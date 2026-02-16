@@ -1,13 +1,6 @@
-from __future__ import annotations
-import datetime as _dt
-from dataclasses import is_dataclass, asdict
-from typing import Any
-
-
 def to_json(obj: Any) -> str:
     seen = set()
     return _encode(obj, seen)
-
 
 def _encode(obj: Any, seen: set[int]) -> str:
     if obj is None:
@@ -79,7 +72,6 @@ def _encode(obj: Any, seen: set[int]) -> str:
         return _quote(str(obj))
     finally:
         seen.remove(oid)
-
 
 def _quote(s: str) -> str:
     out = ['"']
