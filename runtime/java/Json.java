@@ -1,8 +1,5 @@
 public final class Json {
 
-	private Json() {
-	}
-
 	public static String toJson(Object obj) {
 		IdentityHashMap<Object, Boolean> seen = new IdentityHashMap<>();
 		StringBuilder sb = new StringBuilder(256);
@@ -127,7 +124,7 @@ public final class Json {
 	}
 
 	private static List<Field> allFields(Class<?> c) {
-		ArrayList<Field> out = new ArrayList<>();
+		List<Field> out = new ArrayList<>();
 		for (Class<?> x = c; x != null && x != Object.class; x = x.getSuperclass()) {
 			Field[] fs = x.getDeclaredFields();
 			Collections.addAll(out, fs);
