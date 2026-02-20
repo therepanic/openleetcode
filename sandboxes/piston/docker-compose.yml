@@ -1,0 +1,31 @@
+services:
+  piston:
+    image: ghcr.io/engineer-man/piston:latest
+    container_name: piston
+    privileged: true
+    ports:
+      - "2000:2000"
+    volumes:
+      - piston_packages:/piston/packages
+
+  piston-installer:
+    image: node:20-bullseye
+    container_name: piston-installer
+    depends_on:
+      - piston
+    volumes:
+      - piston_packages:/piston/packages
+    entrypoint: ["/bin/bash", "-lc"]
+    command:
+      - |
+        apt-get update -y >/dev/null
+        apt-get install -y --no-install-recommends git ca-certificates curl >/dev/null
+        rm -rf /tmp/piston
+        git clone --depth 1 https://github.com/engineer-man/piston /tmp/piston >/dev/null
+        cd /tmp/piston/cli
+        npm ci --silent
+        for i in $(seq 1 120); do curl -fsS http://piston:2000/api/v2/runtimes >/dev/null 2>&1 && break; sleep 1; done
+        node index.js -u http://piston:2000 ppman install python java node typescript gcc mono dotnet go kotlin swift rust ruby php dart scala elixir erlang racket || true
+
+volumes:
+  piston_packages:
