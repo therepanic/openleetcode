@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.therepanic'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'info.picocli:picocli:4.7.7'
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.therepanic.cli.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+test {
+    useJUnitPlatform()
+}
