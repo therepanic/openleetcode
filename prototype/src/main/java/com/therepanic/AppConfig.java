@@ -1,5 +1,7 @@
 package com.therepanic;
 
+import com.therepanic.cli.Backend;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +12,8 @@ public class AppConfig {
     private String host = "127.0.0.1";
 
     private Integer port = 20000;
+
+    private Backend backend = Backend.PISTON;
 
     private static final Path CONFIG_DIR  = Path.of(System.getProperty("user.home"), ".openleetcode");
 
@@ -28,6 +32,9 @@ public class AppConfig {
         if (props.containsKey("port")) {
             appConfig.setPort(Integer.valueOf(props.getProperty("port")));
         }
+        if (props.containsKey("backend")) {
+            appConfig.setBackend(Backend.valueOf((props.getProperty("backend"))));
+        }
         return appConfig;
     }
 
@@ -39,6 +46,7 @@ public class AppConfig {
         }
         props.setProperty("host", this.host);
         props.setProperty("port", String.valueOf(this.port));
+        props.setProperty("backend", String.valueOf(this.backend));
         props.store(Files.newOutputStream(CONFIG_FILE), "openleetcode save");
     }
 
@@ -56,5 +64,13 @@ public class AppConfig {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public void setBackend(Backend backend) {
+        this.backend = backend;
+    }
+
+    public Backend getBackend() {
+        return this.backend;
     }
 }

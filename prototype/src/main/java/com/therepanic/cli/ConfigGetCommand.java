@@ -20,6 +20,7 @@ public class ConfigGetCommand implements Callable<Integer> {
         String value = switch (this.key) {
             case "host" -> config.getHost();
             case "port" -> String.valueOf(config.getPort());
+            case "backend" -> String.valueOf(config.getBackend()).toLowerCase();
             default -> {
                 System.err.println("Unknown key: " + this.key);
                 System.err.println("Available keys: host, port");

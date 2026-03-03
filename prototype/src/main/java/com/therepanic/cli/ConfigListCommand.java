@@ -16,6 +16,7 @@ public class ConfigListCommand implements Callable<Integer> {
         AppConfig config = this.parent.getConfig();
         System.out.println("host = " + config.getHost());
         System.out.println("port = " + config.getPort());
+        System.out.println("backend = " + config.getBackend().toString().toLowerCase());
         return 0;
     }
 

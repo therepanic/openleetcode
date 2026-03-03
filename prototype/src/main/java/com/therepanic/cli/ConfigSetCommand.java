@@ -27,9 +27,12 @@ public class ConfigSetCommand  implements Callable<Integer> {
             case "port" -> {
                 config.setPort(Integer.valueOf(this.value));
             }
+            case "backend" -> {
+                config.setBackend(Backend.valueOf(this.value.toUpperCase()));
+            }
             default -> {
                 System.err.println("Unknown key: " + this.key);
-                System.err.println("Available keys: host, port");
+                System.err.println("Available keys: host, port, backend");
                 return 1;
             }
         }
