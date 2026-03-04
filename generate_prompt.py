@@ -26,6 +26,7 @@ You are helping generate a test manifest for the openleetcode project.
 openleetcode is a CLI tool that lets you run LeetCode solutions against test cases locally without a subscription. Test suites are defined in YAML manifests. Solutions are executed in sandboxed runtimes for these languages: python3, python2, ruby, java, kotlin, go, dart, swift.
 
 ## Test format (TEST_FORMAT.md)
+⚠️ For static 2D arrays, you must use gen: "array" + const: form. Writing [[0,1],[1,2]] as plain YAML is not supported for nested arrays.
 
 {TEST_FORMAT}
 

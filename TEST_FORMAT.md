@@ -424,6 +424,8 @@ in:
       - [false, true]
 ```
 
+For `call`, use the same syntax principle for 2D as for 1D: keep the usual language wrapper and only increase dimensionality (`int[] -> int[][]`, `[]int -> [][]int`, `intArrayOf(...) -> arrayOf(intArrayOf(...))`).
+
 ---
 
 ## Full Example

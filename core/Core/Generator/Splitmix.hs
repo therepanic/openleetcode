@@ -289,4 +289,4 @@ renderNestedArr lang elemType rows = case lang of
           _ -> "arrayOf"
      in intercalate ", " (map (\r -> innerFn <> "(" <> r <> ")") rows)
   Go -> intercalate ", " (map (\r -> "{" <> r <> "}") rows)
-  _ -> "[" <> intercalate ", " (map (\r -> "[" <> r <> "]") rows) <> "]"
+  _ -> intercalate ", " (map (\r -> "[" <> r <> "]") rows)
