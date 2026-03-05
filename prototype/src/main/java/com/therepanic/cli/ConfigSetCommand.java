@@ -1,6 +1,7 @@
 package com.therepanic.cli;
 
 import com.therepanic.AppConfig;
+import com.therepanic.Backend;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;

@@ -1,4 +1,4 @@
-package com.therepanic.cli;
+package com.therepanic;
 
 public enum Backend {
     PISTON
