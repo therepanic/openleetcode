@@ -4,14 +4,15 @@ import Core.Types
 
 data ExecRequest = ExecRequest
   { language :: Language,
-    content :: Text,
+    content :: String,
     runTimeout :: Int,
     runMemoryLimit :: Int
   }
+  deriving (Show)
 
-data ExecResult
-  = ExecSuccess {stdout :: Text}
-  | ExecError {stderr :: Text}
+data ExecResult = ExecSuc {stdout :: String} | ExecFail {stderr :: String}
+
+type ExecResponse = ExecResult
 
 class CodeExecutor e where
-  execute :: e ExecRequest -> IO ExecResult
+  execute :: e -> ExecRequest -> IO ExecResponse
