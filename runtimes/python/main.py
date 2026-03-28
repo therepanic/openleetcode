@@ -4,4 +4,4 @@ ${SOLUTION}
 
 ${JSON_GEN}
 
-print to_json(Solution().${CALL_SOLUTION})
+print to_json(${CALL_SOLUTION})
