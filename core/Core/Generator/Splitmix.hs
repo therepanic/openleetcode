@@ -5,8 +5,8 @@ import Data.List (foldl')
 import Data.Word (Word64)
 import System.Random.SplitMix
 
-generateIntInRange :: Int -> Int -> SMGen -> (Int, SMGen)
-generateIntInRange lo hi gen =
+generateIntegralInRange :: Integer -> Integer -> SMGen -> (Integer, SMGen)
+generateIntegralInRange lo hi gen =
   let (w, gen') = nextWord64 gen
       range = fromIntegral (hi - lo + 1) :: Word64
       val = lo + fromIntegral (mod w range)
@@ -15,17 +15,18 @@ generateIntInRange lo hi gen =
 generateFloatInRange :: Double -> Double -> Int -> SMGen -> (Double, SMGen)
 generateFloatInRange lo hi prec gen =
   let factor = 10 ^ prec
-      loI = round (lo * fromIntegral factor) :: Int
-      hiI = round (hi * fromIntegral factor) :: Int
-      (n, gen') = generateIntInRange loI hiI gen
+      loI = round (lo * fromIntegral factor) :: Integer
+      hiI = round (hi * fromIntegral factor) :: Integer
+      (n, gen') = generateIntegralInRange loI hiI gen
       val = fromIntegral n / fromIntegral factor :: Double
    in (val, gen')
 
-generateInt :: GenInt -> SMGen -> (String, SMGen)
-generateInt (GenIntConst c) gen = (show c, gen)
-generateInt (GenIntRange lo hi) gen =
-  let (val, gen') = generateIntInRange lo hi gen
+generateIntegral :: GenIntegral -> SMGen -> (String, SMGen)
+generateIntegral (GenIntegralConst c) gen = (show c, gen)
+generateIntegral (GenIntegralRange lo hi) gen =
+  let (val, gen') = generateIntegralInRange lo hi gen
    in (show val, gen')
+
 generateInt _ _ = error "Unhandled GenInt type"
 
 generateFloat :: GenFloat -> SMGen -> (String, SMGen)
@@ -37,16 +38,14 @@ generateFloat _ _ = error "Unhandled GenFloat type"
 
 generateCharFromList :: [Char] -> SMGen -> (Char, SMGen)
 generateCharFromList xs gen =
-  let (it, gen') = generateIntInRange 0 (length xs - 1) gen
-   in (xs !! it, gen')
+  let (it, gen') = generateIntegralInRange 0 (fromIntegral (length xs - 1) :: Integer) gen
+   in (xs !! (fromIntegral it :: Int), gen')
 
 generateChar :: GenChar -> SMGen -> (String, SMGen)
 generateChar (GenCharConst c) gen = (show c, gen)
 generateChar (GenCharVariety v) gen =
-    let
-        (c, gen') = generateCharFromList v gen
-    in
-        (show c, gen')
+  let (c, gen') = generateCharFromList v gen
+   in (show c, gen')
 generateChar _ _ = error "Unhandled GenChar type"
 
 generateStr :: GenStr -> SMGen -> (String, SMGen)

@@ -3,18 +3,18 @@ module Core.Generator.Class where
 import Core.Types
 import Data.Map as M
 
-data GenInt = GenIntRange {intMin :: Int, intMax :: Int} | GenIntConst Int
+data GenIntegral = GenIntegralRange {intMin :: Integer, intMax :: Integer} | GenIntegralConst Integer
 
 data GenFloat = GenFloatRange {floatMin :: Double, floatMax :: Double, floatPrecision :: Int} | GenFloatConst Double
 
-data GenStr = GenStr {strLen :: GenInt, strAlphabet :: [Char]}
+data GenStr = GenStr {strLen :: GenIntegral, strAlphabet :: [Char]}
 
 data GenChar = GenCharVariety {charVariety :: [Char]} | GenCharConst Char
 
-data GenArray = GenArray {arrDistinct :: Bool, arrSorted :: Bool, arrLen :: GenInt, arrOf :: GenInfo}
+data GenArray = GenArray {arrDistinct :: Bool, arrLen :: GenIntegral, arrOf :: GenInfo}
 
 data GenInfo
-  = GenIntInfo GenInt
+  = GenIntegralInfo GenIntegral
   | GenFloatInfo GenFloat
   | GenCharInfo GenChar
   | GenStrInfo GenStr
