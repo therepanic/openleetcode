@@ -11,9 +11,7 @@ import Data.Text qualified as T
 import GHC.Generics
 import Network.HTTP.Req
 
-data PistonExecutor = PistonExecutor
-  { url :: String
-  }
+newtype PistonExecutor = PistonExecutor {url :: String}
 
 data PistonRuntime = PistonRuntime
   { lang :: Language,
@@ -54,7 +52,7 @@ instance FromJSON PistonExecuteRun where
       <$> v .: "stdout"
       <*> v .: "stderr"
 
-data PistonExecuteResponse = PistonExecuteResponse
+newtype PistonExecuteResponse = PistonExecuteResponse
   { pistonResponseRun :: Maybe PistonExecuteRun
   }
   deriving (Show, Generic)
