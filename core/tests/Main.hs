@@ -1,5 +1,8 @@
 module Main where
 
+import Generator.SplitmixSpec qualified as SplitmixSpec
+import Test.Hspec
+
 main :: IO ()
-main = do
-  print "starting point"
+main = hspec $ do
+  describe "Splitmix" SplitmixSpec.spec
