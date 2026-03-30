@@ -5,7 +5,7 @@ module Core.Types where
 
 import Data.Aeson
 
-data Language = Python3 | Python | Ruby | Java
+data Language = Python3 | Python | Ruby | Java | Go
   deriving (Show, Eq, Ord)
 
 instance FromJSON Language where
@@ -15,6 +15,7 @@ instance FromJSON Language where
       "python" -> pure Python
       "ruby" -> pure Ruby
       "java" -> pure Java
+      "go" -> pure Go
       _ -> fail "Unknown language"
 
 instance ToJSON Language where
@@ -22,3 +23,4 @@ instance ToJSON Language where
   toJSON Python = "python"
   toJSON Ruby = "ruby"
   toJSON Java = "java"
+  toJSON Go = "go"
