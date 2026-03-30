@@ -13,5 +13,5 @@ ${SOLUTION}
 ${JSON_GEN}
 
 func main() {
-	fmt.Print(toJson(${CALL_SOLUTION}))
+	${CALL_SOLUTION}
 }

@@ -8,6 +8,6 @@ ${JSON_GEN}
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println(Json.toString(${CALL_SOLUTION}));
+        ${CALL_SOLUTION}
     }
 }

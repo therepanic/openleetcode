@@ -8,5 +8,5 @@ ${SOLUTION}
 ${JSON_GEN}
 
 fun main() {
-    println(Json.toJson(${CALL_SOLUTION}))
+    ${CALL_SOLUTION}
 }

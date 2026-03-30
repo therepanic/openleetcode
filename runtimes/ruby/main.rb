@@ -6,4 +6,4 @@ ${SOLUTION}
 
 ${JSON_GEN}
 
-puts to_json(${CALL_SOLUTION})
+${CALL_SOLUTION}
