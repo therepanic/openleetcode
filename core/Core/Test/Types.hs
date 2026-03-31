@@ -40,15 +40,19 @@ data GIDChar
   | GIDGenCharConst Char
 
 data GIDArr
-  = GidArrConst String
+  = GIDArrConst String
   | GIDArrGen {gidArrDistinct :: Bool, gidSorted :: Bool, gidArrLen :: GIDIntegral, gidArrOf :: GeneratedInData}
 
 data TestCaseInData = InCase String | InGenerated GeneratedInData
 
 newtype TestCaseOutData = OutCase String
 
+type TestCaseIn = (String, TestCaseInData)
+
+type TestOracle = M.Map Language String
+
 data TestCase
-  = TestCase {tcName :: String, tcJudge :: Maybe Judge, tcIn :: [(String, TestCaseInData)], tcOut :: Maybe TestCaseOutData}
+  = TestCase {tcName :: String, tcJudge :: Maybe Judge, tcIn :: [TestCaseIn], tcOut :: Maybe TestCaseOutData}
 
 data TestSuite
   = TestSuite
@@ -134,8 +138,8 @@ instance FromJSON GIDArr where
     return $ GIDArrGen distinct sorted len of'
   parseJSON (Array vec) =
     let s = BL.unpack (encode (Array vec))
-     in return $ GidArrConst $ drop 1 $ init s
-  parseJSON v = return $ GidArrConst (BL.unpack (encode v))
+     in return $ GIDArrConst $ drop 1 $ init s
+  parseJSON v = return $ GIDArrConst (BL.unpack (encode v))
 
 instance FromJSON GeneratedInData where
   parseJSON = withObject "GeneratedInData" $ \o -> do

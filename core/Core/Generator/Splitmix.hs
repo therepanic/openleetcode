@@ -4,7 +4,6 @@ import Core.Generator.Class
 import Core.Types
 import Data.Char (toLower)
 import Data.List (foldl', intercalate)
-import Data.Map qualified as M
 import Data.Set qualified as S
 import Data.Vector qualified as V
 import Data.Word (Word64)
@@ -221,24 +220,14 @@ data SplitmixGenerator = SplitmixGenerator
 
 instance Generator SplitmixGenerator where
   generate _ d =
-    let go :: [(String, GenInfo)] -> M.Map String String -> SMGen -> M.Map String String
-        go [] m _ = m
-        go ((k, GenIntegralInfo i) : xs) m gen =
-          let (v, gen') = generateIntegral i gen
-           in go xs (M.insert k v m) gen'
-        go ((k, GenFloatInfo i) : xs) m gen =
-          let (v, gen') = generateFloat i gen
-           in go xs (M.insert k v m) gen'
-        go ((k, GenCharInfo i) : xs) m gen =
-          let (v, gen') = generateChar i gen
-           in go xs (M.insert k v m) gen'
-        go ((k, GenStrInfo i) : xs) m gen =
-          let (v, gen') = generateStr i gen
-           in go xs (M.insert k v m) gen'
-        go ((k, GenArrInfo i) : xs) m gen =
-          let (v, gen') = generateArr i (lang d) gen
-           in go xs (M.insert k v m) gen'
-        go ((k, GenBoolInfo i) : xs) m gen =
-          let (v, gen') = generateBool i (lang d) gen
-           in go xs (M.insert k v m) gen'
-     in GenResult {result = go (info d) M.empty (mkSMGen (fromIntegral (seed d)))}
+    let gen = mkSMGen (fromIntegral (seed d))
+        (result, _) = generateInfo (info d) (lang d) gen
+     in result
+
+generateInfo :: GenInfo -> Language -> SMGen -> (String, SMGen)
+generateInfo (GenIntegralInfo i) _ gen = generateIntegral i gen
+generateInfo (GenFloatInfo i) _ gen = generateFloat i gen
+generateInfo (GenCharInfo i) _ gen = generateChar i gen
+generateInfo (GenStrInfo i) _ gen = generateStr i gen
+generateInfo (GenArrInfo i) l gen = generateArr i l gen
+generateInfo (GenBoolInfo i) l gen = generateBool i l gen

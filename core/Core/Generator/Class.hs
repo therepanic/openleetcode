@@ -1,7 +1,6 @@
 module Core.Generator.Class where
 
 import Core.Types
-import Data.Map as M
 
 data GenIntegral = GenIntegralRange {intMin :: Integer, intMax :: Integer} | GenIntegralConst Integer
 
@@ -23,9 +22,9 @@ data GenInfo
   | GenStrInfo GenStr
   | GenArrInfo GenArr
 
-data GenData = GenData {seed :: Int, info :: [(String, GenInfo)], lang :: Language}
+data GenData = GenData {seed :: Int, info :: GenInfo, lang :: Language}
 
-newtype GenResult = GenResult {result :: M.Map String String}
+type GenResult = String
 
 class Generator g where
   generate :: g -> GenData -> GenResult

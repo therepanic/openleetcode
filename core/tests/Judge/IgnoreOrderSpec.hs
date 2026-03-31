@@ -7,7 +7,7 @@ import Test.Hspec
 spec :: Spec
 spec = do
   describe "IgnoreOrder Judge" $ do
-    it "passes when JSON arrays have same elements in different order" $ do
+    it "passes when json arrays have same elements in different order" $ do
       judge IgnoreOrder "[1, 2, 3]" "[3, 1, 2]" `shouldBe` Pass
 
     it "passes for nested arrays with different order" $ do
@@ -26,7 +26,7 @@ spec = do
         Fail _ -> True `shouldBe` True
         _ -> expectationFailure "should fail because lengths differ"
 
-    it "fails with error message on invalid JSON" $ do
+    it "fails with error message on invalid json" $ do
       case judge IgnoreOrder "not a json" "[1, 2]" of
         Fail msg -> msg `shouldBe` "failed to parse json"
         _ -> expectationFailure "should fail on invalid input"
