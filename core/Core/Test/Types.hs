@@ -45,7 +45,7 @@ data TestCaseInData = InCase String | InGenerated GeneratedInData
 data TestCaseOutData = OutCase String
 
 data TestCase
-  = TestCase {tcName :: String, tcJudge :: Maybe Judge, tcIn :: [(String, TestCaseInData)], tcOut :: TestCaseOutData}
+  = TestCase {tcName :: String, tcJudge :: Maybe Judge, tcIn :: [(String, TestCaseInData)], tcOut :: Maybe TestCaseOutData}
 
 data TestSuite
   = TestSuite
@@ -153,7 +153,7 @@ instance FromJSON TestCase where
     name <- o .: "name"
     judge <- o .:? "judge"
     inMap <- o .: "in" :: Parser (M.Map String TestCaseInData)
-    out <- o .: "out"
+    out <- o .:? "out"
     return $ TestCase name judge (M.toList inMap) out
 
 instance FromJSON TestSuite where
