@@ -1,8 +1,11 @@
 module Core.Generator.Class where
 
+import Core.Types
 import Data.Map as M
 
 data GenIntegral = GenIntegralRange {intMin :: Integer, intMax :: Integer} | GenIntegralConst Integer
+
+data GenBool = GenBoolConst Bool | GenBoolGen
 
 data GenFloat = GenFloatRange {floatMin :: Double, floatMax :: Double, floatPrecision :: Int} | GenFloatConst Double
 
@@ -14,12 +17,13 @@ data GenArr = GenArr {arrDistinct :: Bool, arrLen :: GenIntegral, arrOf :: GenIn
 
 data GenInfo
   = GenIntegralInfo GenIntegral
+  | GenBoolInfo GenBool
   | GenFloatInfo GenFloat
   | GenCharInfo GenChar
   | GenStrInfo GenStr
   | GenArrInfo GenArr
 
-data GenData = GenData {seed :: Int, info :: [(String, GenInfo)]}
+data GenData = GenData {seed :: Int, info :: [(String, GenInfo)], lang :: Language}
 
 newtype GenResult = GenResult {result :: M.Map String String}
 

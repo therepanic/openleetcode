@@ -10,4 +10,4 @@ instance Judge Exact where
       then
         Pass
       else
-        Fail ("Expected: " ++ expected ++ " Got: " ++ actual)
+        Fail ("expected: " ++ expected ++ " got: " ++ actual)

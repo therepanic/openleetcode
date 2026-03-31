@@ -1,6 +1,8 @@
 module Core.Generator.Splitmix where
 
 import Core.Generator.Class
+import Core.Types
+import Data.Char (toLower)
 import Data.List (foldl', intercalate)
 import Data.Map qualified as M
 import Data.Set qualified as S
@@ -74,8 +76,15 @@ generateStr (GenStr l a) gen =
    in (result, gen'')
 generateStr _ _ = error "Unhandled GenStr type"
 
-generateArr :: GenArr -> SMGen -> (String, SMGen)
-generateArr (GenArr False l (GenIntegralInfo (GenIntegralRange lo hi))) gen =
+generateBool :: GenBool -> SMGen -> (String, SMGen)
+generateBool (GenBoolConst b) gen = (show b, gen)
+generateBool GenBoolGen gen =
+  let (w, gen') = nextWord64 gen
+      val = even w
+   in (show val, gen')
+
+generateArr :: GenArr -> Language -> SMGen -> (String, SMGen)
+generateArr (GenArr False l (GenIntegralInfo (GenIntegralRange lo hi))) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       (nums, gen'') =
@@ -88,7 +97,7 @@ generateArr (GenArr False l (GenIntegralInfo (GenIntegralRange lo hi))) gen =
           [1 .. len]
       result = intercalate ", " (map show (reverse nums))
    in (result, gen'')
-generateArr (GenArr True l (GenIntegralInfo (GenIntegralRange lo hi))) gen =
+generateArr (GenArr True l (GenIntegralInfo (GenIntegralRange lo hi))) _ gen =
   let (v, gen') = generateIntegral l gen
       len = min (read v :: Int) (fromIntegral (hi - lo + 1))
       vec = V.fromList [lo .. hi]
@@ -96,15 +105,15 @@ generateArr (GenArr True l (GenIntegralInfo (GenIntegralRange lo hi))) gen =
       nums = V.toList (V.take len shuffled)
       result = intercalate ", " (map show nums)
    in (result, gen'')
-generateArr (GenArr False l (GenIntegralInfo (GenIntegralConst constVal))) gen =
+generateArr (GenArr False l (GenIntegralInfo (GenIntegralConst constVal))) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       result = replicate len constVal
       formattedString = intercalate ", " (map show result)
    in (formattedString, gen')
-generateArr (GenArr True _ (GenIntegralInfo (GenIntegralConst constVal))) gen =
+generateArr (GenArr True _ (GenIntegralInfo (GenIntegralConst constVal))) _ gen =
   (show constVal, gen)
-generateArr (GenArr True l (GenFloatInfo (GenFloatRange lo hi p))) gen =
+generateArr (GenArr True l (GenFloatInfo (GenFloatRange lo hi p))) _ gen =
   let step = 1 / (10 ^ p)
       vec = V.fromList [lo, lo + step .. hi]
       (v, gen') = generateIntegral l gen
@@ -113,7 +122,7 @@ generateArr (GenArr True l (GenFloatInfo (GenFloatRange lo hi p))) gen =
       nums = V.toList (V.take len shuffled)
       result = intercalate ", " (map show nums)
    in (result, gen'')
-generateArr (GenArr False l (GenFloatInfo (GenFloatRange lo hi p))) gen =
+generateArr (GenArr False l (GenFloatInfo (GenFloatRange lo hi p))) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       (nums, gen'') =
@@ -126,15 +135,15 @@ generateArr (GenArr False l (GenFloatInfo (GenFloatRange lo hi p))) gen =
           [1 .. len]
       result = intercalate ", " (map show (reverse nums))
    in (result, gen'')
-generateArr (GenArr False l (GenFloatInfo (GenFloatConst constVal))) gen =
+generateArr (GenArr False l (GenFloatInfo (GenFloatConst constVal))) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       result = replicate len constVal
       formattedString = intercalate ", " (map show result)
    in (formattedString, gen')
-generateArr (GenArr True _ (GenFloatInfo (GenFloatConst constVal))) gen =
+generateArr (GenArr True _ (GenFloatInfo (GenFloatConst constVal))) _ gen =
   (show constVal, gen)
-generateArr (GenArr False l (GenCharInfo i)) gen =
+generateArr (GenArr False l (GenCharInfo i)) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       (chars, gen'') =
@@ -147,7 +156,7 @@ generateArr (GenArr False l (GenCharInfo i)) gen =
           [1 .. len]
       result = intercalate ", " (map show (reverse chars))
    in (result, gen'')
-generateArr (GenArr True l (GenCharInfo (GenCharVariety alphabet))) gen =
+generateArr (GenArr True l (GenCharInfo (GenCharVariety alphabet))) _ gen =
   let vec = V.fromList alphabet
       (v, gen') = generateIntegral l gen
       len = min (read v :: Int) (V.length vec)
@@ -155,9 +164,9 @@ generateArr (GenArr True l (GenCharInfo (GenCharVariety alphabet))) gen =
       chars = V.toList (V.take len shuffled)
       result = intercalate ", " (map show chars)
    in (result, gen'')
-generateArr (GenArr True _ (GenCharInfo (GenCharConst c))) gen =
+generateArr (GenArr True _ (GenCharInfo (GenCharConst c))) _ gen =
   (show c, gen)
-generateArr (GenArr False l (GenStrInfo val)) gen =
+generateArr (GenArr False l (GenStrInfo val)) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       (strs, gen'') =
@@ -170,7 +179,7 @@ generateArr (GenArr False l (GenStrInfo val)) gen =
           [1 .. len]
       result = intercalate ", " (map show (reverse strs))
    in (result, gen'')
-generateArr (GenArr True l (GenStrInfo val)) gen =
+generateArr (GenArr True l (GenStrInfo val)) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       (strs, gen'') = go S.empty [] len gen'
@@ -182,7 +191,31 @@ generateArr (GenArr True l (GenStrInfo val)) gen =
        in if S.member s seen
             then go seen acc n g'
             else go (S.insert s seen) (s : acc) (n - 1) g'
-generateArr (GenArr _ _ (GenArrInfo (GenArr {}))) _ = error "todo: think of something about two-dimensional arrays" -- todo
+generateArr (GenArr _ _ (GenArrInfo (GenArr {}))) _ _ = error "todo: think of something about two-dimensional arrays" -- todo
+generateArr (GenArr False l (GenBoolInfo i)) lang gen =
+  let (v, gen') = generateIntegral l gen
+      len = read v :: Int
+      (bools, gen'') =
+        foldl'
+          ( \(acc, g) _ ->
+              let (s, g') = generateBool i g
+               in (s : acc, g')
+          )
+          ([], gen')
+          [1 .. len]
+      result = intercalate ", " (reverse bools)
+   in (if lang /= Python && lang /= Python3 then map toLower result else result, gen'')
+generateArr (GenArr True l (GenBoolInfo i)) lang gen =
+  let (v, gen') = generateIntegral l gen
+      len = min (read v :: Int) 2
+      pool = case i of
+        GenBoolConst b -> [b]
+        GenBoolGen -> [True, False]
+      vec = V.fromList pool
+      (shuffled, gen'') = fisherYates vec gen'
+      actualLen = min len (V.length shuffled)
+      result = intercalate ", " (map show (V.toList (V.take actualLen shuffled)))
+   in (if lang /= Python && lang /= Python3 then map toLower result else result, gen'')
 
 data SplitmixGenerator = SplitmixGenerator
 
@@ -203,6 +236,9 @@ instance Generator SplitmixGenerator where
           let (v, gen') = generateStr i gen
            in go xs (M.insert k v m) gen'
         go ((k, GenArrInfo i) : xs) m gen =
-          let (v, gen') = generateArr i gen
+          let (v, gen') = generateArr i (lang d) gen
+           in go xs (M.insert k v m) gen'
+        go ((k, GenBoolInfo i) : xs) m gen =
+          let (v, gen') = generateBool i gen
            in go xs (M.insert k v m) gen'
      in GenResult {result = go (info d) M.empty (mkSMGen (fromIntegral (seed d)))}

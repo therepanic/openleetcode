@@ -23,10 +23,13 @@ data GeneratedInData
   | GIDStr {gidStrLen :: GIDIntegral, gidStrAlphabet :: [Char]}
   | GIDChar GIDChar
   | GIDArr GIDArr
+  | GIDBool GIDBool
 
 data GIDIntegral
   = GIDGenIntegralRange {gidGenIntMin :: Integer, gidGenIntMax :: Integer}
   | GIDGenIntegralConst Integer
+
+data GIDBool = GIDGenBoolConst Bool | GIDGenBoolGen
 
 data GIDFloat
   = GIDGenFloatRange {gidGenFloatMin :: Double, gidGenFloatMax :: Double, gidGenFloatPrecision :: Int}
@@ -42,7 +45,7 @@ data GIDArr
 
 data TestCaseInData = InCase String | InGenerated GeneratedInData
 
-data TestCaseOutData = OutCase String
+newtype TestCaseOutData = OutCase String
 
 data TestCase
   = TestCase {tcName :: String, tcJudge :: Maybe Judge, tcIn :: [(String, TestCaseInData)], tcOut :: Maybe TestCaseOutData}
@@ -95,6 +98,15 @@ instance FromJSON GIDIntegral where
       _ -> fail $ "unknown gen for integral: " <> gen
   parseJSON _ = fail "expected number or object"
 
+instance FromJSON GIDBool where
+  parseJSON (Bool v) = return $ GIDGenBoolConst v
+  parseJSON (Object o) = do
+    gen <- o .: "gen" :: Parser String
+    case gen of
+      "bool" -> return GIDGenBoolGen
+      _ -> fail $ "unknown gen for bool: " <> gen
+  parseJSON _ = fail "expected bool or object"
+
 instance FromJSON GIDFloat where
   parseJSON (Number n) = return $ GIDGenFloatConst (realToFrac n)
   parseJSON (Object o) = do
@@ -134,6 +146,7 @@ instance FromJSON GeneratedInData where
       "str" -> GIDStr <$> o .: "len" <*> o .: "alphabet"
       "char" -> GIDChar <$> parseJSON (Object o)
       "array" -> GIDArr <$> parseJSON (Object o)
+      "bool" -> GIDBool <$> parseJSON (Object o)
       _ -> fail $ "unknown gen: " <> gen
 
 instance FromJSON TestCaseInData where
