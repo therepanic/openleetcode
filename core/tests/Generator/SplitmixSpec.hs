@@ -34,6 +34,18 @@ spec = do
       let v = val "b" (GenBoolInfo GenBoolGen)
       v `shouldSatisfy` (\s -> s == "True" || s == "False")
 
+  describe "boolean (cross-language)" $ do
+    it "returns lowercase 'true' for Java" $ do
+      let d = GenData {seed = 42, info = [("b", GenBoolInfo (GenBoolConst True))], lang = Java}
+      let GenResult r = generate SplitmixGenerator d
+      (r M.! "b") `shouldBe` "true"
+
+    it "array of bools for Java should be lowercase" $ do
+      let info = GenArrInfo (GenArr False (GenIntegralConst 2) (GenBoolInfo (GenBoolConst True)))
+      let d = GenData {seed = 42, info = [("a", info)], lang = Java}
+      let GenResult r = generate SplitmixGenerator d
+      (r M.! "a") `shouldBe` "true, true"
+
   describe "string" $ do
     it "generates string of correct length" $ do
       let v = val "s" (GenStrInfo (GenStr (GenIntegralConst 10) "abc"))
