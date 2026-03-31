@@ -2,6 +2,7 @@ module Generator.SplitmixSpec (spec) where
 
 import Core.Generator.Class
 import Core.Generator.Splitmix
+import Core.Types
 import Data.List (nub)
 import Data.Map qualified as M
 import Test.Hspec
@@ -24,7 +25,42 @@ spec = do
       let n = read $ val "f" (GenFloatInfo (GenFloatRange 0.0 1.0 2))
       n `shouldSatisfy` (\x -> x >= 0.0 && x <= 1.0)
 
+  describe "boolean" $ do
+    it "const returns exact value" $ do
+      val "b" (GenBoolInfo (GenBoolConst True)) `shouldBe` "True"
+      val "b" (GenBoolInfo (GenBoolConst False)) `shouldBe` "False"
+
+    it "random produces a boolean string" $ do
+      let v = val "b" (GenBoolInfo GenBoolGen)
+      v `shouldSatisfy` (\s -> s == "True" || s == "False")
+
+  describe "string" $ do
+    it "generates string of correct length" $ do
+      let v = val "s" (GenStrInfo (GenStr (GenIntegralConst 10) "abc"))
+      length v `shouldBe` 12
+
+    it "uses only characters from alphabet" $ do
+      let alphabet = "XYZ"
+      let v = val "s" (GenStrInfo (GenStr (GenIntegralConst 50) alphabet))
+      let content = init (tail v)
+      content `shouldSatisfy` all (`elem` alphabet)
+
   describe "array" $ do
+    it "boolean array has correct format" $ do
+      let v = val "a" (GenArrInfo (GenArr False (GenIntegralConst 3) (GenBoolInfo (GenBoolConst True))))
+      v `shouldBe` "True, True, True"
+
+    it "distinct string array has no duplicates" $ do
+      let genStr = GenStr (GenIntegralConst 1) "abcde"
+      let v = val "a" (GenArrInfo (GenArr True (GenIntegralConst 5) (GenStrInfo genStr)))
+      let strs = map (filter (/= ' ')) (splitOn ',' v)
+      length strs `shouldBe` length (nub strs)
+
+    it "distinct boolean array capped at 2" $ do
+      let v = val "a" (GenArrInfo (GenArr True (GenIntegralConst 10) (GenBoolInfo GenBoolGen)))
+      let parts = splitOn ',' v
+      length parts `shouldSatisfy` (\l -> l <= 2)
+
     it "non-distinct array has correct length" $ do
       let v = val "a" (GenArrInfo (GenArr False (GenIntegralConst 5) (GenIntegralInfo (GenIntegralRange 0 100))))
       length (filter (== ',') v) `shouldBe` 4
@@ -49,7 +85,7 @@ spec = do
       r1 `shouldNotBe` r2
 
 mkData :: Int -> String -> GenInfo -> GenData
-mkData s k i = GenData {seed = s, info = [(k, i)]}
+mkData s k i = GenData {seed = s, info = [(k, i)], lang = Python3}
 
 val :: String -> GenInfo -> String
 val k i = val' 42 k i

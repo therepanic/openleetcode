@@ -65,15 +65,15 @@ generateStr :: GenStr -> SMGen -> (String, SMGen)
 generateStr (GenStr l a) gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
-      (result, gen'') =
+      (charList, gen'') =
         foldl'
           ( \(acc, g) _ ->
               let (c, g') = generateCharFromList a g
-               in (acc ++ show c, g')
+               in (c : acc, g')
           )
           ("", gen')
           [0 .. len - 1]
-   in (result, gen'')
+   in (show $ reverse charList, gen'')
 generateStr _ _ = error "Unhandled GenStr type"
 
 generateBool :: GenBool -> SMGen -> (String, SMGen)
@@ -177,7 +177,7 @@ generateArr (GenArr False l (GenStrInfo val)) _ gen =
           )
           ([], gen')
           [1 .. len]
-      result = intercalate ", " (map show (reverse strs))
+      result = intercalate ", " (reverse strs)
    in (result, gen'')
 generateArr (GenArr True l (GenStrInfo val)) _ gen =
   let (v, gen') = generateIntegral l gen
