@@ -76,12 +76,12 @@ generateStr (GenStr l a) gen =
    in (show $ reverse charList, gen'')
 generateStr _ _ = error "Unhandled GenStr type"
 
-generateBool :: GenBool -> SMGen -> (String, SMGen)
-generateBool (GenBoolConst b) gen = (show b, gen)
-generateBool GenBoolGen gen =
+generateBool :: GenBool -> Language -> SMGen -> (String, SMGen)
+generateBool (GenBoolConst b) lang gen = (if lang /= Python && lang /= Python3 then map toLower $ show b else show b, gen)
+generateBool GenBoolGen lang gen =
   let (w, gen') = nextWord64 gen
       val = even w
-   in (show val, gen')
+   in (if lang /= Python && lang /= Python3 then map toLower $ show val else show val, gen')
 
 generateArr :: GenArr -> Language -> SMGen -> (String, SMGen)
 generateArr (GenArr False l (GenIntegralInfo (GenIntegralRange lo hi))) _ gen =
@@ -198,7 +198,7 @@ generateArr (GenArr False l (GenBoolInfo i)) lang gen =
       (bools, gen'') =
         foldl'
           ( \(acc, g) _ ->
-              let (s, g') = generateBool i g
+              let (s, g') = generateBool i lang g
                in (s : acc, g')
           )
           ([], gen')
@@ -239,6 +239,6 @@ instance Generator SplitmixGenerator where
           let (v, gen') = generateArr i (lang d) gen
            in go xs (M.insert k v m) gen'
         go ((k, GenBoolInfo i) : xs) m gen =
-          let (v, gen') = generateBool i gen
+          let (v, gen') = generateBool i (lang d) gen
            in go xs (M.insert k v m) gen'
      in GenResult {result = go (info d) M.empty (mkSMGen (fromIntegral (seed d)))}
