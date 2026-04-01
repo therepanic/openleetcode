@@ -34,7 +34,7 @@ spec = do
       v `shouldSatisfy` (\s -> s == "True" || s == "False")
 
   describe "boolean (cross-language)" $ do
-    it "returns lowercase 'true' for Java" $ do
+    it "returns lowercase true for Java" $ do
       let d = GenData {seed = 42, info = GenBoolInfo (GenBoolConst True), lang = Java}
       generate SplitmixGenerator d `shouldBe` "true"
 

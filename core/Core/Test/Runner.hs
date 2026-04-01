@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Core.Test.Runner where
 
 import Core.Executor.Class (CodeExecutor, ExecRequest (..), ExecResult (..), execute)
@@ -43,8 +41,8 @@ handleTestCase exec gen jud lang batch runtime seed limits oracle test = do
 
   let genResults = map generateField inGens
 
-  let afterGen = foldl (\acc (var, res) -> replaceUniversal var res acc) (entry batch) genResults
-  let fullCall = foldl (\acc (var, val) -> replaceUniversal var val acc) afterGen inCases
+  let afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) (entry batch) genResults
+  let fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
 
   let withRuntime = replaceUniversal "${JSON_GEN}" runtime fullCall
   let ready = replaceUniversal "${SOLUTION}" (solution batch) withRuntime
