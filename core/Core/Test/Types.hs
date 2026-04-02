@@ -60,7 +60,7 @@ data TestSuite
     tsJudge :: Judge,
     tsLimits :: TestLimits,
     tsOracle :: M.Map Language String,
-    tsSeed :: Maybe Int,
+    tsSeed :: Int,
     tsCases :: [TestCase]
   }
 
@@ -179,6 +179,6 @@ instance FromJSON TestSuite where
     judge <- o .: "judge"
     limits <- o .: "limits"
     oracle <- o .: "oracle"
-    seed <- o .:? "seed"
+    seed <- o .: "seed"
     tests <- o .: "tests"
     return $ TestSuite entry judge limits oracle seed tests

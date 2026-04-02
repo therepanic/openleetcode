@@ -1,5 +1,6 @@
 module Core.Test.Runner where
 
+import Control.Concurrent.Async
 import Core.Executor.Class (CodeExecutor, ExecRequest (..), ExecResult (..), execute)
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
 import Core.Judge.Class (Judge, judge)
@@ -8,6 +9,7 @@ import Core.Test.Converter (toGenInfo)
 import Core.Test.Types qualified as Types
 import Core.Types
 import Data.Map qualified as M
+import Data.Maybe (fromJust)
 import Data.Text qualified as T
 
 data TestResult = Pass | Fail String deriving (Show, Eq)
@@ -89,12 +91,21 @@ handleTestCase exec gen jud lang batch runtime seed limits oracle test = do
                       J.Pass -> Pass
                       J.Fail err -> Fail err
 
--- runSuite ::
---   (CodeExecutor e, Generator g, Judge j) =>
---   e ->
---   g ->
---   j ->
---   Language ->
---   SolutionBatch ->
---   TestSuite ->
---   IO [TestResult]
+runSuite ::
+  (CodeExecutor e, Generator g, Judge j) =>
+  e ->
+  g ->
+  j ->
+  Language ->
+  SolutionBatch ->
+  Types.TestSuite ->
+  IO [TestResult]
+runSuite exec gen jud lang batch suite =
+  mapConcurrently
+    (\test -> handleTestCase exec gen jud lang batch runtime seed limits oracle test)
+    (Types.tsCases suite)
+  where
+    runtime = fromJust (M.lookup lang (Types.tsOracle suite))
+    oracle = Types.tsOracle suite
+    seed = Types.tsSeed suite
+    limits = Types.tsLimits suite
