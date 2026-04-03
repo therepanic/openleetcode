@@ -14,7 +14,7 @@ import Data.Text qualified as T
 
 data TestResult = Pass | Fail String deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {solution :: String, entry :: String}
+data SolutionBatch = SolutionBatch {solution :: String, entry :: String, runtime :: String}
 
 renderGenResult :: GenResult -> String
 renderGenResult r = r
@@ -28,8 +28,8 @@ replaceUniversal target replacement input =
 
 handleTestCase ::
   (CodeExecutor e, Generator g, Judge j) =>
-  e -> g -> j -> Language -> SolutionBatch -> String -> Int -> Types.TestLimits -> Types.TestOracle -> Types.TestCase -> IO TestResult
-handleTestCase exec gen jud lang batch runtime seed limits oracle test = do
+  e -> g -> j -> Language -> SolutionBatch -> Int -> Types.TestLimits -> Types.TestOracle -> Types.TestCase -> IO TestResult
+handleTestCase exec gen jud lang batch seed limits oracle test = do
   let (inCases, inGens) = foldr splitIn ([], []) (Types.tcIn test)
         where
           splitIn (var, Types.InCase c) (cs, gs) = ((var, c) : cs, gs)
@@ -46,7 +46,7 @@ handleTestCase exec gen jud lang batch runtime seed limits oracle test = do
   let afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) (entry batch) genResults
   let fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
 
-  let withRuntime = replaceUniversal "${JSON_GEN}" runtime fullCall
+  let withRuntime = replaceUniversal "${JSON_GEN}" (runtime batch) fullCall
   let ready = replaceUniversal "${SOLUTION}" (solution batch) withRuntime
 
   response <-
@@ -102,10 +102,9 @@ runSuite ::
   IO [TestResult]
 runSuite exec gen jud lang batch suite =
   mapConcurrently
-    (\test -> handleTestCase exec gen jud lang batch runtime seed limits oracle test)
+    (\test -> handleTestCase exec gen jud lang batch seed limits oracle test)
     (Types.tsCases suite)
   where
-    runtime = fromJust (M.lookup lang (Types.tsOracle suite))
     oracle = Types.tsOracle suite
     seed = Types.tsSeed suite
     limits = Types.tsLimits suite
