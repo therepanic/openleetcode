@@ -52,7 +52,13 @@ type TestCaseIn = (String, TestCaseInData)
 type TestOracle = M.Map Language String
 
 data TestCase
-  = TestCase {tcName :: String, tcJudge :: Maybe Judge, tcIn :: [TestCaseIn], tcOut :: Maybe TestCaseOutData}
+  = TestCase
+  { tcName :: String,
+    tcJudge :: Maybe Judge,
+    tcCall :: Maybe (M.Map Language String),
+    tcIn :: [TestCaseIn],
+    tcOut :: Maybe TestCaseOutData
+  }
 
 data TestSuite
   = TestSuite
@@ -169,9 +175,10 @@ instance FromJSON TestCase where
   parseJSON = withObject "TestCase" $ \o -> do
     name <- o .: "name"
     judge <- o .:? "judge"
+    call <- o .:? "call"
     inMap <- o .: "in" :: Parser (M.Map String TestCaseInData)
     out <- o .:? "out"
-    return $ TestCase name judge (M.toList inMap) out
+    return $ TestCase name judge call (M.toList inMap) out
 
 instance FromJSON TestSuite where
   parseJSON = withObject "TestSuite" $ \o -> do

@@ -44,7 +44,14 @@ handleTestCase exec gen jud lang batch seed suite test = do
   let genResults = map generateField inGens
 
   let poorEntry = entry batch
-  let entryWithCall = replaceUniversal "${CALL_SOLUTION}" (fromJust (M.lookup lang (Types.teCall $ Types.tsEntry suite))) poorEntry
+  let entryWithCall =
+        replaceUniversal
+          "${CALL_SOLUTION}"
+          ( case Types.tcCall test of
+              Just call -> fromJust (M.lookup lang call)
+              Nothing -> fromJust (M.lookup lang (Types.teCall $ Types.tsEntry suite))
+          )
+          poorEntry
 
   let afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
   let fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
