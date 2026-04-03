@@ -28,8 +28,8 @@ replaceUniversal target replacement input =
 
 handleTestCase ::
   (CodeExecutor e, Generator g, Judge j) =>
-  e -> g -> j -> Language -> SolutionBatch -> Int -> Types.TestLimits -> Types.TestOracle -> Types.TestCase -> IO TestResult
-handleTestCase exec gen jud lang batch seed limits oracle test = do
+  e -> g -> j -> Language -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
+handleTestCase exec gen jud lang batch seed suite test = do
   let (inCases, inGens) = foldr splitIn ([], []) (Types.tcIn test)
         where
           splitIn (var, Types.InCase c) (cs, gs) = ((var, c) : cs, gs)
@@ -43,7 +43,10 @@ handleTestCase exec gen jud lang batch seed limits oracle test = do
 
   let genResults = map generateField inGens
 
-  let afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) (entry batch) genResults
+  let poorEntry = entry batch
+  let entryWithCall = replaceUniversal "${CALL_SOLUTION}" (fromJust (M.lookup lang (Types.teCall $ Types.tsEntry suite))) poorEntry
+
+  let afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
   let fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
 
   let withRuntime = replaceUniversal "${JSON_GEN}" (runtime batch) fullCall
@@ -55,8 +58,8 @@ handleTestCase exec gen jud lang batch seed limits oracle test = do
       ( ExecRequest
           { language = lang,
             content = ready,
-            runTimeout = Types.tlTimeMs limits,
-            runMemoryLimit = Types.tlMemoryMb limits
+            runTimeout = Types.tlTimeMs (Types.tsLimits suite),
+            runMemoryLimit = Types.tlMemoryMb (Types.tsLimits suite)
           }
       )
 
@@ -69,7 +72,7 @@ handleTestCase exec gen jud lang batch seed limits oracle test = do
            in return $ case res of
                 J.Pass -> Pass
                 J.Fail err -> Fail err
-        Nothing -> case M.lookup Python3 oracle of
+        Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
           Nothing -> return $ Fail "no expected output and no oracle for Python3"
           Just oracleSolution -> do
             let oracleReady = replaceUniversal "${SOLUTION}" oracleSolution withRuntime
@@ -79,8 +82,8 @@ handleTestCase exec gen jud lang batch seed limits oracle test = do
                 ( ExecRequest
                     { language = Python3,
                       content = oracleReady,
-                      runTimeout = Types.tlTimeMs limits,
-                      runMemoryLimit = Types.tlMemoryMb limits
+                      runTimeout = Types.tlTimeMs (Types.tsLimits suite),
+                      runMemoryLimit = Types.tlMemoryMb (Types.tsLimits suite)
                     }
                 )
             case oracleResponse of
@@ -102,9 +105,7 @@ runSuite ::
   IO [TestResult]
 runSuite exec gen jud lang batch suite =
   mapConcurrently
-    (\test -> handleTestCase exec gen jud lang batch seed limits oracle test)
+    (\test -> handleTestCase exec gen jud lang batch seed suite test)
     (Types.tsCases suite)
   where
-    oracle = Types.tsOracle suite
     seed = Types.tsSeed suite
-    limits = Types.tsLimits suite
