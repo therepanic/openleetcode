@@ -19,8 +19,6 @@ data PistonRuntime = PistonRuntime
   }
   deriving (Show, Generic)
 
-instance FromJSON PistonRuntime
-
 data PistonExecuteRequest = PistonExecuteRequest
   { pistonRequestLanguage :: Language,
     pistonRequestVersion :: String,
@@ -30,37 +28,16 @@ data PistonExecuteRequest = PistonExecuteRequest
   }
   deriving (Show, Generic)
 
-instance ToJSON PistonExecuteRequest where
-  toJSON req =
-    object
-      [ "language" .= pistonRequestLanguage req,
-        "version" .= pistonRequestVersion req,
-        "content" .= pistonRequestContent req,
-        "run_timeout" .= pistonRequestRunTimeout req,
-        "run_memory_limit" .= pistonRequestRunMemoryLimit req
-      ]
-
 data PistonExecuteRun = PistonExecuteRun
   { pistonResponseStdout :: String,
     pistonResponseStderr :: String
   }
   deriving (Show, Generic)
 
-instance FromJSON PistonExecuteRun where
-  parseJSON = withObject "PistonExecuteRun" $ \v ->
-    PistonExecuteRun
-      <$> v .: "stdout"
-      <*> v .: "stderr"
-
 newtype PistonExecuteResponse = PistonExecuteResponse
   { pistonResponseRun :: Maybe PistonExecuteRun
   }
   deriving (Show, Generic)
-
-instance FromJSON PistonExecuteResponse where
-  parseJSON = withObject "PistonExecuteResponse" $ \v ->
-    PistonExecuteResponse
-      <$> v .: "run"
 
 getRuntimes :: String -> IO (M.Map Language String)
 getRuntimes url = runReq defaultHttpConfig $ do
@@ -111,3 +88,26 @@ instance CodeExecutor PistonExecutor where
                 else ExecFail {stderr = pistonResponseStderr run}
             Nothing -> error "Piston response does not contain run field"
       Nothing -> fail ("There is no " ++ show (language request) ++ " language")
+
+instance FromJSON PistonExecuteResponse where
+  parseJSON = withObject "PistonExecuteResponse" $ \v ->
+    PistonExecuteResponse
+      <$> v .: "run"
+
+instance FromJSON PistonExecuteRun where
+  parseJSON = withObject "PistonExecuteRun" $ \v ->
+    PistonExecuteRun
+      <$> v .: "stdout"
+      <*> v .: "stderr"
+
+instance FromJSON PistonRuntime
+
+instance ToJSON PistonExecuteRequest where
+  toJSON req =
+    object
+      [ "language" .= pistonRequestLanguage req,
+        "version" .= pistonRequestVersion req,
+        "content" .= pistonRequestContent req,
+        "run_timeout" .= pistonRequestRunTimeout req,
+        "run_memory_limit" .= pistonRequestRunMemoryLimit req
+      ]

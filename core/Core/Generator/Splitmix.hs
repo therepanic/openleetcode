@@ -9,30 +9,21 @@ import Data.Vector qualified as V
 import Data.Word (Word64)
 import System.Random.SplitMix
 
-fisherYates :: V.Vector a -> SMGen -> (V.Vector a, SMGen)
-fisherYates vec gen = foldl' step (vec, gen) [0 .. V.length vec - 2]
-  where
-    step (v, g) i =
-      let (j, g') = generateIntegralInRange (fromIntegral i) (fromIntegral (V.length v - 1)) g
-          j' = fromIntegral j
-          v' = v V.// [(i, v V.! j'), (j', v V.! i)]
-       in (v', g')
+data SplitmixGenerator = SplitmixGenerator
 
-generateIntegralInRange :: Integer -> Integer -> SMGen -> (Integer, SMGen)
-generateIntegralInRange lo hi gen =
-  let (w, gen') = nextWord64 gen
-      range = fromIntegral (hi - lo + 1) :: Word64
-      val = lo + fromIntegral (mod w range)
-   in (val, gen')
+instance Generator SplitmixGenerator where
+  generate _ d =
+    let gen = mkSMGen (fromIntegral (seed d))
+        (result, _) = generateInfo (info d) (lang d) gen
+     in result
 
-generateFloatInRange :: Double -> Double -> Int -> SMGen -> (Double, SMGen)
-generateFloatInRange lo hi prec gen =
-  let factor = 10 ^ prec
-      loI = round (lo * fromIntegral factor) :: Integer
-      hiI = round (hi * fromIntegral factor) :: Integer
-      (n, gen') = generateIntegralInRange loI hiI gen
-      val = fromIntegral n / fromIntegral factor :: Double
-   in (val, gen')
+generateInfo :: GenInfo -> Language -> SMGen -> (String, SMGen)
+generateInfo (GenIntegralInfo i) _ gen = generateIntegral i gen
+generateInfo (GenFloatInfo i) _ gen = generateFloat i gen
+generateInfo (GenCharInfo i) _ gen = generateChar i gen
+generateInfo (GenStrInfo i) _ gen = generateStr i gen
+generateInfo (GenArrInfo i) l gen = generateArr i l gen
+generateInfo (GenBoolInfo i) l gen = generateBool i l gen
 
 generateIntegral :: GenIntegral -> SMGen -> (String, SMGen)
 generateIntegral (GenIntegralConst c) gen = (show c, gen)
@@ -47,11 +38,6 @@ generateFloat (GenFloatRange lo hi prec) gen =
   let (val, gen') = generateFloatInRange lo hi prec gen
    in (show val, gen')
 generateFloat _ _ = error "Unhandled GenFloat type"
-
-generateCharFromList :: [Char] -> SMGen -> (Char, SMGen)
-generateCharFromList xs gen =
-  let (it, gen') = generateIntegralInRange 0 (fromIntegral (length xs - 1) :: Integer) gen
-   in (xs !! (fromIntegral it :: Int), gen')
 
 generateChar :: GenChar -> SMGen -> (String, SMGen)
 generateChar (GenCharConst c) gen = (show c, gen)
@@ -216,18 +202,32 @@ generateArr (GenArr True l (GenBoolInfo i)) lang gen =
       result = intercalate ", " (map show (V.toList (V.take actualLen shuffled)))
    in (if lang /= Python && lang /= Python3 then map toLower result else result, gen'')
 
-data SplitmixGenerator = SplitmixGenerator
+generateIntegralInRange :: Integer -> Integer -> SMGen -> (Integer, SMGen)
+generateIntegralInRange lo hi gen =
+  let (w, gen') = nextWord64 gen
+      range = fromIntegral (hi - lo + 1) :: Word64
+      val = lo + fromIntegral (mod w range)
+   in (val, gen')
 
-instance Generator SplitmixGenerator where
-  generate _ d =
-    let gen = mkSMGen (fromIntegral (seed d))
-        (result, _) = generateInfo (info d) (lang d) gen
-     in result
+generateFloatInRange :: Double -> Double -> Int -> SMGen -> (Double, SMGen)
+generateFloatInRange lo hi prec gen =
+  let factor = 10 ^ prec
+      loI = round (lo * fromIntegral factor) :: Integer
+      hiI = round (hi * fromIntegral factor) :: Integer
+      (n, gen') = generateIntegralInRange loI hiI gen
+      val = fromIntegral n / fromIntegral factor :: Double
+   in (val, gen')
 
-generateInfo :: GenInfo -> Language -> SMGen -> (String, SMGen)
-generateInfo (GenIntegralInfo i) _ gen = generateIntegral i gen
-generateInfo (GenFloatInfo i) _ gen = generateFloat i gen
-generateInfo (GenCharInfo i) _ gen = generateChar i gen
-generateInfo (GenStrInfo i) _ gen = generateStr i gen
-generateInfo (GenArrInfo i) l gen = generateArr i l gen
-generateInfo (GenBoolInfo i) l gen = generateBool i l gen
+generateCharFromList :: [Char] -> SMGen -> (Char, SMGen)
+generateCharFromList xs gen =
+  let (it, gen') = generateIntegralInRange 0 (fromIntegral (length xs - 1) :: Integer) gen
+   in (xs !! (fromIntegral it :: Int), gen')
+
+fisherYates :: V.Vector a -> SMGen -> (V.Vector a, SMGen)
+fisherYates vec gen = foldl' step (vec, gen) [0 .. V.length vec - 2]
+  where
+    step (v, g) i =
+      let (j, g') = generateIntegralInRange (fromIntegral i) (fromIntegral (V.length v - 1)) g
+          j' = fromIntegral j
+          v' = v V.// [(i, v V.! j'), (j', v V.! i)]
+       in (v', g')

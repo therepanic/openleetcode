@@ -8,10 +8,6 @@ import Data.Vector qualified as V
 
 data IgnoreOrder = IgnoreOrder
 
-sortValue :: Value -> Value
-sortValue (Array vs) = Array . V.fromList . sort . map sortValue . V.toList $ vs
-sortValue other = other
-
 instance Judge IgnoreOrder where
   judge _ expected actual =
     case (decode (BS.pack expected), decode (BS.pack actual)) of
@@ -20,3 +16,7 @@ instance Judge IgnoreOrder where
           then Pass
           else Fail ("expected: " ++ show expected ++ " got: " ++ show actual)
       _ -> Fail "failed to parse json"
+
+sortValue :: Value -> Value
+sortValue (Array vs) = Array . V.fromList . sort . map sortValue . V.toList $ vs
+sortValue other = other

@@ -16,15 +16,21 @@ data TestResult = Pass | Fail String deriving (Show, Eq)
 
 data SolutionBatch = SolutionBatch {solution :: String, entry :: String, runtime :: String}
 
-renderGenResult :: GenResult -> String
-renderGenResult r = r
-
-replaceUniversal :: String -> String -> String -> String
-replaceUniversal target replacement input =
-  let tTarget = T.pack target
-      tReplacement = T.pack replacement
-      tInput = T.pack input
-   in T.unpack $ T.replace tTarget tReplacement tInput
+runSuite ::
+  (CodeExecutor e, Generator g, Judge j) =>
+  e ->
+  g ->
+  j ->
+  Language ->
+  SolutionBatch ->
+  Types.TestSuite ->
+  IO [TestResult]
+runSuite exec gen jud lang batch suite =
+  mapConcurrently
+    (\test -> handleTestCase exec gen jud lang batch seed suite test)
+    (Types.tsCases suite)
+  where
+    seed = Types.tsSeed suite
 
 handleTestCase ::
   (CodeExecutor e, Generator g, Judge j) =>
@@ -101,18 +107,12 @@ handleTestCase exec gen jud lang batch seed suite test = do
                       J.Pass -> Pass
                       J.Fail err -> Fail err
 
-runSuite ::
-  (CodeExecutor e, Generator g, Judge j) =>
-  e ->
-  g ->
-  j ->
-  Language ->
-  SolutionBatch ->
-  Types.TestSuite ->
-  IO [TestResult]
-runSuite exec gen jud lang batch suite =
-  mapConcurrently
-    (\test -> handleTestCase exec gen jud lang batch seed suite test)
-    (Types.tsCases suite)
-  where
-    seed = Types.tsSeed suite
+renderGenResult :: GenResult -> String
+renderGenResult r = r
+
+replaceUniversal :: String -> String -> String -> String
+replaceUniversal target replacement input =
+  let tTarget = T.pack target
+      tReplacement = T.pack replacement
+      tInput = T.pack input
+   in T.unpack $ T.replace tTarget tReplacement tInput
