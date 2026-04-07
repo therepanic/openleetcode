@@ -1,6 +1,7 @@
 module Main where
 
 import CLI.Commands
+import CLI.Config qualified as Config
 import CLI.Download qualified as Download
 import Options.Applicative
 
@@ -15,3 +16,4 @@ main = do
 
 dispatch :: Command -> IO ()
 dispatch (Download opts) = Download.run opts
+dispatch (Config opts) = Config.run opts
