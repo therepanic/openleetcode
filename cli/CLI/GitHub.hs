@@ -6,6 +6,7 @@ import CLI.AppEnv
 import Codec.Archive.Zip
 import Data.List (isPrefixOf)
 import Network.HTTP.Req
+import System.Directory (createDirectoryIfMissing)
 
 -- todo: for runtimes, we could consider downloading files directly since there are few of them, and also perhaps optimize the current logic somehow.
 
@@ -21,6 +22,7 @@ downloadTests = do
                   zEntries archive
           }
   root <- defaultConfigRoot
+  createDirectoryIfMissing True root
   extractFilesFromArchive [OptDestination root] filtered
 
 downloadRuntimes :: IO ()
@@ -35,6 +37,7 @@ downloadRuntimes = do
                   zEntries archive
           }
   root <- defaultConfigRoot
+  createDirectoryIfMissing True root
   extractFilesFromArchive [OptDestination root] filtered
 
 downloadRepoArchive :: IO Archive
