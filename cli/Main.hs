@@ -1,15 +1,17 @@
 module Main where
 
 import CLI.Commands
+import CLI.Download qualified as Download
 import Options.Applicative
 
 main :: IO ()
 main = do
   cmd <-
-    execParser $
+    customExecParser (prefs showHelpOnEmpty) $
       info
         (commandParser <**> helper)
         (fullDesc <> progDesc "we have democratized the Leetcode tests" <> header "openleetcode")
   dispatch cmd
 
 dispatch :: Command -> IO ()
+dispatch (Download opts) = Download.run opts
