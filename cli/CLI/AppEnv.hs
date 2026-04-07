@@ -13,6 +13,7 @@ data Config = Config
   { backendType :: BackendType,
     backendUrl :: String
   }
+  deriving (Show)
 
 loadConfig :: IO Config
 loadConfig = do
@@ -27,7 +28,8 @@ loadConfig = do
           putStrLn $ "Error parsing config: " ++ show err
           return defaultConfig
         Right config -> return config
-    else
+    else do
+      saveConfig defaultConfig
       return defaultConfig
 
 saveConfig :: Config -> IO ()
@@ -67,3 +69,10 @@ instance FromJSON BackendType where
 
 instance ToJSON BackendType where
   toJSON Piston = toJSON (pack "piston")
+
+instance Show BackendType where
+  show Piston = "piston"
+
+instance Read BackendType where
+  readsPrec _ "piston" = [(Piston, "")]
+  readsPrec _ _ = []
