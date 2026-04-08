@@ -40,6 +40,11 @@ downloadRuntimes = do
   createDirectoryIfMissing True root
   extractFilesFromArchive [OptDestination root] filtered
 
+downloadAll :: IO ()
+downloadAll = do
+  downloadRuntimes
+  downloadTests
+
 downloadRepoArchive :: IO Archive
 downloadRepoArchive = do
   body <- runReq defaultHttpConfig $ do

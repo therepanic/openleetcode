@@ -3,10 +3,12 @@ module Main where
 import CLI.Commands
 import CLI.Config qualified as Config
 import CLI.Download qualified as Download
+import CLI.Onboarding (runOnboarding)
 import Options.Applicative
 
 main :: IO ()
 main = do
+  runOnboarding
   cmd <-
     customExecParser (prefs showHelpOnEmpty) $
       info

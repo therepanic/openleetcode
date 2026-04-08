@@ -68,6 +68,7 @@ instance FromJSON BackendType where
       other -> fail $ "Unknown backend type: " ++ show other
 
 instance ToJSON BackendType where
+  toJSON :: BackendType -> Value
   toJSON Piston = toJSON (pack "piston")
 
 instance Show BackendType where
