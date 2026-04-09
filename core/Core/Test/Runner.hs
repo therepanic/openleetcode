@@ -9,12 +9,13 @@ import Core.Test.Converter (toGenInfo)
 import Core.Test.Types qualified as Types
 import Core.Types
 import Data.Map qualified as M
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.Text qualified as T
+import Text.Read (readMaybe)
 
-data TestResult = Pass | Fail String deriving (Show, Eq)
+data TestResult = Pass Int | Fail String deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {solution :: String, entry :: String, jsonGen :: String}
+data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String}
 
 runSuite ::
   (CodeExecutor e, Generator g, Judge j) =>
@@ -49,63 +50,74 @@ handleTestCase exec gen jud lang batch seed suite test = do
 
   let genResults = map generateField inGens
 
-  let poorEntry = entry batch
-  let entryWithCall =
-        replaceUniversal
-          "${CALL_SOLUTION}"
-          ( case Types.tcCall test of
-              Just call -> fromJust (M.lookup lang call)
-              Nothing -> fromJust (M.lookup lang (Types.teCall $ Types.tsEntry suite))
-          )
-          poorEntry
+  let callStr = case Types.tcCall test of
+        Just call -> fromJust (M.lookup lang call)
+        Nothing -> fromJust (M.lookup lang (Types.teCall $ Types.tsEntry suite))
 
-  let afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
-  let fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
+  let buildContent template =
+        let entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr template
+            afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
+            fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
+            withRuntime = replaceUniversal "${JSON_GEN}" (jsonGen batch) fullCall
+         in replaceUniversal "${SOLUTION}" (solution batch) withRuntime
 
-  let withRuntime = replaceUniversal "${JSON_GEN}" (jsonGen batch) fullCall
-  let ready = replaceUniversal "${SOLUTION}" (solution batch) withRuntime
-
-  response <-
+  let timeReady = buildContent (entryTime batch)
+  timeResponse <-
     execute
       exec
       ( ExecRequest
           { language = lang,
-            content = ready,
-            runTimeout = Types.tlTimeMs (Types.tsLimits suite),
-            runMemoryLimit = Types.tlMemoryMb (Types.tsLimits suite)
+            content = timeReady,
+            runTimeout = Just (Types.tlTimeMs (Types.tsLimits suite)),
+            runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
           }
       )
 
-  case response of
-    ExecFail err -> return $ Fail err
-    ExecSuc out ->
-      case Types.tcOut test of
-        Just (Types.OutCase expected) ->
-          let res = judge jud expected out
-           in return $ case res of
-                J.Pass -> Pass
-                J.Fail err -> Fail err
-        Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
-          Nothing -> return $ Fail "no expected output and no oracle for Python3"
-          Just oracleSolution -> do
-            let oracleReady = replaceUniversal "${SOLUTION}" oracleSolution withRuntime
-            oracleResponse <-
-              execute
-                exec
-                ( ExecRequest
-                    { language = Python3,
-                      content = oracleReady,
-                      runTimeout = Types.tlTimeMs (Types.tsLimits suite),
-                      runMemoryLimit = Types.tlMemoryMb (Types.tsLimits suite)
-                    }
-                )
-            case oracleResponse of
-              ExecFail err -> return $ Fail $ "oracle execution error: " ++ err
-              ExecSuc oracleOut ->
-                let res = judge jud oracleOut out
-                 in return $ case res of
-                      J.Pass -> Pass
-                      J.Fail err -> Fail err
+  case timeResponse of
+    ExecFail err -> return $ Fail $ "Time failed: " ++ err
+    ExecSuc tOut -> do
+      let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tOut)
+      let mainReady = buildContent (entryMain batch)
+      response <-
+        execute
+          exec
+          ( ExecRequest
+              { language = lang,
+                content = mainReady,
+                runTimeout = Nothing,
+                runMemoryLimit = Nothing
+              }
+          )
+      case response of
+        ExecFail err -> return $ Fail err
+        ExecSuc out ->
+          case Types.tcOut test of
+            Just (Types.OutCase expected) ->
+              let res = judge jud expected out
+               in return $ case res of
+                    J.Pass -> Pass ms
+                    J.Fail err -> Fail err
+            Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
+              Nothing -> return $ Fail "no expected output and no oracle for Python3"
+              Just oracleSolution -> do
+                let oracleReady = replaceUniversal "${SOLUTION}" oracleSolution (buildContent (entryMain batch))
+                oracleResponse <-
+                  execute
+                    exec
+                    ( ExecRequest
+                        { language = Python3,
+                          content = oracleReady,
+                          runTimeout = Nothing,
+                          runMemoryLimit = Nothing
+                        }
+                    )
+                case oracleResponse of
+                  ExecFail err -> return $ Fail $ "oracle execution error: " ++ err
+                  ExecSuc oracleOut ->
+                    let res = judge jud oracleOut out
+                     in return $ case res of
+                          J.Pass -> Pass ms
+                          J.Fail err -> Fail err
 
 renderGenResult :: GenResult -> String
 renderGenResult r = r

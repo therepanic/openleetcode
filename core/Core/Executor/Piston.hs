@@ -23,8 +23,8 @@ data PistonExecuteRequest = PistonExecuteRequest
   { pistonRequestLanguage :: Language,
     pistonRequestVersion :: String,
     pistonRequestContent :: String,
-    pistonRequestRunTimeout :: Int,
-    pistonRequestRunMemoryLimit :: Int
+    pistonRequestRunTimeout :: Maybe Int,
+    pistonRequestRunMemoryLimit :: Maybe Int
   }
   deriving (Show, Generic)
 

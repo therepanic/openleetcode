@@ -8,6 +8,9 @@ ${JSON_GEN}
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println(Json.toString(${CALL_SOLUTION}));
+        long cur = System.currentTimeMillis();
+        ${CALL_SOLUTION};
+        long now = System.currentTimeMillis();
+        System.out.println(now - cur);
     }
 }

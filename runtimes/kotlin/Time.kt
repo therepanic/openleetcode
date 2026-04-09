@@ -8,5 +8,8 @@ ${SOLUTION}
 ${JSON_GEN}
 
 fun main() {
-    println(Json.toJson(${CALL_SOLUTION}))
+    val cur = System.currentTimeMillis()
+    ${CALL_SOLUTION}
+    val now = System.currentTimeMillis()
+    println(now - cur)
 }

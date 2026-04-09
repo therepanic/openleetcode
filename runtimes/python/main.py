@@ -4,4 +4,4 @@ ${SOLUTION}
 
 ${JSON_GEN}
 
-${CALL_SOLUTION}
+print(to_json(${CALL_SOLUTION}))

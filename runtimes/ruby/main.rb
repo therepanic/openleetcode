@@ -6,4 +6,4 @@ ${SOLUTION}
 
 ${JSON_GEN}
 
-${CALL_SOLUTION}
+puts to_json(${CALL_SOLUTION})

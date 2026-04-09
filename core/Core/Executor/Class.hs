@@ -5,8 +5,8 @@ import Core.Types
 data ExecRequest = ExecRequest
   { language :: Language,
     content :: String,
-    runTimeout :: Int,
-    runMemoryLimit :: Int
+    runTimeout :: Maybe Int,
+    runMemoryLimit :: Maybe Int
   }
   deriving (Show)
 
