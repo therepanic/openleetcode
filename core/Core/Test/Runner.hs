@@ -14,7 +14,7 @@ import Data.Text qualified as T
 
 data TestResult = Pass | Fail String deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {solution :: String, entry :: String, runtime :: String}
+data SolutionBatch = SolutionBatch {solution :: String, entry :: String, jsonGen :: String}
 
 runSuite ::
   (CodeExecutor e, Generator g, Judge j) =>
@@ -62,7 +62,7 @@ handleTestCase exec gen jud lang batch seed suite test = do
   let afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
   let fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
 
-  let withRuntime = replaceUniversal "${JSON_GEN}" (runtime batch) fullCall
+  let withRuntime = replaceUniversal "${JSON_GEN}" (jsonGen batch) fullCall
   let ready = replaceUniversal "${SOLUTION}" (solution batch) withRuntime
 
   response <-
