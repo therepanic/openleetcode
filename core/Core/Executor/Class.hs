@@ -10,9 +10,9 @@ data ExecRequest = ExecRequest
   }
   deriving (Show)
 
-data ExecResult = ExecSuc {stdout :: String} | ExecFail {stderr :: String}
+data ExecStatus = TLE | RE | Unknown String deriving (Show)
 
-type ExecResponse = ExecResult
+data ExecResponse = ExecSuc {stdout :: String} | ExecFail {stderr :: String, status :: ExecStatus}
 
 class CodeExecutor e where
   execute :: e -> ExecRequest -> IO ExecResponse

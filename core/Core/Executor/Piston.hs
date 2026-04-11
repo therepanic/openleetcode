@@ -3,9 +3,10 @@
 
 module Core.Executor.Piston where
 
-import Core.Executor.Class
+import Core.Executor.Class qualified as E
 import Core.Types
 import Data.Aeson
+import Data.Aeson.Types (typeMismatch)
 import Data.Map as M
 import Data.Text qualified as T
 import GHC.Generics
@@ -28,9 +29,12 @@ data PistonExecuteRequest = PistonExecuteRequest
   }
   deriving (Show, Generic)
 
+data PistonExecuteRunStatus = OK | TLE | RE | Unknown String deriving (Show, Generic)
+
 data PistonExecuteRun = PistonExecuteRun
   { pistonResponseStdout :: String,
-    pistonResponseStderr :: String
+    pistonResponseStderr :: String,
+    pistonResponseStatus :: PistonExecuteRunStatus
   }
   deriving (Show, Generic)
 
@@ -66,28 +70,32 @@ executeReq url piston = runReq defaultHttpConfig $ do
   let response = responseBody r :: PistonExecuteResponse
   return response
 
-instance CodeExecutor PistonExecutor where
+instance E.CodeExecutor PistonExecutor where
   execute piston request = do
     runtimes <- getRuntimes (url piston)
-    case M.lookup (language request) runtimes of
+    case M.lookup (E.language request) runtimes of
       Just v -> do
         let pistonReq =
               PistonExecuteRequest
-                { pistonRequestLanguage = language request,
+                { pistonRequestLanguage = E.language request,
                   pistonRequestVersion = v,
-                  pistonRequestContent = content request,
-                  pistonRequestRunTimeout = runTimeout request,
-                  pistonRequestRunMemoryLimit = runMemoryLimit request
+                  pistonRequestContent = E.content request,
+                  pistonRequestRunTimeout = E.runTimeout request,
+                  pistonRequestRunMemoryLimit = E.runMemoryLimit request
                 }
         res <- executeReq (url piston) pistonReq
         return $
           case pistonResponseRun res of
             Just run ->
               if Prelude.null (pistonResponseStderr run)
-                then ExecSuc {stdout = pistonResponseStdout run}
-                else ExecFail {stderr = pistonResponseStderr run}
+                then case pistonResponseStatus run of
+                  OK -> E.ExecSuc {E.stdout = pistonResponseStdout run}
+                  TLE -> E.ExecFail {E.status = E.TLE, E.stderr = pistonResponseStderr run}
+                  RE -> E.ExecFail {E.status = E.RE, E.stderr = pistonResponseStderr run}
+                  Unknown m -> E.ExecFail {E.status = E.Unknown m, E.stderr = pistonResponseStderr run}
+                else E.ExecFail {E.status = E.RE, E.stderr = pistonResponseStderr run}
             Nothing -> error "Piston response does not contain run field"
-      Nothing -> fail ("There is no " ++ show (language request) ++ " language")
+      Nothing -> fail ("There is no " ++ show (E.language request) ++ " language")
 
 instance FromJSON PistonExecuteResponse where
   parseJSON = withObject "PistonExecuteResponse" $ \v ->
@@ -99,8 +107,17 @@ instance FromJSON PistonExecuteRun where
     PistonExecuteRun
       <$> v .: "stdout"
       <*> v .: "stderr"
+      <*> v .: "status"
 
 instance FromJSON PistonRuntime
+
+instance FromJSON PistonExecuteRunStatus where
+  parseJSON Null = pure OK
+  parseJSON (String s) = pure $ case s of
+    "TO" -> TLE
+    "RE" -> RE
+    other -> Unknown (T.unpack other)
+  parseJSON invalid = typeMismatch "PistonExecuteRunStatus" invalid
 
 instance ToJSON PistonExecuteRequest where
   toJSON req =

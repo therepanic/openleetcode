@@ -1,7 +1,7 @@
 module Core.Test.Runner where
 
 import Control.Concurrent.Async
-import Core.Executor.Class (CodeExecutor, ExecRequest (..), ExecResult (..), execute)
+import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
 import Core.Judge.Class (Judge, judge)
 import Core.Judge.Class qualified as J
@@ -13,12 +13,12 @@ import Data.Maybe (fromJust, fromMaybe)
 import Data.Text qualified as T
 import Text.Read (readMaybe)
 
-data TestResult = Pass Int | WA (Maybe String) String | TLE | CE String | Fail String deriving (Show, Eq)
+data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
 
 data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String}
 
 runSuite ::
-  (CodeExecutor e, Generator g, Judge j) =>
+  (C.CodeExecutor e, Generator g, Judge j) =>
   e ->
   g ->
   j ->
@@ -34,7 +34,7 @@ runSuite exec gen jud lang batch suite =
     seed = Types.tsSeed suite
 
 handleTestCase ::
-  (CodeExecutor e, Generator g, Judge j) =>
+  (C.CodeExecutor e, Generator g, Judge j) =>
   e -> g -> j -> Language -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
 handleTestCase exec gen jud lang batch seed suite test = do
   let (inCases, inGens) = foldr splitIn ([], []) (Types.tcIn test)
@@ -63,34 +63,34 @@ handleTestCase exec gen jud lang batch seed suite test = do
 
   let timeReady = buildContent (entryTime batch)
   timeResponse <-
-    execute
+    C.execute
       exec
-      ( ExecRequest
-          { language = lang,
-            content = timeReady,
-            runTimeout = Just (Types.tlTimeMs (Types.tsLimits suite)),
-            runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
+      ( C.ExecRequest
+          { C.language = lang,
+            C.content = timeReady,
+            C.runTimeout = Just (Types.tlTimeMs (Types.tsLimits suite)),
+            C.runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
           }
       )
 
   case timeResponse of
-    ExecFail err -> return $ CE err
-    ExecSuc tOut -> do
+    C.ExecFail err s -> return $ toExecStatus s err
+    C.ExecSuc tOut -> do
       let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tOut)
       let mainReady = buildContent (entryMain batch)
       response <-
-        execute
+        C.execute
           exec
-          ( ExecRequest
-              { language = lang,
-                content = mainReady,
-                runTimeout = Nothing,
-                runMemoryLimit = Nothing
+          ( C.ExecRequest
+              { C.language = lang,
+                C.content = mainReady,
+                C.runTimeout = Nothing,
+                C.runMemoryLimit = Nothing
               }
           )
       case response of
-        ExecFail err -> return $ CE err
-        ExecSuc out ->
+        C.ExecFail err s -> return $ toExecStatus s err
+        C.ExecSuc out ->
           case Types.tcOut test of
             Just (Types.OutCase expected) ->
               let res = judge jud expected out
@@ -104,18 +104,18 @@ handleTestCase exec gen jud lang batch seed suite test = do
                 let oracleWithoutSolution = replaceUniversal "${CALL_SOLUTION}" (Types.call oracleSolution) oracleWithoutCall
                 let oracleReady = replaceUniversal "${SOLUTION}" (Types.checker oracleSolution) (buildContent oracleWithoutSolution)
                 oracleResponse <-
-                  execute
+                  C.execute
                     exec
-                    ( ExecRequest
-                        { language = Python3,
-                          content = oracleReady,
-                          runTimeout = Nothing,
-                          runMemoryLimit = Nothing
+                    ( C.ExecRequest
+                        { C.language = Python3,
+                          C.content = oracleReady,
+                          C.runTimeout = Nothing,
+                          C.runMemoryLimit = Nothing
                         }
                     )
                 case oracleResponse of
-                  ExecFail err -> fail $ "Oracle execution error: " ++ err
-                  ExecSuc oracleOut ->
+                  C.ExecFail err _ -> fail $ "Oracle execution error: " ++ err
+                  C.ExecSuc oracleOut ->
                     if oracleOut == "true"
                       then return (Pass ms)
                       else return (WA Nothing out)
@@ -129,3 +129,8 @@ replaceUniversal target replacement input =
       tReplacement = T.pack replacement
       tInput = T.pack input
    in T.unpack $ T.replace tTarget tReplacement tInput
+
+toExecStatus :: C.ExecStatus -> String -> TestResult
+toExecStatus C.TLE _ = TLE
+toExecStatus C.RE err = RE err
+toExecStatus (C.Unknown s) err = RE (s <> " " <> err)
