@@ -49,7 +49,9 @@ newtype TestCaseOutData = OutCase String
 
 type TestCaseIn = (String, TestCaseInData)
 
-type TestOracle = M.Map Language String
+data TestOracleEntry = TestOracleEntry {call :: String, checker :: String}
+
+type TestOracle = M.Map Language TestOracleEntry
 
 data TestCase
   = TestCase
@@ -65,7 +67,7 @@ data TestSuite
   { tsEntry :: TestEntry,
     tsJudge :: Judge,
     tsLimits :: TestLimits,
-    tsOracle :: M.Map Language String,
+    tsOracle :: TestOracle,
     tsSeed :: Int,
     tsCases :: [TestCase]
   }
@@ -189,3 +191,9 @@ instance FromJSON TestSuite where
     seed <- o .: "seed"
     tests <- o .: "tests"
     return $ TestSuite entry judge limits oracle seed tests
+
+instance FromJSON TestOracleEntry where
+  parseJSON = withObject "TestOracleEntry" $ \o -> do
+    call <- o .: "call"
+    checker <- o .: "checker"
+    return $ TestOracleEntry call checker

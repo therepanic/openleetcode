@@ -100,7 +100,9 @@ handleTestCase exec gen jud lang batch seed suite test = do
             Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
               Nothing -> return $ Fail "no expected output and no oracle for Python3"
               Just oracleSolution -> do
-                let oracleReady = replaceUniversal "${SOLUTION}" oracleSolution (buildContent (entryMain batch))
+                let oracleWithoutCall = replaceUniversal "{result}" ("\"" ++ out ++ "\"") (entryMain batch)
+                let oracleWithoutSolution = replaceUniversal "${CALL_SOLUTION}" (Types.call oracleSolution) oracleWithoutCall
+                let oracleReady = replaceUniversal "${SOLUTION}" (Types.checker oracleSolution) (buildContent oracleWithoutSolution)
                 oracleResponse <-
                   execute
                     exec
@@ -114,10 +116,9 @@ handleTestCase exec gen jud lang batch seed suite test = do
                 case oracleResponse of
                   ExecFail err -> return $ Fail $ "oracle execution error: " ++ err
                   ExecSuc oracleOut ->
-                    let res = judge jud oracleOut out
-                     in return $ case res of
-                          J.Pass -> Pass ms
-                          J.Fail err -> Fail err
+                    if oracleOut == "true"
+                      then return (Pass ms)
+                      else return (Fail "wrong solution")
 
 renderGenResult :: GenResult -> String
 renderGenResult r = r

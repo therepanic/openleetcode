@@ -19,15 +19,22 @@ limits:
   memory_mb: 300
 
 oracle:
-  python3: |
-    from typing import List
-    class Solution:
-        def twoSum(self, nums: List[int], target: int) -> List[int]:
-            seen = {}
-            for i, n in enumerate(nums):
-                if target - n in seen:
-                    return [seen[target - n], i]
-                seen[n] = i
+  python3:
+    call: "Checker().twoSum([{nums}], {target}, {result})"
+    checker: |
+      import json
+      from typing import List
+      class Checker:
+          def twoSum(self, nums: List[int], target: int, result: str) -> bool:
+              indices = json.loads(result)
+              if not isinstance(indices, list) or len(indices) != 2:
+                  return False
+              i, j = indices
+              if i == j:
+                  return False
+              if not (0 <= i < len(nums) and 0 <= j < len(nums)):
+                  return False
+              return nums[i] + nums[j] == target
 
 tests:
   - name: "ex1_basic"
