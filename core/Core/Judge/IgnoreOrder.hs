@@ -14,8 +14,8 @@ instance Judge IgnoreOrder where
       (Just e, Just a) ->
         if sortValue e == sortValue a
           then Pass
-          else Fail ("expected: " ++ show expected ++ " got: " ++ show actual)
-      _ -> Fail "failed to parse json"
+          else Fail ("Expected: " ++ show expected ++ " Got: " ++ show actual)
+      _ -> Fail "Failed to parse json"
 
 sortValue :: Value -> Value
 sortValue (Array vs) = Array . V.fromList . sort . map sortValue . V.toList $ vs

@@ -13,7 +13,7 @@ import Data.Maybe (fromJust, fromMaybe)
 import Data.Text qualified as T
 import Text.Read (readMaybe)
 
-data TestResult = Pass Int | Fail String deriving (Show, Eq)
+data TestResult = Pass Int | WA (Maybe String) String | TLE | CE String | Fail String deriving (Show, Eq)
 
 data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String}
 
@@ -74,7 +74,7 @@ handleTestCase exec gen jud lang batch seed suite test = do
       )
 
   case timeResponse of
-    ExecFail err -> return $ Fail $ "Time failed: " ++ err
+    ExecFail err -> return $ CE err
     ExecSuc tOut -> do
       let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tOut)
       let mainReady = buildContent (entryMain batch)
@@ -89,16 +89,16 @@ handleTestCase exec gen jud lang batch seed suite test = do
               }
           )
       case response of
-        ExecFail err -> return $ Fail err
+        ExecFail err -> return $ CE err
         ExecSuc out ->
           case Types.tcOut test of
             Just (Types.OutCase expected) ->
               let res = judge jud expected out
                in return $ case res of
                     J.Pass -> Pass ms
-                    J.Fail err -> Fail err
+                    J.Fail _ -> WA (Just expected) out
             Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
-              Nothing -> return $ Fail "no expected output and no oracle for Python3"
+              Nothing -> fail "No expected output and no oracle for Python3"
               Just oracleSolution -> do
                 let oracleWithoutCall = replaceUniversal "{result}" ("\"" ++ out ++ "\"") (entryMain batch)
                 let oracleWithoutSolution = replaceUniversal "${CALL_SOLUTION}" (Types.call oracleSolution) oracleWithoutCall
@@ -114,11 +114,11 @@ handleTestCase exec gen jud lang batch seed suite test = do
                         }
                     )
                 case oracleResponse of
-                  ExecFail err -> return $ Fail $ "oracle execution error: " ++ err
+                  ExecFail err -> fail $ "Oracle execution error: " ++ err
                   ExecSuc oracleOut ->
                     if oracleOut == "true"
                       then return (Pass ms)
-                      else return (Fail "wrong solution")
+                      else return (WA Nothing out)
 
 renderGenResult :: GenResult -> String
 renderGenResult r = r
