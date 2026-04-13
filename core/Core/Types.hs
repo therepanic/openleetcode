@@ -6,7 +6,7 @@ module Core.Types where
 import Data.Aeson
 import Data.Aeson.Types (toJSONKeyText)
 
-data Language = Python3 | Python | Ruby | Java | Go
+data Language = Python3 | Python | Ruby | Java | Go | Dart
   deriving (Show, Eq, Ord)
 
 instance FromJSON Language where
@@ -17,6 +17,7 @@ instance FromJSON Language where
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
+      "dart" -> pure Dart
       _ -> fail "Unknown language"
 
 instance ToJSON Language where
@@ -25,6 +26,7 @@ instance ToJSON Language where
   toJSON Ruby = "ruby"
   toJSON Java = "java"
   toJSON Go = "go"
+  toJSON Dart = "dart"
 
 instance FromJSONKey Language where
   fromJSONKey = FromJSONKeyTextParser $ \t ->
@@ -34,6 +36,7 @@ instance FromJSONKey Language where
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
+      "dart" -> pure Dart
       _ -> fail "Unknown language"
 
 instance ToJSONKey Language where
@@ -45,3 +48,4 @@ instance ToJSONKey Language where
       Ruby -> "ruby"
       Java -> "java"
       Go -> "go"
+      Dart -> "dart"
