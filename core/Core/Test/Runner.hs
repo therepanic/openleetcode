@@ -17,27 +17,28 @@ import Text.Read (readMaybe)
 
 data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String}
+data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String, batchLang :: Language}
 
 runSuite ::
   (C.CodeExecutor e, Generator g) =>
   e ->
   g ->
-  Language ->
   SolutionBatch ->
   Types.TestSuite ->
   IO [TestResult]
-runSuite exec gen lang batch suite =
+runSuite exec gen batch suite =
   mapConcurrently
-    (\test -> handleTestCase exec gen lang batch seed suite test)
+    (\test -> handleTestCase exec gen batch seed suite test)
     (Types.tsCases suite)
   where
     seed = Types.tsSeed suite
 
 handleTestCase ::
   (C.CodeExecutor e, Generator g) =>
-  e -> g -> Language -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
-handleTestCase exec gen lang batch seed suite test = do
+  e -> g -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
+handleTestCase exec gen batch seed suite test = do
+  let lang = batchLang batch
+
   let judType = case Types.tcJudge test of
         Just v -> v
         Nothing -> Types.tsJudge suite
