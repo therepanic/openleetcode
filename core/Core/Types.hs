@@ -9,6 +9,16 @@ import Data.Aeson.Types (toJSONKeyText)
 data Language = Python3 | Python | Ruby | Java | Go | Dart
   deriving (Show, Eq, Ord)
 
+parseLang :: String -> Either String Language
+parseLang s = case s of
+  "python3" -> Right Python3
+  "python" -> Right Python
+  "ruby" -> Right Ruby
+  "java" -> Right Java
+  "go" -> Right Go
+  "dart" -> Right Dart
+  _ -> Left $ "Unknown language: " <> s
+
 instance FromJSON Language where
   parseJSON = withText "Language" $ \t ->
     case t of

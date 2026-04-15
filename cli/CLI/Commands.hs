@@ -2,11 +2,14 @@ module CLI.Commands where
 
 import CLI.Config
 import CLI.Download
+import CLI.Submit (SubmitOpts (SubmitOpts))
+import Core.Types (parseLang)
 import Options.Applicative
 
 data Command
   = Download DownloadOpts
   | Config ConfigOpts
+  | Submit SubmitOpts
 
 commandParser :: Parser Command
 commandParser =
@@ -14,6 +17,7 @@ commandParser =
     ( command "download" (info (Download <$> downloadOptsParser) (progDesc "Download tests/runtimes from GitHub repository"))
         <> command "config" (info (Config <$> configOptsParser) (progDesc "Manage config"))
     )
+    <|> (Submit <$> submitOptsParser)
 
 downloadOptsParser :: Parser DownloadOpts
 downloadOptsParser =
@@ -34,3 +38,23 @@ configSetOptsParser =
   ConfigSetOpts
     <$> strArgument (metavar "KEY" <> help "Config key (backend.type, backend.url)")
     <*> strArgument (metavar "VALUE" <> help "Value for the key")
+
+submitOptsParser :: Parser SubmitOpts
+submitOptsParser =
+  SubmitOpts
+    <$> strArgument
+      (metavar "PATH" <> help "Path to solution file")
+    <*> optional
+      ( option
+          auto
+          (long "id" <> metavar "INT" <> help "Problem ID")
+      )
+    <*> optional
+      ( strOption
+          (long "title" <> metavar "STR" <> help "Problem title")
+      )
+    <*> optional
+      ( option
+          (eitherReader parseLang)
+          (long "lang" <> metavar "LANG" <> help "Language override")
+      )

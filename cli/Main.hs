@@ -4,6 +4,7 @@ import CLI.Commands
 import CLI.Config qualified as Config
 import CLI.Download qualified as Download
 import CLI.Onboarding (runOnboarding)
+import CLI.Submit qualified as Submit
 import Options.Applicative
 
 main :: IO ()
@@ -19,3 +20,4 @@ main = do
 dispatch :: Command -> IO ()
 dispatch (Download opts) = Download.run opts
 dispatch (Config opts) = Config.run opts
+dispatch (Submit opts) = Submit.run opts

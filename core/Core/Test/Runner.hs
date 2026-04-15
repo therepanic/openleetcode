@@ -17,7 +17,7 @@ import Text.Read (readMaybe)
 
 data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String, batchLang :: Language}
+data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String, sbLang :: Language}
 
 runSuite ::
   (C.CodeExecutor e, Generator g) =>
@@ -37,7 +37,7 @@ handleTestCase ::
   (C.CodeExecutor e, Generator g) =>
   e -> g -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
 handleTestCase exec gen batch seed suite test = do
-  let lang = batchLang batch
+  let lang = sbLang batch
 
   let judType = case Types.tcJudge test of
         Just v -> v
