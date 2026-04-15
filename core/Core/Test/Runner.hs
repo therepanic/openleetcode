@@ -5,6 +5,8 @@ import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
 import Core.Judge.Class (Judge, judge)
 import Core.Judge.Class qualified as J
+import Core.Judge.Exact qualified as ETypes
+import Core.Judge.IgnoreOrder qualified as ITypes
 import Core.Test.Converter (toGenInfo)
 import Core.Test.Types qualified as Types
 import Core.Types
@@ -18,25 +20,30 @@ data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving
 data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String}
 
 runSuite ::
-  (C.CodeExecutor e, Generator g, Judge j) =>
+  (C.CodeExecutor e, Generator g) =>
   e ->
   g ->
-  j ->
   Language ->
   SolutionBatch ->
   Types.TestSuite ->
   IO [TestResult]
-runSuite exec gen jud lang batch suite =
+runSuite exec gen lang batch suite =
   mapConcurrently
-    (\test -> handleTestCase exec gen jud lang batch seed suite test)
+    (\test -> handleTestCase exec gen lang batch seed suite test)
     (Types.tsCases suite)
   where
     seed = Types.tsSeed suite
 
 handleTestCase ::
-  (C.CodeExecutor e, Generator g, Judge j) =>
-  e -> g -> j -> Language -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
-handleTestCase exec gen jud lang batch seed suite test = do
+  (C.CodeExecutor e, Generator g) =>
+  e -> g -> Language -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
+handleTestCase exec gen lang batch seed suite test = do
+  let judType = case Types.tcJudge test of
+        Just v -> v
+        Nothing -> Types.tsJudge suite
+
+  let jud = convertTestJudgeToJudge (Types.jType judType)
+
   let (inCases, inGens) = foldr splitIn ([], []) (Types.tcIn test)
         where
           splitIn (var, Types.InCase c) (cs, gs) = ((var, c) : cs, gs)
@@ -129,6 +136,16 @@ replaceUniversal target replacement input =
       tReplacement = T.pack replacement
       tInput = T.pack input
    in T.unpack $ T.replace tTarget tReplacement tInput
+
+data AnyJudge = ExactJudge ETypes.Exact | IgnoreOrderJudge ITypes.IgnoreOrder
+
+instance Judge AnyJudge where
+  judge (ExactJudge j) = judge j
+  judge (IgnoreOrderJudge j) = judge j
+
+convertTestJudgeToJudge :: Types.JudgeType -> AnyJudge
+convertTestJudgeToJudge Types.Exact = ExactJudge ETypes.Exact
+convertTestJudgeToJudge Types.IgnoreOrder = IgnoreOrderJudge ITypes.IgnoreOrder
 
 toExecStatus :: C.ExecStatus -> String -> TestResult
 toExecStatus C.TLE _ = TLE

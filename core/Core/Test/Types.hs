@@ -9,7 +9,7 @@ import Data.ByteString.Lazy.Char8 qualified as BL
 import Data.Map qualified as M
 import Data.Text qualified as T
 
-data JudgeType = Exact | IgnoreOrder | IgnoreOrderNested | IgnoreOrderAll
+data JudgeType = Exact | IgnoreOrder
 
 data Judge = Judge {jType :: JudgeType}
 
@@ -77,8 +77,6 @@ instance FromJSON JudgeType where
     case t of
       "exact" -> return Exact
       "ignore_order" -> return IgnoreOrder
-      "ignore_order_nested" -> return IgnoreOrderNested
-      "ignore_order_all" -> return IgnoreOrderAll
       _ -> fail $ "unknown judge type: " <> show t
 
 instance FromJSON Judge where
