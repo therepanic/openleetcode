@@ -6,18 +6,31 @@ module Core.Types where
 import Data.Aeson
 import Data.Aeson.Types (toJSONKeyText)
 
-data Language = Python3 | Python | Ruby | Java | Go | Dart
+data Language = Python3 | Python | Ruby | Java | Go | Dart | Kotlin | Swift
   deriving (Show, Eq, Ord)
 
-parseLang :: String -> Either String Language
+parseLang :: String -> Maybe Language
 parseLang s = case s of
-  "python3" -> Right Python3
-  "python" -> Right Python
-  "ruby" -> Right Ruby
-  "java" -> Right Java
-  "go" -> Right Go
-  "dart" -> Right Dart
-  _ -> Left $ "Unknown language: " <> s
+  "python3" -> Just Python3
+  "python" -> Just Python
+  "ruby" -> Just Ruby
+  "java" -> Just Java
+  "go" -> Just Go
+  "dart" -> Just Dart
+  "kotlin" -> Just Kotlin
+  "swift" -> Just Swift
+  _ -> Nothing
+
+determineLanguage :: String -> Language
+determineLanguage ext = case ext of
+  ".py" -> Python3
+  ".rb" -> Ruby
+  ".java" -> Java
+  ".go" -> Go
+  ".dart" -> Dart
+  ".kt" -> Kotlin
+  ".swift" -> Swift
+  _ -> error $ "Unknown extension: " <> ext
 
 instance FromJSON Language where
   parseJSON = withText "Language" $ \t ->
@@ -28,6 +41,8 @@ instance FromJSON Language where
       "java" -> pure Java
       "go" -> pure Go
       "dart" -> pure Dart
+      "kotlin" -> pure Kotlin
+      "swift" -> pure Swift
       _ -> fail "Unknown language"
 
 instance ToJSON Language where
@@ -37,6 +52,8 @@ instance ToJSON Language where
   toJSON Java = "java"
   toJSON Go = "go"
   toJSON Dart = "dart"
+  toJSON Kotlin = "kotlin"
+  toJSON Swift = "swift"
 
 instance FromJSONKey Language where
   fromJSONKey = FromJSONKeyTextParser $ \t ->
@@ -47,6 +64,8 @@ instance FromJSONKey Language where
       "java" -> pure Java
       "go" -> pure Go
       "dart" -> pure Dart
+      "kotlin" -> pure Kotlin
+      "swift" -> pure Swift
       _ -> fail "Unknown language"
 
 instance ToJSONKey Language where
@@ -59,3 +78,5 @@ instance ToJSONKey Language where
       Java -> "java"
       Go -> "go"
       Dart -> "dart"
+      Kotlin -> "kotlin"
+      Swift -> "swift"

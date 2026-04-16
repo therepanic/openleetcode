@@ -55,6 +55,6 @@ submitOptsParser =
       )
     <*> optional
       ( option
-          (eitherReader parseLang)
+          (maybeReader parseLang)
           (long "lang" <> metavar "LANG" <> help "Language override")
       )
