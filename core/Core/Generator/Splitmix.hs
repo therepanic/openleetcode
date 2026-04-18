@@ -62,11 +62,11 @@ generateStr (GenStr l a) gen =
 generateStr _ _ = error "Unhandled GenStr type"
 
 generateBool :: GenBool -> Language -> SMGen -> (String, SMGen)
-generateBool (GenBoolConst b) lang gen = (if lang /= Python && lang /= Python3 then map toLower $ show b else show b, gen)
+generateBool (GenBoolConst b) lang gen = (if lang /= Python3 then map toLower $ show b else show b, gen)
 generateBool GenBoolGen lang gen =
   let (w, gen') = nextWord64 gen
       val = even w
-   in (if lang /= Python && lang /= Python3 then map toLower $ show val else show val, gen')
+   in (if lang /= Python3 then map toLower $ show val else show val, gen')
 
 generateArr :: GenArr -> Language -> SMGen -> (String, SMGen)
 generateArr (GenArr False l (GenIntegralInfo (GenIntegralRange lo hi))) _ gen =
@@ -189,7 +189,7 @@ generateArr (GenArr False l (GenBoolInfo i)) lang gen =
           ([], gen')
           [1 .. len]
       result = intercalate ", " (reverse bools)
-   in (if lang /= Python && lang /= Python3 then map toLower result else result, gen'')
+   in (if lang /= Python3 then map toLower result else result, gen'')
 generateArr (GenArr True l (GenBoolInfo i)) lang gen =
   let (v, gen') = generateIntegral l gen
       len = min (read v :: Int) 2
@@ -200,7 +200,7 @@ generateArr (GenArr True l (GenBoolInfo i)) lang gen =
       (shuffled, gen'') = fisherYates vec gen'
       actualLen = min len (V.length shuffled)
       result = intercalate ", " (map show (V.toList (V.take actualLen shuffled)))
-   in (if lang /= Python && lang /= Python3 then map toLower result else result, gen'')
+   in (if lang /= Python3 then map toLower result else result, gen'')
 
 generateIntegralInRange :: Integer -> Integer -> SMGen -> (Integer, SMGen)
 generateIntegralInRange lo hi gen =

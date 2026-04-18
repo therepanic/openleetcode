@@ -6,13 +6,22 @@ module Core.Types where
 import Data.Aeson
 import Data.Aeson.Types (toJSONKeyText)
 
-data Language = Python3 | Python | Ruby | Java | Go | Dart | Kotlin | Swift
+data Language = Python3 | Ruby | Java | Go | Dart | Kotlin | Swift
   deriving (Show, Eq, Ord)
 
-parseLang :: String -> Maybe Language
-parseLang s = case s of
+convertLangToStr :: Language -> String
+convertLangToStr lang = case lang of
+  Python3 -> "python3"
+  Ruby -> "ruby"
+  Java -> "java"
+  Go -> "go"
+  Dart -> "dark"
+  Kotlin -> "kotlin"
+  Swift -> "swift"
+
+convertStrToLang :: String -> Maybe Language
+convertStrToLang s = case s of
   "python3" -> Just Python3
-  "python" -> Just Python
   "ruby" -> Just Ruby
   "java" -> Just Java
   "go" -> Just Go
@@ -21,8 +30,8 @@ parseLang s = case s of
   "swift" -> Just Swift
   _ -> Nothing
 
-determineLanguage :: String -> Language
-determineLanguage ext = case ext of
+convertExtToLang :: String -> Language
+convertExtToLang ext = case ext of
   ".py" -> Python3
   ".rb" -> Ruby
   ".java" -> Java
@@ -32,11 +41,20 @@ determineLanguage ext = case ext of
   ".swift" -> Swift
   _ -> error $ "Unknown extension: " <> ext
 
+convertLangToExt :: Language -> String
+convertLangToExt lang = case lang of
+  Python3 -> ".py"
+  Ruby -> ".rb"
+  Java -> ".java"
+  Go -> ".go"
+  Dart -> ".dart"
+  Kotlin -> ".kt"
+  Swift -> ".swift"
+
 instance FromJSON Language where
   parseJSON = withText "Language" $ \t ->
     case t of
       "python3" -> pure Python3
-      "python" -> pure Python
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
@@ -47,7 +65,6 @@ instance FromJSON Language where
 
 instance ToJSON Language where
   toJSON Python3 = "python3"
-  toJSON Python = "python"
   toJSON Ruby = "ruby"
   toJSON Java = "java"
   toJSON Go = "go"
@@ -59,7 +76,6 @@ instance FromJSONKey Language where
   fromJSONKey = FromJSONKeyTextParser $ \t ->
     case t of
       "python3" -> pure Python3
-      "python" -> pure Python
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
@@ -73,7 +89,6 @@ instance ToJSONKey Language where
   toJSONKey = toJSONKeyText $ \l ->
     case l of
       Python3 -> "python3"
-      Python -> "python"
       Ruby -> "ruby"
       Java -> "java"
       Go -> "go"
