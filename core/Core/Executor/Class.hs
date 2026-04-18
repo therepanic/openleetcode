@@ -1,6 +1,8 @@
+{-# LANGUAGE GADTs #-}
+
 module Core.Executor.Class where
 
-import Core.Types
+import Core.Types (Language)
 
 data ExecRequest = ExecRequest
   { language :: Language,

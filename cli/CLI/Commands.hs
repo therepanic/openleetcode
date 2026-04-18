@@ -3,7 +3,7 @@ module CLI.Commands where
 import CLI.Config
 import CLI.Download
 import CLI.Submit (SubmitOpts (SubmitOpts))
-import Core.Types (parseLang)
+import Core.Types (convertStrToLang)
 import Options.Applicative
 
 data Command
@@ -55,6 +55,6 @@ submitOptsParser =
       )
     <*> optional
       ( option
-          (maybeReader parseLang)
+          (maybeReader convertStrToLang)
           (long "lang" <> metavar "LANG" <> help "Language override")
       )

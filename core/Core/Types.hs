@@ -5,6 +5,9 @@ module Core.Types where
 
 import Data.Aeson
 import Data.Aeson.Types (toJSONKeyText)
+import Data.Text (pack)
+
+data ExecutorType = Piston
 
 data Language = Python3 | Ruby | Java | Go | Dart | Kotlin | Swift
   deriving (Show, Eq, Ord)
@@ -50,6 +53,23 @@ convertLangToExt lang = case lang of
   Dart -> ".dart"
   Kotlin -> ".kt"
   Swift -> ".swift"
+
+instance FromJSON ExecutorType where
+  parseJSON = withText "BackendType" $ \t ->
+    case t of
+      "piston" -> pure Piston
+      other -> fail $ "Unknown backend type: " ++ show other
+
+instance ToJSON ExecutorType where
+  toJSON :: ExecutorType -> Value
+  toJSON Piston = toJSON (pack "piston")
+
+instance Show ExecutorType where
+  show Piston = "piston"
+
+instance Read ExecutorType where
+  readsPrec _ "piston" = [(Piston, "")]
+  readsPrec _ _ = []
 
 instance FromJSON Language where
   parseJSON = withText "Language" $ \t ->

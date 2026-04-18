@@ -2,15 +2,13 @@
 
 module CLI.AppEnv where
 
+import Core.Types
 import Data.Aeson
-import Data.Text (pack)
 import Data.Yaml (decodeFileEither, encodeFile)
 import System.Directory (XdgDirectory (..), createDirectoryIfMissing, doesFileExist, getXdgDirectory)
 
-data BackendType = Piston
-
 data Config = Config
-  { backendType :: BackendType,
+  { backendType :: ExecutorType,
     backendUrl :: String
   }
   deriving (Show)
@@ -60,20 +58,3 @@ instance ToJSON Config where
       [ "backendType" .= backendType,
         "backendUrl" .= backendUrl
       ]
-
-instance FromJSON BackendType where
-  parseJSON = withText "BackendType" $ \t ->
-    case t of
-      "piston" -> pure Piston
-      other -> fail $ "Unknown backend type: " ++ show other
-
-instance ToJSON BackendType where
-  toJSON :: BackendType -> Value
-  toJSON Piston = toJSON (pack "piston")
-
-instance Show BackendType where
-  show Piston = "piston"
-
-instance Read BackendType where
-  readsPrec _ "piston" = [(Piston, "")]
-  readsPrec _ _ = []
