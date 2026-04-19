@@ -28,9 +28,9 @@ run opts = do
   let lang = fromMaybe (convertExtToLang (takeExtension (submitPath opts))) (submitLang opts)
   let extStr = convertLangToExt lang
   solutionStr <- readFile (submitPath opts)
-  entryMainStr <- readFile (runtimes </> convertLangToStr lang ++ "main" ++ extStr)
-  entryTimeStr <- readFile (runtimes </> convertLangToStr lang ++ "time" ++ extStr)
-  jsonGenStr <- readFile (runtimes </> convertLangToStr lang ++ "json" ++ extStr)
+  entryMainStr <- readFile (runtimes </> convertLangToStr lang </> "main" ++ extStr)
+  entryTimeStr <- readFile (runtimes </> convertLangToStr lang </> "time" ++ extStr)
+  jsonGenStr <- readFile (runtimes </> convertLangToStr lang </> "json" ++ extStr)
   testSuitePath <- findTestPath root opts
   testSuite <- loadTestSuite testSuitePath
   let batch = SolutionBatch {solution = solutionStr, entryMain = entryMainStr, entryTime = entryTimeStr, jsonGen = jsonGenStr, sbLang = lang}
