@@ -9,7 +9,7 @@ import Data.Text (pack)
 
 data ExecutorType = Piston
 
-data Language = Python3 | Ruby | Java | Go | Dart | Kotlin | Swift
+data Language = Python3 | Ruby | Java | Go | Dart | Kotlin | Swift | Default
   deriving (Show, Eq, Ord)
 
 convertLangToStr :: Language -> String
@@ -74,17 +74,17 @@ instance Read ExecutorType where
 instance FromJSON Language where
   parseJSON = withText "Language" $ \t ->
     case t of
-      "python3" -> pure Python3
+      "python" -> pure Python3
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
       "dart" -> pure Dart
       "kotlin" -> pure Kotlin
       "swift" -> pure Swift
-      _ -> fail "Unknown language"
+      _ -> pure Default
 
 instance ToJSON Language where
-  toJSON Python3 = "python3"
+  toJSON Python3 = "python"
   toJSON Ruby = "ruby"
   toJSON Java = "java"
   toJSON Go = "go"
@@ -95,6 +95,7 @@ instance ToJSON Language where
 instance FromJSONKey Language where
   fromJSONKey = FromJSONKeyTextParser $ \t ->
     case t of
+      "python" -> pure Python3
       "python3" -> pure Python3
       "ruby" -> pure Ruby
       "java" -> pure Java
@@ -102,13 +103,13 @@ instance FromJSONKey Language where
       "dart" -> pure Dart
       "kotlin" -> pure Kotlin
       "swift" -> pure Swift
-      _ -> fail "Unknown language"
+      _ -> pure Default
 
 instance ToJSONKey Language where
   toJSONKey :: ToJSONKeyFunction Language
   toJSONKey = toJSONKeyText $ \l ->
     case l of
-      Python3 -> "python3"
+      Python3 -> "python"
       Ruby -> "ruby"
       Java -> "java"
       Go -> "go"

@@ -16,7 +16,7 @@ import Network.HTTP.Req
 newtype PistonExecutor = PistonExecutor {url :: String}
 
 data PistonRuntime = PistonRuntime
-  { lang :: Language,
+  { language :: Language,
     version :: String
   }
   deriving (Show, Generic)
@@ -54,7 +54,7 @@ getRuntimes url = runReq defaultHttpConfig $ do
       jsonResponse
       opts
   let runtimes = responseBody r :: [PistonRuntime]
-  return $ M.fromList [(lang x, version x) | x <- runtimes]
+  return $ M.fromList [(language x, version x) | x <- runtimes]
 
 executeReq :: String -> PistonExecuteRequest -> IO PistonExecuteResponse
 executeReq url piston = runReq defaultHttpConfig $ do
@@ -138,7 +138,7 @@ instance ToJSON PistonExecuteRequest where
     object
       [ "language" .= pistonRequestLanguage req,
         "version" .= pistonRequestVersion req,
-        "content" .= pistonRequestContent req,
+        "files" .= [object ["content" .= pistonRequestContent req]],
         "run_timeout" .= pistonRequestRunTimeout req,
         "run_memory_limit" .= pistonRequestRunMemoryLimit req
       ]
