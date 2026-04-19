@@ -18,7 +18,7 @@ convertLangToStr lang = case lang of
   Ruby -> "ruby"
   Java -> "java"
   Go -> "go"
-  Dart -> "dark"
+  Dart -> "dart"
   Kotlin -> "kotlin"
   Swift -> "swift"
 
