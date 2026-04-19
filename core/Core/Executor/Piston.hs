@@ -7,6 +7,7 @@ import Core.Executor.Class qualified as E
 import Core.Types
 import Data.Aeson
 import Data.Aeson.Types (typeMismatch)
+import Data.List (isPrefixOf)
 import Data.Map as M
 import Data.Text qualified as T
 import GHC.Generics
@@ -45,30 +46,43 @@ newtype PistonExecuteResponse = PistonExecuteResponse
 
 getRuntimes :: String -> IO (M.Map Language String)
 getRuntimes url = runReq defaultHttpConfig $ do
-  r <-
+  r <- withBaseUrl url $ \base opts ->
     req
       GET
-      (https (T.pack url) /: "runtimes")
+      (base /: "runtimes")
       NoReqBody
       jsonResponse
-      mempty
+      opts
   let runtimes = responseBody r :: [PistonRuntime]
-  let fill :: [PistonRuntime] -> M.Map Language String -> M.Map Language String
-      fill [] m = m
-      fill (x : xs) m = fill xs (M.insert (lang x) (version x) m)
-  return (fill runtimes M.empty)
+  return $ M.fromList [(lang x, version x) | x <- runtimes]
 
 executeReq :: String -> PistonExecuteRequest -> IO PistonExecuteResponse
 executeReq url piston = runReq defaultHttpConfig $ do
-  r <-
+  r <- withBaseUrl url $ \base opts ->
     req
       POST
-      (https (T.pack url) /: "execute")
+      (base /: "execute")
       (ReqBodyJson piston)
       jsonResponse
-      mempty
-  let response = responseBody r :: PistonExecuteResponse
-  return response
+      opts
+  return (responseBody r)
+
+withBaseUrl ::
+  String ->
+  (forall scheme. Url scheme -> Option scheme -> Req a) ->
+  Req a
+withBaseUrl url f = do
+  let (isHttps, rest)
+        | Prelude.take 8 url == "https://" = (True, Prelude.drop 8 url)
+        | Prelude.take 7 url == "http://" = (False, Prelude.drop 7 url)
+        | otherwise = error "Invalid url"
+      (host, mPort) =
+        case break (== ':') rest of
+          (h, ':' : p) -> (h, Just (read p))
+          (h, _) -> (h, Nothing)
+  if isHttps
+    then f (https (T.pack host)) (maybe mempty port mPort)
+    else f (http (T.pack host)) (maybe mempty port mPort)
 
 instance E.CodeExecutor PistonExecutor where
   execute piston request = do
