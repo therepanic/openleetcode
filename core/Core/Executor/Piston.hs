@@ -49,7 +49,7 @@ getRuntimes url = runReq defaultHttpConfig $ do
   r <- withBaseUrl url $ \base opts ->
     req
       GET
-      (base /: "runtimes")
+      (base /: "api" /: "v2" /: "runtimes")
       NoReqBody
       jsonResponse
       opts
@@ -61,7 +61,7 @@ executeReq url piston = runReq defaultHttpConfig $ do
   r <- withBaseUrl url $ \base opts ->
     req
       POST
-      (base /: "execute")
+      (base /: "api" /: "v2" /: "execute")
       (ReqBodyJson piston)
       jsonResponse
       opts
