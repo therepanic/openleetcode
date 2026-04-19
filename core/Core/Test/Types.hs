@@ -80,7 +80,9 @@ instance FromJSON JudgeType where
       _ -> fail $ "unknown judge type: " <> show t
 
 instance FromJSON Judge where
-  parseJSON v = Judge <$> parseJSON v
+  parseJSON = withObject "Judge" $ \o -> do
+    t <- o .: "type"
+    return $ Judge t
 
 instance FromJSON TestLimits where
   parseJSON = withObject "TestLimits" $ \o -> do
