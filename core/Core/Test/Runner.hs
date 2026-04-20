@@ -92,7 +92,7 @@ handleTestCase exec gen batch seed suite test = do
           ( C.ExecRequest
               { C.language = lang,
                 C.content = mainReady,
-                C.runTimeout = Nothing,
+                C.runTimeout = Just 3000, -- hardcoded 3s (maximum for piston btw)
                 C.runMemoryLimit = Nothing
               }
           )
@@ -108,9 +108,26 @@ handleTestCase exec gen batch seed suite test = do
             Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
               Nothing -> fail "No expected output and no oracle for Python3"
               Just oracleSolution -> do
-                let oracleWithoutCall = replaceUniversal "{result}" ("\"" ++ out ++ "\"") (entryMain batch)
-                let oracleWithoutSolution = replaceUniversal "${CALL_SOLUTION}" (Types.call oracleSolution) oracleWithoutCall
-                let oracleReady = replaceUniversal "${SOLUTION}" (Types.checker oracleSolution) (buildContent oracleWithoutSolution)
+                let oracleTemplate =
+                      "import datetime as _dt\n"
+                        ++ "from dataclasses import is_dataclass, asdict\n"
+                        ++ "from typing import Any, List, Dict\n"
+                        ++ jsonGen batch
+                        ++ "\n"
+                        ++ Types.checker oracleSolution
+                        ++ "\n"
+                        ++ solution batch
+                        ++ "\n"
+                        ++ "print(to_json("
+                        ++ Types.call oracleSolution
+                        ++ "))"
+                let cleanResult = T.unpack . T.strip . T.pack $ out
+                let oracleReady =
+                      let withResult = replaceUniversal "{result}" (show cleanResult) oracleTemplate
+                          withCall = replaceUniversal "${CALL_SOLUTION}" callStr withResult
+                          afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) withCall genResults
+                          fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
+                       in fullCall
                 oracleResponse <-
                   C.execute
                     exec
@@ -123,8 +140,9 @@ handleTestCase exec gen batch seed suite test = do
                     )
                 case oracleResponse of
                   C.ExecFail err _ -> fail $ "Oracle execution error: " ++ err
-                  C.ExecSuc oracleOut ->
-                    if oracleOut == "true"
+                  C.ExecSuc oracleOut -> do
+                    let cleanedOut = filter (`notElem` ['\n', '\r', ' ', '"']) oracleOut
+                    if cleanedOut == "true"
                       then return (Pass ms)
                       else return (WA Nothing out)
 
