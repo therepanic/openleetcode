@@ -76,7 +76,7 @@ handleTestCase exec gen batch seed suite test = do
       ( C.ExecRequest
           { C.language = lang,
             C.content = timeReady,
-            C.runTimeout = Just (Types.tlTimeMs (Types.tsLimits suite)),
+            C.runTimeout = Just 15000, -- hardcoded 15s
             C.runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
           }
       )
@@ -86,65 +86,69 @@ handleTestCase exec gen batch seed suite test = do
     C.ExecSuc tOut -> do
       let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tOut)
       let mainReady = buildContent (entryMain batch)
-      response <-
-        C.execute
-          exec
-          ( C.ExecRequest
-              { C.language = lang,
-                C.content = mainReady,
-                C.runTimeout = Just 15000, -- hardcoded 15s (maximum for piston btw)
-                C.runMemoryLimit = Nothing
-              }
-          )
-      case response of
-        C.ExecFail err s -> return $ toExecStatus s err
-        C.ExecSuc out ->
-          case Types.tcOut test of
-            Just (Types.OutCase expected) ->
-              let res = judge jud expected out
-               in return $ case res of
-                    J.Pass -> Pass ms
-                    J.Fail _ -> WA (Just expected) out
-            Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
-              Nothing -> fail "No expected output and no oracle for Python3"
-              Just oracleSolution -> do
-                let oracleTemplate =
-                      "import datetime as _dt\n"
-                        ++ "from dataclasses import is_dataclass, asdict\n"
-                        ++ "from typing import Any, List, Dict\n"
-                        ++ jsonGen batch
-                        ++ "\n"
-                        ++ Types.checker oracleSolution
-                        ++ "\n"
-                        ++ solution batch
-                        ++ "\n"
-                        ++ "print(to_json("
-                        ++ Types.call oracleSolution
-                        ++ "))"
-                let cleanResult = T.unpack . T.strip . T.pack $ out
-                let oracleReady =
-                      let withResult = replaceUniversal "{result}" (show cleanResult) oracleTemplate
-                          withCall = replaceUniversal "${CALL_SOLUTION}" callStr withResult
-                          afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) withCall genResults
-                          fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
-                       in fullCall
-                oracleResponse <-
-                  C.execute
-                    exec
-                    ( C.ExecRequest
-                        { C.language = Python3,
-                          C.content = oracleReady,
-                          C.runTimeout = Nothing,
-                          C.runMemoryLimit = Nothing
-                        }
-                    )
-                case oracleResponse of
-                  C.ExecFail err _ -> fail $ "Oracle execution error: " ++ err
-                  C.ExecSuc oracleOut -> do
-                    let cleanedOut = filter (`notElem` ['\n', '\r', ' ', '"']) oracleOut
-                    if cleanedOut == "true"
-                      then return (Pass ms)
-                      else return (WA Nothing out)
+      if ms > Types.tlTimeMs (Types.tsLimits suite)
+        then
+          return TLE
+        else do
+          response <-
+            C.execute
+              exec
+              ( C.ExecRequest
+                  { C.language = lang,
+                    C.content = mainReady,
+                    C.runTimeout = Just 15000, -- hardcoded 15s
+                    C.runMemoryLimit = Nothing
+                  }
+              )
+          case response of
+            C.ExecFail err s -> return $ toExecStatus s err
+            C.ExecSuc out ->
+              case Types.tcOut test of
+                Just (Types.OutCase expected) ->
+                  let res = judge jud expected out
+                   in return $ case res of
+                        J.Pass -> Pass ms
+                        J.Fail _ -> WA (Just expected) out
+                Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
+                  Nothing -> fail "No expected output and no oracle for Python3"
+                  Just oracleSolution -> do
+                    let oracleTemplate =
+                          "import datetime as _dt\n"
+                            ++ "from dataclasses import is_dataclass, asdict\n"
+                            ++ "from typing import Any, List, Dict\n"
+                            ++ jsonGen batch
+                            ++ "\n"
+                            ++ Types.checker oracleSolution
+                            ++ "\n"
+                            ++ solution batch
+                            ++ "\n"
+                            ++ "print(to_json("
+                            ++ Types.call oracleSolution
+                            ++ "))"
+                    let cleanResult = T.unpack . T.strip . T.pack $ out
+                    let oracleReady =
+                          let withResult = replaceUniversal "{result}" (show cleanResult) oracleTemplate
+                              withCall = replaceUniversal "${CALL_SOLUTION}" callStr withResult
+                              afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) withCall genResults
+                              fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
+                           in fullCall
+                    oracleResponse <-
+                      C.execute
+                        exec
+                        ( C.ExecRequest
+                            { C.language = Python3,
+                              C.content = oracleReady,
+                              C.runTimeout = Nothing,
+                              C.runMemoryLimit = Nothing
+                            }
+                        )
+                    case oracleResponse of
+                      C.ExecFail err _ -> fail $ "Oracle execution error: " ++ err
+                      C.ExecSuc oracleOut -> do
+                        let cleanedOut = filter (`notElem` ['\n', '\r', ' ', '"']) oracleOut
+                        if cleanedOut == "true"
+                          then return (Pass ms)
+                          else return (WA Nothing out)
 
 renderGenResult :: GenResult -> String
 renderGenResult r = r
