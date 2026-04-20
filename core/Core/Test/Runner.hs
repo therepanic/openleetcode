@@ -92,7 +92,7 @@ handleTestCase exec gen batch seed suite test = do
           ( C.ExecRequest
               { C.language = lang,
                 C.content = mainReady,
-                C.runTimeout = Just 3000, -- hardcoded 3s (maximum for piston btw)
+                C.runTimeout = Just 15000, -- hardcoded 15s (maximum for piston btw)
                 C.runMemoryLimit = Nothing
               }
           )
