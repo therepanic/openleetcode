@@ -3,12 +3,19 @@ services:
     image: ghcr.io/engineer-man/piston:latest
     container_name: piston
     privileged: true
+    entrypoint: ["/bin/sh", "-lc"]
+    # todo: fix this https://github.com/engineer-man/piston/issues/741
+    command:
+      - |
+        sed -i "s/app.use(body_parser.urlencoded({ extended: true }));/app.use(body_parser.urlencoded({ extended: true, limit: '50mb' }));/" /piston_api/src/index.js
+        sed -i "s/app.use(body_parser.json());/app.use(body_parser.json({ limit: '50mb' }));/" /piston_api/src/index.js
+        exec /piston_api/src/docker-entrypoint.sh
     environment:
       - NODE_OPTIONS=--max-old-space-size=4096
       - PISTON_RUN_TIMEOUT=50000
       - PISTON_RUN_CPU_TIME=50000
       - PISTON_MAX_FILE_SIZE=50000000
-      - PISTON_OUTPUT_MAX_SIZE=10485760\
+      - PISTON_OUTPUT_MAX_SIZE=10485760
       - PISTON_MAX_CONCURRENT_JOBS=200
     ports:
       - "2000:2000"
