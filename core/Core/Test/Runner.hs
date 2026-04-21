@@ -84,7 +84,8 @@ handleTestCase exec gen batch seed suite test = do
   case timeResponse of
     C.ExecFail err s -> return $ toExecStatus s err
     C.ExecSuc tOut -> do
-      let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tOut)
+      let tLast = last (lines tOut)
+      let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tLast)
       let mainReady = buildContent (entryMain batch)
       if ms > Types.tlTimeMs (Types.tsLimits suite)
         then
@@ -102,13 +103,14 @@ handleTestCase exec gen batch seed suite test = do
               )
           case response of
             C.ExecFail err s -> return $ toExecStatus s err
-            C.ExecSuc out ->
+            C.ExecSuc mOut -> do
+              let mLast = last (lines mOut)
               case Types.tcOut test of
                 Just (Types.OutCase expected) ->
-                  let res = judge jud expected out
+                  let res = judge jud expected mLast
                    in return $ case res of
                         J.Pass -> Pass ms
-                        J.Fail _ -> WA (Just expected) out
+                        J.Fail _ -> WA (Just expected) mLast
                 Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
                   Nothing -> fail "No expected output and no oracle for Python3"
                   Just oracleSolution -> do
@@ -125,7 +127,7 @@ handleTestCase exec gen batch seed suite test = do
                             ++ "print(to_json("
                             ++ Types.call oracleSolution
                             ++ "))"
-                    let cleanResult = T.unpack . T.strip . T.pack $ out
+                    let cleanResult = T.unpack . T.strip . T.pack $ mLast
                     let oracleReady =
                           let withResult = replaceUniversal "{result}" (show cleanResult) oracleTemplate
                               withCall = replaceUniversal "${CALL_SOLUTION}" callStr withResult
@@ -148,7 +150,7 @@ handleTestCase exec gen batch seed suite test = do
                         let cleanedOut = filter (`notElem` ['\n', '\r', ' ', '"']) oracleOut
                         if cleanedOut == "true"
                           then return (Pass ms)
-                          else return (WA Nothing out)
+                          else return (WA Nothing mLast)
 
 renderGenResult :: GenResult -> String
 renderGenResult r = r
