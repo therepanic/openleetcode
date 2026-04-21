@@ -76,8 +76,8 @@ findTestPath root opts = do
       Nothing -> fail "No id or title"
 
 printError :: (Int, TestResult) -> IO ()
-printError (i, WA got expected) =
-  putStrLn $ "Test #" ++ show i ++ ": [Wrong Answer] Expected: " ++ expected ++ ", Got: " ++ fromMaybe "Nothing" got
+printError (i, WA expected got) =
+  putStrLn $ "Test #" ++ show i ++ ": [Wrong Answer] Expected: " ++ fromMaybe "Nothing" expected ++ ", Got: " ++ got
 printError (i, TLE) =
   putStrLn $ "Test #" ++ show i ++ ": [Time Limit Exceeded]"
 printError (i, RE err) =
