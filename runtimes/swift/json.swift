@@ -1,6 +1,6 @@
 func toJson(_ obj: Any?) -> String {
     var seen: [ObjectIdentifier] = []
-    return encode(obj, &seen)
+    return "\n" + encode(obj, &seen)
 }
 
 private func encode(_ obj: Any?, _ seen: inout [ObjectIdentifier]) -> String {

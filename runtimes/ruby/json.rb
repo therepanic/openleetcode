@@ -1,6 +1,6 @@
 def to_json(obj)
   seen = Set.new
-  _encode(obj, seen)
+  "\n" + _encode(obj, seen)
 end
 
 def _encode(obj, seen)

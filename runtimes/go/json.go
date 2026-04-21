@@ -1,6 +1,6 @@
 func toJson(obj interface{}) string {
-	seen := make(map[uintptr]bool)
-	return encodeValue(reflect.ValueOf(obj), seen)
+    seen := make(map[uintptr]bool)
+    return "\n" + encodeValue(reflect.ValueOf(obj), seen)
 }
 
 func encodeValue(v reflect.Value, seen map[uintptr]bool) string {

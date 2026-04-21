@@ -2,6 +2,7 @@ object Json {
     fun toJson(obj: Any?): String {
         val seen = IdentityHashMap<Any, Boolean>()
         val sb = StringBuilder(256)
+        sb.append("\n")
         write(obj, sb, seen)
         return sb.toString()
     }

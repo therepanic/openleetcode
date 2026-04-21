@@ -1,6 +1,6 @@
 def to_json(obj: Any) -> str:
     seen = set()
-    return _encode(obj, seen)
+    return "\n" + _encode(obj, seen)
 
 def _encode(obj: Any, seen: set[int]) -> str:
     if obj is None:

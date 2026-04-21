@@ -1,6 +1,8 @@
 String toJson(Object? obj) {
   final seen = <Object>{};
-  return _encode(obj, seen);
+  final sb = StringBuffer('\n');
+  sb.write(_encode(obj, seen));
+  return sb.toString();
 }
 
 String _encode(Object? obj, Set<Object> seen) {
