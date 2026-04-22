@@ -6,7 +6,7 @@ import time as _time
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 _start = int(_time.time() * 1000)
 ${CALL_SOLUTION}

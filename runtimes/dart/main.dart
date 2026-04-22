@@ -2,7 +2,7 @@ import 'dart:mirrors';
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 void main() {
   print(toJson(${CALL_SOLUTION}));

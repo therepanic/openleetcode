@@ -4,7 +4,7 @@ require "time"
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 start = (Time.now.to_f * 1000).to_i
 ${CALL_SOLUTION}

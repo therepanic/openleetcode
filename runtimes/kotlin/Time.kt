@@ -5,7 +5,7 @@ import java.lang.reflect.Array
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 fun main() {
     val cur = System.currentTimeMillis()

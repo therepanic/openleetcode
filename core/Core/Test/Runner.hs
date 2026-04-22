@@ -17,7 +17,7 @@ import Text.Read (readMaybe)
 
 data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, jsonGen :: String, sbLang :: Language}
+data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, utilities :: String, sbLang :: Language}
 
 runSuite ::
   (C.CodeExecutor e, Generator g) =>
@@ -66,7 +66,7 @@ handleTestCase exec gen batch seed suite test = do
         let entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr template
             afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
             fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
-            withRuntime = replaceUniversal "${JSON_GEN}" (jsonGen batch) fullCall
+            withRuntime = replaceUniversal "${UTILITIES}" (utilities batch) fullCall
          in replaceUniversal "${SOLUTION}" (solution batch) withRuntime
 
   let timeReady = buildContent (entryTime batch)
@@ -118,7 +118,7 @@ handleTestCase exec gen batch seed suite test = do
                           "import datetime as _dt\n"
                             ++ "from dataclasses import is_dataclass, asdict\n"
                             ++ "from typing import Any, List, Dict\n"
-                            ++ jsonGen batch
+                            ++ utilities batch
                             ++ "\n"
                             ++ Types.checker oracleSolution
                             ++ "\n"

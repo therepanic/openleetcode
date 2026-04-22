@@ -4,6 +4,6 @@ require "time"
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 puts to_json(${CALL_SOLUTION})

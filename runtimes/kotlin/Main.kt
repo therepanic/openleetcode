@@ -5,7 +5,7 @@ import java.lang.reflect.Array
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 fun main() {
     println(Json.toJson(${CALL_SOLUTION}))

@@ -2,7 +2,7 @@ import Foundation
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 let start = Int(Date().timeIntervalSince1970 * 1000)
 ${CALL_SOLUTION}

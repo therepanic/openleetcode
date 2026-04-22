@@ -5,7 +5,7 @@ from typing import Any
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 print(to_json(${CALL_SOLUTION}))
 

@@ -5,7 +5,7 @@ import Control.Monad (forM, when)
 import Core.Executor.Any (convertExecutorTypeToExecutor)
 import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
 import Core.Test.Loader (loadTestSuite)
-import Core.Test.Runner (SolutionBatch (SolutionBatch, entryMain, entryTime, jsonGen, sbLang, solution), TestResult (Pass, RE, TLE, WA), runSuite)
+import Core.Test.Runner (SolutionBatch (SolutionBatch, entryMain, entryTime, sbLang, solution, utilities), TestResult (Pass, RE, TLE, WA), runSuite)
 import Core.Types (Language, convertExtToLang, convertLangToExt, convertLangToStr)
 import Data.List (find, isInfixOf, isPrefixOf)
 import Data.Maybe (fromMaybe, isNothing)
@@ -30,10 +30,10 @@ run opts = do
   solutionStr <- readFile (submitPath opts)
   entryMainStr <- readFile (runtimes </> convertLangToStr lang </> "main" ++ extStr)
   entryTimeStr <- readFile (runtimes </> convertLangToStr lang </> "time" ++ extStr)
-  jsonGenStr <- readFile (runtimes </> convertLangToStr lang </> "json" ++ extStr)
+  utilitiesStr <- readFile (runtimes </> convertLangToStr lang </> "utilities" ++ extStr)
   testSuitePath <- findTestPath root opts
   testSuite <- loadTestSuite testSuitePath
-  let batch = SolutionBatch {solution = solutionStr, entryMain = entryMainStr, entryTime = entryTimeStr, jsonGen = jsonGenStr, sbLang = lang}
+  let batch = SolutionBatch {solution = solutionStr, entryMain = entryMainStr, entryTime = entryTimeStr, utilities = utilitiesStr, sbLang = lang}
   let executor = convertExecutorTypeToExecutor (backendType config) (backendUrl config)
   let generator = SplitmixGenerator
   results <- runSuite executor generator batch testSuite

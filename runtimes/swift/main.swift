@@ -2,6 +2,6 @@ import Foundation
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 print(toJson(${CALL_SOLUTION}))

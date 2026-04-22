@@ -10,7 +10,7 @@ import (
 
 ${SOLUTION}
 
-${JSON_GEN}
+${UTILITIES}
 
 func main() {
     cur := time.Now().UnixMilli()
