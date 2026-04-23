@@ -2,6 +2,7 @@ module CLI.Onboarding where
 
 import CLI.AppEnv
 import CLI.GitHub
+import CLI.Installer (unpackRuntimes, unpackTests)
 import Control.Monad (unless)
 import System.Directory
 import System.IO (hFlush, stdout)
@@ -19,5 +20,7 @@ runOnboarding = do
       "n" -> return ()
       _ -> do
         putStrLn "Installing..."
-        downloadAll
+        repository <- downloadRepoArchive
+        unpackRuntimes repository
+        unpackTests repository
         putStrLn "Runtimes and tests were successfully installed"
