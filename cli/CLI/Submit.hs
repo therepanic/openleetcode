@@ -82,3 +82,4 @@ printError (i, TLE) =
   putStrLn $ "Test #" ++ show i ++ ": [Time Limit Exceeded]"
 printError (i, RE err) =
   putStrLn $ "Test #" ++ show i ++ ": [Runtime Error] " ++ err
+printError _ = putStrLn "Unknown error"

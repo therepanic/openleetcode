@@ -20,5 +20,5 @@ spec = do
 
     it "fails when there are extra spaces" $ do
       case judge Exact "1, 2" "1,2" of
-        Fail msg -> msg `shouldContain` "expected: 1, 2 got: 1,2"
+        Fail msg -> msg `shouldContain` "Expected: 1, 2 Got: 1,2"
         _ -> expectationFailure "should have failed due to space mismatch"

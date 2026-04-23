@@ -28,5 +28,5 @@ spec = do
 
     it "fails with error message on invalid json" $ do
       case judge IgnoreOrder "not a json" "[1, 2]" of
-        Fail msg -> msg `shouldBe` "failed to parse json"
+        Fail msg -> msg `shouldBe` "Failed to parse json"
         _ -> expectationFailure "should fail on invalid input"

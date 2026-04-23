@@ -20,7 +20,7 @@ runOnboarding = do
       "n" -> return ()
       _ -> do
         putStrLn "Installing..."
-        repository <- downloadRepoArchive
-        unpackRuntimes repository
-        unpackTests repository
+        repo <- downloadRepoArchive
+        unpackRuntimes repo
+        unpackTests repo
         putStrLn "Runtimes and tests were successfully installed"

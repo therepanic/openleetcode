@@ -1,6 +1,7 @@
 module CLI.Download where
 
 import CLI.GitHub
+import CLI.Installer (unpackRuntimes, unpackTests)
 
 data DownloadTarget = Runtimes | Tests
 
@@ -16,8 +17,10 @@ parseTarget other = Left ("Unknown command: " ++ other)
 run :: DownloadOpts -> IO ()
 run opts = case downloadTarget opts of
   Runtimes -> do
-    downloadRuntimes
+    repo <- downloadRepoArchive
+    unpackRuntimes repo
     putStrLn "Runtimes downloaded"
   Tests -> do
-    downloadTests
+    repo <- downloadRepoArchive
+    unpackTests repo
     putStrLn "Tests downloaded"
