@@ -59,6 +59,7 @@ data TestCase
     tcJudge :: Maybe Judge,
     tcCall :: Maybe (M.Map Language String),
     tcIn :: [TestCaseIn],
+    tcSeed :: Maybe Int,
     tcOut :: Maybe TestCaseOutData
   }
 
@@ -179,8 +180,9 @@ instance FromJSON TestCase where
     judge <- o .:? "judge"
     call <- o .:? "call"
     inMap <- o .: "in" :: Parser (M.Map String TestCaseInData)
+    seed <- o .:? "seed"
     out <- o .:? "out"
-    return $ TestCase name judge call (M.toList inMap) out
+    return $ TestCase name judge call (M.toList inMap) seed out
 
 instance FromJSON TestSuite where
   parseJSON = withObject "TestSuite" $ \o -> do

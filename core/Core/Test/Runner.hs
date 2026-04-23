@@ -36,8 +36,9 @@ runSuite exec gen batch suite =
 handleTestCase ::
   (C.CodeExecutor e, Generator g) =>
   e -> g -> SolutionBatch -> Int -> Types.TestSuite -> Types.TestCase -> IO TestResult
-handleTestCase exec gen batch seed suite test = do
+handleTestCase exec gen batch sSeed suite test = do
   let lang = sbLang batch
+  let seed = fromMaybe sSeed (Types.tcSeed test)
 
   let judType = case Types.tcJudge test of
         Just v -> v
