@@ -1,3 +1,38 @@
+public class ListNode {
+    public int val;
+    public ListNode next;
+
+    public ListNode() {}
+    public ListNode(int val) { this.val = val; }
+    public ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+
+    public static ListNode toListNode(int[] arr) {
+        if (arr == null || arr.length == 0) return null;
+        ListNode head = new ListNode(arr[0]);
+        ListNode cur = head;
+        for (int i = 1; i < arr.length; i++) {
+            cur.next = new ListNode(arr[i]);
+            cur = cur.next;
+        }
+        return head;
+    }
+
+    public static int[] listNodeToArray(ListNode head) {
+        if (head == null) return new int[0];
+        List<Integer> list = new ArrayList<>();
+        ListNode cur = head;
+        while (cur != null) {
+            list.add(cur.val);
+            cur = cur.next;
+        }
+        int[] result = new int[list.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = list.get(i);
+        }
+        return result;
+    }
+}
+
 public final class Json {
 
 	public static String toJson(Object obj) {

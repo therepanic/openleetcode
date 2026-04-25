@@ -1,3 +1,32 @@
+public class ListNode {
+    public var val: Int
+    public var next: ListNode?
+    public init() { self.val = 0; self.next = nil; }
+    public init(_ val: Int) { self.val = val; self.next = nil; }
+    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
+}
+
+func toListNode(_ arr: [Int]) -> ListNode? {
+    if arr.isEmpty { return nil }
+    let head = ListNode(arr[0])
+    var cur = head
+    for i in 1..<arr.count {
+        cur.next = ListNode(arr[i])
+        cur = cur.next!
+    }
+    return head
+}
+
+func listNodeToArray(_ head: ListNode?) -> [Int] {
+    var res = [Int]()
+    var cur = head
+    while cur != nil {
+        res.append(cur!.val)
+        cur = cur!.next
+    }
+    return res
+}
+
 func toJson(_ obj: Any?) -> String {
     var seen: [ObjectIdentifier] = []
     return "\n" + encode(obj, &seen)

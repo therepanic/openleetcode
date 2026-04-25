@@ -1,3 +1,30 @@
+class ListNode {
+  int val;
+  ListNode? next;
+  ListNode([this.val = 0, this.next]);
+}
+
+ListNode? toListNode(List<int> arr) {
+  if (arr.isEmpty) return null;
+  ListNode head = ListNode(arr[0]);
+  ListNode cur = head;
+  for (int i = 1; i < arr.length; i++) {
+    cur.next = ListNode(arr[i]);
+    cur = cur.next!;
+  }
+  return head;
+}
+
+List<int> listNodeToArray(ListNode? head) {
+  List<int> res = [];
+  ListNode? cur = head;
+  while (cur != null) {
+    res.add(cur.val);
+    cur = cur.next;
+  }
+  return res;
+}
+
 String toJson(Object? obj) {
   final seen = <Object>{};
   final sb = StringBuffer('\n');

@@ -1,3 +1,31 @@
+class ListNode
+  attr_accessor :val, :next
+  def initialize(val = 0, _next = nil)
+    @val = val
+    @next = _next
+  end
+end
+
+def to_list_node(arr)
+  return nil if arr.empty?
+  head = ListNode.new(arr[0])
+  cur = head
+  arr[1..].each do |v|
+    cur.next = ListNode.new(v)
+    cur = cur.next
+  end
+  head
+end
+
+def list_node_to_array(head)
+  res = []
+  while head
+    res << head.val
+    head = head.next
+  end
+  res
+end
+
 def to_json(obj)
   seen = Set.new
   "\n" + _encode(obj, seen)

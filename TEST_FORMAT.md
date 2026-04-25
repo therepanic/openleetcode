@@ -40,14 +40,14 @@ tests:
   - ...
 ```
 
-| Field    | Required | Description |
-|----------|----------|-------------|
-| `entry`  | ✅ | Problem metadata and per-language call templates |
-| `judge`  | ✅ | Default judge for all test cases |
-| `limits` | ✅ | Time and memory limits applied to every run |
-| `oracle` | ✅ | Per-language checker used when a test case has no `out` field |
-| `seed`   | ✅ | Global random seed (used when a test case doesn't specify its own) |
-| `tests`  | ✅ | List of test cases |
+| Field    | Required | Description                                                        |
+| -------- | -------- | ------------------------------------------------------------------ |
+| `entry`  | ✅       | Problem metadata and per-language call templates                   |
+| `judge`  | ✅       | Default judge for all test cases                                   |
+| `limits` | ✅       | Time and memory limits applied to every run                        |
+| `oracle` | ✅       | Per-language checker used when a test case has no `out` field      |
+| `seed`   | ✅       | Global random seed (used when a test case doesn't specify its own) |
+| `tests`  | ✅       | List of test cases                                                 |
 
 ---
 
@@ -78,7 +78,7 @@ judge:
 ```
 
 | Value          | Behaviour                                                  |
-|----------------|------------------------------------------------------------|
+| -------------- | ---------------------------------------------------------- |
 | `exact`        | Output must match expected output exactly                  |
 | `ignore_order` | Output is treated as a set - element order does not matter |
 
@@ -155,13 +155,13 @@ A list of test cases. Test cases differ along two independent axes:
 ```
 
 | Field   | Required | Description                                                                              |
-|---------|----------|------------------------------------------------------------------------------------------|
-| `name`  | ✅ | Unique name for this test case                                                           |
-| `in`    | ✅ | Map of input parameter names to values or generator specs                                |
-| `out`   | ❌ | Expected output. If provided, the judge is used. If omitted, the oracle is used instead. |
-| `judge` | ❌ | Overrides the suite-level judge for this case                                            |
-| `call`  | ❌ | Overrides the suite-level call templates for this case                                   |
-| `seed`  | ❌ | Random seed for generated inputs in this case, falls back to suite-level `seed`          |
+| ------- | -------- | ---------------------------------------------------------------------------------------- |
+| `name`  | ✅       | Unique name for this test case                                                           |
+| `in`    | ✅       | Map of input parameter names to values or generator specs                                |
+| `out`   | ❌       | Expected output. If provided, the judge is used. If omitted, the oracle is used instead. |
+| `judge` | ❌       | Overrides the suite-level judge for this case                                            |
+| `call`  | ❌       | Overrides the suite-level call templates for this case                                   |
+| `seed`  | ❌       | Random seed for generated inputs in this case, falls back to suite-level `seed`          |
 
 Each value in `in` is either a plain YAML value (string, number, array, bool) or a generator spec identified by a `gen` field. They can be mixed freely.
 
@@ -185,8 +185,8 @@ Or a constant:
 42
 ```
 
-| Field | Description |
-|-------|-------------|
+| Field | Description               |
+| ----- | ------------------------- |
 | `min` | Minimum value (inclusive) |
 | `max` | Maximum value (inclusive) |
 
@@ -204,18 +204,18 @@ Or a constant:
 3.14
 ```
 
-| Field       | Description |
-|-------------|-------------|
+| Field       | Description               |
+| ----------- | ------------------------- |
 | `min`       | Minimum value (inclusive) |
 | `max`       | Maximum value (inclusive) |
-| `precision` | Number of decimal places |
+| `precision` | Number of decimal places  |
 
 ---
 
 ### `str` - String
 
 ```yaml
-{ gen: "str", len: 100000, alphabet: ['a', 'b', 'c'] }
+{ gen: "str", len: 100000, alphabet: ["a", "b", "c"] }
 ```
 
 Or a constant:
@@ -225,7 +225,7 @@ Or a constant:
 ```
 
 | Field      | Description                                                            |
-|------------|------------------------------------------------------------------------|
+| ---------- | ---------------------------------------------------------------------- |
 | `len`      | Length of the string - either a constant integer or an `int` generator |
 | `alphabet` | List of characters to draw from                                        |
 
@@ -234,17 +234,17 @@ Or a constant:
 ### `char` - Single character
 
 ```yaml
-{ gen: "char", variety: ['a', 'b', 'c'] }
+{ gen: "char", variety: ["a", "b", "c"] }
 ```
 
 Or a constant:
 
 ```yaml
-'b'
+"b"
 ```
 
-| Field     | Description |
-|-----------|-------------|
+| Field     | Description                              |
+| --------- | ---------------------------------------- |
 | `variety` | List of characters to randomly pick from |
 
 ---
@@ -280,7 +280,7 @@ Or a constant (written as a plain YAML array):
 ```
 
 | Field      | Description                                     |
-|------------|-------------------------------------------------|
+| ---------- | ----------------------------------------------- |
 | `distinct` | Whether all elements must be unique             |
 | `sorted`   | Whether the array must be sorted ascending      |
 | `len`      | Length - constant integer or `int` generator    |
@@ -290,8 +290,22 @@ Nested arrays are not supported. To work around this, define each inner array as
 
 ```yaml
 in:
-  a: { gen: "array", distinct: false, sorted: false, len: { gen: "int", min: 1, max: 5 }, of: { gen: "int", min: 0, max: 9 } }
-  b: { gen: "array", distinct: false, sorted: false, len: { gen: "int", min: 1, max: 5 }, of: { gen: "int", min: 0, max: 9 } }
+  a:
+    {
+      gen: "array",
+      distinct: false,
+      sorted: false,
+      len: { gen: "int", min: 1, max: 5 },
+      of: { gen: "int", min: 0, max: 9 },
+    }
+  b:
+    {
+      gen: "array",
+      distinct: false,
+      sorted: false,
+      len: { gen: "int", min: 1, max: 5 },
+      of: { gen: "int", min: 0, max: 9 },
+    }
 ```
 
 ```yaml
@@ -381,4 +395,35 @@ tests:
         len: { gen: "int", min: 80000, max: 100000 }
         of: { gen: "int", min: 0, max: 1000000000 }
       target: { gen: "int", min: 0, max: 2000000000 }
+```
+
+## Runtime Utilities
+
+Each language runtime ships with a `utilities` file that is automatically prepended to the generated test code. It contains JSON serialization helpers and pre-built converters for common LeetCode data structures.
+
+### Linked List (`ListNode`)
+
+Each runtime provides helpers to convert between plain integer arrays and `ListNode`. Use them directly in `call` templates - see the example below for the exact name per language.
+
+**Example - problem 2 "Add Two Numbers":**
+
+```yaml
+entry:
+  id: 2
+  title: "add-two-numbers"
+  call:
+    python3: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    kotlin: "listNodeToArray(Solution().addTwoNumbers(toListNode(intArrayOf({l1})), toListNode(intArrayOf({l2}))))"
+    java: "ListNode.listNodeToArray(new Solution().addTwoNumbers(ListNode.toListNode(new int[]{ {l1} }), ListNode.toListNode(new int[]{ {l2} })))"
+    go: "listNodeToArray(addTwoNumbers(toListNode([]int{ {l1} }), toListNode([]int{ {l2} })))"
+    dart: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    swift: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    ruby: "list_node_to_array(add_two_numbers(to_list_node([{l1}]), to_list_node([{l2}])))"
+
+tests:
+  - name: "ex1"
+    in:
+      l1: [2, 4, 3]
+      l2: [5, 6, 4]
+    out: [7, 0, 8]
 ```

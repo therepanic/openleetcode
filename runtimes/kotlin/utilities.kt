@@ -1,3 +1,28 @@
+class ListNode(var `val`: Int) {
+    var next: ListNode? = null
+}
+
+fun toListNode(arr: IntArray): ListNode? {
+    if (arr.isEmpty()) return null
+    val head = ListNode(arr[0])
+    var cur = head
+    for (i in 1 until arr.size) {
+        cur.next = ListNode(arr[i])
+        cur = cur.next!!
+    }
+    return head
+}
+
+fun listNodeToArray(head: ListNode?): IntArray {
+    val list = mutableListOf<Int>()
+    var cur = head
+    while (cur != null) {
+        list.add(cur.`val`)
+        cur = cur.next
+    }
+    return list.toIntArray()
+}
+
 object Json {
     fun toJson(obj: Any?): String {
         val seen = IdentityHashMap<Any, Boolean>()

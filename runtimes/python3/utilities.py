@@ -1,3 +1,26 @@
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def toListNode(arr: List[int]) -> Optional[ListNode]:
+    if not arr:
+        return None
+    head = ListNode(arr[0])
+    cur = head
+    for v in arr[1:]:
+        cur.next = ListNode(v)
+        cur = cur.next
+    return head
+
+
+def listNodeToArray(head: Optional[ListNode]) -> List[int]:
+    res = []
+    while head:
+        res.append(head.val)
+        head = head.next
+    return res
+
 def to_json(obj: Any) -> str:
     seen = set()
     return "\n" + _encode(obj, seen)

@@ -1,3 +1,29 @@
+type ListNode struct {
+    Val  int
+    Next *ListNode
+}
+
+func toListNode(arr []int) *ListNode {
+    if len(arr) == 0 {
+        return nil
+    }
+    head := &ListNode{Val: arr[0]}
+    cur := head
+    for _, v := range arr[1:] {
+        cur.Next = &ListNode{Val: v}
+        cur = cur.Next
+    }
+    return head
+}
+
+func listNodeToArray(head *ListNode) []int {
+    var res []int
+    for cur := head; cur != nil; cur = cur.Next {
+        res = append(res, cur.Val)
+    }
+    return res
+}
+
 func toJson(obj interface{}) string {
     seen := make(map[uintptr]bool)
     return "\n" + encodeValue(reflect.ValueOf(obj), seen)
