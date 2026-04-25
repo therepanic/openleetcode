@@ -2,7 +2,7 @@
 
 This document describes the YAML format for writing test suites in openleetcode.
 
-Each problem has one test file located at `tests/<range>/<id>. <slug>/manifest.yaml`.
+Each problem has one test file located at `tests/<range>/<id>. <title>/manifest.yaml`.
 
 ---
 
