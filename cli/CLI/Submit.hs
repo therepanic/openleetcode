@@ -5,7 +5,7 @@ import Control.Monad (forM, when)
 import Core.Executor.Any (convertExecutorTypeToExecutor)
 import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
 import Core.Test.Loader (loadTestSuite)
-import Core.Test.Runner (SolutionBatch (SolutionBatch, entryMain, entryTime, sbLang, solution, utilities), TestResult (Pass, RE, TLE, WA), runSuite)
+import Core.Test.Runner (SolutionBatch (SolutionBatch, entryMain, entryTime, python3Utilities, sbLang, solution, utilities), TestResult (Pass, RE, TLE, WA), runSuite)
 import Core.Types (Language, convertExtToLang, convertLangToExt, convertLangToStr)
 import Data.List (find, isInfixOf, isPrefixOf)
 import Data.Maybe (fromMaybe, isNothing)
@@ -27,13 +27,14 @@ run opts = do
   let runtimes = root </> "runtimes"
   let lang = fromMaybe (convertExtToLang (takeExtension (submitPath opts))) (submitLang opts)
   let extStr = convertLangToExt lang
-  solutionStr <- readFile (submitPath opts)
   entryMainStr <- readFile (runtimes </> convertLangToStr lang </> "main" ++ extStr)
   entryTimeStr <- readFile (runtimes </> convertLangToStr lang </> "time" ++ extStr)
+  solutionStr <- readFile (submitPath opts)
   utilitiesStr <- readFile (runtimes </> convertLangToStr lang </> "utilities" ++ extStr)
+  python3UtilitiesStr <- readFile (runtimes </> "python3" </> "utilities.py")
   testSuitePath <- findTestPath root opts
   testSuite <- loadTestSuite testSuitePath
-  let batch = SolutionBatch {solution = solutionStr, entryMain = entryMainStr, entryTime = entryTimeStr, utilities = utilitiesStr, sbLang = lang}
+  let batch = SolutionBatch {entryMain = entryMainStr, entryTime = entryTimeStr, sbLang = lang, utilities = utilitiesStr, solution = solutionStr, python3Utilities = python3UtilitiesStr}
   let executor = convertExecutorTypeToExecutor (backendType config) (backendUrl config)
   let generator = SplitmixGenerator
   results <- runSuite executor generator batch testSuite

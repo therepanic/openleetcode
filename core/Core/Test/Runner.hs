@@ -17,7 +17,7 @@ import Text.Read (readMaybe)
 
 data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {solution :: String, entryMain :: String, entryTime :: String, utilities :: String, sbLang :: Language}
+data SolutionBatch = SolutionBatch {entryMain :: String, entryTime :: String, sbLang :: Language, solution :: String, utilities :: String, python3Utilities :: String}
 
 runSuite ::
   (C.CodeExecutor e, Generator g) =>
@@ -118,11 +118,9 @@ handleTestCase exec gen batch sSeed suite test = do
                           "import datetime as _dt\n"
                             ++ "from dataclasses import is_dataclass, asdict\n"
                             ++ "from typing import *\n"
-                            ++ utilities batch
+                            ++ python3Utilities batch
                             ++ "\n"
                             ++ Types.checker oracleSolution
-                            ++ "\n"
-                            ++ solution batch
                             ++ "\n"
                             ++ "print(to_json("
                             ++ Types.call oracleSolution
