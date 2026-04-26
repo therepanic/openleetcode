@@ -34,7 +34,15 @@ Generate a complete manifest.yml for the following problem.
 
 ### Problem
 
-{PROBLEM}
+## Problem id
+{PROBLEM_ID}
+
+## Problem title
+{PROBLEM_TITLE}
+
+## Content
+
+{PROBLEM_CONTENT}
 
 ### Code snippets
 
@@ -77,6 +85,7 @@ def get_question_details(slug):
     query questionDetail($titleSlug: String!) {
       question(titleSlug: $titleSlug) {
         content
+        questionId
         codeSnippets {
           code
           langSlug
@@ -89,6 +98,7 @@ def get_question_details(slug):
     if not q:
         raise ValueError(f"Question with slug '{slug}' not found")
     content = q["content"]
+    question_id = q["questionId"]
     snippets = {}
     for snip in q["codeSnippets"]:
         lang_slug = snip["langSlug"]
@@ -96,7 +106,7 @@ def get_question_details(slug):
             if api_lang == lang_slug:
                 snippets[our_lang] = snip["code"]
                 break
-    return content, snippets
+    return question_id, content, snippets
 
 def extract_python_code_markdown(html_content):
     pattern = r"```\s*[Pp]ython3?\b[^\n]*\n(.*?)```"
@@ -202,7 +212,7 @@ def main():
     sys.stderr.reconfigure(encoding='utf-8')
 
     test_format = load_test_format()
-    problem_content, snippets = get_question_details(slug)
+    question_id, problem_content, snippets = get_question_details(slug)
 
     try:
         reference = get_reference_solution(slug)
@@ -212,7 +222,9 @@ def main():
 
     prompt = PROMPT_TEMPLATE.format(
         TEST_FORMAT=test_format,
-        PROBLEM=problem_content,
+        PROBLEM_ID=question_id,
+        PROBLEM_TITLE=slug,
+        PROBLEM_CONTENT=problem_content,
         SNIPPETS=format_snippets(snippets),
         REFERENCE=reference,
     )
