@@ -81,17 +81,16 @@ handleTestCase exec gen batch sSeed suite test = do
             C.runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
           }
       )
-
   case timeResponse of
     C.ExecFail err s -> return $ toExecStatus s err
     C.ExecSuc tOut -> do
       let tLast = last (lines tOut)
       let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tLast)
-      let mainReady = buildContent (entryMain batch)
       if ms > Types.tlTimeMs (Types.tsLimits suite)
         then
           return TLE
         else do
+          let mainReady = buildContent (entryMain batch)
           response <-
             C.execute
               exec
@@ -118,7 +117,7 @@ handleTestCase exec gen batch sSeed suite test = do
                     let oracleTemplate =
                           "import datetime as _dt\n"
                             ++ "from dataclasses import is_dataclass, asdict\n"
-                            ++ "from typing import Any, List, Dict\n"
+                            ++ "from typing import *\n"
                             ++ utilities batch
                             ++ "\n"
                             ++ Types.checker oracleSolution

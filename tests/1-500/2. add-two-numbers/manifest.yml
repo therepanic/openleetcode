@@ -1,0 +1,449 @@
+entry:
+  id: 2
+  title: "add-two-numbers"
+  call:
+    python3: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    ruby: "list_node_to_array(add_two_numbers(to_list_node([{l1}]), to_list_node([{l2}])))"
+    java: "ListNode.listNodeToArray(new Solution().addTwoNumbers(ListNode.toListNode(new int[]{ {l1} }), ListNode.toListNode(new int[]{ {l2} })))"
+    kotlin: "listNodeToArray(Solution().addTwoNumbers(toListNode(intArrayOf({l1})), toListNode(intArrayOf({l2}))))"
+    go: "listNodeToArray(addTwoNumbers(toListNode([]int{ {l1} }), toListNode([]int{ {l2} })))"
+    dart: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    swift: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().addTwoNumbers([{l1}], [{l2}], {result})"
+    checker: |
+      import json
+      from typing import List, Optional
+
+      class ListNode:
+          def __init__(self, val=0, next=None):
+              self.val = val
+              self.next = next
+
+      class Checker:
+          def addTwoNumbers(self, l1: List[int], l2: List[int], result: str) -> bool:
+              try:
+                  output = json.loads(result)
+              except:
+                  return False
+              if not isinstance(output, list):
+                  return False
+              for x in output:
+                  if not isinstance(x, int) or not (0 <= x <= 9):
+                      return False
+
+              def to_linked_list(nums):
+                  dummy = ListNode(0)
+                  curr = dummy
+                  for num in nums:
+                      curr.next = ListNode(num)
+                      curr = curr.next
+                  return dummy.next
+
+              def to_array(head):
+                  arr = []
+                  while head:
+                      arr.append(head.val)
+                      head = head.next
+                  return arr
+
+              list1 = to_linked_list(l1)
+              list2 = to_linked_list(l2)
+
+              dummy = ListNode(0)
+              curr = dummy
+              carry = 0
+              p1, p2 = list1, list2
+              while p1 or p2 or carry:
+                  x = p1.val if p1 else 0
+                  y = p2.val if p2 else 0
+                  total = x + y + carry
+                  carry = total // 10
+                  curr.next = ListNode(total % 10)
+                  curr = curr.next
+                  p1 = p1.next if p1 else None
+                  p2 = p2.next if p2 else None
+
+              expected = to_array(dummy.next)
+              return output == expected
+
+seed: 42
+
+tests:
+  - name: "example_1"
+    in:
+      l1: [2, 4, 3]
+      l2: [5, 6, 4]
+    out: [7, 0, 8]
+
+  - name: "example_2"
+    in:
+      l1: [0]
+      l2: [0]
+    out: [0]
+
+  - name: "example_3"
+    in:
+      l1: [9, 9, 9, 9, 9, 9, 9]
+      l2: [9, 9, 9, 9]
+    out: [8, 9, 9, 9, 0, 0, 0, 1]
+
+  - name: "same_length_no_carry"
+    in:
+      l1: [1, 2, 3]
+      l2: [4, 5, 6]
+    out: [5, 7, 9]
+
+  - name: "same_length_with_carry"
+    in:
+      l1: [4, 5, 6]
+      l2: [7, 8, 9]
+    out: [1, 4, 6, 1]
+
+  - name: "different_length_l1_longer"
+    in:
+      l1: [1, 2, 3, 4, 5]
+      l2: [6, 7, 8]
+    out: [7, 9, 1, 5, 5]
+
+  - name: "different_length_l2_longer"
+    in:
+      l1: [3, 4]
+      l2: [5, 6, 7, 8]
+    out: [8, 0, 8, 8]
+
+  - name: "carry_propagation_to_end"
+    in:
+      l1: [9, 9, 9]
+      l2: [1]
+    out: [0, 0, 0, 1]
+
+  - name: "multiple_carries"
+    in:
+      l1: [9, 9, 9, 9]
+      l2: [9, 9, 9, 9]
+    out: [8, 9, 9, 9, 1]
+
+  - name: "single_element_each"
+    in:
+      l1: [5]
+      l2: [5]
+    out: [0, 1]
+
+  - name: "zero_plus_number"
+    in:
+      l1: [0]
+      l2: [1, 2, 3]
+    out: [1, 2, 3]
+
+  - name: "number_plus_zero"
+    in:
+      l1: [4, 5, 6]
+      l2: [0]
+    out: [4, 5, 6]
+
+  - name: "max_digit_values_no_carry"
+    in:
+      l1: [9, 9]
+      l2: [0, 0]
+    out: [9, 9]
+
+  - name: "leading_zeros_not_in_input_but_output_ok"
+    in:
+      l1: [0, 1]
+      l2: [0, 9]
+    out: [0, 0, 1]
+
+  - name: "large_same_length"
+    in:
+      l1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+      l2: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+    out: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+  - name: "max_length_one_large_one_small"
+    in:
+      l1: [1]
+      l2: [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
+    out: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+
+  - name: "all_nines_l1"
+    in:
+      l1: [9, 9, 9, 9, 9]
+      l2: [1, 2, 3]
+    out: [0, 2, 3, 0, 0, 1]
+
+  - name: "all_nines_l2"
+    in:
+      l1: [1, 2, 3]
+      l2: [9, 9, 9, 9, 9]
+    out: [0, 2, 3, 0, 0, 1]
+
+  - name: "alternating_digits"
+    in:
+      l1: [1, 0, 1, 0, 1]
+      l2: [0, 1, 0, 1, 0]
+    out: [1, 1, 1, 1, 1]
+
+  - name: "result_shorter_than_inputs"
+    in:
+      l1: [1, 2]
+      l2: [8, 7]
+    out: [9, 9]
+
+  - name: "intermediate_zeros_in_output"
+    in:
+      l1: [1, 0, 0, 1]
+      l2: [2, 0, 0, 2]
+    out: [3, 0, 0, 3]
+
+  - name: "very_uneven_lengths"
+    in:
+      l1: [1]
+      l2:
+        [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+        ]
+    out:
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+      ]
+
+  - name: "random_small_1"
+    seed: 100
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 1, max: 10 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 1, max: 10 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_small_2"
+    seed: 101
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 1, max: 10 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 1, max: 10 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_small_3"
+    seed: 102
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 1, max: 10 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 1, max: 10 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_medium_1"
+    seed: 200
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 10, max: 50 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 10, max: 50 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_medium_2"
+    seed: 201
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 10, max: 50 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 10, max: 50 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_medium_3"
+    seed: 202
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 10, max: 50 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 10, max: 50 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_large_1"
+    seed: 300
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_large_2"
+    seed: 301
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_large_3"
+    seed: 302
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_large_4"
+    seed: 303
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+
+  - name: "random_large_5"
+    seed: 304
+    in:
+      l1:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }
+      l2:
+        gen: "array"
+        len: { gen: "int", min: 50, max: 100 }
+        of: { gen: "int", min: 0, max: 9 }

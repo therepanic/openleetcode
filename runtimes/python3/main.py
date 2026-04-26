@@ -1,7 +1,8 @@
-from future import annotations
+from __future__ import annotations
 import datetime as _dt
 from dataclasses import is_dataclass, asdict
-from typing import Any
+from typing import *
+import time as _time
 
 ${SOLUTION}
 
