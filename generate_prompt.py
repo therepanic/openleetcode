@@ -34,10 +34,10 @@ Generate a complete manifest.yml for the following problem.
 
 ### Problem
 
-## Problem id
+## Id
 {PROBLEM_ID}
 
-## Problem title
+## Title
 {PROBLEM_TITLE}
 
 ## Content
@@ -56,7 +56,9 @@ Generate a complete manifest.yml for the following problem.
 
 1. Generate a complete manifest.yml following the TEST_FORMAT.md spec exactly.
 2. Include all examples from the problem as static test cases with `out`.
-3. Create a comprehensive set of additional static test cases that cover all edge and tricky scenarios (minimum/maximum values, empty/single‑element inputs, duplicates, negative numbers, large inputs, etc.). For non‑trivial problems aim for a total of around 30–35 test cases (including the examples). If the problem constraints allow safe random generation (inputs are independent and any random combination guarantees a valid answer), you may complement the static cases with generated stress/random tests to reach the target count. If random generation is unreliable (e.g. "exactly one solution exists" cannot be guaranteed randomly), rely solely on static cases and an oracle checker where appropriate.
+3. Create a comprehensive set of additional static test cases that cover all edge and tricky scenarios (minimum/maximum values, empty/single-element inputs, duplicates, negative numbers, large inputs, etc.). For non-trivial problems aim for a total of around 30-35 test cases (including the examples). If the problem constraints allow safe random generation (inputs are independent and any random combination guarantees a valid answer), you may complement the static cases with generated stress/random tests to reach the target count. If random generation is unreliable (e.g. "exactly one solution exists" cannot be guaranteed randomly), rely solely on static cases and an oracle checker where appropriate.
+   - **Generator constraints**: When using generators (`gen`), strictly respect the problem's advertised constraints (value ranges, lengths, allowed characters). Do not generate values outside the allowed bounds (e.g. do not produce negative numbers when the constraint says positive only).
+   - **Large input safety**: For parameters that can be up to 10^6 (according to constraints), cap the generated `len` at 10^5 at most to avoid stdout overflow during local execution.
 4. Write an oracle checker in Python3 based on the reference solution (the reference solution may not necessarily be in Python3, but the oracle checker you write will definitely be in Python3). The checker should validate the result structurally, not just re-run the solution.
 5. Use the call template signatures from the code snippets above for each language.
 6. Output only the manifest.yml. Do not add any comments, explanations. The response must be raw YAML that can be parsed directly.
