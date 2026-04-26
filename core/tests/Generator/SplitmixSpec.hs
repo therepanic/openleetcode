@@ -46,13 +46,12 @@ spec = do
   describe "string" $ do
     it "generates string of correct length" $ do
       let v = val (GenStrInfo (GenStr (GenIntegralConst 10) "abc"))
-      length v `shouldBe` 12
+      length v `shouldBe` 10
 
     it "uses only characters from alphabet" $ do
       let alphabet = "XYZ"
       let v = val (GenStrInfo (GenStr (GenIntegralConst 50) alphabet))
-      let content = init (tail v)
-      content `shouldSatisfy` all (`elem` alphabet)
+      v `shouldSatisfy` all (`elem` alphabet)
 
   describe "array" $ do
     it "boolean array has correct format" $ do

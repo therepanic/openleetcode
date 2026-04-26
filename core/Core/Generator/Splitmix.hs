@@ -40,10 +40,10 @@ generateFloat (GenFloatRange lo hi prec) gen =
 generateFloat _ _ = error "Unhandled GenFloat type"
 
 generateChar :: GenChar -> SMGen -> (String, SMGen)
-generateChar (GenCharConst c) gen = (show c, gen)
+generateChar (GenCharConst c) gen = ([c], gen)
 generateChar (GenCharVariety v) gen =
   let (c, gen') = generateCharFromList v gen
-   in (show c, gen')
+   in ([c], gen')
 generateChar _ _ = error "Unhandled GenChar type"
 
 generateStr :: GenStr -> SMGen -> (String, SMGen)
@@ -58,7 +58,7 @@ generateStr (GenStr l a) gen =
           )
           ("", gen')
           [0 .. len - 1]
-   in (show $ reverse charList, gen'')
+   in (reverse charList, gen'')
 generateStr _ _ = error "Unhandled GenStr type"
 
 generateBool :: GenBool -> Language -> SMGen -> (String, SMGen)
@@ -139,7 +139,7 @@ generateArr (GenArr False l (GenCharInfo i)) _ gen =
           )
           ([], gen')
           [1 .. len]
-      result = intercalate ", " (map show (reverse chars))
+      result = intercalate ", " (map (: []) (reverse chars))
    in (result, gen'')
 generateArr (GenArr True l (GenCharInfo (GenCharVariety alphabet))) _ gen =
   let vec = V.fromList alphabet
@@ -147,10 +147,10 @@ generateArr (GenArr True l (GenCharInfo (GenCharVariety alphabet))) _ gen =
       len = min (read v :: Int) (V.length vec)
       (shuffled, gen'') = fisherYates vec gen'
       chars = V.toList (V.take len shuffled)
-      result = intercalate ", " (map show chars)
+      result = intercalate ", " (map (: []) chars)
    in (result, gen'')
 generateArr (GenArr True _ (GenCharInfo (GenCharConst c))) _ gen =
-  (show c, gen)
+  ([c], gen)
 generateArr (GenArr False l (GenStrInfo val)) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
@@ -168,7 +168,7 @@ generateArr (GenArr True l (GenStrInfo val)) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read v :: Int
       (strs, gen'') = go S.empty [] len gen'
-   in (intercalate ", " (map show (reverse strs)), gen'')
+   in (intercalate ", " (reverse strs), gen'')
   where
     go _ acc 0 g = (acc, g)
     go seen acc n g =
