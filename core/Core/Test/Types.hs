@@ -125,7 +125,7 @@ instance FromJSON GIDFloat where
   parseJSON (Object o) = do
     gen <- o .: "gen" :: Parser String
     case gen of
-      "float" -> GIDGenFloatRange <$> o .: "min" <*> o .: "max" <*> o .: "precision"
+      "float" -> GIDGenFloatRange <$> o .: "min" <*> o .: "max" <*> (o .:? "precision" .!= 0)
       _ -> fail $ "unknown gen for float: " <> gen
   parseJSON _ = fail "expected number or object"
 
@@ -140,8 +140,8 @@ instance FromJSON GIDChar where
 
 instance FromJSON GIDArr where
   parseJSON (Object o) = do
-    distinct <- o .: "distinct"
-    sorted <- o .: "sorted"
+    distinct <- o .:? "distinct" .!= False
+    sorted <- o .:? "sorted" .!= False
     len <- o .: "len"
     of' <- o .: "of"
     return $ GIDArrGen distinct sorted len of'

@@ -185,10 +185,10 @@ Or a constant:
 42
 ```
 
-| Field | Description               |
-| ----- | ------------------------- |
-| `min` | Minimum value (inclusive) |
-| `max` | Maximum value (inclusive) |
+| Field | Required | Description               |
+| ----- | -------- | ------------------------- |
+| `min` | ✅       | Minimum value (inclusive) |
+| `max` | ✅       | Maximum value (inclusive) |
 
 ---
 
@@ -204,11 +204,11 @@ Or a constant:
 3.14
 ```
 
-| Field       | Description               |
-| ----------- | ------------------------- |
-| `min`       | Minimum value (inclusive) |
-| `max`       | Maximum value (inclusive) |
-| `precision` | Number of decimal places  |
+| Field       | Required | Description                               |
+| ----------- | -------- | ----------------------------------------- |
+| `min`       | ✅       | Minimum value (inclusive)                 |
+| `max`       | ✅       | Maximum value (inclusive)                 |
+| `precision` | ❌       | Number of decimal places. Defaults to `0` |
 
 ---
 
@@ -224,10 +224,10 @@ Or a constant:
 "hello"
 ```
 
-| Field      | Description                                                            |
-| ---------- | ---------------------------------------------------------------------- |
-| `len`      | Length of the string - either a constant integer or an `int` generator |
-| `alphabet` | List of characters to draw from                                        |
+| Field      | Required | Description                                                            |
+| ---------- | -------- | ---------------------------------------------------------------------- |
+| `len`      | ✅       | Length of the string — either a constant integer or an `int` generator |
+| `alphabet` | ✅       | List of characters to draw from                                        |
 
 ---
 
@@ -243,9 +243,9 @@ Or a constant:
 "b"
 ```
 
-| Field     | Description                              |
-| --------- | ---------------------------------------- |
-| `variety` | List of characters to randomly pick from |
+| Field     | Required | Description                              |
+| --------- | -------- | ---------------------------------------- |
+| `variety` | ✅       | List of characters to randomly pick from |
 
 ---
 
@@ -279,12 +279,12 @@ Or a constant (written as a plain YAML array):
 [1, 2, 3]
 ```
 
-| Field      | Description                                     |
-| ---------- | ----------------------------------------------- |
-| `distinct` | Whether all elements must be unique             |
-| `sorted`   | Whether the array must be sorted ascending      |
-| `len`      | Length - constant integer or `int` generator    |
-| `of`       | Generator for each element - any generator type |
+| Field      | Required | Description                                                     |
+| ---------- | -------- | --------------------------------------------------------------- |
+| `len`      | ✅       | Length — constant integer or `int` generator                    |
+| `of`       | ✅       | Generator for each element — any generator type                 |
+| `distinct` | ❌       | Whether all elements must be unique. Defaults to `false`        |
+| `sorted`   | ❌       | Whether the array must be sorted ascending. Defaults to `false` |
 
 Nested arrays are not supported. To work around this, define each inner array as a separate parameter and inline them manually in the `call` template:
 
