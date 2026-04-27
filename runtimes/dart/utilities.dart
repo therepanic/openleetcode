@@ -7,10 +7,10 @@ class ListNode {
 ListNode? toListNode(List<int> arr) {
   if (arr.isEmpty) return null;
   ListNode head = ListNode(arr[0]);
-  ListNode cur = head;
+  ListNode? cur = head;
   for (int i = 1; i < arr.length; i++) {
-    cur.next = ListNode(arr[i]);
-    cur = cur.next!;
+    cur!.next = ListNode(arr[i]);
+    cur = cur.next;
   }
   return head;
 }

@@ -1,12 +1,9 @@
 import java.lang.reflect.*;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
+${IMPORTS}
 
-${SOLUTION}
-
-${UTILITIES}
-
-public class Main {
+class Main {
     public static void main(String[] args) {
         long cur = System.currentTimeMillis();
         ${CALL_SOLUTION};
@@ -14,3 +11,7 @@ public class Main {
         System.out.println(now - cur);
     }
 }
+
+${SOLUTION}
+
+${UTILITIES}

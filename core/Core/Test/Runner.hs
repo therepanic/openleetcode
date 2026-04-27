@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Core.Test.Runner where
 
 import Control.Concurrent.Async
@@ -10,6 +12,7 @@ import Core.Judge.IgnoreOrder qualified as ITypes
 import Core.Test.Converter (toGenInfo)
 import Core.Test.Types qualified as Types
 import Core.Types
+import Data.List qualified
 import Data.Map qualified as M
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text qualified as T
@@ -64,11 +67,16 @@ handleTestCase exec gen batch sSeed suite test = do
         Nothing -> fromJust (M.lookup lang (Types.teCall $ Types.tsEntry suite))
 
   let buildContent template =
-        let entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr template
+        let (userImports, userSolution) =
+              if lang == Java
+                then splitJavaCode (solution batch)
+                else ("", solution batch)
+            withImports = replaceUniversal "${IMPORTS}" userImports template
+            entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr withImports
             afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
             fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
             withRuntime = replaceUniversal "${UTILITIES}" (utilities batch) fullCall
-         in replaceUniversal "${SOLUTION}" (solution batch) withRuntime
+         in replaceUniversal "${SOLUTION}" userSolution withRuntime
 
   let timeReady = buildContent (entryTime batch)
   timeResponse <-
@@ -174,3 +182,9 @@ toExecStatus :: C.ExecStatus -> String -> TestResult
 toExecStatus C.TLE _ = TLE
 toExecStatus C.RE err = RE err
 toExecStatus (C.Unknown s) err = RE (s <> " " <> err)
+
+splitJavaCode :: String -> (String, String)
+splitJavaCode code =
+  let allLines = lines code
+      (importLines, restLines) = Data.List.partition (\l -> "import " `Data.List.isPrefixOf` dropWhile (== ' ') l) allLines
+   in (unlines importLines, unlines restLines)

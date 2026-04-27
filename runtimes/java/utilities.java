@@ -1,4 +1,4 @@
-public class ListNode {
+class ListNode {
     public int val;
     public ListNode next;
 
@@ -33,7 +33,7 @@ public class ListNode {
     }
 }
 
-public final class Json {
+final class Json {
 
 	public static String toJson(Object obj) {
 		IdentityHashMap<Object, Boolean> seen = new IdentityHashMap<>();

@@ -13,8 +13,8 @@ ${SOLUTION}
 ${UTILITIES}
 
 func main() {
-    cur := time.Now().UnixMilli()
+    cur := time.Now().UnixNano() / 1_000_000
     ${CALL_SOLUTION}
-    now := time.Now().UnixMilli()
+    now := time.Now().UnixNano() / 1_000_000
     fmt.Print(now - cur)
 }
