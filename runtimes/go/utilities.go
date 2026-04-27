@@ -1,3 +1,48 @@
+type TreeNode struct {
+    Val   int
+    Left  *TreeNode
+    Right *TreeNode
+}
+
+func toTreeNode(arr []interface{}) *TreeNode {
+    if len(arr) == 0 || arr[0] == nil { return nil }
+    val := int(arr[0].(float64))
+    root := &TreeNode{Val: val}
+    queue := []*TreeNode{root}
+    i := 1
+    for len(queue) > 0 && i < len(arr) {
+        node := queue[0]; queue = queue[1:]
+        if i < len(arr) && arr[i] != nil {
+            node.Left = &TreeNode{Val: int(arr[i].(float64))}
+            queue = append(queue, node.Left)
+        }
+        i++
+        if i < len(arr) && arr[i] != nil {
+            node.Right = &TreeNode{Val: int(arr[i].(float64))}
+            queue = append(queue, node.Right)
+        }
+        i++
+    }
+    return root
+}
+
+func treeNodeToArray(root *TreeNode) []interface{} {
+    res := []interface{}{}
+    if root == nil { return res }
+    queue := []*TreeNode{root}
+    for len(queue) > 0 {
+        node := queue[0]; queue = queue[1:]
+        if node != nil {
+            res = append(res, node.Val)
+            queue = append(queue, node.Left, node.Right)
+        } else {
+            res = append(res, nil)
+        }
+    }
+    for len(res) > 0 && res[len(res)-1] == nil { res = res[:len(res)-1] }
+    return res
+}
+
 type ListNode struct {
     Val  int
     Next *ListNode

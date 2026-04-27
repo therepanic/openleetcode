@@ -1,3 +1,41 @@
+class TreeNode {
+    public static TreeNode toTreeNode(Integer[] arr) {
+        if (arr == null || arr.length == 0 || arr[0] == null) return null;
+        TreeNode root = new TreeNode(arr[0]);
+        java.util.Queue<TreeNode> q = new java.util.LinkedList<>();
+        q.add(root);
+        for (int i = 1; i < arr.length; i++) {
+            TreeNode node = q.poll();
+            if (arr[i] != null) {
+                node.left = new TreeNode(arr[i]);
+                q.add(node.left);
+            }
+            if (++i < arr.length && arr[i] != null) {
+                node.right = new TreeNode(arr[i]);
+                q.add(node.right);
+            }
+        }
+        return root;
+    }
+
+    public static List<Integer> treeNodeToArray(TreeNode root) {
+        List<Integer> res = new java.util.ArrayList<>();
+        if (root == null) return res;
+        java.util.Queue<TreeNode> q = new java.util.LinkedList<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            TreeNode node = q.poll();
+            if (node != null) {
+                res.add(node.val);
+                q.add(node.left);
+                q.add(node.right);
+            } else res.add(null);
+        }
+        while (!res.isEmpty() && res.get(res.size() - 1) == null) res.remove(res.size() - 1);
+        return res;
+    }
+}
+
 class ListNode {
     public int val;
     public ListNode next;

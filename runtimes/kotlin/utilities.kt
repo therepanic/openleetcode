@@ -1,3 +1,47 @@
+class TreeNode(var `val`: Int) {
+    var left: TreeNode? = null
+    var right: TreeNode? = null
+}
+
+fun toTreeNode(arr: Array<Int?>): TreeNode? {
+    if (arr.isEmpty() || arr[0] == null) return null
+    val root = TreeNode(arr[0]!!)
+    val queue: java.util.Queue<TreeNode> = java.util.LinkedList()
+    queue.add(root)
+    var i = 1
+    while (i < arr.size) {
+        val node = queue.poll()
+        if (i < arr.size && arr[i] != null) {
+            node.left = TreeNode(arr[i]!!)
+            queue.add(node.left)
+        }
+        i++
+        if (i < arr.size && arr[i] != null) {
+            node.right = TreeNode(arr[i]!!)
+            queue.add(node.right)
+        }
+        i++
+    }
+    return root
+}
+
+fun treeNodeToArray(root: TreeNode?): List<Int?> {
+    val res = mutableListOf<Int?>()
+    if (root == null) return res
+    val queue: java.util.Queue<TreeNode?> = java.util.LinkedList()
+    queue.add(root)
+    while (queue.isNotEmpty()) {
+        val node = queue.poll()
+        if (node != null) {
+            res.add(node.`val`)
+            queue.add(node.left)
+            queue.add(node.right)
+        } else res.add(null)
+    }
+    while (res.isNotEmpty() && res.last() == null) res.removeAt(res.size - 1)
+    return res
+}
+
 class ListNode(var `val`: Int) {
     var next: ListNode? = null
 }

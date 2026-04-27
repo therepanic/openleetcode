@@ -1,3 +1,51 @@
+class TreeNode {
+  int val;
+  TreeNode? left;
+  TreeNode? right;
+  TreeNode([this.val = 0, this.left, this.right]);
+}
+
+TreeNode? toTreeNode(List<dynamic>? arr) {
+  if (arr == null || arr.isEmpty || arr[0] == null) return null;
+  TreeNode root = TreeNode(arr[0]);
+  List<TreeNode?> queue = [root];
+  int i = 1;
+  int qIdx = 0;
+  while (i < arr.length) {
+    TreeNode? node = queue[qIdx++];
+    if (i < arr.length && arr[i] != null) {
+      node!.left = TreeNode(arr[i]);
+      queue.add(node.left);
+    }
+    i++;
+    if (i < arr.length && arr[i] != null) {
+      node!.right = TreeNode(arr[i]);
+      queue.add(node.right);
+    }
+    i++;
+  }
+  return root;
+}
+
+List<dynamic> treeNodeToArray(TreeNode? root) {
+  List<dynamic> res = [];
+  if (root == null) return res;
+  List<TreeNode?> queue = [root];
+  int qIdx = 0;
+  while (qIdx < queue.length) {
+    TreeNode? node = queue[qIdx++];
+    if (node != null) {
+      res.add(node.val);
+      queue.add(node.left);
+      queue.add(node.right);
+    } else {
+      res.add(null);
+    }
+  }
+  while (res.isNotEmpty && res.last == null) res.removeLast();
+  return res;
+}
+
 class ListNode {
   int val;
   ListNode? next;

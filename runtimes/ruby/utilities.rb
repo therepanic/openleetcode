@@ -1,3 +1,49 @@
+class TreeNode
+  attr_accessor :val, :left, :right
+  def initialize(val = 0, left = nil, right = nil)
+    @val = val
+    @left = left
+    @right = right
+  end
+end
+
+def to_tree_node(arr)
+  return nil if arr.nil? || arr.empty? || arr[0].nil?
+  root = TreeNode.new(arr[0])
+  queue = [root]
+  i = 1
+  while !queue.empty? && i < arr.length
+    node = queue.shift
+    if i < arr.length && !arr[i].nil?
+      node.left = TreeNode.new(arr[i])
+      queue << node.left
+    end
+    i += 1
+    if i < arr.length && !arr[i].nil?
+      node.right = TreeNode.new(arr[i])
+      queue << node.right
+    end
+    i += 1
+  end
+  root
+end
+
+def tree_node_to_array(root)
+  return [] if root.nil?
+  res, queue = [], [root]
+  while !queue.empty?
+    node = queue.shift
+    if node
+      res << node.val
+      queue << node.left << node.right
+    else
+      res << nil
+    end
+  end
+  res.pop while res.last.nil?
+  res
+end
+
 class ListNode
   attr_accessor :val, :next
   def initialize(val = 0, _next = nil)

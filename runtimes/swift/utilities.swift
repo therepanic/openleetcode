@@ -1,3 +1,60 @@
+public class TreeNode {
+    public var val: Int
+    public var left: TreeNode?
+    public var right: TreeNode?
+    public init() { self.val = 0; self.left = nil; self.right = nil; }
+    public init(_ val: Int) { self.val = val; self.left = nil; self.right = nil; }
+    public init(_ val: Int, _ left: TreeNode?, _ right: TreeNode?) {
+        self.val = val
+        self.left = left
+        self.right = right
+    }
+}
+
+func toTreeNode(_ arr: [Int?]) -> TreeNode? {
+    guard !arr.isEmpty, let first = arr[0] else { return nil }
+    let root = TreeNode(first)
+    var queue = [root]
+    var i = 1
+    var qIdx = 0
+    while i < arr.count {
+        let node = queue[qIdx]
+        qIdx += 1
+        if i < arr.count, let leftVal = arr[i] {
+            let leftNode = TreeNode(leftVal)
+            node.left = leftNode
+            queue.append(leftNode)
+        }
+        i += 1
+        if i < arr.count, let rightVal = arr[i] {
+            let rightNode = TreeNode(rightVal)
+            node.right = rightNode
+            queue.append(rightNode)
+        }
+        i += 1
+    }
+    return root
+}
+
+func treeNodeToArray(_ root: TreeNode?) -> [Int?] {
+    var res = [Int?]()
+    guard let root = root else { return res }
+    var queue: [TreeNode?] = [root]
+    var qIdx = 0
+    while qIdx < queue.count {
+        if let node = queue[qIdx] {
+            res.append(node.val)
+            queue.append(node.left)
+            queue.append(node.right)
+        } else {
+            res.append(nil)
+        }
+        qIdx += 1
+    }
+    while res.last == nil { res.removeLast() }
+    return res
+}
+
 public class ListNode {
     public var val: Int
     public var next: ListNode?

@@ -427,3 +427,60 @@ tests:
       l2: [5, 6, 4]
     out: [7, 0, 8]
 ```
+
+---
+
+### Binary Tree (`TreeNode`)
+
+Each runtime provides helpers to convert between level-order (BFS) arrays and `TreeNode`. Use them directly in `call` templates.
+
+Trees are represented as arrays in LeetCode standard level-order format. `null` marks an absent child and is required to preserve the structure of the tree. Trailing `null` values - those appearing after the last non-null element - are stripped.
+
+**Example - problem 104 "Maximum Depth of Binary Tree":**
+
+```yaml
+entry:
+  id: 104
+  title: "maximum-depth-of-binary-tree"
+  call:
+    python3: "Solution().maxDepth(to_tree_node([{root}]))"
+    ruby: "Solution.new.max_depth(to_tree_node([{root}]))"
+    java: "new Solution().maxDepth(TreeNode.toTreeNode(new Integer[]{ {root} }))"
+    kotlin: "Solution().maxDepth(toTreeNode(arrayOf({root})))"
+    go: "maxDepth(toTreeNode([]interface{}{ {root} }))"
+    dart: "Solution().maxDepth(toTreeNode([{root}]))"
+    swift: "Solution().maxDepth(toTreeNode([{root}]))"
+
+tests:
+  - name: "ex1"
+    in:
+      root: [3, 9, 20, null, null, 15, 7]
+    out: 3
+
+  - name: "ex2"
+    in:
+      root: [1, null, 2]
+    out: 2
+```
+
+When the solution returns a `TreeNode` (e.g. _Invert Binary Tree_), wrap the result with the serializer so it can be compared as a plain array:
+
+```yaml
+entry:
+  id: 226
+  title: "invert-binary-tree"
+  call:
+    python3: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
+    ruby: "tree_node_to_array(Solution.new.invert_tree(to_tree_node([{root}])))"
+    java: "TreeNode.treeNodeToArray(new Solution().invertTree(TreeNode.toTreeNode(new Integer[]{ {root} })))"
+    kotlin: "treeNodeToArray(Solution().invertTree(toTreeNode(arrayOf({root}))))"
+    go: "treeNodeToArray(invertTree(toTreeNode([]interface{}{ {root} })))"
+    dart: "treeNodeToArray(Solution().invertTree(toTreeNode([{root}])))"
+    swift: "treeNodeToArray(Solution().invertTree(toTreeNode([{root}])))"
+
+tests:
+  - name: "ex1"
+    in:
+      root: [4, 2, 7, 1, 3, 6, 9]
+    out: [4, 7, 2, 9, 6, 3, 1]
+```
