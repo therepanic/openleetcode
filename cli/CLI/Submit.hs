@@ -45,8 +45,9 @@ run opts = do
   case failures of
     ((idx, err) : _) -> printError (idx, err)
     [] -> do
-      let totalTime = sum [t | Pass t <- results]
-      putStrLn $ "All tests passed (" ++ show totalTime ++ "ms)"
+      let times = [t | Pass t <- results]
+      let maxTime = maximum times
+      putStrLn $ "All tests passed (" ++ show maxTime ++ "ms)"
 
 validateSubmit :: SubmitOpts -> IO ()
 validateSubmit opts =
