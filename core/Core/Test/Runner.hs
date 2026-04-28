@@ -74,7 +74,14 @@ handleTestCase exec gen batch sSeed suite test = do
             withImports = replaceUniversal "${IMPORTS}" userImports template
             entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr withImports
             afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
-            fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
+            fullCall =
+              foldl
+                ( \acc (var, val) ->
+                    let preparedVal = prepareInValue lang val
+                     in replaceUniversal ("{" ++ var ++ "}") preparedVal acc
+                )
+                afterGen
+                inCases
             withRuntime = replaceUniversal "${UTILITIES}" (utilities batch) fullCall
          in replaceUniversal "${SOLUTION}" userSolution withRuntime
 
@@ -188,3 +195,16 @@ splitJavaCode code =
   let allLines = lines code
       (importLines, restLines) = Data.List.partition (\l -> "import " `Data.List.isPrefixOf` dropWhile (== ' ') l) allLines
    in (unlines importLines, unlines restLines)
+
+nullLiteral :: Language -> String
+nullLiteral Python3 = "None"
+nullLiteral Go = "nil"
+nullLiteral Ruby = "nil"
+nullLiteral Swift = "nil"
+nullLiteral _ = "null"
+
+prepareInValue :: Language -> String -> String
+prepareInValue lang val =
+  replaceNulls (T.pack val)
+  where
+    replaceNulls = T.unpack . T.replace "null" (T.pack $ nullLiteral lang)

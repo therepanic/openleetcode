@@ -4,21 +4,32 @@ type TreeNode struct {
     Right *TreeNode
 }
 
+func toInt(v interface{}) int {
+    switch t := v.(type) {
+    case int:
+        return t
+    case float64:
+        return int(t)
+    default:
+        return 0
+    }
+}
+
 func toTreeNode(arr []interface{}) *TreeNode {
     if len(arr) == 0 || arr[0] == nil { return nil }
-    val := int(arr[0].(float64))
+    val := toInt(arr[0])
     root := &TreeNode{Val: val}
     queue := []*TreeNode{root}
     i := 1
     for len(queue) > 0 && i < len(arr) {
         node := queue[0]; queue = queue[1:]
         if i < len(arr) && arr[i] != nil {
-            node.Left = &TreeNode{Val: int(arr[i].(float64))}
+            node.Left = &TreeNode{Val: toInt(arr[i])}
             queue = append(queue, node.Left)
         }
         i++
         if i < len(arr) && arr[i] != nil {
-            node.Right = &TreeNode{Val: int(arr[i].(float64))}
+            node.Right = &TreeNode{Val: toInt(arr[i])}
             queue = append(queue, node.Right)
         }
         i++
