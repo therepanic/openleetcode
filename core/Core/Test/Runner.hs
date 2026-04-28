@@ -2,6 +2,7 @@
 
 module Core.Test.Runner where
 
+import Control.Concurrent (getNumCapabilities)
 import Control.Concurrent.Async
 import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
@@ -17,6 +18,7 @@ import Data.Map qualified as M
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text qualified as T
 import Text.Read (readMaybe)
+import UnliftIO.Async (pooledMapConcurrentlyN)
 
 data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
 
@@ -29,8 +31,10 @@ runSuite ::
   SolutionBatch ->
   Types.TestSuite ->
   IO [TestResult]
-runSuite exec gen batch suite =
-  mapConcurrently
+runSuite exec gen batch suite = do
+  n <- getNumCapabilities
+  pooledMapConcurrentlyN
+    n
     (\test -> handleTestCase exec gen batch seed suite test)
     (Types.tsCases suite)
   where
