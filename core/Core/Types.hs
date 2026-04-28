@@ -54,6 +54,13 @@ convertLangToExt lang = case lang of
   Kotlin -> ".kt"
   Swift -> ".swift"
 
+nullLiteral :: Language -> String
+nullLiteral Python3 = "None"
+nullLiteral Go = "nil"
+nullLiteral Ruby = "nil"
+nullLiteral Swift = "nil"
+nullLiteral _ = "null"
+
 instance FromJSON ExecutorType where
   parseJSON = withText "BackendType" $ \t ->
     case t of

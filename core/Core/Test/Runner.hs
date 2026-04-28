@@ -196,13 +196,6 @@ splitJavaCode code =
       (importLines, restLines) = Data.List.partition (\l -> "import " `Data.List.isPrefixOf` dropWhile (== ' ') l) allLines
    in (unlines importLines, unlines restLines)
 
-nullLiteral :: Language -> String
-nullLiteral Python3 = "None"
-nullLiteral Go = "nil"
-nullLiteral Ruby = "nil"
-nullLiteral Swift = "nil"
-nullLiteral _ = "null"
-
 prepareInValue :: Language -> String -> String
 prepareInValue lang val =
   replaceNulls (T.pack val)
