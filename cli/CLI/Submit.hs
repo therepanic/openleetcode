@@ -1,7 +1,7 @@
 module CLI.Submit where
 
 import CLI.AppEnv (Config (backendType, backendUrl), defaultConfigRoot, loadConfig)
-import Control.Monad (forM, when)
+import Control.Monad (forM, unless, when)
 import Core.Executor.Any (convertExecutorTypeToExecutor)
 import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
 import Core.Test.Loader (loadTestSuite)
@@ -38,14 +38,11 @@ run opts = do
   let executor = convertExecutorTypeToExecutor (backendType config) (backendUrl config)
   let generator = SplitmixGenerator
   results <- runSuite executor generator batch testSuite
-  let isPass :: TestResult -> Bool
-      isPass (Pass _) = True
-      isPass _ = False
-  let failures = [(i, res) | (i, res) <- zip [1 ..] results, not (isPass res)]
-  case failures of
-    ((idx, err) : _) -> printError (idx, err)
-    [] -> do
-      let times = [t | Pass t <- results]
+  let failure = find (\(_, res) -> case res of Pass _ -> False; _ -> True) results
+  case failure of
+    Just (idx, err) -> printError (idx, err)
+    Nothing -> do
+      let times = [t | (_, Pass t) <- results]
       let maxTime = maximum times
       putStrLn $ "All tests passed (" ++ show maxTime ++ "ms)"
 
@@ -78,10 +75,13 @@ findTestPath root opts = do
       Nothing -> fail "No id or title"
 
 printError :: (Int, TestResult) -> IO ()
-printError (i, WA expected got) =
+printError (i, WA expected got out) = do
   putStrLn $ "Test #" ++ show i ++ ": [Wrong Answer] Expected: " ++ fromMaybe "Nothing" expected ++ ", Got: " ++ got
-printError (i, TLE) =
+  unless (null out) $ putStrLn $ "Logs:\n" ++ out
+printError (i, TLE out) = do
   putStrLn $ "Test #" ++ show i ++ ": [Time Limit Exceeded]"
-printError (i, RE err) =
+  unless (null out) $ putStrLn $ "Logs before TLE:\n" ++ out
+printError (i, RE err out) = do
   putStrLn $ "Test #" ++ show i ++ ": [Runtime Error] " ++ err
+  unless (null out) $ putStrLn $ "Logs:\n" ++ out
 printError _ = putStrLn "Unknown error"

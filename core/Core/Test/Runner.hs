@@ -20,12 +20,12 @@ import GHC.Conc (getNumProcessors)
 import Text.Read (readMaybe)
 import UnliftIO.Async (pooledMapConcurrentlyN)
 
-newtype ShortCircuit = ShortCircuit TestResult
+newtype ShortCircuit = ShortCircuit (Int, TestResult)
   deriving (Show)
 
 instance Exception ShortCircuit
 
-data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
+data TestResult = Pass Int | WA (Maybe String) String String | TLE String | RE String String deriving (Show, Eq)
 
 data SolutionBatch = SolutionBatch {entryMain :: String, entryTime :: String, sbLang :: Language, solution :: String, utilities :: String, python3Utilities :: String}
 
@@ -35,18 +35,19 @@ runSuite ::
   g ->
   SolutionBatch ->
   Types.TestSuite ->
-  IO [TestResult]
+  IO [(Int, TestResult)]
 runSuite exec gen batch suite = do
   n <- getNumProcessors
-  handle (\(ShortCircuit res) -> return [res]) $ do
-    pooledMapConcurrentlyN n runAndCheck (Types.tsCases suite)
+  let casesWithIdx = zip [1 ..] (Types.tsCases suite)
+  handle (\(ShortCircuit (idx, res)) -> return [(idx, res)]) $
+    pooledMapConcurrentlyN n runAndCheck casesWithIdx
   where
     seed = Types.tsSeed suite
-    runAndCheck test = do
+    runAndCheck (idx, test) = do
       res <- handleTestCase exec gen batch seed suite test
       case res of
-        Pass _ -> return res
-        _ -> throwIO (ShortCircuit res)
+        Pass _ -> return (idx, res)
+        _ -> throwIO (ShortCircuit (idx, res))
 
 handleTestCase ::
   (C.CodeExecutor e, Generator g) =>
@@ -109,13 +110,13 @@ handleTestCase exec gen batch sSeed suite test = do
           }
       )
   case timeResponse of
-    C.ExecFail err s -> return $ toExecStatus s err
+    C.ExecFail err s -> return $ toExecStatus s err ""
     C.ExecSuc tOut -> do
-      let tLast = last (lines tOut)
+      let (userStdout, tLast) = splitStdout tOut
       let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tLast)
       if ms > Types.tlTimeMs (Types.tsLimits suite)
         then
-          return TLE
+          return $ TLE userStdout
         else do
           let mainReady = buildContent (entryMain batch)
           response <-
@@ -129,7 +130,7 @@ handleTestCase exec gen batch sSeed suite test = do
                   }
               )
           case response of
-            C.ExecFail err s -> return $ toExecStatus s err
+            C.ExecFail err s -> return $ toExecStatus s err ""
             C.ExecSuc mOut -> do
               let mLast = last (lines mOut)
               case Types.tcOut test of
@@ -137,7 +138,7 @@ handleTestCase exec gen batch sSeed suite test = do
                   let res = judge jud expected mLast
                    in return $ case res of
                         J.Pass -> Pass ms
-                        J.Fail _ -> WA (Just expected) mLast
+                        J.Fail _ -> WA (Just expected) mLast userStdout
                 Nothing -> case M.lookup Python3 (Types.tsOracle suite) of
                   Nothing -> fail "No expected output and no oracle for Python3"
                   Just oracleSolution -> do
@@ -175,7 +176,7 @@ handleTestCase exec gen batch sSeed suite test = do
                         let cleanedOut = filter (`notElem` ['\n', '\r', ' ', '"']) oracleOut
                         if cleanedOut == "true"
                           then return (Pass ms)
-                          else return (WA Nothing mLast)
+                          else return (WA Nothing mLast userStdout)
 
 renderGenResult :: GenResult -> String
 renderGenResult r = r
@@ -197,10 +198,10 @@ convertTestJudgeToJudge :: Types.JudgeType -> AnyJudge
 convertTestJudgeToJudge Types.Exact = ExactJudge ETypes.Exact
 convertTestJudgeToJudge Types.IgnoreOrder = IgnoreOrderJudge ITypes.IgnoreOrder
 
-toExecStatus :: C.ExecStatus -> String -> TestResult
-toExecStatus C.TLE _ = TLE
-toExecStatus C.RE err = RE err
-toExecStatus (C.Unknown s) err = RE (s <> " " <> err)
+toExecStatus :: C.ExecStatus -> String -> String -> TestResult
+toExecStatus C.TLE _ out = TLE out
+toExecStatus C.RE err out = RE err out
+toExecStatus (C.Unknown s) err out = RE (s <> " " <> err) out
 
 splitJavaCode :: String -> (String, String)
 splitJavaCode code =
@@ -213,3 +214,10 @@ prepareInValue lang val =
   replaceNulls (T.pack val)
   where
     replaceNulls = T.unpack . T.replace "null" (T.pack $ nullLiteral lang)
+
+splitStdout :: String -> (String, String)
+splitStdout out =
+  let allLines = lines out
+   in if null allLines
+        then ("", "")
+        else (unlines (init allLines), last allLines)
