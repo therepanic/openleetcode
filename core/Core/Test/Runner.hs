@@ -95,7 +95,7 @@ handleTestCase exec gen batch sSeed suite test = do
       ( C.ExecRequest
           { C.language = lang,
             C.content = timeReady,
-            C.runTimeout = Just 15000, -- hardcoded 15s
+            C.runTimeout = Just 1500, -- hardcoded 1.5s
             C.runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
           }
       )
@@ -115,7 +115,7 @@ handleTestCase exec gen batch sSeed suite test = do
               ( C.ExecRequest
                   { C.language = lang,
                     C.content = mainReady,
-                    C.runTimeout = Just 15000, -- hardcoded 15s
+                    C.runTimeout = Just 1500, -- hardcoded 1.5s
                     C.runMemoryLimit = Nothing
                   }
               )
