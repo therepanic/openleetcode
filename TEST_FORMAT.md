@@ -436,6 +436,18 @@ Each runtime provides helpers to convert between level-order (BFS) arrays and `T
 
 Trees are represented as arrays in LeetCode standard level-order format. `null` marks an absent child and is required to preserve the structure of the tree. Trailing `null` values - those appearing after the last non-null element - are stripped.
 
+> **Important:** This is the **compressed BFS format**, not a heap/array-indexed format. `null` nodes do **not** occupy child slots in the array - only non-null nodes have their two children listed next.
+>
+> ```
+> # ✅ Correct - left chain of depth 4:
+> [1, 2, null, 3, null, 4]
+>
+> # ❌ Wrong - heap-style with extra nulls reserved for the absent subtree of root's right child:
+> [1, 2, null, 3, null, null, null, 4]
+> ```
+>
+> In the incorrect example, the parser consumes the two extra `null`s as children of node `3`, and never reaches `4`.
+
 **Example - problem 104 "Maximum Depth of Binary Tree":**
 
 ```yaml
