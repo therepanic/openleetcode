@@ -2,6 +2,7 @@
 
 module Core.Test.Runner where
 
+import Control.Exception (Exception, handle, throwIO)
 import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
 import Core.Judge.Class (Judge, judge)
@@ -19,6 +20,11 @@ import GHC.Conc (getNumProcessors)
 import Text.Read (readMaybe)
 import UnliftIO.Async (pooledMapConcurrentlyN)
 
+newtype ShortCircuit = ShortCircuit TestResult
+  deriving (Show)
+
+instance Exception ShortCircuit
+
 data TestResult = Pass Int | WA (Maybe String) String | TLE | RE String deriving (Show, Eq)
 
 data SolutionBatch = SolutionBatch {entryMain :: String, entryTime :: String, sbLang :: Language, solution :: String, utilities :: String, python3Utilities :: String}
@@ -32,12 +38,15 @@ runSuite ::
   IO [TestResult]
 runSuite exec gen batch suite = do
   n <- getNumProcessors
-  pooledMapConcurrentlyN
-    n
-    (\test -> handleTestCase exec gen batch seed suite test)
-    (Types.tsCases suite)
+  handle (\(ShortCircuit res) -> return [res]) $ do
+    pooledMapConcurrentlyN n runAndCheck (Types.tsCases suite)
   where
     seed = Types.tsSeed suite
+    runAndCheck test = do
+      res <- handleTestCase exec gen batch seed suite test
+      case res of
+        Pass _ -> return res
+        _ -> throwIO (ShortCircuit res)
 
 handleTestCase ::
   (C.CodeExecutor e, Generator g) =>
