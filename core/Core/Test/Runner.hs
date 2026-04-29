@@ -2,8 +2,6 @@
 
 module Core.Test.Runner where
 
-import Control.Concurrent (getNumCapabilities)
-import Control.Concurrent.Async
 import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
 import Core.Judge.Class (Judge, judge)
@@ -17,6 +15,7 @@ import Data.List qualified
 import Data.Map qualified as M
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text qualified as T
+import GHC.Conc (getNumProcessors)
 import Text.Read (readMaybe)
 import UnliftIO.Async (pooledMapConcurrentlyN)
 
@@ -32,7 +31,7 @@ runSuite ::
   Types.TestSuite ->
   IO [TestResult]
 runSuite exec gen batch suite = do
-  n <- getNumCapabilities
+  n <- getNumProcessors
   pooledMapConcurrentlyN
     n
     (\test -> handleTestCase exec gen batch seed suite test)
