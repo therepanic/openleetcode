@@ -5,10 +5,17 @@ type TreeNode struct {
 }
 
 func toInt(v interface{}) int {
+    if v == nil {
+        return 0
+    }
     switch t := v.(type) {
     case int:
         return t
+    case int64:
+        return int(t)
     case float64:
+        return int(t)
+    case float32:
         return int(t)
     default:
         return 0
@@ -22,7 +29,8 @@ func toTreeNode(arr []interface{}) *TreeNode {
     queue := []*TreeNode{root}
     i := 1
     for len(queue) > 0 && i < len(arr) {
-        node := queue[0]; queue = queue[1:]
+        node := queue[0]
+        queue = queue[1:]
         if i < len(arr) && arr[i] != nil {
             node.Left = &TreeNode{Val: toInt(arr[i])}
             queue = append(queue, node.Left)

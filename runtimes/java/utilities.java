@@ -12,23 +12,26 @@ class TreeNode {
     }
 
     public static TreeNode toTreeNode(Integer[] arr) {
-        if (arr == null || arr.length == 0 || arr[0] == null) return null;
-        TreeNode root = new TreeNode(arr[0]);
-        java.util.Queue<TreeNode> q = new java.util.LinkedList<>();
-        q.add(root);
-        for (int i = 1; i < arr.length; i++) {
-            TreeNode node = q.poll();
-            if (arr[i] != null) {
-                node.left = new TreeNode(arr[i]);
-                q.add(node.left);
-            }
-            if (++i < arr.length && arr[i] != null) {
-                node.right = new TreeNode(arr[i]);
-                q.add(node.right);
-            }
+    if (arr == null || arr.length == 0 || arr[0] == null) return null;
+    TreeNode root = new TreeNode(arr[0]);
+    java.util.Queue<TreeNode> q = new java.util.LinkedList<>();
+    q.add(root);
+    int i = 1;
+    while (!q.isEmpty() && i < arr.length) {
+        TreeNode curr = q.poll();
+        if (i < arr.length && arr[i] != null) {
+            curr.left = new TreeNode(arr[i]);
+            q.add(curr.left);
         }
-        return root;
+        i++;
+        if (i < arr.length && arr[i] != null) {
+            curr.right = new TreeNode(arr[i]);
+            q.add(curr.right);
+        }
+        i++;
     }
+    return root;
+}
 
     public static List<Integer> treeNodeToArray(TreeNode root) {
         List<Integer> res = new java.util.ArrayList<>();
