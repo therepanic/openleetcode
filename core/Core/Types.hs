@@ -9,12 +9,13 @@ import Data.Text (pack)
 
 data ExecutorType = Piston
 
-data Language = Python3 | Ruby | Java | Go | Dart | Kotlin | Swift | Default
+data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Default
   deriving (Show, Eq, Ord)
 
 convertLangToStr :: Language -> String
 convertLangToStr lang = case lang of
   Python3 -> "python3"
+  Python2 -> "python2"
   Ruby -> "ruby"
   Java -> "java"
   Go -> "go"
@@ -25,6 +26,7 @@ convertLangToStr lang = case lang of
 convertStrToLang :: String -> Maybe Language
 convertStrToLang s = case s of
   "python3" -> Just Python3
+  "python2" -> Just Python2
   "ruby" -> Just Ruby
   "java" -> Just Java
   "go" -> Just Go
@@ -47,6 +49,7 @@ convertExtToLang ext = case ext of
 convertLangToExt :: Language -> String
 convertLangToExt lang = case lang of
   Python3 -> ".py"
+  Python2 -> ".py"
   Ruby -> ".rb"
   Java -> ".java"
   Go -> ".go"
@@ -56,6 +59,7 @@ convertLangToExt lang = case lang of
 
 nullLiteral :: Language -> String
 nullLiteral Python3 = "None"
+nullLiteral Python2 = "None"
 nullLiteral Go = "nil"
 nullLiteral Ruby = "nil"
 nullLiteral Swift = "nil"
@@ -82,6 +86,7 @@ instance FromJSON Language where
   parseJSON = withText "Language" $ \t ->
     case t of
       "python" -> pure Python3
+      "python2" -> pure Python2
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
@@ -92,6 +97,7 @@ instance FromJSON Language where
 
 instance ToJSON Language where
   toJSON Python3 = "python"
+  toJSON Python2 = "python2"
   toJSON Ruby = "ruby"
   toJSON Java = "java"
   toJSON Go = "go"
@@ -103,6 +109,7 @@ instance FromJSONKey Language where
   fromJSONKey = FromJSONKeyTextParser $ \t ->
     case t of
       "python" -> pure Python3
+      "python2" -> pure Python2
       "python3" -> pure Python3
       "ruby" -> pure Ruby
       "java" -> pure Java
@@ -117,6 +124,7 @@ instance ToJSONKey Language where
   toJSONKey = toJSONKeyText $ \l ->
     case l of
       Python3 -> "python"
+      Python2 -> "python2"
       Ruby -> "ruby"
       Java -> "java"
       Go -> "go"

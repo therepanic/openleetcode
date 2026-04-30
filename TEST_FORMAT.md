@@ -14,6 +14,7 @@ entry:
   title: <string>
   call:
     python3: "..."
+    python2: "..."
     ruby: "..."
     java: "..."
     kotlin: "..."
@@ -66,7 +67,7 @@ entry:
 
 `call` templates use `{param_name}` placeholders. At runtime, placeholders are replaced with the actual values of the test case inputs by their name.
 
-**Supported languages:** `python3`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`
+**Supported languages:** `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`
 
 ---
 
@@ -323,6 +324,7 @@ entry:
   title: "two-sum"
   call:
     python3: "Solution().twoSum([{nums}], {target})"
+    python2: "Solution().twoSum([{nums}], {target})"
     ruby: "two_sum([{nums}], {target})"
     java: "new Solution().twoSum(new int[] { {nums} }, {target})"
     kotlin: "Solution().twoSum(intArrayOf({nums}), {target})"
@@ -413,6 +415,7 @@ entry:
   title: "add-two-numbers"
   call:
     python3: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    python2: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
     kotlin: "listNodeToArray(Solution().addTwoNumbers(toListNode(intArrayOf({l1})), toListNode(intArrayOf({l2}))))"
     java: "ListNode.listNodeToArray(new Solution().addTwoNumbers(ListNode.toListNode(new int[]{ {l1} }), ListNode.toListNode(new int[]{ {l2} })))"
     go: "listNodeToArray(addTwoNumbers(toListNode([]int{ {l1} }), toListNode([]int{ {l2} })))"
@@ -457,6 +460,7 @@ entry:
   title: "maximum-depth-of-binary-tree"
   call:
     python3: "Solution().maxDepth(to_tree_node([{root}]))"
+    python2: "Solution().maxDepth(to_tree_node([{root}]))"
     ruby: "Solution.new.max_depth(to_tree_node([{root}]))"
     java: "new Solution().maxDepth(TreeNode.toTreeNode(new Integer[]{ {root} }))"
     kotlin: "Solution().maxDepth(toTreeNode(arrayOf({root})))"
@@ -484,6 +488,7 @@ entry:
   title: "invert-binary-tree"
   call:
     python3: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
+    python2: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     ruby: "tree_node_to_array(Solution.new.invert_tree(to_tree_node([{root}])))"
     java: "TreeNode.treeNodeToArray(new Solution().invertTree(TreeNode.toTreeNode(new Integer[]{ {root} })))"
     kotlin: "treeNodeToArray(Solution().invertTree(toTreeNode(arrayOf({root}))))"

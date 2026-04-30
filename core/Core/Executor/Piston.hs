@@ -7,7 +7,6 @@ import Core.Executor.Class qualified as E
 import Core.Types
 import Data.Aeson
 import Data.Aeson.Types (typeMismatch)
-import Data.List (isPrefixOf)
 import Data.Map as M
 import Data.Text qualified as T
 import GHC.Generics
