@@ -22,7 +22,7 @@ You are helping generate a test manifest for the openleetcode project.
 
 ## What is openleetcode
 
-openleetcode is a CLI tool that lets you run LeetCode solutions against test cases locally without a subscription. Test suites are defined in YAML manifests. Solutions are executed in sandboxed runtimes for these languages: python3, ruby, java, kotlin, go, dart, swift.
+openleetcode is a CLI tool that lets you run LeetCode solutions against test cases locally without a subscription. Test suites are defined in YAML manifests. Solutions are executed in sandboxed runtimes for these languages: python3, python2, ruby, java, kotlin, go, dart, swift.
 
 ## Test format (TEST_FORMAT.md)
 
@@ -173,7 +173,7 @@ def get_reference_solution(slug):
         "userInput": "",
         "tagSlugs": [],
         "skip": 0,
-        "first": 10,
+        "first": 50,
     }
     data = gql_request(articles_query, vars_articles)
     edges = data["ugcArticleSolutionArticles"]["edges"]
