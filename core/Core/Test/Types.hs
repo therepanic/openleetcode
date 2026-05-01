@@ -43,7 +43,7 @@ data GIDChar
   | GIDGenCharConst Char
 
 data GIDArr
-  = GIDArrConst [GeneratedInData]
+  = GIDArrConst {gidArrConstValues :: [GeneratedInData], gidArrConstElemType :: Maybe GIDArrElemType}
   | GIDArrGen {gidArrDistinct :: Bool, gidSorted :: Bool, gidArrLen :: GIDIntegral, gidArrOf :: GeneratedInData, gidElemType :: Maybe GIDArrElemType}
 
 data GIDArrElemType
@@ -151,14 +151,18 @@ instance FromJSON GIDChar where
   parseJSON _ = fail "expected number or object"
 
 instance FromJSON GIDArr where
-  parseJSON (Array vec) = GIDArrConst <$> mapM parseJSON (toList vec)
+  parseJSON (Array vec) = GIDArrConst <$> mapM parseJSON (toList vec) <*> pure Nothing
   parseJSON (Object o) = do
-    distinct <- o .:? "distinct" .!= False
-    sorted <- o .:? "sorted" .!= False
-    len <- o .: "len"
     elemType <- o .:? "elemType"
-    of' <- o .: "of"
-    return $ GIDArrGen distinct sorted len of' elemType
+    constVals <- o .:? "const"
+    case constVals of
+      Just vals -> return $ GIDArrConst vals elemType
+      Nothing -> do
+        distinct <- o .:? "distinct" .!= False
+        sorted <- o .:? "sorted" .!= False
+        len <- o .: "len"
+        of' <- o .: "of"
+        return $ GIDArrGen distinct sorted len of' elemType
 
 instance FromJSON GIDStr where
   parseJSON (String t) = return $ GIDStrConst (T.unpack t)
@@ -166,6 +170,9 @@ instance FromJSON GIDStr where
   parseJSON _ = fail "expected string or object for GIDStr"
 
 instance FromJSON GeneratedInData where
+  parseJSON (Number n) = return $ GIDIntegral (GIDGenIntegralConst (round n))
+  parseJSON (Bool b) = return $ GIDBool (GIDGenBoolConst b)
+  parseJSON (Array vec) = GIDArr <$> parseJSON (Array vec)
   parseJSON (String t) = return $ GIDStr (GIDStrConst (T.unpack t))
   parseJSON (Object o) = do
     gen <- o .: "gen" :: Parser String
@@ -182,10 +189,12 @@ instance FromJSON GeneratedInData where
 instance FromJSON TestCaseInData where
   parseJSON (Object o) = do
     gen <- o .:? "gen" :: Parser (Maybe String)
-    case gen of
-      Just _ -> InGenerated <$> parseJSON (Object o)
-      Nothing -> InCase . BL.unpack . encode <$> pure (Object o)
-  parseJSON (Array vec) = InConst . GIDArr . GIDArrConst <$> mapM parseJSON (toList vec)
+    constVals <- o .:? "const" :: Parser (Maybe Value)
+    case (gen, constVals) of
+      (Just "array", Just _) -> InConst . GIDArr <$> parseJSON (Object o)
+      (Just _, _) -> InGenerated <$> parseJSON (Object o)
+      (Nothing, _) -> InCase . BL.unpack . encode <$> pure (Object o)
+  parseJSON (Array vec) = InConst . GIDArr <$> parseJSON (Array vec)
   parseJSON (String t) = return $ InCase (T.unpack t)
   parseJSON v = return $ InCase (BL.unpack (encode v))
 

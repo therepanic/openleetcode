@@ -244,7 +244,7 @@ generateFieldFor renderLang seed gen (var, gData) =
    in (var, result)
 
 renderConst :: Language -> Types.GeneratedInData -> String
-renderConst lang (Types.GIDArr (Types.GIDArrConst xs)) = renderNestedArr lang Nothing (map (renderConst lang) xs)
+renderConst lang (Types.GIDArr (Types.GIDArrConst xs elemType)) = renderNestedArr lang elemType (map (renderConst lang) xs)
 renderConst _ (Types.GIDIntegral (Types.GIDGenIntegralConst n)) = show n
 renderConst _ (Types.GIDFloat (Types.GIDGenFloatConst f)) = show f
 renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = show c

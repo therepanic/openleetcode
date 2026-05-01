@@ -13,7 +13,7 @@ data GenStr = GenStr {strLen :: GenIntegral, strAlphabet :: [Char]} | GenStrCons
 
 data GenChar = GenCharVariety {charVariety :: [Char]} | GenCharConst Char
 
-data GenArr = GenArr {arrDistinct :: Bool, arrLen :: GenIntegral, arrOf :: GenInfo, arrElemType :: Maybe GIDArrElemType}
+data GenArr = GenArr {arrDistinct :: Bool, arrSorted :: Bool, arrLen :: GenIntegral, arrOf :: GenInfo, arrElemType :: Maybe GIDArrElemType}
 
 data GenInfo
   = GenIntegralInfo GenIntegral

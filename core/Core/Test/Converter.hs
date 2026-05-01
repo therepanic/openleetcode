@@ -29,5 +29,5 @@ toGenBool (GIDGenBoolConst b) = GenBoolConst b
 toGenBool GIDGenBoolGen = GenBoolGen
 
 toGenArr :: GIDArr -> GenArr
-toGenArr (GIDArrGen d _ l o et) = GenArr d (toGenIntegral l) (toGenInfo o) et
-toGenArr (GIDArrConst _) = error "constant array cannot be converted to GenArr"
+toGenArr (GIDArrGen d s l o et) = GenArr d s (toGenIntegral l) (toGenInfo o) et
+toGenArr (GIDArrConst _ _) = error "constant array cannot be converted to GenArr"
