@@ -76,6 +76,8 @@ handleTestCase exec gen batch sSeed suite test = do
          in (var, result)
 
   let genResults = map generateField inGens
+  let oracleGenResults = map (generateFieldFor Python3 seed gen) inGens
+  let oracleConstResults = map (\(var, d) -> (var, renderConst Python3 d)) inConsts
 
   let callStr = case Types.tcCall test of
         Just call -> fromJust (M.lookup lang call)
@@ -161,8 +163,16 @@ handleTestCase exec gen batch sSeed suite test = do
                     let oracleReady =
                           let withResult = replaceUniversal "{result}" (show cleanResult) oracleTemplate
                               withCall = replaceUniversal "${CALL_SOLUTION}" callStr withResult
-                              afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) withCall genResults
-                              fullCall = foldl (\acc (var, val) -> replaceUniversal ("{" ++ var ++ "}") val acc) afterGen inCases
+                              afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) withCall oracleGenResults
+                              afterConst = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) afterGen oracleConstResults
+                              fullCall =
+                                foldl
+                                  ( \acc (var, val) ->
+                                      let preparedVal = prepareInValue Python3 val
+                                       in replaceUniversal ("{" ++ var ++ "}") preparedVal acc
+                                  )
+                                  afterConst
+                                  inCases
                            in fullCall
                     oracleResponse <-
                       C.execute
@@ -226,12 +236,22 @@ splitStdout out =
         then ("", "")
         else (unlines (init allLines), last allLines)
 
+generateFieldFor :: (Generator g) => Language -> Int -> g -> (String, Types.GeneratedInData) -> (String, String)
+generateFieldFor renderLang seed gen (var, gData) =
+  let gInfo = toGenInfo gData
+      genData = GenData seed gInfo renderLang
+      result = generate gen genData
+   in (var, result)
+
 renderConst :: Language -> Types.GeneratedInData -> String
 renderConst lang (Types.GIDArr (Types.GIDArrConst xs)) = renderNestedArr lang Nothing (map (renderConst lang) xs)
 renderConst _ (Types.GIDIntegral (Types.GIDGenIntegralConst n)) = show n
 renderConst _ (Types.GIDFloat (Types.GIDGenFloatConst f)) = show f
-renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = [c]
-renderConst _ (Types.GIDBool (Types.GIDGenBoolConst b)) = show b
-renderConst _ (Types.GIDStr (Types.GIDStrConst s)) = "\"" <> s <> "\""
+renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = show c
+renderConst lang (Types.GIDBool (Types.GIDGenBoolConst b)) =
+  if lang == Python3 || lang == Python2
+    then show b
+    else T.unpack . T.toLower . T.pack $ show b
+renderConst _ (Types.GIDStr (Types.GIDStrConst s)) = show s
 renderConst _ (Types.GIDStr (Types.GIDStrGen _ _)) = error "unsupported"
 renderConst _ _ = error "unsupported const element"
