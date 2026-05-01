@@ -9,6 +9,7 @@ GRAPHQL_URL = "https://leetcode.com/graphql"
 
 SUPPORTED_LANGS = {
     "python3": "python3",
+    "python2": "python",
     "ruby": "ruby",
     "java": "java",
     "kotlin": "kotlin",
