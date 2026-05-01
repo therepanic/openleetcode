@@ -8,6 +8,7 @@ import Data.Aeson.Types (Parser)
 import Data.ByteString.Lazy.Char8 qualified as BL
 import Data.Map qualified as M
 import Data.Text qualified as T
+import Data.Vector (toList)
 
 data JudgeType = Exact | IgnoreOrder
 
@@ -20,7 +21,7 @@ data TestEntry = TestEntry {teId :: Int, teTitle :: String, teCall :: M.Map Lang
 data GeneratedInData
   = GIDIntegral GIDIntegral
   | GIDFloat GIDFloat
-  | GIDStr {gidStrLen :: GIDIntegral, gidStrAlphabet :: [Char]}
+  | GIDStr GIDStr
   | GIDChar GIDChar
   | GIDArr GIDArr
   | GIDBool GIDBool
@@ -35,15 +36,26 @@ data GIDFloat
   = GIDGenFloatRange {gidGenFloatMin :: Double, gidGenFloatMax :: Double, gidGenFloatPrecision :: Int}
   | GIDGenFloatConst Double
 
+data GIDStr = GIDStrGen {gidStrLen :: GIDIntegral, gidStrAlphabet :: [Char]} | GIDStrConst String
+
 data GIDChar
   = GIDGenCharVariety {gidGenCharVariety :: [Char]}
   | GIDGenCharConst Char
 
 data GIDArr
-  = GIDArrConst String
-  | GIDArrGen {gidArrDistinct :: Bool, gidSorted :: Bool, gidArrLen :: GIDIntegral, gidArrOf :: GeneratedInData}
+  = GIDArrConst [GeneratedInData]
+  | GIDArrGen {gidArrDistinct :: Bool, gidSorted :: Bool, gidArrLen :: GIDIntegral, gidArrOf :: GeneratedInData, gidElemType :: Maybe GIDArrElemType}
 
-data TestCaseInData = InCase String | InGenerated GeneratedInData
+data GIDArrElemType
+  = GIDArrElemInt
+  | GIDArrElemLong
+  | GIDArrElemDouble
+  | GIDArrElemFloat
+  | GIDArrElemString
+  | GIDArrElemChar
+  | GIDArrElemBool
+
+data TestCaseInData = InCase String | InGenerated GeneratedInData | InConst GeneratedInData
 
 newtype TestCaseOutData = OutCase String
 
@@ -139,28 +151,33 @@ instance FromJSON GIDChar where
   parseJSON _ = fail "expected number or object"
 
 instance FromJSON GIDArr where
+  parseJSON (Array vec) = GIDArrConst <$> mapM parseJSON (toList vec)
   parseJSON (Object o) = do
     distinct <- o .:? "distinct" .!= False
     sorted <- o .:? "sorted" .!= False
     len <- o .: "len"
+    elemType <- o .:? "elemType"
     of' <- o .: "of"
-    return $ GIDArrGen distinct sorted len of'
-  parseJSON (Array vec) =
-    let s = BL.unpack (encode (Array vec))
-     in return $ GIDArrConst $ drop 1 $ init s
-  parseJSON v = return $ GIDArrConst (BL.unpack (encode v))
+    return $ GIDArrGen distinct sorted len of' elemType
+
+instance FromJSON GIDStr where
+  parseJSON (String t) = return $ GIDStrConst (T.unpack t)
+  parseJSON (Object o) = GIDStrGen <$> o .: "len" <*> o .: "alphabet"
+  parseJSON _ = fail "expected string or object for GIDStr"
 
 instance FromJSON GeneratedInData where
-  parseJSON = withObject "GeneratedInData" $ \o -> do
+  parseJSON (String t) = return $ GIDStr (GIDStrConst (T.unpack t))
+  parseJSON (Object o) = do
     gen <- o .: "gen" :: Parser String
     case gen of
       "int" -> GIDIntegral <$> parseJSON (Object o)
       "float" -> GIDFloat <$> parseJSON (Object o)
-      "str" -> GIDStr <$> o .: "len" <*> o .: "alphabet"
+      "str" -> GIDStr <$> parseJSON (Object o)
       "char" -> GIDChar <$> parseJSON (Object o)
       "array" -> GIDArr <$> parseJSON (Object o)
       "bool" -> GIDBool <$> parseJSON (Object o)
       _ -> fail $ "unknown gen: " <> gen
+  parseJSON _ = fail "expected string or object for GeneratedInData"
 
 instance FromJSON TestCaseInData where
   parseJSON (Object o) = do
@@ -168,9 +185,7 @@ instance FromJSON TestCaseInData where
     case gen of
       Just _ -> InGenerated <$> parseJSON (Object o)
       Nothing -> InCase . BL.unpack . encode <$> pure (Object o)
-  parseJSON (Array vec) =
-    let s = BL.unpack (encode (Array vec))
-     in return $ InCase $ drop 1 $ init s
+  parseJSON (Array vec) = InConst . GIDArr . GIDArrConst <$> mapM parseJSON (toList vec)
   parseJSON (String t) = return $ InCase (T.unpack t)
   parseJSON v = return $ InCase (BL.unpack (encode v))
 
@@ -199,3 +214,14 @@ instance FromJSON TestOracleEntry where
     call <- o .: "call"
     checker <- o .: "checker"
     return $ TestOracleEntry call checker
+
+instance FromJSON GIDArrElemType where
+  parseJSON = withText "GIDArrElemType" $ \t -> case t of
+    "int" -> return GIDArrElemInt
+    "long" -> return GIDArrElemLong
+    "double" -> return GIDArrElemDouble
+    "float" -> return GIDArrElemFloat
+    "string" -> return GIDArrElemString
+    "char" -> return GIDArrElemChar
+    "bool" -> return GIDArrElemBool
+    _ -> fail $ "unknown elemType: " <> show t

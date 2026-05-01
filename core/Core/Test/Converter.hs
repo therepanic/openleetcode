@@ -9,7 +9,8 @@ toGenInfo (GIDFloat f) = GenFloatInfo (toGenFloat f)
 toGenInfo (GIDChar c) = GenCharInfo (toGenChar c)
 toGenInfo (GIDArr a) = GenArrInfo (toGenArr a)
 toGenInfo (GIDBool b) = GenBoolInfo (toGenBool b)
-toGenInfo (GIDStr l a) = GenStrInfo (GenStr (toGenIntegral l) a)
+toGenInfo (GIDStr (GIDStrGen l a)) = GenStrInfo (GenStr (toGenIntegral l) a)
+toGenInfo (GIDStr (GIDStrConst s)) = GenStrInfo (GenStrConst s)
 
 toGenIntegral :: GIDIntegral -> GenIntegral
 toGenIntegral (GIDGenIntegralConst c) = GenIntegralConst c
@@ -28,5 +29,5 @@ toGenBool (GIDGenBoolConst b) = GenBoolConst b
 toGenBool GIDGenBoolGen = GenBoolGen
 
 toGenArr :: GIDArr -> GenArr
-toGenArr (GIDArrGen d _ l o) = GenArr d (toGenIntegral l) (toGenInfo o)
+toGenArr (GIDArrGen d _ l o et) = GenArr d (toGenIntegral l) (toGenInfo o) et
 toGenArr (GIDArrConst _) = error "constant array cannot be converted to GenArr"

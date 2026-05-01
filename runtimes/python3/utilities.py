@@ -4,8 +4,10 @@ class TreeNode:
         self.left = left
         self.right = right
 
+
 def to_tree_node(arr):
-    if not arr or arr[0] is None: return None
+    if not arr or arr[0] is None:
+        return None
     root = TreeNode(arr[0])
     queue = [root]
     i = 1
@@ -21,8 +23,10 @@ def to_tree_node(arr):
         i += 1
     return root
 
+
 def tree_node_to_array(root):
-    if not root: return []
+    if not root:
+        return []
     res, queue = [], [root]
     while queue:
         node = queue.pop(0)
@@ -32,13 +36,16 @@ def tree_node_to_array(root):
             queue.append(node.right)
         else:
             res.append(None)
-    while res and res[-1] is None: res.pop()
+    while res and res[-1] is None:
+        res.pop()
     return res
+
 
 class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
+
 
 def toListNode(arr: List[int]) -> Optional[ListNode]:
     if not arr:
@@ -58,9 +65,11 @@ def listNodeToArray(head: Optional[ListNode]) -> List[int]:
         head = head.next
     return res
 
+
 def to_json(obj: Any) -> str:
     seen = set()
     return "\n" + _encode(obj, seen)
+
 
 def _encode(obj: Any, seen: set[int]) -> str:
     if obj is None:
@@ -132,6 +141,7 @@ def _encode(obj: Any, seen: set[int]) -> str:
         return _quote(str(obj))
     finally:
         seen.remove(oid)
+
 
 def _quote(s: str) -> str:
     out = ['"']

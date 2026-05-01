@@ -5,6 +5,7 @@ module Core.Test.Runner where
 import Control.Exception (Exception, handle, throwIO)
 import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
+import Core.Generator.Splitmix (renderNestedArr)
 import Core.Judge.Class (Judge, judge)
 import Core.Judge.Class qualified as J
 import Core.Judge.Exact qualified as ETypes
@@ -62,10 +63,11 @@ handleTestCase exec gen batch sSeed suite test = do
 
   let jud = convertTestJudgeToJudge (Types.jType judType)
 
-  let (inCases, inGens) = foldr splitIn ([], []) (Types.tcIn test)
+  let (inCases, inConsts, inGens) = foldr splitIn ([], [], []) (Types.tcIn test)
         where
-          splitIn (var, Types.InCase c) (cs, gs) = ((var, c) : cs, gs)
-          splitIn (var, Types.InGenerated gData) (cs, gs) = (cs, (var, gData) : gs)
+          splitIn (var, Types.InCase c) (cs, ks, gs) = ((var, c) : cs, ks, gs)
+          splitIn (var, Types.InGenerated gd) (cs, ks, gs) = (cs, ks, (var, gd) : gs)
+          splitIn (var, Types.InConst d) (cs, ks, gs) = (cs, (var, d) : ks, gs)
 
   let generateField (var, gData) =
         let gInfo = toGenInfo gData
@@ -84,16 +86,18 @@ handleTestCase exec gen batch sSeed suite test = do
               if lang == Java
                 then splitJavaCode (solution batch)
                 else ("", solution batch)
+            constResults = map (\(var, d) -> (var, renderConst lang d)) inConsts
             withImports = replaceUniversal "${IMPORTS}" userImports template
             entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr withImports
             afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
+            afterConst = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) afterGen constResults
             fullCall =
               foldl
                 ( \acc (var, val) ->
                     let preparedVal = prepareInValue lang val
                      in replaceUniversal ("{" ++ var ++ "}") preparedVal acc
                 )
-                afterGen
+                afterConst
                 inCases
             withRuntime = replaceUniversal "${UTILITIES}" (utilities batch) fullCall
          in replaceUniversal "${SOLUTION}" userSolution withRuntime
@@ -221,3 +225,13 @@ splitStdout out =
    in if null allLines
         then ("", "")
         else (unlines (init allLines), last allLines)
+
+renderConst :: Language -> Types.GeneratedInData -> String
+renderConst lang (Types.GIDArr (Types.GIDArrConst xs)) = renderNestedArr lang Nothing (map (renderConst lang) xs)
+renderConst _ (Types.GIDIntegral (Types.GIDGenIntegralConst n)) = show n
+renderConst _ (Types.GIDFloat (Types.GIDGenFloatConst f)) = show f
+renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = [c]
+renderConst _ (Types.GIDBool (Types.GIDGenBoolConst b)) = show b
+renderConst _ (Types.GIDStr (Types.GIDStrConst s)) = "\"" <> s <> "\""
+renderConst _ (Types.GIDStr (Types.GIDStrGen _ _)) = error "unsupported"
+renderConst _ _ = error "unsupported const element"

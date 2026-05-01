@@ -66,6 +66,7 @@ Generate a complete manifest.yml for the following problem.
 7. Output only the manifest.yml. Do not add any comments, explanations. The response must be raw YAML that can be parsed directly.
 """
 
+
 def gql_request(query, variables):
     resp = requests.post(
         GRAPHQL_URL,
@@ -78,11 +79,13 @@ def gql_request(query, variables):
         raise RuntimeError(f"Graphql errors: {data['errors']}")
     return data["data"]
 
+
 def load_test_format():
     if not os.path.exists(TEST_FORMAT_PATH):
         raise FileNotFoundError(f"{TEST_FORMAT_PATH} not found. Run from repo root")
     with open(TEST_FORMAT_PATH, "r", encoding="utf-8") as f:
         return f.read()
+
 
 def get_question_details(slug):
     query = """
@@ -112,6 +115,7 @@ def get_question_details(slug):
                 break
     return question_id, content, snippets
 
+
 def extract_python_code_markdown(html_content):
     pattern = r"```\s*[Pp]ython3?\b[^\n]*\n(.*?)```"
     matches = re.findall(pattern, html_content, re.DOTALL)
@@ -119,11 +123,12 @@ def extract_python_code_markdown(html_content):
         return matches[-1].strip()
     return None
 
+
 def extract_python_code_html(html_content):
     pre_pattern = r"<pre[^>]*>(.*?)</pre>"
     pre_matches = re.findall(pre_pattern, html_content, re.DOTALL)
     for pre in pre_matches:
-        if 'language-python' in pre or 'lang-python' in pre:
+        if "language-python" in pre or "lang-python" in pre:
             code = re.sub(r"<[^>]+>", "", pre).strip()
             if code:
                 return code
@@ -133,6 +138,7 @@ def extract_python_code_html(html_content):
         return code_matches[-1].strip()
     return None
 
+
 def extract_python_code(html_content):
     code = extract_python_code_markdown(html_content)
     if code and len(code) > 30:
@@ -141,6 +147,7 @@ def extract_python_code(html_content):
     if fallback:
         return fallback
     return code if code else None
+
 
 def get_reference_solution(slug):
     articles_query = """
@@ -198,6 +205,7 @@ def get_reference_solution(slug):
 
     raise RuntimeError("No complete Python solution block found in top articles")
 
+
 def format_snippets(snippets):
     out = []
     for lang in ["python3", "ruby", "java", "kotlin", "go", "dart", "swift"]:
@@ -206,14 +214,15 @@ def format_snippets(snippets):
             out.append(f"### {lang}\n```{lang}\n{code}\n```")
     return "\n\n".join(out)
 
+
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <slug>", file=sys.stderr)
         sys.exit(1)
     slug = sys.argv[1]
 
-    sys.stdout.reconfigure(encoding='utf-8')
-    sys.stderr.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
 
     test_format = load_test_format()
     question_id, problem_content, snippets = get_question_details(slug)
@@ -233,6 +242,7 @@ def main():
         REFERENCE=reference,
     )
     print(prompt)
+
 
 if __name__ == "__main__":
     main()

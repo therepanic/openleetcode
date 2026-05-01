@@ -4,6 +4,7 @@ class TreeNode(object):
         self.left = left
         self.right = right
 
+
 def to_tree_node(arr):
     if not arr or arr[0] is None:
         return None
@@ -22,6 +23,7 @@ def to_tree_node(arr):
         i += 1
     return root
 
+
 def tree_node_to_array(root):
     if not root:
         return []
@@ -38,10 +40,12 @@ def tree_node_to_array(root):
         res.pop()
     return res
 
+
 class ListNode(object):
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
+
 
 def toListNode(arr):
     if not arr:
@@ -53,6 +57,7 @@ def toListNode(arr):
         cur = cur.next
     return head
 
+
 def listNodeToArray(head):
     res = []
     while head:
@@ -60,9 +65,11 @@ def listNodeToArray(head):
         head = head.next
     return res
 
+
 def to_json(obj):
     seen = set()
     return "\n" + _encode(obj, seen)
+
 
 def _encode(obj, seen):
     if obj is None:
@@ -76,11 +83,15 @@ def _encode(obj, seen):
     if isinstance(obj, float):
         return repr(obj)
     if isinstance(obj, bytes):
-        return _quote(obj.encode('hex') if hasattr(obj, 'encode') else obj.hex())
-    if isinstance(obj, _dt.datetime) or isinstance(obj, _dt.date) or isinstance(obj, _dt.time):
+        return _quote(obj.encode("hex") if hasattr(obj, "encode") else obj.hex())
+    if (
+        isinstance(obj, _dt.datetime)
+        or isinstance(obj, _dt.date)
+        or isinstance(obj, _dt.time)
+    ):
         return _quote(obj.isoformat())
     if isinstance(obj, unicode):
-        return _quote(obj.encode('utf-8'))
+        return _quote(obj.encode("utf-8"))
     if isinstance(obj, str):
         return _quote(obj)
 
@@ -95,7 +106,7 @@ def _encode(obj, seen):
                 if not isinstance(k, str) and not isinstance(k, unicode):
                     k = str(k)
                 elif isinstance(k, unicode):
-                    k = k.encode('utf-8')
+                    k = k.encode("utf-8")
                 items.append(_quote(k) + ":" + _encode(v, seen))
             return "{" + ",".join(items) + "}"
 
@@ -126,9 +137,10 @@ def _encode(obj, seen):
     finally:
         seen.discard(oid)
 
+
 def _quote(s):
     if isinstance(s, unicode):
-        s = s.encode('utf-8')
+        s = s.encode("utf-8")
     out = ['"']
     for ch in s:
         o = ord(ch)
