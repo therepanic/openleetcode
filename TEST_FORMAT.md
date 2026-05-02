@@ -227,7 +227,7 @@ Or a constant:
 
 | Field      | Required | Description                                                            |
 | ---------- | -------- | ---------------------------------------------------------------------- |
-| `len`      | ✅       | Length of the string — either a constant integer or an `int` generator |
+| `len`      | ✅       | Length of the string - either a constant integer or an `int` generator |
 | `alphabet` | ✅       | List of characters to draw from                                        |
 
 ---
@@ -268,8 +268,9 @@ true
 
 ```yaml
 gen: "array"
-distinct: false # if true, all elements are unique
-sorted: false # if true, array is sorted ascending
+distinct: false
+sorted: false
+elemType: "int" # mainly for Java/Kotlin typed inner arrays in 2D cases
 len: { gen: "int", min: 1, max: 20 }
 of: { gen: "int", min: 0, max: 9 }
 ```
@@ -280,38 +281,147 @@ Or a constant (written as a plain YAML array):
 [1, 2, 3]
 ```
 
-| Field      | Required | Description                                                     |
-| ---------- | -------- | --------------------------------------------------------------- |
-| `len`      | ✅       | Length — constant integer or `int` generator                    |
-| `of`       | ✅       | Generator for each element — any generator type                 |
-| `distinct` | ❌       | Whether all elements must be unique. Defaults to `false`        |
-| `sorted`   | ❌       | Whether the array must be sorted ascending. Defaults to `false` |
+| Field      | Required | Description                                                                                       |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `len`      | ✅       | Length - constant integer or `int` generator                                                      |
+| `of`       | ✅       | Generator for each element - any generator type                                                   |
+| `distinct` | ❌       | Whether all elements must be unique. Defaults to `false`                                          |
+| `sorted`   | ❌       | Whether the array must be sorted ascending. Defaults to `false`                                   |
+| `elemType` | ❌       | Element type hint for typed runtimes (`int`, `long`, `double`, `float`, `string`, `char`, `bool`) |
 
-Nested arrays are not supported. To work around this, define each inner array as a separate parameter and inline them manually in the `call` template:
+Arrays can be nested (for example, 2D arrays) by using `of: { gen: "array", ... }`.
 
 ```yaml
 in:
-  a:
-    {
-      gen: "array",
-      distinct: false,
-      sorted: false,
-      len: { gen: "int", min: 1, max: 5 },
-      of: { gen: "int", min: 0, max: 9 },
-    }
-  b:
-    {
-      gen: "array",
-      distinct: false,
-      sorted: false,
-      len: { gen: "int", min: 1, max: 5 },
-      of: { gen: "int", min: 0, max: 9 },
-    }
+  matrix:
+    gen: "array"
+    distinct: false
+    sorted: false
+    elemType: "int"
+    len: { gen: "int", min: 1, max: 4 }
+    of:
+      gen: "array"
+      distinct: false
+      sorted: false
+      len: { gen: "int", min: 1, max: 5 }
+      of: { gen: "int", min: 0, max: 9 }
+```
+
+You can also provide a static 2D array directly:
+
+```yaml
+in:
+  matrix:
+    gen: "array"
+    elemType: "int"
+    const:
+      - [1, 2, 3]
+      - [4, 5, 6]
+```
+
+More 2D examples with other element types:
+
+```yaml
+# float (generated)
+in:
+  matrixFloatGen:
+    gen: "array"
+    elemType: "float"
+    len: { gen: "int", min: 1, max: 3 }
+    of:
+      gen: "array"
+      len: { gen: "int", min: 1, max: 4 }
+      of: { gen: "float", min: -10.0, max: 10.0, precision: 2 }
 ```
 
 ```yaml
-call:
-  java: "new Solution().solve(new int[][] { new int[] { {a} }, new int[] { {b} } })"
+# float (static)
+in:
+  matrixFloatConst:
+    gen: "array"
+    elemType: "float"
+    const:
+      - [1.25, 2.5]
+      - [-3.0, 4.75]
+```
+
+`double` uses the same shape as `float`: keep everything the same and switch `elemType` to `double` (and use `gen: "float"` for values).
+
+```yaml
+# string (generated)
+in:
+  matrixStringGen:
+    gen: "array"
+    elemType: "string"
+    len: { gen: "int", min: 1, max: 3 }
+    of:
+      gen: "array"
+      len: { gen: "int", min: 1, max: 4 }
+      of:
+        gen: "str"
+        len: { gen: "int", min: 1, max: 3 }
+        alphabet: ["a", "b", "c", "d"]
+```
+
+```yaml
+# string (static)
+in:
+  matrixStringConst:
+    gen: "array"
+    elemType: "string"
+    const:
+      - ["aa", "bb"]
+      - ["cc", "dd"]
+```
+
+```yaml
+# char (generated)
+in:
+  matrixCharGen:
+    gen: "array"
+    elemType: "char"
+    len: { gen: "int", min: 1, max: 3 }
+    of:
+      gen: "array"
+      len: { gen: "int", min: 1, max: 4 }
+      of:
+        gen: "char"
+        variety: ["a", "b", "c", "d", "e"]
+```
+
+```yaml
+# char (static)
+in:
+  matrixCharConst:
+    gen: "array"
+    elemType: "char"
+    const:
+      - ["a", "b"]
+      - ["c", "d"]
+```
+
+```yaml
+# bool (generated)
+in:
+  matrixBoolGen:
+    gen: "array"
+    elemType: "bool"
+    len: { gen: "int", min: 1, max: 3 }
+    of:
+      gen: "array"
+      len: { gen: "int", min: 1, max: 4 }
+      of: { gen: "bool" }
+```
+
+```yaml
+# bool (static)
+in:
+  matrixBoolConst:
+    gen: "array"
+    elemType: "bool"
+    const:
+      - [true, false]
+      - [false, true]
 ```
 
 ---
