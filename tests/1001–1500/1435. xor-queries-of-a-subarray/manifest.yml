@@ -1,0 +1,227 @@
+entry:
+  id: 1435
+  title: "xor-queries-of-a-subarray"
+  call:
+    python3: "Solution().xorQueries([{arr}], [{queries}])"
+    python2: "Solution().xorQueries([{arr}], [{queries}])"
+    ruby: "xor_queries([{arr}], [{queries}])"
+    java: "new Solution().xorQueries(new int[] { {arr} }, new int[][] { {queries} })"
+    kotlin: "Solution().xorQueries(intArrayOf({arr}), arrayOf({queries}))"
+    go: "xorQueries([]int{ {arr} }, [][]int{ {queries} })"
+    dart: "Solution().xorQueries([{arr}], [{queries}])"
+    swift: "Solution().xorQueries([{arr}], [{queries}])"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().xorQueries([{arr}], [{queries}], {result})"
+    checker: |
+      import json
+      from typing import List
+
+      class Checker:
+          def xorQueries(self, arr: List[int], queries: List[List[int]], result: str) -> bool:
+              try:
+                  answer = json.loads(result)
+              except:
+                  return False
+
+              if not isinstance(answer, list) or len(answer) != len(queries):
+                  return False
+
+              prefix = [0]
+              for num in arr:
+                  prefix.append(prefix[-1] ^ num)
+
+              for i, (l, r) in enumerate(queries):
+                  if not (0 <= l <= r < len(arr)):
+                      return False
+                  if answer[i] != (prefix[r + 1] ^ prefix[l]):
+                      return False
+
+              return True
+
+seed: 42
+
+tests:
+  - name: "ex1_basic"
+    in:
+      arr: [1, 3, 4, 8]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 1]
+          - [1, 2]
+          - [0, 3]
+          - [3, 3]
+    out: [2, 7, 14, 8]
+
+  - name: "ex2_basic"
+    in:
+      arr: [4, 8, 2, 10]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [2, 3]
+          - [1, 3]
+          - [0, 0]
+          - [0, 3]
+    out: [8, 0, 4, 4]
+
+  - name: "single_element"
+    in:
+      arr: [5]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 0]
+    out: [5]
+
+  - name: "two_elements"
+    in:
+      arr: [3, 5]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 0]
+          - [1, 1]
+          - [0, 1]
+    out: [3, 5, 6]
+
+  - name: "all_same"
+    in:
+      arr: [7, 7, 7, 7]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 3]
+          - [1, 2]
+    out: [0, 0]
+
+  - name: "increasing"
+    in:
+      arr: [1, 2, 3, 4, 5]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 4]
+          - [1, 3]
+          - [2, 2]
+    out: [1, 5, 3]
+
+  - name: "power_of_two"
+    in:
+      arr: [1, 2, 4, 8, 16]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 1]
+          - [1, 3]
+          - [0, 4]
+    out: [3, 14, 31]
+
+  - name: "alternating"
+    in:
+      arr: [10, 5, 10, 5]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 3]
+          - [1, 2]
+    out: [0, 15]
+
+  - name: "large_values"
+    in:
+      arr: [1000000000, 999999999, 500000000]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 2]
+          - [1, 2]
+    out: [930022527, 1466015103]
+
+  - name: "prefix_property"
+    in:
+      arr: [6, 9, 4, 2]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 1]
+          - [2, 3]
+          - [0, 3]
+    out: [15, 6, 9]
+
+  - name: "full_range"
+    in:
+      arr: [7, 3, 14, 2]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 3]
+    out: [12]
+
+  - name: "many_single"
+    in:
+      arr: [42, 13, 99, 7, 55]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+    out: [42, 13, 99, 7, 55]
+
+  - name: "edge_min_values"
+    in:
+      arr: [1, 1]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 0]
+          - [0, 1]
+          - [1, 1]
+    out: [1, 0, 1]
+
+  - name: "mixed_values"
+    in:
+      arr: [8, 1, 2, 12, 7, 6]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 5]
+          - [2, 4]
+          - [3, 3]
+    out: [0, 9, 12]
+
+  - name: "max_small_pattern"
+    in:
+      arr: [1000000000, 1, 1000000000, 1]
+      queries:
+        gen: "array"
+        elemType: "int"
+        const:
+          - [0, 3]
+          - [1, 2]
+    out: [0, 1000000001]

@@ -21,14 +21,333 @@ SUPPORTED_LANGS = {
 PROMPT_TEMPLATE = """\
 You are helping generate a test manifest for the openleetcode project.
 
-## What is openleetcode
+openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: python3, python2, ruby, java, kotlin, go, dart, swift.
 
-openleetcode is a CLI tool that lets you run LeetCode solutions against test cases locally without a subscription. Test suites are defined in YAML manifests. Solutions are executed in sandboxed runtimes for these languages: python3, python2, ruby, java, kotlin, go, dart, swift.
+Generate 20-25 tests.
 
-## Test format (TEST_FORMAT.md)
-⚠️ For static 2D arrays, you must use gen: "array" + const: form. Writing [[0,1],[1,2]] as plain YAML is not supported for nested arrays.
+CRITICAL YAML RULE:
+Never use flow-style mappings { } anywhere in the output.
+Every mapping must use block style (indented lines).
+This applies to ALL fields including gen, const, and inline params.
 
-{TEST_FORMAT}
+---
+
+## Manifest structure
+
+Top-level fields in this exact order - nothing is nested inside entry:
+
+entry:
+  id: <int>
+  title: <string>
+  call:
+    python3: "..."
+    python2: "..."
+    ruby: "..."
+    java: "..."
+    kotlin: "..."
+    go: "..."
+    dart: "..."
+    swift: "..."
+
+judge:
+  type: "exact" | "ignore_order"
+
+limits:
+  time_ms: <int>
+  memory_mb: <int>
+
+oracle:
+  python3:
+    call: "..."
+    checker: |
+      <python source, must return bool>
+
+seed: <int>
+
+tests:
+  - name: "..."
+    in:
+      param1: <value or generator>
+    out: <value>
+    judge: ...
+    seed: ...
+
+judge MUST always be object form. NEVER write:
+judge: "exact"
+
+Correct form:
+judge:
+  type: "exact"
+
+---
+
+## Static values in `in`
+
+1D arrays and scalars - write directly, no gen wrapper:
+
+in:
+  nums: [1, 3, 4, 8]
+  target: 9
+
+2D arrays - ALWAYS multiline block style.
+NEVER flow style. No exceptions.
+
+CORRECT - 1x1:
+
+in:
+  matrix:
+    gen: "array"
+    elemType: "int"
+    const:
+      - [5]
+  target: 3
+
+CORRECT - 3x4:
+
+in:
+  matrix:
+    gen: "array"
+    elemType: "int"
+    const:
+      - [1, 3, 5, 7]
+      - [10, 11, 16, 20]
+      - [23, 30, 34, 60]
+  target: 3
+
+WRONG - never do this:
+
+matrix: { gen: "array", elemType: "int", const: [[1,3,5,7]] }
+matrix: { gen: "array", elemType: "int", const: [[1]] }
+
+---
+
+## Call template syntax
+
+RULE:
+Every array param MUST be wrapped in ALL 8 languages. No exceptions.
+
+1D array {x}:
+  → [{x}]
+  → new int[]{ {x} }
+  → []int{ {x} }
+  → intArrayOf({x})
+
+2D array {x}:
+  → [{x}]
+  → new int[][]{ {x} }
+  → [][]int{ {x} }
+  → arrayOf({x})
+
+scalar {x}:
+  → {x}
+
+{result} in oracle call:
+  → always bare, never wrap
+
+Example - method(nums []int, target int):
+
+call:
+  python3: "Solution().method([{nums}], {target})"
+  python2: "Solution().method([{nums}], {target})"
+  ruby: "method([{nums}], {target})"
+  java: "new Solution().method(new int[]{ {nums} }, {target})"
+  kotlin: "Solution().method(intArrayOf({nums}), {target})"
+  go: "method([]int{ {nums} }, {target})"
+  dart: "Solution().method([{nums}], {target})"
+  swift: "Solution().method([{nums}], {target})"
+
+oracle:
+  python3:
+    call: "Checker().method([{nums}], {target}, {result})"
+
+---
+
+Example - method(arr []int, queries [][]int):
+
+call:
+  python3: "Solution().method([{arr}], [{queries}])"
+  python2: "Solution().method([{arr}], [{queries}])"
+  ruby: "method([{arr}], [{queries}])"
+  java: "new Solution().method(new int[]{ {arr} }, new int[][]{ {queries} })"
+  kotlin: "Solution().method(intArrayOf({arr}), arrayOf({queries}))"
+  go: "method([]int{ {arr} }, [][]int{ {queries} })"
+  dart: "Solution().method([{arr}], [{queries}])"
+  swift: "Solution().method([{arr}], [{queries}])"
+
+oracle:
+  python3:
+    call: "Checker().method([{arr}], [{queries}], {result})"
+
+---
+
+Example - method(matrix [][]int, target int):
+
+call:
+  python3: "Solution().method([{matrix}], {target})"
+  python2: "Solution().method([{matrix}], {target})"
+  ruby: "method([{matrix}], {target})"
+  java: "new Solution().method(new int[][]{ {matrix} }, {target})"
+  kotlin: "Solution().method(arrayOf({matrix}), {target})"
+  go: "method([][]int{ {matrix} }, {target})"
+  dart: "Solution().method([{matrix}], {target})"
+  swift: "Solution().method([{matrix}], {target})"
+
+oracle:
+  python3:
+    call: "Checker().method([{matrix}], {target}, {result})"
+
+WRONG:
+call: "Checker().method({matrix}, {target}, {result})"
+
+RIGHT:
+call: "Checker().method([{matrix}], {target}, {result})"
+
+---
+
+## Generators
+
+CORRECT block style:
+
+gen: "int"
+min: 0
+max: 100
+
+gen: "float"
+min: 0.0
+max: 1.0
+precision: 2
+
+gen: "str"
+len:
+  gen: "int"
+  min: 1
+  max: 10
+alphabet: ["a","b","c"]
+
+gen: "char"
+variety: ["a","b","c"]
+
+gen: "bool"
+
+---
+
+1D array:
+
+gen: "array"
+len:
+  gen: "int"
+  min: 1
+  max: 20
+of:
+  gen: "int"
+  min: 0
+  max: 100
+distinct: false
+sorted: false
+elemType: "int"
+
+---
+
+2D array static - ALWAYS multiline:
+
+gen: "array"
+elemType: "int"
+const:
+  - [1, 2, 3]
+  - [4, 5, 6]
+
+---
+
+## Runtime utilities
+
+ListNode:
+
+python3/python2/dart/swift:
+  "listNodeToArray(Solution().method(toListNode([{l1}])))"
+
+ruby:
+  "list_node_to_array(method(to_list_node([{l1}])))"
+
+java:
+  "ListNode.listNodeToArray(new Solution().method(ListNode.toListNode(new int[]{ {l1} })))"
+
+kotlin:
+  "listNodeToArray(Solution().method(toListNode(intArrayOf({l1}))))"
+
+go:
+  "listNodeToArray(method(toListNode([]int{ {l1} })))"
+
+---
+
+TreeNode (input):
+
+python3/python2/dart/swift:
+  "Solution().method(to_tree_node([{root}]))"
+
+ruby:
+  "Solution.new.method(to_tree_node([{root}]))"
+
+java:
+  "new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} }))"
+
+kotlin:
+  "Solution().method(toTreeNode(arrayOf({root})))"
+
+go:
+  "method(toTreeNode([]interface{}{ {root} }))"
+
+---
+
+TreeNode (output):
+
+python3/python2/dart/swift:
+  "tree_node_to_array(Solution().method(to_tree_node([{root}])))"
+
+ruby:
+  "tree_node_to_array(Solution.new.method(to_tree_node([{root}])))"
+
+java:
+  "TreeNode.treeNodeToArray(new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} })))"
+
+kotlin:
+  "treeNodeToArray(Solution().method(toTreeNode(arrayOf({root}))))"
+
+go:
+  "treeNodeToArray(method(toTreeNode([]interface{}{ {root} })))"
+
+Trees: compressed BFS, null marks absent child, trailing nulls stripped.
+
+---
+
+## Instructions
+
+1. If the problem is SQL, concurrency, or design (class with multiple methods), output only:
+   CANNOT_GENERATE: <reason>
+
+2. Otherwise generate manifest.yml:
+
+- All problem examples as static tests with out
+- 20-25 static tests total covering edge cases:
+  - min/max values
+  - single element
+  - duplicates
+  - large values
+  - boundary conditions
+
+- Do NOT use generated 2D arrays
+- ALWAYS write matrices/queries as static const rows in block style
+- You MAY use generated 1D arrays without out (oracle) only when the param is fully independent
+- Every test without out must use oracle
+- Ensure oracle call is correct
+- Generator ranges must match problem constraints exactly
+- Cap 1D array length at 10^5
+- Oracle checker in Python3 validates structurally (not just re-run solution)
+- Follow call wrapping rules exactly for all 8 languages
+
+3. Output only raw YAML.
+   No comments, no explanation.
+
+---
 
 ## Task
 
@@ -53,18 +372,6 @@ Generate a complete manifest.yml for the following problem.
 ### Reference solution
 
 {REFERENCE}
-
-## Instructions
-
-1. If the problem requires data structures not covered by the runtime utilities (e.g. TreeNode, GraphNode, etc.), or is an SQL problem, a concurrency problem, or a design problem (like "Design Twitter") where the solution is a class with methods rather than a single function, **do not** generate a manifest. Instead output a single line in plain text: `CANNOT_GENERATE: <brief reason>`. Stop there.
-2. Otherwise, generate a complete manifest.yml following the TEST_FORMAT.md spec exactly.
-3. Include all examples from the problem as static test cases with `out`.
-4. Create a comprehensive set of additional static test cases that cover all edge and tricky scenarios (minimum/maximum values, empty/single-element inputs, duplicates, negative numbers, large inputs, etc.). For non-trivial problems aim for a total of around 30-35 test cases (including the examples). If the problem constraints allow safe random generation (inputs are independent and any random combination guarantees a valid answer), you may complement the static cases with generated stress/random tests to reach the target count. If random generation is unreliable (e.g. "exactly one solution exists" cannot be guaranteed randomly), rely solely on static cases and an oracle checker where appropriate.
-   - **Generator constraints**: When using generators (`gen`), strictly respect the problem's advertised constraints (value ranges, lengths, allowed characters). Do not generate values outside the allowed bounds (e.g. do not produce negative numbers when the constraint says positive only).
-   - **Large input safety**: For parameters that can be up to 10^6 (according to constraints), cap the generated `len` at 10^5 at most to avoid stdout overflow during local execution.
-5. Write an oracle checker in Python3 based on the reference solution (the reference solution may not necessarily be in Python3, but the oracle checker you write will definitely be in Python3). The checker should validate the result structurally, not just re-run the solution.
-6. Use the call template signatures from the code snippets above for each language.
-7. Output only the manifest.yml. Do not add any comments, explanations. The response must be raw YAML that can be parsed directly.
 """
 
 
@@ -79,13 +386,6 @@ def gql_request(query, variables):
     if "errors" in data:
         raise RuntimeError(f"Graphql errors: {data['errors']}")
     return data["data"]
-
-
-def load_test_format():
-    if not os.path.exists(TEST_FORMAT_PATH):
-        raise FileNotFoundError(f"{TEST_FORMAT_PATH} not found. Run from repo root")
-    with open(TEST_FORMAT_PATH, "r", encoding="utf-8") as f:
-        return f.read()
 
 
 def get_question_details(slug):
@@ -225,7 +525,6 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
 
-    test_format = load_test_format()
     question_id, problem_content, snippets = get_question_details(slug)
 
     try:
@@ -235,7 +534,6 @@ def main():
         reference = "# Reference solution not found"
 
     prompt = PROMPT_TEMPLATE.format(
-        TEST_FORMAT=test_format,
         PROBLEM_ID=question_id,
         PROBLEM_TITLE=slug,
         PROBLEM_CONTENT=problem_content,
