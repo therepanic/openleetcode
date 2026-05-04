@@ -2,10 +2,10 @@
 
 module Core.Test.Runner where
 
+import Control.Applicative ((<|>))
 import Control.Exception (Exception, handle, throwIO)
 import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
-import Core.Generator.Splitmix (renderNestedArr)
 import Core.Judge.Class (Judge, judge)
 import Core.Judge.Class qualified as J
 import Core.Judge.Exact qualified as ETypes
@@ -13,6 +13,7 @@ import Core.Judge.IgnoreOrder qualified as ITypes
 import Core.Test.Converter (toGenInfo)
 import Core.Test.Types qualified as Types
 import Core.Types
+import Data.List (intercalate)
 import Data.List qualified
 import Data.Map qualified as M
 import Data.Maybe (fromJust, fromMaybe)
@@ -243,8 +244,13 @@ generateFieldFor renderLang seed gen (var, gData) =
       result = generate gen genData
    in (var, result)
 
+renderNestedArr :: Language -> Maybe Types.GIDArrElemType -> [String] -> String
+renderNestedArr lang et rows =
+  intercalate ", " (map (wrapArray lang et) rows)
+
 renderConst :: Language -> Types.GeneratedInData -> String
-renderConst lang (Types.GIDArr (Types.GIDArrConst xs elemType)) = renderNestedArr lang elemType (map (renderConst lang) xs)
+renderConst lang (Types.GIDArr (Types.GIDArrConst xs elemType)) =
+  intercalate ", " (map (renderConstArrayItem lang elemType) xs)
 renderConst _ (Types.GIDIntegral (Types.GIDGenIntegralConst n)) = show n
 renderConst _ (Types.GIDFloat (Types.GIDGenFloatConst f)) = show f
 renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = show c
@@ -254,4 +260,38 @@ renderConst lang (Types.GIDBool (Types.GIDGenBoolConst b)) =
     else T.unpack . T.toLower . T.pack $ show b
 renderConst _ (Types.GIDStr (Types.GIDStrConst s)) = show s
 renderConst _ (Types.GIDStr (Types.GIDStrGen _ _)) = error "unsupported"
-renderConst _ _ = error "unsupported const element"
+renderConst _ _ = error "unsupported"
+
+renderConstArrayItem :: Language -> Maybe Types.GIDArrElemType -> Types.GeneratedInData -> String
+renderConstArrayItem lang inheritedElemType (Types.GIDArr (Types.GIDArrConst xs elemType)) =
+  let et = elemType <|> inheritedElemType
+   in wrapArray lang et $
+        intercalate ", " (map (renderConstArrayItem lang et) xs)
+renderConstArrayItem lang _ x = renderConst lang x
+
+wrapArray :: Language -> Maybe Types.GIDArrElemType -> String -> String
+wrapArray lang elemType inner = case lang of
+  Java ->
+    let t = case elemType of
+          Just Types.GIDArrElemInt -> "int"
+          Just Types.GIDArrElemLong -> "long"
+          Just Types.GIDArrElemDouble -> "double"
+          Just Types.GIDArrElemFloat -> "float"
+          Just Types.GIDArrElemString -> "String"
+          Just Types.GIDArrElemChar -> "char"
+          Just Types.GIDArrElemBool -> "boolean"
+          _ -> "Object"
+     in "new " <> t <> "[]{ " <> inner <> " }"
+  Kotlin ->
+    let f = case elemType of
+          Just Types.GIDArrElemInt -> "intArrayOf"
+          Just Types.GIDArrElemLong -> "longArrayOf"
+          Just Types.GIDArrElemDouble -> "doubleArrayOf"
+          Just Types.GIDArrElemFloat -> "floatArrayOf"
+          Just Types.GIDArrElemString -> "arrayOf"
+          Just Types.GIDArrElemChar -> "charArrayOf"
+          Just Types.GIDArrElemBool -> "booleanArrayOf"
+          _ -> "arrayOf"
+     in f <> "(" <> inner <> ")"
+  Go -> "{" <> inner <> "}"
+  _ -> "[" <> inner <> "]"

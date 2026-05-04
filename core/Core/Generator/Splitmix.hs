@@ -1,7 +1,7 @@
 module Core.Generator.Splitmix where
 
 import Core.Generator.Class
-import Core.Test.Types (GIDArrElemType (GIDArrElemBool, GIDArrElemChar, GIDArrElemDouble, GIDArrElemFloat, GIDArrElemInt, GIDArrElemLong, GIDArrElemString))
+import Core.Test.Runner (renderNestedArr)
 import Core.Types
 import Data.Char (toLower)
 import Data.List (foldl', intercalate, sort)
@@ -263,30 +263,3 @@ generateNestedRows distinct len inner lang gen
        in if S.member row seen
             then goDistinct seen acc remaining (attempts - 1) g'
             else goDistinct (S.insert row seen) (row : acc) (remaining - 1) (attempts - 1) g'
-
-renderNestedArr :: Language -> Maybe GIDArrElemType -> [String] -> String
-renderNestedArr lang elemType rows = case lang of
-  Java ->
-    let t = case elemType of
-          Just GIDArrElemInt -> "int"
-          Just GIDArrElemLong -> "long"
-          Just GIDArrElemDouble -> "double"
-          Just GIDArrElemFloat -> "float"
-          Just GIDArrElemString -> "String"
-          Just GIDArrElemChar -> "char"
-          Just GIDArrElemBool -> "boolean"
-          _ -> "Object"
-     in intercalate ", " (map (\r -> "new " <> t <> "[]{ " <> r <> " }") rows)
-  Kotlin ->
-    let innerFn = case elemType of
-          Just GIDArrElemInt -> "intArrayOf"
-          Just GIDArrElemLong -> "longArrayOf"
-          Just GIDArrElemDouble -> "doubleArrayOf"
-          Just GIDArrElemFloat -> "floatArrayOf"
-          Just GIDArrElemString -> "arrayOf"
-          Just GIDArrElemChar -> "charArrayOf"
-          Just GIDArrElemBool -> "booleanArrayOf"
-          _ -> "arrayOf"
-     in intercalate ", " (map (\r -> innerFn <> "(" <> r <> ")") rows)
-  Go -> intercalate ", " (map (\r -> "{" <> r <> "}") rows)
-  _ -> intercalate ", " (map (\r -> "[" <> r <> "]") rows)
