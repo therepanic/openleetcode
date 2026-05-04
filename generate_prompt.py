@@ -119,6 +119,18 @@ WRONG - never do this:
 matrix: { gen: "array", elemType: "int", const: [[1,3,5,7]] }
 matrix: { gen: "array", elemType: "int", const: [[1]] }
 
+Nested `out` (e.g. matrices): SAME rule as 2D `in` - ALWAYS multiline block style, real line breaks, one `- [ ... ]` row per dimension. NEVER a single YAML string holding the entire JSON (`out: '[[...]]'` and similar).
+
+CORRECT:
+  out:
+    - [1, 2, 3]
+    - [4, 5, 6]
+
+WRONG:
+  out: "[[1,2,3],[4,5,6]]"
+
+Judge `exact` still compares the solution's last stdout line to compact JSON (no extra whitespace).
+
 ---
 
 ## Call template syntax

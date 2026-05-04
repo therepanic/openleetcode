@@ -166,6 +166,9 @@ A list of test cases. Test cases differ along two independent axes:
 
 Each value in `in` is either a plain YAML value (string, number, array, bool) or a generator spec identified by a `gen` field. They can be mixed freely.
 
+> [!NOTE]
+> The same YAML shapes work for `out` (nested lists are interpreted as nested JSON). With `exact`, the compact JSON text must match the submission's last stdout line\*character-for-character. With `ignore_order`, both sides are parsed as JSON and arrays are sorted recursively before comparison - use `exact` when row/column order of a matrix must match. Without `out`, the oracle parses `{result}` in Python however you define the checker.
+
 ---
 
 ## Generator Specifications
