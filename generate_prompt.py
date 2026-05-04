@@ -2,9 +2,9 @@ import sys
 import os
 import re
 import requests
+from string import Template
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEST_FORMAT_PATH = os.path.join(BASE_DIR, "TEST_FORMAT.md")
 GRAPHQL_URL = "https://leetcode.com/graphql"
 
 SUPPORTED_LANGS = {
@@ -18,7 +18,7 @@ SUPPORTED_LANGS = {
     "swift": "swift",
 }
 
-PROMPT_TEMPLATE = """\
+PROMPT_TEMPLATE = Template("""
 You are helping generate a test manifest for the openleetcode project.
 
 openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: python3, python2, ruby, java, kotlin, go, dart, swift.
@@ -338,7 +338,9 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 
 2. Otherwise generate manifest.yml:
 
-- All problem examples as static tests with out
+- All problem examples as static tests
+- Use `out` only when the problem has exactly one correct answer
+- Use oracle for problems where multiple valid answers exist
 - 20-25 static tests total covering edge cases:
   - min/max values
   - single element
@@ -346,8 +348,8 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
   - large values
   - boundary conditions
 
-- Do NOT use generated 2D arrays
-- ALWAYS write matrices/queries as static const rows in block style
+- You MAY use generated 2D arrays when the test uses oracle (no `out`)
+- Static 2D arrays MUST always use multiline block style const rows, never flow style
 - You MAY use generated 1D arrays without out (oracle) only when the param is fully independent
 - Every test without out must use oracle
 - Ensure oracle call is correct
@@ -368,23 +370,23 @@ Generate a complete manifest.yml for the following problem.
 ### Problem
 
 ## Id
-{PROBLEM_ID}
+$PROBLEM_ID
 
 ## Title
-{PROBLEM_TITLE}
+$PROBLEM_TITLE
 
 ## Content
 
-{PROBLEM_CONTENT}
+$PROBLEM_CONTENT
 
 ### Code snippets
 
-{SNIPPETS}
+$SNIPPETS
 
 ### Reference solution
 
-{REFERENCE}
-"""
+$REFERENCE
+""")
 
 
 def gql_request(query, variables):
@@ -545,7 +547,7 @@ def main():
         print(f"Could not fetch reference solution {e}", file=sys.stderr)
         reference = "# Reference solution not found"
 
-    prompt = PROMPT_TEMPLATE.format(
+    prompt = PROMPT_TEMPLATE.substitute(
         PROBLEM_ID=question_id,
         PROBLEM_TITLE=slug,
         PROBLEM_CONTENT=problem_content,
