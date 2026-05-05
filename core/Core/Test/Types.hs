@@ -25,6 +25,7 @@ data GeneratedInData
   | GIDChar GIDChar
   | GIDArr GIDArr
   | GIDBool GIDBool
+  | GIDNull
 
 data GIDIntegral
   = GIDGenIntegralRange {gidGenIntMin :: Integer, gidGenIntMax :: Integer}
@@ -172,6 +173,7 @@ instance FromJSON GIDStr where
 instance FromJSON GeneratedInData where
   parseJSON (Number n) = return $ GIDIntegral (GIDGenIntegralConst (round n))
   parseJSON (Bool b) = return $ GIDBool (GIDGenBoolConst b)
+  parseJSON Null = return GIDNull
   parseJSON (Array vec) = GIDArr <$> parseJSON (Array vec)
   parseJSON (String t) = return $ GIDStr (GIDStrConst (T.unpack t))
   parseJSON (Object o) = do

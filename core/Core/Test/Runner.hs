@@ -86,9 +86,10 @@ handleTestCase exec gen batch sSeed suite test = do
 
   let buildContent template =
         let (userImports, userSolution) =
-              if lang == Java
-                then splitJavaCode (solution batch)
-                else ("", solution batch)
+              case lang of
+                Java -> splitJavaCode (solution batch)
+                Cpp -> splitCppCode (solution batch)
+                _ -> ("", solution batch)
             constResults = map (\(var, d) -> (var, renderConst lang d)) inConsts
             withImports = replaceUniversal "${IMPORTS}" userImports template
             entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr withImports
@@ -224,6 +225,15 @@ splitJavaCode code =
       (importLines, restLines) = Data.List.partition (\l -> "import " `Data.List.isPrefixOf` dropWhile (== ' ') l) allLines
    in (unlines importLines, unlines restLines)
 
+splitCppCode :: String -> (String, String)
+splitCppCode code =
+  let allLines = lines code
+      isInclude l =
+        let trimmed = dropWhile (== ' ') l
+         in "#include" `Data.List.isPrefixOf` trimmed
+      (includeLines, restLines) = Data.List.partition isInclude allLines
+   in (unlines includeLines, unlines restLines)
+
 prepareInValue :: Language -> String -> String
 prepareInValue lang val =
   replaceNulls (T.pack val)
@@ -254,6 +264,7 @@ renderConst lang (Types.GIDArr (Types.GIDArrConst xs elemType)) =
 renderConst _ (Types.GIDIntegral (Types.GIDGenIntegralConst n)) = show n
 renderConst _ (Types.GIDFloat (Types.GIDGenFloatConst f)) = show f
 renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = show c
+renderConst lang Types.GIDNull = nullLiteral lang
 renderConst lang (Types.GIDBool (Types.GIDGenBoolConst b)) =
   if lang == Python3 || lang == Python2
     then show b
@@ -293,5 +304,16 @@ wrapArray lang elemType inner = case lang of
           Just Types.GIDArrElemBool -> "booleanArrayOf"
           _ -> "arrayOf"
      in f <> "(" <> inner <> ")"
+  Cpp ->
+    let t = case elemType of
+          Just Types.GIDArrElemInt -> "int"
+          Just Types.GIDArrElemLong -> "long long"
+          Just Types.GIDArrElemDouble -> "double"
+          Just Types.GIDArrElemFloat -> "float"
+          Just Types.GIDArrElemString -> "string"
+          Just Types.GIDArrElemChar -> "char"
+          Just Types.GIDArrElemBool -> "bool"
+          _ -> "int"
+     in "lv(vector<" <> t <> ">{ " <> inner <> " })"
   Go -> "{" <> inner <> "}"
   _ -> "[" <> inner <> "]"

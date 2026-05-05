@@ -9,12 +9,13 @@ import Data.Text (pack)
 
 data ExecutorType = Piston
 
-data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Default
+data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Cpp | Default
   deriving (Show, Eq, Ord)
 
 convertLangToStr :: Language -> String
 convertLangToStr lang = case lang of
   Python3 -> "python3"
+  Cpp -> "cpp"
   Python2 -> "python2"
   Ruby -> "ruby"
   Java -> "java"
@@ -27,6 +28,7 @@ convertStrToLang :: String -> Maybe Language
 convertStrToLang s = case s of
   "python3" -> Just Python3
   "python2" -> Just Python2
+  "cpp" -> Just Cpp
   "ruby" -> Just Ruby
   "java" -> Just Java
   "go" -> Just Go
@@ -39,6 +41,9 @@ convertExtToLang :: String -> Language
 convertExtToLang ext = case ext of
   ".py" -> Python3
   ".rb" -> Ruby
+  ".cpp" -> Cpp
+  ".c++" -> Cpp
+  ".cc" -> Cpp
   ".java" -> Java
   ".go" -> Go
   ".dart" -> Dart
@@ -51,6 +56,7 @@ convertLangToExt lang = case lang of
   Python3 -> ".py"
   Python2 -> ".py"
   Ruby -> ".rb"
+  Cpp -> ".cpp"
   Java -> ".java"
   Go -> ".go"
   Dart -> ".dart"
@@ -60,6 +66,7 @@ convertLangToExt lang = case lang of
 nullLiteral :: Language -> String
 nullLiteral Python3 = "None"
 nullLiteral Python2 = "None"
+nullLiteral Cpp = "nullopt"
 nullLiteral Go = "nil"
 nullLiteral Ruby = "nil"
 nullLiteral Swift = "nil"
@@ -87,6 +94,24 @@ instance FromJSON Language where
     case t of
       "python" -> pure Python3
       "python2" -> pure Python2
+      "cpp" -> pure Cpp
+      "c++" -> pure Cpp
+      "ruby" -> pure Ruby
+      "java" -> pure Java
+      "go" -> pure Go
+      "dart" -> pure Dart
+      "kotlin" -> pure Kotlin
+      "swift" -> pure Swift
+      _ -> pure Default
+
+instance FromJSONKey Language where
+  fromJSONKey = FromJSONKeyTextParser $ \t ->
+    case t of
+      "python" -> pure Python3
+      "python2" -> pure Python2
+      "cpp" -> pure Cpp
+      "c++" -> pure Cpp
+      "python3" -> pure Python3
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
@@ -99,25 +124,12 @@ instance ToJSON Language where
   toJSON Python3 = "python"
   toJSON Python2 = "python2"
   toJSON Ruby = "ruby"
+  toJSON Cpp = "c++"
   toJSON Java = "java"
   toJSON Go = "go"
   toJSON Dart = "dart"
   toJSON Kotlin = "kotlin"
   toJSON Swift = "swift"
-
-instance FromJSONKey Language where
-  fromJSONKey = FromJSONKeyTextParser $ \t ->
-    case t of
-      "python" -> pure Python3
-      "python2" -> pure Python2
-      "python3" -> pure Python3
-      "ruby" -> pure Ruby
-      "java" -> pure Java
-      "go" -> pure Go
-      "dart" -> pure Dart
-      "kotlin" -> pure Kotlin
-      "swift" -> pure Swift
-      _ -> pure Default
 
 instance ToJSONKey Language where
   toJSONKey :: ToJSONKeyFunction Language
@@ -126,6 +138,7 @@ instance ToJSONKey Language where
       Python3 -> "python"
       Python2 -> "python2"
       Ruby -> "ruby"
+      Cpp -> "c++"
       Java -> "java"
       Go -> "go"
       Dart -> "dart"

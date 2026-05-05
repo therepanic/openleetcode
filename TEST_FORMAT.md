@@ -13,6 +13,7 @@ entry:
   id: <int>
   title: <string>
   call:
+    cpp: "..."
     python3: "..."
     python2: "..."
     ruby: "..."
@@ -59,6 +60,7 @@ entry:
   id: 1
   title: "two-sum"
   call:
+    cpp: "Solution().twoSum(lv(vector<int>{ {nums} }), {target})"
     python3: "Solution().twoSum([{nums}], {target})"
     java: "new Solution().twoSum(new int[] { {nums} }, {target})"
     go: "twoSum([]int{ {nums} }, {target})"
@@ -67,7 +69,7 @@ entry:
 
 `call` templates use `{param_name}` placeholders. At runtime, placeholders are replaced with the actual values of the test case inputs by their name.
 
-**Supported languages:** `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`
+**Supported languages:** `cpp`, `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`
 
 ---
 
@@ -438,6 +440,7 @@ entry:
   id: 1
   title: "two-sum"
   call:
+    cpp: "Solution().twoSum(lv(vector<int>{ {nums} }), {target})"
     python3: "Solution().twoSum([{nums}], {target})"
     python2: "Solution().twoSum([{nums}], {target})"
     ruby: "two_sum([{nums}], {target})"
@@ -529,6 +532,7 @@ entry:
   id: 2
   title: "add-two-numbers"
   call:
+    cpp: "listNodeToArray(Solution().addTwoNumbers(toListNode(lv(vector<int>{ {l1} })), toListNode(lv(vector<int>{ {l2} }))))"
     python3: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
     python2: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
     kotlin: "listNodeToArray(Solution().addTwoNumbers(toListNode(intArrayOf({l1})), toListNode(intArrayOf({l2}))))"
@@ -574,6 +578,7 @@ entry:
   id: 104
   title: "maximum-depth-of-binary-tree"
   call:
+    cpp: "Solution().maxDepth(toTreeNode(lv(vector<optional<int>>{ {root} })))"
     python3: "Solution().maxDepth(to_tree_node([{root}]))"
     python2: "Solution().maxDepth(to_tree_node([{root}]))"
     ruby: "Solution.new.max_depth(to_tree_node([{root}]))"
@@ -602,6 +607,7 @@ entry:
   id: 226
   title: "invert-binary-tree"
   call:
+    cpp: "treeNodeToArray(Solution().invertTree(toTreeNode(lv(vector<optional<int>>{ {root} }))))"
     python3: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     python2: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     ruby: "tree_node_to_array(Solution.new.invert_tree(to_tree_node([{root}])))"
