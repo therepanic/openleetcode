@@ -24,7 +24,7 @@ You are helping generate a test manifest for the openleetcode project.
 
 openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, python3, python2, ruby, java, kotlin, go, dart, swift.
 
-Generate 20-25 tests.
+Generate 25-30 tests.
 
 CRITICAL YAML RULE:
 Never use flow-style mappings { } anywhere in the output.
@@ -182,7 +182,7 @@ oracle:
 Example - method(arr []int, queries [][]int):
 
 call:
-  cpp: "Solution().method(lv(vector<int>{ {arr} }), vector<vector<int>>{ {queries} })"
+  cpp: "Solution().method(lv(vector<int>{ {arr} }), lv(vector<vector<int>>{ {queries} }))"
   python3: "Solution().method([{arr}], [{queries}])"
   python2: "Solution().method([{arr}], [{queries}])"
   ruby: "method([{arr}], [{queries}])"
@@ -357,20 +357,26 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - All problem examples as static tests
 - Use `out` only when the problem has exactly one correct answer
 - Use oracle for problems where multiple valid answers exist
-- 20-25 static tests total covering edge cases:
+- 25-30 tests total covering edge cases:
   - min/max values
   - single element
   - duplicates
   - large values
   - boundary conditions
 
-- You MAY use generated 2D arrays when the test uses oracle (no `out`)
+- Tests without `out` automatically use the top-level oracle. Do NOT repeat or redefine oracle in tests.
+- String parameters MUST always be quoted in calls ("{s}")
+- Use generators when possible; if not possible, do not use them
+- Generated tests MUST use oracle (no `out`)
+- The checker MUST define a class `Checker` with the method used in oracle.call.
+- Use generators ONLY when all constraints can be satisfied independently
+- Use ~5 generated tests (using gen) when constraints allow
+- Large tests MUST use explicit large sizes (e.g. 50000-100000 for strings/arrays) when constraints allow
+- Include at least 2 large tests near maximum input size
 - Static 2D arrays MUST always use multiline block style const rows, never flow style
-- You MAY use generated 1D arrays without out (oracle) only when the param is fully independent
 - Every test without out must use oracle
 - Ensure oracle call is correct
 - Generator ranges must match problem constraints exactly
-- Cap 1D array length at 10^5
 - Oracle checker in Python3 validates structurally (not just re-run solution)
 - Follow call wrapping rules exactly for all 9 languages
 
