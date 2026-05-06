@@ -5,7 +5,7 @@ class TreeNode {
   TreeNode([this.val = 0, this.left, this.right]);
 }
 
-TreeNode? toTreeNode(List<dynamic>? arr) {
+TreeNode? to_tree_node(List<dynamic>? arr) {
   if (arr == null || arr.isEmpty || arr[0] == null) return null;
   TreeNode root = TreeNode(arr[0]);
   List<TreeNode?> queue = [root];
@@ -27,7 +27,7 @@ TreeNode? toTreeNode(List<dynamic>? arr) {
   return root;
 }
 
-List<dynamic> treeNodeToArray(TreeNode? root) {
+List<dynamic> tree_node_to_array(TreeNode? root) {
   List<dynamic> res = [];
   if (root == null) return res;
   List<TreeNode?> queue = [root];
@@ -52,7 +52,7 @@ class ListNode {
   ListNode([this.val = 0, this.next]);
 }
 
-ListNode? toListNode(List<int> arr) {
+ListNode? to_list_node(List<int> arr) {
   if (arr.isEmpty) return null;
   ListNode head = ListNode(arr[0]);
   ListNode? cur = head;
@@ -63,7 +63,7 @@ ListNode? toListNode(List<int> arr) {
   return head;
 }
 
-List<int> listNodeToArray(ListNode? head) {
+List<int> list_node_to_array(ListNode? head) {
   List<int> res = [];
   ListNode? cur = head;
   while (cur != null) {

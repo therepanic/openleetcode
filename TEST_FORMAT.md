@@ -14,6 +14,7 @@ entry:
   title: <string>
   call:
     cpp: "..."
+    rust: "..."
     python3: "..."
     python2: "..."
     ruby: "..."
@@ -60,6 +61,7 @@ entry:
   id: 1
   title: "two-sum"
   call:
+    rust: "Solution::two_sum(vec![{nums}], {target})"
     cpp: "Solution().twoSum(lv(vector<int>{ {nums} }), {target})"
     python3: "Solution().twoSum([{nums}], {target})"
     java: "new Solution().twoSum(new int[] { {nums} }, {target})"
@@ -69,7 +71,7 @@ entry:
 
 `call` templates use `{param_name}` placeholders. At runtime, placeholders are replaced with the actual values of the test case inputs by their name.
 
-**Supported languages:** `cpp`, `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`
+**Supported languages:** `cpp`, `rust`, `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`
 
 ---
 
@@ -441,6 +443,7 @@ entry:
   title: "two-sum"
   call:
     cpp: "Solution().twoSum(lv(vector<int>{ {nums} }), {target})"
+    rust: "Solution::two_sum(vec![{nums}], {target})"
     python3: "Solution().twoSum([{nums}], {target})"
     python2: "Solution().twoSum([{nums}], {target})"
     ruby: "two_sum([{nums}], {target})"
@@ -533,13 +536,14 @@ entry:
   title: "add-two-numbers"
   call:
     cpp: "listNodeToArray(Solution().addTwoNumbers(toListNode(lv(vector<int>{ {l1} })), toListNode(lv(vector<int>{ {l2} }))))"
-    python3: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
-    python2: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    rust: "ListNode::list_node_to_array(Solution::add_two_numbers(ListNode::to_list_node(vec![{l1}]), ListNode::to_list_node(vec![{l2}])))"
+    python3: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
+    python2: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
     kotlin: "listNodeToArray(Solution().addTwoNumbers(toListNode(intArrayOf({l1})), toListNode(intArrayOf({l2}))))"
     java: "ListNode.listNodeToArray(new Solution().addTwoNumbers(ListNode.toListNode(new int[]{ {l1} }), ListNode.toListNode(new int[]{ {l2} })))"
     go: "listNodeToArray(addTwoNumbers(toListNode([]int{ {l1} }), toListNode([]int{ {l2} })))"
-    dart: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
-    swift: "listNodeToArray(Solution().addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    dart: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
+    swift: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
     ruby: "list_node_to_array(add_two_numbers(to_list_node([{l1}]), to_list_node([{l2}])))"
 
 tests:
@@ -579,14 +583,15 @@ entry:
   title: "maximum-depth-of-binary-tree"
   call:
     cpp: "Solution().maxDepth(toTreeNode(lv(vector<optional<int>>{ {root} })))"
+    rust: "Solution::max_depth(TreeNode::to_tree_node(vec![{root}]))"
     python3: "Solution().maxDepth(to_tree_node([{root}]))"
     python2: "Solution().maxDepth(to_tree_node([{root}]))"
     ruby: "Solution.new.max_depth(to_tree_node([{root}]))"
     java: "new Solution().maxDepth(TreeNode.toTreeNode(new Integer[]{ {root} }))"
     kotlin: "Solution().maxDepth(toTreeNode(arrayOf({root})))"
     go: "maxDepth(toTreeNode([]interface{}{ {root} }))"
-    dart: "Solution().maxDepth(toTreeNode([{root}]))"
-    swift: "Solution().maxDepth(toTreeNode([{root}]))"
+    dart: "Solution().maxDepth(to_tree_node([{root}]))"
+    swift: "Solution().maxDepth(to_tree_node([{root}]))"
 
 tests:
   - name: "ex1"
@@ -608,14 +613,15 @@ entry:
   title: "invert-binary-tree"
   call:
     cpp: "treeNodeToArray(Solution().invertTree(toTreeNode(lv(vector<optional<int>>{ {root} }))))"
+    rust: "TreeNode::tree_node_to_array(Solution::invert_tree(TreeNode::to_tree_node(vec![{root}])))"
     python3: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     python2: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     ruby: "tree_node_to_array(Solution.new.invert_tree(to_tree_node([{root}])))"
     java: "TreeNode.treeNodeToArray(new Solution().invertTree(TreeNode.toTreeNode(new Integer[]{ {root} })))"
     kotlin: "treeNodeToArray(Solution().invertTree(toTreeNode(arrayOf({root}))))"
     go: "treeNodeToArray(invertTree(toTreeNode([]interface{}{ {root} })))"
-    dart: "treeNodeToArray(Solution().invertTree(toTreeNode([{root}])))"
-    swift: "treeNodeToArray(Solution().invertTree(toTreeNode([{root}])))"
+    dart: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
+    swift: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
 
 tests:
   - name: "ex1"

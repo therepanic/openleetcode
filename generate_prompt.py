@@ -17,12 +17,13 @@ SUPPORTED_LANGS = {
     "go": "golang",
     "dart": "dart",
     "swift": "swift",
+    "rust": "rust",
 }
 
 PROMPT_TEMPLATE = Template("""
 You are helping generate a test manifest for the openleetcode project.
 
-openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, python3, python2, ruby, java, kotlin, go, dart, swift.
+openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, rust, python3, python2, ruby, java, kotlin, go, dart, swift.
 
 Generate 25-30 tests.
 
@@ -42,6 +43,7 @@ entry:
   title: <string>
   call:
     cpp: "..."
+    rust: "..."
     python3: "..."
     python2: "..."
     ruby: "..."
@@ -138,11 +140,12 @@ Judge `exact` still compares the solution's last stdout line to compact JSON (no
 ## Call template syntax
 
 RULE:
-Every array param MUST be wrapped in ALL 9 languages. No exceptions.
+Every array param MUST be wrapped in ALL 10 languages. No exceptions.
 
 1D array {x}:
   → [{x}]
   → new int[]{ {x} }
+  → vec![{x}]
   → []int{ {x} }
   → intArrayOf({x})
   → lv(vector<int>{ {x} })
@@ -150,6 +153,7 @@ Every array param MUST be wrapped in ALL 9 languages. No exceptions.
 2D array {x}:
   → [{x}]
   → new int[][]{ {x} }
+  → vec![{x}]
   → [][]int{ {x} }
   → arrayOf({x})
   → lv(vector<vector<int>>{ {x} })
@@ -164,6 +168,7 @@ Example - method(nums []int, target int):
 
 call:
   cpp: "Solution().method(lv(vector<int>{ {nums} }), {target})"
+  rust: "Solution::method(vec![{nums}], {target})"
   python3: "Solution().method([{nums}], {target})"
   python2: "Solution().method([{nums}], {target})"
   ruby: "method([{nums}], {target})"
@@ -183,6 +188,7 @@ Example - method(arr []int, queries [][]int):
 
 call:
   cpp: "Solution().method(lv(vector<int>{ {arr} }), lv(vector<vector<int>>{ {queries} }))"
+  rust: "Solution::method(vec![{arr}], vec![{queries}])"
   python3: "Solution().method([{arr}], [{queries}])"
   python2: "Solution().method([{arr}], [{queries}])"
   ruby: "method([{arr}], [{queries}])"
@@ -202,6 +208,7 @@ Example - method(matrix [][]int, target int):
 
 call:
   cpp: "Solution().method(lv(vector<vector<int>>{ {matrix} }), {target})"
+  rust: "Solution::method(vec![{matrix}], {target})"
   python3: "Solution().method([{matrix}], {target})"
   python2: "Solution().method([{matrix}], {target})"
   ruby: "method([{matrix}], {target})"
@@ -282,7 +289,10 @@ const:
 ListNode:
 
 python3/python2/dart/swift:
-  "listNodeToArray(Solution().method(toListNode([{l1}])))"
+  "list_node_to_array(Solution().method(to_list_node([{l1}])))"
+
+rust:
+  "ListNode::list_node_to_array(Solution::method(ListNode::to_list_node(vec![{l1}])))"
 
 cpp:
   "listNodeToArray(Solution().method(toListNode(lv(vector<int>{ {l1} }))))"
@@ -306,6 +316,9 @@ TreeNode (input):
 python3/python2/dart/swift:
   "Solution().method(to_tree_node([{root}]))"
 
+rust:
+  "Solution::method(TreeNode::to_tree_node(vec![{root}]))"
+
 cpp:
   "Solution().method(toTreeNode(lv(vector<optional<int>>{ {root} })))"
 
@@ -327,6 +340,9 @@ TreeNode (output):
 
 python3/python2/dart/swift:
   "tree_node_to_array(Solution().method(to_tree_node([{root}])))"
+
+rust:
+  "TreeNode::tree_node_to_array(Solution::method(TreeNode::to_tree_node(vec![{root}])))"
 
 cpp:
   "treeNodeToArray(Solution().method(toTreeNode(lv(vector<optional<int>>{ {root} }))))"
@@ -378,7 +394,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - Ensure oracle call is correct
 - Generator ranges must match problem constraints exactly
 - Oracle checker in Python3 validates structurally (not just re-run solution)
-- Follow call wrapping rules exactly for all 9 languages
+- Follow call wrapping rules exactly for all 10 languages
 
 3. Output only raw YAML.
    No comments, no explanation.

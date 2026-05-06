@@ -47,7 +47,7 @@ class ListNode:
         self.next = next
 
 
-def toListNode(arr: List[int]) -> Optional[ListNode]:
+def to_list_node(arr: List[int]) -> Optional[ListNode]:
     if not arr:
         return None
     head = ListNode(arr[0])
@@ -58,7 +58,7 @@ def toListNode(arr: List[int]) -> Optional[ListNode]:
     return head
 
 
-def listNodeToArray(head: Optional[ListNode]) -> List[int]:
+def list_node_to_array(head: Optional[ListNode]) -> List[int]:
     res = []
     while head:
         res.append(head.val)

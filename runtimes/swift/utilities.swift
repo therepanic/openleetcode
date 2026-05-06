@@ -11,7 +11,7 @@ public class TreeNode {
     }
 }
 
-func toTreeNode(_ arr: [Int?]) -> TreeNode? {
+func to_tree_node(_ arr: [Int?]) -> TreeNode? {
     guard !arr.isEmpty, let first = arr[0] else { return nil }
     let root = TreeNode(first)
     var queue = [root]
@@ -36,7 +36,7 @@ func toTreeNode(_ arr: [Int?]) -> TreeNode? {
     return root
 }
 
-func treeNodeToArray(_ root: TreeNode?) -> [Int?] {
+func tree_node_to_array(_ root: TreeNode?) -> [Int?] {
     var res = [Int?]()
     guard let root = root else { return res }
     var queue: [TreeNode?] = [root]
@@ -63,7 +63,7 @@ public class ListNode {
     public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
 }
 
-func toListNode(_ arr: [Int]) -> ListNode? {
+func to_list_node(_ arr: [Int]) -> ListNode? {
     if arr.isEmpty { return nil }
     let head = ListNode(arr[0])
     var cur = head
@@ -74,7 +74,7 @@ func toListNode(_ arr: [Int]) -> ListNode? {
     return head
 }
 
-func listNodeToArray(_ head: ListNode?) -> [Int] {
+func list_node_to_array(_ head: ListNode?) -> [Int] {
     var res = [Int]()
     var cur = head
     while cur != nil {

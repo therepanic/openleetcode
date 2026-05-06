@@ -47,7 +47,7 @@ class ListNode(object):
         self.next = next
 
 
-def toListNode(arr):
+def to_list_node(arr):
     if not arr:
         return None
     head = ListNode(arr[0])
@@ -58,7 +58,7 @@ def toListNode(arr):
     return head
 
 
-def listNodeToArray(head):
+def list_node_to_array(head):
     res = []
     while head:
         res.append(head.val)
