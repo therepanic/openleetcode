@@ -9,7 +9,7 @@ import Data.Text (pack)
 
 data ExecutorType = Piston
 
-data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Cpp | Default
+data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Cpp | Rust | Default
   deriving (Show, Eq, Ord)
 
 convertLangToStr :: Language -> String
@@ -23,12 +23,14 @@ convertLangToStr lang = case lang of
   Dart -> "dart"
   Kotlin -> "kotlin"
   Swift -> "swift"
+  Rust -> "rust"
 
 convertStrToLang :: String -> Maybe Language
 convertStrToLang s = case s of
   "python3" -> Just Python3
   "python2" -> Just Python2
   "cpp" -> Just Cpp
+  "rust" -> Just Rust
   "ruby" -> Just Ruby
   "java" -> Just Java
   "go" -> Just Go
@@ -43,6 +45,7 @@ convertExtToLang ext = case ext of
   ".rb" -> Ruby
   ".cpp" -> Cpp
   ".c++" -> Cpp
+  ".rs" -> Rust
   ".cc" -> Cpp
   ".java" -> Java
   ".go" -> Go
@@ -56,6 +59,7 @@ convertLangToExt lang = case lang of
   Python3 -> ".py"
   Python2 -> ".py"
   Ruby -> ".rb"
+  Rust -> ".rs"
   Cpp -> ".cpp"
   Java -> ".java"
   Go -> ".go"
@@ -66,6 +70,7 @@ convertLangToExt lang = case lang of
 nullLiteral :: Language -> String
 nullLiteral Python3 = "None"
 nullLiteral Python2 = "None"
+nullLiteral Rust = "None"
 nullLiteral Cpp = "nullopt"
 nullLiteral Go = "nil"
 nullLiteral Ruby = "nil"
@@ -96,6 +101,7 @@ instance FromJSON Language where
       "python2" -> pure Python2
       "cpp" -> pure Cpp
       "c++" -> pure Cpp
+      "rust" -> pure Rust
       "ruby" -> pure Ruby
       "java" -> pure Java
       "go" -> pure Go
@@ -111,6 +117,7 @@ instance FromJSONKey Language where
       "python2" -> pure Python2
       "cpp" -> pure Cpp
       "c++" -> pure Cpp
+      "rust" -> pure Rust
       "python3" -> pure Python3
       "ruby" -> pure Ruby
       "java" -> pure Java
@@ -125,6 +132,7 @@ instance ToJSON Language where
   toJSON Python2 = "python2"
   toJSON Ruby = "ruby"
   toJSON Cpp = "c++"
+  toJSON Rust = "rust"
   toJSON Java = "java"
   toJSON Go = "go"
   toJSON Dart = "dart"
@@ -138,6 +146,7 @@ instance ToJSONKey Language where
       Python3 -> "python"
       Python2 -> "python2"
       Ruby -> "ruby"
+      Rust -> "rust"
       Cpp -> "c++"
       Java -> "java"
       Go -> "go"

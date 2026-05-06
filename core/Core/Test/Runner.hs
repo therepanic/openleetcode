@@ -89,8 +89,19 @@ handleTestCase exec gen batch sSeed suite test = do
               case lang of
                 Java -> splitJavaCode (solution batch)
                 Cpp -> splitCppCode (solution batch)
+                Rust -> splitRustCode (solution batch)
                 _ -> ("", solution batch)
-            constResults = map (\(var, d) -> (var, renderConst lang d)) inConsts
+            constResults =
+              map
+                ( \(var, d) ->
+                    let rendered = renderConst lang d
+                        prepared =
+                          if expectsRustOptionList lang callStr var
+                            then wrapRustOptionList rendered
+                            else rendered
+                     in (var, prepared)
+                )
+                inConsts
             withImports = replaceUniversal "${IMPORTS}" userImports template
             entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr withImports
             afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
@@ -234,11 +245,39 @@ splitCppCode code =
       (includeLines, restLines) = Data.List.partition isInclude allLines
    in (unlines includeLines, unlines restLines)
 
+splitRustCode :: String -> (String, String)
+splitRustCode code =
+  let allLines = lines code
+      isUse l = "use " `Data.List.isPrefixOf` dropWhile (== ' ') l
+      (useLines, restLines) = Data.List.partition isUse allLines
+   in (unlines useLines, unlines restLines)
+
 prepareInValue :: Language -> String -> String
 prepareInValue lang val =
   replaceNulls (T.pack val)
   where
     replaceNulls = T.unpack . T.replace "null" (T.pack $ nullLiteral lang)
+
+-- todo: bullshit
+expectsRustOptionList :: Language -> String -> String -> Bool
+expectsRustOptionList lang callStr var =
+  lang == Rust && (("to_tree_node(vec![{" <> var <> "}])") `Data.List.isInfixOf` callStr)
+
+wrapRustOptionList :: String -> String
+wrapRustOptionList raw =
+  intercalate ", " (map wrapItem nonEmptyItems)
+  where
+    nonEmptyItems = filter (not . null) (splitByComma raw)
+    splitByComma s = map trim (go s "" [])
+    go [] current acc = reverse (current : acc)
+    go (c : cs) current acc
+      | c == ',' = go cs "" (current : acc)
+      | otherwise = go cs (current <> [c]) acc
+    trim = T.unpack . T.strip . T.pack
+    wrapItem x
+      | x == "None" = x
+      | "Some(" `Data.List.isPrefixOf` x = x
+      | otherwise = "Some(" <> x <> ")"
 
 splitStdout :: String -> (String, String)
 splitStdout out =
@@ -276,9 +315,8 @@ renderConst _ _ = error "unsupported"
 renderConstArrayItem :: Language -> Maybe Types.GIDArrElemType -> Types.GeneratedInData -> String
 renderConstArrayItem lang inheritedElemType (Types.GIDArr (Types.GIDArrConst xs elemType)) =
   let et = elemType <|> inheritedElemType
-   in wrapArray lang et $
-        intercalate ", " (map (renderConstArrayItem lang et) xs)
-renderConstArrayItem lang _ x = renderConst lang x
+   in wrapArray lang et $ intercalate ", " (map (renderConstArrayItem lang et) xs)
+renderConstArrayItem lang _ val = renderConst lang val
 
 wrapArray :: Language -> Maybe Types.GIDArrElemType -> String -> String
 wrapArray lang elemType inner = case lang of
@@ -316,4 +354,5 @@ wrapArray lang elemType inner = case lang of
           _ -> "int"
      in "lv(vector<" <> t <> ">{ " <> inner <> " })"
   Go -> "{" <> inner <> "}"
+  Rust -> "vec![" <> inner <> "]"
   _ -> "[" <> inner <> "]"
