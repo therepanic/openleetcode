@@ -23,6 +23,7 @@ entry:
     go: "..."
     dart: "..."
     swift: "..."
+    typescript: "..."
 
 judge:
   type: "exact" | "ignore_order"
@@ -66,12 +67,13 @@ entry:
     python3: "Solution().twoSum([{nums}], {target})"
     java: "new Solution().twoSum(new int[] { {nums} }, {target})"
     go: "twoSum([]int{ {nums} }, {target})"
+    typescript: "twoSum([{nums}], {target})"
     # ... other languages
 ```
 
 `call` templates use `{param_name}` placeholders. At runtime, placeholders are replaced with the actual values of the test case inputs by their name.
 
-**Supported languages:** `cpp`, `rust`, `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`
+**Supported languages:** `cpp`, `rust`, `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`, `typescript`
 
 ---
 
@@ -452,6 +454,7 @@ entry:
     go: "twoSum([]int{ {nums} }, {target})"
     dart: "Solution().twoSum([{nums}], {target})"
     swift: "Solution().twoSum([{nums}], {target})"
+    typescript: "twoSum([{nums}], {target})"
 
 judge:
   type: "ignore_order"
@@ -545,6 +548,7 @@ entry:
     dart: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
     swift: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
     ruby: "list_node_to_array(add_two_numbers(to_list_node([{l1}]), to_list_node([{l2}])))"
+    typescript: "listNodeToArray(addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
 
 tests:
   - name: "ex1"
@@ -592,6 +596,7 @@ entry:
     go: "maxDepth(toTreeNode([]interface{}{ {root} }))"
     dart: "Solution().maxDepth(to_tree_node([{root}]))"
     swift: "Solution().maxDepth(to_tree_node([{root}]))"
+    typescript: "maxDepth(toTreeNode([{root}]))"
 
 tests:
   - name: "ex1"
@@ -622,6 +627,7 @@ entry:
     go: "treeNodeToArray(invertTree(toTreeNode([]interface{}{ {root} })))"
     dart: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     swift: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
+    typescript: "treeNodeToArray(invertTree(toTreeNode([{root}])))"
 
 tests:
   - name: "ex1"

@@ -7,6 +7,19 @@ from string import Template
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 GRAPHQL_URL = "https://leetcode.com/graphql"
 
+SNIPPET_LANGS = [
+    "python3",
+    "ruby",
+    "java",
+    "kotlin",
+    "go",
+    "dart",
+    "swift",
+    "typescript",
+    "rust",
+    "cpp",
+]
+
 SUPPORTED_LANGS = {
     "python3": "python3",
     "python2": "python",
@@ -18,12 +31,13 @@ SUPPORTED_LANGS = {
     "dart": "dart",
     "swift": "swift",
     "rust": "rust",
+    "typescript": "typescript",
 }
 
 PROMPT_TEMPLATE = Template("""
 You are helping generate a test manifest for the openleetcode project.
 
-openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, rust, python3, python2, ruby, java, kotlin, go, dart, swift.
+openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, rust, python3, python2, ruby, java, kotlin, go, dart, swift, typescript.
 
 Generate 25-30 tests.
 
@@ -52,6 +66,7 @@ entry:
     go: "..."
     dart: "..."
     swift: "..."
+    typescript: "..."
 
 judge:
   type: "exact" | "ignore_order"
@@ -140,7 +155,7 @@ Judge `exact` still compares the solution's last stdout line to compact JSON (no
 ## Call template syntax
 
 RULE:
-Every array param MUST be wrapped in ALL 10 languages. No exceptions.
+Every array param MUST be wrapped in ALL 11 languages. No exceptions.
 
 1D array {x}:
   → [{x}]
@@ -177,6 +192,7 @@ call:
   go: "method([]int{ {nums} }, {target})"
   dart: "Solution().method([{nums}], {target})"
   swift: "Solution().method([{nums}], {target})"
+  typescript: "method([{nums}], {target})"
 
 oracle:
   python3:
@@ -197,6 +213,7 @@ call:
   go: "method([]int{ {arr} }, [][]int{ {queries} })"
   dart: "Solution().method([{arr}], [{queries}])"
   swift: "Solution().method([{arr}], [{queries}])"
+  typescript: "method([{arr}], [{queries}])"
 
 oracle:
   python3:
@@ -217,6 +234,7 @@ call:
   go: "method([][]int{ {matrix} }, {target})"
   dart: "Solution().method([{matrix}], {target})"
   swift: "Solution().method([{matrix}], {target})"
+  typescript: "method([{matrix}], {target})"
 
 oracle:
   python3:
@@ -309,6 +327,9 @@ kotlin:
 go:
   "listNodeToArray(method(toListNode([]int{ {l1} })))"
 
+typescript:
+  "listNodeToArray(method(toListNode([{l1}])))"
+
 ---
 
 TreeNode (input):
@@ -334,6 +355,9 @@ kotlin:
 go:
   "method(toTreeNode([]interface{}{ {root} }))"
 
+typescript:
+  "method(toTreeNode([{root}]))"
+
 ---
 
 TreeNode (output):
@@ -358,6 +382,9 @@ kotlin:
 
 go:
   "treeNodeToArray(method(toTreeNode([]interface{}{ {root} })))"
+
+typescript:
+  "treeNodeToArray(method(toTreeNode([{root}])))"
 
 Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 
@@ -394,7 +421,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - Ensure oracle call is correct
 - Generator ranges must match problem constraints exactly
 - Oracle checker in Python3 validates structurally (not just re-run solution)
-- Follow call wrapping rules exactly for all 10 languages
+- Follow call wrapping rules exactly for all 11 languages
 
 3. Output only raw YAML.
    No comments, no explanation.
@@ -561,7 +588,7 @@ def get_reference_solution(slug):
 
 def format_snippets(snippets):
     out = []
-    for lang in ["python3", "ruby", "java", "kotlin", "go", "dart", "swift"]:
+    for lang in SNIPPET_LANGS:
         code = snippets.get(lang)
         if code:
             out.append(f"### {lang}\n```{lang}\n{code}\n```")

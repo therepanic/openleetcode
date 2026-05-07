@@ -9,7 +9,7 @@ import Data.Text (pack)
 
 data ExecutorType = Piston
 
-data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Cpp | Rust | Default
+data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Cpp | Rust | TypeScript | Default
   deriving (Show, Eq, Ord)
 
 convertLangToStr :: Language -> String
@@ -24,6 +24,7 @@ convertLangToStr lang = case lang of
   Kotlin -> "kotlin"
   Swift -> "swift"
   Rust -> "rust"
+  TypeScript -> "typescript"
 
 convertStrToLang :: String -> Maybe Language
 convertStrToLang s = case s of
@@ -37,6 +38,7 @@ convertStrToLang s = case s of
   "dart" -> Just Dart
   "kotlin" -> Just Kotlin
   "swift" -> Just Swift
+  "typescript" -> Just TypeScript
   _ -> Nothing
 
 convertExtToLang :: String -> Language
@@ -52,6 +54,7 @@ convertExtToLang ext = case ext of
   ".dart" -> Dart
   ".kt" -> Kotlin
   ".swift" -> Swift
+  ".ts" -> TypeScript
   _ -> error $ "Unknown extension: " <> ext
 
 convertLangToExt :: Language -> String
@@ -66,6 +69,7 @@ convertLangToExt lang = case lang of
   Dart -> ".dart"
   Kotlin -> ".kt"
   Swift -> ".swift"
+  TypeScript -> ".ts"
 
 nullLiteral :: Language -> String
 nullLiteral Python3 = "None"
@@ -108,6 +112,7 @@ instance FromJSON Language where
       "dart" -> pure Dart
       "kotlin" -> pure Kotlin
       "swift" -> pure Swift
+      "typescript" -> pure TypeScript
       _ -> pure Default
 
 instance FromJSONKey Language where
@@ -125,6 +130,7 @@ instance FromJSONKey Language where
       "dart" -> pure Dart
       "kotlin" -> pure Kotlin
       "swift" -> pure Swift
+      "typescript" -> pure TypeScript
       _ -> pure Default
 
 instance ToJSON Language where
@@ -138,6 +144,7 @@ instance ToJSON Language where
   toJSON Dart = "dart"
   toJSON Kotlin = "kotlin"
   toJSON Swift = "swift"
+  toJSON TypeScript = "typescript"
 
 instance ToJSONKey Language where
   toJSONKey :: ToJSONKeyFunction Language
@@ -153,3 +160,4 @@ instance ToJSONKey Language where
       Dart -> "dart"
       Kotlin -> "kotlin"
       Swift -> "swift"
+      TypeScript -> "typescript"
