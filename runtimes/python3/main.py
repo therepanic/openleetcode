@@ -1,12 +1,21 @@
 from __future__ import annotations
-import datetime as _dt
-from dataclasses import is_dataclass, asdict
+
+import sys
+import math
+import heapq
+import bisect
+import itertools
+
 from typing import *
-import time as _time
+from collections import *
+from functools import cache, lru_cache
+from heapq import *
+from bisect import *
+
+sys.setrecursionlimit(10**6)
 
 ${SOLUTION}
 
 ${UTILITIES}
 
 print(to_json(${CALL_SOLUTION}))
-

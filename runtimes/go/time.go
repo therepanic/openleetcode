@@ -1,11 +1,12 @@
 package main
 
 import (
-    "fmt"
-    "reflect"
-    "strings"
-    "time"
-    "unsafe"
+	"fmt"
+	"time"
+	"math"
+	"strings"
+	"reflect"
+	"unsafe"
 )
 
 ${SOLUTION}

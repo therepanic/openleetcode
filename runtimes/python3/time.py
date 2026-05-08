@@ -1,14 +1,25 @@
 from __future__ import annotations
-import datetime as _dt
-from dataclasses import is_dataclass, asdict
+
+import sys
+import math
+import heapq
+import bisect
+import time
+import itertools
+
 from typing import *
-import time as _time
+from collections import *
+from functools import cache, lru_cache
+from heapq import *
+from bisect import *
+
+sys.setrecursionlimit(10**6)
 
 ${SOLUTION}
 
 ${UTILITIES}
 
-_start = int(_time.time() * 1000)
+_start = int(time.time() * 1000)
 ${CALL_SOLUTION}
-_end = int(_time.time() * 1000)
+_end = int(time.time() * 1000)
 print(_end - _start)

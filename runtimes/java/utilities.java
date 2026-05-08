@@ -259,3 +259,53 @@ final class Json {
 		sb.append('"');
 	}
 }
+
+// from https://docs.oracle.com/javase/8/javafx/api/javafx/util/Pair.html
+class Pair<K, V> {
+
+    private K key;
+    private V value;
+
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() {
+        return key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return key + "=" + value;
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode() * 13 +
+               (value == null ? 0 : value.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Pair<?, ?> pair)) {
+            return false;
+        }
+
+        if (key != null ? !key.equals(pair.key) : pair.key != null) {
+            return false;
+        }
+
+        return value != null
+                ? value.equals(pair.value)
+                : pair.value == null;
+    }
+}

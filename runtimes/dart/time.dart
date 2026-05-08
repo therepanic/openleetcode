@@ -1,12 +1,15 @@
 import 'dart:mirrors';
+import 'dart:math';
+import 'dart:collection';
+import 'dart:io';
 
 ${SOLUTION}
 
 ${UTILITIES}
 
 void main() {
-  final start = DateTime.now().millisecondsSinceEpoch;
+  final start = Stopwatch()..start();
   ${CALL_SOLUTION};
-  final end = DateTime.now().millisecondsSinceEpoch;
-  print(end - start);
+  start.stop();
+  print(start.elapsedMilliseconds);
 }
