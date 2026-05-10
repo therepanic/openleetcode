@@ -9,7 +9,7 @@ import Data.Text (pack)
 
 data ExecutorType = Piston
 
-data Language = Python3 | Python2 | Ruby | Java | Go | Dart | Kotlin | Swift | Cpp | Rust | TypeScript | Default
+data Language = Python3 | Python2 | Ruby | Java | CSharp | Go | Dart | Kotlin | Swift | Cpp | Rust | TypeScript | Default
   deriving (Show, Eq, Ord)
 
 convertLangToStr :: Language -> String
@@ -19,6 +19,7 @@ convertLangToStr lang = case lang of
   Python2 -> "python2"
   Ruby -> "ruby"
   Java -> "java"
+  CSharp -> "csharp"
   Go -> "go"
   Dart -> "dart"
   Kotlin -> "kotlin"
@@ -34,6 +35,7 @@ convertStrToLang s = case s of
   "rust" -> Just Rust
   "ruby" -> Just Ruby
   "java" -> Just Java
+  "csharp" -> Just CSharp
   "go" -> Just Go
   "dart" -> Just Dart
   "kotlin" -> Just Kotlin
@@ -50,6 +52,7 @@ convertExtToLang ext = case ext of
   ".rs" -> Rust
   ".cc" -> Cpp
   ".java" -> Java
+  ".cs" -> CSharp
   ".go" -> Go
   ".dart" -> Dart
   ".kt" -> Kotlin
@@ -65,6 +68,7 @@ convertLangToExt lang = case lang of
   Rust -> ".rs"
   Cpp -> ".cpp"
   Java -> ".java"
+  CSharp -> ".cs"
   Go -> ".go"
   Dart -> ".dart"
   Kotlin -> ".kt"
@@ -108,6 +112,7 @@ instance FromJSON Language where
       "rust" -> pure Rust
       "ruby" -> pure Ruby
       "java" -> pure Java
+      "csharp" -> pure CSharp
       "go" -> pure Go
       "dart" -> pure Dart
       "kotlin" -> pure Kotlin
@@ -126,6 +131,7 @@ instance FromJSONKey Language where
       "python3" -> pure Python3
       "ruby" -> pure Ruby
       "java" -> pure Java
+      "csharp" -> pure CSharp
       "go" -> pure Go
       "dart" -> pure Dart
       "kotlin" -> pure Kotlin
@@ -140,6 +146,7 @@ instance ToJSON Language where
   toJSON Cpp = "c++"
   toJSON Rust = "rust"
   toJSON Java = "java"
+  toJSON CSharp = "csharp"
   toJSON Go = "go"
   toJSON Dart = "dart"
   toJSON Kotlin = "kotlin"
@@ -156,6 +163,7 @@ instance ToJSONKey Language where
       Rust -> "rust"
       Cpp -> "c++"
       Java -> "java"
+      CSharp -> "csharp"
       Go -> "go"
       Dart -> "dart"
       Kotlin -> "kotlin"

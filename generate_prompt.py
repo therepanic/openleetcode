@@ -18,6 +18,7 @@ SNIPPET_LANGS = [
     "typescript",
     "rust",
     "cpp",
+    "csharp",
 ]
 
 SUPPORTED_LANGS = {
@@ -32,12 +33,13 @@ SUPPORTED_LANGS = {
     "swift": "swift",
     "rust": "rust",
     "typescript": "typescript",
+    "csharp": "csharp",
 }
 
 PROMPT_TEMPLATE = Template("""
 You are helping generate a test manifest for the openleetcode project.
 
-openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, rust, python3, python2, ruby, java, kotlin, go, dart, swift, typescript.
+openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, rust, python3, python2, ruby, java, csharp, kotlin, go, dart, swift, typescript.
 
 Generate 25-30 tests.
 
@@ -62,6 +64,7 @@ entry:
     python2: "..."
     ruby: "..."
     java: "..."
+    csharp: "..."
     kotlin: "..."
     go: "..."
     dart: "..."
@@ -155,7 +158,7 @@ Judge `exact` still compares the solution's last stdout line to compact JSON (no
 ## Call template syntax
 
 RULE:
-Every array param MUST be wrapped in ALL 11 languages. No exceptions.
+Every array param MUST be wrapped in ALL 12 languages. No exceptions.
 
 1D array {x}:
   → [{x}]
@@ -188,6 +191,7 @@ call:
   python2: "Solution().method([{nums}], {target})"
   ruby: "method([{nums}], {target})"
   java: "new Solution().method(new int[]{ {nums} }, {target})"
+  csharp: "new Solution().Method(new int[]{ {nums} }, {target})"
   kotlin: "Solution().method(intArrayOf({nums}), {target})"
   go: "method([]int{ {nums} }, {target})"
   dart: "Solution().method([{nums}], {target})"
@@ -209,6 +213,7 @@ call:
   python2: "Solution().method([{arr}], [{queries}])"
   ruby: "method([{arr}], [{queries}])"
   java: "new Solution().method(new int[]{ {arr} }, new int[][]{ {queries} })"
+  csharp: "new Solution().Method(new int[]{ {arr} }, new int[][]{ {queries} })"
   kotlin: "Solution().method(intArrayOf({arr}), arrayOf({queries}))"
   go: "method([]int{ {arr} }, [][]int{ {queries} })"
   dart: "Solution().method([{arr}], [{queries}])"
@@ -230,6 +235,7 @@ call:
   python2: "Solution().method([{matrix}], {target})"
   ruby: "method([{matrix}], {target})"
   java: "new Solution().method(new int[][]{ {matrix} }, {target})"
+  csharp: "new Solution().Method(new int[][]{ {matrix} }, {target})"
   kotlin: "Solution().method(arrayOf({matrix}), {target})"
   go: "method([][]int{ {matrix} }, {target})"
   dart: "Solution().method([{matrix}], {target})"
@@ -321,6 +327,9 @@ ruby:
 java:
   "ListNode.listNodeToArray(new Solution().method(ListNode.toListNode(new int[]{ {l1} })))"
 
+csharp:
+  "ListNode.ListNodeToArray(new Solution().Method(ListNode.ToListNode(new int[]{ {l1} })))"
+
 kotlin:
   "listNodeToArray(Solution().method(toListNode(intArrayOf({l1}))))"
 
@@ -349,6 +358,9 @@ ruby:
 java:
   "new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} }))"
 
+csharp:
+  "new Solution().Method(TreeNode.ToTreeNode(new int?[]{ {root} }))"
+
 kotlin:
   "Solution().method(toTreeNode(arrayOf({root})))"
 
@@ -376,6 +388,9 @@ ruby:
 
 java:
   "TreeNode.treeNodeToArray(new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} })))"
+
+csharp:
+  "TreeNode.TreeNodeToArray(new Solution().Method(TreeNode.ToTreeNode(new int?[]{ {root} })))"
 
 kotlin:
   "treeNodeToArray(Solution().method(toTreeNode(arrayOf({root}))))"
@@ -421,7 +436,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - Ensure oracle call is correct
 - Generator ranges must match problem constraints exactly
 - Oracle checker in Python3 validates structurally (not just re-run solution)
-- Follow call wrapping rules exactly for all 11 languages
+- Follow call wrapping rules exactly for all 12 languages
 
 3. Output only raw YAML.
    No comments, no explanation.

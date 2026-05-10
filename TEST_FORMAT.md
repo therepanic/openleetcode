@@ -19,6 +19,7 @@ entry:
     python2: "..."
     ruby: "..."
     java: "..."
+    csharp: "..."
     kotlin: "..."
     go: "..."
     dart: "..."
@@ -66,6 +67,7 @@ entry:
     cpp: "Solution().twoSum(lv(vector<int>{ {nums} }), {target})"
     python3: "Solution().twoSum([{nums}], {target})"
     java: "new Solution().twoSum(new int[] { {nums} }, {target})"
+    csharp: "new Solution().TwoSum(new int[]{ {nums} }, {target})"
     go: "twoSum([]int{ {nums} }, {target})"
     typescript: "twoSum([{nums}], {target})"
     # ... other languages
@@ -73,7 +75,7 @@ entry:
 
 `call` templates use `{param_name}` placeholders. At runtime, placeholders are replaced with the actual values of the test case inputs by their name.
 
-**Supported languages:** `cpp`, `rust`, `python3`, `python2`, `ruby`, `java`, `kotlin`, `go`, `dart`, `swift`, `typescript`
+**Supported languages:** `cpp`, `rust`, `python3`, `python2`, `ruby`, `java`, `csharp`, `kotlin`, `go`, `dart`, `swift`, `typescript`
 
 ---
 
@@ -450,6 +452,7 @@ entry:
     python2: "Solution().twoSum([{nums}], {target})"
     ruby: "two_sum([{nums}], {target})"
     java: "new Solution().twoSum(new int[] { {nums} }, {target})"
+    csharp: "new Solution().TwoSum(new int[]{ {nums} }, {target})"
     kotlin: "Solution().twoSum(intArrayOf({nums}), {target})"
     go: "twoSum([]int{ {nums} }, {target})"
     dart: "Solution().twoSum([{nums}], {target})"
@@ -544,6 +547,7 @@ entry:
     python2: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
     kotlin: "listNodeToArray(Solution().addTwoNumbers(toListNode(intArrayOf({l1})), toListNode(intArrayOf({l2}))))"
     java: "ListNode.listNodeToArray(new Solution().addTwoNumbers(ListNode.toListNode(new int[]{ {l1} }), ListNode.toListNode(new int[]{ {l2} })))"
+    csharp: "ListNode.ListNodeToArray(new Solution().AddTwoNumbers(ListNode.ToListNode(new int[]{ {l1} }), ListNode.ToListNode(new int[]{ {l2} })))"
     go: "listNodeToArray(addTwoNumbers(toListNode([]int{ {l1} }), toListNode([]int{ {l2} })))"
     dart: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
     swift: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
@@ -592,6 +596,7 @@ entry:
     python2: "Solution().maxDepth(to_tree_node([{root}]))"
     ruby: "Solution.new.max_depth(to_tree_node([{root}]))"
     java: "new Solution().maxDepth(TreeNode.toTreeNode(new Integer[]{ {root} }))"
+    csharp: "new Solution().MaxDepth(TreeNode.ToTreeNode(new int?[]{ {root} }))"
     kotlin: "Solution().maxDepth(toTreeNode(arrayOf({root})))"
     go: "maxDepth(toTreeNode([]interface{}{ {root} }))"
     dart: "Solution().maxDepth(to_tree_node([{root}]))"
@@ -623,6 +628,7 @@ entry:
     python2: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     ruby: "tree_node_to_array(Solution.new.invert_tree(to_tree_node([{root}])))"
     java: "TreeNode.treeNodeToArray(new Solution().invertTree(TreeNode.toTreeNode(new Integer[]{ {root} })))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().InvertTree(TreeNode.ToTreeNode(new int?[]{ {root} })))"
     kotlin: "treeNodeToArray(Solution().invertTree(toTreeNode(arrayOf({root}))))"
     go: "treeNodeToArray(invertTree(toTreeNode([]interface{}{ {root} })))"
     dart: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"

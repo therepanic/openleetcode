@@ -353,6 +353,17 @@ wrapArray lang elemType inner = case lang of
           Just Types.GIDArrElemBool -> "bool"
           _ -> "int"
      in "lv(vector<" <> t <> ">{ " <> inner <> " })"
+  CSharp ->
+    let t = case elemType of
+          Just Types.GIDArrElemInt -> "int"
+          Just Types.GIDArrElemLong -> "long"
+          Just Types.GIDArrElemDouble -> "double"
+          Just Types.GIDArrElemFloat -> "float"
+          Just Types.GIDArrElemString -> "string"
+          Just Types.GIDArrElemChar -> "char"
+          Just Types.GIDArrElemBool -> "bool"
+          _ -> "object"
+     in "new " <> t <> "[]{ " <> inner <> " }"
   Go -> "{" <> inner <> "}"
   Rust -> "vec![" <> inner <> "]"
   _ -> "[" <> inner <> "]"
