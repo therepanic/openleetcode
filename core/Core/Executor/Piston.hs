@@ -103,12 +103,15 @@ instance E.CodeExecutor PistonExecutor where
               if Prelude.null (pistonResponseStderr run)
                 then case pistonResponseStatus run of
                   OK -> E.ExecSuc {E.stdout = pistonResponseStdout run}
-                  TLE -> E.ExecFail {E.status = E.TLE, E.stderr = pistonResponseStderr run}
-                  RE -> E.ExecFail {E.status = E.RE, E.stderr = pistonResponseStderr run}
-                  Unknown m -> E.ExecFail {E.status = E.Unknown m, E.stderr = pistonResponseStderr run}
-                else E.ExecFail {E.status = E.RE, E.stderr = pistonResponseStderr run}
+                  TLE -> E.ExecFail {E.status = E.TLE, E.stderr = handleExceptionStderrEdgeCase run}
+                  RE -> E.ExecFail {E.status = E.RE, E.stderr = handleExceptionStderrEdgeCase run}
+                  Unknown m -> E.ExecFail {E.status = E.Unknown m, E.stderr = handleExceptionStderrEdgeCase run}
+                else E.ExecFail {E.status = E.RE, E.stderr = handleExceptionStderrEdgeCase run}
             Nothing -> error "Piston response does not contain run field"
       Nothing -> fail ("There is no " ++ show (E.language request) ++ " language")
+
+handleExceptionStderrEdgeCase :: PistonExecuteRun -> String
+handleExceptionStderrEdgeCase run = if Prelude.null (pistonResponseStderr run) then pistonResponseStdout run else pistonResponseStderr run
 
 instance FromJSON PistonExecuteResponse where
   parseJSON = withObject "PistonExecuteResponse" $ \v ->
