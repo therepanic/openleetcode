@@ -12,7 +12,7 @@ unpackRuntimes archive = do
         archive
           { zEntries =
               map strip $
-                filter (isPrefixOf "openleetcode-main/tests/" . eRelativePath) $
+                filter (isPrefixOf "openleetcode-main/runtimes/" . eRelativePath) $
                   zEntries archive
           }
   root <- defaultConfigRoot

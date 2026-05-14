@@ -43,22 +43,27 @@ convertStrToLang s = case s of
   "typescript" -> Just TypeScript
   _ -> Nothing
 
+convertExtToLangMaybe :: String -> Maybe Language
+convertExtToLangMaybe ext = case ext of
+  ".py" -> Just Python3
+  ".rb" -> Just Ruby
+  ".cpp" -> Just Cpp
+  ".c++" -> Just Cpp
+  ".rs" -> Just Rust
+  ".cc" -> Just Cpp
+  ".java" -> Just Java
+  ".cs" -> Just CSharp
+  ".go" -> Just Go
+  ".dart" -> Just Dart
+  ".kt" -> Just Kotlin
+  ".swift" -> Just Swift
+  ".ts" -> Just TypeScript
+  _ -> Nothing
+
 convertExtToLang :: String -> Language
-convertExtToLang ext = case ext of
-  ".py" -> Python3
-  ".rb" -> Ruby
-  ".cpp" -> Cpp
-  ".c++" -> Cpp
-  ".rs" -> Rust
-  ".cc" -> Cpp
-  ".java" -> Java
-  ".cs" -> CSharp
-  ".go" -> Go
-  ".dart" -> Dart
-  ".kt" -> Kotlin
-  ".swift" -> Swift
-  ".ts" -> TypeScript
-  _ -> error $ "Unknown extension: " <> ext
+convertExtToLang ext = case convertExtToLangMaybe ext of
+  Just lang -> lang
+  Nothing -> error $ "Unknown extension: " <> ext
 
 convertLangToExt :: Language -> String
 convertLangToExt lang = case lang of
