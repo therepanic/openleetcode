@@ -13,10 +13,7 @@ build-type:         Simple
 common warnings
     ghc-options: -Wall
 
-executable openleetcode
-    import:           warnings
-    main-is:          Main.hs
-    autogen-modules:  Paths_openleetcode
+common cli-modules
     other-modules:
         Paths_openleetcode
         CLI.AppEnv
@@ -45,6 +42,11 @@ executable openleetcode
         containers
     if os(windows)
         build-depends: Win32
+
+executable openleetcode
+    import:           warnings, cli-modules
+    main-is:          Main.hs
+    autogen-modules:  Paths_openleetcode
     hs-source-dirs:   cli
     default-language: GHC2021
 
@@ -95,38 +97,10 @@ test-suite core-tests
         containers
 
 test-suite cli-tests
-    import:           warnings
+    import:           warnings, cli-modules
     default-language: GHC2021
     type:             exitcode-stdio-1.0
     hs-source-dirs:   cli, cli/tests
     main-is:          CLIMain.hs
-    other-modules:
-        Paths_openleetcode
-        CLISpec
-        CLI.AppEnv
-        CLI.GitHub
-        CLI.Commands
-        CLI.Download
-        CLI.Config
-        CLI.Onboarding
-        CLI.Submit
-        CLI.Installer
-        CLI.Runtime
-        CLI.SubmitPipeline
-        CLI.UI
-    build-depends:
-        base ^>=4.19.1.0,
-        openleetcode:core,
-        optparse-applicative,
-        directory,
-        req,
-        zip-archive,
-        filepath,
-        yaml,
-        aeson,
-        bytestring,
-        text,
-        containers,
-        hspec
-    if os(windows)
-        build-depends: Win32
+    other-modules:    CLISpec
+    build-depends:    hspec
