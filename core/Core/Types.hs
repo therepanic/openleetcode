@@ -60,11 +60,6 @@ convertExtToLangMaybe ext = case ext of
   ".ts" -> Just TypeScript
   _ -> Nothing
 
-convertExtToLang :: String -> Language
-convertExtToLang ext = case convertExtToLangMaybe ext of
-  Just lang -> lang
-  Nothing -> error $ "Unknown extension: " <> ext
-
 convertLangToExt :: Language -> String
 convertLangToExt lang = case lang of
   Python3 -> ".py"

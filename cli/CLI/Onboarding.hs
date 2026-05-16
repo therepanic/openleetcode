@@ -23,7 +23,7 @@ runOnboarding runtime = do
       interactive <- stdinIsInteractive
       if not interactive
         then do
-          putPlain "onboarding" "" "non-interactive stdin; skipping automatic download (run `openleetcode download tests` and `openleetcode download runtimes`)"
+          putPlain "onboarding" "" "non-interactive stdin, skipping automatic download (run `openleetcode download tests` and `openleetcode download runtimes`)"
           pure (renderExitCode ExitOk)
         else do
           putStr (renderPrompt ui "Download them now? [Y/n] ")

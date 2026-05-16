@@ -29,7 +29,7 @@ cliOptionsParser =
 globalOptionsParser :: Parser GlobalOptions
 globalOptionsParser =
   GlobalOptions
-    <$> switch (long "plain" <> help "Disable animations and colors; line-oriented output.")
+    <$> switch (long "plain" <> help "Disable animations and colors, line-oriented output.")
     <*> switch (long "no-color" <> help "Disable ANSI colors.")
     <*> pure ColorAuto
 

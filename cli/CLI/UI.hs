@@ -345,6 +345,3 @@ cursorDown n = "\ESC[" ++ show n ++ "B"
 
 clearLine :: String -> String
 clearLine line = "\ESC[2K\r" ++ line
-
-stderrHandle :: Handle
-stderrHandle = stderr

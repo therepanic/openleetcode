@@ -82,10 +82,10 @@ emitConfigWarning ui result = case clrWarning result of
   Just warn ->
     case uiMode ui of
       Rich -> do
-        putStrLn "Warning: could not parse config file; using defaults."
+        putStrLn "Warning: could not parse config file, using defaults."
         putStrLn ("Details: " ++ sanitizeSingleLine warn)
       Plain -> do
-        putPlain "config" "warning" "could not parse config file; using defaults."
+        putPlain "config" "warning" "could not parse config file, using defaults."
         putPlain "config" "warning" ("Details: " ++ sanitizeSingleLine warn)
 
 emitConfigWriteError :: UI -> SomeException -> IO ()
