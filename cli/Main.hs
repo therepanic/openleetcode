@@ -17,7 +17,6 @@ import Options.Applicative.Help.Pretty (Doc, pretty, vsep)
 import Paths_openleetcode qualified
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitWith, ExitCode (ExitFailure, ExitSuccess))
-import System.Info (os)
 import System.IO (hSetEncoding, stderr, stdout)
 #if defined(mingw32_HOST_OS)
 import System.Win32.Console (setConsoleOutputCP)
@@ -26,27 +25,25 @@ import System.Win32.Console (setConsoleOutputCP)
 main :: IO ()
 main = do
   initConsoleEncoding
-  rawArgs <- getArgs
-  withArgs rawArgs $ do
-    opts <-
-      customExecParser (prefs showHelpOnEmpty) $
-        info
-          (cliOptionsParser <**> helper <**> versionOption)
-          ( fullDesc
-              <> progDesc "Run LeetCode-style tests locally using open test suites and a pluggable execution backend."
-              <> header "openleetcode"
-              <> footerDoc (Just cliHelpFooter)
-          )
-    runtime <- mkRuntime (cliGlobalOptions opts)
-    onboardingCode <- runOnboarding runtime
-    if onboardingCode /= 0
-      then exitWith (ExitFailure onboardingCode)
-      else do
-        code <- dispatch runtime (cliCommand opts)
-        exitWith $
-          if code == 0
-            then ExitSuccess
-            else ExitFailure code
+  opts <-
+    customExecParser (prefs showHelpOnEmpty) $
+      info
+        (cliOptionsParser <**> helper <**> versionOption)
+        ( fullDesc
+            <> progDesc "Run LeetCode-style tests locally using open test suites and a pluggable execution backend."
+            <> header "openleetcode"
+            <> footerDoc (Just cliHelpFooter)
+        )
+  runtime <- mkRuntime (cliGlobalOptions opts)
+  onboardingCode <- runOnboarding runtime
+  if onboardingCode /= 0
+    then exitWith (ExitFailure onboardingCode)
+    else do
+      code <- dispatch runtime (cliCommand opts)
+      exitWith $
+        if code == 0
+          then ExitSuccess
+          else ExitFailure code
 
 dispatch :: Runtime -> Command -> IO Int
 dispatch runtime (Download opts) = Download.run runtime opts
@@ -70,19 +67,6 @@ cliHelpFooter =
       pretty ("  openleetcode download tests" :: String),
       pretty ("  openleetcode config list" :: String)
     ]
-
-firstNonOption :: [String] -> Maybe String
-firstNonOption = find (not . isOptionLike)
-
-isOptionLike :: String -> Bool
-isOptionLike ('-' : _) = True
-isOptionLike _ = False
-
-rewriteLegacySubmitArgs :: [String] -> [String]
-rewriteLegacySubmitArgs args =
-  case break (not . isOptionLike) args of
-    (submitOpts, path : rest) -> ["submit", path] ++ submitOpts ++ rest
-    _ -> ["submit"] ++ args
 
 initConsoleEncoding :: IO ()
 initConsoleEncoding = do

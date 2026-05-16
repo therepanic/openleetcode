@@ -17,7 +17,7 @@ data ConfigSetOpts = ConfigSetOpts
 run :: Runtime -> ConfigOpts -> IO Int
 run runtime ConfigList = do
   let ui = rtUI runtime
-  result <- loadConfigDetailed
+  result <- loadConfig
   emitConfigWarning ui result
   configPath <- loadConfigPath
   let config = clrConfig result
@@ -28,7 +28,7 @@ run runtime ConfigList = do
   pure (renderExitCode ExitOk)
 run runtime (ConfigSet opts) = do
   let ui = rtUI runtime
-  result <- loadConfigDetailed
+  result <- loadConfig
   emitConfigWarning ui result
   let config = clrConfig result
   case configKey opts of
@@ -49,7 +49,7 @@ run runtime (ConfigSet opts) = do
           Plain -> putPlain "config" "" "Allowed values: piston"
         pure (renderExitCode ExitInput)
     "backend.url" -> do
-      saveResult <- try (saveConfig Config {backendUrl = configValue opts, backendType = backendType config}) :: IO (Either SomeException ())
+      saveResult <- try (saveConfig config {backendUrl = configValue opts}) :: IO (Either SomeException ())
       case saveResult of
         Right _ -> do
           case uiMode ui of
@@ -75,18 +75,6 @@ emitConfigError :: UI -> String -> IO ()
 emitConfigError ui msg = case uiMode ui of
   Rich -> putErrorLine ui msg
   Plain -> putPlain "config" "error" msg
-
-emitConfigWarning :: UI -> ConfigLoadResult -> IO ()
-emitConfigWarning ui result = case clrWarning result of
-  Nothing -> pure ()
-  Just warn ->
-    case uiMode ui of
-      Rich -> do
-        putStrLn "Warning: could not parse config file, using defaults."
-        putStrLn ("Details: " ++ sanitizeSingleLine warn)
-      Plain -> do
-        putPlain "config" "warning" "could not parse config file, using defaults."
-        putPlain "config" "warning" ("Details: " ++ sanitizeSingleLine warn)
 
 emitConfigWriteError :: UI -> SomeException -> IO ()
 emitConfigWriteError ui exc =

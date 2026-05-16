@@ -140,7 +140,3 @@ onboardingBanner =
       " \\____/|   __/ \\___  >___|  /____/\\___  >\\___  >__|  \\___  >____/\\____ |\\___  >",
       "       |__|        \\/     \\/          \\/     \\/          \\/           \\/    \\/ "
     ]
-
-stopMaybeChecklist :: Maybe Checklist -> IO ()
-stopMaybeChecklist Nothing = pure ()
-stopMaybeChecklist (Just checklist) = stopChecklist checklist

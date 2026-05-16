@@ -37,7 +37,6 @@ run runtime opts = do
         Rich -> pure ()
         Plain -> putPlain "download" "" "fetching repository archive"
       repo <- downloadRepoArchive
-      root <- defaultConfigRoot
       case uiMode ui of
         Rich -> case checklist of
           Just cl -> do
@@ -53,6 +52,7 @@ run runtime opts = do
           case checklist of
             Just cl -> updateChecklistStep cl 1 StepDone "Writing into data directory"
             Nothing -> pure ()
+          root <- defaultConfigRoot
           case downloadTarget opts of
             Runtimes -> putSuccess ui "Runtimes updated."
             Tests -> putSuccess ui "Tests updated."
@@ -74,7 +74,3 @@ run runtime opts = do
           putPlain "download" "error" reason
           putPlain "download" "" "Check your network connection and try again."
       pure (renderExitCode ExitInfra)
-
-stopMaybeChecklist :: Maybe Checklist -> IO ()
-stopMaybeChecklist Nothing = pure ()
-stopMaybeChecklist (Just checklist) = stopChecklist checklist

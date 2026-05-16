@@ -9,9 +9,7 @@ data SubmitResolved = SubmitResolved
   { srConfig :: Config,
     srLang :: Language,
     srBatch :: SolutionBatch,
-    srTestSuite :: TestSuite,
-    srBackendLabel :: String,
-    srBackendUrl :: String
+    srTestSuite :: TestSuite
   }
 
 data SubmitFailure

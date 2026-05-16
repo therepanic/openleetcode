@@ -18,8 +18,8 @@ data ConfigLoadResult = ConfigLoadResult
     clrWarning :: Maybe String
   }
 
-loadConfigDetailed :: IO ConfigLoadResult
-loadConfigDetailed = do
+loadConfig :: IO ConfigLoadResult
+loadConfig = do
   configRoot <- defaultConfigRoot
   let configPath = configRoot ++ "/config.yml"
   confExist <- doesFileExist configPath
@@ -51,11 +51,6 @@ loadConfigPath :: IO FilePath
 loadConfigPath = do
   configRoot <- defaultConfigRoot
   pure (configRoot <> "/config.yml")
-
-loadConfig :: IO Config
-loadConfig = do
-  result <- loadConfigDetailed
-  pure (clrConfig result)
 
 saveConfig :: Config -> IO ()
 saveConfig conf = do

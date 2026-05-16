@@ -17,6 +17,7 @@ import System.IO (Handle, hFlush, hIsTerminalDevice, stderr, stdin, stdout)
 #if defined(mingw32_HOST_OS)
 import System.Win32.Console (eNABLE_PROCESSED_OUTPUT, eNABLE_VIRTUAL_TERMINAL_PROCESSING, getConsoleMode, setConsoleMode)
 import System.Win32.Types (withHandleToHANDLE)
+import CLI.AppEnv (ConfigLoadResult (clrWarning))
 #endif
 
 data ColorMode = ColorAuto
@@ -51,8 +52,7 @@ data Checklist = Checklist
     clFrameRef :: IORef Int,
     clRenderedRef :: IORef Bool,
     clStopRef :: IORef Bool,
-    clRenderLock :: MVar (),
-    clTickerThread :: ThreadId
+    clRenderLock :: MVar ()
   }
 
 data ExitCodeKind = ExitOk | ExitInput | ExitInfra | ExitVerdict
@@ -187,8 +187,7 @@ startChecklist ui header steps =
       renderedRef <- newIORef False
       stopRef <- newIORef False
       renderLock <- newMVar ()
-      bootstrapThread <- forkIO (pure ())
-      let mkChecklist threadId =
+      let mkChecklist =
             Checklist
               { clUI = ui,
                 clHeader = header,
@@ -196,13 +195,11 @@ startChecklist ui header steps =
                 clFrameRef = frameRef,
                 clRenderedRef = renderedRef,
                 clStopRef = stopRef,
-                clRenderLock = renderLock,
-                clTickerThread = threadId
+                clRenderLock = renderLock
               }
-      let initialChecklist = mkChecklist bootstrapThread
+      let initialChecklist = mkChecklist
       renderChecklist initialChecklist
-      threadId <- forkIO (spinnerLoop initialChecklist)
-      pure (Just (mkChecklist threadId))
+      pure (Just mkChecklist)
 
 updateChecklistStep :: Checklist -> Int -> StepStatus -> String -> IO ()
 updateChecklistStep checklist idx newStatus newText =
@@ -213,10 +210,6 @@ updateChecklistStep checklist idx newStatus newText =
     if rendered
       then renderChecklistLineLocked checklist idx
       else renderChecklistLocked checklist
-
-finishChecklist :: Checklist -> IO ()
-finishChecklist checklist =
-  withMVar (clRenderLock checklist) $ \_ -> renderChecklistLocked checklist
 
 stopChecklist :: Checklist -> IO ()
 stopChecklist checklist = do
@@ -345,3 +338,19 @@ cursorDown n = "\ESC[" ++ show n ++ "B"
 
 clearLine :: String -> String
 clearLine line = "\ESC[2K\r" ++ line
+
+stopMaybeChecklist :: Maybe Checklist -> IO ()
+stopMaybeChecklist Nothing = pure ()
+stopMaybeChecklist (Just checklist) = stopChecklist checklist
+
+emitConfigWarning :: UI -> ConfigLoadResult -> IO ()
+emitConfigWarning ui result = case clrWarning result of
+  Nothing -> pure ()
+  Just warn ->
+    case uiMode ui of
+      Rich -> do
+        putStrLn "Warning: could not parse config file, using defaults."
+        putStrLn ("Details: " ++ sanitizeSingleLine warn)
+      Plain -> do
+        putPlain "config" "warning" "could not parse config file, using defaults."
+        putPlain "config" "warning" ("Details: " ++ sanitizeSingleLine warn)

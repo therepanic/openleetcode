@@ -65,7 +65,7 @@ prepareSubmit :: UI -> SubmitOpts -> IO (Either SubmitFailure SubmitResolved)
 prepareSubmit ui opts = do
   preparingChecklist <- emitPreparingHeader ui
   flip finally (stopMaybeChecklist preparingChecklist) $ do
-    configResult <- loadConfigDetailed
+    configResult <- loadConfig
     emitConfigWarning ui configResult
     emitPreparingStep ui preparingChecklist 0 "load configuration"
     root <- defaultConfigRoot
@@ -108,21 +108,22 @@ prepareSubmit ui opts = do
                               { srConfig = config,
                                 srLang = lang,
                                 srBatch = batch,
-                                srTestSuite = testSuite,
-                                srBackendLabel = show (backendType config),
-                                srBackendUrl = backendUrl config
+                                srTestSuite = testSuite
                               }
 
 executeSubmit :: UI -> SubmitResolved -> IO (Either SubmitFailure Int)
 executeSubmit ui resolved = do
-  runningChecklist <- emitRunningHeader ui (srBackendLabel resolved) (srBackendUrl resolved)
+  let config = srConfig resolved
+  let backUrl = backendUrl config
+  let backLabel = show (backendType config)
+  runningChecklist <- emitRunningHeader ui backLabel backUrl
   flip finally (stopMaybeChecklist runningChecklist) $ do
-    backendReady <- try (Piston.getRuntimes (srBackendUrl resolved)) :: IO (Either SomeException (M.Map Language String))
+    backendReady <- try (Piston.getRuntimes backUrl) :: IO (Either SomeException (M.Map Language String))
     case backendReady of
-      Left _ -> failSubmitStep runningChecklist (SubmitBackendUnavailable (srBackendUrl resolved))
+      Left _ -> failSubmitStep runningChecklist (SubmitBackendUnavailable backUrl)
       Right _ -> do
-        emitBackendReady ui runningChecklist (srBackendLabel resolved) (srBackendUrl resolved) (length (TestTypes.tsCases (srTestSuite resolved)))
-        let executor = convertExecutorTypeToExecutor (backendType (srConfig resolved)) (srBackendUrl resolved)
+        emitBackendReady ui runningChecklist backLabel backUrl (length (TestTypes.tsCases (srTestSuite resolved)))
+        let executor = convertExecutorTypeToExecutor (backendType config) backUrl
         let generator = SplitmixGenerator
         progressRef <- newIORef (Nothing :: Maybe Word64)
         resultsOrError <-
@@ -421,18 +422,6 @@ trimLeadingSpace :: String -> String
 trimLeadingSpace (' ' : xs) = trimLeadingSpace xs
 trimLeadingSpace xs = xs
 
-emitConfigWarning :: UI -> ConfigLoadResult -> IO ()
-emitConfigWarning ui result = case clrWarning result of
-  Nothing -> pure ()
-  Just warn ->
-    case uiMode ui of
-      Rich -> do
-        putStrLn "Warning: could not parse config file, using defaults."
-        putStrLn ("Details: " ++ sanitizeSingleLine warn)
-      Plain -> do
-        putPlain "config" "warning" "could not parse config file, using defaults."
-        putPlain "config" "warning" ("Details: " ++ sanitizeSingleLine warn)
-
 capitalize :: String -> String
 capitalize [] = []
 capitalize (x : xs) = toUpperAscii x : xs
@@ -441,10 +430,6 @@ toUpperAscii :: Char -> Char
 toUpperAscii c
   | 'a' <= c && c <= 'z' = toEnum (fromEnum c - 32)
   | otherwise = c
-
-stopMaybeChecklist :: Maybe Checklist -> IO ()
-stopMaybeChecklist Nothing = pure ()
-stopMaybeChecklist (Just checklist) = stopChecklist checklist
 
 failSubmitStep :: Maybe Checklist -> SubmitFailure -> IO (Either SubmitFailure a)
 failSubmitStep Nothing failure = pure (Left failure)
