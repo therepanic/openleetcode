@@ -94,10 +94,6 @@ isParsedPlainSubmit (Success opts) =
       _ -> False
 isParsedPlainSubmit _ = False
 
-isParseFailure :: ParserResult a -> Bool
-isParseFailure (Failure _) = True
-isParseFailure _ = False
-
 isParsedConfigSet :: ParserResult CliOptions -> Bool
 isParsedConfigSet (Success opts) =
   case cliCommand opts of
