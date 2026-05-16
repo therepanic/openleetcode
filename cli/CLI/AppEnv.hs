@@ -13,7 +13,12 @@ data Config = Config
   }
   deriving (Show)
 
-loadConfig :: IO Config
+data ConfigLoadResult = ConfigLoadResult
+  { clrConfig :: Config,
+    clrWarning :: Maybe String
+  }
+
+loadConfig :: IO ConfigLoadResult
 loadConfig = do
   configRoot <- defaultConfigRoot
   let configPath = configRoot ++ "/config.yml"
@@ -22,13 +27,30 @@ loadConfig = do
     then do
       result <- decodeFileEither configPath
       case result of
-        Left err -> do
-          putStrLn $ "Error parsing config: " ++ show err
-          return defaultConfig
-        Right config -> return config
+        Left err ->
+          pure
+            ConfigLoadResult
+              { clrConfig = defaultConfig,
+                clrWarning = Just (show err)
+              }
+        Right config ->
+          pure
+            ConfigLoadResult
+              { clrConfig = config,
+                clrWarning = Nothing
+              }
     else do
       saveConfig defaultConfig
-      return defaultConfig
+      pure
+        ConfigLoadResult
+          { clrConfig = defaultConfig,
+            clrWarning = Nothing
+          }
+
+loadConfigPath :: IO FilePath
+loadConfigPath = do
+  configRoot <- defaultConfigRoot
+  pure (configRoot <> "/config.yml")
 
 saveConfig :: Config -> IO ()
 saveConfig conf = do

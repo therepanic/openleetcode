@@ -88,9 +88,6 @@ def _encode(obj: Any, seen: set[int]) -> str:
     if isinstance(obj, (bytes, bytearray, memoryview)):
         return _quote(bytes(obj).hex())
 
-    if isinstance(obj, (_dt.datetime, _dt.date, _dt.time)):
-        return _quote(obj.isoformat())
-
     try:
         import enum
 

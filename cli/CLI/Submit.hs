@@ -1,15 +1,29 @@
 module CLI.Submit where
 
-import CLI.AppEnv (Config (backendType, backendUrl), defaultConfigRoot, loadConfig)
-import Control.Monad (forM, unless, when)
+import CLI.AppEnv
+import CLI.Runtime (Runtime (rtUI))
+import CLI.SubmitPipeline
+import CLI.UI
+import Control.Exception (SomeException, finally, try)
+import Control.Monad (forM)
 import Core.Executor.Any (convertExecutorTypeToExecutor)
+import Core.Executor.Piston qualified as Piston
 import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
 import Core.Test.Loader (loadTestSuite)
-import Core.Test.Runner (SolutionBatch (SolutionBatch, entryMain, entryTime, python3Utilities, sbLang, solution, utilities), TestResult (Pass, RE, TLE, WA), runSuite)
-import Core.Types (Language, convertExtToLang, convertLangToExt, convertLangToStr)
+import Core.Test.Runner
+  ( SolutionBatch (SolutionBatch, entryMain, entryTime, python3Utilities, sbLang, solution, utilities),
+    TestResult (Internal, Pass, RE, TLE, WA),
+    runSuiteWithProgress,
+  )
+import Core.Test.Types qualified as TestTypes
+import Core.Types (Language, convertExtToLangMaybe, convertLangToExt, convertLangToStr)
+import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.List (find, isInfixOf, isPrefixOf)
-import Data.Maybe (fromMaybe, isNothing)
-import System.Directory (listDirectory)
+import Data.Map qualified as M
+import Data.Maybe (fromMaybe)
+import Data.Word (Word64)
+import GHC.Clock (getMonotonicTimeNSec)
+import System.Directory (doesDirectoryExist, listDirectory)
 import System.FilePath (takeExtension, (</>))
 
 data SubmitOpts = SubmitOpts
@@ -19,69 +33,406 @@ data SubmitOpts = SubmitOpts
     submitLang :: Maybe Language
   }
 
-run :: SubmitOpts -> IO ()
-run opts = do
-  validateSubmit opts
-  root <- defaultConfigRoot
-  config <- loadConfig
-  let runtimes = root </> "runtimes"
-  let lang = fromMaybe (convertExtToLang (takeExtension (submitPath opts))) (submitLang opts)
-  let extStr = convertLangToExt lang
-  entryMainStr <- readFile (runtimes </> convertLangToStr lang </> "main" ++ extStr)
-  entryTimeStr <- readFile (runtimes </> convertLangToStr lang </> "time" ++ extStr)
-  solutionStr <- readFile (submitPath opts)
-  utilitiesStr <- readFile (runtimes </> convertLangToStr lang </> "utilities" ++ extStr)
-  python3UtilitiesStr <- readFile (runtimes </> "python3" </> "utilities.py")
-  testSuitePath <- findTestPath root opts
-  testSuite <- loadTestSuite testSuitePath
-  let batch = SolutionBatch {entryMain = entryMainStr, entryTime = entryTimeStr, sbLang = lang, utilities = utilitiesStr, solution = solutionStr, python3Utilities = python3UtilitiesStr}
-  let executor = convertExecutorTypeToExecutor (backendType config) (backendUrl config)
-  let generator = SplitmixGenerator
-  results <- runSuite executor generator batch testSuite
-  let failure = find (\(_, res) -> case res of Pass _ -> False; _ -> True) results
-  case failure of
-    Just (idx, err) -> printError (idx, err)
+run :: Runtime -> SubmitOpts -> IO Int
+run runtime opts = do
+  let ui = rtUI runtime
+  case validateSubmit opts of
+    Just failure -> do
+      renderSubmitFailure ui failure
+      pure (submitFailureExitCode failure)
     Nothing -> do
-      let times = [t | (_, Pass t) <- results]
-      let maxTime = maximum times
-      putStrLn $ "All tests passed (" ++ show maxTime ++ "ms)"
+      prepared <- prepareSubmit ui opts
+      case prepared of
+        Left failure -> do
+          renderSubmitFailure ui failure
+          pure (submitFailureExitCode failure)
+        Right resolved -> do
+          result <- executeSubmit ui resolved
+          case result of
+            Left failure -> do
+              renderSubmitFailure ui failure
+              pure (submitFailureExitCode failure)
+            Right maxTime -> do
+              renderAccepted ui maxTime
+              pure (renderExitCode ExitOk)
 
-validateSubmit :: SubmitOpts -> IO ()
-validateSubmit opts =
-  when (isNothing (submitId opts) && isNothing (submitTitle opts)) $
-    fail "Title or id must be entered"
+validateSubmit :: SubmitOpts -> Maybe SubmitFailure
+validateSubmit opts
+  | submitId opts == Nothing && submitTitle opts == Nothing = Just SubmitMissingSelector
+  | otherwise = Nothing
 
-findTestPath :: FilePath -> SubmitOpts -> IO FilePath
+prepareSubmit :: UI -> SubmitOpts -> IO (Either SubmitFailure SubmitResolved)
+prepareSubmit ui opts = do
+  preparingChecklist <- emitPreparingHeader ui
+  flip finally (stopMaybeChecklist preparingChecklist) $ do
+    configResult <- loadConfig
+    emitConfigWarning ui configResult
+    emitPreparingStep ui preparingChecklist 0 "load configuration"
+    root <- defaultConfigRoot
+    case resolveLanguage opts of
+      Left failure -> failSubmitStep preparingChecklist failure
+      Right lang -> do
+        emitPreparingStep ui preparingChecklist 1 "resolve problem"
+        suitePathResult <- findTestPath root opts
+        case suitePathResult of
+          Left failure -> failSubmitStep preparingChecklist failure
+          Right suitePath -> do
+            suiteResult <- try (loadTestSuite suitePath) :: IO (Either SomeException TestTypes.TestSuite)
+            case suiteResult of
+              Left exc -> failSubmitStep preparingChecklist (SubmitInfraFailure (classifyException exc))
+              Right testSuite -> do
+                emitPreparingStep ui preparingChecklist 2 ("load test suite (" ++ show (length (TestTypes.tsCases testSuite)) ++ " cases)")
+                runtimeResult <- loadRuntimeTemplates root lang
+                case runtimeResult of
+                  Left failure -> failSubmitStep preparingChecklist failure
+                  Right (entryMainStr, entryTimeStr, utilitiesStr, python3UtilitiesStr) -> do
+                    emitPreparingStep ui preparingChecklist 3 ("load runtime templates (" ++ convertLangToStr lang ++ ")")
+                    solutionResult <- try (readFile (submitPath opts)) :: IO (Either SomeException String)
+                    case solutionResult of
+                      Left exc -> failSubmitStep preparingChecklist (SubmitSolutionReadError (submitPath opts) (sanitizeSingleLine (show exc)))
+                      Right solutionStr -> do
+                        emitPreparingStep ui preparingChecklist 4 "read solution"
+                        let config = clrConfig configResult
+                        let batch =
+                              SolutionBatch
+                                { entryMain = entryMainStr,
+                                  entryTime = entryTimeStr,
+                                  sbLang = lang,
+                                  utilities = utilitiesStr,
+                                  solution = solutionStr,
+                                  python3Utilities = python3UtilitiesStr
+                                }
+                        pure $
+                          Right
+                            SubmitResolved
+                              { srConfig = config,
+                                srLang = lang,
+                                srBatch = batch,
+                                srTestSuite = testSuite
+                              }
+
+executeSubmit :: UI -> SubmitResolved -> IO (Either SubmitFailure Int)
+executeSubmit ui resolved = do
+  let config = srConfig resolved
+  let backUrl = backendUrl config
+  let backLabel = show (backendType config)
+  runningChecklist <- emitRunningHeader ui backLabel backUrl
+  flip finally (stopMaybeChecklist runningChecklist) $ do
+    backendReady <- try (Piston.getRuntimes backUrl) :: IO (Either SomeException (M.Map Language String))
+    case backendReady of
+      Left _ -> failSubmitStep runningChecklist (SubmitBackendUnavailable backUrl)
+      Right _ -> do
+        emitBackendReady ui runningChecklist backLabel backUrl (length (TestTypes.tsCases (srTestSuite resolved)))
+        let executor = convertExecutorTypeToExecutor (backendType config) backUrl
+        let generator = SplitmixGenerator
+        progressRef <- newIORef (Nothing :: Maybe Word64)
+        resultsOrError <-
+          try $
+            runSuiteWithProgress
+              executor
+              generator
+              (srBatch resolved)
+              (srTestSuite resolved)
+              (\done total -> emitRunningProgressThrottled ui runningChecklist progressRef done total)
+        case resultsOrError of
+          Left exc ->
+            failSubmitStep runningChecklist (classifySuiteException exc)
+          Right results ->
+            case find (\(_, res) -> case res of Pass _ -> False; _ -> True) results of
+              Just (idx, verdict) ->
+                failSubmitStep runningChecklist $
+                  case verdict of
+                    Internal msg
+                      | isOracleExecutionMessage msg -> SubmitInternalWhileJudging (Just idx) (sanitizeInternalJudgeMessage msg)
+                      | otherwise -> SubmitJudgeInternal (Just idx) (sanitizeInternalJudgeMessage msg)
+                    _ -> SubmitVerdict idx verdict
+              Nothing -> pure (Right (maximum [t | (_, Pass t) <- results]))
+
+loadRuntimeTemplates :: FilePath -> Language -> IO (Either SubmitFailure (String, String, String, String))
+loadRuntimeTemplates root lang = do
+  let runtimes = root </> "runtimes"
+  let extStr = convertLangToExt lang
+  let langDir = runtimes </> convertLangToStr lang
+  mainResult <- try (readFile (langDir </> ("main" ++ extStr))) :: IO (Either SomeException String)
+  timeResult <- try (readFile (langDir </> ("time" ++ extStr))) :: IO (Either SomeException String)
+  utilitiesResult <- try (readFile (langDir </> ("utilities" ++ extStr))) :: IO (Either SomeException String)
+  pyUtilsResult <- try (readFile (runtimes </> "python3" </> "utilities.py")) :: IO (Either SomeException String)
+  pure $ do
+    entryMainStr <- either (Left . SubmitInfraFailure . classifyException) Right mainResult
+    entryTimeStr <- either (Left . SubmitInfraFailure . classifyException) Right timeResult
+    utilitiesStr <- either (Left . SubmitInfraFailure . classifyException) Right utilitiesResult
+    python3UtilitiesStr <- either (Left . SubmitInfraFailure . classifyException) Right pyUtilsResult
+    Right (entryMainStr, entryTimeStr, utilitiesStr, python3UtilitiesStr)
+
+resolveLanguage :: SubmitOpts -> Either SubmitFailure Language
+resolveLanguage opts = case submitLang opts of
+  Just lang -> Right lang
+  Nothing ->
+    case convertExtToLangMaybe (takeExtension (submitPath opts)) of
+      Just lang -> Right lang
+      Nothing -> Left (SubmitUnknownExtension (takeExtension (submitPath opts)))
+
+findTestPath :: FilePath -> SubmitOpts -> IO (Either SubmitFailure FilePath)
 findTestPath root opts = do
   let testsDir = root </> "tests"
   case submitId opts of
     Just taskId -> do
       let low = ((taskId - 1) `div` 500) * 500 + 1
       let rangeDir = testsDir </> (show low ++ "-" ++ show (low + 499))
-      subDirs <- listDirectory rangeDir
-      case find (\d -> (show taskId ++ ".") `isPrefixOf` d) subDirs of
-        Just target -> return (rangeDir </> target </> "manifest.yml")
-        Nothing -> fail "Test id folder not found"
+      rangeExists <- doesDirectoryExist rangeDir
+      if not rangeExists
+        then pure (Left (SubmitSuiteNotFoundById taskId))
+        else do
+          subDirs <- listDirectory rangeDir
+          case find (\d -> (show taskId ++ ".") `isPrefixOf` d) subDirs of
+            Just target -> pure (Right (rangeDir </> target </> "manifest.yml"))
+            Nothing -> pure (Left (SubmitSuiteNotFoundById taskId))
     Nothing -> case submitTitle opts of
       Just title -> do
-        ranges <- listDirectory testsDir
-        paths <- forM ranges $ \r -> do
-          let currRange = testsDir </> r
-          subs <- listDirectory currRange
-          return [currRange </> s | s <- subs, title `isInfixOf` s]
-        case concat paths of
-          (p : _) -> return (p </> "manifest.yml")
-          [] -> fail "Test title not found"
-      Nothing -> fail "No id or title"
+        testsExist <- doesDirectoryExist testsDir
+        if not testsExist
+          then pure (Left (SubmitSuiteNotFoundByTitle title))
+          else do
+            ranges <- listDirectory testsDir
+            paths <- forM ranges $ \r -> do
+              let currRange = testsDir </> r
+              rangeExists <- doesDirectoryExist currRange
+              if not rangeExists
+                then pure []
+                else do
+                  subs <- listDirectory currRange
+                  pure [currRange </> s | s <- subs, title `isInfixOf` s]
+            case concat paths of
+              (p : _) -> pure (Right (p </> "manifest.yml"))
+              [] -> pure (Left (SubmitSuiteNotFoundByTitle title))
+      Nothing -> pure (Left SubmitMissingSelector)
 
-printError :: (Int, TestResult) -> IO ()
-printError (i, WA expected got out) = do
-  putStrLn $ "Test #" ++ show i ++ ": [Wrong Answer] Expected: " ++ fromMaybe "Nothing" expected ++ ", Got: " ++ got
-  unless (null out) $ putStrLn $ "Logs:\n" ++ out
-printError (i, TLE out) = do
-  putStrLn $ "Test #" ++ show i ++ ": [Time Limit Exceeded]"
-  unless (null out) $ putStrLn $ "Logs before TLE:\n" ++ out
-printError (i, RE err out) = do
-  putStrLn $ "Test #" ++ show i ++ ": [Runtime Error] " ++ err
-  unless (null out) $ putStrLn $ "Logs:\n" ++ out
-printError _ = putStrLn "Unknown error"
+emitPreparingHeader :: UI -> IO (Maybe Checklist)
+emitPreparingHeader ui = case uiMode ui of
+  Rich ->
+    startChecklist
+      ui
+      "Preparing…"
+      [ ChecklistStep StepActive "Load configuration",
+        ChecklistStep StepPending "Resolve problem",
+        ChecklistStep StepPending "Load test suite",
+        ChecklistStep StepPending "Load runtime templates",
+        ChecklistStep StepPending "Read solution"
+      ]
+  Plain -> pure Nothing
+
+emitPreparingStep :: UI -> Maybe Checklist -> Int -> String -> IO ()
+emitPreparingStep ui maybeChecklist idx msg = case uiMode ui of
+  Rich -> case maybeChecklist of
+    Just checklist -> do
+      updateChecklistStep checklist idx StepDone (capitalize msg)
+      advanceChecklist checklist (idx + 1)
+    Nothing -> pure ()
+  Plain -> putPlain "submit" "preparing" msg
+
+advanceChecklist :: Checklist -> Int -> IO ()
+advanceChecklist checklist idx =
+  updateChecklistStep checklist idx StepActive =<< nextStepText idx
+  where
+    nextStepText 1 = pure "Resolve problem"
+    nextStepText 2 = pure "Load test suite"
+    nextStepText 3 = pure "Load runtime templates"
+    nextStepText 4 = pure "Read solution"
+    nextStepText _ = pure ""
+
+emitRunningHeader :: UI -> String -> String -> IO (Maybe Checklist)
+emitRunningHeader ui backendLabel backendUrl = case uiMode ui of
+  Rich ->
+    startChecklist
+      ui
+      "Running tests…"
+      [ ChecklistStep StepActive ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")"),
+        ChecklistStep StepPending "Run test cases"
+      ]
+  Plain -> pure Nothing
+
+emitBackendReady :: UI -> Maybe Checklist -> String -> String -> Int -> IO ()
+emitBackendReady ui maybeChecklist backendLabel backendUrl total = case uiMode ui of
+  Rich -> case maybeChecklist of
+    Just checklist -> do
+      updateChecklistStep checklist 0 StepDone ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")")
+      updateChecklistStep checklist 1 StepActive ("Run test cases (0/" ++ show total ++ ")")
+    Nothing -> pure ()
+  Plain -> putPlain "submit" "running" ("backend " ++ backendLabel ++ " @ " ++ backendUrl)
+
+emitRunningProgress :: UI -> Maybe Checklist -> Int -> Int -> IO ()
+emitRunningProgress ui maybeChecklist done total = case uiMode ui of
+  Rich -> case maybeChecklist of
+    Just checklist ->
+      updateChecklistStep checklist 1 (if done == total then StepDone else StepActive) ("Run test cases (" ++ show done ++ "/" ++ show total ++ ")")
+    Nothing -> pure ()
+  Plain -> putPlain "submit" "running" ("progress " ++ show done ++ "/" ++ show total)
+
+emitRunningProgressThrottled :: UI -> Maybe Checklist -> IORef (Maybe Word64) -> Int -> Int -> IO ()
+emitRunningProgressThrottled ui maybeChecklist progressRef done total =
+  case uiMode ui of
+    Plain -> emitRunningProgress ui maybeChecklist done total
+    Rich -> do
+      nowMs <- fmap (`div` 1000000) getMonotonicTimeNSec
+      lastMs <- readIORef progressRef
+      let shouldRender =
+            done == total
+              || done == 1
+              || maybe True (\prev -> nowMs - prev >= 250) lastMs
+      if shouldRender
+        then do
+          writeIORef progressRef (Just nowMs)
+          emitRunningProgress ui maybeChecklist done total
+        else pure ()
+
+renderAccepted :: UI -> Int -> IO ()
+renderAccepted ui maxTime = case uiMode ui of
+  Rich -> do
+    putSuccess ui "All tests passed"
+    putStrLn ("Runtime: " ++ show maxTime ++ " ms")
+  Plain -> do
+    putPlain "submit" "verdict" "accepted"
+    putPlain "submit" "verdict" ("runtime: " ++ show maxTime)
+
+renderSubmitFailure :: UI -> SubmitFailure -> IO ()
+renderSubmitFailure ui failure = case failure of
+  SubmitMissingSelector -> do
+    renderErrorHeader ui "submit" "Missing problem selector."
+    emitDetail ui "submit" "Provide either --id <number> or --title \"<substring>\"."
+    emitDetail ui "submit" "Example:"
+    emitDetail ui "submit" "  openleetcode submit ./solution.py --id 1"
+  SubmitSolutionReadError path reason -> do
+    renderErrorHeader ui "submit" ("Could not read solution file: " ++ path)
+    emitDetail ui "submit" reason
+  SubmitUnknownExtension ext -> do
+    renderErrorHeader ui "submit" ("Unknown file extension for language detection: '" ++ ext ++ "'")
+    emitDetail ui "submit" "Use --lang <LANG> (see --help for supported values)."
+  SubmitSuiteNotFoundById taskId ->
+    renderErrorHeader ui "submit" ("Test suite not found for problem id " ++ show taskId ++ ".")
+  SubmitSuiteNotFoundByTitle title ->
+    renderErrorHeader ui "submit" ("Test suite not found for title matching: \"" ++ title ++ "\".")
+  SubmitBackendUnavailable backendUrl -> do
+    renderErrorHeader ui "submit" ("Backend is not reachable: " ++ backendUrl)
+    emitDetail ui "submit" "Check `openleetcode config list` and your backend service."
+  SubmitJudgeInternal maybeIdx msg -> do
+    renderErrorHeader ui "submit" $
+      case maybeIdx of
+        Just idx -> "Judge internal error on test #" ++ show idx
+        Nothing -> "Judge internal error"
+    emitDetail ui "submit" ("  " ++ msg)
+  SubmitInternalWhileJudging maybeIdx msg -> do
+    renderErrorHeader ui "submit" $
+      case maybeIdx of
+        Just idx -> "Internal error while judging test #" ++ show idx
+        Nothing -> "Internal error while judging"
+    emitDetail ui "submit" ("  " ++ msg)
+  SubmitInfraFailure msg ->
+    renderErrorHeader ui "submit" ("Internal error: " ++ msg)
+  SubmitVerdict idx verdict -> renderVerdict ui idx verdict
+
+renderVerdict :: UI -> Int -> TestResult -> IO ()
+renderVerdict ui idx verdict = case verdict of
+  WA expected got out -> do
+    renderVerdictHeader ui "wa" ("Wrong answer on test #" ++ show idx)
+    emitVerdictDetail ui "wa" ("  Expected: " ++ fromMaybe "No expected output" expected)
+    emitVerdictDetail ui "wa" ("  Got:      " ++ got)
+    if null out
+      then pure ()
+      else do
+        emitVerdictDetail ui "wa" "  Logs:"
+        emitVerdictDetail ui "wa" out
+  TLE out -> do
+    renderVerdictHeader ui "tle" ("Time limit exceeded on test #" ++ show idx)
+    if null out
+      then pure ()
+      else do
+        emitVerdictDetail ui "tle" "  Logs before time limit:"
+        emitVerdictDetail ui "tle" out
+  RE err out -> do
+    renderVerdictHeader ui "re" ("Runtime error on test #" ++ show idx)
+    emitVerdictDetail ui "re" ("  " ++ err)
+    if null out
+      then pure ()
+      else do
+        emitVerdictDetail ui "re" "  Logs:"
+        emitVerdictDetail ui "re" out
+  Internal msg -> do
+    renderErrorHeader ui "submit" ("Judge internal error on test #" ++ show idx)
+    emitDetail ui "submit" ("  " ++ sanitizeInternalJudgeMessage msg)
+  Pass _ -> pure ()
+
+renderErrorHeader :: UI -> String -> String -> IO ()
+renderErrorHeader ui scope msg = case uiMode ui of
+  Rich -> putErrorLine ui msg
+  Plain -> putPlain scope "error" msg
+
+renderVerdictHeader :: UI -> String -> String -> IO ()
+renderVerdictHeader ui verdictTag msg = case uiMode ui of
+  Rich -> putErrorLine ui msg
+  Plain -> putPlain "submit" ("verdict: " ++ verdictTag) msg
+
+emitVerdictDetail :: UI -> String -> String -> IO ()
+emitVerdictDetail ui verdictTag msg = case uiMode ui of
+  Rich -> putStrLn msg
+  Plain -> putPlain "submit" ("verdict: " ++ verdictTag) msg
+
+emitDetail :: UI -> String -> String -> IO ()
+emitDetail ui scope msg = case uiMode ui of
+  Rich -> putStrLn msg
+  Plain -> putPlain scope "" msg
+
+submitFailureExitCode :: SubmitFailure -> Int
+submitFailureExitCode failure = case failure of
+  SubmitMissingSelector -> renderExitCode ExitInput
+  SubmitSolutionReadError _ _ -> renderExitCode ExitInput
+  SubmitUnknownExtension _ -> renderExitCode ExitInput
+  SubmitSuiteNotFoundById _ -> renderExitCode ExitInput
+  SubmitSuiteNotFoundByTitle _ -> renderExitCode ExitInput
+  SubmitBackendUnavailable _ -> renderExitCode ExitInfra
+  SubmitInternalWhileJudging _ _ -> renderExitCode ExitInfra
+  SubmitJudgeInternal _ _ -> renderExitCode ExitInfra
+  SubmitInfraFailure _ -> renderExitCode ExitInfra
+  SubmitVerdict _ _ -> renderExitCode ExitVerdict
+
+classifySuiteException :: SomeException -> SubmitFailure
+classifySuiteException exc =
+  if "Oracle execution error:" `isInfixOf` shown
+    then SubmitInternalWhileJudging Nothing (stripOracleExecutionPrefix (sanitizeSingleLine shown))
+    else SubmitInfraFailure (classifyException exc)
+  where
+    shown = show exc
+
+sanitizeInternalJudgeMessage :: String -> String
+sanitizeInternalJudgeMessage = stripOracleExecutionPrefix . sanitizeSingleLine
+
+isOracleExecutionMessage :: String -> Bool
+isOracleExecutionMessage = isInfixOf "Oracle execution error:"
+
+stripOracleExecutionPrefix :: String -> String
+stripOracleExecutionPrefix msg =
+  case splitAt prefixLen msg of
+    (prefix, rest)
+      | prefix == oraclePrefix -> trimLeadingSpace rest
+    _ -> msg
+  where
+    oraclePrefix = "Oracle execution error:"
+    prefixLen = length oraclePrefix
+
+trimLeadingSpace :: String -> String
+trimLeadingSpace (' ' : xs) = trimLeadingSpace xs
+trimLeadingSpace xs = xs
+
+capitalize :: String -> String
+capitalize [] = []
+capitalize (x : xs) = toUpperAscii x : xs
+
+toUpperAscii :: Char -> Char
+toUpperAscii c
+  | 'a' <= c && c <= 'z' = toEnum (fromEnum c - 32)
+  | otherwise = c
+
+failSubmitStep :: Maybe Checklist -> SubmitFailure -> IO (Either SubmitFailure a)
+failSubmitStep Nothing failure = pure (Left failure)
+failSubmitStep (Just checklist) failure = do
+  failActiveChecklistStep checklist
+  pure (Left failure)

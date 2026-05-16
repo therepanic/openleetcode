@@ -3,7 +3,7 @@
 module Core.Test.Runner where
 
 import Control.Applicative ((<|>))
-import Control.Exception (Exception, handle, throwIO)
+import Control.Exception (Exception, SomeException, displayException, handle, throwIO, try)
 import Core.Executor.Class qualified as C
 import Core.Generator.Class (GenData (..), GenResult, Generator, generate)
 import Core.Judge.Class (Judge, judge)
@@ -13,6 +13,7 @@ import Core.Judge.IgnoreOrder qualified as ITypes
 import Core.Test.Converter (toGenInfo)
 import Core.Test.Types qualified as Types
 import Core.Types
+import Data.IORef (IORef, atomicModifyIORef', newIORef)
 import Data.List (intercalate)
 import Data.List qualified
 import Data.Map qualified as M
@@ -27,7 +28,7 @@ newtype ShortCircuit = ShortCircuit (Int, TestResult)
 
 instance Exception ShortCircuit
 
-data TestResult = Pass Int | WA (Maybe String) String String | TLE String | RE String String deriving (Show, Eq)
+data TestResult = Pass Int | WA (Maybe String) String String | TLE String | RE String String | Internal String deriving (Show, Eq)
 
 data SolutionBatch = SolutionBatch {entryMain :: String, entryTime :: String, sbLang :: Language, solution :: String, utilities :: String, python3Utilities :: String}
 
@@ -38,18 +39,39 @@ runSuite ::
   SolutionBatch ->
   Types.TestSuite ->
   IO [(Int, TestResult)]
-runSuite exec gen batch suite = do
+runSuite exec gen batch suite = runSuiteWithProgress exec gen batch suite (\_ _ -> pure ())
+
+runSuiteWithProgress ::
+  (C.CodeExecutor e, Generator g) =>
+  e ->
+  g ->
+  SolutionBatch ->
+  Types.TestSuite ->
+  (Int -> Int -> IO ()) ->
+  IO [(Int, TestResult)]
+runSuiteWithProgress exec gen batch suite onProgress = do
   n <- getNumProcessors
+  doneRef <- newIORef 0
   let casesWithIdx = zip [1 ..] (Types.tsCases suite)
+  let total = length casesWithIdx
+  let runAndCheck (idx, test) = do
+        resOrExc <- try (handleTestCase exec gen batch seed suite test) :: IO (Either SomeException TestResult)
+        let res = case resOrExc of
+              Left exc -> Internal (displayException exc)
+              Right value -> value
+        reportDone doneRef total onProgress
+        case res of
+          Pass _ -> return (idx, res)
+          _ -> throwIO (ShortCircuit (idx, res))
   handle (\(ShortCircuit (idx, res)) -> return [(idx, res)]) $
     pooledMapConcurrentlyN n runAndCheck casesWithIdx
   where
     seed = Types.tsSeed suite
-    runAndCheck (idx, test) = do
-      res <- handleTestCase exec gen batch seed suite test
-      case res of
-        Pass _ -> return (idx, res)
-        _ -> throwIO (ShortCircuit (idx, res))
+
+reportDone :: IORef Int -> Int -> (Int -> Int -> IO ()) -> IO ()
+reportDone doneRef total onProgress = do
+  done <- atomicModifyIORef' doneRef (\n -> let n' = n + 1 in (n', n'))
+  onProgress done total
 
 handleTestCase ::
   (C.CodeExecutor e, Generator g) =>
