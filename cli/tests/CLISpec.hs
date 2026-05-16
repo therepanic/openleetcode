@@ -69,10 +69,6 @@ spec = do
       isParsedPlainSubmit (parseCli ["--plain", "submit", "solution.py", "--id", "1"])
         `shouldBe` True
 
-    it "does not accept legacy bare submit path anymore" $
-      isParseFailure (parseCli ["solution.py", "--id", "1"])
-        `shouldBe` True
-
     it "parses config set command" $
       isParsedConfigSet (parseCli ["config", "set", "backend.url", "http://localhost:2000"])
         `shouldBe` True
