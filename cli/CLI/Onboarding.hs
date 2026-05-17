@@ -23,7 +23,7 @@ runOnboarding runtime = do
       interactive <- stdinIsInteractive
       if not interactive
         then do
-          putPlain "onboarding" "" "non-interactive stdin, skipping automatic download (run `openleetcode download tests` and `openleetcode download runtimes`)"
+          putPlain "onboarding" "" "non-interactive stdin, skipping automatic download (run `openleetcode download all`)"
           pure (renderExitCode ExitOk)
         else do
           putStr (renderPrompt ui "Download them now? [Y/n] ")
@@ -61,8 +61,7 @@ emitSkip ui = case uiMode ui of
   Rich -> do
     putStrLn (style ui Yellow "Skipping download.")
     putStrLn (style ui Dim "You can install later with:")
-    putStrLn (style ui Dim "  openleetcode download runtimes")
-    putStrLn (style ui Dim "  openleetcode download tests")
+    putStrLn (style ui Dim "  openleetcode download all")
   Plain -> do
     putPlain "onboarding" "" "download skipped"
     putPlain "onboarding" "hint" "openleetcode download runtimes|tests"

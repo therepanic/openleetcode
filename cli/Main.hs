@@ -64,7 +64,7 @@ cliHelpFooter =
       pretty ("" :: String),
       pretty ("Examples:" :: String),
       pretty ("  openleetcode submit ./solution.py --id 1" :: String),
-      pretty ("  openleetcode download tests" :: String),
+      pretty ("  openleetcode download all" :: String),
       pretty ("  openleetcode config list" :: String)
     ]
 

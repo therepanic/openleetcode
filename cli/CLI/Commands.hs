@@ -44,7 +44,7 @@ downloadOptsParser =
   DownloadOpts
     <$> argument
       (eitherReader parseTarget)
-      (metavar "runtimes|tests" <> help "Download target")
+      (metavar "all|runtimes|tests" <> help "Download target")
 
 configOptsParser :: Parser ConfigOpts
 configOptsParser =
@@ -95,11 +95,12 @@ submitHelp =
 
 downloadHelp :: InfoMod Command
 downloadHelp =
-  progDesc "Download tests or runtimes into the data directory"
+  progDesc "Download data assets into the data directory"
     <> footerDoc
       ( Just $
           vsep
             [ pretty ("Targets:" :: String),
+              pretty ("  all" :: String),
               pretty ("  runtimes" :: String),
               pretty ("  tests" :: String)
             ]

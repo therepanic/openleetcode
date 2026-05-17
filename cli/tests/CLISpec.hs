@@ -20,7 +20,7 @@ spec = do
       parseTarget "tests" `shouldBe` Right Tests
 
     it "returns normalized parser error for invalid target" $
-      parseTarget "foo" `shouldBe` Left "Invalid download target: 'foo' (expected: runtimes, tests)"
+      parseTarget "foo" `shouldBe` Left "Invalid download target: 'foo' (expected: all, runtimes, tests)"
 
   describe "CLI.Submit.validateSubmit" $ do
     it "requires either id or title" $

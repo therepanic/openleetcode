@@ -7,7 +7,7 @@ import CLI.Runtime (Runtime (rtUI))
 import CLI.UI
 import Control.Exception (SomeException, finally, try)
 
-data DownloadTarget = Runtimes | Tests
+data DownloadTarget = All | Runtimes | Tests
   deriving (Eq, Show)
 
 newtype DownloadOpts = DownloadOpts
@@ -15,9 +15,10 @@ newtype DownloadOpts = DownloadOpts
   }
 
 parseTarget :: String -> Either String DownloadTarget
+parseTarget "all" = Right All
 parseTarget "runtimes" = Right Runtimes
 parseTarget "tests" = Right Tests
-parseTarget other = Left ("Invalid download target: '" ++ other ++ "' (expected: runtimes, tests)")
+parseTarget other = Left ("Invalid download target: '" ++ other ++ "' (expected: all, runtimes, tests)")
 
 run :: Runtime -> DownloadOpts -> IO Int
 run runtime opts = do
@@ -45,6 +46,9 @@ run runtime opts = do
           Nothing -> pure ()
         Plain -> putPlain "download" "" "extracting"
       case downloadTarget opts of
+        All -> do
+          unpackRuntimes repo
+          unpackTests repo
         Runtimes -> unpackRuntimes repo
         Tests -> unpackTests repo
       case uiMode ui of
@@ -54,12 +58,14 @@ run runtime opts = do
             Nothing -> pure ()
           root <- defaultConfigRoot
           case downloadTarget opts of
+            All -> putSuccess ui "Runtimes and tests updated."
             Runtimes -> putSuccess ui "Runtimes updated."
             Tests -> putSuccess ui "Tests updated."
           putDim ui ("Data directory: " ++ root)
         Plain ->
           putPlain "download" "" $
             "done: " ++ case downloadTarget opts of
+              All -> "runtimes and tests"
               Runtimes -> "runtimes"
               Tests -> "tests"
   case result of
