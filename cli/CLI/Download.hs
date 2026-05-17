@@ -10,7 +10,7 @@ import Control.Exception (SomeException, finally, try)
 data DownloadTarget = Runtimes | Tests
   deriving (Eq, Show)
 
-data DownloadOpts = DownloadOpts
+newtype DownloadOpts = DownloadOpts
   { downloadTarget :: DownloadTarget
   }
 

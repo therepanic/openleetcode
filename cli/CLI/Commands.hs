@@ -1,5 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
-
 module CLI.Commands where
 
 import CLI.Config

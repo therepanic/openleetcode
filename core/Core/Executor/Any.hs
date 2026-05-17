@@ -10,7 +10,7 @@ data AnyExecutor where
   AnyExecutor :: (CodeExecutor e) => e -> AnyExecutor
 
 instance CodeExecutor AnyExecutor where
-  execute (AnyExecutor e) req = execute e req
+  execute (AnyExecutor e) = execute e
 
 convertExecutorTypeToExecutor :: ExecutorType -> String -> AnyExecutor
 convertExecutorTypeToExecutor Piston url = AnyExecutor (PistonExecutor url)

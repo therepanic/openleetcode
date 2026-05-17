@@ -5,7 +5,7 @@ import CLI.Runtime (Runtime (rtUI))
 import CLI.SubmitPipeline
 import CLI.UI
 import Control.Exception (SomeException, finally, try)
-import Control.Monad (forM)
+import Control.Monad (forM, when)
 import Core.Executor.Any (convertExecutorTypeToExecutor)
 import Core.Executor.Piston qualified as Piston
 import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
@@ -17,10 +17,11 @@ import Core.Test.Runner
   )
 import Core.Test.Types qualified as TestTypes
 import Core.Types (Language, convertExtToLangMaybe, convertLangToExt, convertLangToStr)
+import Data.Char (isAsciiLower)
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.List (find, isInfixOf, isPrefixOf)
 import Data.Map qualified as M
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isNothing)
 import Data.Word (Word64)
 import GHC.Clock (getMonotonicTimeNSec)
 import System.Directory (doesDirectoryExist, listDirectory)
@@ -58,7 +59,7 @@ run runtime opts = do
 
 validateSubmit :: SubmitOpts -> Maybe SubmitFailure
 validateSubmit opts
-  | submitId opts == Nothing && submitTitle opts == Nothing = Just SubmitMissingSelector
+  | isNothing (submitId opts) && isNothing (submitTitle opts) = Just SubmitMissingSelector
   | otherwise = Nothing
 
 prepareSubmit :: UI -> SubmitOpts -> IO (Either SubmitFailure SubmitResolved)
@@ -133,7 +134,7 @@ executeSubmit ui resolved = do
               generator
               (srBatch resolved)
               (srTestSuite resolved)
-              (\done total -> emitRunningProgressThrottled ui runningChecklist progressRef done total)
+              (emitRunningProgressThrottled ui runningChecklist progressRef)
         case resultsOrError of
           Left exc ->
             failSubmitStep runningChecklist (classifySuiteException exc)
@@ -279,11 +280,9 @@ emitRunningProgressThrottled ui maybeChecklist progressRef done total =
             done == total
               || done == 1
               || maybe True (\prev -> nowMs - prev >= 250) lastMs
-      if shouldRender
-        then do
-          writeIORef progressRef (Just nowMs)
-          emitRunningProgress ui maybeChecklist done total
-        else pure ()
+      when shouldRender $ do
+        writeIORef progressRef (Just nowMs)
+        emitRunningProgress ui maybeChecklist done total
 
 renderAccepted :: UI -> Int -> IO ()
 renderAccepted ui maxTime = case uiMode ui of
@@ -428,7 +427,7 @@ capitalize (x : xs) = toUpperAscii x : xs
 
 toUpperAscii :: Char -> Char
 toUpperAscii c
-  | 'a' <= c && c <= 'z' = toEnum (fromEnum c - 32)
+  | isAsciiLower c = toEnum (fromEnum c - 32)
   | otherwise = c
 
 failSubmitStep :: Maybe Checklist -> SubmitFailure -> IO (Either SubmitFailure a)

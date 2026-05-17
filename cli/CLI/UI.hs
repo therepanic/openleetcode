@@ -3,7 +3,7 @@
 
 module CLI.UI where
 
-import Control.Concurrent (ThreadId, forkIO, threadDelay)
+import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar (MVar, newMVar, withMVar)
 import Control.Exception (SomeException, displayException, try)
 import Control.Monad (unless, when)
@@ -13,11 +13,13 @@ import Data.IORef (IORef, atomicModifyIORef', modifyIORef', newIORef, readIORef,
 import Data.List (isInfixOf)
 import System.Environment (lookupEnv)
 import System.Info (os)
-import System.IO (Handle, hFlush, hIsTerminalDevice, stderr, stdin, stdout)
+import System.IO (Handle, hFlush, hIsTerminalDevice, stdin, stdout)
 #if defined(mingw32_HOST_OS)
 import System.Win32.Console (eNABLE_PROCESSED_OUTPUT, eNABLE_VIRTUAL_TERMINAL_PROCESSING, getConsoleMode, setConsoleMode)
 import System.Win32.Types (withHandleToHANDLE)
 import CLI.AppEnv (ConfigLoadResult (clrWarning))
+import Data.Maybe (isNothing)
+import Data.Foldable (for_)
 #endif
 
 data ColorMode = ColorAuto
@@ -63,7 +65,7 @@ mkUI opts = do
   noColorEnv <- lookupEnv "NO_COLOR"
   let richAllowed = stdoutSupportsRich && not (goPlain opts)
   let mode = if richAllowed then Rich else Plain
-  let useColor = mode == Rich && not (goNoColor opts) && noColorEnv == Nothing
+  let useColor = mode == Rich && not (goNoColor opts) && isNothing noColorEnv
   pure UI {uiMode = mode, uiUseColor = useColor}
 
 stdinIsInteractive :: IO Bool
@@ -236,9 +238,7 @@ spinnerLoop checklist = loop
           steps <- readIORef (clStepsRef checklist)
           when (any ((== StepActive) . csStatus) steps) $ do
             _ <- atomicModifyIORef' (clFrameRef checklist) (\n -> let n' = n + 1 in (n', n'))
-            case activeStepIndex steps of
-              Just idx -> renderChecklistLineLocked checklist idx
-              Nothing -> pure ()
+            for_ (activeStepIndex steps) (renderChecklistLineLocked checklist)
         threadDelay 100000
         loop
 
@@ -295,7 +295,7 @@ renderStepText ui frameIdx step =
     ++ csText step
 
 activeStepIndex :: [ChecklistStep] -> Maybe Int
-activeStepIndex steps = go 0 steps
+activeStepIndex = go 0
   where
     go _ [] = Nothing
     go n (x : xs)

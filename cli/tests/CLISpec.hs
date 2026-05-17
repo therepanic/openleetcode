@@ -74,8 +74,8 @@ spec = do
         `shouldBe` True
 
 parseCli :: [String] -> ParserResult CliOptions
-parseCli args =
-  execParserPure defaultPrefs (info (cliOptionsParser <**> helper) mempty) args
+parseCli =
+  execParserPure defaultPrefs (info (cliOptionsParser <**> helper) mempty)
 
 isParsedSubmitWithId :: ParserResult CliOptions -> Bool
 isParsedSubmitWithId (Success opts) =
