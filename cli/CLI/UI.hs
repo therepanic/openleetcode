@@ -11,15 +11,15 @@ import Data.Bits ((.|.))
 import Data.Char (toLower)
 import Data.IORef (IORef, atomicModifyIORef', modifyIORef', newIORef, readIORef, writeIORef)
 import Data.List (isInfixOf)
+import Data.Maybe (isNothing)
+import Data.Foldable (for_)
 import System.Environment (lookupEnv)
 import System.Info (os)
 import System.IO (Handle, hFlush, hIsTerminalDevice, stdin, stdout)
+import CLI.AppEnv (ConfigLoadResult (clrWarning))
 #if defined(mingw32_HOST_OS)
 import System.Win32.Console (eNABLE_PROCESSED_OUTPUT, eNABLE_VIRTUAL_TERMINAL_PROCESSING, getConsoleMode, setConsoleMode)
 import System.Win32.Types (withHandleToHANDLE)
-import CLI.AppEnv (ConfigLoadResult (clrWarning))
-import Data.Maybe (isNothing)
-import Data.Foldable (for_)
 #endif
 
 data ColorMode = ColorAuto
