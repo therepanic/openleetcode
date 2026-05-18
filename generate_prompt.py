@@ -9,6 +9,7 @@ GRAPHQL_URL = "https://leetcode.com/graphql"
 
 SNIPPET_LANGS = [
     "python3",
+    "python",
     "ruby",
     "java",
     "kotlin",
