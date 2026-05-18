@@ -13,9 +13,11 @@ from generate_prompt import (
     PROMPT_TEMPLATE,
 )
 
-PROBLEMS_DIR = Path(__file__).parent / "problems"
+PROBLEMS_DIR = Path(__file__).parent / "generated_problems"
 GRAPHQL_URL = "https://leetcode.com/graphql"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+DEFAULT_MODEL = "google/gemini-3.1-flash-lite"
+DEFAULT_CONCURRENCY = 10
 
 
 def fetch_problem_list(from_id, to_id, hide_premium):
@@ -129,13 +131,10 @@ async def run(from_id, to_id, concurrency, model, api_key, hide_premium=False):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--from", dest="from_id", type=int)
-    parser.add_argument("--to", dest="to_id", type=int)
-    parser.add_argument("--concurrency", type=int, default=10)
-    parser.add_argument(
-        "--model",
-        default="google/gemini-3.1-flash-lite",
-    )
+    parser.add_argument("--from-id", dest="from_id", type=int)
+    parser.add_argument("--to-id", dest="to_id", type=int)
+    parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY)
+    parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--hide-premium", dest="hide_premium", action="store_true")
     args = parser.parse_args()
 
