@@ -1,10 +1,12 @@
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Core.Executor.Any where
 
 import Core.Executor.Class
 import Core.Executor.Piston (PistonExecutor (PistonExecutor))
 import Core.Types (ExecutorType (Piston))
+import Data.Text (Text)
 
 data AnyExecutor where
   AnyExecutor :: (CodeExecutor e) => e -> AnyExecutor
@@ -12,5 +14,5 @@ data AnyExecutor where
 instance CodeExecutor AnyExecutor where
   execute (AnyExecutor e) = execute e
 
-convertExecutorTypeToExecutor :: ExecutorType -> String -> AnyExecutor
+convertExecutorTypeToExecutor :: ExecutorType -> Text -> AnyExecutor
 convertExecutorTypeToExecutor Piston url = AnyExecutor (PistonExecutor url)

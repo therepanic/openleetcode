@@ -1,17 +1,21 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module CLI.Config where
 
 import CLI.AppEnv
 import CLI.Runtime (Runtime (rtUI))
 import CLI.UI
 import Control.Exception (SomeException, try)
+import Data.Text (Text)
+import Data.Text qualified as T
 
 data ConfigOpts
   = ConfigSet ConfigSetOpts
   | ConfigList
 
 data ConfigSetOpts = ConfigSetOpts
-  { configKey :: String,
-    configValue :: String
+  { configKey :: Text,
+    configValue :: Text
   }
 
 run :: Runtime -> ConfigOpts -> IO Int
@@ -23,7 +27,7 @@ run runtime ConfigList = do
   let config = clrConfig result
   putStrLn "Backend"
   putStrLn $ "  type    " ++ show (backendType config)
-  putStrLn $ "  url     " ++ backendUrl config
+  putStrLn $ "  url     " ++ T.unpack (backendUrl config)
   putStrLn $ "Config file: " ++ configPath
   pure (renderExitCode ExitOk)
 run runtime (ConfigSet opts) = do
@@ -32,7 +36,7 @@ run runtime (ConfigSet opts) = do
   emitConfigWarning ui result
   let config = clrConfig result
   case configKey opts of
-    "backend.type" -> case reads (configValue opts) of
+    "backend.type" -> case reads (T.unpack (configValue opts)) of
       [(bt, "")] -> do
         saveResult <- try (saveConfig config {backendType = bt}) :: IO (Either SomeException ())
         case saveResult of
@@ -43,7 +47,7 @@ run runtime (ConfigSet opts) = do
             emitConfigWriteError ui exc
             pure (renderExitCode ExitInfra)
       _ -> do
-        emitConfigError ui ("Unknown backend type: '" ++ configValue opts ++ "'")
+        emitConfigError ui ("Unknown backend type: '" <> configValue opts <> "'")
         case uiMode ui of
           Rich -> putStrLn "Allowed values: piston"
           Plain -> putPlain "config" "" "Allowed values: piston"
@@ -60,18 +64,18 @@ run runtime (ConfigSet opts) = do
           emitConfigWriteError ui exc
           pure (renderExitCode ExitInfra)
     k -> do
-      emitConfigError ui ("Unknown config key: '" ++ k ++ "'")
+      emitConfigError ui ("Unknown config key: '" <> k <> "'")
       case uiMode ui of
         Rich -> putStrLn "Try: backend.type, backend.url"
         Plain -> putPlain "config" "" "Try: backend.type, backend.url"
       pure (renderExitCode ExitInput)
 
-emitConfigSuccess :: UI -> String -> String -> IO ()
+emitConfigSuccess :: UI -> Text -> Text -> IO ()
 emitConfigSuccess ui prefix value = case uiMode ui of
-  Rich -> putSuccess ui (prefix ++ " " ++ value)
-  Plain -> putPlain "config" "" (prefix ++ " " ++ value)
+  Rich -> putSuccess ui (prefix <> " " <> value)
+  Plain -> putPlain "config" "" (prefix <> " " <> value)
 
-emitConfigError :: UI -> String -> IO ()
+emitConfigError :: UI -> Text -> IO ()
 emitConfigError ui msg = case uiMode ui of
   Rich -> putErrorLine ui msg
   Plain -> putPlain "config" "error" msg
@@ -79,5 +83,5 @@ emitConfigError ui msg = case uiMode ui of
 emitConfigWriteError :: UI -> SomeException -> IO ()
 emitConfigWriteError ui exc =
   case uiMode ui of
-    Rich -> putErrorLine ui ("Could not write config file: " ++ classifyException exc)
-    Plain -> putPlain "config" "error" ("could not write config file: " ++ classifyException exc)
+    Rich -> putErrorLine ui ("Could not write config file: " <> classifyException exc)
+    Plain -> putPlain "config" "error" ("could not write config file: " <> classifyException exc)

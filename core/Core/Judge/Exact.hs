@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Core.Judge.Exact where
 
 import Core.Judge.Class
@@ -10,4 +12,4 @@ instance Judge Exact where
       then
         Pass
       else
-        Fail ("Expected: " ++ expected ++ " Got: " ++ actual)
+        Fail ("Expected: " <> expected <> " Got: " <> actual)

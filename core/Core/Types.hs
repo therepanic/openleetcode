@@ -5,14 +5,14 @@ module Core.Types where
 
 import Data.Aeson
 import Data.Aeson.Types (toJSONKeyText)
-import Data.Text (pack)
+import Data.Text (Text, pack)
 
 data ExecutorType = Piston
 
 data Language = Python3 | Python2 | Ruby | Java | CSharp | Go | Dart | Kotlin | Swift | Cpp | Rust | TypeScript | Default
   deriving (Show, Eq, Ord)
 
-convertLangToStr :: Language -> String
+convertLangToStr :: Language -> Text
 convertLangToStr lang = case lang of
   Python3 -> "python3"
   Cpp -> "cpp"
@@ -27,7 +27,7 @@ convertLangToStr lang = case lang of
   Rust -> "rust"
   TypeScript -> "typescript"
 
-convertStrToLang :: String -> Maybe Language
+convertStrToLang :: Text -> Maybe Language
 convertStrToLang s = case s of
   "python3" -> Just Python3
   "python2" -> Just Python2
@@ -43,7 +43,7 @@ convertStrToLang s = case s of
   "typescript" -> Just TypeScript
   _ -> Nothing
 
-convertExtToLangMaybe :: String -> Maybe Language
+convertExtToLangMaybe :: Text -> Maybe Language
 convertExtToLangMaybe ext = case ext of
   ".py" -> Just Python3
   ".rb" -> Just Ruby
@@ -60,7 +60,7 @@ convertExtToLangMaybe ext = case ext of
   ".ts" -> Just TypeScript
   _ -> Nothing
 
-convertLangToExt :: Language -> String
+convertLangToExt :: Language -> Text
 convertLangToExt lang = case lang of
   Python3 -> ".py"
   Python2 -> ".py"
@@ -75,7 +75,7 @@ convertLangToExt lang = case lang of
   Swift -> ".swift"
   TypeScript -> ".ts"
 
-nullLiteral :: Language -> String
+nullLiteral :: Language -> Text
 nullLiteral Python3 = "None"
 nullLiteral Python2 = "None"
 nullLiteral Rust = "None"

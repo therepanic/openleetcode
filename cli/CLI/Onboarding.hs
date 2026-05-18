@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module CLI.Onboarding where
 
 import CLI.AppEnv
@@ -7,6 +9,8 @@ import CLI.Runtime (Runtime (rtUI))
 import CLI.UI
 import Control.Exception (SomeException, finally, try)
 import Data.Char (toLower)
+import Data.Text qualified as T
+import Data.Text.IO qualified as TIO
 import System.Directory
 import System.IO (hFlush, stdout)
 
@@ -26,7 +30,7 @@ runOnboarding runtime = do
           putPlain "onboarding" "" "non-interactive stdin, skipping automatic download (run `openleetcode download all`)"
           pure (renderExitCode ExitOk)
         else do
-          putStr (renderPrompt ui "Download them now? [Y/n] ")
+          TIO.putStr (renderPrompt ui "Download them now? [Y/n] ")
           hFlush stdout
           answer <- getLine
           if isSkip answer
@@ -40,28 +44,28 @@ runOnboarding runtime = do
                 Left exc -> do
                   let reason = classifyException exc
                   case uiMode ui of
-                    Rich -> putErrorLine ui ("Setup failed: " ++ reason)
-                    Plain -> putPlain "onboarding" "error" ("setup failed: " ++ reason)
+                    Rich -> putErrorLine ui ("Setup failed: " <> reason)
+                    Plain -> putPlain "onboarding" "error" ("setup failed: " <> reason)
                   pure (renderExitCode ExitInfra)
 
 emitWelcome :: UI -> FilePath -> IO ()
 emitWelcome ui root = case uiMode ui of
   Rich -> do
-    putStrLn (style ui CyanBold onboardingBanner)
-    putStrLn (style ui CyanBold "Welcome to openleetcode.")
-    putStrLn (style ui Dim ("Data directory: " ++ root))
-    putStrLn (style ui Yellow "Tests and runtimes are not installed yet.")
+    TIO.putStrLn (style ui CyanBold onboardingBanner)
+    TIO.putStrLn (style ui CyanBold "Welcome to openleetcode.")
+    TIO.putStrLn (style ui Dim ("Data directory: " <> T.pack root))
+    TIO.putStrLn (style ui Yellow "Tests and runtimes are not installed yet.")
   Plain -> do
     putPlain "onboarding" "" "welcome"
-    putPlain "onboarding" "" ("data directory: " ++ root)
+    putPlain "onboarding" "" ("data directory: " <> T.pack root)
     putPlain "onboarding" "" "tests and runtimes not installed"
 
 emitSkip :: UI -> IO ()
 emitSkip ui = case uiMode ui of
   Rich -> do
-    putStrLn (style ui Yellow "Skipping download.")
-    putStrLn (style ui Dim "You can install later with:")
-    putStrLn (style ui Dim "  openleetcode download all")
+    TIO.putStrLn (style ui Yellow "Skipping download.")
+    TIO.putStrLn (style ui Dim "You can install later with:")
+    TIO.putStrLn (style ui Dim "  openleetcode download all")
   Plain -> do
     putPlain "onboarding" "" "download skipped"
     putPlain "onboarding" "hint" "openleetcode download runtimes|tests"
@@ -123,15 +127,15 @@ isSkip raw =
 trim :: String -> String
 trim = reverse . dropWhile (== ' ') . reverse . dropWhile (== ' ')
 
-renderPrompt :: UI -> String -> String
+renderPrompt :: UI -> T.Text -> T.Text
 renderPrompt ui prompt =
   case uiMode ui of
     Rich -> style ui Yellow prompt
     Plain -> prompt
 
-onboardingBanner :: String
+onboardingBanner :: T.Text
 onboardingBanner =
-  unlines
+  T.unlines
     [ "                          .__                 __                   .___      ",
       "  ____ ______   ____   ____ |  |   ____   _____/  |_  ____  ____   __| _/____  ",
       " /  _ \\\\____ \\_/ __ \\\\ /    \\|  | _/ __ \\\\_/ __ \\\\   __\\\\/ ___\\\\/  _ \\\\ / __ |/ __ \\ ",

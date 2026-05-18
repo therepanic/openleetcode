@@ -1,11 +1,14 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Core.Generator.Splitmix where
 
 import Core.Generator.Class
 import Core.Test.Runner (renderNestedArr)
 import Core.Types
-import Data.Char (toLower)
-import Data.List (foldl', intercalate, sort)
+import Data.List (foldl', sort)
 import Data.Set qualified as S
+import Data.Text (Text)
+import Data.Text qualified as T
 import Data.Vector qualified as V
 import Data.Word (Word64)
 import System.Random.SplitMix
@@ -18,7 +21,7 @@ instance Generator SplitmixGenerator where
         (result, _) = generateInfo (info d) (lang d) gen
      in result
 
-generateInfo :: GenInfo -> Language -> SMGen -> (String, SMGen)
+generateInfo :: GenInfo -> Language -> SMGen -> (Text, SMGen)
 generateInfo (GenIntegralInfo i) _ gen = generateIntegral i gen
 generateInfo (GenFloatInfo i) _ gen = generateFloat i gen
 generateInfo (GenCharInfo i) _ gen = generateChar i gen
@@ -26,31 +29,31 @@ generateInfo (GenStrInfo i) _ gen = generateStr i gen
 generateInfo (GenArrInfo i) l gen = generateArr i l gen
 generateInfo (GenBoolInfo i) l gen = generateBool i l gen
 
-generateIntegral :: GenIntegral -> SMGen -> (String, SMGen)
-generateIntegral (GenIntegralConst c) gen = (show c, gen)
+generateIntegral :: GenIntegral -> SMGen -> (Text, SMGen)
+generateIntegral (GenIntegralConst c) gen = (T.pack (show c), gen)
 generateIntegral (GenIntegralRange lo hi) gen =
   let (val, gen') = generateIntegralInRange lo hi gen
-   in (show val, gen')
+   in (T.pack (show val), gen')
 generateIntegral _ _ = error "Unhandled GenInt type"
 
-generateFloat :: GenFloat -> SMGen -> (String, SMGen)
-generateFloat (GenFloatConst c) gen = (show c, gen)
+generateFloat :: GenFloat -> SMGen -> (Text, SMGen)
+generateFloat (GenFloatConst c) gen = (T.pack (show c), gen)
 generateFloat (GenFloatRange lo hi prec) gen =
   let (val, gen') = generateFloatInRange lo hi prec gen
-   in (show val, gen')
+   in (T.pack (show val), gen')
 generateFloat _ _ = error "Unhandled GenFloat type"
 
-generateChar :: GenChar -> SMGen -> (String, SMGen)
-generateChar (GenCharConst c) gen = ([c], gen)
+generateChar :: GenChar -> SMGen -> (Text, SMGen)
+generateChar (GenCharConst c) gen = (T.singleton c, gen)
 generateChar (GenCharVariety v) gen =
   let (c, gen') = generateCharFromList v gen
-   in ([c], gen')
+   in (T.singleton c, gen')
 generateChar _ _ = error "Unhandled GenChar type"
 
-generateStr :: GenStr -> SMGen -> (String, SMGen)
+generateStr :: GenStr -> SMGen -> (Text, SMGen)
 generateStr (GenStr l a) gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (charList, gen'') =
         foldl'
           ( \(acc, g) _ ->
@@ -59,35 +62,35 @@ generateStr (GenStr l a) gen =
           )
           ("", gen')
           [0 .. len - 1]
-   in (reverse charList, gen'')
+   in (T.pack (reverse charList), gen'')
 generateStr (GenStrConst s) gen = (s, gen)
 generateStr _ _ = error "Unhandled GenStr type"
 
-generateBool :: GenBool -> Language -> SMGen -> (String, SMGen)
-generateBool (GenBoolConst b) lang gen = (if lang /= Python3 then map toLower $ show b else show b, gen)
+generateBool :: GenBool -> Language -> SMGen -> (Text, SMGen)
+generateBool (GenBoolConst b) lang gen = (if lang /= Python3 then T.toLower (T.pack (show b)) else T.pack (show b), gen)
 generateBool GenBoolGen lang gen =
   let (w, gen') = nextWord64 gen
       val = even w
-   in (if lang /= Python3 then map toLower $ show val else show val, gen')
+   in (if lang /= Python3 then T.toLower $ T.pack (show val) else T.pack (show val), gen')
 
-generateArr :: GenArr -> Language -> SMGen -> (String, SMGen)
+generateArr :: GenArr -> Language -> SMGen -> (Text, SMGen)
 generateArr (GenArr distinct sortedRows l (GenArrInfo inner) et) lang gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (rows, gen'') = generateNestedRows distinct len inner lang gen'
       rendered = applySorted sortedRows rows
    in (renderNestedArr lang et rendered, gen'')
 generateArr (GenArr True sortedVals l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = min (read v :: Int) (fromIntegral (hi - lo + 1))
+      len = min (read (T.unpack v) :: Int) (fromIntegral (hi - lo + 1))
       vec = V.fromList [lo .. hi]
       (shuffled, gen'') = fisherYates vec gen'
       nums = applySorted sortedVals (V.toList (V.take len shuffled))
-      result = intercalate ", " (map show nums)
+      result = T.intercalate ", " (map (T.pack . show) nums)
    in (result, gen'')
 generateArr (GenArr False sortedVals l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (nums, gen'') =
         foldl'
           ( \(acc, g) _ ->
@@ -96,28 +99,28 @@ generateArr (GenArr False sortedVals l (GenIntegralInfo (GenIntegralRange lo hi)
           )
           ([], gen')
           [1 .. len]
-      result = intercalate ", " (map show (applySorted sortedVals (reverse nums)))
+      result = T.intercalate ", " (map (T.pack . show) (applySorted sortedVals (reverse nums)))
    in (result, gen'')
 generateArr (GenArr False _ l (GenIntegralInfo (GenIntegralConst constVal)) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       result = replicate len constVal
-      formattedString = intercalate ", " (map show result)
+      formattedString = T.intercalate ", " (map (T.pack . show) result)
    in (formattedString, gen')
 generateArr (GenArr True _ _ (GenIntegralInfo (GenIntegralConst constVal)) _) _ gen =
-  (show constVal, gen)
+  (T.pack (show constVal), gen)
 generateArr (GenArr True sortedVals l (GenFloatInfo (GenFloatRange lo hi p)) _) _ gen =
   let step = 1 / (10 ^ p)
       vec = V.fromList [lo, lo + step .. hi]
       (v, gen') = generateIntegral l gen
-      len = min (read v :: Int) (V.length vec)
+      len = min (read (T.unpack v) :: Int) (V.length vec)
       (shuffled, gen'') = fisherYates vec gen'
       nums = applySorted sortedVals (V.toList (V.take len shuffled))
-      result = intercalate ", " (map show nums)
+      result = T.intercalate ", " (map (T.pack . show) nums)
    in (result, gen'')
 generateArr (GenArr False sortedVals l (GenFloatInfo (GenFloatRange lo hi p)) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (nums, gen'') =
         foldl'
           ( \(acc, g) _ ->
@@ -126,42 +129,42 @@ generateArr (GenArr False sortedVals l (GenFloatInfo (GenFloatRange lo hi p)) _)
           )
           ([], gen')
           [1 .. len]
-      result = intercalate ", " (map show (applySorted sortedVals (reverse nums)))
+      result = T.intercalate ", " (map (T.pack . show) (applySorted sortedVals (reverse nums)))
    in (result, gen'')
 generateArr (GenArr False _ l (GenFloatInfo (GenFloatConst constVal)) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       result = replicate len constVal
-      formattedString = intercalate ", " (map show result)
+      formattedString = T.intercalate ", " (map (T.pack . show) result)
    in (formattedString, gen')
 generateArr (GenArr True _ _ (GenFloatInfo (GenFloatConst constVal)) _) _ gen =
-  (show constVal, gen)
+  (T.pack (show constVal), gen)
 generateArr (GenArr False sortedVals l (GenCharInfo i) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (chars, gen'') =
         foldl'
           ( \(acc, g) _ ->
               let (s, g') = generateChar i g
-               in (head s : acc, g')
+               in (T.head s : acc, g')
           )
           ([], gen')
           [1 .. len]
-      result = intercalate ", " (map (: []) (applySorted sortedVals (reverse chars)))
+      result = T.intercalate ", " (map T.singleton (applySorted sortedVals (reverse chars)))
    in (result, gen'')
 generateArr (GenArr True sortedVals l (GenCharInfo (GenCharVariety alphabet)) _) _ gen =
-  let vec = V.fromList alphabet
+  let vec = V.fromList (T.unpack alphabet)
       (v, gen') = generateIntegral l gen
-      len = min (read v :: Int) (V.length vec)
+      len = min (read (T.unpack v) :: Int) (V.length vec)
       (shuffled, gen'') = fisherYates vec gen'
       chars = applySorted sortedVals (V.toList (V.take len shuffled))
-      result = intercalate ", " (map (: []) chars)
+      result = T.intercalate ", " (map T.singleton chars)
    in (result, gen'')
 generateArr (GenArr True _ _ (GenCharInfo (GenCharConst c)) _) _ gen =
-  ([c], gen)
+  (T.singleton c, gen)
 generateArr (GenArr False sortedVals l (GenStrInfo val) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (strs, gen'') =
         foldl'
           ( \(acc, g) _ ->
@@ -170,14 +173,14 @@ generateArr (GenArr False sortedVals l (GenStrInfo val) _) _ gen =
           )
           ([], gen')
           [1 .. len]
-      result = intercalate ", " (applySorted sortedVals (reverse strs))
+      result = T.intercalate ", " (applySorted sortedVals (reverse strs))
    in (result, gen'')
 generateArr (GenArr True sortedVals l (GenStrInfo val) _) _ gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (strs, gen'') = go S.empty [] len gen'
       rendered = applySorted sortedVals (reverse strs)
-   in (intercalate ", " rendered, gen'')
+   in (T.intercalate ", " rendered, gen'')
   where
     go _ acc 0 g = (acc, g)
     go seen acc n g =
@@ -187,7 +190,7 @@ generateArr (GenArr True sortedVals l (GenStrInfo val) _) _ gen =
             else go (S.insert s seen) (s : acc) (n - 1) g'
 generateArr (GenArr False sortedVals l (GenBoolInfo i) _) lang gen =
   let (v, gen') = generateIntegral l gen
-      len = read v :: Int
+      len = read (T.unpack v) :: Int
       (bools, gen'') =
         foldl'
           ( \(acc, g) _ ->
@@ -196,11 +199,11 @@ generateArr (GenArr False sortedVals l (GenBoolInfo i) _) lang gen =
           )
           ([], gen')
           [1 .. len]
-      result = intercalate ", " (applySorted sortedVals (reverse bools))
-   in (if lang /= Python3 then map toLower result else result, gen'')
+      result = T.intercalate ", " (applySorted sortedVals (reverse bools))
+   in (if lang /= Python3 then T.toLower result else result, gen'')
 generateArr (GenArr True sortedVals l (GenBoolInfo i) _) lang gen =
   let (v, gen') = generateIntegral l gen
-      len = min (read v :: Int) 2
+      len = min (read (T.unpack v) :: Int) 2
       pool = case i of
         GenBoolConst b -> [b]
         GenBoolGen -> [True, False]
@@ -208,8 +211,8 @@ generateArr (GenArr True sortedVals l (GenBoolInfo i) _) lang gen =
       (shuffled, gen'') = fisherYates vec gen'
       actualLen = min len (V.length shuffled)
       vals = applySorted sortedVals (V.toList (V.take actualLen shuffled))
-      result = intercalate ", " (map show vals)
-   in (if lang /= Python3 then map toLower result else result, gen'')
+      result = T.intercalate ", " (map (T.pack . show) vals)
+   in (if lang /= Python3 then T.toLower result else result, gen'')
 
 generateIntegralInRange :: Integer -> Integer -> SMGen -> (Integer, SMGen)
 generateIntegralInRange lo hi gen =
@@ -227,10 +230,10 @@ generateFloatInRange lo hi prec gen =
       val = fromIntegral n / fromIntegral factor :: Double
    in (val, gen')
 
-generateCharFromList :: [Char] -> SMGen -> (Char, SMGen)
+generateCharFromList :: Text -> SMGen -> (Char, SMGen)
 generateCharFromList xs gen =
-  let (it, gen') = generateIntegralInRange 0 (fromIntegral (length xs - 1) :: Integer) gen
-   in (xs !! (fromIntegral it :: Int), gen')
+  let (it, gen') = generateIntegralInRange 0 (fromIntegral (T.length xs - 1) :: Integer) gen
+   in (T.index xs (fromIntegral it), gen')
 
 fisherYates :: V.Vector a -> SMGen -> (V.Vector a, SMGen)
 fisherYates vec gen = foldl' step (vec, gen) [0 .. V.length vec - 2]
@@ -244,7 +247,7 @@ fisherYates vec gen = foldl' step (vec, gen) [0 .. V.length vec - 2]
 applySorted :: (Ord a) => Bool -> [a] -> [a]
 applySorted shouldSort xs = if shouldSort then sort xs else xs
 
-generateNestedRows :: Bool -> Int -> GenArr -> Language -> SMGen -> ([String], SMGen)
+generateNestedRows :: Bool -> Int -> GenArr -> Language -> SMGen -> ([Text], SMGen)
 generateNestedRows distinct len inner lang gen
   | distinct = goDistinct S.empty [] len (len * 20 + 100) gen
   | otherwise =
@@ -253,7 +256,7 @@ generateNestedRows distinct len inner lang gen
             let (row, g') = generateArr inner lang g
              in (acc ++ [row], g')
         )
-        ([], gen)
+        (([] :: [Text]), gen)
         [1 .. len]
   where
     goDistinct _ acc 0 _ g = (reverse acc, g)

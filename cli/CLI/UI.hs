@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module CLI.UI where
 
@@ -13,6 +14,9 @@ import Data.IORef (IORef, atomicModifyIORef', modifyIORef', newIORef, readIORef,
 import Data.List (isInfixOf)
 import Data.Maybe (isNothing)
 import Data.Foldable (for_)
+import Data.Text (Text)
+import Data.Text qualified as T
+import Data.Text.IO qualified as TIO
 import System.Environment (lookupEnv)
 import System.Info (os)
 import System.IO (Handle, hFlush, hIsTerminalDevice, stdin, stdout)
@@ -44,12 +48,12 @@ data StepStatus = StepPending | StepActive | StepDone | StepFailed
 
 data ChecklistStep = ChecklistStep
   { csStatus :: StepStatus,
-    csText :: String
+    csText :: Text
   }
 
 data Checklist = Checklist
   { clUI :: UI,
-    clHeader :: String,
+    clHeader :: Text,
     clStepsRef :: IORef [ChecklistStep],
     clFrameRef :: IORef Int,
     clRenderedRef :: IORef Bool,
@@ -118,36 +122,36 @@ renderExitCode = \case
   ExitInfra -> 2
   ExitVerdict -> 3
 
-plainLine :: String -> String -> String -> String
+plainLine :: Text -> Text -> Text -> Text
 plainLine scope section msg =
-  "openleetcode: " ++ scope ++ suffix ++ msg
+  "openleetcode: " <> scope <> suffix <> msg
   where
     suffix =
-      if null section
+      if T.null section
         then ": "
-        else ": " ++ section ++ ": "
+        else ": " <> section <> ": "
 
-putPlain :: String -> String -> String -> IO ()
-putPlain scope section msg = putStrLn (plainLine scope section msg)
+putPlain :: Text -> Text -> Text -> IO ()
+putPlain scope section msg = TIO.putStrLn (plainLine scope section msg)
 
-putInfo :: UI -> String -> IO ()
-putInfo ui msg = putStrLn (style ui CyanBold msg)
+putInfo :: UI -> Text -> IO ()
+putInfo ui msg = TIO.putStrLn (style ui CyanBold msg)
 
-putSuccess :: UI -> String -> IO ()
-putSuccess ui msg = putStrLn (style ui Green ("✓ " ++ msg))
+putSuccess :: UI -> Text -> IO ()
+putSuccess ui msg = TIO.putStrLn (style ui Green ("✓ " <> msg))
 
-putErrorLine :: UI -> String -> IO ()
-putErrorLine ui msg = putStrLn (style ui Red ("✗ " ++ msg))
+putErrorLine :: UI -> Text -> IO ()
+putErrorLine ui msg = TIO.putStrLn (style ui Red ("✗ " <> msg))
 
-putDim :: UI -> String -> IO ()
-putDim ui msg = putStrLn (style ui Dim msg)
+putDim :: UI -> Text -> IO ()
+putDim ui msg = TIO.putStrLn (style ui Dim msg)
 
 data AnsiStyle = PlainStyle | Green | Red | Yellow | Dim | CyanBold
 
-style :: UI -> AnsiStyle -> String -> String
+style :: UI -> AnsiStyle -> Text -> Text
 style ui ansi msg
   | not (uiUseColor ui) = msg
-  | otherwise = prefix ++ msg ++ "\ESC[0m"
+  | otherwise = prefix <> msg <> "\ESC[0m"
   where
     prefix = case ansi of
       PlainStyle -> ""
@@ -157,7 +161,7 @@ style ui ansi msg
       Dim -> "\ESC[2m"
       CyanBold -> "\ESC[1;36m"
 
-classifyException :: SomeException -> String
+classifyException :: SomeException -> Text
 classifyException exc
   | "timed out" `isInfixOf` lowered = "network timeout"
   | "timeout" `isInfixOf` lowered = "network timeout"
@@ -170,16 +174,16 @@ classifyException exc
   | "500" `isInfixOf` lowered = "http 500"
   | otherwise = sanitizeSingleLine raw
   where
-    raw = displayException exc
-    lowered = map toLower raw
+    raw = T.pack (displayException exc)
+    lowered = map toLower (T.unpack raw)
 
-sanitizeSingleLine :: String -> String
-sanitizeSingleLine = takeWhile (/= '\n')
+sanitizeSingleLine :: Text -> Text
+sanitizeSingleLine = T.takeWhile (/= '\n')
 
 supportsRichPrompt :: UI -> Bool
 supportsRichPrompt ui = uiMode ui == Rich
 
-startChecklist :: UI -> String -> [ChecklistStep] -> IO (Maybe Checklist)
+startChecklist :: UI -> Text -> [ChecklistStep] -> IO (Maybe Checklist)
 startChecklist ui header steps =
   if uiMode ui /= Rich
     then pure Nothing
@@ -203,7 +207,7 @@ startChecklist ui header steps =
       renderChecklist initialChecklist
       pure (Just mkChecklist)
 
-updateChecklistStep :: Checklist -> Int -> StepStatus -> String -> IO ()
+updateChecklistStep :: Checklist -> Int -> StepStatus -> Text -> IO ()
 updateChecklistStep checklist idx newStatus newText =
   withMVar (clRenderLock checklist) $ \_ -> do
     modifyIORef' (clStepsRef checklist) (updateAt idx (\s -> s {csStatus = newStatus, csText = newText}))
@@ -253,9 +257,9 @@ renderChecklistLocked checklist = do
   frameIdx <- readIORef (clFrameRef checklist)
   let block = checklistBlock checklist steps frameIdx
   if rendered
-    then putStr (cursorUp (length steps + 1))
+    then TIO.putStr (cursorUp (length steps + 1))
     else writeIORef (clRenderedRef checklist) True
-  putStr block
+  TIO.putStr block
   hFlush stdout
 
 renderChecklistLineLocked :: Checklist -> Int -> IO ()
@@ -266,33 +270,33 @@ renderChecklistLineLocked checklist idx = do
     Nothing -> pure ()
     Just step -> do
       let total = length steps
-      putStr (cursorUp (total - idx))
-      putStr (clearLine (renderStepText (clUI checklist) frameIdx step))
-      putStr (cursorDown (total - idx))
-      putStr "\r"
+      TIO.putStr (cursorUp (total - idx))
+      TIO.putStr (clearLine (renderStepText (clUI checklist) frameIdx step))
+      TIO.putStr (cursorDown (total - idx))
+      TIO.putStr "\r"
       hFlush stdout
 
 moveCursorToChecklistBottom :: Checklist -> IO ()
 moveCursorToChecklistBottom checklist = do
   steps <- readIORef (clStepsRef checklist)
-  putStr (cursorDown (length steps))
-  putStr "\r"
+  TIO.putStr (cursorDown (length steps))
+  TIO.putStr "\r"
   hFlush stdout
 
-checklistBlock :: Checklist -> [ChecklistStep] -> Int -> String
+checklistBlock :: Checklist -> [ChecklistStep] -> Int -> Text
 checklistBlock checklist steps frameIdx =
-  unlines (clearLine (style ui CyanBold header) : map renderStep steps)
+  T.unlines (clearLine (style ui CyanBold header) : map renderStep steps)
   where
     ui = clUI checklist
     header = clHeader checklist
     renderStep step = clearLine (renderStepText ui frameIdx step)
 
-renderStepText :: UI -> Int -> ChecklistStep -> String
+renderStepText :: UI -> Int -> ChecklistStep -> Text
 renderStepText ui frameIdx step =
   "  "
-    ++ style ui (markerStyle (csStatus step)) [markerChar frameIdx (csStatus step)]
-    ++ " "
-    ++ csText step
+    <> style ui (markerStyle (csStatus step)) (T.singleton (markerChar frameIdx (csStatus step)))
+    <> " "
+    <> csText step
 
 activeStepIndex :: [ChecklistStep] -> Maybe Int
 activeStepIndex = go 0
@@ -330,14 +334,14 @@ safeIndex idx xs
         (x : _) -> Just x
         [] -> Nothing
 
-cursorUp :: Int -> String
-cursorUp n = "\ESC[" ++ show n ++ "A"
+cursorUp :: Int -> Text
+cursorUp n = "\ESC[" <> T.pack (show n) <> "A"
 
-cursorDown :: Int -> String
-cursorDown n = "\ESC[" ++ show n ++ "B"
+cursorDown :: Int -> Text
+cursorDown n = "\ESC[" <> T.pack (show n) <> "B"
 
-clearLine :: String -> String
-clearLine line = "\ESC[2K\r" ++ line
+clearLine :: Text -> Text
+clearLine line = "\ESC[2K\r" <> line
 
 stopMaybeChecklist :: Maybe Checklist -> IO ()
 stopMaybeChecklist Nothing = pure ()
@@ -349,8 +353,8 @@ emitConfigWarning ui result = case clrWarning result of
   Just warn ->
     case uiMode ui of
       Rich -> do
-        putStrLn "Warning: could not parse config file, using defaults."
-        putStrLn ("Details: " ++ sanitizeSingleLine warn)
+        TIO.putStrLn "Warning: could not parse config file, using defaults."
+        TIO.putStrLn ("Details: " <> sanitizeSingleLine warn)
       Plain -> do
         putPlain "config" "warning" "could not parse config file, using defaults."
-        putPlain "config" "warning" ("Details: " ++ sanitizeSingleLine warn)
+        putPlain "config" "warning" ("Details: " <> sanitizeSingleLine warn)

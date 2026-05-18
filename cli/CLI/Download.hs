@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module CLI.Download where
 
 import CLI.AppEnv (defaultConfigRoot)
@@ -6,6 +8,7 @@ import CLI.Installer (unpackRuntimes, unpackTests)
 import CLI.Runtime (Runtime (rtUI))
 import CLI.UI
 import Control.Exception (SomeException, finally, try)
+import Data.Text qualified as T
 
 data DownloadTarget = All | Runtimes | Tests
   deriving (Eq, Show)
@@ -61,10 +64,10 @@ run runtime opts = do
             All -> putSuccess ui "Runtimes and tests updated."
             Runtimes -> putSuccess ui "Runtimes updated."
             Tests -> putSuccess ui "Tests updated."
-          putDim ui ("Data directory: " ++ root)
+          putDim ui ("Data directory: " <> T.pack root)
         Plain ->
           putPlain "download" "" $
-            "done: " ++ case downloadTarget opts of
+            "done: " <> case downloadTarget opts of
               All -> "runtimes and tests"
               Runtimes -> "runtimes"
               Tests -> "tests"
@@ -74,7 +77,7 @@ run runtime opts = do
       let reason = classifyException (exc :: SomeException)
       case uiMode ui of
         Rich -> do
-          putErrorLine ui ("Download failed: " ++ reason)
+          putErrorLine ui ("Download failed: " <> reason)
           putDim ui "Check your network connection and try again."
         Plain -> do
           putPlain "download" "error" reason

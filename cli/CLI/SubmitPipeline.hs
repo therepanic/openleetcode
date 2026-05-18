@@ -4,6 +4,7 @@ import CLI.AppEnv (Config)
 import Core.Test.Runner (SolutionBatch, TestResult)
 import Core.Test.Types (TestSuite)
 import Core.Types (Language)
+import Data.Text (Text)
 
 data SubmitResolved = SubmitResolved
   { srConfig :: Config,
@@ -14,13 +15,13 @@ data SubmitResolved = SubmitResolved
 
 data SubmitFailure
   = SubmitMissingSelector
-  | SubmitSolutionReadError FilePath String
-  | SubmitUnknownExtension String
+  | SubmitSolutionReadError FilePath Text
+  | SubmitUnknownExtension Text
   | SubmitSuiteNotFoundById Int
-  | SubmitSuiteNotFoundByTitle String
-  | SubmitBackendUnavailable String
-  | SubmitInternalWhileJudging (Maybe Int) String
-  | SubmitJudgeInternal (Maybe Int) String
-  | SubmitInfraFailure String
+  | SubmitSuiteNotFoundByTitle Text
+  | SubmitBackendUnavailable Text
+  | SubmitInternalWhileJudging (Maybe Int) Text
+  | SubmitJudgeInternal (Maybe Int) Text
+  | SubmitInfraFailure Text
   | SubmitVerdict Int TestResult
   deriving (Eq, Show)

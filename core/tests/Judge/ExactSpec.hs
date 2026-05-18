@@ -1,7 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Judge.ExactSpec (spec) where
 
 import Core.Judge.Class
 import Core.Judge.Exact
+import Data.Text qualified as T
 import Test.Hspec
 
 spec :: Spec
@@ -20,5 +23,5 @@ spec = do
 
     it "fails when there are extra spaces" $ do
       case judge Exact "1, 2" "1,2" of
-        Fail msg -> msg `shouldContain` "Expected: 1, 2 Got: 1,2"
+        Fail msg -> msg `shouldSatisfy` T.isInfixOf "Expected: 1, 2 Got: 1,2"
         _ -> expectationFailure "should have failed due to space mismatch"

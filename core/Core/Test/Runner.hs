@@ -14,10 +14,10 @@ import Core.Test.Converter (toGenInfo)
 import Core.Test.Types qualified as Types
 import Core.Types
 import Data.IORef (IORef, atomicModifyIORef', newIORef)
-import Data.List (intercalate)
 import Data.List qualified
 import Data.Map qualified as M
 import Data.Maybe (fromJust, fromMaybe)
+import Data.Text (Text)
 import Data.Text qualified as T
 import GHC.Conc (getNumProcessors)
 import Text.Read (readMaybe)
@@ -28,9 +28,9 @@ newtype ShortCircuit = ShortCircuit (Int, TestResult)
 
 instance Exception ShortCircuit
 
-data TestResult = Pass Int | WA (Maybe String) String String | TLE String | RE String String | Internal String deriving (Show, Eq)
+data TestResult = Pass Int | WA (Maybe Text) Text Text | TLE Text | RE Text Text | Internal Text deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {entryMain :: String, entryTime :: String, sbLang :: Language, solution :: String, utilities :: String, python3Utilities :: String}
+data SolutionBatch = SolutionBatch {entryMain :: Text, entryTime :: Text, sbLang :: Language, solution :: Text, utilities :: Text, python3Utilities :: Text}
 
 runSuite ::
   (C.CodeExecutor e, Generator g) =>
@@ -57,7 +57,7 @@ runSuiteWithProgress exec gen batch suite onProgress = do
   let runAndCheck (idx, test) = do
         resOrExc <- try (handleTestCase exec gen batch seed suite test) :: IO (Either SomeException TestResult)
         let res = case resOrExc of
-              Left exc -> Internal (displayException exc)
+              Left exc -> Internal (T.pack (displayException exc))
               Right value -> value
         reportDone doneRef total onProgress
         case res of
@@ -126,13 +126,13 @@ handleTestCase exec gen batch sSeed suite test = do
                 inConsts
             withImports = replaceUniversal "${IMPORTS}" userImports template
             entryWithCall = replaceUniversal "${CALL_SOLUTION}" callStr withImports
-            afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) entryWithCall genResults
-            afterConst = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) afterGen constResults
+            afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" <> var <> "}") res acc) entryWithCall genResults
+            afterConst = foldl (\acc (var, res) -> replaceUniversal ("{" <> var <> "}") res acc) afterGen constResults
             fullCall =
               foldl
                 ( \acc (var, val) ->
                     let preparedVal = prepareInValue lang val
-                     in replaceUniversal ("{" ++ var ++ "}") preparedVal acc
+                     in replaceUniversal ("{" <> var <> "}") preparedVal acc
                 )
                 afterConst
                 inCases
@@ -154,7 +154,7 @@ handleTestCase exec gen batch sSeed suite test = do
     C.ExecFail err s -> return $ toExecStatus s err ""
     C.ExecSuc tOut -> do
       let (userStdout, tLast) = splitStdout tOut
-      let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip . T.pack $ tLast)
+      let ms = fromMaybe 0 (readMaybe . T.unpack . T.strip $ tLast)
       if ms > Types.tlTimeMs (Types.tsLimits suite)
         then
           return $ TLE userStdout
@@ -173,7 +173,7 @@ handleTestCase exec gen batch sSeed suite test = do
           case response of
             C.ExecFail err s -> return $ toExecStatus s err ""
             C.ExecSuc mOut -> do
-              let mLast = last (lines mOut)
+              let mLast = last (T.lines mOut)
               case Types.tcOut test of
                 Just (Types.OutCase expected) ->
                   let res = judge jud expected mLast
@@ -185,26 +185,26 @@ handleTestCase exec gen batch sSeed suite test = do
                   Just oracleSolution -> do
                     let oracleTemplate =
                           "import datetime as _dt\n"
-                            ++ "from dataclasses import is_dataclass, asdict\n"
-                            ++ "from typing import *\n"
-                            ++ python3Utilities batch
-                            ++ "\n"
-                            ++ Types.checker oracleSolution
-                            ++ "\n"
-                            ++ "print(to_json("
-                            ++ Types.call oracleSolution
-                            ++ "))"
-                    let cleanResult = T.unpack . T.strip . T.pack $ mLast
+                            <> "from dataclasses import is_dataclass, asdict\n"
+                            <> "from typing import *\n"
+                            <> python3Utilities batch
+                            <> "\n"
+                            <> Types.checker oracleSolution
+                            <> "\n"
+                            <> "print(to_json("
+                            <> Types.call oracleSolution
+                            <> "))"
+                    let cleanResult = T.strip mLast
                     let oracleReady =
-                          let withResult = replaceUniversal "{result}" (show cleanResult) oracleTemplate
+                          let withResult = replaceUniversal "{result}" (T.pack (show cleanResult)) oracleTemplate
                               withCall = replaceUniversal "${CALL_SOLUTION}" callStr withResult
-                              afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) withCall oracleGenResults
-                              afterConst = foldl (\acc (var, res) -> replaceUniversal ("{" ++ var ++ "}") res acc) afterGen oracleConstResults
+                              afterGen = foldl (\acc (var, res) -> replaceUniversal ("{" <> var <> "}") res acc) withCall oracleGenResults
+                              afterConst = foldl (\acc (var, res) -> replaceUniversal ("{" <> var <> "}") res acc) afterGen oracleConstResults
                               fullCall =
                                 foldl
                                   ( \acc (var, val) ->
                                       let preparedVal = prepareInValue Python3 val
-                                       in replaceUniversal ("{" ++ var ++ "}") preparedVal acc
+                                       in replaceUniversal ("{" <> var <> "}") preparedVal acc
                                   )
                                   afterConst
                                   inCases
@@ -220,22 +220,19 @@ handleTestCase exec gen batch sSeed suite test = do
                             }
                         )
                     case oracleResponse of
-                      C.ExecFail err _ -> fail $ "Oracle execution error: " ++ err
+                      C.ExecFail err _ -> fail $ "Oracle execution error: " ++ T.unpack err
                       C.ExecSuc oracleOut -> do
-                        let cleanedOut = filter (`notElem` ['\n', '\r', ' ', '"']) oracleOut
+                        let cleanedOut = T.filter (`notElem` ['\n', '\r', ' ', '"']) oracleOut
                         if cleanedOut == "true"
                           then return (Pass ms)
                           else return (WA Nothing mLast userStdout)
 
-renderGenResult :: GenResult -> String
+renderGenResult :: GenResult -> Text
 renderGenResult r = r
 
-replaceUniversal :: String -> String -> String -> String
+replaceUniversal :: Text -> Text -> Text -> Text
 replaceUniversal target replacement input =
-  let tTarget = T.pack target
-      tReplacement = T.pack replacement
-      tInput = T.pack input
-   in T.unpack $ T.replace tTarget tReplacement tInput
+  T.replace target replacement input
 
 data AnyJudge = ExactJudge ETypes.Exact | IgnoreOrderJudge ITypes.IgnoreOrder
 
@@ -247,100 +244,94 @@ convertTestJudgeToJudge :: Types.JudgeType -> AnyJudge
 convertTestJudgeToJudge Types.Exact = ExactJudge ETypes.Exact
 convertTestJudgeToJudge Types.IgnoreOrder = IgnoreOrderJudge ITypes.IgnoreOrder
 
-toExecStatus :: C.ExecStatus -> String -> String -> TestResult
+toExecStatus :: C.ExecStatus -> Text -> Text -> TestResult
 toExecStatus C.TLE _ out = TLE out
 toExecStatus C.RE err out = RE err out
 toExecStatus (C.Unknown s) err out = RE (s <> " " <> err) out
 
-splitJavaCode :: String -> (String, String)
+splitJavaCode :: Text -> (Text, Text)
 splitJavaCode code =
-  let allLines = lines code
-      (importLines, restLines) = Data.List.partition (\l -> "import " `Data.List.isPrefixOf` dropWhile (== ' ') l) allLines
-   in (unlines importLines, unlines restLines)
+  let allLines = T.lines code
+      (importLines, restLines) = Data.List.partition (\l -> "import " `T.isPrefixOf` T.dropWhile (== ' ') l) allLines
+   in (T.unlines importLines, T.unlines restLines)
 
-splitCppCode :: String -> (String, String)
+splitCppCode :: Text -> (Text, Text)
 splitCppCode code =
-  let allLines = lines code
+  let allLines = T.lines code
       isInclude l =
-        let trimmed = dropWhile (== ' ') l
-         in "#include" `Data.List.isPrefixOf` trimmed
+        let trimmed = T.dropWhile (== ' ') l
+         in "#include" `T.isPrefixOf` trimmed
       (includeLines, restLines) = Data.List.partition isInclude allLines
-   in (unlines includeLines, unlines restLines)
+   in (T.unlines includeLines, T.unlines restLines)
 
-splitRustCode :: String -> (String, String)
+splitRustCode :: Text -> (Text, Text)
 splitRustCode code =
-  let allLines = lines code
-      isUse l = "use " `Data.List.isPrefixOf` dropWhile (== ' ') l
+  let allLines = T.lines code
+      isUse l = "use " `T.isPrefixOf` T.dropWhile (== ' ') l
       (useLines, restLines) = Data.List.partition isUse allLines
-   in (unlines useLines, unlines restLines)
+   in (T.unlines useLines, T.unlines restLines)
 
-prepareInValue :: Language -> String -> String
+prepareInValue :: Language -> Text -> Text
 prepareInValue lang val =
-  replaceNulls (T.pack val)
+  replaceNulls val
   where
-    replaceNulls = T.unpack . T.replace "null" (T.pack $ nullLiteral lang)
+    replaceNulls = T.replace "null" (nullLiteral lang)
 
 -- todo: bullshit
-expectsRustOptionList :: Language -> String -> String -> Bool
+expectsRustOptionList :: Language -> Text -> Text -> Bool
 expectsRustOptionList lang callStr var =
-  lang == Rust && (("to_tree_node(vec![{" <> var <> "}])") `Data.List.isInfixOf` callStr)
+  lang == Rust && (("to_tree_node(vec![{" <> var <> "}])") `T.isInfixOf` callStr)
 
-wrapRustOptionList :: String -> String
+wrapRustOptionList :: Text -> Text
 wrapRustOptionList raw =
-  intercalate ", " (map wrapItem nonEmptyItems)
+  T.intercalate ", " (map wrapItem nonEmptyItems)
   where
-    nonEmptyItems = filter (not . null) (splitByComma raw)
-    splitByComma s = map trim (go s "" [])
-    go [] current acc = reverse (current : acc)
-    go (c : cs) current acc
-      | c == ',' = go cs "" (current : acc)
-      | otherwise = go cs (current <> [c]) acc
-    trim = T.unpack . T.strip . T.pack
+    nonEmptyItems = filter (not . T.null) (map T.strip (T.splitOn "," raw))
     wrapItem x
       | x == "None" = x
-      | "Some(" `Data.List.isPrefixOf` x = x
+      | "Some(" `T.isPrefixOf` x = x
       | otherwise = "Some(" <> x <> ")"
 
-splitStdout :: String -> (String, String)
+splitStdout :: Text -> (Text, Text)
 splitStdout out =
-  let allLines = lines out
+  let allLines = T.lines out
    in if null allLines
         then ("", "")
-        else (unlines (init allLines), last allLines)
+        else (T.unlines (init allLines), last allLines)
 
-generateFieldFor :: (Generator g) => Language -> Int -> g -> (String, Types.GeneratedInData) -> (String, String)
+generateFieldFor :: (Generator g) => Language -> Int -> g -> (Text, Types.GeneratedInData) -> (Text, Text)
 generateFieldFor renderLang seed gen (var, gData) =
   let gInfo = toGenInfo gData
       genData = GenData seed gInfo renderLang
       result = generate gen genData
    in (var, result)
 
-renderNestedArr :: Language -> Maybe Types.GIDArrElemType -> [String] -> String
+renderNestedArr :: Language -> Maybe Types.GIDArrElemType -> [Text] -> Text
 renderNestedArr lang et rows =
-  intercalate ", " (map (wrapArray lang et) rows)
+  T.intercalate ", " (map (wrapArray lang et) rows)
 
-renderConst :: Language -> Types.GeneratedInData -> String
+renderConst :: Language -> Types.GeneratedInData -> Text
 renderConst lang (Types.GIDArr (Types.GIDArrConst xs elemType)) =
-  intercalate ", " (map (renderConstArrayItem lang elemType) xs)
-renderConst _ (Types.GIDIntegral (Types.GIDGenIntegralConst n)) = show n
-renderConst _ (Types.GIDFloat (Types.GIDGenFloatConst f)) = show f
-renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = show c
+  T.intercalate ", " (map (renderConstArrayItem lang elemType) xs)
+renderConst _ (Types.GIDIntegral (Types.GIDGenIntegralConst n)) = T.pack (show n)
+renderConst _ (Types.GIDFloat (Types.GIDGenFloatConst f)) = T.pack (show f)
+renderConst _ (Types.GIDChar (Types.GIDGenCharConst c)) = T.pack (show c)
 renderConst lang Types.GIDNull = nullLiteral lang
 renderConst lang (Types.GIDBool (Types.GIDGenBoolConst b)) =
   if lang == Python3 || lang == Python2
-    then show b
-    else T.unpack . T.toLower . T.pack $ show b
-renderConst _ (Types.GIDStr (Types.GIDStrConst s)) = show s
+    then T.pack (show b)
+    else T.toLower . T.pack $ show b
+renderConst _ (Types.GIDStr (Types.GIDStrConst s)) = T.pack (show s)
 renderConst _ (Types.GIDStr (Types.GIDStrGen _ _)) = error "unsupported"
 renderConst _ _ = error "unsupported"
 
-renderConstArrayItem :: Language -> Maybe Types.GIDArrElemType -> Types.GeneratedInData -> String
+renderConstArrayItem :: Language -> Maybe Types.GIDArrElemType -> Types.GeneratedInData -> Text
 renderConstArrayItem lang inheritedElemType (Types.GIDArr (Types.GIDArrConst xs elemType)) =
   let et = elemType <|> inheritedElemType
-   in wrapArray lang et $ intercalate ", " (map (renderConstArrayItem lang et) xs)
+   in wrapArray lang et $ T.intercalate ", " (map (renderConstArrayItem lang et) xs)
 renderConstArrayItem lang _ val = renderConst lang val
 
-wrapArray :: Language -> Maybe Types.GIDArrElemType -> String -> String
+wrapArray :: Language -> Maybe Types.GIDArrElemType -> Text -> Text
 wrapArray lang elemType inner = case lang of
   Java ->
     let t = case elemType of

@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module CLI.Submit where
 
 import CLI.AppEnv
@@ -22,6 +24,9 @@ import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.List (find, isInfixOf, isPrefixOf)
 import Data.Map qualified as M
 import Data.Maybe (fromMaybe, isNothing)
+import Data.Text (Text)
+import Data.Text qualified as T
+import Data.Text.IO qualified as TIO
 import Data.Word (Word64)
 import GHC.Clock (getMonotonicTimeNSec)
 import System.Directory (doesDirectoryExist, listDirectory)
@@ -30,7 +35,7 @@ import System.FilePath (takeExtension, (</>))
 data SubmitOpts = SubmitOpts
   { submitPath :: FilePath,
     submitId :: Maybe Int,
-    submitTitle :: Maybe String,
+    submitTitle :: Maybe Text,
     submitLang :: Maybe Language
   }
 
@@ -87,10 +92,10 @@ prepareSubmit ui opts = do
                 case runtimeResult of
                   Left failure -> failSubmitStep preparingChecklist failure
                   Right (entryMainStr, entryTimeStr, utilitiesStr, python3UtilitiesStr) -> do
-                    emitPreparingStep ui preparingChecklist 3 ("load runtime templates (" ++ convertLangToStr lang ++ ")")
-                    solutionResult <- try (readFile (submitPath opts)) :: IO (Either SomeException String)
+                    emitPreparingStep ui preparingChecklist 3 ("load runtime templates (" ++ T.unpack (convertLangToStr lang) ++ ")")
+                    solutionResult <- try (TIO.readFile (submitPath opts)) :: IO (Either SomeException Text)
                     case solutionResult of
-                      Left exc -> failSubmitStep preparingChecklist (SubmitSolutionReadError (submitPath opts) (sanitizeSingleLine (show exc)))
+                      Left exc -> failSubmitStep preparingChecklist (SubmitSolutionReadError (submitPath opts) (sanitizeSingleLine (T.pack (show exc))))
                       Right solutionStr -> do
                         emitPreparingStep ui preparingChecklist 4 "read solution"
                         let config = clrConfig configResult
@@ -117,13 +122,13 @@ executeSubmit ui resolved = do
   let config = srConfig resolved
   let backUrl = backendUrl config
   let backLabel = show (backendType config)
-  runningChecklist <- emitRunningHeader ui backLabel backUrl
+  runningChecklist <- emitRunningHeader ui backLabel (T.unpack backUrl)
   flip finally (stopMaybeChecklist runningChecklist) $ do
-    backendReady <- try (Piston.getRuntimes backUrl) :: IO (Either SomeException (M.Map Language String))
+    backendReady <- try (Piston.getRuntimes backUrl) :: IO (Either SomeException (M.Map Language Text))
     case backendReady of
       Left _ -> failSubmitStep runningChecklist (SubmitBackendUnavailable backUrl)
       Right _ -> do
-        emitBackendReady ui runningChecklist backLabel backUrl (length (TestTypes.tsCases (srTestSuite resolved)))
+        emitBackendReady ui runningChecklist backLabel (T.unpack backUrl) (length (TestTypes.tsCases (srTestSuite resolved)))
         let executor = convertExecutorTypeToExecutor (backendType config) backUrl
         let generator = SplitmixGenerator
         progressRef <- newIORef (Nothing :: Maybe Word64)
@@ -149,15 +154,15 @@ executeSubmit ui resolved = do
                     _ -> SubmitVerdict idx verdict
               Nothing -> pure (Right (maximum [t | (_, Pass t) <- results]))
 
-loadRuntimeTemplates :: FilePath -> Language -> IO (Either SubmitFailure (String, String, String, String))
+loadRuntimeTemplates :: FilePath -> Language -> IO (Either SubmitFailure (Text, Text, Text, Text))
 loadRuntimeTemplates root lang = do
   let runtimes = root </> "runtimes"
-  let extStr = convertLangToExt lang
-  let langDir = runtimes </> convertLangToStr lang
-  mainResult <- try (readFile (langDir </> ("main" ++ extStr))) :: IO (Either SomeException String)
-  timeResult <- try (readFile (langDir </> ("time" ++ extStr))) :: IO (Either SomeException String)
-  utilitiesResult <- try (readFile (langDir </> ("utilities" ++ extStr))) :: IO (Either SomeException String)
-  pyUtilsResult <- try (readFile (runtimes </> "python3" </> "utilities.py")) :: IO (Either SomeException String)
+  let extStr = T.unpack (convertLangToExt lang)
+  let langDir = runtimes </> T.unpack (convertLangToStr lang)
+  mainResult <- try (TIO.readFile (langDir </> ("main" ++ extStr))) :: IO (Either SomeException Text)
+  timeResult <- try (TIO.readFile (langDir </> ("time" ++ extStr))) :: IO (Either SomeException Text)
+  utilitiesResult <- try (TIO.readFile (langDir </> ("utilities" ++ extStr))) :: IO (Either SomeException Text)
+  pyUtilsResult <- try (TIO.readFile (runtimes </> "python3" </> "utilities.py")) :: IO (Either SomeException Text)
   pure $ do
     entryMainStr <- either (Left . SubmitInfraFailure . classifyException) Right mainResult
     entryTimeStr <- either (Left . SubmitInfraFailure . classifyException) Right timeResult
@@ -169,9 +174,9 @@ resolveLanguage :: SubmitOpts -> Either SubmitFailure Language
 resolveLanguage opts = case submitLang opts of
   Just lang -> Right lang
   Nothing ->
-    case convertExtToLangMaybe (takeExtension (submitPath opts)) of
+    case convertExtToLangMaybe (T.pack (takeExtension (submitPath opts))) of
       Just lang -> Right lang
-      Nothing -> Left (SubmitUnknownExtension (takeExtension (submitPath opts)))
+      Nothing -> Left (SubmitUnknownExtension (T.pack (takeExtension (submitPath opts))))
 
 findTestPath :: FilePath -> SubmitOpts -> IO (Either SubmitFailure FilePath)
 findTestPath root opts = do
@@ -202,7 +207,7 @@ findTestPath root opts = do
                 then pure []
                 else do
                   subs <- listDirectory currRange
-                  pure [currRange </> s | s <- subs, title `isInfixOf` s]
+                  pure [currRange </> s | s <- subs, T.unpack title `isInfixOf` s]
             case concat paths of
               (p : _) -> pure (Right (p </> "manifest.yml"))
               [] -> pure (Left (SubmitSuiteNotFoundByTitle title))
@@ -226,10 +231,10 @@ emitPreparingStep :: UI -> Maybe Checklist -> Int -> String -> IO ()
 emitPreparingStep ui maybeChecklist idx msg = case uiMode ui of
   Rich -> case maybeChecklist of
     Just checklist -> do
-      updateChecklistStep checklist idx StepDone (capitalize msg)
+      updateChecklistStep checklist idx StepDone (T.pack (capitalize msg))
       advanceChecklist checklist (idx + 1)
     Nothing -> pure ()
-  Plain -> putPlain "submit" "preparing" msg
+  Plain -> putPlain "submit" "preparing" (T.pack msg)
 
 advanceChecklist :: Checklist -> Int -> IO ()
 advanceChecklist checklist idx =
@@ -247,7 +252,7 @@ emitRunningHeader ui backendLabel backendUrl = case uiMode ui of
     startChecklist
       ui
       "Running tests…"
-      [ ChecklistStep StepActive ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")"),
+      [ ChecklistStep StepActive (T.pack ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")")),
         ChecklistStep StepPending "Run test cases"
       ]
   Plain -> pure Nothing
@@ -256,18 +261,18 @@ emitBackendReady :: UI -> Maybe Checklist -> String -> String -> Int -> IO ()
 emitBackendReady ui maybeChecklist backendLabel backendUrl total = case uiMode ui of
   Rich -> case maybeChecklist of
     Just checklist -> do
-      updateChecklistStep checklist 0 StepDone ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")")
-      updateChecklistStep checklist 1 StepActive ("Run test cases (0/" ++ show total ++ ")")
+      updateChecklistStep checklist 0 StepDone (T.pack ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")"))
+      updateChecklistStep checklist 1 StepActive (T.pack ("Run test cases (0/" ++ show total ++ ")"))
     Nothing -> pure ()
-  Plain -> putPlain "submit" "running" ("backend " ++ backendLabel ++ " @ " ++ backendUrl)
+  Plain -> putPlain "submit" "running" (T.pack ("backend " ++ backendLabel ++ " @ " ++ backendUrl))
 
 emitRunningProgress :: UI -> Maybe Checklist -> Int -> Int -> IO ()
 emitRunningProgress ui maybeChecklist done total = case uiMode ui of
   Rich -> case maybeChecklist of
     Just checklist ->
-      updateChecklistStep checklist 1 (if done == total then StepDone else StepActive) ("Run test cases (" ++ show done ++ "/" ++ show total ++ ")")
+      updateChecklistStep checklist 1 (if done == total then StepDone else StepActive) (T.pack ("Run test cases (" ++ show done ++ "/" ++ show total ++ ")"))
     Nothing -> pure ()
-  Plain -> putPlain "submit" "running" ("progress " ++ show done ++ "/" ++ show total)
+  Plain -> putPlain "submit" "running" (T.pack ("progress " ++ show done ++ "/" ++ show total))
 
 emitRunningProgressThrottled :: UI -> Maybe Checklist -> IORef (Maybe Word64) -> Int -> Int -> IO ()
 emitRunningProgressThrottled ui maybeChecklist progressRef done total =
@@ -291,7 +296,7 @@ renderAccepted ui maxTime = case uiMode ui of
     putStrLn ("Runtime: " ++ show maxTime ++ " ms")
   Plain -> do
     putPlain "submit" "verdict" "accepted"
-    putPlain "submit" "verdict" ("runtime: " ++ show maxTime)
+    putPlain "submit" "verdict" (T.pack ("runtime: " ++ show maxTime))
 
 renderSubmitFailure :: UI -> SubmitFailure -> IO ()
 renderSubmitFailure ui failure = case failure of
@@ -302,83 +307,83 @@ renderSubmitFailure ui failure = case failure of
     emitDetail ui "submit" "  openleetcode submit ./solution.py --id 1"
   SubmitSolutionReadError path reason -> do
     renderErrorHeader ui "submit" ("Could not read solution file: " ++ path)
-    emitDetail ui "submit" reason
+    emitDetail ui "submit" (T.unpack reason)
   SubmitUnknownExtension ext -> do
-    renderErrorHeader ui "submit" ("Unknown file extension for language detection: '" ++ ext ++ "'")
+    renderErrorHeader ui "submit" ("Unknown file extension for language detection: '" ++ T.unpack ext ++ "'")
     emitDetail ui "submit" "Use --lang <LANG> (see --help for supported values)."
   SubmitSuiteNotFoundById taskId ->
     renderErrorHeader ui "submit" ("Test suite not found for problem id " ++ show taskId ++ ".")
   SubmitSuiteNotFoundByTitle title ->
-    renderErrorHeader ui "submit" ("Test suite not found for title matching: \"" ++ title ++ "\".")
+    renderErrorHeader ui "submit" ("Test suite not found for title matching: \"" ++ T.unpack title ++ "\".")
   SubmitBackendUnavailable backendUrl -> do
-    renderErrorHeader ui "submit" ("Backend is not reachable: " ++ backendUrl)
+    renderErrorHeader ui "submit" ("Backend is not reachable: " ++ T.unpack backendUrl)
     emitDetail ui "submit" "Check `openleetcode config list` and your backend service."
   SubmitJudgeInternal maybeIdx msg -> do
     renderErrorHeader ui "submit" $
       case maybeIdx of
         Just idx -> "Judge internal error on test #" ++ show idx
         Nothing -> "Judge internal error"
-    emitDetail ui "submit" ("  " ++ msg)
+    emitDetail ui "submit" ("  " ++ T.unpack msg)
   SubmitInternalWhileJudging maybeIdx msg -> do
     renderErrorHeader ui "submit" $
       case maybeIdx of
         Just idx -> "Internal error while judging test #" ++ show idx
         Nothing -> "Internal error while judging"
-    emitDetail ui "submit" ("  " ++ msg)
+    emitDetail ui "submit" ("  " ++ T.unpack msg)
   SubmitInfraFailure msg ->
-    renderErrorHeader ui "submit" ("Internal error: " ++ msg)
+    renderErrorHeader ui "submit" ("Internal error: " ++ T.unpack msg)
   SubmitVerdict idx verdict -> renderVerdict ui idx verdict
 
 renderVerdict :: UI -> Int -> TestResult -> IO ()
 renderVerdict ui idx verdict = case verdict of
   WA expected got out -> do
     renderVerdictHeader ui "wa" ("Wrong answer on test #" ++ show idx)
-    emitVerdictDetail ui "wa" ("  Expected: " ++ fromMaybe "No expected output" expected)
-    emitVerdictDetail ui "wa" ("  Got:      " ++ got)
-    if null out
+    emitVerdictDetail ui "wa" ("  Expected: " ++ T.unpack (fromMaybe "No expected output" expected))
+    emitVerdictDetail ui "wa" ("  Got:      " ++ T.unpack got)
+    if T.null out
       then pure ()
       else do
         emitVerdictDetail ui "wa" "  Logs:"
-        emitVerdictDetail ui "wa" out
+        emitVerdictDetail ui "wa" (T.unpack out)
   TLE out -> do
     renderVerdictHeader ui "tle" ("Time limit exceeded on test #" ++ show idx)
-    if null out
+    if T.null out
       then pure ()
       else do
         emitVerdictDetail ui "tle" "  Logs before time limit:"
-        emitVerdictDetail ui "tle" out
+        emitVerdictDetail ui "tle" (T.unpack out)
   RE err out -> do
     renderVerdictHeader ui "re" ("Runtime error on test #" ++ show idx)
-    emitVerdictDetail ui "re" ("  " ++ err)
-    if null out
+    emitVerdictDetail ui "re" ("  " ++ T.unpack err)
+    if T.null out
       then pure ()
       else do
         emitVerdictDetail ui "re" "  Logs:"
-        emitVerdictDetail ui "re" out
+        emitVerdictDetail ui "re" (T.unpack out)
   Internal msg -> do
     renderErrorHeader ui "submit" ("Judge internal error on test #" ++ show idx)
-    emitDetail ui "submit" ("  " ++ sanitizeInternalJudgeMessage msg)
+    emitDetail ui "submit" ("  " ++ T.unpack (sanitizeInternalJudgeMessage msg))
   Pass _ -> pure ()
 
 renderErrorHeader :: UI -> String -> String -> IO ()
 renderErrorHeader ui scope msg = case uiMode ui of
-  Rich -> putErrorLine ui msg
-  Plain -> putPlain scope "error" msg
+  Rich -> putErrorLine ui (T.pack msg)
+  Plain -> putPlain (T.pack scope) "error" (T.pack msg)
 
 renderVerdictHeader :: UI -> String -> String -> IO ()
 renderVerdictHeader ui verdictTag msg = case uiMode ui of
-  Rich -> putErrorLine ui msg
-  Plain -> putPlain "submit" ("verdict: " ++ verdictTag) msg
+  Rich -> putErrorLine ui (T.pack msg)
+  Plain -> putPlain "submit" (T.pack ("verdict: " ++ verdictTag)) (T.pack msg)
 
 emitVerdictDetail :: UI -> String -> String -> IO ()
 emitVerdictDetail ui verdictTag msg = case uiMode ui of
   Rich -> putStrLn msg
-  Plain -> putPlain "submit" ("verdict: " ++ verdictTag) msg
+  Plain -> putPlain "submit" (T.pack ("verdict: " ++ verdictTag)) (T.pack msg)
 
 emitDetail :: UI -> String -> String -> IO ()
 emitDetail ui scope msg = case uiMode ui of
   Rich -> putStrLn msg
-  Plain -> putPlain scope "" msg
+  Plain -> putPlain (T.pack scope) "" (T.pack msg)
 
 submitFailureExitCode :: SubmitFailure -> Int
 submitFailureExitCode failure = case failure of
@@ -396,30 +401,29 @@ submitFailureExitCode failure = case failure of
 classifySuiteException :: SomeException -> SubmitFailure
 classifySuiteException exc =
   if "Oracle execution error:" `isInfixOf` shown
-    then SubmitInternalWhileJudging Nothing (stripOracleExecutionPrefix (sanitizeSingleLine shown))
+    then SubmitInternalWhileJudging Nothing (stripOracleExecutionPrefix (sanitizeSingleLine (T.pack shown)))
     else SubmitInfraFailure (classifyException exc)
   where
     shown = show exc
 
-sanitizeInternalJudgeMessage :: String -> String
+sanitizeInternalJudgeMessage :: Text -> Text
 sanitizeInternalJudgeMessage = stripOracleExecutionPrefix . sanitizeSingleLine
 
-isOracleExecutionMessage :: String -> Bool
-isOracleExecutionMessage = isInfixOf "Oracle execution error:"
+isOracleExecutionMessage :: Text -> Bool
+isOracleExecutionMessage = T.isInfixOf "Oracle execution error:"
 
-stripOracleExecutionPrefix :: String -> String
+stripOracleExecutionPrefix :: Text -> Text
 stripOracleExecutionPrefix msg =
-  case splitAt prefixLen msg of
+  case T.splitAt prefixLen msg of
     (prefix, rest)
       | prefix == oraclePrefix -> trimLeadingSpace rest
     _ -> msg
   where
     oraclePrefix = "Oracle execution error:"
-    prefixLen = length oraclePrefix
+    prefixLen = T.length oraclePrefix
 
-trimLeadingSpace :: String -> String
-trimLeadingSpace (' ' : xs) = trimLeadingSpace xs
-trimLeadingSpace xs = xs
+trimLeadingSpace :: Text -> Text
+trimLeadingSpace = T.dropWhile (== ' ')
 
 capitalize :: String -> String
 capitalize [] = []

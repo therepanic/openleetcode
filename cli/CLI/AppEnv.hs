@@ -4,18 +4,20 @@ module CLI.AppEnv where
 
 import Core.Types
 import Data.Aeson
+import Data.Text (Text)
+import Data.Text qualified as T
 import Data.Yaml (decodeFileEither, encodeFile)
 import System.Directory (XdgDirectory (..), createDirectoryIfMissing, doesFileExist, getXdgDirectory)
 
 data Config = Config
   { backendType :: ExecutorType,
-    backendUrl :: String
+    backendUrl :: Text
   }
   deriving (Show)
 
 data ConfigLoadResult = ConfigLoadResult
   { clrConfig :: Config,
-    clrWarning :: Maybe String
+    clrWarning :: Maybe Text
   }
 
 loadConfig :: IO ConfigLoadResult
@@ -31,7 +33,7 @@ loadConfig = do
           pure
             ConfigLoadResult
               { clrConfig = defaultConfig,
-                clrWarning = Just (show err)
+                clrWarning = Just (T.pack (show err))
               }
         Right config ->
           pure

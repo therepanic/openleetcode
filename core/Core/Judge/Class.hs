@@ -1,6 +1,8 @@
 module Core.Judge.Class where
 
-data JudgeResult = Pass | Fail String deriving (Show, Eq)
+import Data.Text (Text)
+
+data JudgeResult = Pass | Fail Text deriving (Show, Eq)
 
 class Judge j where
-  judge :: j -> String -> String -> JudgeResult
+  judge :: j -> Text -> Text -> JudgeResult

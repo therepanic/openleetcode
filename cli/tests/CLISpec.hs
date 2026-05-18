@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module CLISpec where
 
 import CLI.Commands
@@ -7,6 +9,7 @@ import CLI.Submit
 import CLI.SubmitPipeline (SubmitFailure (SubmitMissingSelector))
 import CLI.UI (ColorMode (ColorAuto), GlobalOptions (goColorMode, goNoColor, goPlain), plainLine, sanitizeSingleLine)
 import Core.Types (Language (Python3))
+import Data.Text qualified as T
 import Options.Applicative
 import Test.Hspec
 
@@ -51,14 +54,14 @@ spec = do
   describe "CLI.UI helpers" $ do
     it "formats plain output with scope and section" $
       plainLine "submit" "preparing" "load configuration"
-        `shouldBe` "openleetcode: submit: preparing: load configuration"
+        `shouldBe` ("openleetcode: submit: preparing: load configuration" :: T.Text)
 
     it "keeps plain output compact without multiline tails" $
-      sanitizeSingleLine "line1\nline2" `shouldBe` "line1"
+      sanitizeSingleLine "line1\nline2" `shouldBe` ("line1" :: T.Text)
 
     it "formats plain output without section" $
       plainLine "config" "" "backend.url updated"
-        `shouldBe` "openleetcode: config: backend.url updated"
+        `shouldBe` ("openleetcode: config: backend.url updated" :: T.Text)
 
   describe "CLI.Commands parser" $ do
     it "parses explicit submit command with id" $

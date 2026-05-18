@@ -1,20 +1,23 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Core.Judge.IgnoreOrder where
 
 import Core.Judge.Class
 import Data.Aeson
 import Data.ByteString.Lazy.Char8 qualified as BS
 import Data.List (sort)
+import Data.Text qualified as T
 import Data.Vector qualified as V
 
 data IgnoreOrder = IgnoreOrder
 
 instance Judge IgnoreOrder where
   judge _ expected actual =
-    case (decode (BS.pack expected), decode (BS.pack actual)) of
+    case (decode (BS.pack (T.unpack expected)), decode (BS.pack (T.unpack actual))) of
       (Just e, Just a) ->
         if sortValue e == sortValue a
           then Pass
-          else Fail ("Expected: " ++ show expected ++ " Got: " ++ show actual)
+          else Fail ("Expected: " <> T.pack (show expected) <> " Got: " <> T.pack (show actual))
       _ -> Fail "Failed to parse json"
 
 sortValue :: Value -> Value

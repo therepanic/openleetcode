@@ -5,6 +5,7 @@ import CLI.Download
 import CLI.Submit (SubmitOpts (SubmitOpts))
 import CLI.UI (ColorMode (ColorAuto), GlobalOptions (GlobalOptions))
 import Core.Types (convertStrToLang)
+import Data.Text qualified as T
 import Options.Applicative
 import Options.Applicative.Help.Pretty (pretty, vsep)
 
@@ -56,8 +57,8 @@ configOptsParser =
 configSetOptsParser :: Parser ConfigSetOpts
 configSetOptsParser =
   ConfigSetOpts
-    <$> strArgument (metavar "KEY" <> help "Config key (backend.type, backend.url)")
-    <*> strArgument (metavar "VALUE" <> help "Value for the key")
+    <$> fmap T.pack (strArgument (metavar "KEY" <> help "Config key (backend.type, backend.url)"))
+    <*> fmap T.pack (strArgument (metavar "VALUE" <> help "Value for the key"))
 
 submitOptsParser :: Parser SubmitOpts
 submitOptsParser =
@@ -70,12 +71,13 @@ submitOptsParser =
           (long "id" <> metavar "INT" <> help "Problem ID (takes precedence over --title when both are provided)")
       )
     <*> optional
-      ( strOption
-          (long "title" <> metavar "STR" <> help "Problem title substring")
+      ( fmap T.pack $
+          strOption
+            (long "title" <> metavar "STR" <> help "Problem title substring")
       )
     <*> optional
       ( option
-          (maybeReader convertStrToLang)
+          (maybeReader (convertStrToLang . T.pack))
           (long "lang" <> metavar "LANG" <> help "Language override (for example: python3, cpp, rust)")
       )
 

@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Judge.IgnoreOrderSpec (spec) where
 
 import Core.Judge.Class

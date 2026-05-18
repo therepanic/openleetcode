@@ -12,28 +12,28 @@ import Data.Text qualified as T
 import GHC.Generics
 import Network.HTTP.Req
 
-newtype PistonExecutor = PistonExecutor {url :: String}
+newtype PistonExecutor = PistonExecutor {url :: T.Text}
 
 data PistonRuntime = PistonRuntime
   { language :: Language,
-    version :: String
+    version :: T.Text
   }
   deriving (Show, Generic)
 
 data PistonExecuteRequest = PistonExecuteRequest
   { pistonRequestLanguage :: Language,
-    pistonRequestVersion :: String,
-    pistonRequestContent :: String,
+    pistonRequestVersion :: T.Text,
+    pistonRequestContent :: T.Text,
     pistonRequestRunTimeout :: Maybe Int,
     pistonRequestRunMemoryLimit :: Maybe Int
   }
   deriving (Show, Generic)
 
-data PistonExecuteRunStatus = OK | TLE | RE | Unknown String deriving (Show, Generic)
+data PistonExecuteRunStatus = OK | TLE | RE | Unknown T.Text deriving (Show, Generic)
 
 data PistonExecuteRun = PistonExecuteRun
-  { pistonResponseStdout :: String,
-    pistonResponseStderr :: String,
+  { pistonResponseStdout :: T.Text,
+    pistonResponseStderr :: T.Text,
     pistonResponseStatus :: PistonExecuteRunStatus
   }
   deriving (Show, Generic)
@@ -43,7 +43,7 @@ newtype PistonExecuteResponse = PistonExecuteResponse
   }
   deriving (Show, Generic)
 
-getRuntimes :: String -> IO (M.Map Language String)
+getRuntimes :: T.Text -> IO (M.Map Language T.Text)
 getRuntimes url = runReq defaultHttpConfig $ do
   r <- withBaseUrl url $ \base opts ->
     req
@@ -55,7 +55,7 @@ getRuntimes url = runReq defaultHttpConfig $ do
   let runtimes = responseBody r :: [PistonRuntime]
   return $ M.fromList [(language x, version x) | x <- runtimes]
 
-executeReq :: String -> PistonExecuteRequest -> IO PistonExecuteResponse
+executeReq :: T.Text -> PistonExecuteRequest -> IO PistonExecuteResponse
 executeReq url piston = runReq defaultHttpConfig $ do
   r <- withBaseUrl url $ \base opts ->
     req
@@ -67,21 +67,26 @@ executeReq url piston = runReq defaultHttpConfig $ do
   return (responseBody r)
 
 withBaseUrl ::
-  String ->
+  T.Text ->
   (forall scheme. Url scheme -> Option scheme -> Req a) ->
   Req a
 withBaseUrl url f = do
   let (isHttps, rest)
-        | Prelude.take 8 url == "https://" = (True, Prelude.drop 8 url)
-        | Prelude.take 7 url == "http://" = (False, Prelude.drop 7 url)
+        | T.take 8 url == "https://" = (True, T.drop 8 url)
+        | T.take 7 url == "http://" = (False, T.drop 7 url)
         | otherwise = error "Invalid url"
       (host, mPort) =
-        case break (== ':') rest of
-          (h, ':' : p) -> (h, Just (read p))
-          (h, _) -> (h, Nothing)
+        case T.breakOn ":" rest of
+          (h, p)
+            | T.null p ->
+                (h, Nothing)
+            | otherwise ->
+                ( h,
+                  Just (read (T.unpack (T.drop 1 p)))
+                )
   if isHttps
-    then f (https (T.pack host)) (maybe mempty port mPort)
-    else f (http (T.pack host)) (maybe mempty port mPort)
+    then f (https host) (maybe mempty port mPort)
+    else f (http host) (maybe mempty port mPort)
 
 instance E.CodeExecutor PistonExecutor where
   execute piston request = do
@@ -100,7 +105,7 @@ instance E.CodeExecutor PistonExecutor where
         return $
           case pistonResponseRun res of
             Just run ->
-              if Prelude.null (pistonResponseStderr run)
+              if T.null (pistonResponseStderr run)
                 then case pistonResponseStatus run of
                   OK -> E.ExecSuc {E.stdout = pistonResponseStdout run}
                   TLE -> E.ExecFail {E.status = E.TLE, E.stderr = handleExceptionStderrEdgeCase run}
@@ -110,8 +115,8 @@ instance E.CodeExecutor PistonExecutor where
             Nothing -> error "Piston response does not contain run field"
       Nothing -> fail ("There is no " ++ show (E.language request) ++ " language")
 
-handleExceptionStderrEdgeCase :: PistonExecuteRun -> String
-handleExceptionStderrEdgeCase run = if Prelude.null (pistonResponseStderr run) then pistonResponseStdout run else pistonResponseStderr run
+handleExceptionStderrEdgeCase :: PistonExecuteRun -> T.Text
+handleExceptionStderrEdgeCase run = if T.null (pistonResponseStderr run) then pistonResponseStdout run else pistonResponseStderr run
 
 instance FromJSON PistonExecuteResponse where
   parseJSON = withObject "PistonExecuteResponse" $ \v ->
@@ -132,7 +137,7 @@ instance FromJSON PistonExecuteRunStatus where
   parseJSON (String s) = pure $ case s of
     "TO" -> TLE
     "RE" -> RE
-    other -> Unknown (T.unpack other)
+    other -> Unknown other
   parseJSON invalid = typeMismatch "PistonExecuteRunStatus" invalid
 
 instance ToJSON PistonExecuteRequest where
