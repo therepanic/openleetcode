@@ -20,7 +20,7 @@ DEFAULT_MODEL = "google/gemini-3.1-flash-lite"
 DEFAULT_CONCURRENCY = 10
 
 
-def fetch_problem_list(from_id, to_id, hide_premium):
+def fetch_problem_list(skip, limit, hide_premium):
     filters = {"filterCombineType": "ALL"}
     if hide_premium:
         filters["premiumFilter"] = {"premiumStatus": ["PREMIUM"], "operator": "IS_NOT"}
@@ -35,8 +35,8 @@ def fetch_problem_list(from_id, to_id, hide_premium):
             }
         """,
             "variables": {
-                "skip": from_id - 1,
-                "limit": to_id - from_id + 1,
+                "skip": skip,
+                "limit": limit,
                 "categorySlug": "all-code-essentials",
                 "filters": filters,
             },
@@ -122,17 +122,17 @@ async def process(sem, problem, model, api_key):
             print(f"Error {pid}. {slug}: {e}", file=sys.stderr)
 
 
-async def run(from_id, to_id, concurrency, model, api_key, hide_premium=False):
+async def run(skip, limit, concurrency, model, api_key, hide_premium=False):
     PROBLEMS_DIR.mkdir(parents=True, exist_ok=True)
-    problems = fetch_problem_list(from_id, to_id, hide_premium)
+    problems = fetch_problem_list(skip, limit, hide_premium)
     sem = asyncio.Semaphore(concurrency)
     await asyncio.gather(*[process(sem, p, model, api_key) for p in problems])
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--from-id", dest="from_id", type=int)
-    parser.add_argument("--to-id", dest="to_id", type=int)
+    parser.add_argument("--skip", type=int)
+    parser.add_argument("--limit", type=int)
     parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY)
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--hide-premium", dest="hide_premium", action="store_true")
@@ -144,8 +144,8 @@ def main():
 
     asyncio.run(
         run(
-            args.from_id,
-            args.to_id,
+            args.skip,
+            args.limit,
             args.concurrency,
             args.model,
             api_key,
