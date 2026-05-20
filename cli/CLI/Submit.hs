@@ -7,28 +7,25 @@ import CLI.Runtime (Runtime (rtUI))
 import CLI.SubmitPipeline
 import CLI.UI
 import Control.Exception (SomeException, finally, try)
-import Control.Monad (forM, when)
+import Control.Monad (forM)
 import Core.Executor.Any (convertExecutorTypeToExecutor)
 import Core.Executor.Piston qualified as Piston
 import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
 import Core.Test.Loader (loadTestSuite)
 import Core.Test.Runner
-  ( SolutionBatch (SolutionBatch, entryMain, entryTime, python3Utilities, sbLang, solution, utilities),
+  ( SolutionBatch (SolutionBatch, entryMain, python3Utilities, sbLang, solution, utilities),
     TestResult (Internal, Pass, RE, TLE, WA),
     runSuiteWithProgress,
   )
 import Core.Test.Types qualified as TestTypes
 import Core.Types (Language, convertExtToLangMaybe, convertLangToExt, convertLangToStr)
 import Data.Char (isAsciiLower)
-import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.List (find, isInfixOf, isPrefixOf)
 import Data.Map qualified as M
 import Data.Maybe (fromMaybe, isNothing)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
-import Data.Word (Word64)
-import GHC.Clock (getMonotonicTimeNSec)
 import System.Directory (doesDirectoryExist, listDirectory)
 import System.FilePath (takeExtension, (</>))
 
@@ -91,7 +88,7 @@ prepareSubmit ui opts = do
                 runtimeResult <- loadRuntimeTemplates root lang
                 case runtimeResult of
                   Left failure -> failSubmitStep preparingChecklist failure
-                  Right (entryMainStr, entryTimeStr, utilitiesStr, python3UtilitiesStr) -> do
+                  Right (entryMainStr, utilitiesStr, python3UtilitiesStr) -> do
                     emitPreparingStep ui preparingChecklist 3 ("load runtime templates (" ++ T.unpack (convertLangToStr lang) ++ ")")
                     solutionResult <- try (TIO.readFile (submitPath opts)) :: IO (Either SomeException Text)
                     case solutionResult of
@@ -102,7 +99,6 @@ prepareSubmit ui opts = do
                         let batch =
                               SolutionBatch
                                 { entryMain = entryMainStr,
-                                  entryTime = entryTimeStr,
                                   sbLang = lang,
                                   utilities = utilitiesStr,
                                   solution = solutionStr,
@@ -131,7 +127,6 @@ executeSubmit ui resolved = do
         emitBackendReady ui runningChecklist backLabel (T.unpack backUrl) (length (TestTypes.tsCases (srTestSuite resolved)))
         let executor = convertExecutorTypeToExecutor (backendType config) backUrl
         let generator = SplitmixGenerator
-        progressRef <- newIORef (Nothing :: Maybe Word64)
         resultsOrError <-
           try $
             runSuiteWithProgress
@@ -139,7 +134,7 @@ executeSubmit ui resolved = do
               generator
               (srBatch resolved)
               (srTestSuite resolved)
-              (emitRunningProgressThrottled ui runningChecklist progressRef)
+              (emitRunningProgress ui runningChecklist)
         case resultsOrError of
           Left exc ->
             failSubmitStep runningChecklist (classifySuiteException exc)
@@ -154,21 +149,19 @@ executeSubmit ui resolved = do
                     _ -> SubmitVerdict idx verdict
               Nothing -> pure (Right (maximum [t | (_, Pass t) <- results]))
 
-loadRuntimeTemplates :: FilePath -> Language -> IO (Either SubmitFailure (Text, Text, Text, Text))
+loadRuntimeTemplates :: FilePath -> Language -> IO (Either SubmitFailure (Text, Text, Text))
 loadRuntimeTemplates root lang = do
   let runtimes = root </> "runtimes"
   let extStr = T.unpack (convertLangToExt lang)
   let langDir = runtimes </> T.unpack (convertLangToStr lang)
   mainResult <- try (TIO.readFile (langDir </> ("main" ++ extStr))) :: IO (Either SomeException Text)
-  timeResult <- try (TIO.readFile (langDir </> ("time" ++ extStr))) :: IO (Either SomeException Text)
   utilitiesResult <- try (TIO.readFile (langDir </> ("utilities" ++ extStr))) :: IO (Either SomeException Text)
   pyUtilsResult <- try (TIO.readFile (runtimes </> "python3" </> "utilities.py")) :: IO (Either SomeException Text)
   pure $ do
     entryMainStr <- either (Left . SubmitInfraFailure . classifyException) Right mainResult
-    entryTimeStr <- either (Left . SubmitInfraFailure . classifyException) Right timeResult
     utilitiesStr <- either (Left . SubmitInfraFailure . classifyException) Right utilitiesResult
     python3UtilitiesStr <- either (Left . SubmitInfraFailure . classifyException) Right pyUtilsResult
-    Right (entryMainStr, entryTimeStr, utilitiesStr, python3UtilitiesStr)
+    Right (entryMainStr, utilitiesStr, python3UtilitiesStr)
 
 resolveLanguage :: SubmitOpts -> Either SubmitFailure Language
 resolveLanguage opts = case submitLang opts of
@@ -253,16 +246,16 @@ emitRunningHeader ui backendLabel backendUrl = case uiMode ui of
       ui
       "Running tests…"
       [ ChecklistStep StepActive (T.pack ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")")),
-        ChecklistStep StepPending "Run test cases"
+        ChecklistStep StepPending "Run tests"
       ]
   Plain -> pure Nothing
 
 emitBackendReady :: UI -> Maybe Checklist -> String -> String -> Int -> IO ()
-emitBackendReady ui maybeChecklist backendLabel backendUrl total = case uiMode ui of
+emitBackendReady ui maybeChecklist backendLabel backendUrl _total = case uiMode ui of
   Rich -> case maybeChecklist of
     Just checklist -> do
       updateChecklistStep checklist 0 StepDone (T.pack ("Connect to backend (" ++ backendLabel ++ " @ " ++ backendUrl ++ ")"))
-      updateChecklistStep checklist 1 StepActive (T.pack ("Run test cases (0/" ++ show total ++ ")"))
+      updateChecklistStep checklist 1 StepActive "Run tests"
     Nothing -> pure ()
   Plain -> putPlain "submit" "running" (T.pack ("backend " ++ backendLabel ++ " @ " ++ backendUrl))
 
@@ -270,24 +263,9 @@ emitRunningProgress :: UI -> Maybe Checklist -> Int -> Int -> IO ()
 emitRunningProgress ui maybeChecklist done total = case uiMode ui of
   Rich -> case maybeChecklist of
     Just checklist ->
-      updateChecklistStep checklist 1 (if done == total then StepDone else StepActive) (T.pack ("Run test cases (" ++ show done ++ "/" ++ show total ++ ")"))
+      updateChecklistStep checklist 1 (if done == total then StepDone else StepActive) "Run tests"
     Nothing -> pure ()
-  Plain -> putPlain "submit" "running" (T.pack ("progress " ++ show done ++ "/" ++ show total))
-
-emitRunningProgressThrottled :: UI -> Maybe Checklist -> IORef (Maybe Word64) -> Int -> Int -> IO ()
-emitRunningProgressThrottled ui maybeChecklist progressRef done total =
-  case uiMode ui of
-    Plain -> emitRunningProgress ui maybeChecklist done total
-    Rich -> do
-      nowMs <- fmap (`div` 1000000) getMonotonicTimeNSec
-      lastMs <- readIORef progressRef
-      let shouldRender =
-            done == total
-              || done == 1
-              || maybe True (\prev -> nowMs - prev >= 250) lastMs
-      when shouldRender $ do
-        writeIORef progressRef (Just nowMs)
-        emitRunningProgress ui maybeChecklist done total
+  Plain -> pure ()
 
 renderAccepted :: UI -> Int -> IO ()
 renderAccepted ui maxTime = case uiMode ui of

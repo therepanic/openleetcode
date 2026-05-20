@@ -18,4 +18,4 @@ ${SOLUTION}
 
 ${UTILITIES}
 
-print(to_json(${CALL_SOLUTION}))
+${INSERTION}

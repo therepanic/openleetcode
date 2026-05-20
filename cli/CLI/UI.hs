@@ -4,7 +4,7 @@
 
 module CLI.UI where
 
-import Control.Concurrent (threadDelay)
+import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.MVar (MVar, newMVar, withMVar)
 import Control.Exception (SomeException, displayException, try)
 import Control.Monad (unless, when)
@@ -205,6 +205,7 @@ startChecklist ui header steps =
               }
       let initialChecklist = mkChecklist
       renderChecklist initialChecklist
+      _ <- forkIO (spinnerLoop initialChecklist)
       pure (Just mkChecklist)
 
 updateChecklistStep :: Checklist -> Int -> StepStatus -> Text -> IO ()

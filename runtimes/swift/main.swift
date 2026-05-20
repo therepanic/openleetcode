@@ -4,4 +4,4 @@ ${SOLUTION}
 
 ${UTILITIES}
 
-print(toJson(${CALL_SOLUTION}))
+${INSERTION}

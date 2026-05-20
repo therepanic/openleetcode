@@ -4,6 +4,7 @@ import sys
 import math
 import heapq
 import bisect
+import time
 import itertools
 import datetime as _dt
 
@@ -20,4 +21,4 @@ ${SOLUTION}
 
 ${UTILITIES}
 
-print(to_json(${CALL_SOLUTION}))
+${INSERTION}

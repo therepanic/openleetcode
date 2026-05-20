@@ -6,4 +6,4 @@ ${SOLUTION}
 
 ${UTILITIES}
 
-puts to_json(${CALL_SOLUTION})
+${INSERTION}

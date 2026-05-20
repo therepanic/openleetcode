@@ -9,6 +9,6 @@ ${SOLUTION}
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(nullptr);
-  cout << "\n" << toJson(${CALL_SOLUTION}) << "\n";
+  ${INSERTION}
   return 0;
 }

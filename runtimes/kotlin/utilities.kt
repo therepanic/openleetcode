@@ -137,10 +137,10 @@ object Json {
             }
             if (obj.javaClass.isArray) {
                 sb.append('[')
-                val n = Array.getLength(obj)
+                val n = java.lang.reflect.Array.getLength(obj)
                 for (i in 0 until n) {
                     if (i > 0) sb.append(',')
-                    write(Array.get(obj, i), sb, seen)
+                    write(java.lang.reflect.Array.get(obj, i), sb, seen)
                 }
                 sb.append(']')
                 return
