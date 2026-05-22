@@ -68,7 +68,7 @@ def list_node_to_array(head: Optional[ListNode]) -> List[int]:
 
 def to_json(obj: Any) -> str:
     seen = set()
-    return "\n" + _encode(obj, seen)
+    return _encode(obj, seen)
 
 
 def _encode(obj: Any, seen: set[int]) -> str:

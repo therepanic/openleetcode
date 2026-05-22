@@ -91,7 +91,6 @@ final class Json {
 	public static String toJson(Object obj) {
 		IdentityHashMap<Object, Boolean> seen = new IdentityHashMap<>();
 		StringBuilder sb = new StringBuilder(256);
-		sb.append("\n");
 		write(obj, sb, seen);
 		return sb.toString();
 	}

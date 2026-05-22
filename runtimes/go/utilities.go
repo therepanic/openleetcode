@@ -90,7 +90,7 @@ func listNodeToArray(head *ListNode) []int {
 
 func toJson(obj interface{}) string {
     seen := make(map[uintptr]bool)
-    return "\n" + encodeValue(reflect.ValueOf(obj), seen)
+    return encodeValue(reflect.ValueOf(obj), seen)
 }
 
 func encodeValue(v reflect.Value, seen map[uintptr]bool) string {

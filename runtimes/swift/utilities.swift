@@ -86,7 +86,7 @@ func list_node_to_array(_ head: ListNode?) -> [Int] {
 
 func toJson(_ obj: Any?) -> String {
     var seen: [ObjectIdentifier] = []
-    return "\n" + encode(obj, &seen)
+    return encode(obj, &seen)
 }
 
 private func encode(_ obj: Any?, _ seen: inout [ObjectIdentifier]) -> String {

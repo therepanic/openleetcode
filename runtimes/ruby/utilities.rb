@@ -74,7 +74,7 @@ end
 
 def to_json(obj)
   seen = Set.new
-  "\n" + _encode(obj, seen)
+  _encode(obj, seen)
 end
 
 def _encode(obj, seen)

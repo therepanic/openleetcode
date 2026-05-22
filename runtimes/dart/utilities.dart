@@ -75,7 +75,7 @@ List<int> list_node_to_array(ListNode? head) {
 
 String toJson(Object? obj) {
   final seen = <Object>{};
-  final sb = StringBuffer('\n');
+  final sb = StringBuffer();
   sb.write(_encode(obj, seen));
   return sb.toString();
 }
