@@ -144,8 +144,8 @@ executeSubmit ui resolved = do
                 failSubmitStep runningChecklist $
                   case verdict of
                     Internal msg
-                      | isOracleExecutionMessage msg -> SubmitInternalWhileJudging (Just idx) (sanitizeInternalJudgeMessage msg)
-                      | otherwise -> SubmitJudgeInternal (Just idx) (sanitizeInternalJudgeMessage msg)
+                      | isOracleExecutionMessage msg -> SubmitInternalWhileJudging (Just idx) (stripOracleExecutionPrefix msg)
+                      | otherwise -> SubmitJudgeInternal (Just idx) (stripOracleExecutionPrefix msg)
                     _ -> SubmitVerdict idx verdict
               Nothing -> pure (Right (maximum [t | (_, Pass t) <- results]))
 
@@ -340,7 +340,7 @@ renderVerdict ui idx verdict = case verdict of
         emitVerdictDetail ui "re" (T.unpack out)
   Internal msg -> do
     renderErrorHeader ui "submit" ("Judge internal error on test #" ++ show idx)
-    emitDetail ui "submit" ("  " ++ T.unpack (sanitizeInternalJudgeMessage msg))
+    emitDetail ui "submit" ("  " ++ T.unpack (stripOracleExecutionPrefix msg))
   Pass _ -> pure ()
 
 renderErrorHeader :: UI -> String -> String -> IO ()
@@ -379,13 +379,10 @@ submitFailureExitCode failure = case failure of
 classifySuiteException :: SomeException -> SubmitFailure
 classifySuiteException exc =
   if "Oracle execution error:" `isInfixOf` shown
-    then SubmitInternalWhileJudging Nothing (stripOracleExecutionPrefix (sanitizeSingleLine (T.pack shown)))
+    then SubmitInternalWhileJudging Nothing (stripOracleExecutionPrefix (T.pack shown))
     else SubmitInfraFailure (classifyException exc)
   where
     shown = show exc
-
-sanitizeInternalJudgeMessage :: Text -> Text
-sanitizeInternalJudgeMessage = stripOracleExecutionPrefix . sanitizeSingleLine
 
 isOracleExecutionMessage :: Text -> Bool
 isOracleExecutionMessage = T.isInfixOf "Oracle execution error:"
