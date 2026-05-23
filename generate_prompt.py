@@ -354,7 +354,7 @@ cpp:
   "Solution().method(toTreeNode(lv(vector<optional<int>>{ {root} })))"
 
 ruby:
-  "Solution.new.method(to_tree_node([{root}]))"
+  "method(to_tree_node([{root}]))"
 
 java:
   "new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} }))"
@@ -385,7 +385,7 @@ cpp:
   "treeNodeToArray(Solution().method(toTreeNode(lv(vector<optional<int>>{ {root} }))))"
 
 ruby:
-  "tree_node_to_array(Solution.new.method(to_tree_node([{root}])))"
+  "tree_node_to_array(method(to_tree_node([{root}])))"
 
 java:
   "TreeNode.treeNodeToArray(new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} })))"

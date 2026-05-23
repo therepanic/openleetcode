@@ -626,7 +626,7 @@ entry:
     rust: "TreeNode::tree_node_to_array(Solution::invert_tree(TreeNode::to_tree_node(vec![{root}])))"
     python3: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
     python2: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
-    ruby: "tree_node_to_array(Solution.new.invert_tree(to_tree_node([{root}])))"
+    ruby: "tree_node_to_array(invert_tree(to_tree_node([{root}])))"
     java: "TreeNode.treeNodeToArray(new Solution().invertTree(TreeNode.toTreeNode(new Integer[]{ {root} })))"
     csharp: "TreeNode.TreeNodeToArray(new Solution().InvertTree(TreeNode.ToTreeNode(new int?[]{ {root} })))"
     kotlin: "treeNodeToArray(Solution().invertTree(toTreeNode(arrayOf({root}))))"
