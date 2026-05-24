@@ -124,7 +124,7 @@ renderExitCode = \case
 
 plainLine :: Text -> Text -> Text -> Text
 plainLine scope section msg =
-  "openleetcode: " <> scope <> suffix <> msg
+  scope <> suffix <> msg
   where
     suffix =
       if T.null section

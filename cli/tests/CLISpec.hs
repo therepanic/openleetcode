@@ -54,14 +54,14 @@ spec = do
   describe "CLI.UI helpers" $ do
     it "formats plain output with scope and section" $
       plainLine "submit" "preparing" "load configuration"
-        `shouldBe` ("openleetcode: submit: preparing: load configuration" :: T.Text)
+        `shouldBe` ("submit: preparing: load configuration" :: T.Text)
 
     it "keeps plain output compact without multiline tails" $
       sanitizeSingleLine "line1\nline2" `shouldBe` ("line1" :: T.Text)
 
     it "formats plain output without section" $
       plainLine "config" "" "backend.url updated"
-        `shouldBe` ("openleetcode: config: backend.url updated" :: T.Text)
+        `shouldBe` ("config: backend.url updated" :: T.Text)
 
   describe "CLI.Commands parser" $ do
     it "parses explicit submit command with id" $
