@@ -408,7 +408,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 
 ## Instructions
 
-1. If the problem is SQL, concurrency, or design (class with multiple methods), output only:
+1. If the problem is SQL, concurrency, design (class with multiple methods), or in-place (solution mutates input and returns nothing), output only:
    CANNOT_GENERATE: <reason>
 
 2. Otherwise generate manifest.yml:
