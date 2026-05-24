@@ -26,7 +26,7 @@ import Data.Maybe (fromMaybe, isNothing)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
-import System.Directory (doesDirectoryExist, listDirectory)
+import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath (takeExtension, (</>))
 
 data SubmitOpts = SubmitOpts
@@ -184,7 +184,7 @@ findTestPath root opts = do
         else do
           subDirs <- listDirectory rangeDir
           case find (\d -> (show taskId ++ ".") `isPrefixOf` d) subDirs of
-            Just target -> pure (Right (rangeDir </> target </> "manifest.yml"))
+            Just target -> resolveManifestPath (rangeDir </> target)
             Nothing -> pure (Left (SubmitSuiteNotFoundById taskId))
     Nothing -> case submitTitle opts of
       Just title -> do
@@ -202,9 +202,23 @@ findTestPath root opts = do
                   subs <- listDirectory currRange
                   pure [currRange </> s | s <- subs, T.unpack title `isInfixOf` s]
             case concat paths of
-              (p : _) -> pure (Right (p </> "manifest.yml"))
+              (p : _) -> resolveManifestPath p
               [] -> pure (Left (SubmitSuiteNotFoundByTitle title))
       Nothing -> pure (Left SubmitMissingSelector)
+
+resolveManifestPath :: FilePath -> IO (Either SubmitFailure FilePath)
+resolveManifestPath problemDir = do
+  let candidates = [problemDir </> "manifest.yaml", problemDir </> "manifest.yml"]
+  existing <- findFirstExisting candidates
+  pure $ maybe (Left (SubmitInfraFailure "Test suite manifest is missing")) Right existing
+
+findFirstExisting :: [FilePath] -> IO (Maybe FilePath)
+findFirstExisting [] = pure Nothing
+findFirstExisting (path : rest) = do
+  exists <- doesFileExist path
+  if exists
+    then pure (Just path)
+    else findFirstExisting rest
 
 emitPreparingHeader :: UI -> IO (Maybe Checklist)
 emitPreparingHeader ui = case uiMode ui of
