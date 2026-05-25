@@ -4,23 +4,23 @@
 
 module CLI.UI where
 
+import CLI.AppEnv (ConfigLoadResult (clrWarning))
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.MVar (MVar, newMVar, withMVar)
 import Control.Exception (SomeException, displayException, try)
 import Control.Monad (unless, when)
 import Data.Bits ((.|.))
 import Data.Char (toLower)
+import Data.Foldable (for_)
 import Data.IORef (IORef, atomicModifyIORef', modifyIORef', newIORef, readIORef, writeIORef)
 import Data.List (isInfixOf)
 import Data.Maybe (isNothing)
-import Data.Foldable (for_)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
 import System.Environment (lookupEnv)
-import System.Info (os)
 import System.IO (Handle, hFlush, hIsTerminalDevice, stdin, stdout)
-import CLI.AppEnv (ConfigLoadResult (clrWarning))
+import System.Info (os)
 #if defined(mingw32_HOST_OS)
 import System.Win32.Console (eNABLE_PROCESSED_OUTPUT, eNABLE_VIRTUAL_TERMINAL_PROCESSING, getConsoleMode, setConsoleMode)
 import System.Win32.Types (withHandleToHANDLE)
