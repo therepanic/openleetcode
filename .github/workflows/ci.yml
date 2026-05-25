@@ -62,7 +62,6 @@ jobs:
           find . \
             -name '*.hs' \
             -not -path './dist-newstyle/*' \
-            -not -path './runtimes/*' \
             -exec ormolu --mode check {} +
 
   prettier:
@@ -79,3 +78,15 @@ jobs:
       - run: npm install --global prettier
 
       - run: prettier --check . --ignore-path .prettierignore
+
+  ruff:
+    name: Ruff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: "check --exclude runtimes"
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: "format --check --exclude runtimes"
