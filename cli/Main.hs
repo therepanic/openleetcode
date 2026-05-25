@@ -3,20 +3,18 @@
 module Main where
 
 import CLI.Commands
-import CLI.Runtime (Runtime, mkRuntime)
 import CLI.Config qualified as Config
 import CLI.Download qualified as Download
 import CLI.Onboarding (runOnboarding)
+import CLI.Runtime (Runtime, mkRuntime)
 import CLI.Submit qualified as Submit
 import Control.Exception (SomeException, try)
-import Data.List (find)
 import Data.Version (showVersion)
 import GHC.IO.Encoding (utf8)
 import Options.Applicative
 import Options.Applicative.Help.Pretty (Doc, pretty, vsep)
 import Paths_openleetcode qualified
-import System.Environment (getArgs, withArgs)
-import System.Exit (exitWith, ExitCode (ExitFailure, ExitSuccess))
+import System.Exit (ExitCode (ExitFailure, ExitSuccess), exitWith)
 import System.IO (hSetEncoding, stderr, stdout)
 #if defined(mingw32_HOST_OS)
 import System.Win32.Console (setConsoleOutputCP)
@@ -70,11 +68,16 @@ cliHelpFooter =
 
 initConsoleEncoding :: IO ()
 initConsoleEncoding = do
-#if defined(mingw32_HOST_OS) 
-  do
-    _ <- try (setConsoleOutputCP 65001) :: IO (Either SomeException ())
-    pure ()
-#endif
+  setupWindowsCP
   _ <- try (hSetEncoding stdout utf8) :: IO (Either SomeException ())
   _ <- try (hSetEncoding stderr utf8) :: IO (Either SomeException ())
   pure ()
+
+setupWindowsCP :: IO ()
+#if defined(mingw32_HOST_OS)
+setupWindowsCP = do
+  _ <- try (setConsoleOutputCP 65001) :: IO (Either SomeException ())
+  pure ()
+#else
+setupWindowsCP = pure ()
+#endif
