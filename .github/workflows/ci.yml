@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-26-intel, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -28,12 +28,23 @@ jobs:
           cabal build all
           cabal test all
 
-      - name: Collect executables (Unix)
-        if: runner.os != 'Windows'
+      - name: Collect executables (Linux)
+        if: runner.os == 'Linux'
         run: |
           mkdir -p artifacts
-          find dist-newstyle -type f -perm /111 -not -name "*.so" -not -name "*.dylib" \
-            | while read f; do
+          find dist-newstyle -type f -perm /111 \
+            -not -name "*.so" -print0 \
+            | while IFS= read -r -d '' f; do
+                cp "$f" artifacts/
+              done
+
+      - name: Collect executables (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p artifacts
+          find dist-newstyle -type f \( -perm -0100 -o -perm -0010 -o -perm -0001 \) \
+            -not -name "*.dylib" -print0 \
+            | while IFS= read -r -d '' f; do
                 cp "$f" artifacts/
               done
 
