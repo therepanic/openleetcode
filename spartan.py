@@ -79,6 +79,18 @@ async def generate(prompt, model, api_key):
     return await asyncio.get_event_loop().run_in_executor(None, do_request)
 
 
+def normalize_ref(code):
+    code = code.strip()
+
+    if re.search(r"^\s*class\s+Solution\b", code, re.MULTILINE):
+        return code
+
+    indented = "\n".join(
+        "    " + line if line.strip() else "" for line in code.splitlines()
+    )
+    return f"class Solution:\n{indented}\n"
+
+
 async def process(sem, problem, model, api_key):
     pid, slug = problem["id"], problem["titleSlug"]
     folder = PROBLEMS_DIR / f"{pid}. {slug}"
@@ -112,7 +124,7 @@ async def process(sem, problem, model, api_key):
 
             folder.mkdir(parents=True, exist_ok=True)
             (folder / "prompt.txt").write_text(prompt, encoding="utf-8")
-            (folder / "sol.py").write_text(reference, encoding="utf-8")
+            (folder / "sol.py").write_text(normalize_ref(reference), encoding="utf-8")
             manifest.write_text(clean, encoding="utf-8")
 
             print(f"Done {pid}. {slug}")
