@@ -1,0 +1,333 @@
+entry:
+  id: 40
+  title: combination-sum-ii
+  call:
+    cpp: Solution().combinationSum2(lv(vector<int>{ {candidates} }), {target})
+    rust: Solution::combination_sum2(vec![{candidates}], {target})
+    python3: Solution().combinationSum2([{candidates}], {target})
+    python2: Solution().combinationSum2([{candidates}], {target})
+    ruby: combination_sum2([{candidates}], {target})
+    java: new Solution().combinationSum2(new int[]{ {candidates} }, {target})
+    csharp: new Solution().CombinationSum2(new int[]{ {candidates} }, {target})
+    kotlin: Solution().combinationSum2(intArrayOf({candidates}), {target})
+    go: combinationSum2([]int{ {candidates} }, {target})
+    dart: Solution().combinationSum2([{candidates}], {target})
+    swift: Solution().combinationSum2([{candidates}], {target})
+    typescript: combinationSum2([{candidates}], {target})
+judge:
+  type: ignore_order
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().combinationSum2([{candidates}], {target}, {result})
+    checker:
+      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
+      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
+      \            except Exception:\n                pass\n        return result\n\
+      \n    def combinationSum2(self, candidates, target, result):\n        result\
+      \ = self._norm(result)\n        if not isinstance(result, list): return False\n\
+      \        for combo in result:\n            if sum(combo) != target: return False\n\
+      \        from collections import Counter\n        cand_counts = Counter(candidates)\n\
+      \        for combo in result:\n            combo_counts = Counter(combo)\n \
+      \           for num, count in combo_counts.items():\n                if count\
+      \ > cand_counts[num]: return False\n        seen = set()\n        for combo\
+      \ in result:\n            s = tuple(sorted(combo))\n            if s in seen:\
+      \ return False\n            seen.add(s)\n        return True\n"
+seed: 42
+tests:
+  - name: Example 1
+    in:
+      candidates:
+        - 10
+        - 1
+        - 2
+        - 7
+        - 6
+        - 1
+        - 5
+      target: 8
+    out:
+      - - 1
+        - 1
+        - 6
+      - - 1
+        - 2
+        - 5
+      - - 1
+        - 7
+      - - 2
+        - 6
+  - name: Example 2
+    in:
+      candidates:
+        - 2
+        - 5
+        - 2
+        - 1
+        - 2
+      target: 5
+    out:
+      - - 1
+        - 2
+        - 2
+      - - 5
+  - name: Single element match
+    in:
+      candidates:
+        - 5
+      target: 5
+    out:
+      - - 5
+  - name: Single element no match
+    in:
+      candidates:
+        - 5
+      target: 3
+    out: []
+  - name: All same values targets
+    in:
+      candidates:
+        - 1
+        - 1
+        - 1
+        - 1
+      target: 2
+    out:
+      - - 1
+        - 1
+  - name: Target unreachable with small values
+    in:
+      candidates:
+        - 1
+        - 1
+        - 1
+      target: 4
+    out: []
+  - name: Target unreachable with large values
+    in:
+      candidates:
+        - 10
+        - 20
+        - 30
+      target: 5
+    out: []
+  - name: Exact target sum
+    in:
+      candidates:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      target: 15
+    out:
+      - - 1
+        - 2
+        - 3
+        - 4
+        - 5
+  - name: Subset sum exists
+    in:
+      candidates:
+        - 2
+        - 3
+        - 6
+        - 7
+      target: 7
+    out:
+      - - 7
+  - name: Multiple small combinations
+    in:
+      candidates:
+        - 1
+        - 2
+        - 3
+      target: 3
+    out:
+      - - 1
+        - 2
+      - - 3
+  - name: Duplicate candidates handling strictly once
+    in:
+      candidates:
+        - 2
+        - 2
+        - 2
+        - 2
+      target: 4
+    out:
+      - - 2
+        - 2
+  - name: Large target impossible
+    in:
+      candidates:
+        - 1
+        - 1
+        - 1
+      target: 30
+    out: []
+  - name: Mixed small candidates
+    in:
+      candidates:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+      target: 4
+    out:
+      - - 1
+        - 1
+        - 2
+      - - 1
+        - 3
+      - - 2
+        - 2
+  - name: Single candidate repeated
+    in:
+      candidates:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+      target: 2
+    out:
+      - - 1
+        - 1
+  - name: Descending inputs
+    in:
+      candidates:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      target: 3
+    out:
+      - - 1
+        - 2
+      - - 3
+  - name: Generated test 1
+    in:
+      candidates:
+        gen: array
+        len:
+          gen: int
+          min: 5
+          max: 10
+        of:
+          gen: int
+          min: 1
+          max: 10
+      target: 10
+  - name: Generated test 2
+    in:
+      candidates:
+        gen: array
+        len:
+          gen: int
+          min: 5
+          max: 10
+        of:
+          gen: int
+          min: 1
+          max: 5
+      target: 5
+  - name: Generated test 3
+    in:
+      candidates:
+        gen: array
+        len:
+          gen: int
+          min: 10
+          max: 20
+        of:
+          gen: int
+          min: 1
+          max: 8
+      target: 12
+  - name: Generated test 4
+    in:
+      candidates:
+        gen: array
+        len:
+          gen: int
+          min: 10
+          max: 15
+        of:
+          gen: int
+          min: 1
+          max: 5
+      target: 8
+  - name: Generated test 5
+    in:
+      candidates:
+        gen: array
+        len:
+          gen: int
+          min: 20
+          max: 30
+        of:
+          gen: int
+          min: 1
+          max: 10
+      target: 15
+  - name: Minimum constraints
+    in:
+      candidates:
+        - 1
+      target: 1
+    out:
+      - - 1
+  - name: Maximum target
+    in:
+      candidates:
+        - 30
+        - 1
+      target: 30
+    out:
+      - - 30
+  - name: All same values many duplicates
+    in:
+      candidates:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      target: 4
+    out:
+      - - 2
+        - 2
+  - name: Sparse values
+    in:
+      candidates:
+        - 1
+        - 50
+        - 1
+        - 50
+      target: 51
+    out:
+      - - 1
+        - 50
+  - name: Just over max candidate length
+    in:
+      candidates:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+      target: 3
+    out:
+      - - 1
+        - 1
+        - 1
+      - - 1
+        - 2

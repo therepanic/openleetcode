@@ -1,0 +1,192 @@
+entry:
+  id: 44
+  title: wildcard-matching
+  call:
+    cpp: Solution().isMatch("{s}", "{p}")
+    rust: Solution::is_match("{s}".to_string(), "{p}".to_string())
+    python3: Solution().isMatch("{s}", "{p}")
+    python2: Solution().isMatch("{s}", "{p}")
+    ruby: is_match("{s}", "{p}")
+    java: new Solution().isMatch("{s}", "{p}")
+    csharp: new Solution().IsMatch("{s}", "{p}")
+    kotlin: Solution().isMatch("{s}", "{p}")
+    go: isMatch("{s}", "{p}")
+    dart: Solution().isMatch("{s}", "{p}")
+    swift: Solution().isMatch("{s}", "{p}")
+    typescript: isMatch("{s}", "{p}")
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().isMatch("{s}", "{p}", {result})
+    checker:
+      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
+      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
+      \            except Exception:\n                pass\n            if isinstance(result,\
+      \ str):\n                low = result.strip().lower()\n                if low\
+      \ == 'true':\n                    return True\n                if low == 'false':\n\
+      \                    return False\n                if low.lstrip('-').isdigit():\n\
+      \                    return int(low)\n        return result\n\n    def isMatch(self,\
+      \ s, p, result):\n        result = self._norm(result)\n        m, n = len(s),\
+      \ len(p)\n        dp = [[False] * (n + 1) for _ in range(m + 1)]\n        dp[0][0]\
+      \ = True\n        for j in range(1, n + 1):\n            if p[j - 1] == \"*\"\
+      :\n                dp[0][j] = dp[0][j - 1]\n        for i in range(1, m + 1):\n\
+      \            for j in range(1, n + 1):\n                if s[i - 1] == p[j -\
+      \ 1] or p[j - 1] == \"?\":\n                    dp[i][j] = dp[i - 1][j - 1]\n\
+      \                elif p[j - 1] == \"*\":\n                    dp[i][j] = dp[i][j\
+      \ - 1] or dp[i - 1][j]\n        return dp[m][n] == result\n"
+seed: 42
+tests:
+  - name: Example 1
+    in:
+      s: aa
+      p: a
+    out: false
+  - name: Example 2
+    in:
+      s: aa
+      p: "*"
+    out: true
+  - name: Example 3
+    in:
+      s: cb
+      p: ?a
+    out: false
+  - name: Empty strings
+    in:
+      s: ""
+      p: ""
+    out: true
+  - name: Empty s non-empty p star
+    in:
+      s: ""
+      p: "***"
+    out: true
+  - name: Empty s non-empty p char
+    in:
+      s: ""
+      p: a
+    out: false
+  - name: Simple matching
+    in:
+      s: abc
+      p: abc
+    out: true
+  - name: Single wildcards
+    in:
+      s: abc
+      p: a?c
+    out: true
+  - name: Star matching part
+    in:
+      s: abcdef
+      p: a*f
+    out: true
+  - name: Complex star
+    in:
+      s: abefcdgiescdfimde
+      p: ab*cd?i*de
+    out: true
+  - name: Mismatch star
+    in:
+      s: acdcb
+      p: a*c?b
+    out: false
+  - name: Multiple stars
+    in:
+      s: mississippi
+      p: m*i*p*i
+    out: true
+  - name: Only question marks
+    in:
+      s: abc
+      p: ???
+    out: true
+  - name: More question marks than string
+    in:
+      s: ab
+      p: ???
+    out: false
+  - name: Trailing stars
+    in:
+      s: abc
+      p: abc***********
+    out: true
+  - name: Leading stars
+    in:
+      s: abc
+      p: "******abc"
+    out: true
+  - name: Mixed star quest
+    in:
+      s: ab
+      p: ?*
+    out: true
+  - name: All question marks
+    in:
+      s: aaaaa
+      p: ?????
+    out: true
+  - name: Specific star position
+    in:
+      s: a
+      p: "*?*"
+    out: true
+  - name: No match long
+    in:
+      s: abcdefg
+      p: ah*g
+    out: false
+  - name: Generated 1
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 10
+          max: 20
+        alphabet: ab
+      p: a*b
+  - name: Generated 2
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 10
+          max: 20
+        alphabet: ab
+      p: "****************"
+  - name: Generated 3
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 5
+          max: 10
+        alphabet: abc
+      p: ??????
+  - name: Large test 1
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 1000
+          max: 1000
+        alphabet: a
+      p: a*a
+  - name: Large test 2
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 1000
+          max: 1000
+        alphabet: b
+      p: "*a*"

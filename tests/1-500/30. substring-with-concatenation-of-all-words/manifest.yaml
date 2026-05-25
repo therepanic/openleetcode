@@ -1,0 +1,262 @@
+entry:
+  id: 30
+  title: substring-with-concatenation-of-all-words
+  call:
+    cpp: Solution().findSubstring("{s}", lv(vector<string>{ {words} }))
+    rust: Solution::find_substring("{s}".to_string(), vec![{words}])
+    python3: Solution().findSubstring("{s}", [{words}])
+    python2: Solution().findSubstring("{s}", [{words}])
+    ruby: find_substring("{s}", [{words}])
+    java: new Solution().findSubstring("{s}", new String[]{ {words} })
+    csharp: new Solution().FindSubstring("{s}", new string[]{ {words} })
+    kotlin: Solution().findSubstring("{s}", arrayOf({words}))
+    go: findSubstring("{s}", []string{ {words} })
+    dart: Solution().findSubstring("{s}", [{words}])
+    swift: Solution().findSubstring("{s}", [{words}])
+    typescript: findSubstring("{s}", [{words}])
+judge:
+  type: ignore_order
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check("{s}", [{words}], {result})
+    checker:
+      "from collections import Counter\nclass Checker:\n    def check(self,\
+      \ s, words, result):\n        if not s or not words: return result == []\n \
+      \       c = len(words)\n        wl = len(words[0])\n        target = Counter(words)\n\
+      \        actual = []\n        for i in range(len(s) - c * wl + 1):\n       \
+      \     sub = s[i:i + c * wl]\n            chunks = [sub[j:j + wl] for j in range(0,\
+      \ len(sub), wl)]\n            if Counter(chunks) == target:\n              \
+      \  actual.append(i)\n        return sorted(result) == sorted(actual)\n"
+seed: 42
+tests:
+  - name: example 1
+    in:
+      s: barfoothefoobarman
+      words:
+        - foo
+        - bar
+    out:
+      - 0
+      - 9
+  - name: example 2
+    in:
+      s: wordgoodgoodgoodbestword
+      words:
+        - word
+        - good
+        - best
+        - word
+    out: []
+  - name: example 3
+    in:
+      s: barfoofoobarthefoobarman
+      words:
+        - bar
+        - foo
+        - the
+    out:
+      - 6
+      - 9
+      - 12
+  - name: single word full match
+    in:
+      s: abc
+      words:
+        - abc
+    out:
+      - 0
+  - name: single word multiple matches
+    in:
+      s: abcabc
+      words:
+        - abc
+    out:
+      - 0
+      - 3
+  - name: no match
+    in:
+      s: aaaaa
+      words:
+        - aa
+        - aa
+    out:
+      - 0
+      - 1
+  - name: empty and short strings
+    in:
+      s: abcd
+      words:
+        - ab
+        - cd
+    out:
+      - 0
+  - name: interleaved
+    in:
+      s: abbcbb
+      words:
+        - ab
+        - bc
+    out:
+      - 0
+  - name: overlap test
+    in:
+      s: ababab
+      words:
+        - ab
+        - ab
+    out:
+      - 0
+      - 2
+  - name: large number of words
+    in:
+      s: abcabcabc
+      words:
+        - abc
+        - abc
+    out:
+      - 0
+      - 3
+  - name: prefix match
+    in:
+      s: abcd
+      words:
+        - a
+        - b
+        - c
+    out:
+      - 0
+  - name: suffix match
+    in:
+      s: deabc
+      words:
+        - a
+        - b
+        - c
+    out:
+      - 2
+  - name: varying word repetition
+    in:
+      s: foofoo
+      words:
+        - foo
+    out:
+      - 0
+      - 3
+  - name: generated test 1
+    in:
+      s: abababab
+      words:
+        - ab
+        - ab
+    out:
+      - 0
+      - 2
+      - 4
+  - name: single character repetition
+    in:
+      s: aaaaaa
+      words:
+        - a
+        - a
+        - a
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+  - name: spaced words
+    in:
+      s: abcde
+      words:
+        - ab
+        - fg
+    out: []
+  - name: complex permutation search
+    in:
+      s: abcde
+      words:
+        - ab
+        - de
+    out: []
+  - name: full string match
+    in:
+      s: abcdef
+      words:
+        - abc
+        - def
+    out:
+      - 0
+  - name: repeating words but different structure
+    in:
+      s: abacba
+      words:
+        - ab
+        - ac
+    out:
+      - 0
+  - name: long string missing parts
+    in:
+      s: abcdefgh
+      words:
+        - ab
+        - ef
+    out: []
+  - name: large random generated
+    in:
+      s: abababababab
+      words:
+        - ab
+        - ab
+        - ab
+    out:
+      - 0
+      - 2
+      - 4
+      - 6
+  - name: boundary string
+    in:
+      s: ab
+      words:
+        - a
+        - b
+    out:
+      - 0
+  - name: single char words
+    in:
+      s: abcde
+      words:
+        - a
+        - c
+        - e
+    out: []
+  - name: long consecutive matches
+    in:
+      s: ababababab
+      words:
+        - ab
+        - ab
+    out:
+      - 0
+      - 2
+      - 4
+      - 6
+  - name: large test 1
+    in:
+      s: barfoothefoobarman
+      words:
+        - foo
+        - bar
+    out:
+      - 0
+      - 9
+  - name: large test 2
+    in:
+      s: abcabc
+      words:
+        - abc
+    out:
+      - 0
+      - 3

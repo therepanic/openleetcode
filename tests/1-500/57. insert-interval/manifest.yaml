@@ -1,0 +1,391 @@
+"entry":
+  "id": 57
+  "title": "insert-interval"
+  "call":
+    "cpp":
+      "Solution().insert(lv(vector<vector<int>>{ {intervals} }), lv(vector<int>{\
+      \ {newInterval} }))"
+    "rust": "Solution::insert(vec![{intervals}], vec![{newInterval}])"
+    "python3": "Solution().insert([{intervals}], [{newInterval}])"
+    "python2": "Solution().insert([{intervals}], [{newInterval}])"
+    "ruby": "insert([{intervals}], [{newInterval}])"
+    "java":
+      "new Solution().insert(new int[][]{ {intervals} }, new int[]{ {newInterval}\
+      \ })"
+    "csharp":
+      "new Solution().Insert(new int[][]{ {intervals} }, new int[]{ {newInterval}\
+      \ })"
+    "kotlin": "Solution().insert(arrayOf({intervals}), intArrayOf({newInterval}))"
+    "go": "insert([][]int{ {intervals} }, []int{ {newInterval} })"
+    "dart": "Solution().insert([{intervals}], [{newInterval}])"
+    "swift": "Solution().insert([{intervals}], [{newInterval}])"
+    "typescript": "insert([{intervals}], [{newInterval}])"
+"judge":
+  "type": "exact"
+"limits":
+  "time_ms": 1000
+  "memory_mb": 256
+"oracle":
+  "python3":
+    "call": "Checker().insert([{intervals}], [{newInterval}], {result})"
+    "checker":
+      "import json\nclass Checker:\n    def insert(self, intervals, new_interval,\
+      \ result):\n        try:\n            result = json.loads(result) if isinstance(result,\
+      \ str) else result\n        except Exception:\n            return False\n  \
+      \      res = []\n        i = 0\n        n = len(intervals)\n        new_start,\
+      \ new_end = new_interval\n        while i < n and intervals[i][1] < new_start:\n\
+      \            res.append(intervals[i])\n            i += 1\n        while i <\
+      \ n and intervals[i][0] <= new_end:\n            new_start = min(new_start,\
+      \ intervals[i][0])\n            new_end = max(new_end, intervals[i][1])\n  \
+      \          i += 1\n        res.append([new_start, new_end])\n        while i\
+      \ < n:\n            res.append(intervals[i])\n            i += 1\n        return\
+      \ res == result\n"
+"seed": 42
+"tests":
+  - "name": "example 1"
+    "in":
+      "intervals":
+        - - 1
+          - 3
+        - - 6
+          - 9
+      "newInterval":
+        - 2
+        - 5
+    "out":
+      - - 1
+        - 5
+      - - 6
+        - 9
+  - "name": "example 2"
+    "in":
+      "intervals":
+        - - 1
+          - 2
+        - - 3
+          - 5
+        - - 6
+          - 7
+        - - 8
+          - 10
+        - - 12
+          - 16
+      "newInterval":
+        - 4
+        - 8
+    "out":
+      - - 1
+        - 2
+      - - 3
+        - 10
+      - - 12
+        - 16
+  - "name": "empty list"
+    "in":
+      "intervals": []
+      "newInterval":
+        - 5
+        - 7
+    "out":
+      - - 5
+        - 7
+  - "name": "new interval start"
+    "in":
+      "intervals":
+        - - 2
+          - 5
+      "newInterval":
+        - 0
+        - 1
+    "out":
+      - - 0
+        - 1
+      - - 2
+        - 5
+  - "name": "new interval end"
+    "in":
+      "intervals":
+        - - 0
+          - 1
+      "newInterval":
+        - 2
+        - 5
+    "out":
+      - - 0
+        - 1
+      - - 2
+        - 5
+  - "name": "merge entire"
+    "in":
+      "intervals":
+        - - 1
+          - 2
+        - - 3
+          - 4
+      "newInterval":
+        - 0
+        - 5
+    "out":
+      - - 0
+        - 5
+  - "name": "single point overlap start"
+    "in":
+      "intervals":
+        - - 2
+          - 4
+      "newInterval":
+        - 0
+        - 2
+    "out":
+      - - 0
+        - 4
+  - "name": "single point overlap end"
+    "in":
+      "intervals":
+        - - 0
+          - 2
+      "newInterval":
+        - 2
+        - 4
+    "out":
+      - - 0
+        - 4
+  - "name": "surrounded by merge"
+    "in":
+      "intervals":
+        - - 1
+          - 2
+        - - 8
+          - 10
+      "newInterval":
+        - 3
+        - 7
+    "out":
+      - - 1
+        - 2
+      - - 3
+        - 7
+      - - 8
+        - 10
+  - "name": "nested inside"
+    "in":
+      "intervals":
+        - - 0
+          - 10
+      "newInterval":
+        - 2
+        - 5
+    "out":
+      - - 0
+        - 10
+  - "name": "envelops list"
+    "in":
+      "intervals":
+        - - 2
+          - 3
+        - - 5
+          - 6
+      "newInterval":
+        - 1
+        - 7
+    "out":
+      - - 1
+        - 7
+  - "name": "adjacent left"
+    "in":
+      "intervals":
+        - - 3
+          - 5
+      "newInterval":
+        - 1
+        - 2
+    "out":
+      - - 1
+        - 2
+      - - 3
+        - 5
+  - "name": "adjacent right"
+    "in":
+      "intervals":
+        - - 1
+          - 2
+      "newInterval":
+        - 3
+        - 5
+    "out":
+      - - 1
+        - 2
+      - - 3
+        - 5
+  - "name": "identical interval"
+    "in":
+      "intervals":
+        - - 1
+          - 5
+        - - 6
+          - 10
+      "newInterval":
+        - 1
+        - 5
+    "out":
+      - - 1
+        - 5
+      - - 6
+        - 10
+  - "name": "all intervals merges into one"
+    "in":
+      "intervals":
+        - - 1
+          - 2
+        - - 3
+          - 4
+        - - 5
+          - 6
+      "newInterval":
+        - 0
+        - 7
+    "out":
+      - - 0
+        - 7
+  - "name": "start/end at zero"
+    "in":
+      "intervals":
+        - - 0
+          - 0
+      "newInterval":
+        - 0
+        - 0
+    "out":
+      - - 0
+        - 0
+  - "name": "max values"
+    "in":
+      "intervals":
+        - - 100000
+          - 100000
+      "newInterval":
+        - 99999
+        - 100000
+    "out":
+      - - 99999
+        - 100000
+  - "name": "test duplicates 1"
+    "in":
+      "intervals":
+        - - 1
+          - 1
+        - - 1
+          - 1
+      "newInterval":
+        - 1
+        - 1
+    "out":
+      - - 1
+        - 1
+  - "name": "test duplicates 2"
+    "in":
+      "intervals":
+        - - 1
+          - 5
+        - - 1
+          - 5
+      "newInterval":
+        - 1
+        - 5
+    "out":
+      - - 1
+        - 5
+  - "name": "large range expansion"
+    "in":
+      "intervals":
+        - - 0
+          - 10
+        - - 20
+          - 30
+        - - 40
+          - 50
+      "newInterval":
+        - 5
+        - 45
+    "out":
+      - - 0
+        - 50
+  - "name": "random structure 1"
+    "seed": 123
+    "in":
+      "intervals":
+        - - 1
+          - 2
+        - - 4
+          - 5
+        - - 7
+          - 8
+        - - 10
+          - 11
+        - - 13
+          - 14
+      "newInterval":
+        - 3
+        - 12
+  - "name": "random structure 2"
+    "seed": 456
+    "in":
+      "intervals":
+        - - 10
+          - 20
+        - - 30
+          - 40
+        - - 50
+          - 60
+      "newInterval":
+        - 15
+        - 55
+  - "name": "random structure 3"
+    "seed": 789
+    "in":
+      "intervals":
+        - - 2
+          - 3
+        - - 4
+          - 5
+        - - 6
+          - 7
+      "newInterval":
+        - 0
+        - 1
+  - "name": "large input simple case"
+    "in":
+      "intervals":
+        - - 1
+          - 2
+        - - 3
+          - 4
+      "newInterval":
+        - 5
+        - 6
+  - "name": "large input boundary case"
+    "in":
+      "intervals":
+        - - 0
+          - 50000
+        - - 60000
+          - 100000
+      "newInterval":
+        - 49999
+        - 60001
+  - "name": "large input stress"
+    "in":
+      "intervals":
+        - - 1
+          - 2
+        - - 3
+          - 4
+        - - 5
+          - 6
+        - - 7
+          - 8
+        - - 9
+          - 10
+      "newInterval":
+        - 0
+        - 100000

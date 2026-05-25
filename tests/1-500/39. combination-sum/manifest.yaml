@@ -1,0 +1,351 @@
+entry:
+  id: 39
+  title: combination-sum
+  call:
+    cpp: Solution().combinationSum(lv(vector<int>{ {candidates} }), {target})
+    rust: Solution::combination_sum(vec![{candidates}], {target})
+    python3: Solution().combinationSum([{candidates}], {target})
+    python2: Solution().combinationSum([{candidates}], {target})
+    ruby: combination_sum([{candidates}], {target})
+    java: new Solution().combinationSum(new int[]{ {candidates} }, {target})
+    csharp: new Solution().CombinationSum(new int[]{ {candidates} }, {target})
+    kotlin: Solution().combinationSum(intArrayOf({candidates}), {target})
+    go: combinationSum([]int{ {candidates} }, {target})
+    dart: Solution().combinationSum([{candidates}], {target})
+    swift: Solution().combinationSum([{candidates}], {target})
+    typescript: combinationSum([{candidates}], {target})
+judge:
+  type: ignore_order
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check([{candidates}], {target}, {result})
+    checker:
+      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
+      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
+      \            except Exception:\n                pass\n        return result\n\
+      \n    def check(self, candidates, target, result):\n        result = self._norm(result)\n\
+      \        if not isinstance(result, list): return False\n        seen = set()\n\
+      \        for comb in result:\n            if sum(comb) != target: return False\n\
+      \            for x in comb:\n                if x not in candidates: return\
+      \ False\n            seen.add(tuple(sorted(comb)))\n        def get_all(target_val,\
+      \ start_idx):\n            if target_val == 0: return [[]]\n            if target_val\
+      \ < 0 or start_idx == len(candidates): return []\n            res = []\n   \
+      \         for i in range(start_idx, len(candidates)):\n                for sub\
+      \ in get_all(target_val - candidates[i], i):\n                    res.append([candidates[i]]\
+      \ + sub)\n            return res\n        expected = [tuple(sorted(c)) for c\
+      \ in get_all(target, 0)]\n        return len(result) == len(expected) and all(tuple(sorted(c))\
+      \ in expected for c in result)\n"
+seed: 42
+tests:
+  - name: Example 1
+    in:
+      candidates:
+        - 2
+        - 3
+        - 6
+        - 7
+      target: 7
+    out:
+      - - 2
+        - 2
+        - 3
+      - - 7
+  - name: Example 2
+    in:
+      candidates:
+        - 2
+        - 3
+        - 5
+      target: 8
+    out:
+      - - 2
+        - 2
+        - 2
+        - 2
+      - - 2
+        - 3
+        - 3
+      - - 3
+        - 5
+  - name: Example 3
+    in:
+      candidates:
+        - 2
+      target: 1
+    out: []
+  - name: Smallest candidates
+    in:
+      candidates:
+        - 2
+        - 5
+      target: 5
+    out:
+      - - 5
+    seed: 1
+  - name: Target unreachable
+    in:
+      candidates:
+        - 3
+        - 5
+      target: 2
+    out: []
+  - name: Even numbers only
+    in:
+      candidates:
+        - 2
+        - 4
+        - 6
+      target: 6
+    out:
+      - - 2
+        - 2
+        - 2
+      - - 2
+        - 4
+      - - 6
+  - name: Single candidate equal to target
+    in:
+      candidates:
+        - 10
+      target: 10
+    out:
+      - - 10
+  - name: Two candidates
+    in:
+      candidates:
+        - 2
+        - 3
+      target: 5
+    out:
+      - - 2
+        - 3
+  - name: Target is multiple of only one candidate
+    in:
+      candidates:
+        - 3
+        - 7
+      target: 9
+    out:
+      - - 3
+        - 3
+        - 3
+  - name: Many small combinations
+    in:
+      candidates:
+        - 2
+        - 3
+        - 4
+      target: 6
+    out:
+      - - 2
+        - 2
+        - 2
+      - - 2
+        - 4
+      - - 3
+        - 3
+  - name: Large target
+    in:
+      candidates:
+        - 10
+        - 20
+        - 30
+      target: 40
+    out:
+      - - 10
+        - 10
+        - 10
+        - 10
+      - - 10
+        - 10
+        - 20
+      - - 10
+        - 30
+      - - 20
+        - 20
+  - name: Prime numbers
+    in:
+      candidates:
+        - 2
+        - 3
+        - 5
+        - 7
+      target: 10
+    out:
+      - - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      - - 2
+        - 2
+        - 3
+        - 3
+      - - 2
+        - 3
+        - 5
+      - - 3
+        - 7
+      - - 5
+        - 5
+  - name: Check order independence
+    in:
+      candidates:
+        - 5
+        - 2
+      target: 7
+    out:
+      - - 2
+        - 5
+  - name: Deep recursion
+    in:
+      candidates:
+        - 2
+      target: 8
+    out:
+      - - 2
+        - 2
+        - 2
+        - 2
+  - name: Max candidate value
+    in:
+      candidates:
+        - 40
+      target: 40
+    out:
+      - - 40
+  - name: Constraints boundary 1
+    in:
+      candidates:
+        - 2
+        - 40
+      target: 40
+    out:
+      - - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      - - 40
+  - name: Generated 1
+    in:
+      candidates:
+        - 3
+        - 5
+        - 7
+      target: 15
+    judge:
+      type: ignore_order
+  - name: Generated 2
+    in:
+      candidates:
+        - 2
+        - 4
+        - 6
+      target: 12
+    judge:
+      type: ignore_order
+  - name: Generated 3
+    in:
+      candidates:
+        - 10
+        - 15
+        - 20
+      target: 30
+    judge:
+      type: ignore_order
+  - name: Generated 4
+    in:
+      candidates:
+        - 5
+        - 8
+        - 12
+      target: 20
+    judge:
+      type: ignore_order
+  - name: Generated 5
+    in:
+      candidates:
+        - 4
+        - 6
+        - 9
+      target: 18
+    judge:
+      type: ignore_order
+  - name: Distinct small ints
+    in:
+      candidates:
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      target: 10
+    judge:
+      type: ignore_order
+  - name: Few candidates large target
+    in:
+      candidates:
+        - 15
+        - 25
+      target: 40
+    out:
+      - - 15
+        - 25
+  - name: Max constraints density
+    in:
+      candidates:
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      target: 20
+    judge:
+      type: ignore_order
+  - name: Specific sum
+    in:
+      candidates:
+        - 3
+        - 9
+      target: 18
+    out:
+      - - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+      - - 3
+        - 3
+        - 3
+        - 9
+      - - 9
+        - 9
