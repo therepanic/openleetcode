@@ -8,8 +8,12 @@ on:
 
 jobs:
   build:
-    name: Build
-    runs-on: ubuntu-latest
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +26,30 @@ jobs:
       - run: |
           cabal update
           cabal build all
+
+      - name: Collect executables (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p artifacts
+          find dist-newstyle -type f -perm /111 -not -name "*.so" -not -name "*.dylib" \
+            | while read f; do
+                cp "$f" artifacts/
+              done
+
+      - name: Collect executables (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts
+          Get-ChildItem -Path dist-newstyle -Recurse -Filter "*.exe" |
+            Copy-Item -Destination artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.os }}
+          path: artifacts/
+          if-no-files-found: warn
 
   tests:
     name: Tests
