@@ -519,6 +519,8 @@ renderConstArrayItem :: Language -> Maybe Types.GIDArrElemType -> Types.Generate
 renderConstArrayItem lang inheritedElemType (Types.GIDArr (Types.GIDArrConst xs elemType)) =
   let et = elemType <|> inheritedElemType
    in wrapArray lang et $ T.intercalate ", " (map (renderConstArrayItem lang et) xs)
+renderConstArrayItem lang (Just Types.GIDArrElemChar) (Types.GIDStr (Types.GIDStrConst s))
+  | T.length s == 1 = renderConst lang (Types.GIDChar (Types.GIDGenCharConst (T.head s)))
 renderConstArrayItem lang _ val = renderConst lang val
 
 wrapArray :: Language -> Maybe Types.GIDArrElemType -> Text -> Text

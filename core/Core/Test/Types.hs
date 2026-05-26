@@ -157,8 +157,8 @@ instance FromJSON GIDArr where
   parseJSON (Array vec) = GIDArrConst <$> mapM parseJSON (toList vec) <*> pure Nothing
   parseJSON (Object o) = do
     elemType <- o .:? "elemType"
-    constVals <- o .:? "const"
-    case constVals of
+    valueVals <- o .:? "value"
+    case valueVals of
       Just vals -> pure $ GIDArrConst vals elemType
       Nothing -> do
         distinct <- o .:? "distinct" .!= False
@@ -193,9 +193,10 @@ instance FromJSON GeneratedInData where
 instance FromJSON TestCaseInData where
   parseJSON (Object o) = do
     gen <- o .:? "gen" :: Parser (Maybe Text)
-    constVals <- o .:? "const" :: Parser (Maybe Value)
-    case (gen, constVals) of
+    valueVals <- o .:? "value" :: Parser (Maybe Value)
+    case (gen, valueVals) of
       (Just "array", Just _) -> InConst . GIDArr <$> parseJSON (Object o)
+      (Nothing, Just _) -> InConst . GIDArr <$> parseJSON (Object o)
       (Just _, _) -> InGenerated <$> parseJSON (Object o)
       (Nothing, _) -> pure $ InCase (jsonToText (Object o))
   parseJSON (Array vec) = InConst . GIDArr <$> parseJSON (Array vec)

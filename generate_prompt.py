@@ -47,7 +47,7 @@ Generate 25-30 tests.
 CRITICAL YAML RULE:
 Never use flow-style mappings { } anywhere in the output.
 Every mapping must use block style (indented lines).
-This applies to ALL fields including gen, const, and inline params.
+This applies to ALL fields including gen, value, and inline params.
 
 ---
 
@@ -115,13 +115,14 @@ in:
 2D arrays - ALWAYS multiline block style.
 NEVER flow style. No exceptions.
 
+If a static array needs a type hint for typed runtimes, wrap it with `elemType` + `value`.
+
 CORRECT - 1x1:
 
 in:
   matrix:
-    gen: "array"
     elemType: "int"
-    const:
+    value:
       - [5]
   target: 3
 
@@ -129,9 +130,8 @@ CORRECT - 3x4:
 
 in:
   matrix:
-    gen: "array"
     elemType: "int"
-    const:
+    value:
       - [1, 3, 5, 7]
       - [10, 11, 16, 20]
       - [23, 30, 34, 60]
@@ -139,8 +139,8 @@ in:
 
 WRONG - never do this:
 
-matrix: { gen: "array", elemType: "int", const: [[1,3,5,7]] }
-matrix: { gen: "array", elemType: "int", const: [[1]] }
+matrix: { elemType: "int", value: [[1,3,5,7]] }
+matrix: { elemType: "int", value: [[1]] }
 
 Nested `out` (e.g. matrices): SAME rule as 2D `in` - ALWAYS multiline block style, real line breaks, one `- [ ... ]` row per dimension. NEVER a single YAML string holding the entire JSON (`out: '[[...]]'` and similar).
 
@@ -301,9 +301,8 @@ elemType: "int"
 
 2D array static - ALWAYS multiline:
 
-gen: "array"
 elemType: "int"
-const:
+value:
   - [1, 2, 3]
   - [4, 5, 6]
 
@@ -432,7 +431,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - Use ~5 generated tests (using gen) when constraints allow
 - Large tests MUST use explicit large sizes (e.g. 50000-100000 for strings/arrays) when constraints allow
 - Include at least 2 large tests near maximum input size
-- Static 2D arrays MUST always use multiline block style const rows, never flow style
+- Static 2D arrays MUST always use multiline block style value rows, never flow style
 - Every test without out must use oracle
 - Ensure oracle call is correct
 - Generator ranges must match problem constraints exactly

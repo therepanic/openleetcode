@@ -286,10 +286,17 @@ len: { gen: "int", min: 1, max: 20 }
 of: { gen: "int", min: 0, max: 9 }
 ```
 
-Or a constant (written as a plain YAML array):
+Or a constant:
 
 ```yaml
 [1, 2, 3]
+```
+
+If you need a type hint for a static array in typed runtimes, use `elemType` with `value`:
+
+```yaml
+elemType: "int"
+value: [1, 2, 3]
 ```
 
 | Field      | Required | Description                                                                                       |
@@ -323,9 +330,8 @@ You can also provide a static 2D array directly:
 ```yaml
 in:
   matrix:
-    gen: "array"
     elemType: "int"
-    const:
+    value:
       - [1, 2, 3]
       - [4, 5, 6]
 ```
@@ -348,10 +354,9 @@ in:
 ```yaml
 # float (static)
 in:
-  matrixFloatConst:
-    gen: "array"
+  matrixFloatStatic:
     elemType: "float"
-    const:
+    value:
       - [1.25, 2.5]
       - [-3.0, 4.75]
 ```
@@ -377,10 +382,9 @@ in:
 ```yaml
 # string (static)
 in:
-  matrixStringConst:
-    gen: "array"
+  matrixStringStatic:
     elemType: "string"
-    const:
+    value:
       - ["aa", "bb"]
       - ["cc", "dd"]
 ```
@@ -403,10 +407,9 @@ in:
 ```yaml
 # char (static)
 in:
-  matrixCharConst:
-    gen: "array"
+  matrixCharStatic:
     elemType: "char"
-    const:
+    value:
       - ["a", "b"]
       - ["c", "d"]
 ```
@@ -427,10 +430,9 @@ in:
 ```yaml
 # bool (static)
 in:
-  matrixBoolConst:
-    gen: "array"
+  matrixBoolStatic:
     elemType: "bool"
-    const:
+    value:
       - [true, false]
       - [false, true]
 ```
