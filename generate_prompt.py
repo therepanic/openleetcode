@@ -47,6 +47,7 @@ Generate 25-30 tests.
 CRITICAL YAML RULE:
 Never use flow-style mappings { } anywhere in the output.
 Every mapping must use block style (indented lines).
+This applies to ALL fields including gen, value, and inline params.
 
 ---
 
@@ -430,6 +431,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - Use ~5 generated tests (using gen) when constraints allow
 - Large tests MUST use explicit large sizes (e.g. 50000-100000 for strings/arrays) when constraints allow
 - Include at least 2 large tests near maximum input size
+- Static 2D arrays MUST always use multiline block style value rows, never flow style
 - Every test without out must use oracle
 - Ensure oracle call is correct
 - Generator ranges must match problem constraints exactly
