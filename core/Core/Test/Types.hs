@@ -149,8 +149,8 @@ instance FromJSON GIDChar where
   parseJSON (Object o) = do
     gen <- o .: "gen" :: Parser Text
     case gen of
-      "char" -> GIDGenCharVariety <$> o .: "variety"
-      _ -> fail $ "unknown gen for float: " <> T.unpack gen
+      "char" -> GIDGenCharVariety . T.concat <$> (o .: "variety")
+      _ -> fail $ "unknown gen for char: " <> T.unpack gen
   parseJSON _ = fail "expected number or object"
 
 instance FromJSON GIDArr where
