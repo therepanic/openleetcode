@@ -194,7 +194,7 @@ runOracleBatch exec _ batch suite cases mainOutputs =
           ( C.ExecRequest
               { C.language = Python3,
                 C.content = oracleProgram,
-                C.files = [],
+                C.files = buildMainFiles cases,
                 C.runTimeout = Just batchTimeoutMs,
                 C.runMemoryLimit = Nothing
               }
@@ -240,10 +240,14 @@ buildMainProgram batch cases =
 buildOracleProgram :: SolutionBatch -> Types.TestOracleEntry -> [PreparedCase] -> M.Map Int MainCaseOutput -> Text
 buildOracleProgram batch oracleSolution cases mainOutputs =
   T.unlines $
-    [ "import datetime as _dt",
+    [ "import json",
+      "import datetime as _dt",
       "from dataclasses import is_dataclass, asdict",
       "from typing import *",
       python3Utilities batch,
+      "",
+      "with open(\"test.json\", \"r\", encoding=\"utf-8\") as _f:",
+      "    _TEST_ = json.load(_f)",
       "",
       Types.checker oracleSolution
     ]
@@ -258,9 +262,17 @@ buildOracleProgram batch oracleSolution cases mainOutputs =
             T.replace "{result}" resultLiteral $
               fromJust (pcOracleCall pc)
        in T.unlines
-            [ "print(" <> T.pack (show (T.unpack (marker (pcIdx pc)))) <> ")",
-              "print(to_json(" <> callExpr <> "))"
-            ]
+            ( ["_case_" <> suffix <> " = _TEST_[" <> T.pack (show (show (pcIdx pc))) <> "]"]
+                ++ map (renderOracleBinding suffix) (M.keys (pcJsonInputs pc))
+                ++ [ "print(" <> T.pack (show (T.unpack (marker (pcIdx pc)))) <> ")",
+                     "print(to_json(" <> callExpr <> "))"
+                   ]
+            )
+      where
+        suffix = T.pack (show (pcIdx pc))
+
+    renderOracleBinding suffix var =
+      var <> " = _case_" <> suffix <> "[" <> T.pack (show (T.unpack var)) <> "][\"val\"]"
 
 buildProgramTemplate :: Language -> Text -> Text -> Text -> [Text] -> Text
 buildProgramTemplate lang template rawSolution runtimeUtilities snippets =
