@@ -18,7 +18,7 @@ data Judge = Judge {jType :: JudgeType}
 
 data TestLimits = TestLimits {tlTimeMs :: Int, tlMemoryMb :: Int}
 
-data TestEntry = TestEntry {teId :: Int, teTitle :: Text, teCall :: M.Map Language Text}
+data TestEntry = TestEntry {teId :: Int, teTitle :: Text, teParams :: Maybe (M.Map Text TestParams), teCall :: M.Map Language Text}
 
 data GeneratedInData
   = GIDIntegral GIDIntegral
@@ -68,6 +68,10 @@ data TestOracleEntry = TestOracleEntry {call :: Text, checker :: Text}
 
 type TestOracle = M.Map Language TestOracleEntry
 
+data TestParamsType = TPTInt | TPTFloat | TPTDouble | TPTLong | TPTString | TPTChar | TPTBool | TPTArray | TPTListNode | TPTTreeNode
+
+data TestParams = TestParams {tpaType :: TestParamsType, tpaItems :: Maybe TestParams}
+
 data TestCase
   = TestCase
   { tcName :: Text,
@@ -110,8 +114,9 @@ instance FromJSON TestEntry where
   parseJSON = withObject "TestEntry" $ \o -> do
     id' <- o .: "id"
     title <- o .: "title"
+    params <- o .:? "params"
     call <- o .: "call"
-    pure $ TestEntry id' title call
+    pure $ TestEntry id' title params call
 
 instance FromJSON TestCaseOutData where
   parseJSON (String t) = pure $ OutCase t
@@ -215,6 +220,26 @@ instance FromJSON TestCase where
     seed <- o .:? "seed"
     out <- o .:? "out"
     pure $ TestCase name judge call (M.toList inMap) seed out
+
+instance FromJSON TestParams where
+  parseJSON = withObject "TestParams" $ \o -> do
+    type' <- o .: "type"
+    items <- o .:? "items"
+    pure $ TestParams type' items
+
+instance FromJSON TestParamsType where
+  parseJSON = withText "TestParamsType" $ \t -> case t of
+    "int" -> pure TPTInt
+    "long" -> pure TPTLong
+    "double" -> pure TPTDouble
+    "float" -> pure TPTFloat
+    "string" -> pure TPTString
+    "char" -> pure TPTChar
+    "bool" -> pure TPTBool
+    "array" -> pure TPTArray
+    "tree_node" -> pure TPTTreeNode
+    "list_node" -> pure TPTListNode
+    _ -> fail $ "unknown elemType: " <> T.unpack t
 
 instance FromJSON TestSuite where
   parseJSON = withObject "TestSuite" $ \o -> do

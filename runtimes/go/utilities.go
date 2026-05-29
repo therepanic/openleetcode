@@ -22,6 +22,95 @@ func toInt(v interface{}) int {
     }
 }
 
+func toFloat64Value(v interface{}) float64 {
+    if v == nil {
+        return 0
+    }
+    switch t := v.(type) {
+    case float64:
+        return t
+    case float32:
+        return float64(t)
+    case int:
+        return float64(t)
+    case int64:
+        return float64(t)
+    default:
+        return 0
+    }
+}
+
+func toStringValue(v interface{}) string {
+    if v == nil {
+        return ""
+    }
+    switch t := v.(type) {
+    case string:
+        return t
+    case byte:
+        return string([]byte{t})
+    default:
+        return fmt.Sprintf("%v", t)
+    }
+}
+
+func toBoolValue(v interface{}) bool {
+    if v == nil {
+        return false
+    }
+    if b, ok := v.(bool); ok {
+        return b
+    }
+    return false
+}
+
+func toByteValue(v interface{}) byte {
+    s := toStringValue(v)
+    if len(s) == 0 {
+        return 0
+    }
+    return s[0]
+}
+
+func toIntArrayValue(v interface{}) []int {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]int, len(arr))
+    for i, item := range arr {
+        res[i] = toInt(item)
+    }
+    return res
+}
+
+func toInterfaceArrayValue(v interface{}) []interface{} {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    return arr
+}
+
+func toByteMatrixValue(v interface{}) [][]byte {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]byte, len(rows))
+    for i, row := range rows {
+        cols, ok := row.([]interface{})
+        if !ok {
+            continue
+        }
+        res[i] = make([]byte, len(cols))
+        for j, cell := range cols {
+            res[i][j] = toByteValue(cell)
+        }
+    }
+    return res
+}
+
 func toTreeNode(arr []interface{}) *TreeNode {
     if len(arr) == 0 || arr[0] == nil { return nil }
     val := toInt(arr[0])

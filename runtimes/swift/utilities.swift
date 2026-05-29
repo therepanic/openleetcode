@@ -11,13 +11,54 @@ public class TreeNode {
     }
 }
 
+func anyToInt(_ value: Any) -> Int {
+    if let x = value as? Int { return x }
+    if let x = value as? Double { return Int(x) }
+    if let x = value as? NSNumber { return x.intValue }
+    return Int("\(value)") ?? 0
+}
+
+func anyToDouble(_ value: Any) -> Double {
+    if let x = value as? Double { return x }
+    if let x = value as? Int { return Double(x) }
+    if let x = value as? NSNumber { return x.doubleValue }
+    return Double("\(value)") ?? 0
+}
+
+func anyToString(_ value: Any) -> String {
+    if let x = value as? String { return x }
+    return "\(value)"
+}
+
+func anyToBool(_ value: Any) -> Bool {
+    if let x = value as? Bool { return x }
+    return "\(value)" == "true"
+}
+
+func anyToIntArray(_ value: Any) -> [Int] {
+    return (value as! [Any]).map(anyToInt)
+}
+
+func anyToOptionalIntArray(_ value: Any) -> [Int?] {
+    return (value as! [Any]).map { item in
+        if item is NSNull { return nil }
+        return anyToInt(item)
+    }
+}
+
+func anyToCharMatrix(_ value: Any) -> [[Character]] {
+    return (value as! [Any]).map { row in
+        (row as! [Any]).map { Character(anyToString($0)) }
+    }
+}
+
 func to_tree_node(_ arr: [Int?]) -> TreeNode? {
     guard !arr.isEmpty, let first = arr[0] else { return nil }
     let root = TreeNode(first)
     var queue = [root]
     var i = 1
     var qIdx = 0
-    while i < arr.count {
+    while qIdx < queue.count && i < arr.count {
         let node = queue[qIdx]
         qIdx += 1
         if i < arr.count, let leftVal = arr[i] {

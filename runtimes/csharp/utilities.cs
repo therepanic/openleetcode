@@ -79,6 +79,57 @@ public class TreeNode {
 }
 
 partial class _Runner {
+    static int ToInt(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0 : el.Value<int>();
+    }
+
+    static long ToLong(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0L : el.Value<long>();
+    }
+
+    static double ToDouble(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0d : el.Value<double>();
+    }
+
+    static float ToFloat(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0f : el.Value<float>();
+    }
+
+    static string ToStringValue(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? "" : el.Type == JTokenType.String ? el.Value<string>() : el.ToString();
+    }
+
+    static char ToChar(JToken el) {
+        var s = ToStringValue(el);
+        return s.Length == 0 ? '\0' : s[0];
+    }
+
+    static bool ToBool(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return false;
+        if (el.Type == JTokenType.Boolean) return el.Value<bool>();
+        return bool.TryParse(el.ToString(), out var value) && value;
+    }
+
+    static int[] ToIntArray(JToken el) {
+        return ((JArray)el).Select(ToInt).ToArray();
+    }
+
+    static int?[] ToNullableIntArray(JToken el) {
+        return ((JArray)el).Select(x => x == null || x.Type == JTokenType.Null ? (int?)null : ToInt(x)).ToArray();
+    }
+
+    static int[][] ToIntMatrix(JToken el) {
+        return ((JArray)el).Select(ToIntArray).ToArray();
+    }
+
+    static char[] ToCharArray(JToken el) {
+        return ((JArray)el).Select(ToChar).ToArray();
+    }
+
+    static char[][] ToCharMatrix(JToken el) {
+        return ((JArray)el).Select(ToCharArray).ToArray();
+    }
+
     static string ToJson(object obj) {
         if (obj == null) return "null";
         if (obj is bool b) return b ? "true" : "false";

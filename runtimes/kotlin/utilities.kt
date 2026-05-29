@@ -3,6 +3,46 @@ class TreeNode(var `val`: Int) {
     var right: TreeNode? = null
 }
 
+fun toIntValue(value: Any?): Int = when (value) {
+    null -> 0
+    is Number -> value.toInt()
+    else -> value.toString().toInt()
+}
+
+fun toLongValue(value: Any?): Long = when (value) {
+    null -> 0L
+    is Number -> value.toLong()
+    else -> value.toString().toLong()
+}
+
+fun toDoubleValue(value: Any?): Double = when (value) {
+    null -> 0.0
+    is Number -> value.toDouble()
+    else -> value.toString().toDouble()
+}
+
+fun toFloatValue(value: Any?): Float = toDoubleValue(value).toFloat()
+
+fun toStringValue(value: Any?): String = value?.toString() ?: ""
+
+fun toCharValue(value: Any?): Char = toStringValue(value).firstOrNull() ?: '\u0000'
+
+fun toBoolValue(value: Any?): Boolean = when (value) {
+    is Boolean -> value
+    else -> value?.toString() == "true"
+}
+
+fun toIntArrayValue(value: Any?): IntArray =
+    (value as List<*>).map { toIntValue(it) }.toIntArray()
+
+fun toNullableIntArrayValue(value: Any?): Array<Int?> =
+    (value as List<*>).map { if (it == null) null else toIntValue(it) }.toTypedArray()
+
+fun toCharMatrixValue(value: Any?): Array<CharArray> =
+    (value as List<*>)
+        .map { row -> (row as List<*>).map { toCharValue(it) }.toCharArray() }
+        .toTypedArray()
+
 fun toTreeNode(arr: Array<Int?>): TreeNode? {
     if (arr.isEmpty() || arr[0] == null) return null
     val root = TreeNode(arr[0]!!)

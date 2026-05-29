@@ -7,12 +7,19 @@ import bisect
 import itertools
 import datetime as _dt
 import collections
+import json
 from functools import *
 from collections import *
 from heapq import *
 from bisect import *
 
 sys.setrecursionlimit(10**6)
+
+with open("test.json", "r") as _test_json_file:
+    _TEST_ = json.load(_test_json_file)
+
+def _test_val(case_id, name):
+    return _TEST_[case_id][name]["val"]
 
 ${SOLUTION}
 

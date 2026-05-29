@@ -68,7 +68,7 @@ def list_node_to_array(head):
 
 def to_json(obj):
     seen = set()
-    return "\n" + _encode(obj, seen)
+    return _encode(obj, seen)
 
 
 def _encode(obj, seen):

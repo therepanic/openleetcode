@@ -5,13 +5,53 @@ class TreeNode {
   TreeNode([this.val = 0, this.left, this.right]);
 }
 
+int toIntValue(dynamic value) {
+  if (value == null) return 0;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  return int.parse(value.toString());
+}
+
+double toDoubleValue(dynamic value) {
+  if (value == null) return 0;
+  if (value is double) return value;
+  if (value is num) return value.toDouble();
+  return double.parse(value.toString());
+}
+
+String toStringValue(dynamic value) {
+  if (value == null) return '';
+  return value.toString();
+}
+
+bool toBoolValue(dynamic value) {
+  if (value is bool) return value;
+  return value.toString() == 'true';
+}
+
+List<int> toIntArrayValue(dynamic value) {
+  final list = value as List;
+  return list.map((item) => toIntValue(item)).toList();
+}
+
+List<dynamic> toDynamicListValue(dynamic value) {
+  return (value as List).toList();
+}
+
+List<List<String>> toStringMatrixValue(dynamic value) {
+  final rows = value as List;
+  return rows
+      .map((row) => (row as List).map((cell) => toStringValue(cell)).toList())
+      .toList();
+}
+
 TreeNode? to_tree_node(List<dynamic>? arr) {
   if (arr == null || arr.isEmpty || arr[0] == null) return null;
   TreeNode root = TreeNode(arr[0]);
   List<TreeNode?> queue = [root];
   int i = 1;
   int qIdx = 0;
-  while (i < arr.length) {
+  while (qIdx < queue.length && i < arr.length) {
     TreeNode? node = queue[qIdx++];
     if (i < arr.length && arr[i] != null) {
       node!.left = TreeNode(arr[i]);
