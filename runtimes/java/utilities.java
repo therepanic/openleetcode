@@ -55,6 +55,14 @@ class TreeNode {
         while (!res.isEmpty() && res.get(res.size() - 1) == null) res.remove(res.size() - 1);
         return res;
     }
+
+    public static List<List<Integer>> treeNodesArrayToArrayList(List<TreeNode> roots) {
+        List<List<Integer>> res = new java.util.ArrayList<>(roots.size());
+        for (TreeNode root : roots) {
+            res.add(treeNodeToArray(root));
+        }
+        return res;
+    }
 }
 
 class ListNode {
@@ -87,6 +95,14 @@ class ListNode {
         int[] result = new int[list.size()];
         for (int i = 0; i < result.length; i++) {
             result[i] = list.get(i);
+        }
+        return result;
+    }
+
+    public static ListNode[] toListNodes(int[][] arrs) {
+        ListNode[] result = new ListNode[arrs.length];
+        for (int i = 0; i < arrs.length; i++) {
+            result[i] = toListNode(arrs[i]);
         }
         return result;
     }
@@ -137,6 +153,26 @@ final class Json {
 
     public static String[] toStringArray(Object obj) {
         return gson.fromJson(gson.toJsonTree(obj), String[].class);
+    }
+
+    public static long[][] toLongMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), long[][].class);
+    }
+
+    public static double[][] toDoubleMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), double[][].class);
+    }
+
+    public static float[][] toFloatMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), float[][].class);
+    }
+
+    public static boolean[][] toBoolMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), boolean[][].class);
+    }
+
+    public static String[][] toStringMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), String[][].class);
     }
 
     public static int[][] toIntMatrix(Object obj) {

@@ -197,15 +197,8 @@ oracle:
   python3:
     call: "Checker().twoSum(nums, target, {result})"
     checker: |
-      import json
-      from typing import List
-
       class Checker:
-          def twoSum(self, nums: List[int], target: int, result: str) -> bool:
-              try:
-                  indices = json.loads(result)
-              except:
-                  return False
+          def twoSum(self, nums: List[int], target: int, result: Any) -> bool:
               if not isinstance(indices, list) or len(indices) != 2:
                   return False
               i, j = indices

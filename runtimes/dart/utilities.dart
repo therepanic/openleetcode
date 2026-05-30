@@ -34,6 +34,21 @@ List<int> toIntArrayValue(dynamic value) {
   return list.map((item) => toIntValue(item)).toList();
 }
 
+List<double> toDoubleArrayValue(dynamic value) {
+  final list = value as List;
+  return list.map((item) => toDoubleValue(item)).toList();
+}
+
+List<String> toStringArrayValue(dynamic value) {
+  final list = value as List;
+  return list.map((item) => toStringValue(item)).toList();
+}
+
+List<bool> toBoolArrayValue(dynamic value) {
+  final list = value as List;
+  return list.map((item) => toBoolValue(item)).toList();
+}
+
 List<dynamic> toDynamicListValue(dynamic value) {
   return (value as List).toList();
 }
@@ -43,6 +58,21 @@ List<List<String>> toStringMatrixValue(dynamic value) {
   return rows
       .map((row) => (row as List).map((cell) => toStringValue(cell)).toList())
       .toList();
+}
+
+List<List<int>> toIntMatrixValue(dynamic value) {
+  final rows = value as List;
+  return rows.map((row) => toIntArrayValue(row)).toList();
+}
+
+List<List<double>> toDoubleMatrixValue(dynamic value) {
+  final rows = value as List;
+  return rows.map((row) => toDoubleArrayValue(row)).toList();
+}
+
+List<List<bool>> toBoolMatrixValue(dynamic value) {
+  final rows = value as List;
+  return rows.map((row) => toBoolArrayValue(row)).toList();
 }
 
 TreeNode? to_tree_node(List<dynamic>? arr) {
@@ -111,6 +141,10 @@ List<int> list_node_to_array(ListNode? head) {
     cur = cur.next;
   }
   return res;
+}
+
+List<ListNode?> to_list_nodes(List<List<int>> arrs) {
+  return arrs.map((arr) => to_list_node(arr)).toList();
 }
 
 String toJson(Object? obj) {

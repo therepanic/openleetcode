@@ -23,6 +23,10 @@ public class ListNode {
             res.Add(cur.val);
         return res.ToArray();
     }
+
+    public static ListNode[] ToListNodes(int[][] arrs) {
+        return arrs.Select(ToListNode).ToArray();
+    }
 }
 
 public class TreeNode {
@@ -76,6 +80,10 @@ public class TreeNode {
             res.RemoveAt(res.Count - 1);
         return res.ToArray();
     }
+
+    public static List<int?[]> TreeNodeListToArrayList(IList<TreeNode> roots) {
+        return roots.Select(TreeNodeToArray).ToList();
+    }
 }
 
 partial class _Runner {
@@ -114,12 +122,52 @@ partial class _Runner {
         return ((JArray)el).Select(ToInt).ToArray();
     }
 
+    static long[] ToLongArray(JToken el) {
+        return ((JArray)el).Select(ToLong).ToArray();
+    }
+
+    static double[] ToDoubleArray(JToken el) {
+        return ((JArray)el).Select(ToDouble).ToArray();
+    }
+
+    static float[] ToFloatArray(JToken el) {
+        return ((JArray)el).Select(ToFloat).ToArray();
+    }
+
+    static bool[] ToBoolArray(JToken el) {
+        return ((JArray)el).Select(ToBool).ToArray();
+    }
+
+    static string[] ToStringArray(JToken el) {
+        return ((JArray)el).Select(ToStringValue).ToArray();
+    }
+
     static int?[] ToNullableIntArray(JToken el) {
         return ((JArray)el).Select(x => x == null || x.Type == JTokenType.Null ? (int?)null : ToInt(x)).ToArray();
     }
 
     static int[][] ToIntMatrix(JToken el) {
         return ((JArray)el).Select(ToIntArray).ToArray();
+    }
+
+    static long[][] ToLongMatrix(JToken el) {
+        return ((JArray)el).Select(ToLongArray).ToArray();
+    }
+
+    static double[][] ToDoubleMatrix(JToken el) {
+        return ((JArray)el).Select(ToDoubleArray).ToArray();
+    }
+
+    static float[][] ToFloatMatrix(JToken el) {
+        return ((JArray)el).Select(ToFloatArray).ToArray();
+    }
+
+    static bool[][] ToBoolMatrix(JToken el) {
+        return ((JArray)el).Select(ToBoolArray).ToArray();
+    }
+
+    static string[][] ToStringMatrix(JToken el) {
+        return ((JArray)el).Select(ToStringArray).ToArray();
     }
 
     static char[] ToCharArray(JToken el) {

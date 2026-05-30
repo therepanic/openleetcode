@@ -132,6 +132,14 @@ inline vector<int> listNodeToArray(ListNode *head) {
   return res;
 }
 
+inline vector<ListNode *> toLinkedLists(const vector<vector<int>> &arrs) {
+  vector<ListNode *> res;
+  res.reserve(arrs.size());
+  for (const auto &arr : arrs)
+    res.push_back(toListNode(arr));
+  return res;
+}
+
 inline TreeNode *toTreeNode(const vector<optional<int>> &arr) {
   if (arr.empty() || !arr[0])
     return nullptr;
@@ -175,6 +183,15 @@ inline vector<optional<int>> treeNodeToArray(TreeNode *root) {
   }
   while (!res.empty() && !res.back())
     res.pop_back();
+  return res;
+}
+
+inline vector<vector<optional<int>>> treeNodesArrayToVector(const vector<TreeNode *> &roots) {
+  vector<vector<optional<int>>> res;
+  res.reserve(roots.size());
+  for (auto *root : roots) {
+    res.push_back(treeNodeToArray(root));
+  }
   return res;
 }
 
@@ -227,9 +244,12 @@ inline string toJson(unsigned v) { return to_string(v); }
 inline string toJson(unsigned long v) { return to_string(v); }
 inline string toJson(unsigned long long v) { return to_string(v); }
 inline string toJson(double v) {
-  char buf[64];
-  snprintf(buf, sizeof(buf), "%g", v);
-  return buf;
+  if (isnan(v) || isinf(v)) return "null";
+  ostringstream oss;
+  oss << setprecision(15) << v;
+  string s = oss.str();
+  if (s.find_first_of(".eE") == string::npos) s += ".0";
+  return s;
 }
 inline string toJson(float v) { return toJson((double)v); }
 inline string toJson(char v) { return _jsonQuote(string(1, v)); }

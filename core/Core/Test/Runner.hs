@@ -240,10 +240,21 @@ buildMainProgram batch cases =
 buildOracleProgram :: SolutionBatch -> Types.TestOracleEntry -> [PreparedCase] -> M.Map Int MainCaseOutput -> Text
 buildOracleProgram batch oracleSolution cases mainOutputs =
   T.unlines $
-    [ "import json",
+    [ "import sys",
+      "import time as _time",
+      "import math",
+      "import heapq",
+      "import bisect",
+      "import itertools",
+      "import collections",
+      "import json",
       "import datetime as _dt",
       "from dataclasses import is_dataclass, asdict",
       "from typing import *",
+      "from functools import *",
+      "from collections import *",
+      "from heapq import *",
+      "from bisect import *",
       python3Utilities batch,
       "",
       "with open(\"test.json\", \"r\", encoding=\"utf-8\") as _f:",
@@ -255,9 +266,9 @@ buildOracleProgram batch oracleSolution cases mainOutputs =
   where
     buildSnippet pc =
       let resultLiteral =
-            case M.lookup (pcIdx pc) mainOutputs of
-              Just out -> T.strip (mcoResult out)
-              Nothing -> "\"\""
+            "json.loads("
+              <> T.pack (show (T.unpack (mcoResult (fromJust (M.lookup (pcIdx pc) mainOutputs)))))
+              <> ")"
           callExpr =
             T.replace "{result}" resultLiteral $
               fromJust (pcOracleCall pc)
@@ -670,7 +681,12 @@ javaExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
         Just Types.TPTInt -> "Json.toIntMatrix(" <> accessor <> ")"
+        Just Types.TPTLong -> "Json.toLongMatrix(" <> accessor <> ")"
+        Just Types.TPTDouble -> "Json.toDoubleMatrix(" <> accessor <> ")"
+        Just Types.TPTFloat -> "Json.toFloatMatrix(" <> accessor <> ")"
+        Just Types.TPTString -> "Json.toStringMatrix(" <> accessor <> ")"
         Just Types.TPTChar -> "Json.toCharMatrix(" <> accessor <> ")"
+        Just Types.TPTBool -> "Json.toBoolMatrix(" <> accessor <> ")"
         _ -> error "Unsupported java nested array type"
     _ -> error "Unsupported java array item type"
 javaExpr accessor (Types.TestParams Types.TPTListNode _) = "ListNode.toListNode(Json.toIntArray(" <> accessor <> "))"
@@ -763,11 +779,21 @@ csharpExpr accessor (Types.TestParams Types.TPTBool _) = "ToBool(" <> accessor <
 csharpExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "ToIntArray(" <> accessor <> ")"
+    Types.TPTLong -> "ToLongArray(" <> accessor <> ")"
+    Types.TPTDouble -> "ToDoubleArray(" <> accessor <> ")"
+    Types.TPTFloat -> "ToFloatArray(" <> accessor <> ")"
+    Types.TPTString -> "ToStringArray(" <> accessor <> ")"
     Types.TPTChar -> "ToCharArray(" <> accessor <> ")"
+    Types.TPTBool -> "ToBoolArray(" <> accessor <> ")"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
-        Just Types.TPTChar -> "ToCharMatrix(" <> accessor <> ")"
         Just Types.TPTInt -> "ToIntMatrix(" <> accessor <> ")"
+        Just Types.TPTLong -> "ToLongMatrix(" <> accessor <> ")"
+        Just Types.TPTDouble -> "ToDoubleMatrix(" <> accessor <> ")"
+        Just Types.TPTFloat -> "ToFloatMatrix(" <> accessor <> ")"
+        Just Types.TPTString -> "ToStringMatrix(" <> accessor <> ")"
+        Just Types.TPTChar -> "ToCharMatrix(" <> accessor <> ")"
+        Just Types.TPTBool -> "ToBoolMatrix(" <> accessor <> ")"
         _ -> error "Unsupported csharp nested array type"
     _ -> error "Unsupported csharp array item type"
 csharpExpr accessor (Types.TestParams Types.TPTListNode _) = "ListNode.ToListNode(ToIntArray(" <> accessor <> "))"
@@ -795,7 +821,7 @@ renderGoDecl name accessor params = name <> " := " <> goExpr accessor params
 
 goExpr :: Text -> Types.TestParams -> Text
 goExpr accessor (Types.TestParams Types.TPTInt _) = "toInt(" <> accessor <> ")"
-goExpr accessor (Types.TestParams Types.TPTLong _) = "toInt(" <> accessor <> ")"
+goExpr accessor (Types.TestParams Types.TPTLong _) = "toLongValue(" <> accessor <> ")"
 goExpr accessor (Types.TestParams Types.TPTDouble _) = "toFloat64Value(" <> accessor <> ")"
 goExpr accessor (Types.TestParams Types.TPTFloat _) = "float32(toFloat64Value(" <> accessor <> "))"
 goExpr accessor (Types.TestParams Types.TPTString _) = "toStringValue(" <> accessor <> ")"
@@ -804,9 +830,21 @@ goExpr accessor (Types.TestParams Types.TPTBool _) = "toBoolValue(" <> accessor 
 goExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "toIntArrayValue(" <> accessor <> ")"
+    Types.TPTLong -> "toLongArrayValue(" <> accessor <> ")"
+    Types.TPTDouble -> "toDoubleArrayValue(" <> accessor <> ")"
+    Types.TPTFloat -> "toFloatArrayValue(" <> accessor <> ")"
+    Types.TPTString -> "toStringArrayValue(" <> accessor <> ")"
+    Types.TPTChar -> "toByteArrayValue(" <> accessor <> ")"
+    Types.TPTBool -> "toBoolArrayValue(" <> accessor <> ")"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "toIntMatrixValue(" <> accessor <> ")"
+        Just Types.TPTLong -> "toLongMatrixValue(" <> accessor <> ")"
+        Just Types.TPTDouble -> "toDoubleMatrixValue(" <> accessor <> ")"
+        Just Types.TPTFloat -> "toFloatMatrixValue(" <> accessor <> ")"
+        Just Types.TPTString -> "toStringMatrixValue(" <> accessor <> ")"
         Just Types.TPTChar -> "toByteMatrixValue(" <> accessor <> ")"
+        Just Types.TPTBool -> "toBoolMatrixValue(" <> accessor <> ")"
         _ -> error "Unsupported go nested array type"
     _ -> error "Unsupported go array item type"
 goExpr accessor (Types.TestParams Types.TPTListNode _) = "toListNode(toIntArrayValue(" <> accessor <> "))"
@@ -827,9 +865,21 @@ typeScriptExpr accessor (Types.TestParams Types.TPTBool _) = "Boolean(" <> acces
 typeScriptExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> accessor <> " as number[]"
+    Types.TPTLong -> accessor <> " as number[]"
+    Types.TPTDouble -> accessor <> " as number[]"
+    Types.TPTFloat -> accessor <> " as number[]"
+    Types.TPTString -> accessor <> " as string[]"
+    Types.TPTChar -> accessor <> " as string[]"
+    Types.TPTBool -> accessor <> " as boolean[]"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> accessor <> " as number[][]"
+        Just Types.TPTLong -> accessor <> " as number[][]"
+        Just Types.TPTDouble -> accessor <> " as number[][]"
+        Just Types.TPTFloat -> accessor <> " as number[][]"
+        Just Types.TPTString -> accessor <> " as string[][]"
         Just Types.TPTChar -> accessor <> " as string[][]"
+        Just Types.TPTBool -> accessor <> " as boolean[][]"
         _ -> error "Unsupported typescript nested array type"
     _ -> error "Unsupported typescript array item type"
 typeScriptExpr accessor (Types.TestParams Types.TPTListNode _) = "toListNode(" <> accessor <> " as number[])"
@@ -850,9 +900,21 @@ dartExpr accessor (Types.TestParams Types.TPTBool _) = "toBoolValue(" <> accesso
 dartExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "toIntArrayValue(" <> accessor <> ")"
+    Types.TPTLong -> "toIntArrayValue(" <> accessor <> ")"
+    Types.TPTDouble -> "toDoubleArrayValue(" <> accessor <> ")"
+    Types.TPTFloat -> "toDoubleArrayValue(" <> accessor <> ")"
+    Types.TPTString -> "toStringArrayValue(" <> accessor <> ")"
+    Types.TPTChar -> "toStringArrayValue(" <> accessor <> ")"
+    Types.TPTBool -> "toBoolArrayValue(" <> accessor <> ")"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "toIntMatrixValue(" <> accessor <> ")"
+        Just Types.TPTLong -> "toIntMatrixValue(" <> accessor <> ")"
+        Just Types.TPTDouble -> "toDoubleMatrixValue(" <> accessor <> ")"
+        Just Types.TPTFloat -> "toDoubleMatrixValue(" <> accessor <> ")"
+        Just Types.TPTString -> "toStringMatrixValue(" <> accessor <> ")"
         Just Types.TPTChar -> "toStringMatrixValue(" <> accessor <> ")"
+        Just Types.TPTBool -> "toBoolMatrixValue(" <> accessor <> ")"
         _ -> error "Unsupported dart nested array type"
     _ -> error "Unsupported dart array item type"
 dartExpr accessor (Types.TestParams Types.TPTListNode _) = "to_list_node(toIntArrayValue(" <> accessor <> "))"
@@ -866,16 +928,28 @@ swiftType :: Types.TestParams -> Text
 swiftType (Types.TestParams Types.TPTInt _) = "Int"
 swiftType (Types.TestParams Types.TPTLong _) = "Int"
 swiftType (Types.TestParams Types.TPTDouble _) = "Double"
-swiftType (Types.TestParams Types.TPTFloat _) = "Double"
+swiftType (Types.TestParams Types.TPTFloat _) = "Float"
 swiftType (Types.TestParams Types.TPTString _) = "String"
 swiftType (Types.TestParams Types.TPTChar _) = "Character"
 swiftType (Types.TestParams Types.TPTBool _) = "Bool"
 swiftType (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "[Int]"
+    Types.TPTLong -> "[Int]"
+    Types.TPTDouble -> "[Double]"
+    Types.TPTFloat -> "[Float]"
+    Types.TPTString -> "[String]"
+    Types.TPTChar -> "[Character]"
+    Types.TPTBool -> "[Bool]"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "[[Int]]"
+        Just Types.TPTLong -> "[[Int]]"
+        Just Types.TPTDouble -> "[[Double]]"
+        Just Types.TPTFloat -> "[[Float]]"
+        Just Types.TPTString -> "[[String]]"
         Just Types.TPTChar -> "[[Character]]"
+        Just Types.TPTBool -> "[[Bool]]"
         _ -> error "Unsupported swift nested array type"
     _ -> error "Unsupported swift array item type"
 swiftType (Types.TestParams Types.TPTListNode _) = "ListNode?"
@@ -886,16 +960,28 @@ swiftExpr :: Text -> Types.TestParams -> Text
 swiftExpr accessor (Types.TestParams Types.TPTInt _) = "anyToInt(" <> accessor <> ")"
 swiftExpr accessor (Types.TestParams Types.TPTLong _) = "anyToInt(" <> accessor <> ")"
 swiftExpr accessor (Types.TestParams Types.TPTDouble _) = "anyToDouble(" <> accessor <> ")"
-swiftExpr accessor (Types.TestParams Types.TPTFloat _) = "anyToDouble(" <> accessor <> ")"
+swiftExpr accessor (Types.TestParams Types.TPTFloat _) = "anyToFloat(" <> accessor <> ")"
 swiftExpr accessor (Types.TestParams Types.TPTString _) = "anyToString(" <> accessor <> ")"
 swiftExpr accessor (Types.TestParams Types.TPTChar _) = "Character(anyToString(" <> accessor <> "))"
 swiftExpr accessor (Types.TestParams Types.TPTBool _) = "anyToBool(" <> accessor <> ")"
 swiftExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "anyToIntArray(" <> accessor <> ")"
+    Types.TPTLong -> "anyToIntArray(" <> accessor <> ")"
+    Types.TPTDouble -> "anyToDoubleArray(" <> accessor <> ")"
+    Types.TPTFloat -> "anyToFloatArray(" <> accessor <> ")"
+    Types.TPTString -> "anyToStringArray(" <> accessor <> ")"
+    Types.TPTChar -> "anyToCharArray(" <> accessor <> ")"
+    Types.TPTBool -> "anyToBoolArray(" <> accessor <> ")"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "anyToIntMatrix(" <> accessor <> ")"
+        Just Types.TPTLong -> "anyToIntMatrix(" <> accessor <> ")"
+        Just Types.TPTDouble -> "anyToDoubleMatrix(" <> accessor <> ")"
+        Just Types.TPTFloat -> "anyToFloatMatrix(" <> accessor <> ")"
+        Just Types.TPTString -> "anyToStringMatrix(" <> accessor <> ")"
         Just Types.TPTChar -> "anyToCharMatrix(" <> accessor <> ")"
+        Just Types.TPTBool -> "anyToBoolMatrix(" <> accessor <> ")"
         _ -> error "Unsupported swift nested array type"
     _ -> error "Unsupported swift array item type"
 swiftExpr accessor (Types.TestParams Types.TPTListNode _) = "to_list_node(anyToIntArray(" <> accessor <> "))"
@@ -916,9 +1002,21 @@ rustType (Types.TestParams Types.TPTBool _) = "bool"
 rustType (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "Vec<i32>"
+    Types.TPTLong -> "Vec<i64>"
+    Types.TPTDouble -> "Vec<f64>"
+    Types.TPTFloat -> "Vec<f32>"
+    Types.TPTString -> "Vec<String>"
+    Types.TPTChar -> "Vec<char>"
+    Types.TPTBool -> "Vec<bool>"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "Vec<Vec<i32>>"
+        Just Types.TPTLong -> "Vec<Vec<i64>>"
+        Just Types.TPTDouble -> "Vec<Vec<f64>>"
+        Just Types.TPTFloat -> "Vec<Vec<f32>>"
+        Just Types.TPTString -> "Vec<Vec<String>>"
         Just Types.TPTChar -> "Vec<Vec<char>>"
+        Just Types.TPTBool -> "Vec<Vec<bool>>"
         _ -> error "Unsupported rust nested array type"
     _ -> error "Unsupported rust array item type"
 rustType (Types.TestParams Types.TPTListNode _) = "Option<Box<ListNode>>"
@@ -936,9 +1034,21 @@ rustExpr accessor (Types.TestParams Types.TPTBool _) = "json_to_bool(&" <> acces
 rustExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "json_to_i32_array(&" <> accessor <> ")"
+    Types.TPTLong -> "json_to_i64_array(&" <> accessor <> ")"
+    Types.TPTDouble -> "json_to_f64_array(&" <> accessor <> ")"
+    Types.TPTFloat -> "json_to_f32_array(&" <> accessor <> ")"
+    Types.TPTString -> "json_to_string_array(&" <> accessor <> ")"
+    Types.TPTChar -> "json_to_char_array(&" <> accessor <> ")"
+    Types.TPTBool -> "json_to_bool_array(&" <> accessor <> ")"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "json_to_i32_matrix(&" <> accessor <> ")"
+        Just Types.TPTLong -> "json_to_i64_matrix(&" <> accessor <> ")"
+        Just Types.TPTDouble -> "json_to_f64_matrix(&" <> accessor <> ")"
+        Just Types.TPTFloat -> "json_to_f32_matrix(&" <> accessor <> ")"
+        Just Types.TPTString -> "json_to_string_matrix(&" <> accessor <> ")"
         Just Types.TPTChar -> "json_to_char_matrix(&" <> accessor <> ")"
+        Just Types.TPTBool -> "json_to_bool_matrix(&" <> accessor <> ")"
         _ -> error "Unsupported rust nested array type"
     _ -> error "Unsupported rust array item type"
 rustExpr accessor (Types.TestParams Types.TPTListNode _) = "ListNode::to_list_node(json_to_i32_array(&" <> accessor <> "))"
@@ -959,9 +1069,21 @@ kotlinType (Types.TestParams Types.TPTBool _) = "Boolean"
 kotlinType (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "IntArray"
+    Types.TPTLong -> "LongArray"
+    Types.TPTDouble -> "DoubleArray"
+    Types.TPTFloat -> "FloatArray"
+    Types.TPTString -> "Array<String>"
+    Types.TPTChar -> "CharArray"
+    Types.TPTBool -> "BooleanArray"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "Array<IntArray>"
+        Just Types.TPTLong -> "Array<LongArray>"
+        Just Types.TPTDouble -> "Array<DoubleArray>"
+        Just Types.TPTFloat -> "Array<FloatArray>"
+        Just Types.TPTString -> "Array<Array<String>>"
         Just Types.TPTChar -> "Array<CharArray>"
+        Just Types.TPTBool -> "Array<BooleanArray>"
         _ -> error "Unsupported kotlin nested array type"
     _ -> error "Unsupported kotlin array item type"
 kotlinType (Types.TestParams Types.TPTListNode _) = "ListNode?"
@@ -979,9 +1101,21 @@ kotlinExpr accessor (Types.TestParams Types.TPTBool _) = "toBoolValue(" <> acces
 kotlinExpr accessor (Types.TestParams Types.TPTArray (Just items)) =
   case Types.tpaType items of
     Types.TPTInt -> "toIntArrayValue(" <> accessor <> ")"
+    Types.TPTLong -> "toLongArrayValue(" <> accessor <> ")"
+    Types.TPTDouble -> "toDoubleArrayValue(" <> accessor <> ")"
+    Types.TPTFloat -> "toFloatArrayValue(" <> accessor <> ")"
+    Types.TPTString -> "toStringArrayValue(" <> accessor <> ")"
+    Types.TPTChar -> "toCharArrayValue(" <> accessor <> ")"
+    Types.TPTBool -> "toBoolArrayValue(" <> accessor <> ")"
     Types.TPTArray ->
       case fmap Types.tpaType (Types.tpaItems items) of
+        Just Types.TPTInt -> "toIntMatrixValue(" <> accessor <> ")"
+        Just Types.TPTLong -> "toLongMatrixValue(" <> accessor <> ")"
+        Just Types.TPTDouble -> "toDoubleMatrixValue(" <> accessor <> ")"
+        Just Types.TPTFloat -> "toFloatMatrixValue(" <> accessor <> ")"
+        Just Types.TPTString -> "toStringMatrixValue(" <> accessor <> ")"
         Just Types.TPTChar -> "toCharMatrixValue(" <> accessor <> ")"
+        Just Types.TPTBool -> "toBoolMatrixValue(" <> accessor <> ")"
         _ -> error "Unsupported kotlin nested array type"
     _ -> error "Unsupported kotlin array item type"
 kotlinExpr accessor (Types.TestParams Types.TPTListNode _) = "toListNode(toIntArrayValue(" <> accessor <> "))"

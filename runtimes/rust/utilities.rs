@@ -257,6 +257,48 @@ pub fn json_to_i32_array(v: &JsonValue) -> Vec<i32> {
     }
 }
 
+pub fn json_to_i64_array(v: &JsonValue) -> Vec<i64> {
+    match v {
+        JsonValue::Array(xs) => xs.iter().map(json_to_i64).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_f64_array(v: &JsonValue) -> Vec<f64> {
+    match v {
+        JsonValue::Array(xs) => xs.iter().map(json_to_f64).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_f32_array(v: &JsonValue) -> Vec<f32> {
+    match v {
+        JsonValue::Array(xs) => xs.iter().map(json_to_f32).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_string_array(v: &JsonValue) -> Vec<String> {
+    match v {
+        JsonValue::Array(xs) => xs.iter().map(json_to_string).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_char_array(v: &JsonValue) -> Vec<char> {
+    match v {
+        JsonValue::Array(xs) => xs.iter().map(json_to_char).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_bool_array(v: &JsonValue) -> Vec<bool> {
+    match v {
+        JsonValue::Array(xs) => xs.iter().map(json_to_bool).collect(),
+        _ => Vec::new(),
+    }
+}
+
 pub fn json_to_optional_i32_array(v: &JsonValue) -> Vec<Option<i32>> {
     match v {
         JsonValue::Array(xs) => xs
@@ -279,6 +321,48 @@ pub fn json_to_char_matrix(v: &JsonValue) -> Vec<Vec<char>> {
                 _ => Vec::new(),
             })
             .collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_i32_matrix(v: &JsonValue) -> Vec<Vec<i32>> {
+    match v {
+        JsonValue::Array(rows) => rows.iter().map(json_to_i32_array).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_i64_matrix(v: &JsonValue) -> Vec<Vec<i64>> {
+    match v {
+        JsonValue::Array(rows) => rows.iter().map(json_to_i64_array).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_f64_matrix(v: &JsonValue) -> Vec<Vec<f64>> {
+    match v {
+        JsonValue::Array(rows) => rows.iter().map(json_to_f64_array).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_f32_matrix(v: &JsonValue) -> Vec<Vec<f32>> {
+    match v {
+        JsonValue::Array(rows) => rows.iter().map(json_to_f32_array).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_string_matrix(v: &JsonValue) -> Vec<Vec<String>> {
+    match v {
+        JsonValue::Array(rows) => rows.iter().map(json_to_string_array).collect(),
+        _ => Vec::new(),
+    }
+}
+
+pub fn json_to_bool_matrix(v: &JsonValue) -> Vec<Vec<bool>> {
+    match v {
+        JsonValue::Array(rows) => rows.iter().map(json_to_bool_array).collect(),
         _ => Vec::new(),
     }
 }
@@ -311,6 +395,10 @@ impl ListNode {
             curr = node.next;
         }
         res
+    }
+
+    pub fn to_list_nodes(arrs: Vec<Vec<i32>>) -> Vec<Option<Box<ListNode>>> {
+        arrs.into_iter().map(ListNode::to_list_node).collect()
     }
 }
 
@@ -382,8 +470,28 @@ pub trait ToJson {
 
 impl ToJson for i32 { fn to_json(&self) -> String { self.to_string() } }
 impl ToJson for i64 { fn to_json(&self) -> String { self.to_string() } }
-impl ToJson for f64 { fn to_json(&self) -> String { self.to_string() } }
+impl ToJson for f32 {
+    fn to_json(&self) -> String {
+        let s = self.to_string();
+        if s.contains('.') || s.contains('e') || s.contains('E') {
+            s
+        } else {
+            format!("{s}.0")
+        }
+    }
+}
+impl ToJson for f64 {
+    fn to_json(&self) -> String {
+        let s = self.to_string();
+        if s.contains('.') || s.contains('e') || s.contains('E') {
+            s
+        } else {
+            format!("{s}.0")
+        }
+    }
+}
 impl ToJson for bool { fn to_json(&self) -> String { self.to_string() } }
+impl ToJson for char { fn to_json(&self) -> String { format!("\"{}\"", self) } }
 impl ToJson for String { fn to_json(&self) -> String { format!("\"{}\"", self) } }
 
 impl<T: ToJson> ToJson for Vec<T> {
