@@ -12,6 +12,11 @@ Each problem has one test file located at `tests/<range>/<id>. <title>/manifest.
 entry:
   id: <int>
   title: <string>
+  params:
+    arg1:
+      type: <schema>
+    arg2:
+      type: <schema>
   call:
     cpp: "..."
     rust: "..."
@@ -62,20 +67,96 @@ tests:
 entry:
   id: 1
   title: "two-sum"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
   call:
-    rust: "Solution::two_sum(vec![{nums}], {target})"
-    cpp: "Solution().twoSum(lv(vector<int>{ {nums} }), {target})"
-    python3: "Solution().twoSum([{nums}], {target})"
-    java: "new Solution().twoSum(new int[] { {nums} }, {target})"
-    csharp: "new Solution().TwoSum(new int[]{ {nums} }, {target})"
-    go: "twoSum([]int{ {nums} }, {target})"
-    typescript: "twoSum([{nums}], {target})"
+    rust: "Solution::two_sum({nums}, {target})"
+    cpp: "Solution().twoSum({nums}, {target})"
+    python3: "Solution().twoSum({nums}, {target})"
+    java: "new Solution().twoSum({nums}, {target})"
+    csharp: "new Solution().TwoSum({nums}, {target})"
+    go: "twoSum({nums}, {target})"
+    typescript: "twoSum({nums}, {target})"
     # ... other languages
 ```
 
-`call` templates use `{param_name}` placeholders. At runtime, placeholders are replaced with the actual values of the test case inputs by their name.
-
 **Supported languages:** `cpp`, `rust`, `python3`, `python2`, `ruby`, `java`, `csharp`, `kotlin`, `go`, `dart`, `swift`, `typescript`
+
+---
+
+### `entry.params`
+
+`entry.params` is the type schema for solution arguments. It tells the runtime how to materialize values from test data before evaluating `call`.
+
+Use plain placeholders in `call`:
+
+```yaml
+call:
+  python3: "Solution().twoSum({nums}, {target})"
+  java: "new Solution().twoSum({nums}, {target})"
+```
+
+The runtime uses `params` to decide what `{nums}` and `{target}` mean.
+
+#### Supported param types
+
+- scalar types: `int`, `long`, `float`, `double`, `bool`, `string`, `char`
+- structural types: `array`, `list_node`, `tree_node`
+
+#### Examples
+
+Scalar:
+
+```yaml
+params:
+  target:
+    type: int
+```
+
+1D array:
+
+```yaml
+params:
+  nums:
+    type: array
+    items:
+      type: int
+```
+
+2D matrix:
+
+```yaml
+params:
+  matrix:
+    type: array
+    items:
+      type: array
+      items:
+        type: char
+```
+
+Linked list:
+
+```yaml
+params:
+  l1:
+    type: list_node
+  l2:
+    type: list_node
+```
+
+Binary tree:
+
+```yaml
+params:
+  root:
+    type: tree_node
+```
 
 ---
 
@@ -114,17 +195,10 @@ Used when a test case has no `out` field. The oracle runs the checker on the sol
 ```yaml
 oracle:
   python3:
-    call: "Checker().twoSum([{nums}], {target}, {result})"
+    call: "Checker().twoSum(nums, target, {result})"
     checker: |
-      import json
-      from typing import List
-
       class Checker:
-          def twoSum(self, nums: List[int], target: int, result: str) -> bool:
-              try:
-                  indices = json.loads(result)
-              except:
-                  return False
+          def twoSum(self, nums: List[int], target: int, result: Any) -> bool:
               if not isinstance(indices, list) or len(indices) != 2:
                   return False
               i, j = indices
@@ -133,7 +207,7 @@ oracle:
               return nums[i] + nums[j] == target
 ```
 
-`call` receives the same input placeholders as the solution call, plus `{result}` which is the solution's output as a string.
+In `oracle.python3.call`, input arguments should be plain Python names such as `nums`, `target`, `matrix`, `root`. `{result}` remains the special placeholder for the solution output.
 
 `checker` must be a full source file. The call expression must return a `bool`.
 
@@ -155,7 +229,7 @@ A list of test cases. Test cases differ along two independent axes:
   judge: # optional - overrides the top-level judge
     type: "ignore_order"
   call: # optional - overrides the top-level entry.call for this case only
-    python3: "Solution().twoSum([{nums}], {target})"
+    python3: "Solution().twoSum({nums}, {target})"
   seed: 111 # optional - overrides the suite-level seed for generated inputs
   in:
     nums: [2, 7, 11, 15] # static value
@@ -437,7 +511,7 @@ in:
       - [false, true]
 ```
 
-For `call`, use the same syntax principle for 2D as for 1D: keep the usual language wrapper and only increase dimensionality (`int[] -> int[][]`, `[]int -> [][]int`, `intArrayOf(...) -> arrayOf(intArrayOf(...))`).
+For `call`, keep using plain placeholders such as `{matrix}`. Typed runtimes materialize values from `entry.params`.
 
 ---
 
@@ -447,19 +521,26 @@ For `call`, use the same syntax principle for 2D as for 1D: keep the usual langu
 entry:
   id: 1
   title: "two-sum"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
   call:
-    cpp: "Solution().twoSum(lv(vector<int>{ {nums} }), {target})"
-    rust: "Solution::two_sum(vec![{nums}], {target})"
-    python3: "Solution().twoSum([{nums}], {target})"
-    python2: "Solution().twoSum([{nums}], {target})"
-    ruby: "two_sum([{nums}], {target})"
-    java: "new Solution().twoSum(new int[] { {nums} }, {target})"
-    csharp: "new Solution().TwoSum(new int[]{ {nums} }, {target})"
-    kotlin: "Solution().twoSum(intArrayOf({nums}), {target})"
-    go: "twoSum([]int{ {nums} }, {target})"
-    dart: "Solution().twoSum([{nums}], {target})"
-    swift: "Solution().twoSum([{nums}], {target})"
-    typescript: "twoSum([{nums}], {target})"
+    cpp: "Solution().twoSum({nums}, {target})"
+    rust: "Solution::two_sum({nums}, {target})"
+    python3: "Solution().twoSum({nums}, {target})"
+    python2: "Solution().twoSum({nums}, {target})"
+    ruby: "two_sum({nums}, {target})"
+    java: "new Solution().twoSum({nums}, {target})"
+    csharp: "new Solution().TwoSum({nums}, {target})"
+    kotlin: "Solution().twoSum({nums}, {target})"
+    go: "twoSum({nums}, {target})"
+    dart: "Solution().twoSum({nums}, {target})"
+    swift: "Solution().twoSum({nums}, {target})"
+    typescript: "twoSum({nums}, {target})"
 
 judge:
   type: "ignore_order"
@@ -472,7 +553,7 @@ limits:
 
 oracle:
   python3:
-    call: "Checker().twoSum([{nums}], {target}, {result})"
+    call: "Checker().twoSum(nums, target, {result})"
     checker: |
       import json
       from typing import List
@@ -542,19 +623,24 @@ Each runtime provides helpers to convert between plain integer arrays and `ListN
 entry:
   id: 2
   title: "add-two-numbers"
+  params:
+    l1:
+      type: list_node
+    l2:
+      type: list_node
   call:
-    cpp: "listNodeToArray(Solution().addTwoNumbers(toListNode(lv(vector<int>{ {l1} })), toListNode(lv(vector<int>{ {l2} }))))"
-    rust: "ListNode::list_node_to_array(Solution::add_two_numbers(ListNode::to_list_node(vec![{l1}]), ListNode::to_list_node(vec![{l2}])))"
-    python3: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
-    python2: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
-    kotlin: "listNodeToArray(Solution().addTwoNumbers(toListNode(intArrayOf({l1})), toListNode(intArrayOf({l2}))))"
-    java: "ListNode.listNodeToArray(new Solution().addTwoNumbers(ListNode.toListNode(new int[]{ {l1} }), ListNode.toListNode(new int[]{ {l2} })))"
-    csharp: "ListNode.ListNodeToArray(new Solution().AddTwoNumbers(ListNode.ToListNode(new int[]{ {l1} }), ListNode.ToListNode(new int[]{ {l2} })))"
-    go: "listNodeToArray(addTwoNumbers(toListNode([]int{ {l1} }), toListNode([]int{ {l2} })))"
-    dart: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
-    swift: "list_node_to_array(Solution().addTwoNumbers(to_list_node([{l1}]), to_list_node([{l2}])))"
-    ruby: "list_node_to_array(add_two_numbers(to_list_node([{l1}]), to_list_node([{l2}])))"
-    typescript: "listNodeToArray(addTwoNumbers(toListNode([{l1}]), toListNode([{l2}])))"
+    cpp: "listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))"
+    rust: "ListNode::list_node_to_array(Solution::add_two_numbers({l1}, {l2}))"
+    python3: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    python2: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    kotlin: "listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))"
+    java: "ListNode.listNodeToArray(new Solution().addTwoNumbers({l1}, {l2}))"
+    csharp: "ListNode.ListNodeToArray(new Solution().AddTwoNumbers({l1}, {l2}))"
+    go: "listNodeToArray(addTwoNumbers({l1}, {l2}))"
+    dart: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    swift: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    ruby: "list_node_to_array(add_two_numbers({l1}, {l2}))"
+    typescript: "listNodeToArray(addTwoNumbers({l1}, {l2}))"
 
 tests:
   - name: "ex1"
@@ -591,19 +677,22 @@ Trees are represented as arrays in LeetCode standard level-order format. `null` 
 entry:
   id: 104
   title: "maximum-depth-of-binary-tree"
+  params:
+    root:
+      type: tree_node
   call:
-    cpp: "Solution().maxDepth(toTreeNode(lv(vector<optional<int>>{ {root} })))"
-    rust: "Solution::max_depth(TreeNode::to_tree_node(vec![{root}]))"
-    python3: "Solution().maxDepth(to_tree_node([{root}]))"
-    python2: "Solution().maxDepth(to_tree_node([{root}]))"
-    ruby: "Solution.new.max_depth(to_tree_node([{root}]))"
-    java: "new Solution().maxDepth(TreeNode.toTreeNode(new Integer[]{ {root} }))"
-    csharp: "new Solution().MaxDepth(TreeNode.ToTreeNode(new int?[]{ {root} }))"
-    kotlin: "Solution().maxDepth(toTreeNode(arrayOf({root})))"
-    go: "maxDepth(toTreeNode([]interface{}{ {root} }))"
-    dart: "Solution().maxDepth(to_tree_node([{root}]))"
-    swift: "Solution().maxDepth(to_tree_node([{root}]))"
-    typescript: "maxDepth(toTreeNode([{root}]))"
+    cpp: "Solution().maxDepth({root})"
+    rust: "Solution::max_depth({root})"
+    python3: "Solution().maxDepth({root})"
+    python2: "Solution().maxDepth({root})"
+    ruby: "Solution.new.max_depth({root})"
+    java: "new Solution().maxDepth({root})"
+    csharp: "new Solution().MaxDepth({root})"
+    kotlin: "Solution().maxDepth({root})"
+    go: "maxDepth({root})"
+    dart: "Solution().maxDepth({root})"
+    swift: "Solution().maxDepth({root})"
+    typescript: "maxDepth({root})"
 
 tests:
   - name: "ex1"
@@ -623,19 +712,22 @@ When the solution returns a `TreeNode` (e.g. _Invert Binary Tree_), wrap the res
 entry:
   id: 226
   title: "invert-binary-tree"
+  params:
+    root:
+      type: tree_node
   call:
-    cpp: "treeNodeToArray(Solution().invertTree(toTreeNode(lv(vector<optional<int>>{ {root} }))))"
-    rust: "TreeNode::tree_node_to_array(Solution::invert_tree(TreeNode::to_tree_node(vec![{root}])))"
-    python3: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
-    python2: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
-    ruby: "tree_node_to_array(invert_tree(to_tree_node([{root}])))"
-    java: "TreeNode.treeNodeToArray(new Solution().invertTree(TreeNode.toTreeNode(new Integer[]{ {root} })))"
-    csharp: "TreeNode.TreeNodeToArray(new Solution().InvertTree(TreeNode.ToTreeNode(new int?[]{ {root} })))"
-    kotlin: "treeNodeToArray(Solution().invertTree(toTreeNode(arrayOf({root}))))"
-    go: "treeNodeToArray(invertTree(toTreeNode([]interface{}{ {root} })))"
-    dart: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
-    swift: "tree_node_to_array(Solution().invertTree(to_tree_node([{root}])))"
-    typescript: "treeNodeToArray(invertTree(toTreeNode([{root}])))"
+    cpp: "treeNodeToArray(Solution().invertTree({root}))"
+    rust: "TreeNode::tree_node_to_array(Solution::invert_tree({root}))"
+    python3: "tree_node_to_array(Solution().invertTree({root}))"
+    python2: "tree_node_to_array(Solution().invertTree({root}))"
+    ruby: "tree_node_to_array(invert_tree({root}))"
+    java: "TreeNode.treeNodeToArray(new Solution().invertTree({root}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().InvertTree({root}))"
+    kotlin: "treeNodeToArray(Solution().invertTree({root}))"
+    go: "treeNodeToArray(invertTree({root}))"
+    dart: "tree_node_to_array(Solution().invertTree({root}))"
+    swift: "tree_node_to_array(Solution().invertTree({root}))"
+    typescript: "treeNodeToArray(invertTree({root}))"
 
 tests:
   - name: "ex1"

@@ -85,6 +85,17 @@ nullLiteral Ruby = "nil"
 nullLiteral Swift = "nil"
 nullLiteral _ = "null"
 
+renderGeneratedCharElem :: Language -> Char -> Text
+renderGeneratedCharElem lang c =
+  case lang of
+    Python3 -> pack (show [c])
+    Python2 -> pack (show [c])
+    Ruby -> pack (show [c])
+    TypeScript -> pack (show [c])
+    Dart -> pack (show [c])
+    Swift -> pack (show [c])
+    _ -> pack (show c)
+
 instance FromJSON ExecutorType where
   parseJSON = withText "BackendType" $ \t ->
     case t of

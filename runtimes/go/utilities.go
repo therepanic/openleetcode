@@ -22,6 +22,267 @@ func toInt(v interface{}) int {
     }
 }
 
+func toFloat64Value(v interface{}) float64 {
+    if v == nil {
+        return 0
+    }
+    switch t := v.(type) {
+    case float64:
+        return t
+    case float32:
+        return float64(t)
+    case int:
+        return float64(t)
+    case int64:
+        return float64(t)
+    default:
+        return 0
+    }
+}
+
+func toLongValue(v interface{}) int64 {
+    if v == nil {
+        return 0
+    }
+    switch t := v.(type) {
+    case int:
+        return int64(t)
+    case int64:
+        return t
+    case float64:
+        return int64(t)
+    case float32:
+        return int64(t)
+    default:
+        return 0
+    }
+}
+
+func formatJsonFloat(v float64) string {
+    s := fmt.Sprintf("%.15f", v)
+    s = strings.TrimRight(s, "0")
+    s = strings.TrimRight(s, ".")
+    if !strings.ContainsAny(s, ".eE") {
+        s += ".0"
+    }
+    return s
+}
+
+func toStringValue(v interface{}) string {
+    if v == nil {
+        return ""
+    }
+    switch t := v.(type) {
+    case string:
+        return t
+    case byte:
+        return string([]byte{t})
+    default:
+        return fmt.Sprintf("%v", t)
+    }
+}
+
+func toBoolValue(v interface{}) bool {
+    if v == nil {
+        return false
+    }
+    if b, ok := v.(bool); ok {
+        return b
+    }
+    return false
+}
+
+func toByteValue(v interface{}) byte {
+    s := toStringValue(v)
+    if len(s) == 0 {
+        return 0
+    }
+    return s[0]
+}
+
+func toIntArrayValue(v interface{}) []int {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]int, len(arr))
+    for i, item := range arr {
+        res[i] = toInt(item)
+    }
+    return res
+}
+
+func toLongArrayValue(v interface{}) []int64 {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]int64, len(arr))
+    for i, item := range arr {
+        res[i] = toLongValue(item)
+    }
+    return res
+}
+
+func toDoubleArrayValue(v interface{}) []float64 {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]float64, len(arr))
+    for i, item := range arr {
+        res[i] = toFloat64Value(item)
+    }
+    return res
+}
+
+func toFloatArrayValue(v interface{}) []float32 {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]float32, len(arr))
+    for i, item := range arr {
+        res[i] = float32(toFloat64Value(item))
+    }
+    return res
+}
+
+func toStringArrayValue(v interface{}) []string {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]string, len(arr))
+    for i, item := range arr {
+        res[i] = toStringValue(item)
+    }
+    return res
+}
+
+func toByteArrayValue(v interface{}) []byte {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]byte, len(arr))
+    for i, item := range arr {
+        res[i] = toByteValue(item)
+    }
+    return res
+}
+
+func toBoolArrayValue(v interface{}) []bool {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([]bool, len(arr))
+    for i, item := range arr {
+        res[i] = toBoolValue(item)
+    }
+    return res
+}
+
+func toInterfaceArrayValue(v interface{}) []interface{} {
+    arr, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    return arr
+}
+
+func toByteMatrixValue(v interface{}) [][]byte {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]byte, len(rows))
+    for i, row := range rows {
+        cols, ok := row.([]interface{})
+        if !ok {
+            continue
+        }
+        res[i] = make([]byte, len(cols))
+        for j, cell := range cols {
+            res[i][j] = toByteValue(cell)
+        }
+    }
+    return res
+}
+
+func toIntMatrixValue(v interface{}) [][]int {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]int, len(rows))
+    for i, row := range rows {
+        res[i] = toIntArrayValue(row)
+    }
+    return res
+}
+
+func toLongMatrixValue(v interface{}) [][]int64 {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]int64, len(rows))
+    for i, row := range rows {
+        res[i] = toLongArrayValue(row)
+    }
+    return res
+}
+
+func toDoubleMatrixValue(v interface{}) [][]float64 {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]float64, len(rows))
+    for i, row := range rows {
+        res[i] = toDoubleArrayValue(row)
+    }
+    return res
+}
+
+func toFloatMatrixValue(v interface{}) [][]float32 {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]float32, len(rows))
+    for i, row := range rows {
+        res[i] = toFloatArrayValue(row)
+    }
+    return res
+}
+
+func toStringMatrixValue(v interface{}) [][]string {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]string, len(rows))
+    for i, row := range rows {
+        res[i] = toStringArrayValue(row)
+    }
+    return res
+}
+
+func toBoolMatrixValue(v interface{}) [][]bool {
+    rows, ok := v.([]interface{})
+    if !ok {
+        return nil
+    }
+    res := make([][]bool, len(rows))
+    for i, row := range rows {
+        res[i] = toBoolArrayValue(row)
+    }
+    return res
+}
+
 func toTreeNode(arr []interface{}) *TreeNode {
     if len(arr) == 0 || arr[0] == nil { return nil }
     val := toInt(arr[0])
@@ -62,6 +323,14 @@ func treeNodeToArray(root *TreeNode) []interface{} {
     return res
 }
 
+func treesToArrays(roots []*TreeNode) [][]interface{} {
+    res := make([][]interface{}, len(roots))
+    for i, root := range roots {
+        res[i] = treeNodeToArray(root)
+    }
+    return res
+}
+
 type ListNode struct {
     Val  int
     Next *ListNode
@@ -81,11 +350,26 @@ func toListNode(arr []int) *ListNode {
 }
 
 func listNodeToArray(head *ListNode) []int {
-    var res []int
+    res := []int{}
     for cur := head; cur != nil; cur = cur.Next {
         res = append(res, cur.Val)
     }
     return res
+}
+
+func toListNodes(arrs [][]int) []*ListNode {
+    res := make([]*ListNode, len(arrs))
+    for i, arr := range arrs {
+        res[i] = toListNode(arr)
+    }
+    return res
+}
+
+func absInt(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
 
 func toJson(obj interface{}) string {
@@ -121,7 +405,7 @@ func encodeValue(v reflect.Value, seen map[uintptr]bool) string {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		return fmt.Sprintf("%d", v.Uint())
 	case reflect.Float32, reflect.Float64:
-		return fmt.Sprintf("%g", v.Float())
+		return formatJsonFloat(v.Float())
 	case reflect.String:
 		return jsonQuote(v.String())
 	case reflect.Slice:

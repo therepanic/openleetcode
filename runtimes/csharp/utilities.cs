@@ -23,6 +23,10 @@ public class ListNode {
             res.Add(cur.val);
         return res.ToArray();
     }
+
+    public static ListNode[] ToListNodes(int[][] arrs) {
+        return arrs.Select(ToListNode).ToArray();
+    }
 }
 
 public class TreeNode {
@@ -76,9 +80,104 @@ public class TreeNode {
             res.RemoveAt(res.Count - 1);
         return res.ToArray();
     }
+
+    public static List<int?[]> TreeNodeListToArrayList(IList<TreeNode> roots) {
+        return roots.Select(TreeNodeToArray).ToList();
+    }
 }
 
 partial class _Runner {
+    static int ToInt(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0 : el.Value<int>();
+    }
+
+    static long ToLong(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0L : el.Value<long>();
+    }
+
+    static double ToDouble(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0d : el.Value<double>();
+    }
+
+    static float ToFloat(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? 0f : el.Value<float>();
+    }
+
+    static string ToStringValue(JToken el) {
+        return el == null || el.Type == JTokenType.Null ? "" : el.Type == JTokenType.String ? el.Value<string>() : el.ToString();
+    }
+
+    static char ToChar(JToken el) {
+        var s = ToStringValue(el);
+        return s.Length == 0 ? '\0' : s[0];
+    }
+
+    static bool ToBool(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return false;
+        if (el.Type == JTokenType.Boolean) return el.Value<bool>();
+        return bool.TryParse(el.ToString(), out var value) && value;
+    }
+
+    static int[] ToIntArray(JToken el) {
+        return ((JArray)el).Select(ToInt).ToArray();
+    }
+
+    static long[] ToLongArray(JToken el) {
+        return ((JArray)el).Select(ToLong).ToArray();
+    }
+
+    static double[] ToDoubleArray(JToken el) {
+        return ((JArray)el).Select(ToDouble).ToArray();
+    }
+
+    static float[] ToFloatArray(JToken el) {
+        return ((JArray)el).Select(ToFloat).ToArray();
+    }
+
+    static bool[] ToBoolArray(JToken el) {
+        return ((JArray)el).Select(ToBool).ToArray();
+    }
+
+    static string[] ToStringArray(JToken el) {
+        return ((JArray)el).Select(ToStringValue).ToArray();
+    }
+
+    static int?[] ToNullableIntArray(JToken el) {
+        return ((JArray)el).Select(x => x == null || x.Type == JTokenType.Null ? (int?)null : ToInt(x)).ToArray();
+    }
+
+    static int[][] ToIntMatrix(JToken el) {
+        return ((JArray)el).Select(ToIntArray).ToArray();
+    }
+
+    static long[][] ToLongMatrix(JToken el) {
+        return ((JArray)el).Select(ToLongArray).ToArray();
+    }
+
+    static double[][] ToDoubleMatrix(JToken el) {
+        return ((JArray)el).Select(ToDoubleArray).ToArray();
+    }
+
+    static float[][] ToFloatMatrix(JToken el) {
+        return ((JArray)el).Select(ToFloatArray).ToArray();
+    }
+
+    static bool[][] ToBoolMatrix(JToken el) {
+        return ((JArray)el).Select(ToBoolArray).ToArray();
+    }
+
+    static string[][] ToStringMatrix(JToken el) {
+        return ((JArray)el).Select(ToStringArray).ToArray();
+    }
+
+    static char[] ToCharArray(JToken el) {
+        return ((JArray)el).Select(ToChar).ToArray();
+    }
+
+    static char[][] ToCharMatrix(JToken el) {
+        return ((JArray)el).Select(ToCharArray).ToArray();
+    }
+
     static string ToJson(object obj) {
         if (obj == null) return "null";
         if (obj is bool b) return b ? "true" : "false";

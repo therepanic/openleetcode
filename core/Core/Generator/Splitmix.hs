@@ -139,7 +139,7 @@ generateArr (GenArr False _ l (GenFloatInfo (GenFloatConst constVal)) _) _ gen =
    in (formattedString, gen')
 generateArr (GenArr True _ _ (GenFloatInfo (GenFloatConst constVal)) _) _ gen =
   (T.pack (show constVal), gen)
-generateArr (GenArr False sortedVals l (GenCharInfo i) _) _ gen =
+generateArr (GenArr False sortedVals l (GenCharInfo i) _) lang gen =
   let (v, gen') = generateIntegral l gen
       len = read (T.unpack v) :: Int
       (chars, gen'') =
@@ -150,18 +150,18 @@ generateArr (GenArr False sortedVals l (GenCharInfo i) _) _ gen =
           )
           ([], gen')
           [1 .. len]
-      result = T.intercalate ", " (map T.singleton (applySorted sortedVals (reverse chars)))
+      result = T.intercalate ", " (map (renderGeneratedCharElem lang) (applySorted sortedVals (reverse chars)))
    in (result, gen'')
-generateArr (GenArr True sortedVals l (GenCharInfo (GenCharVariety alphabet)) _) _ gen =
+generateArr (GenArr True sortedVals l (GenCharInfo (GenCharVariety alphabet)) _) lang gen =
   let vec = V.fromList (T.unpack alphabet)
       (v, gen') = generateIntegral l gen
       len = min (read (T.unpack v) :: Int) (V.length vec)
       (shuffled, gen'') = fisherYates vec gen'
       chars = applySorted sortedVals (V.toList (V.take len shuffled))
-      result = T.intercalate ", " (map T.singleton chars)
+      result = T.intercalate ", " (map (renderGeneratedCharElem lang) chars)
    in (result, gen'')
-generateArr (GenArr True _ _ (GenCharInfo (GenCharConst c)) _) _ gen =
-  (T.singleton c, gen)
+generateArr (GenArr True _ _ (GenCharInfo (GenCharConst c)) _) lang gen =
+  (renderGeneratedCharElem lang c, gen)
 generateArr (GenArr False sortedVals l (GenStrInfo val) _) _ gen =
   let (v, gen') = generateIntegral l gen
       len = read (T.unpack v) :: Int

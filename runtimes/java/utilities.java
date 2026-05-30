@@ -1,3 +1,9 @@
+class _TEST_ {
+    public Object val;
+
+    public _TEST_() {}
+}
+
 class TreeNode {
 	public int val;
     public TreeNode left;
@@ -49,6 +55,14 @@ class TreeNode {
         while (!res.isEmpty() && res.get(res.size() - 1) == null) res.remove(res.size() - 1);
         return res;
     }
+
+    public static List<List<Integer>> treeNodesArrayToArrayList(List<TreeNode> roots) {
+        List<List<Integer>> res = new java.util.ArrayList<>(roots.size());
+        for (TreeNode root : roots) {
+            res.add(treeNodeToArray(root));
+        }
+        return res;
+    }
 }
 
 class ListNode {
@@ -84,179 +98,100 @@ class ListNode {
         }
         return result;
     }
+
+    public static ListNode[] toListNodes(int[][] arrs) {
+        ListNode[] result = new ListNode[arrs.length];
+        for (int i = 0; i < arrs.length; i++) {
+            result[i] = toListNode(arrs[i]);
+        }
+        return result;
+    }
 }
 
 final class Json {
+    private static final Gson gson = new Gson();
 
-	public static String toJson(Object obj) {
-		IdentityHashMap<Object, Boolean> seen = new IdentityHashMap<>();
-		StringBuilder sb = new StringBuilder(256);
-		write(obj, sb, seen);
-		return sb.toString();
-	}
+    public static Map<String, Map<String, _TEST_>> fromJsonMap(String json) {
+        return gson.fromJson(json, new TypeToken<Map<String, Map<String, _TEST_>>>() {}.getType());
+    }
 
-	private static void write(Object obj, StringBuilder sb, IdentityHashMap<Object, Boolean> seen) {
-		if (obj == null) {
-			sb.append("null");
-			return;
-		}
-		if (obj instanceof Boolean) {
-			sb.append(((Boolean) obj) ? "true" : "false");
-			return;
-		}
-		if (obj instanceof Number) {
-			sb.append(obj);
-			return;
-		}
-		if (obj instanceof Character) {
-			quote(String.valueOf(obj), sb);
-			return;
-		}
-		if (obj instanceof CharSequence) {
-			quote(obj.toString(), sb);
-			return;
-		}
+    public static String toJson(Object obj) {
+        return gson.toJson(obj);
+    }
 
-		if (obj instanceof Enum) {
-			quote(((Enum<?>) obj).name(), sb);
-			return;
-		}
+    public static int toInt(Object obj) { return ((Number) obj).intValue(); }
+    public static long toLong(Object obj) { return ((Number) obj).longValue(); }
+    public static double toDouble(Object obj) { return ((Number) obj).doubleValue(); }
+    public static float toFloat(Object obj) { return ((Number) obj).floatValue(); }
+    public static boolean toBool(Object obj) { return (Boolean) obj; }
+    public static String toStringValue(Object obj) { return String.valueOf(obj); }
+    public static char toChar(Object obj) { return ((String) obj).charAt(0); }
 
-		if (obj instanceof TemporalAccessor) {
-			quote(obj.toString(), sb);
-			return;
-		}
-		if (obj instanceof Date) {
-			quote(String.valueOf(((Date) obj).getTime()), sb);
-			return;
-		}
-		if (seen.put(obj, Boolean.TRUE) != null) {
-			throw new IllegalArgumentException("Cycle detected while encoding to json");
-		}
-		try {
-			if (obj instanceof Map<?, ?>) {
-				sb.append('{');
-				boolean first = true;
-				for (Map.Entry<?, ?> e : ((Map<?, ?>) obj).entrySet()) {
-					if (!first) {
-						sb.append(',');
-					}
-					first = false;
-					String key = String.valueOf(e.getKey());
-					quote(key, sb);
-					sb.append(':');
-					write(e.getValue(), sb, seen);
-				}
-				sb.append('}');
-				return;
-			}
-			if (obj instanceof Iterable<?>) {
-				sb.append('[');
-				boolean first = true;
-				for (Object x : (Iterable<?>) obj) {
-					if (!first) {
-						sb.append(',');
-					}
-					first = false;
-					write(x, sb, seen);
-				}
-				sb.append(']');
-				return;
-			}
-			Class<?> c = obj.getClass();
-			if (c.isArray()) {
-				sb.append('[');
-				int n = Array.getLength(obj);
-				for (int i = 0; i < n; i++) {
-					if (i > 0) {
-						sb.append(',');
-					}
-					write(Array.get(obj, i), sb, seen);
-				}
-				sb.append(']');
-				return;
-			}
-			sb.append('{');
-			boolean first = true;
-			for (Field f : allFields(c)) {
-				int m = f.getModifiers();
-				if (Modifier.isStatic(m) || Modifier.isTransient(m) || f.isSynthetic()) {
-					continue;
-				}
-				String name = f.getName();
-				if (name.startsWith("_")) {
-					continue;
-				}
-				Object v;
-				try {
-					f.setAccessible(true);
-					v = f.get(obj);
-				}
-				catch (Exception ex) {
-					continue;
-				}
+    public static Integer[] toIntegerArray(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), Integer[].class);
+    }
 
-				if (!first) {
-					sb.append(',');
-				}
-				first = false;
-				quote(name, sb);
-				sb.append(':');
-				write(v, sb, seen);
-			}
-			sb.append('}');
-		}
-		finally {
-			seen.remove(obj);
-		}
-	}
+    public static int[] toIntArray(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), int[].class);
+    }
 
-	private static List<Field> allFields(Class<?> c) {
-		List<Field> out = new ArrayList<>();
-		for (Class<?> x = c; x != null && x != Object.class; x = x.getSuperclass()) {
-			Field[] fs = x.getDeclaredFields();
-			Collections.addAll(out, fs);
-		}
-		return out;
-	}
+    public static long[] toLongArray(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), long[].class);
+    }
 
-	private static void quote(String s, StringBuilder sb) {
-		sb.append('"');
-		for (int i = 0; i < s.length(); i++) {
-			char ch = s.charAt(i);
-			switch (ch) {
-				case '"':
-					sb.append("\\\"");
-					break;
-				case '\\':
-					sb.append("\\\\");
-					break;
-				case '\b':
-					sb.append("\\b");
-					break;
-				case '\f':
-					sb.append("\\f");
-					break;
-				case '\n':
-					sb.append("\\n");
-					break;
-				case '\r':
-					sb.append("\\r");
-					break;
-				case '\t':
-					sb.append("\\t");
-					break;
-				default:
-					if (ch < 0x20) {
-						sb.append(String.format("\\u%04x", (int) ch));
-					}
-					else {
-						sb.append(ch);
-					}
-			}
-		}
-		sb.append('"');
-	}
+    public static double[] toDoubleArray(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), double[].class);
+    }
+
+    public static float[] toFloatArray(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), float[].class);
+    }
+
+    public static boolean[] toBoolArray(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), boolean[].class);
+    }
+
+    public static String[] toStringArray(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), String[].class);
+    }
+
+    public static long[][] toLongMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), long[][].class);
+    }
+
+    public static double[][] toDoubleMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), double[][].class);
+    }
+
+    public static float[][] toFloatMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), float[][].class);
+    }
+
+    public static boolean[][] toBoolMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), boolean[][].class);
+    }
+
+    public static String[][] toStringMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), String[][].class);
+    }
+
+    public static int[][] toIntMatrix(Object obj) {
+        return gson.fromJson(gson.toJsonTree(obj), int[][].class);
+    }
+
+    public static char[] toCharArray(Object obj) {
+        ArrayList<?> list = gson.fromJson(gson.toJsonTree(obj), ArrayList.class);
+        char[] out = new char[list.size()];
+        for (int i = 0; i < list.size(); i++) out[i] = toChar(list.get(i));
+        return out;
+    }
+
+    public static char[][] toCharMatrix(Object obj) {
+        ArrayList<?> rows = gson.fromJson(gson.toJsonTree(obj), ArrayList.class);
+        char[][] out = new char[rows.size()][];
+        for (int i = 0; i < rows.size(); i++) out[i] = toCharArray(rows.get(i));
+        return out;
+    }
 }
 
 // from https://docs.oracle.com/javase/8/javafx/api/javafx/util/Pair.html

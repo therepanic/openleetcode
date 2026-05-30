@@ -24,6 +24,7 @@ data PistonExecuteRequest = PistonExecuteRequest
   { pistonRequestLanguage :: Language,
     pistonRequestVersion :: T.Text,
     pistonRequestContent :: T.Text,
+    pistonRequestFiles :: [E.ExecFile],
     pistonRequestRunTimeout :: Maybe Int,
     pistonRequestRunMemoryLimit :: Maybe Int
   }
@@ -98,6 +99,7 @@ instance E.CodeExecutor PistonExecutor where
                 { pistonRequestLanguage = E.language request,
                   pistonRequestVersion = v,
                   pistonRequestContent = E.content request,
+                  pistonRequestFiles = E.files request,
                   pistonRequestRunTimeout = E.runTimeout request,
                   pistonRequestRunMemoryLimit = E.runMemoryLimit request
                 }
@@ -145,7 +147,15 @@ instance ToJSON PistonExecuteRequest where
     object
       [ "language" .= pistonRequestLanguage req,
         "version" .= pistonRequestVersion req,
-        "files" .= [object ["content" .= pistonRequestContent req]],
+        "files"
+          .= ( [object ["content" .= pistonRequestContent req]]
+                 ++ [ object
+                        [ "name" .= E.fileName extraFile,
+                          "content" .= E.fileContent extraFile
+                        ]
+                    | extraFile <- pistonRequestFiles req
+                    ]
+             ),
         "run_timeout" .= pistonRequestRunTimeout req,
         "run_memory_limit" .= pistonRequestRunMemoryLimit req
       ]

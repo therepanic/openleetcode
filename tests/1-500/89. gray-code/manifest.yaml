@@ -14,6 +14,9 @@
     "dart": "Solution().grayCode({n})"
     "swift": "Solution().grayCode({n})"
     "typescript": "grayCode({n})"
+  "params":
+    "n":
+      "type": "int"
 "judge":
   "type": "exact"
 "limits":
@@ -21,16 +24,33 @@
   "memory_mb": 256
 "oracle":
   "python3":
-    "call": "Checker().check({n}, {result})"
-    "checker":
-      "import json\nclass Checker:\n    def check(self, n, result):\n   \
-      \     try:\n            result = json.loads(result) if isinstance(result, str)\
-      \ else result\n        except Exception:\n            return False\n       \
-      \ if len(result) != (1 << n): return False\n        if sorted(result) != list(range(1\
-      \ << n)):\n            return False\n        for i in range(len(result)):\n\
-      \            curr = result[i]\n            nxt = result[(i + 1) % len(result)]\n\
-      \            diff = curr ^ nxt\n            if diff == 0 or (diff & (diff -\
-      \ 1)) != 0: return False\n        return True\n"
+    "call": "Checker().check(n, {result})"
+    "checker": |
+      import json
+
+      class Checker:
+          def check(self, n, result):
+              try:
+                  result = json.loads(result) if isinstance(result, str) else result
+              except Exception:
+                  return False
+
+              for i, x in enumerate(result):
+                  if isinstance(x, float) and x.is_integer():
+                      result[i] = int(x)
+
+              if len(result) != (1 << n):
+                  return False
+              if sorted(result) != list(range(1 << n)):
+                  return False
+
+              for i in range(len(result)):
+                  curr = result[i]
+                  nxt = result[(i + 1) % len(result)]
+                  diff = curr ^ nxt
+                  if diff == 0 or (diff & (diff - 1)) != 0:
+                      return False
+              return True
 "seed": 42
 "tests":
   - "name": "n=1"

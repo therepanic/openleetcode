@@ -58,6 +58,11 @@ Top-level fields in this exact order - nothing is nested inside entry:
 entry:
   id: <int>
   title: <string>
+  params:
+    arg1:
+      type: <schema>
+    arg2:
+      type: <schema>
   call:
     cpp: "..."
     rust: "..."
@@ -157,101 +162,111 @@ Judge `exact` still compares the solution's last stdout line to compact JSON (no
 ---
 
 ## Call template syntax
+                           
+### Supported param types
 
-RULE:
-Every array param MUST be wrapped in ALL 12 languages. No exceptions.
-
-1D array {x}:
-  → [{x}]
-  → new int[]{ {x} }
-  → vec![{x}]
-  → []int{ {x} }
-  → intArrayOf({x})
-  → lv(vector<int>{ {x} })
-
-2D array {x}:
-  → [{x}]
-  → new int[][]{ {x} }
-  → vec![{x}]
-  → [][]int{ {x} }
-  → arrayOf({x})
-  → lv(vector<vector<int>>{ {x} })
-
-scalar {x}:
-  → {x}
-
-{result} in oracle call:
-  → always bare, never wrap
+- scalar types: `int`, `long`, `float`, `double`, `bool`, `string`, `char`
+- structural types: `array`, `list_node`, `tree_node`
 
 Example - method(nums []int, target int):
 
+params:
+  nums:
+    type: array
+    items:
+      type: int
+  target:
+    type: int
+
 call:
-  cpp: "Solution().method(lv(vector<int>{ {nums} }), {target})"
-  rust: "Solution::method(vec![{nums}], {target})"
-  python3: "Solution().method([{nums}], {target})"
-  python2: "Solution().method([{nums}], {target})"
-  ruby: "method([{nums}], {target})"
-  java: "new Solution().method(new int[]{ {nums} }, {target})"
-  csharp: "new Solution().Method(new int[]{ {nums} }, {target})"
-  kotlin: "Solution().method(intArrayOf({nums}), {target})"
-  go: "method([]int{ {nums} }, {target})"
-  dart: "Solution().method([{nums}], {target})"
-  swift: "Solution().method([{nums}], {target})"
-  typescript: "method([{nums}], {target})"
+  cpp: "Solution().method({nums}, {target})"
+  rust: "Solution::method({nums}, {target})"
+  python3: "Solution().method({nums}, {target})"
+  python2: "Solution().method({nums}, {target})"
+  ruby: "method({nums}, {target})"
+  java: "new Solution().method({nums}, {target})"
+  csharp: "new Solution().Method({nums}, {target})"
+  kotlin: "Solution().method({nums}, {target})"
+  go: "method({nums}, {target})"
+  dart: "Solution().method({nums}, {target})"
+  swift: "Solution().method({nums}, {target})"
+  typescript: "method({nums}, {target})"
 
 oracle:
   python3:
-    call: "Checker().method([{nums}], {target}, {result})"
+    call: "Checker().method(nums, target, {result})"
 
 ---
 
 Example - method(arr []int, queries [][]int):
 
+params:
+  arr:
+    type: array
+    items:
+      type: int
+  queries:
+    type: array
+    items:
+      type: array
+      items:
+        type: int
+
 call:
-  cpp: "Solution().method(lv(vector<int>{ {arr} }), lv(vector<vector<int>>{ {queries} }))"
-  rust: "Solution::method(vec![{arr}], vec![{queries}])"
-  python3: "Solution().method([{arr}], [{queries}])"
-  python2: "Solution().method([{arr}], [{queries}])"
-  ruby: "method([{arr}], [{queries}])"
-  java: "new Solution().method(new int[]{ {arr} }, new int[][]{ {queries} })"
-  csharp: "new Solution().Method(new int[]{ {arr} }, new int[][]{ {queries} })"
-  kotlin: "Solution().method(intArrayOf({arr}), arrayOf({queries}))"
-  go: "method([]int{ {arr} }, [][]int{ {queries} })"
-  dart: "Solution().method([{arr}], [{queries}])"
-  swift: "Solution().method([{arr}], [{queries}])"
-  typescript: "method([{arr}], [{queries}])"
+  cpp: "Solution().method({arr}, {queries})"
+  rust: "Solution::method({arr}, {queries})"
+  python3: "Solution().method({arr}, {queries})"
+  python2: "Solution().method({arr}, {queries})"
+  ruby: "method({arr}, {queries})"
+  java: "new Solution().method({arr}, {queries})"
+  csharp: "new Solution().Method({arr}, {queries})"
+  kotlin: "Solution().method({arr}, {queries})"
+  go: "method({arr}, {queries})"
+  dart: "Solution().method({arr}, {queries})"
+  swift: "Solution().method({arr}, {queries})"
+  typescript: "method({arr}, {queries})"
 
 oracle:
   python3:
-    call: "Checker().method([{arr}], [{queries}], {result})"
+    call: "Checker().method(arr, queries, {result})"
 
 ---
 
 Example - method(matrix [][]int, target int):
 
+params:
+  matrix:
+    type: array
+    items:
+      type: array
+      items:
+        type: int
+  target:
+    type: int
+
 call:
-  cpp: "Solution().method(lv(vector<vector<int>>{ {matrix} }), {target})"
-  rust: "Solution::method(vec![{matrix}], {target})"
-  python3: "Solution().method([{matrix}], {target})"
-  python2: "Solution().method([{matrix}], {target})"
-  ruby: "method([{matrix}], {target})"
-  java: "new Solution().method(new int[][]{ {matrix} }, {target})"
-  csharp: "new Solution().Method(new int[][]{ {matrix} }, {target})"
-  kotlin: "Solution().method(arrayOf({matrix}), {target})"
-  go: "method([][]int{ {matrix} }, {target})"
-  dart: "Solution().method([{matrix}], {target})"
-  swift: "Solution().method([{matrix}], {target})"
-  typescript: "method([{matrix}], {target})"
+  cpp: "Solution().method({matrix}, {target})"
+  rust: "Solution::method({matrix}, {target})"
+  python3: "Solution().method({matrix}, {target})"
+  python2: "Solution().method({matrix}, {target})"
+  ruby: "method({matrix}, {target})"
+  java: "new Solution().method({matrix}, {target})"
+  csharp: "new Solution().Method({matrix}, {target})"
+  kotlin: "Solution().method({matrix}, {target})"
+  go: "method({matrix}, {target})"
+  dart: "Solution().method({matrix}, {target})"
+  swift: "Solution().method({matrix}, {target})"
+  typescript: "method({matrix}, {target})"
 
 oracle:
   python3:
-    call: "Checker().method([{matrix}], {target}, {result})"
+    call: "Checker().method(matrix, target, {result})"
 
 WRONG:
-call: "Checker().method({matrix}, {target}, {result})"
+call: "Checker().method([{matrix}], {target}, {result})"
 
 RIGHT:
-call: "Checker().method([{matrix}], {target}, {result})"
+call: "Checker().method(matrix, target, {result})"
 
 ---
 
@@ -313,93 +328,93 @@ value:
 ListNode:
 
 python3/python2/dart/swift:
-  "list_node_to_array(Solution().method(to_list_node([{l1}])))"
+  "list_node_to_array(Solution().method({l1}))"
 
 rust:
-  "ListNode::list_node_to_array(Solution::method(ListNode::to_list_node(vec![{l1}])))"
+  "ListNode::list_node_to_array(Solution::method({l1}))"
 
 cpp:
-  "listNodeToArray(Solution().method(toListNode(lv(vector<int>{ {l1} }))))"
+  "listNodeToArray(Solution().method({l1}))"
 
 ruby:
-  "list_node_to_array(method(to_list_node([{l1}])))"
+  "list_node_to_array(method({l1}))"
 
 java:
-  "ListNode.listNodeToArray(new Solution().method(ListNode.toListNode(new int[]{ {l1} })))"
+  "ListNode.listNodeToArray(new Solution().method({l1}))"
 
 csharp:
-  "ListNode.ListNodeToArray(new Solution().Method(ListNode.ToListNode(new int[]{ {l1} })))"
+  "ListNode.ListNodeToArray(new Solution().Method({l1}))"
 
 kotlin:
-  "listNodeToArray(Solution().method(toListNode(intArrayOf({l1}))))"
+  "listNodeToArray(Solution().method({l1}))"
 
 go:
-  "listNodeToArray(method(toListNode([]int{ {l1} })))"
+  "listNodeToArray(method({l1}))"
 
 typescript:
-  "listNodeToArray(method(toListNode([{l1}])))"
+  "listNodeToArray(method({l1}))"
 
 ---
 
 TreeNode (input):
 
 python3/python2/dart/swift:
-  "Solution().method(to_tree_node([{root}]))"
+  "Solution().method({root})"
 
 rust:
-  "Solution::method(TreeNode::to_tree_node(vec![{root}]))"
+  "Solution::method({root})"
 
 cpp:
-  "Solution().method(toTreeNode(lv(vector<optional<int>>{ {root} })))"
+  "Solution().method({root})"
 
 ruby:
-  "method(to_tree_node([{root}]))"
+  "method({root})"
 
 java:
-  "new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} }))"
+  "new Solution().method({root})"
 
 csharp:
-  "new Solution().Method(TreeNode.ToTreeNode(new int?[]{ {root} }))"
+  "new Solution().Method({root})"
 
 kotlin:
-  "Solution().method(toTreeNode(arrayOf({root})))"
+  "Solution().method({root})"
 
 go:
-  "method(toTreeNode([]interface{}{ {root} }))"
+  "method({root})"
 
 typescript:
-  "method(toTreeNode([{root}]))"
+  "method({root})"
 
 ---
 
 TreeNode (output):
 
 python3/python2/dart/swift:
-  "tree_node_to_array(Solution().method(to_tree_node([{root}])))"
+  "tree_node_to_array(Solution().method({root}))"
 
 rust:
-  "TreeNode::tree_node_to_array(Solution::method(TreeNode::to_tree_node(vec![{root}])))"
+  "TreeNode::tree_node_to_array(Solution::method({root}))"
 
 cpp:
-  "treeNodeToArray(Solution().method(toTreeNode(lv(vector<optional<int>>{ {root} }))))"
+  "treeNodeToArray(Solution().method({root}))"
 
 ruby:
-  "tree_node_to_array(method(to_tree_node([{root}])))"
+  "tree_node_to_array(method({root}))"
 
 java:
-  "TreeNode.treeNodeToArray(new Solution().method(TreeNode.toTreeNode(new Integer[]{ {root} })))"
+  "TreeNode.treeNodeToArray(new Solution().method({root}))"
 
 csharp:
-  "TreeNode.TreeNodeToArray(new Solution().Method(TreeNode.ToTreeNode(new int?[]{ {root} })))"
+  "TreeNode.TreeNodeToArray(new Solution().Method({root}))"
 
 kotlin:
-  "treeNodeToArray(Solution().method(toTreeNode(arrayOf({root}))))"
+  "treeNodeToArray(Solution().method({root}))"
 
 go:
-  "treeNodeToArray(method(toTreeNode([]interface{}{ {root} })))"
+  "treeNodeToArray(method({root}))"
 
 typescript:
-  "treeNodeToArray(method(toTreeNode([{root}])))"
+  "treeNodeToArray(method({root}))"
 
 Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 
@@ -423,7 +438,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
   - boundary conditions
 
 - Tests without `out` automatically use the top-level oracle. Do NOT repeat or redefine oracle in tests.
-- String parameters MUST always be quoted in calls ("{s}")
+- String parameters should use plain placeholders in `call` (`{s}`), not manual quotes or wrappers
 - Use generators when possible; if not possible, do not use them
 - Generated tests MUST use oracle (no `out`)
 - The checker MUST define a class `Checker` with the method used in oracle.call.
@@ -436,7 +451,6 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - Ensure oracle call is correct
 - Generator ranges must match problem constraints exactly
 - Oracle checker in Python3 validates structurally (not just re-run solution)
-- Follow call wrapping rules exactly for all 12 languages
 
 3. Output only raw YAML.
    No comments, no explanation.

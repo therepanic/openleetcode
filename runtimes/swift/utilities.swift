@@ -11,13 +11,108 @@ public class TreeNode {
     }
 }
 
+func anyToInt(_ value: Any) -> Int {
+    if let x = value as? Int { return x }
+    if let x = value as? Double { return Int(x) }
+    if let x = value as? NSNumber { return x.intValue }
+    return Int("\(value)") ?? 0
+}
+
+func anyToDouble(_ value: Any) -> Double {
+    if let x = value as? Double { return x }
+    if let x = value as? Int { return Double(x) }
+    if let x = value as? NSNumber { return x.doubleValue }
+    return Double("\(value)") ?? 0
+}
+
+func anyToFloat(_ value: Any) -> Float {
+    return Float(anyToDouble(value))
+}
+
+func anyToString(_ value: Any) -> String {
+    if let x = value as? String { return x }
+    return "\(value)"
+}
+
+func anyToBool(_ value: Any) -> Bool {
+    if let x = value as? Bool { return x }
+    return "\(value)" == "true"
+}
+
+func anyToIntArray(_ value: Any) -> [Int] {
+    return (value as! [Any]).map(anyToInt)
+}
+
+func anyToStringArray(_ value: Any) -> [String] {
+    return (value as! [Any]).map(anyToString)
+}
+
+func anyToDoubleArray(_ value: Any) -> [Double] {
+    return (value as! [Any]).map(anyToDouble)
+}
+
+func anyToFloatArray(_ value: Any) -> [Float] {
+    return (value as! [Any]).map(anyToFloat)
+}
+
+func anyToCharArray(_ value: Any) -> [Character] {
+    return (value as! [Any]).map { Character(anyToString($0)) }
+}
+
+func anyToBoolArray(_ value: Any) -> [Bool] {
+    return (value as! [Any]).map(anyToBool)
+}
+
+func anyToOptionalIntArray(_ value: Any) -> [Int?] {
+    return (value as! [Any]).map { item in
+        if item is NSNull { return nil }
+        return anyToInt(item)
+    }
+}
+
+func anyToIntMatrix(_ value: Any) -> [[Int]] {
+    return (value as! [Any]).map { row in
+        anyToIntArray(row)
+    }
+}
+
+func anyToDoubleMatrix(_ value: Any) -> [[Double]] {
+    return (value as! [Any]).map { row in
+        anyToDoubleArray(row)
+    }
+}
+
+func anyToFloatMatrix(_ value: Any) -> [[Float]] {
+    return (value as! [Any]).map { row in
+        anyToFloatArray(row)
+    }
+}
+
+func anyToStringMatrix(_ value: Any) -> [[String]] {
+    return (value as! [Any]).map { row in
+        anyToStringArray(row)
+    }
+}
+
+func anyToBoolMatrix(_ value: Any) -> [[Bool]] {
+    return (value as! [Any]).map { row in
+        anyToBoolArray(row)
+    }
+}
+
+func anyToCharMatrix(_ value: Any) -> [[Character]] {
+    return (value as! [Any]).map { row in
+        anyToCharArray(row)
+    }
+}
+
 func to_tree_node(_ arr: [Int?]) -> TreeNode? {
     guard !arr.isEmpty, let first = arr[0] else { return nil }
     let root = TreeNode(first)
     var queue = [root]
     var i = 1
     var qIdx = 0
-    while i < arr.count {
+    while qIdx < queue.count && i < arr.count {
         let node = queue[qIdx]
         qIdx += 1
         if i < arr.count, let leftVal = arr[i] {
@@ -51,7 +146,7 @@ func tree_node_to_array(_ root: TreeNode?) -> [Int?] {
         }
         qIdx += 1
     }
-    while res.last == nil { res.removeLast() }
+    while let last = res.last, last == nil { res.removeLast() }
     return res
 }
 
@@ -82,6 +177,10 @@ func list_node_to_array(_ head: ListNode?) -> [Int] {
         cur = cur!.next
     }
     return res
+}
+
+func to_list_nodes(_ arrs: [[Int]]) -> [ListNode?] {
+    return arrs.map { to_list_node($0) }
 }
 
 func toJson(_ obj: Any?) -> String {
