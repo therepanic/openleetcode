@@ -8,12 +8,35 @@ on:
 
 jobs:
   build:
-    name: Build (${{ matrix.os }})
+    name: Build (${{ matrix.target }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-26-intel, macos-latest]
+        include:
+          - os: ubuntu-latest
+            target: linux-amd64
+            artifact: openleetcode-linux-amd64
+
+          - os: ubuntu-24.04-arm
+            target: linux-arm64
+            artifact: openleetcode-linux-arm64
+
+          - os: windows-latest
+            target: windows-amd64
+            artifact: openleetcode-windows-amd64
+
+          - os: windows-11-arm
+            target: windows-arm64
+            artifact: openleetcode-windows-arm64
+
+          - os: macos-26-intel
+            target: darwin-amd64
+            artifact: openleetcode-darwin-amd64
+
+          - os: macos-26
+            target: darwin-arm64
+            artifact: openleetcode-darwin-arm64
 
     steps:
       - uses: actions/checkout@v4
@@ -28,40 +51,36 @@ jobs:
           cabal build all
           cabal test all
 
-      - name: Collect executables (Linux)
-        if: runner.os == 'Linux'
+      - name: Collect executable
+        if: runner.os != 'Windows'
         run: |
           mkdir -p artifacts
-          find dist-newstyle -type f -perm /111 \
-            -not -name "*.so" -print0 \
-            | while IFS= read -r -d '' f; do
-                cp "$f" artifacts/
-              done
+          exe="$(find dist-newstyle \
+            -type f \
+            -path "*/x/openleetcode/build/openleetcode/openleetcode" \
+            | head -n 1)"
 
-      - name: Collect executables (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          mkdir -p artifacts
-          find dist-newstyle -type f \( -perm -0100 -o -perm -0010 -o -perm -0001 \) \
-            -not -name "*.dylib" -print0 \
-            | while IFS= read -r -d '' f; do
-                cp "$f" artifacts/
-              done
+          cp "$exe" "artifacts/${{ matrix.artifact }}"
 
-      - name: Collect executables (Windows)
+      - name: Collect executable
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts
-          Get-ChildItem -Path dist-newstyle -Recurse -Filter "*.exe" |
-            Copy-Item -Destination artifacts/
+          $exe = Get-ChildItem -Path dist-newstyle -Recurse -Filter "openleetcode.exe" |
+            Where-Object {
+              $_.FullName -like "*\x\openleetcode\build\openleetcode\openleetcode.exe"
+            } |
+            Select-Object -First 1
+
+          Copy-Item $exe.FullName "artifacts/${{ matrix.artifact }}.exe"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.os }}
-          path: artifacts/
-          if-no-files-found: warn
+          name: ${{ matrix.artifact }}
+          path: artifacts/*
+          if-no-files-found: error
 
   format-hs:
     name: Haskell format
@@ -93,13 +112,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-
       - run: npm install --global prettier
-
       - run: prettier --check . --ignore-path .prettierignore
 
   ruff:
