@@ -135,7 +135,7 @@ putPlain :: Text -> Text -> Text -> IO ()
 putPlain scope section msg = TIO.putStrLn (plainLine scope section msg)
 
 putInfo :: UI -> Text -> IO ()
-putInfo ui msg = TIO.putStrLn (style ui CyanBold msg)
+putInfo ui msg = TIO.putStrLn (style ui OrangeBold msg)
 
 putSuccess :: UI -> Text -> IO ()
 putSuccess ui msg = TIO.putStrLn (style ui Green ("✓ " <> msg))
@@ -146,7 +146,7 @@ putErrorLine ui msg = TIO.putStrLn (style ui Red ("✗ " <> msg))
 putDim :: UI -> Text -> IO ()
 putDim ui msg = TIO.putStrLn (style ui Dim msg)
 
-data AnsiStyle = PlainStyle | Green | Red | Yellow | Dim | CyanBold
+data AnsiStyle = PlainStyle | Green | Red | Yellow | Dim | Gray | OrangeBold
 
 style :: UI -> AnsiStyle -> Text -> Text
 style ui ansi msg
@@ -159,7 +159,8 @@ style ui ansi msg
       Red -> "\ESC[31m"
       Yellow -> "\ESC[33m"
       Dim -> "\ESC[2m"
-      CyanBold -> "\ESC[1;36m"
+      Gray -> "\ESC[38;2;159;159;159m"
+      OrangeBold -> "\ESC[1;38;2;255;161;22m"
 
 classifyException :: SomeException -> Text
 classifyException exc
@@ -286,7 +287,7 @@ moveCursorToChecklistBottom checklist = do
 
 checklistBlock :: Checklist -> [ChecklistStep] -> Int -> Text
 checklistBlock checklist steps frameIdx =
-  T.unlines (clearLine (style ui CyanBold header) : map renderStep steps)
+  T.unlines (clearLine (style ui OrangeBold header) : map renderStep steps)
   where
     ui = clUI checklist
     header = clHeader checklist

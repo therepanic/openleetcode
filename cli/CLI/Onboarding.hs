@@ -51,8 +51,8 @@ runOnboarding runtime = do
 emitWelcome :: UI -> FilePath -> IO ()
 emitWelcome ui root = case uiMode ui of
   Rich -> do
-    TIO.putStrLn (style ui CyanBold onboardingBanner)
-    TIO.putStrLn (style ui CyanBold "Welcome to openleetcode.")
+    mapM_ (TIO.putStrLn . renderOnboardingBannerLine ui) (T.lines onboardingBanner)
+    TIO.putStrLn (style ui OrangeBold "Welcome to openleetcode.")
     TIO.putStrLn (style ui Dim ("Data directory: " <> T.pack root))
     TIO.putStrLn (style ui Yellow "Tests and runtimes are not installed yet.")
   Plain -> do
@@ -133,10 +133,17 @@ renderPrompt ui prompt =
     Rich -> style ui Yellow prompt
     Plain -> prompt
 
+renderOnboardingBannerLine :: UI -> T.Text -> T.Text
+renderOnboardingBannerLine ui line =
+  case T.splitOn "#" line of
+    [open, leet, code] ->
+      style ui Gray open <> style ui OrangeBold leet <> style ui Gray code
+    _ -> style ui Gray line
+
 onboardingBanner :: T.Text
 onboardingBanner =
   T.unlines
-    [ " ▄▄▄  ▄▄▄▄  ▄▄▄▄▄ ▄▄  ▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄  ▄▄▄  ▄▄▄▄  ▄▄▄▄▄",
-      "██▀██ ██▄█▀ ██▄▄  ███▄██ ██    ██▄▄  ██▄▄    ██  ██▀▀▀ ██▀██ ██▀██ ██▄▄",
-      "▀███▀ ██    ██▄▄▄ ██ ▀██ ██▄▄▄ ██▄▄▄ ██▄▄▄   ██  ▀████ ▀███▀ ████▀ ██▄▄▄"
+    [ " ▄▄▄  ▄▄▄▄  ▄▄▄▄▄ ▄▄  ▄▄ #▄▄    ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄▄ #▄▄▄▄  ▄▄▄  ▄▄▄▄  ▄▄▄▄▄",
+      "██▀██ ██▄█▀ ██▄▄  ███▄██ #██    ██▄▄  ██▄▄    ██  #██▀▀▀ ██▀██ ██▀██ ██▄▄",
+      "▀███▀ ██    ██▄▄▄ ██ ▀██ #██▄▄▄ ██▄▄▄ ██▄▄▄   ██  #▀████ ▀███▀ ████▀ ██▄▄▄"
     ]
