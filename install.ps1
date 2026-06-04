@@ -99,4 +99,5 @@ if ($userPath -notlike "*$INSTALL_DIR*") {
 }
 
 success "Installed successfully!"
+success "Start backend manually."
 success "Run: $BIN_NAME"

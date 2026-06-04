@@ -82,9 +82,11 @@ esac
 
 asset="openleetcode-${os_name}-${arch_name}"
 url="https://github.com/${REPO}/releases/latest/download/${asset}"
+backend_url="https://raw.githubusercontent.com/${REPO}/main/sandboxes/piston/docker-compose.yml"
 
 tmp="$(mktemp)"
-trap 'rm -f "$tmp"' EXIT
+backend_tmp="$(mktemp)"
+trap 'rm -f "$tmp" "$backend_tmp"' EXIT
 
 info "Detected target: ${os_name}-${arch_name}"
 info "Downloading latest release..."
@@ -105,4 +107,20 @@ else
 fi
 
 success "Installed successfully!"
+
+info "Downloading Piston backend..."
+curl -fsSL "$backend_url" -o "$backend_tmp"
+
+info "Starting Piston backend..."
+if command -v docker-compose >/dev/null 2>&1; then
+  docker-compose -f "$backend_tmp" up -d
+elif docker compose version >/dev/null 2>&1; then
+  docker compose -f "$backend_tmp" up -d
+else
+  error "Docker Compose is not installed"
+  exit 1
+fi
+
+rm -f "$backend_tmp"
+success "Piston backend started successfully!"
 success "Run: ${BIN_NAME}"
