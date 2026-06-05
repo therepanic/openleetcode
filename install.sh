@@ -48,11 +48,11 @@ info() {
 }
 
 success() {
-  printf '%s✓%s %s\n' "$GREEN" "$RESET" "$1"
+  printf '%s✓ %s%s\n' "$GREEN" "$1" "$RESET"
 }
 
 error() {
-  printf '%s✗%s %s\n' "$RED" "$RESET" "$1" >&2
+  printf '%s✗ %s%s\n' "$RED" "$1" "$RESET" >&2
 }
 
 banner
