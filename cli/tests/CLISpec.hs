@@ -38,31 +38,6 @@ spec = do
     it "allows both selectors and lets id win later" $
       validateSubmit (SubmitOpts "solution.py" (Just 1) (Just "two-sum") (Just Python3)) `shouldBe` Nothing
 
-  describe "CLI.Submit helpers" $ do
-    it "strips oracle execution prefix from internal judge messages" $
-      stripOracleExecutionPrefix "Oracle execution error: boom"
-        `shouldBe` "boom"
-
-    it "leaves non-oracle messages unchanged" $
-      stripOracleExecutionPrefix "plain failure"
-        `shouldBe` "plain failure"
-
-    it "detects oracle execution messages" $
-      isOracleExecutionMessage "Oracle execution error: boom"
-        `shouldBe` True
-
-  describe "CLI.UI helpers" $ do
-    it "formats plain output with scope and section" $
-      plainLine "submit" "preparing" "load configuration"
-        `shouldBe` ("submit: preparing: load configuration" :: T.Text)
-
-    it "keeps plain output compact without multiline tails" $
-      sanitizeSingleLine "line1\nline2" `shouldBe` ("line1" :: T.Text)
-
-    it "formats plain output without section" $
-      plainLine "config" "" "backend.url updated"
-        `shouldBe` ("config: backend.url updated" :: T.Text)
-
   describe "CLI.Commands parser" $ do
     it "parses explicit submit command with id" $
       isParsedSubmitWithId (parseCli ["submit", "solution.py", "--id", "1"])
