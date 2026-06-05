@@ -82,7 +82,7 @@ esac
 
 asset="openleetcode-${os_name}-${arch_name}"
 url="https://github.com/${REPO}/releases/latest/download/${asset}"
-backend_url="https://raw.githubusercontent.com/${REPO}/main/sandboxes/piston/docker-compose.yml"
+backend_url="https://raw.githubusercontent.com/${REPO}/main/backends/piston/docker-compose.yml"
 
 tmp="$(mktemp)"
 backend_tmp="$(mktemp)"
