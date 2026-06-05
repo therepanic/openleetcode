@@ -76,6 +76,11 @@ info "Downloading latest release..."
 
 curl.exe -fsSL $url -o $tmp
 
+if ($LASTEXITCODE -ne 0) {
+    error "Failed to download: $url"
+    exit 1
+}
+
 if (!(Test-Path $INSTALL_DIR)) {
     New-Item -ItemType Directory -Force -Path $INSTALL_DIR | Out-Null
 }

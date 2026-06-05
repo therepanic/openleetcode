@@ -90,7 +90,10 @@ trap 'rm -f "$tmp" "$backend_tmp"' EXIT
 
 info "Detected target: ${os_name}-${arch_name}"
 info "Downloading latest release..."
-curl -fsSL "$url" -o "$tmp"
+if ! curl -fsSL "$url" -o "$tmp"; then
+  error "Failed to download: $url"
+  exit 1
+fi
 
 chmod +x "$tmp"
 
