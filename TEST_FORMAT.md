@@ -87,6 +87,9 @@ entry:
 
 **Supported languages:** `cpp`, `rust`, `python3`, `python2`, `ruby`, `java`, `csharp`, `kotlin`, `go`, `dart`, `swift`, `typescript`
 
+> [!NOTE]
+> Language versions and libraries match the environments used by LeetCode. See the [official LeetCode environment documentation](https://support.leetcode.com/hc/en-us/articles/360011833974-What-are-the-environments-for-the-programming-languages).
+
 ---
 
 ### `entry.params`
