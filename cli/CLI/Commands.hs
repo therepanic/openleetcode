@@ -13,6 +13,7 @@ data Command
   = Download DownloadOpts
   | Config ConfigOpts
   | Submit SubmitOpts
+  | Update
 
 data CliOptions = CliOptions
   { cliGlobalOptions :: GlobalOptions,
@@ -38,6 +39,7 @@ commandParser =
     ( command "submit" (info ((Submit <$> submitOptsParser) <**> helper) submitHelp)
         <> command "download" (info ((Download <$> downloadOptsParser) <**> helper) downloadHelp)
         <> command "config" (info ((Config <$> configOptsParser) <**> helper) configHelp)
+        <> command "update" (info (pure Update <**> helper) updateHelp)
     )
 
 downloadOptsParser :: Parser DownloadOpts
@@ -122,3 +124,6 @@ configSetHelp =
               pretty ("  backend.url" :: String)
             ]
       )
+
+updateHelp :: InfoMod Command
+updateHelp = progDesc "Update the openleetcode"

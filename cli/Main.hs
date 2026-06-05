@@ -8,6 +8,7 @@ import CLI.Download qualified as Download
 import CLI.Onboarding (runOnboarding)
 import CLI.Runtime (Runtime, mkRuntime)
 import CLI.Submit qualified as Submit
+import CLI.Update qualified as Update
 import Control.Exception (SomeException, try)
 import Data.Version (showVersion)
 import GHC.IO.Encoding (utf8)
@@ -28,7 +29,7 @@ main = do
       info
         (cliOptionsParser <**> helper <**> versionOption)
         ( fullDesc
-            <> progDesc "Run LeetCode-style tests locally using open test suites and a pluggable execution backend."
+            <> progDesc "Run LeetCode tests locally using open test suites and a pluggable execution backend."
             <> header "openleetcode"
             <> footerDoc (Just cliHelpFooter)
         )
@@ -47,6 +48,7 @@ dispatch :: Runtime -> Command -> IO Int
 dispatch runtime (Download opts) = Download.run runtime opts
 dispatch runtime (Config opts) = Config.run runtime opts
 dispatch runtime (Submit opts) = Submit.run runtime opts
+dispatch runtime Update = Update.run runtime
 
 versionOption :: Parser (a -> a)
 versionOption =
@@ -63,7 +65,8 @@ cliHelpFooter =
       pretty ("Examples:" :: String),
       pretty ("  openleetcode submit ./solution.py --id 1" :: String),
       pretty ("  openleetcode download all" :: String),
-      pretty ("  openleetcode config list" :: String)
+      pretty ("  openleetcode config list" :: String),
+      pretty ("  openleetcode update" :: String)
     ]
 
 initConsoleEncoding :: IO ()
