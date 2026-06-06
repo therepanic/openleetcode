@@ -85,8 +85,8 @@ fun toTreeNode(arr: Array<Int?>): TreeNode? {
     val queue: java.util.Queue<TreeNode> = java.util.LinkedList()
     queue.add(root)
     var i = 1
-    while (i < arr.size) {
-        val node = queue.poll()
+    while (i < arr.size && queue.isNotEmpty()) {
+        val node = queue.poll() ?: break
         if (i < arr.size && arr[i] != null) {
             node.left = TreeNode(arr[i]!!)
             queue.add(node.left)
@@ -132,6 +132,9 @@ fun toListNode(arr: IntArray): ListNode? {
     }
     return head
 }
+
+fun toLinkedLists(arr: Array<IntArray>): Array<ListNode?> =
+    Array(arr.size) { idx -> toListNode(arr[idx]) }
 
 fun listNodeToArray(head: ListNode?): IntArray {
     val list = mutableListOf<Int>()

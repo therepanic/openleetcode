@@ -292,6 +292,7 @@ buildProgramTemplate lang template rawSolution runtimeUtilities snippets =
           Java -> splitJavaCode rawSolution
           Cpp -> splitCppCode rawSolution
           Rust -> splitRustCode rawSolution
+          Kotlin -> splitKotlinCode rawSolution
           _ -> ("", rawSolution)
       withImports = T.replace "${IMPORTS}" userImports template
       withInsertion = T.replace "${INSERTION}" (T.intercalate "\n" snippets) withImports
@@ -491,7 +492,7 @@ marker :: Int -> Text
 marker idx = "SOL_CASE_" <> T.pack (show idx)
 
 batchTimeoutMs :: Int
-batchTimeoutMs = 15000
+batchTimeoutMs = 20000
 
 buildMainStdin :: [PreparedCase] -> Maybe Text
 buildMainStdin cases =
@@ -1180,6 +1181,13 @@ splitRustCode code =
       isUse l = "use " `T.isPrefixOf` T.dropWhile (== ' ') l
       (useLines, restLines) = Data.List.partition isUse allLines
    in (T.unlines useLines, T.unlines restLines)
+
+splitKotlinCode :: Text -> (Text, Text)
+splitKotlinCode code =
+  let allLines = T.lines code
+      isImport l = "import " `T.isPrefixOf` T.dropWhile (== ' ') l
+      (importLines, restLines) = Data.List.partition isImport allLines
+   in (T.unlines importLines, T.unlines restLines)
 
 prepareInValue :: Language -> Text -> Text
 prepareInValue lang =
