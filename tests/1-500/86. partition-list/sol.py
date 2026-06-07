@@ -7,7 +7,7 @@ class Solution:
     def partition(self, head, x):
 
         slist, blist = ListNode(), ListNode()
-        small, big = slist, blist # dummy lists
+        small, big = slist, blist  # dummy lists
 
         while head:
             if head.val < x:
@@ -20,6 +20,6 @@ class Solution:
             head = head.next
 
         small.next = blist.next
-        big.next = None # prevent linked list circle
+        big.next = None  # prevent linked list circle
 
         return slist.next

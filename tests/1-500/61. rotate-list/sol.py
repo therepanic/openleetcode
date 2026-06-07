@@ -4,6 +4,7 @@
 #         self.val = val
 #         self.next = next
 
+
 class Solution:
     def rotateRight(self, head, k):
         if not head or not head.next or k == 0:

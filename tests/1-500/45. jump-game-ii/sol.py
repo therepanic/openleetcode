@@ -5,7 +5,7 @@ class Solution:
             return 0
 
         jumps = 0
-        curr_end = 0   # end of current jump range
+        curr_end = 0  # end of current jump range
         max_reach = 0  # farthest index we can reach while scanning this range
 
         # We only need to process until n-2, because once we can reach last index,

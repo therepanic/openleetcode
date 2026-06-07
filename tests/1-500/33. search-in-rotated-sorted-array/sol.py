@@ -11,7 +11,6 @@ class Solution:
 
             # left half is sorted
             if nums[low] <= nums[mid]:
-
                 if nums[low] <= target < nums[mid]:
                     high = mid - 1
                 else:
@@ -19,7 +18,6 @@ class Solution:
 
             # right half is sorted
             else:
-
                 if nums[mid] < target <= nums[high]:
                     low = mid + 1
                 else:

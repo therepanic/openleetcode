@@ -1,6 +1,6 @@
 class Solution:
     def divide(self, dividend, divisor):
-        if dividend == -2**31 and divisor == -1:
+        if dividend == -(2**31) and divisor == -1:
             return 2**31 - 1
         negative = (dividend < 0) != (divisor < 0)
         dividend = abs(dividend)
@@ -16,4 +16,4 @@ class Solution:
             ans += multiple
         if negative:
             ans = -ans
-        return min(max(ans, -2**31), 2**31 - 1)
+        return min(max(ans, -(2**31)), 2**31 - 1)

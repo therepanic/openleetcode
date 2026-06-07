@@ -4,6 +4,7 @@ class Solution(object):
         :type nums: List[int]
         :rtype: List[List[int]]
         """
+
         def backtrack(start, subset):
             result.append(subset[:])
             for i in range(start, len(nums)):

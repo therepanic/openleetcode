@@ -5,9 +5,11 @@ class Solution:
     def isScramble(self, s1, s2):
         if len(s1) != len(s2):
             return False
-        if s1 == s2: return True
+        if s1 == s2:
+            return True
         key = s1 + "#" + s2
-        if key in self.memo: return self.memo[key]
+        if key in self.memo:
+            return self.memo[key]
 
         if sorted(s1) != sorted(s2):
             self.memo[key] = False
@@ -20,7 +22,9 @@ class Solution:
                 self.memo[key] = True
                 return True
             # Swap
-            if self.isScramble(s1[:i], s2[n-i:]) and self.isScramble(s1[i:], s2[:n-i]):
+            if self.isScramble(s1[:i], s2[n - i :]) and self.isScramble(
+                s1[i:], s2[: n - i]
+            ):
                 self.memo[key] = True
                 return True
 

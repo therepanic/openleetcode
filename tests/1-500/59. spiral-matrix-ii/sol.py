@@ -6,9 +6,9 @@ class Solution:
         for i in range(n * n):
             res[y][x] = i + 1
 
-            if not 0 <= x + dx < n or not 0 <= y + dy < n or res[y+dy][x+dx] != 0:
+            if not 0 <= x + dx < n or not 0 <= y + dy < n or res[y + dy][x + dx] != 0:
                 dx, dy = -dy, dx
-            
+
             x += dx
             y += dy
 

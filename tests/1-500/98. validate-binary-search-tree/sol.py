@@ -12,7 +12,8 @@ class Solution(object):
             if not (min_val < node.val < max_val):
                 return False
 
-            return (validate(node.left, min_val, node.val) and
-                    validate(node.right, node.val, max_val))
+            return validate(node.left, min_val, node.val) and validate(
+                node.right, node.val, max_val
+            )
 
-        return validate(root, float('-inf'), float('inf'))
+        return validate(root, float("-inf"), float("inf"))

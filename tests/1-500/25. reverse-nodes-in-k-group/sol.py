@@ -7,7 +7,7 @@ class Solution:
             while start and k > 0:
                 start = start.next
                 k -= 1
-            
+
             return start
 
         while True:

@@ -1,6 +1,7 @@
 class Solution:
     def climbStairs(self, n):
-        if n <= 3: return n
+        if n <= 3:
+            return n
 
         prev1 = 3
         prev2 = 2
@@ -10,5 +11,5 @@ class Solution:
             cur = prev1 + prev2
             prev2 = prev1
             prev1 = cur
-        
+
         return cur

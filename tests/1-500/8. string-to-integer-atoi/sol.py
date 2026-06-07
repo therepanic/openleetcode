@@ -7,10 +7,10 @@ class Solution:
         sign, i, res = 1, 0, 0
 
         # Check for sign
-        if s[0] == '-':
+        if s[0] == "-":
             sign = -1
             i += 1
-        elif s[0] == '+':
+        elif s[0] == "+":
             i += 1
 
         while i < len(s) and s[i].isdigit():
@@ -19,8 +19,8 @@ class Solution:
             # Handle overflow
             if sign * res > 2**31 - 1:
                 return 2**31 - 1
-            if sign * res < -2**31:
-                return -2**31
+            if sign * res < -(2**31):
+                return -(2**31)
 
             i += 1
 

@@ -1,5 +1,6 @@
 from collections import Counter, defaultdict
 
+
 class Solution:
     def findSubstring(self, s, words):
         if not s or not words:
@@ -17,20 +18,20 @@ class Solution:
             used = 0
 
             while right + word_len <= len(s):
-                word = s[right:right + word_len]
+                word = s[right : right + word_len]
                 right += word_len
 
                 if word in target:
                     window[word] += 1
                     used += 1
                     while window[word] > target[word]:
-                        left_word = s[left:left + word_len]
+                        left_word = s[left : left + word_len]
                         window[left_word] -= 1
                         left += word_len
                         used -= 1
                     if used == word_count:
                         ans.append(left)
-                        left_word = s[left:left + word_len]
+                        left_word = s[left : left + word_len]
                         window[left_word] -= 1
                         left += word_len
                         used -= 1

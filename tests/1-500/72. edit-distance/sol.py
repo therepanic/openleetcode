@@ -15,9 +15,9 @@ class Solution:
                 res = dp(i - 1, j - 1)
             else:
                 res = 1 + min(
-                    dp(i - 1, j),      # Delete
-                    dp(i, j - 1),      # Insert
-                    dp(i - 1, j - 1)   # Replace
+                    dp(i - 1, j),  # Delete
+                    dp(i, j - 1),  # Insert
+                    dp(i - 1, j - 1),  # Replace
                 )
 
             cache[(i, j)] = res

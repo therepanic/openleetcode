@@ -9,7 +9,6 @@ class Solution:
         totalWater = 0
 
         while start < end:
-
             leftMax = max(leftMax, height[start])
             rightMax = max(rightMax, height[end])
 

@@ -4,7 +4,7 @@ class Solution:
             return s
 
         idx, d = 0, 1
-        rows = [''] * numRows
+        rows = [""] * numRows
 
         for char in s:
             rows[idx] += char
@@ -14,4 +14,4 @@ class Solution:
                 d = -1
             idx += d
 
-        return ''.join(rows)
+        return "".join(rows)
