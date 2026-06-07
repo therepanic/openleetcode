@@ -90,9 +90,8 @@ function jsonEncode(value: unknown, seen: Set<object>): string {
   if (typeof value === "boolean") return value ? "true" : "false";
   if (typeof value === "number") {
     if (!isFinite(value)) return "null";
-    if (Object.is(value, -0)) return "0.0";
-    const s = String(value);
-    return /[.eE]/.test(s) ? s : s + ".0";
+    if (Object.is(value, -0)) return "0";
+    return String(value);
   }
   if (typeof value === "string") return jsonQuote(value);
   if (Array.isArray(value)) {
