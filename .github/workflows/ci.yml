@@ -109,25 +109,14 @@ jobs:
         run: |
           set -euo pipefail
           required_runtimes='["python","python2","c++","java","node","csharp","go","dart","kotlin","swift","rust","ruby","typescript"]'
+          python_check='import json, sys; required = set(json.loads(sys.argv[1])); available = {item.get("language") for item in json.load(open("/tmp/runtimes.json", "r", encoding="utf-8"))}; missing = sorted(required - available); open("/tmp/missing-runtimes.txt", "w", encoding="utf-8").write(", ".join(missing)); raise SystemExit(1 if missing else 0)'
           curl_failures=0
 
           for _ in $(seq 1 480); do
             if curl -fsS http://localhost:2000/api/v2/runtimes > /tmp/runtimes.json; then
               curl_failures=0
 
-              if python3 - "$required_runtimes" <<'PY'
-                import json
-                import sys
-
-                required = set(json.loads(sys.argv[1]))
-                with open("/tmp/runtimes.json", "r", encoding="utf-8") as fh:
-                    available = {item.get("language") for item in json.load(fh)}
-
-                missing = sorted(required - available)
-                with open("/tmp/missing-runtimes.txt", "w", encoding="utf-8") as fh:
-                    fh.write(", ".join(missing))
-                raise SystemExit(1 if missing else 0)
-                PY
+              if python3 -c "$python_check" "$required_runtimes"
               then
                 echo "All required runtimes are available."
                 exit 0
