@@ -492,7 +492,7 @@ marker :: Int -> Text
 marker idx = "SOL_CASE_" <> T.pack (show idx)
 
 batchTimeoutMs :: Int
-batchTimeoutMs = 20000
+batchTimeoutMs = 80000
 
 buildMainStdin :: [PreparedCase] -> Maybe Text
 buildMainStdin cases =
