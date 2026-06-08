@@ -139,6 +139,7 @@ jobs:
         run: |
           set -euo pipefail
           max_parallel=4
+          max_attempts=5
 
           while IFS= read -r -d '' problem_path; do
             problem_dir="$(basename "$problem_path")"
@@ -185,13 +186,26 @@ jobs:
             failed=0
             for file in "${files[@]}"; do
               (
-                echo "Submitting problem $problem_id: $file"
+                for attempt in $(seq 1 "$max_attempts"); do
+                  echo "Submitting problem $problem_id: $file (attempt $attempt/$max_attempts)"
 
-                if [[ "$file" == *.py2 ]]; then
-                  ./openleetcode --plain submit "$file" --id "$problem_id" --lang python2
-                else
-                  ./openleetcode --plain submit "$file" --id "$problem_id"
-                fi
+                  if [[ "$file" == *.py2 ]]; then
+                    if ./openleetcode --plain submit "$file" --id "$problem_id" --lang python2; then
+                      exit 0
+                    fi
+                  else
+                    if ./openleetcode --plain submit "$file" --id "$problem_id"; then
+                      exit 0
+                    fi
+                  fi
+
+                  if [[ "$attempt" -lt "$max_attempts" ]]; then
+                    echo "Retrying problem $problem_id: $file"
+                    sleep 2
+                  fi
+                done
+
+                exit 1
               ) &
 
               active=$((active + 1))
