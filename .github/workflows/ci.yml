@@ -26,6 +26,10 @@ jobs:
             target: windows-amd64
             artifact: openleetcode-windows-amd64
 
+          - os: macos-26-intel
+            target: darwin-amd64
+            artifact: openleetcode-darwin-amd64
+
           - os: macos-26
             target: darwin-arm64
             artifact: openleetcode-darwin-arm64
@@ -74,11 +78,31 @@ jobs:
           path: artifacts/*
           if-no-files-found: error
 
-  submit-stored-solutions:
-    name: Submit stored solutions
+  discover-test-ranges:
+    name: Discover test ranges
     runs-on: ubuntu-latest
-    needs: build
+    outputs:
+      ranges: ${{ steps.collect.outputs.ranges }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect test ranges
+        id: collect
+        run: |
+          set -euo pipefail
+          ranges_json="$(find tests -mindepth 1 -maxdepth 1 -printf '%f\n' | jq -R -s -c 'split("\n") | map(select(length > 0))')"
+          echo "ranges=$ranges_json" >> "$GITHUB_OUTPUT"
+
+  submit-stored-solutions:
+    name: Submit stored solutions (${{ matrix.range }})
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - discover-test-ranges
     timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        range: ${{ fromJson(needs.discover-test-ranges.outputs.ranges) }}
     steps:
       - uses: actions/checkout@v4
       - name: Download linux artifact
@@ -227,7 +251,7 @@ jobs:
               echo "One or more submissions failed for problem $problem_id"
               exit 1
             fi
-          done < <(find tests -mindepth 2 -maxdepth 2 -type d -print0 | sort -z)
+          done < <(find "tests/${{ matrix.range }}" -mindepth 1 -maxdepth 1 -print0 | sort -z)
 
       - name: Dump backend logs on failure
         if: failure()
