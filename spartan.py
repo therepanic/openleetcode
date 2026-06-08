@@ -74,10 +74,10 @@ async def process(sem, problem):
     async with sem:
         print(f"Start {pid}. {slug}")
         try:
-            _, content, snippets = get_question_details(slug)
+            _, content, snippets = await asyncio.to_thread(get_question_details, slug)
 
             try:
-                reference = get_reference_solution(slug)
+                reference = await asyncio.to_thread(get_reference_solution, slug)
             except Exception:
                 reference = None
 

@@ -42,7 +42,7 @@ You are helping generate a test manifest for the openleetcode project.
 
 openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, rust, python3, python2, ruby, java, csharp, kotlin, go, dart, swift, typescript.
 
-Generate 25-30 tests.
+Generate 30-35 tests.
 
 CRITICAL YAML RULE:
 Never use flow-style mappings { } anywhere in the output.
