@@ -78,6 +78,189 @@ jobs:
           path: artifacts/*
           if-no-files-found: error
 
+  discover-test-ranges:
+    name: Discover test ranges
+    runs-on: ubuntu-latest
+    outputs:
+      ranges: ${{ steps.collect.outputs.ranges }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect test ranges
+        id: collect
+        run: |
+          set -euo pipefail
+          ranges_json="$(find tests -mindepth 1 -maxdepth 1 -printf '%f\n' | jq -R -s -c 'split("\n") | map(select(length > 0))')"
+          echo "ranges=$ranges_json" >> "$GITHUB_OUTPUT"
+
+  submit-stored-solutions:
+    name: Submit stored solutions (${{ matrix.range }})
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - discover-test-ranges
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        range: ${{ fromJson(needs.discover-test-ranges.outputs.ranges) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openleetcode-linux-amd64
+          path: .artifacts/openleetcode-linux-amd64
+
+      - name: Prepare executable
+        run: |
+          cp .artifacts/openleetcode-linux-amd64/openleetcode-linux-amd64 ./openleetcode
+          chmod +x ./openleetcode
+
+      - name: Prepare local openleetcode data dir
+        run: |
+          mkdir -p "$HOME/.config/openleetcode"
+          cp -R tests "$HOME/.config/openleetcode/"
+          cp -R runtimes "$HOME/.config/openleetcode/"
+
+      - name: Start backend
+        run: docker compose -f backends/piston/docker-compose.yml up -d
+
+      - name: Wait for runtimes
+        run: |
+          set -euo pipefail
+          required_runtimes='["python","python2","c++","java","node","csharp","go","dart","kotlin","swift","rust","ruby","typescript"]'
+          python_check='import json, sys; required = set(json.loads(sys.argv[1])); available = {item.get("language") for item in json.load(open("/tmp/runtimes.json", "r", encoding="utf-8"))}; missing = sorted(required - available); open("/tmp/missing-runtimes.txt", "w", encoding="utf-8").write(", ".join(missing)); raise SystemExit(1 if missing else 0)'
+          curl_failures=0
+
+          for _ in $(seq 1 480); do
+            if curl -fsS http://localhost:2000/api/v2/runtimes > /tmp/runtimes.json; then
+              curl_failures=0
+
+              if python3 -c "$python_check" "$required_runtimes"
+              then
+                echo "All required runtimes are available."
+                exit 0
+              fi
+            else
+              curl_failures=$((curl_failures + 1))
+              if [[ "$curl_failures" -ge 60 ]]; then
+                echo "Backend runtimes endpoint did not respond in time."
+                exit 1
+              fi
+            fi
+            sleep 5
+          done
+
+          echo "Backend did not become ready with all required runtimes in time."
+          if [[ -s /tmp/missing-runtimes.txt ]]; then
+            echo "Missing runtimes: $(cat /tmp/missing-runtimes.txt)"
+          else
+            echo "No missing runtime information was recorded."
+          fi
+          exit 1
+
+      - name: Submit stored solutions
+        run: |
+          set -euo pipefail
+          max_parallel=4
+          max_attempts=10
+
+          while IFS= read -r -d '' problem_path; do
+            problem_dir="$(basename "$problem_path")"
+            problem_id="${problem_dir%%.*}"
+
+            if [[ ! "$problem_id" =~ ^[0-9]+$ ]]; then
+              echo "Could not resolve problem id from path: $problem_path"
+              exit 1
+            fi
+
+            mapfile -d '' files < <(
+              find "$problem_path" -maxdepth 1 -type f \
+                \( \
+                  -name '*.cpp' -o \
+                  -name '*.java' -o \
+                  -name '*.py' -o \
+                  -name '*.py2' -o \
+                  -name '*.c' -o \
+                  -name '*.cs' -o \
+                  -name '*.js' -o \
+                  -name '*.rb' -o \
+                  -name '*.sh' -o \
+                  -name '*.kt' -o \
+                  -name '*.swift' -o \
+                  -name '*.go' -o \
+                  -name '*.scala' -o \
+                  -name '*.rs' -o \
+                  -name '*.php' -o \
+                  -name '*.ts' -o \
+                  -name '*.rkt' -o \
+                  -name '*.erl' -o \
+                  -name '*.ex' -o \
+                  -name '*.dart' \
+                \) -print0 | sort -z
+            )
+
+            if [[ "${#files[@]}" -eq 0 ]]; then
+              continue
+            fi
+
+            echo "Submitting problem $problem_id with ${#files[@]} files"
+
+            active=0
+            failed=0
+            for file in "${files[@]}"; do
+              (
+                for attempt in $(seq 1 "$max_attempts"); do
+                  echo "Submitting problem $problem_id: $file (attempt $attempt/$max_attempts)"
+
+                  if [[ "$file" == *.py2 ]]; then
+                    if ./openleetcode --plain submit "$file" --id "$problem_id" --lang python2; then
+                      exit 0
+                    fi
+                  else
+                    if ./openleetcode --plain submit "$file" --id "$problem_id"; then
+                      exit 0
+                    fi
+                  fi
+
+                  if [[ "$attempt" -lt "$max_attempts" ]]; then
+                    sleep 2
+                  fi
+                done
+
+                exit 1
+              ) &
+
+              active=$((active + 1))
+              if [[ "$active" -ge "$max_parallel" ]]; then
+                if ! wait -n; then
+                  failed=1
+                fi
+                active=$((active - 1))
+              fi
+            done
+
+            while [[ "$active" -gt 0 ]]; do
+              if ! wait -n; then
+                failed=1
+              fi
+              active=$((active - 1))
+            done
+
+            if [[ "$failed" -ne 0 ]]; then
+              echo "One or more submissions failed for problem $problem_id"
+              exit 1
+            fi
+          done < <(find "tests/${{ matrix.range }}" -mindepth 1 -maxdepth 1 -print0 | sort -z)
+
+      - name: Dump backend logs on failure
+        if: failure()
+        run: docker compose -f backends/piston/docker-compose.yml logs --no-color
+
+      - name: Stop backend
+        if: always()
+        run: docker compose -f backends/piston/docker-compose.yml down -v
+
   format-hs:
     name: Haskell format
     runs-on: ubuntu-latest
