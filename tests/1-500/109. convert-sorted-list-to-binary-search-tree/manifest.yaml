@@ -1,0 +1,353 @@
+entry:
+  id: 109
+  title: "convert-sorted-list-to-binary-search-tree"
+  params:
+    head:
+      type: "list_node"
+  call:
+    cpp: "treeNodeToArray(Solution().sortedListToBST({head}))"
+    rust: "TreeNode::tree_node_to_array(Solution::sorted_list_to_bst({head}))"
+    python3: "tree_node_to_array(Solution().sortedListToBST({head}))"
+    python2: "tree_node_to_array(Solution().sortedListToBST({head}))"
+    ruby: "tree_node_to_array(sorted_list_to_bst({head}))"
+    java: "TreeNode.treeNodeToArray(new Solution().sortedListToBST({head}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().SortedListToBST({head}))"
+    kotlin: "treeNodeToArray(Solution().sortedListToBST({head}))"
+    go: "treeNodeToArray(sortedListToBST({head}))"
+    dart: "tree_node_to_array(Solution().sortedListToBST({head}))"
+    swift: "tree_node_to_array(Solution().sortedListToBST({head}))"
+    typescript: "treeNodeToArray(sortedListToBST({head}))"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().sortedListToBST(head, {result})"
+    checker: |
+      import copy
+
+      from typing import Optional
+
+      class Solution:
+          def sortedListToBST(self, head: Optional[ListNode]) -> Optional[TreeNode]:
+              values = []
+              while head is not None:
+                  values.append(head.val)
+                  head = head.next
+
+              def build(left: int, right: int) -> Optional[TreeNode]:
+                  if left > right:
+                      return None
+                  mid = (left + right) // 2
+                  root = TreeNode(values[mid])
+                  root.left = build(left, mid - 1)
+                  root.right = build(mid + 1, right)
+                  return root
+
+              return build(0, len(values) - 1)
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "tree_node"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def sortedListToBST(self, head, result):
+              prepared_head = prepare_input(head, "list_node")
+              expected = Solution().sortedListToBST(prepared_head)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 109
+tests:
+  - name: "case_01"
+    in:
+      head: [-10, -3, 0, 5, 9]
+  - name: "case_02"
+    in:
+      head: []
+  - name: "case_03"
+    in:
+      head: [-40, -20, -15, -12, 7, 14, 16, 22]
+  - name: "case_04"
+    in:
+      head: [-27, 26, 42]
+  - name: "case_05"
+    in:
+      head: [-16, 38]
+  - name: "case_06"
+    in:
+      head: [-47, -43, -5, 11, 25, 36, 47, 50]
+  - name: "case_07"
+    in:
+      head: [-25, -11, 19, 24, 27, 33, 39]
+  - name: "case_08"
+    in:
+      head: [-46, -32, -29, -19, -17, -16, -6, -5, 23, 48]
+  - name: "case_09"
+    in:
+      head: [-38, -21, -18, 5, 13, 39, 40, 45]
+  - name: "case_10"
+    in:
+      head: [-49, -45, -38, -37, -34, -28, -25, 0, 7, 13, 29, 32, 40, 45]
+  - name: "case_11"
+    in:
+      head: [-48, -35, -30, -29, -21, -18, -8, -1, 10, 29, 35, 36]
+  - name: "case_12"
+    in:
+      head: [-24, 3, 37]
+  - name: "case_13"
+    in:
+      head: [-44, -22, -21, -18, -17, -16, -15, -10, 33, 39, 42, 43]
+  - name: "case_14"
+    in:
+      head: [-37, -35, -33, -19, -2, 33]
+  - name: "case_15"
+    in:
+      head: [-38, -30, 15, 17, 22, 23, 26, 28, 33, 42]
+  - name: "case_16"
+    in:
+      head: [-50, -48, -45, -29, -12, -10, 15, 19, 25, 27, 30, 36]
+  - name: "case_17"
+    in:
+      head: [-48, -44, -37, 3, 8, 39, 40, 45, 46, 47]
+  - name: "case_18"
+    in:
+      head: [-46, -43, -15, -12, -11, -6, -2, -1, 0, 15, 36, 40, 44]
+  - name: "case_19"
+    in:
+      head: [-47, -16, -14, -12, 5, 19, 21, 22, 29, 32, 36, 40, 48]
+  - name: "case_20"
+    in:
+      head: [-42, -41, -40, -23, -15, -10, 5, 24, 41, 45]
+  - name: "case_21"
+    in:
+      head: [-18, -16, 4, 12, 17, 19, 22, 24, 37, 41, 50]
+  - name: "case_22"
+    in:
+      head: [-38, -36, -6, 38, 50]
+  - name: "case_23"
+    in:
+      head: [-5, 6]
+  - name: "case_24"
+    in:
+      head: [-37]
+  - name: "case_25"
+    in:
+      head: [-39, -36, -25, -2, 1, 6, 8, 21, 45, 47, 50]
+  - name: "case_26"
+    in:
+      head: [-31, -1, 0, 37, 49]
+  - name: "case_27"
+    in:
+      head: [5, 23, 38]
+  - name: "case_28"
+    in:
+      head: [-45, -44, -19, -18, -16, -7, -2]
+  - name: "case_29"
+    in:
+      head: [-30, -21, 9, 14, 33]
+  - name: "case_30"
+    in:
+      head: [-7, -2, -1, 0]
+  - name: "case_31"
+    in:
+      head: [-12, -9, 7]
+  - name: "case_32"
+    in:
+      head: [20]
+  - name: "case_33"
+    in:
+      head: [-37, -26, -8, 7, 24, 44]
+  - name: "case_34"
+    in:
+      head: [-45, -34, -28, -11, 4, 10, 16, 20, 26, 32, 40, 42, 44, 47]
+  - name: "case_35"
+    in:
+      head: [-46, -45, -24, -22, -17, -7, 0, 6, 21, 23]
+  - name: "case_36"
+    in:
+      head: [-49, -33, -16, -10, -8, 3, 24]
+  - name: "case_37"
+    in:
+      head: [-40, -33, -31, -30, -18, -15, 9, 18, 34]
+  - name: "case_38"
+    in:
+      head: [-39, -38, -34, -31, -23, -19, -17, -15, -10, -5, 2, 47, 49]
+  - name: "case_39"
+    in:
+      head: [-50, -45, -42, -40, -15, 0, 4, 7, 18, 21, 24, 30, 41, 47, 50]
+  - name: "case_40"
+    in:
+      head: [-49, -32, -26, -19, -15, -14, 0, 14, 20, 32, 36, 40, 45]
+  - name: "case_41"
+    in:
+      head: [-27, -7, -6, 21, 27]
+  - name: "case_42"
+    in:
+      head: [-25, -16, 34, 42]
+  - name: "case_43"
+    in:
+      head: [-18]
+  - name: "case_44"
+    in:
+      head: [-40, -35, -28, -24, -19, -16, 1, 29, 32, 37, 46, 49]
+  - name: "case_45"
+    in:
+      head: [-44, -22, -18, -12, -10, 26, 40, 43]
+  - name: "case_46"
+    in:
+      head: [6, 13, 28]
+  - name: "case_47"
+    in:
+      head: [-26, 19, 37, 39]
+  - name: "case_48"
+    in:
+      head: [-45, -22, 13]
+  - name: "case_49"
+    in:
+      head: [-47, -41, -14, -11, -1, 1, 19, 33]
+  - name: "case_50"
+    in:
+      head: [-48, -30, -17, -4, -3, 0, 4, 9, 10, 13, 24, 30, 32, 35, 41]
+  - name: "case_51"
+    in:
+      head: [-45, -44, -42, -40, -37, -34, -29, -11, -6, 10, 11, 29, 42, 46, 48]
+  - name: "case_52"
+    in:
+      head: [-49, -47, -33, -8, -2, 2, 3, 7, 26]
+  - name: "case_53"
+    in:
+      head: [-29, -11, -10, 2, 11, 27, 37, 39, 48, 49]
+  - name: "case_54"
+    in:
+      head: [-35, -32, -23, -19, -18, -11, -7, 46]
+  - name: "case_55"
+    in:
+      head: [-49, -38, -26, -25, -15, 0, 8, 14, 22, 23, 43]
+  - name: "case_56"
+    in:
+      head: [-50, -35, -34, -13, 0, 30, 38, 47]
+  - name: "case_57"
+    in:
+      head: [-31, -27]
+  - name: "case_58"
+    in:
+      head: [-9]
+  - name: "case_59"
+    in:
+      head: [-47, -31, -30, -28, -13, -12, 7, 11, 20, 45]
+  - name: "case_60"
+    in:
+      head: [-42, -18, -17, 2, 4, 6, 15, 24, 27]
+  - name: "case_61"
+    in:
+      head: [-45, -38, -20, -10, 22, 23, 26, 29, 32, 35, 42, 45, 48, 50]
+  - name: "case_62"
+    in:
+      head: [-27, 33, 43, 47]
+  - name: "case_63"
+    in:
+      head: [-34, -29, -26, -10, -5, -4, -2, 5, 18, 25]
+  - name: "case_64"
+    in:
+      head: [-42, -34, -32, -26, -21, 5, 6, 12, 24, 35, 37]
+  - name: "case_65"
+    in:
+      head: [-40, -35, -22, 28]
+  - name: "case_66"
+    in:
+      head: [-50, -45, -41, -37, -12, 24, 25, 34]
+  - name: "case_67"
+    in:
+      head: [-48, -44, -37, -30, -13, -8, -7, 16, 21]
+  - name: "case_68"
+    in:
+      head: [-37, -24, 3, 12]
+  - name: "case_69"
+    in:
+      head: [-27, -22, -3, 10, 14, 15, 25, 36]
+  - name: "case_70"
+    in:
+      head: [-41, -27, -13, 13]
+  - name: "case_71"
+    in:
+      head: [-47, -44, -41, -25, -9, 2, 7, 20, 26, 28, 35, 41, 44, 45, 49]
+  - name: "case_72"
+    in:
+      head: [-44, -38, -24, -20, -15, -9, 6, 8, 10, 24, 34, 45, 46]

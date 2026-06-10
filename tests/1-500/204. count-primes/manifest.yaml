@@ -1,0 +1,458 @@
+entry:
+  id: 204
+  title: "count-primes"
+  params:
+    n:
+      type: "int"
+  call:
+    cpp: "Solution().countPrimes({n})"
+    rust: "Solution::count_primes({n})"
+    python3: "Solution().countPrimes({n})"
+    python2: "Solution().countPrimes({n})"
+    ruby: "count_primes({n})"
+    java: "new Solution().countPrimes({n})"
+    csharp: "new Solution().CountPrimes({n})"
+    kotlin: "Solution().countPrimes({n})"
+    go: "countPrimes({n})"
+    dart: "Solution().countPrimes({n})"
+    swift: "Solution().countPrimes({n})"
+    typescript: "countPrimes({n})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().countPrimes(n, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution(object):
+          def countPrimes(self, n):
+              if n < 2:
+                  return 0
+
+              sieve = [True] * n
+              sieve[0] = sieve[1] = False
+
+              i = 2
+              while i * i < n:
+                  if sieve[i]:
+                      for j in range(i * i, n, i):
+                          sieve[j] = False
+                  i += 1
+
+              return sum(sieve)
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def countPrimes(self, n, result):
+              prepared_n = prepare_input(n, "int")
+              expected = Solution().countPrimes(prepared_n)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 204
+tests:
+  - name: "case_01"
+    in:
+      n: 10
+    out: 4
+  - name: "case_02"
+    in:
+      n: 0
+    out: 0
+  - name: "case_03"
+    in:
+      n: 1
+    out: 0
+  - name: "case_04"
+    in:
+      n: 6502
+    out: 842
+  - name: "case_05"
+    in:
+      n: 1400
+    out: 222
+  - name: "case_06"
+    in:
+      n: 9566
+    out: 1183
+  - name: "case_07"
+    in:
+      n: 3431
+    out: 480
+  - name: "case_08"
+    in:
+      n: 2174
+    out: 326
+  - name: "case_09"
+    in:
+      n: 6743
+    out: 869
+  - name: "case_10"
+    in:
+      n: 7898
+    out: 997
+  - name: "case_11"
+    in:
+      n: 5442
+    out: 719
+  - name: "case_12"
+    in:
+      n: 1745
+    out: 271
+  - name: "case_13"
+    in:
+      n: 9258
+    out: 1147
+  - name: "case_14"
+    in:
+      n: 2587
+    out: 376
+  - name: "case_15"
+    in:
+      n: 5363
+    out: 708
+  - name: "case_16"
+    in:
+      n: 6767
+    out: 871
+  - name: "case_17"
+    in:
+      n: 1186
+    out: 194
+  - name: "case_18"
+    in:
+      n: 7187
+    out: 917
+  - name: "case_19"
+    in:
+      n: 1111
+    out: 186
+  - name: "case_20"
+    in:
+      n: 7548
+    out: 957
+  - name: "case_21"
+    in:
+      n: 8592
+    out: 1069
+  - name: "case_22"
+    in:
+      n: 5875
+    out: 773
+  - name: "case_23"
+    in:
+      n: 2478
+    out: 367
+  - name: "case_24"
+    in:
+      n: 3246
+    out: 457
+  - name: "case_25"
+    in:
+      n: 3729
+    out: 520
+  - name: "case_26"
+    in:
+      n: 4817
+    out: 648
+  - name: "case_27"
+    in:
+      n: 3884
+    out: 538
+  - name: "case_28"
+    in:
+      n: 3355
+    out: 472
+  - name: "case_29"
+    in:
+      n: 2792
+    out: 406
+  - name: "case_30"
+    in:
+      n: 4989
+    out: 667
+  - name: "case_31"
+    in:
+      n: 7368
+    out: 937
+  - name: "case_32"
+    in:
+      n: 6182
+    out: 804
+  - name: "case_33"
+    in:
+      n: 3366
+    out: 474
+  - name: "case_34"
+    in:
+      n: 5298
+    out: 702
+  - name: "case_35"
+    in:
+      n: 4384
+    out: 597
+  - name: "case_36"
+    in:
+      n: 2200
+    out: 327
+  - name: "case_37"
+    in:
+      n: 6652
+    out: 856
+  - name: "case_38"
+    in:
+      n: 8548
+    out: 1066
+  - name: "case_39"
+    in:
+      n: 9891
+    out: 1220
+  - name: "case_40"
+    in:
+      n: 575
+    out: 105
+  - name: "case_41"
+    in:
+      n: 2081
+    out: 312
+  - name: "case_42"
+    in:
+      n: 9286
+    out: 1150
+  - name: "case_43"
+    in:
+      n: 9081
+    out: 1127
+  - name: "case_44"
+    in:
+      n: 7342
+    out: 935
+  - name: "case_45"
+    in:
+      n: 7336
+    out: 935
+  - name: "case_46"
+    in:
+      n: 6627
+    out: 855
+  - name: "case_47"
+    in:
+      n: 6088
+    out: 793
+  - name: "case_48"
+    in:
+      n: 8667
+    out: 1078
+  - name: "case_49"
+    in:
+      n: 1050
+    out: 176
+  - name: "case_50"
+    in:
+      n: 7194
+    out: 919
+  - name: "case_51"
+    in:
+      n: 7286
+    out: 929
+  - name: "case_52"
+    in:
+      n: 5304
+    out: 703
+  - name: "case_53"
+    in:
+      n: 3002
+    out: 431
+  - name: "case_54"
+    in:
+      n: 7611
+    out: 967
+  - name: "case_55"
+    in:
+      n: 4716
+    out: 635
+  - name: "case_56"
+    in:
+      n: 191
+    out: 42
+  - name: "case_57"
+    in:
+      n: 7413
+    out: 940
+  - name: "case_58"
+    in:
+      n: 8218
+    out: 1029
+  - name: "case_59"
+    in:
+      n: 2420
+    out: 359
+  - name: "case_60"
+    in:
+      n: 7314
+    out: 932
+  - name: "case_61"
+    in:
+      n: 8282
+    out: 1038
+  - name: "case_62"
+    in:
+      n: 6444
+    out: 836
+  - name: "case_63"
+    in:
+      n: 6472
+    out: 839
+  - name: "case_64"
+    in:
+      n: 5948
+    out: 780
+  - name: "generated_01"
+    seed: 20401
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000
+  - name: "generated_02"
+    seed: 20402
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000
+  - name: "generated_03"
+    seed: 20403
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000
+  - name: "generated_04"
+    seed: 20404
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000
+  - name: "generated_05"
+    seed: 20405
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000
+  - name: "generated_06"
+    seed: 20406
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000
+  - name: "generated_07"
+    seed: 20407
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000
+  - name: "generated_08"
+    seed: 20408
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 200000

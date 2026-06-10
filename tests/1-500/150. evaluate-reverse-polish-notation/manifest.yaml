@@ -1,0 +1,437 @@
+entry:
+  id: 150
+  title: "evaluate-reverse-polish-notation"
+  params:
+    tokens:
+      type: "array"
+      items:
+        type: "string"
+  call:
+    cpp: "Solution().evalRPN({tokens})"
+    rust: "Solution::eval_rpn({tokens})"
+    python3: "Solution().evalRPN({tokens})"
+    python2: "Solution().evalRPN({tokens})"
+    ruby: "eval_rpn({tokens})"
+    java: "new Solution().evalRPN({tokens})"
+    csharp: "new Solution().EvalRPN({tokens})"
+    kotlin: "Solution().evalRPN({tokens})"
+    go: "evalRPN({tokens})"
+    dart: "Solution().evalRPN({tokens})"
+    swift: "Solution().evalRPN({tokens})"
+    typescript: "evalRPN({tokens})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().evalRPN(tokens, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def evalRPN(self, tokens: List[str]) -> int:
+              def calc(a,b,op):
+                  if op == "+":return a+b
+                  elif op == "-": return a-b
+                  elif op == "/": return int(a/b)
+                  elif op == "*":return a*b
+              stack = []
+              for t in tokens:
+                  if t in {"+", "*", "-", "/"}:
+                      a = stack.pop(-1)
+                      b = stack.pop(-1)
+                      stack.append(calc(b,a,t))
+                  else:
+                      stack.append(int(t))
+              return stack[0]
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def evalRPN(self, tokens, result):
+              prepared_tokens = prepare_input(tokens, "array[string]")
+              expected = Solution().evalRPN(prepared_tokens)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 150
+tests:
+  - name: "case_01"
+    in:
+      tokens: ["2", "1", "+", "3", "*"]
+    out: 9
+  - name: "case_02"
+    in:
+      tokens: ["4", "13", "5", "/", "+"]
+    out: 6
+  - name: "case_03"
+    in:
+      tokens:
+        ["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]
+    out: 22
+  - name: "case_04"
+    in:
+      tokens: ["-9", "-5", "2", "*", "-", "6", "*"]
+    out: 6
+  - name: "case_05"
+    in:
+      tokens: ["-1", "8", "*"]
+    out: -8
+  - name: "case_06"
+    in:
+      tokens: ["-4", "-6", "*", "-9", "*"]
+    out: -216
+  - name: "case_07"
+    in:
+      tokens: ["-2", "-8", "1", "3", "*", "9", "-", "-7", "+", "*", "-"]
+    out: -106
+  - name: "case_08"
+    in:
+      tokens: ["8", "6", "+"]
+    out: 14
+  - name: "case_09"
+    in:
+      tokens: ["1", "6", "-5", "1", "-4", "-1", "-", "+", "-", "*", "-"]
+    out: 19
+  - name: "case_10"
+    in:
+      tokens: ["1", "7", "4", "-", "-7", "*", "-"]
+    out: 22
+  - name: "case_11"
+    in:
+      tokens: ["-3", "5", "-9", "-", "+"]
+    out: 11
+  - name: "case_12"
+    in:
+      tokens: ["-1", "2", "-6", "-2", "*", "-3", "8", "-", "-", "*", "*"]
+    out: -46
+  - name: "case_13"
+    in:
+      tokens: ["3", "7", "5", "*", "*", "4", "+"]
+    out: 109
+  - name: "case_14"
+    in:
+      tokens: ["9", "8", "6", "8", "8", "+", "-7", "-", "+", "-", "+"]
+    out: -12
+  - name: "case_15"
+    in:
+      tokens: ["-4", "-9", "-", "-3", "*", "4", "+", "-5", "+"]
+    out: -16
+  - name: "case_16"
+    in:
+      tokens: ["-9", "-4", "*", "-1", "*", "4", "*", "9", "-"]
+    out: -153
+  - name: "case_17"
+    in:
+      tokens: ["5", "5", "-5", "-4", "+", "+", "*"]
+    out: -20
+  - name: "case_18"
+    in:
+      tokens: ["-6", "4", "-3", "5", "-", "-5", "-", "-", "*"]
+    out: -42
+  - name: "case_19"
+    in:
+      tokens: ["2", "1", "8", "-3", "8", "-3", "-", "*", "-", "-", "*"]
+    out: -80
+  - name: "case_20"
+    in:
+      tokens: ["-3", "5", "4", "8", "-1", "+", "*", "*", "-"]
+    out: -143
+  - name: "case_21"
+    in:
+      tokens: ["4", "-7", "1", "-6", "*", "+", "*"]
+    out: -52
+  - name: "case_22"
+    in:
+      tokens: ["-7", "-8", "+", "-7", "-", "-1", "-", "2", "7", "*", "+"]
+    out: 7
+  - name: "case_23"
+    in:
+      tokens: ["-9", "1", "2", "+", "-", "3", "-2", "+", "+"]
+    out: -11
+  - name: "case_24"
+    in:
+      tokens: ["7", "-7", "-2", "1", "-", "*", "+"]
+    out: 28
+  - name: "case_25"
+    in:
+      tokens: ["5", "9", "*"]
+    out: 45
+  - name: "case_26"
+    in:
+      tokens: ["1", "-8", "*", "-7", "1", "-", "-9", "-", "*"]
+    out: -8
+  - name: "case_27"
+    in:
+      tokens: ["-7", "8", "*", "5", "-6", "-6", "-4", "-", "*", "*", "*"]
+    out: -3360
+  - name: "case_28"
+    in:
+      tokens: ["1", "3", "3", "-", "8", "+", "-"]
+    out: -7
+  - name: "case_29"
+    in:
+      tokens: ["-8", "-4", "-6", "8", "2", "*", "6", "-", "*", "-", "+"]
+    out: 48
+  - name: "case_30"
+    in:
+      tokens: ["-9", "-3", "-9", "-3", "-1", "+", "+", "-", "+"]
+    out: 1
+  - name: "case_31"
+    in:
+      tokens: ["-8", "5", "-9", "3", "-", "+", "7", "+", "-"]
+    out: -8
+  - name: "case_32"
+    in:
+      tokens: ["4", "1", "-6", "*", "-"]
+    out: 10
+  - name: "case_33"
+    in:
+      tokens: ["-1", "7", "-5", "-", "6", "-7", "-", "-", "+"]
+    out: -2
+  - name: "case_34"
+    in:
+      tokens: ["-8", "-3", "+", "-7", "6", "-", "-"]
+    out: 2
+  - name: "case_35"
+    in:
+      tokens: ["-2", "-1", "5", "+", "-", "-3", "-"]
+    out: -3
+  - name: "case_36"
+    in:
+      tokens: ["4", "4", "-1", "-", "-"]
+    out: -1
+  - name: "case_37"
+    in:
+      tokens: ["7", "2", "-", "-6", "-2", "*", "+", "5", "-"]
+    out: 12
+  - name: "case_38"
+    in:
+      tokens: ["2", "-6", "*", "-4", "8", "-9", "-", "+", "-8", "*", "*"]
+    out: 1248
+  - name: "case_39"
+    in:
+      tokens: ["-7", "1", "*", "-1", "*", "-1", "+"]
+    out: 6
+  - name: "case_40"
+    in:
+      tokens: ["-9", "-9", "*", "-3", "-", "3", "7", "-", "*"]
+    out: -336
+  - name: "case_41"
+    in:
+      tokens: ["9", "8", "-7", "-", "-", "-1", "9", "*", "-"]
+    out: 3
+  - name: "case_42"
+    in:
+      tokens: ["-7", "2", "*", "5", "1", "-", "-", "-8", "-"]
+    out: -10
+  - name: "case_43"
+    in:
+      tokens: ["-7", "1", "2", "-", "-9", "-3", "+", "5", "-", "+", "+"]
+    out: -25
+  - name: "case_44"
+    in:
+      tokens: ["-6", "1", "+", "-9", "-", "9", "1", "+", "-"]
+    out: -6
+  - name: "case_45"
+    in:
+      tokens: ["-7", "4", "4", "-", "*"]
+    out: 0
+  - name: "case_46"
+    in:
+      tokens: ["4", "-2", "-8", "4", "8", "+", "-", "*", "-"]
+    out: -36
+  - name: "case_47"
+    in:
+      tokens: ["-3", "3", "+", "1", "+", "2", "1", "-", "3", "-", "+"]
+    out: -1
+  - name: "case_48"
+    in:
+      tokens: ["3", "-6", "*", "-4", "+", "-8", "5", "+", "*"]
+    out: 66
+  - name: "case_49"
+    in:
+      tokens: ["6", "3", "+"]
+    out: 9
+  - name: "case_50"
+    in:
+      tokens: ["4", "-1", "-", "7", "8", "5", "+", "+", "-2", "*", "-"]
+    out: 45
+  - name: "case_51"
+    in:
+      tokens: ["-9", "2", "6", "4", "*", "6", "*", "3", "*", "-", "*"]
+    out: 3870
+  - name: "case_52"
+    in:
+      tokens: ["4", "7", "5", "5", "-", "*", "*"]
+    out: 0
+  - name: "case_53"
+    in:
+      tokens: ["1", "4", "*", "-7", "-2", "+", "*"]
+    out: -36
+  - name: "case_54"
+    in:
+      tokens: ["6", "-7", "-", "-1", "-", "5", "7", "-2", "+", "-", "-"]
+    out: 14
+  - name: "case_55"
+    in:
+      tokens: ["7", "-2", "*"]
+    out: -14
+  - name: "case_56"
+    in:
+      tokens: ["5", "-5", "*"]
+    out: -25
+  - name: "case_57"
+    in:
+      tokens: ["1", "8", "3", "1", "*", "-4", "1", "*", "+", "+", "+"]
+    out: 8
+  - name: "case_58"
+    in:
+      tokens: ["7", "-6", "-"]
+    out: 13
+  - name: "case_59"
+    in:
+      tokens: ["-7", "-1", "*", "9", "+"]
+    out: 16
+  - name: "case_60"
+    in:
+      tokens: ["-8", "-8", "-", "-1", "-9", "*", "*"]
+    out: 0
+  - name: "case_61"
+    in:
+      tokens: ["-7", "-4", "4", "-3", "7", "6", "-", "+", "-", "*", "+"]
+    out: -31
+  - name: "case_62"
+    in:
+      tokens: ["1", "-9", "+"]
+    out: -8
+  - name: "case_63"
+    in:
+      tokens: ["3", "-5", "-1", "*", "+"]
+    out: 8
+  - name: "case_64"
+    in:
+      tokens: ["8", "4", "3", "+", "*"]
+    out: 56
+  - name: "case_65"
+    in:
+      tokens: ["9", "-6", "7", "1", "*", "+", "6", "+", "-"]
+    out: 2
+  - name: "case_66"
+    in:
+      tokens: ["-6", "8", "-6", "*", "*"]
+    out: 288
+  - name: "case_67"
+    in:
+      tokens: ["-4", "-9", "+", "-8", "-8", "*", "+"]
+    out: 51
+  - name: "case_68"
+    in:
+      tokens: ["-2", "1", "-5", "-1", "1", "*", "*", "-", "+"]
+    out: -6
+  - name: "case_69"
+    in:
+      tokens: ["6", "6", "+"]
+    out: 12
+  - name: "case_70"
+    in:
+      tokens: ["5", "-5", "+", "-9", "-", "1", "3", "*", "+"]
+    out: 12
+  - name: "case_71"
+    in:
+      tokens: ["2", "-9", "-6", "-9", "7", "-", "-", "-", "-"]
+    out: 21
+  - name: "case_72"
+    in:
+      tokens: ["-4", "-8", "-"]
+    out: 4

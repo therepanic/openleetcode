@@ -1,0 +1,515 @@
+entry:
+  id: 167
+  title: "two-sum-ii-input-array-is-sorted"
+  params:
+    numbers:
+      type: "array"
+      items:
+        type: "int"
+    target:
+      type: "int"
+  call:
+    cpp: "Solution().twoSum({numbers}, {target})"
+    rust: "Solution::two_sum({numbers}, {target})"
+    python3: "Solution().twoSum({numbers}, {target})"
+    python2: "Solution().twoSum({numbers}, {target})"
+    ruby: "two_sum({numbers}, {target})"
+    java: "new Solution().twoSum({numbers}, {target})"
+    csharp: "new Solution().TwoSum({numbers}, {target})"
+    kotlin: "Solution().twoSum({numbers}, {target})"
+    go: "twoSum({numbers}, {target})"
+    dart: "Solution().twoSum({numbers}, {target})"
+    swift: "Solution().twoSum({numbers}, {target})"
+    typescript: "twoSum({numbers}, {target})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().twoSum(numbers, target, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def twoSum(self, numbers, target):
+
+              start = 0
+              end = len(numbers) - 1
+
+              while start < end:
+
+                  total = numbers[start] + numbers[end]
+
+                  if total == target:
+                      return [start + 1, end + 1]
+
+                  elif total < target:
+                      start += 1
+                  else:
+                      end -= 1
+
+              return [-1, -1]
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "array[int]"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def twoSum(self, numbers, target, result):
+              prepared_numbers = prepare_input(numbers, "array[int]"); prepared_target = prepare_input(target, "int")
+              expected = Solution().twoSum(prepared_numbers, prepared_target)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 167
+tests:
+  - name: "case_01"
+    in:
+      numbers: [-50, -40, 16, 42, 44, 45, 48]
+      target: 86
+    out: [4, 5]
+  - name: "case_02"
+    in:
+      numbers: [-50, -42, -41, -39, -29, -14, 3, 14, 37, 43]
+      target: -64
+    out: [1, 6]
+  - name: "case_03"
+    in:
+      numbers: [-50, -28, -18, -11, 6, 32, 39, 42, 43]
+      target: 21
+    out: [3, 7]
+  - name: "case_04"
+    in:
+      numbers: [-19, -17, 0, 1, 8]
+      target: -18
+    out: [1, 4]
+  - name: "case_05"
+    in:
+      numbers: [-35, -33, -22, -21, -19, -5, 10, 24, 26, 30, 43, 50]
+      target: -9
+    out: [1, 9]
+  - name: "case_06"
+    in:
+      numbers: [-30, 8, 43, 45]
+      target: 51
+    out: [2, 3]
+  - name: "case_07"
+    in:
+      numbers: [-50, -43, -36, -30, -28, -22, 17, 23, 30]
+      target: -27
+    out: [1, 8]
+  - name: "case_08"
+    in:
+      numbers: [-45, -34, -19, -16, -11, -4, 3, 18, 30, 33, 39, 46, 48]
+      target: 37
+    out: [5, 13]
+  - name: "case_09"
+    in:
+      numbers: [-49, -48, -38, -31, -16, -15, -12, -7, -2, 2, 13, 46]
+      target: 39
+    out: [8, 12]
+  - name: "case_10"
+    in:
+      numbers: [-42, -30, -26, 8, 14, 17, 40, 44, 47]
+      target: -25
+    out: [1, 6]
+  - name: "case_11"
+    in:
+      numbers: [-41, -11, -3, 15, 34]
+      target: 12
+    out: [3, 4]
+  - name: "case_12"
+    in:
+      numbers: [-48, -34, -31, -22, -18, -12, 42, 45, 46]
+      target: -46
+    out: [2, 6]
+  - name: "case_13"
+    in:
+      numbers: [-50, -48, -47, -42, -32, -10, -8, -6, 6, 34, 43, 49]
+      target: -4
+    out: [3, 11]
+  - name: "case_14"
+    in:
+      numbers: [-28, 30]
+      target: 2
+    out: [1, 2]
+  - name: "case_15"
+    in:
+      numbers: [-46, -39, -35, -27, -26, -24, -21, -1, 1, 12, 27, 37, 43]
+      target: -48
+    out: [4, 7]
+  - name: "case_16"
+    in:
+      numbers: [-40, -18, -14, -12, 23, 47]
+      target: 70
+    out: [5, 6]
+  - name: "case_17"
+    in:
+      numbers: [-36, 5, 22, 29]
+      target: 34
+    out: [2, 4]
+  - name: "case_18"
+    in:
+      numbers: [-41, -32, -27, -25, -18, -15, -3, 18, 28, 38, 50]
+      target: -44
+    out: [1, 7]
+  - name: "case_19"
+    in:
+      numbers: [-50, -40, -9, 3, 14, 24, 25, 29, 39, 41, 42]
+      target: -36
+    out: [1, 5]
+  - name: "case_20"
+    in:
+      numbers: [-44, -38]
+      target: -82
+    out: [1, 2]
+  - name: "case_21"
+    in:
+      numbers: [-39, -36, -25, -5, -4, -2, 35]
+      target: -40
+    out: [2, 5]
+  - name: "case_22"
+    in:
+      numbers: [-50, -31, -13, 10, 30, 31, 43]
+      target: 17
+    out: [3, 5]
+  - name: "case_23"
+    in:
+      numbers: [-48, -40, -39, -33, -16, -14, -12, -8, 2, 16, 17, 29]
+      target: -55
+    out: [3, 5]
+  - name: "case_24"
+    in:
+      numbers: [-39, -20, -16, -8, -5, -4, -2, 3, 11, 28]
+      target: -10
+    out: [4, 7]
+  - name: "case_25"
+    in:
+      numbers: [-41, -17, 11, 13, 37, 45, 47]
+      target: 48
+    out: [3, 5]
+  - name: "case_26"
+    in:
+      numbers: [-49, 13, 14, 16, 31, 32, 33, 35, 38, 41, 43]
+      target: 64
+    out: [5, 7]
+  - name: "case_27"
+    in:
+      numbers: [-47, -45, -34, -27, -13, -9, 4, 11, 15, 17, 22, 27, 31, 47]
+      target: 13
+    out: [3, 14]
+  - name: "case_28"
+    in:
+      numbers: [-44, -42, -30, -27, -22, -8, -7, 0, 23, 32, 50]
+      target: 24
+    out: [6, 10]
+  - name: "case_29"
+    in:
+      numbers: [-17, -11]
+      target: -28
+    out: [1, 2]
+  - name: "case_30"
+    in:
+      numbers: [38, 41, 43]
+      target: 79
+    out: [1, 2]
+  - name: "case_31"
+    in:
+      numbers: [-48, -20]
+      target: -68
+    out: [1, 2]
+  - name: "case_32"
+    in:
+      numbers: [-16, -14, -6, 8, 10, 40]
+      target: -30
+    out: [1, 2]
+  - name: "case_33"
+    in:
+      numbers: [-44, -43, -36, -15, -12, 11, 14, 15, 18, 31, 39]
+      target: -59
+    out: [1, 4]
+  - name: "case_34"
+    in:
+      numbers: [-50, -46, -33, -31, -29, -18, -1, 7, 22, 28, 43]
+      target: -81
+    out: [1, 4]
+  - name: "case_35"
+    in:
+      numbers: [-5, 31, 41]
+      target: 26
+    out: [1, 2]
+  - name: "case_36"
+    in:
+      numbers: [-49, -24, -2, 1, 15, 27, 44]
+      target: -48
+    out: [1, 4]
+  - name: "case_37"
+    in:
+      numbers: [-29, -13, -10, -8, 9, 15, 26, 29, 44]
+      target: 15
+    out: [1, 9]
+  - name: "case_38"
+    in:
+      numbers: [-45, -26, -25, -22, -9, -5, 7, 13, 16, 29, 37, 38]
+      target: -51
+    out: [2, 3]
+  - name: "case_39"
+    in:
+      numbers: [6, 50]
+      target: 56
+    out: [1, 2]
+  - name: "case_40"
+    in:
+      numbers: [-47, -16, -14, -2, 12, 19, 37, 45]
+      target: -35
+    out: [1, 5]
+  - name: "case_41"
+    in:
+      numbers: [-37, -32, -6, 5, 7, 49]
+      target: -38
+    out: [2, 3]
+  - name: "case_42"
+    in:
+      numbers: [-34, -21, -18, -14, -1, 20]
+      target: 6
+    out: [4, 6]
+  - name: "case_43"
+    in:
+      numbers: [-36, -28, -20, -11, -8, 10, 18]
+      target: -64
+    out: [1, 2]
+  - name: "case_44"
+    in:
+      numbers: [-46, -23, -18, 10, 15, 27, 45]
+      target: -8
+    out: [2, 5]
+  - name: "case_45"
+    in:
+      numbers: [-7, 5, 10, 35, 42, 46]
+      target: 81
+    out: [4, 6]
+  - name: "case_46"
+    in:
+      numbers:
+        [-45, -44, -43, -36, -33, -29, -24, -21, -11, -5, -1, 4, 8, 35, 45]
+      target: 6
+    out: [6, 14]
+  - name: "case_47"
+    in:
+      numbers: [-43, -36, -21, -18, -15, -11, -9, -6, 0, 26, 41]
+      target: -51
+    out: [2, 5]
+  - name: "case_48"
+    in:
+      numbers: [-41, -32, -5, -4, 11, 23, 25, 26, 31]
+      target: -37
+    out: [2, 3]
+  - name: "case_49"
+    in:
+      numbers: [-37, -22, -3, 16, 28, 30, 46]
+      target: -7
+    out: [1, 6]
+  - name: "case_50"
+    in:
+      numbers: [-47, -35, -6, -3, 10, 15, 23, 27, 35, 39, 43, 49]
+      target: 20
+    out: [4, 7]
+  - name: "case_51"
+    in:
+      numbers: [-49, -27, -23, -20, -17, -16, -3, 13, 14, 17, 27, 41, 45, 49]
+      target: 21
+    out: [4, 12]
+  - name: "case_52"
+    in:
+      numbers: [-43, -41, -20, -7, -4, 20, 24, 28, 38, 40, 41]
+      target: 61
+    out: [6, 11]
+  - name: "case_53"
+    in:
+      numbers: [-22, -21, -17, 2, 3, 9, 33, 45]
+      target: 47
+    out: [4, 8]
+  - name: "case_54"
+    in:
+      numbers: [-47, -42, 7, 25, 45]
+      target: 32
+    out: [3, 4]
+  - name: "case_55"
+    in:
+      numbers: [-26, -6, 5, 23, 32, 39, 40, 43, 47, 48, 50]
+      target: 28
+    out: [3, 4]
+  - name: "case_56"
+    in:
+      numbers: [-45, -36, -21, -10, 8, 16, 22, 50]
+      target: 38
+    out: [6, 7]
+  - name: "case_57"
+    in:
+      numbers: [-24, -10]
+      target: -34
+    out: [1, 2]
+  - name: "case_58"
+    in:
+      numbers: [-49, -42, -28, -15, -13, -2, 6, 7, 34, 40, 48]
+      target: 82
+    out: [9, 11]
+  - name: "case_59"
+    in:
+      numbers: [-37, -23, -13, -7, 2, 28]
+      target: -35
+    out: [1, 5]
+  - name: "case_60"
+    in:
+      numbers: [-46, -16, -5, 21]
+      target: -25
+    out: [1, 4]
+  - name: "case_61"
+    in:
+      numbers: [-40, -24, -14, -8, -3, 4, 35, 43, 49]
+      target: 41
+    out: [4, 9]
+  - name: "case_62"
+    in:
+      numbers:
+        [-47, -36, -33, -29, -23, -21, -15, -14, 18, 21, 28, 29, 40, 48, 49]
+      target: 26
+    out: [5, 15]
+  - name: "case_63"
+    in:
+      numbers: [-50, -49]
+      target: -99
+    out: [1, 2]
+  - name: "case_64"
+    in:
+      numbers: [-42, -37, -26, -20, -18, -15, 12, 16, 23, 26, 36, 43, 49]
+      target: -68
+    out: [1, 3]
+  - name: "case_65"
+    in:
+      numbers: [-35, -32, -25, -23, -20, -9, 4, 6, 22, 25, 39, 47]
+      target: -10
+    out: [1, 10]
+  - name: "case_66"
+    in:
+      numbers: [0, 29, 41, 48]
+      target: 41
+    out: [1, 3]
+  - name: "case_67"
+    in:
+      numbers: [10, 33, 46]
+      target: 56
+    out: [1, 3]
+  - name: "case_68"
+    in:
+      numbers: [-18, 6, 25, 28, 34, 41, 47]
+      target: 59
+    out: [3, 5]
+  - name: "case_69"
+    in:
+      numbers: [-46, -27, -21, -15, -8, -7, 1, 15, 27, 39]
+      target: -14
+    out: [4, 7]
+  - name: "case_70"
+    in:
+      numbers: [-34, -22, 22, 37, 44, 48]
+      target: 26
+    out: [2, 6]
+  - name: "case_71"
+    in:
+      numbers: [-49, -48, -38, -29, -28, -11, -10, 17, 28, 29, 36, 45, 46]
+      target: 0
+    out: [4, 10]
+  - name: "case_72"
+    in:
+      numbers: [-43, -34, -24, -9, -8, -2, 2, 8, 30, 42]
+      target: -32
+    out: [2, 7]

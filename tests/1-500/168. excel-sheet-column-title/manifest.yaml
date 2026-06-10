@@ -1,0 +1,452 @@
+entry:
+  id: 168
+  title: "excel-sheet-column-title"
+  params:
+    columnNumber:
+      type: "int"
+  call:
+    cpp: "Solution().convertToTitle({columnNumber})"
+    rust: "Solution::convert_to_title({columnNumber})"
+    python3: "Solution().convertToTitle({columnNumber})"
+    python2: "Solution().convertToTitle({columnNumber})"
+    ruby: "convert_to_title({columnNumber})"
+    java: "new Solution().convertToTitle({columnNumber})"
+    csharp: "new Solution().ConvertToTitle({columnNumber})"
+    kotlin: "Solution().convertToTitle({columnNumber})"
+    go: "convertToTitle({columnNumber})"
+    dart: "Solution().convertToTitle({columnNumber})"
+    swift: "Solution().convertToTitle({columnNumber})"
+    typescript: "convertToTitle({columnNumber})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().convertToTitle(columnNumber, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def convertToTitle(self, columnNumber: int) -> str:
+              res = ""
+
+              while columnNumber > 0:
+                  columnNumber -= 1
+                  res = chr((columnNumber % 26) + ord("A")) + res
+                  columnNumber //= 26
+
+              return res
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "string"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def convertToTitle(self, columnNumber, result):
+              prepared_columnNumber = prepare_input(columnNumber, "int")
+              expected = Solution().convertToTitle(prepared_columnNumber)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 168
+tests:
+  - name: "case_01"
+    in:
+      columnNumber: 1
+    out: "A"
+  - name: "case_02"
+    in:
+      columnNumber: 28
+    out: "AB"
+  - name: "case_03"
+    in:
+      columnNumber: 701
+    out: "ZY"
+  - name: "case_04"
+    in:
+      columnNumber: 1883
+    out: "BTK"
+  - name: "case_05"
+    in:
+      columnNumber: 8472
+    out: "LMV"
+  - name: "case_06"
+    in:
+      columnNumber: 6053
+    out: "HXU"
+  - name: "case_07"
+    in:
+      columnNumber: 6220
+    out: "IEF"
+  - name: "case_08"
+    in:
+      columnNumber: 3020
+    out: "DLD"
+  - name: "case_09"
+    in:
+      columnNumber: 3632
+    out: "EIR"
+  - name: "case_10"
+    in:
+      columnNumber: 8724
+    out: "LWN"
+  - name: "case_11"
+    in:
+      columnNumber: 3114
+    out: "DOT"
+  - name: "case_12"
+    in:
+      columnNumber: 3241
+    out: "DTQ"
+  - name: "case_13"
+    in:
+      columnNumber: 8945
+    out: "MFA"
+  - name: "case_14"
+    in:
+      columnNumber: 8397
+    out: "LJY"
+  - name: "case_15"
+    in:
+      columnNumber: 8189
+    out: "LBY"
+  - name: "case_16"
+    in:
+      columnNumber: 9983
+    out: "NSY"
+  - name: "case_17"
+    in:
+      columnNumber: 3574
+    out: "EGL"
+  - name: "case_18"
+    in:
+      columnNumber: 6286
+    out: "IGT"
+  - name: "case_19"
+    in:
+      columnNumber: 1864
+    out: "BSR"
+  - name: "case_20"
+    in:
+      columnNumber: 1918
+    out: "BUT"
+  - name: "case_21"
+    in:
+      columnNumber: 6877
+    out: "JDM"
+  - name: "case_22"
+    in:
+      columnNumber: 8696
+    out: "LVL"
+  - name: "case_23"
+    in:
+      columnNumber: 5638
+    out: "HHV"
+  - name: "case_24"
+    in:
+      columnNumber: 5669
+    out: "HJA"
+  - name: "case_25"
+    in:
+      columnNumber: 5316
+    out: "GVL"
+  - name: "case_26"
+    in:
+      columnNumber: 9663
+    out: "NGQ"
+  - name: "case_27"
+    in:
+      columnNumber: 2775
+    out: "DBS"
+  - name: "case_28"
+    in:
+      columnNumber: 6164
+    out: "ICB"
+  - name: "case_29"
+    in:
+      columnNumber: 9077
+    out: "MKC"
+  - name: "case_30"
+    in:
+      columnNumber: 4161
+    out: "FDA"
+  - name: "case_31"
+    in:
+      columnNumber: 7455
+    out: "JZS"
+  - name: "case_32"
+    in:
+      columnNumber: 462
+    out: "QT"
+  - name: "case_33"
+    in:
+      columnNumber: 83
+    out: "CE"
+  - name: "case_34"
+    in:
+      columnNumber: 3442
+    out: "EBJ"
+  - name: "case_35"
+    in:
+      columnNumber: 5262
+    out: "GTJ"
+  - name: "case_36"
+    in:
+      columnNumber: 3117
+    out: "DOW"
+  - name: "case_37"
+    in:
+      columnNumber: 2542
+    out: "CST"
+  - name: "case_38"
+    in:
+      columnNumber: 6673
+    out: "IVQ"
+  - name: "case_39"
+    in:
+      columnNumber: 7324
+    out: "JUR"
+  - name: "case_40"
+    in:
+      columnNumber: 9761
+    out: "NKK"
+  - name: "case_41"
+    in:
+      columnNumber: 293
+    out: "KG"
+  - name: "case_42"
+    in:
+      columnNumber: 6910
+    out: "JET"
+  - name: "case_43"
+    in:
+      columnNumber: 5187
+    out: "GQM"
+  - name: "case_44"
+    in:
+      columnNumber: 4621
+    out: "FUS"
+  - name: "case_45"
+    in:
+      columnNumber: 7158
+    out: "JOH"
+  - name: "case_46"
+    in:
+      columnNumber: 2470
+    out: "CPZ"
+  - name: "case_47"
+    in:
+      columnNumber: 6667
+    out: "IVK"
+  - name: "case_48"
+    in:
+      columnNumber: 6772
+    out: "IZL"
+  - name: "case_49"
+    in:
+      columnNumber: 1255
+    out: "AVG"
+  - name: "case_50"
+    in:
+      columnNumber: 8788
+    out: "LYZ"
+  - name: "case_51"
+    in:
+      columnNumber: 404
+    out: "ON"
+  - name: "case_52"
+    in:
+      columnNumber: 9032
+    out: "MIJ"
+  - name: "case_53"
+    in:
+      columnNumber: 4046
+    out: "EYP"
+  - name: "case_54"
+    in:
+      columnNumber: 570
+    out: "UX"
+  - name: "case_55"
+    in:
+      columnNumber: 95
+    out: "CQ"
+  - name: "case_56"
+    in:
+      columnNumber: 4086
+    out: "FAD"
+  - name: "case_57"
+    in:
+      columnNumber: 7277
+    out: "JSW"
+  - name: "case_58"
+    in:
+      columnNumber: 7164
+    out: "JON"
+  - name: "case_59"
+    in:
+      columnNumber: 7439
+    out: "JZC"
+  - name: "case_60"
+    in:
+      columnNumber: 1367
+    out: "AZO"
+  - name: "case_61"
+    in:
+      columnNumber: 2479
+    out: "CQI"
+  - name: "case_62"
+    in:
+      columnNumber: 6465
+    out: "INQ"
+  - name: "case_63"
+    in:
+      columnNumber: 5887
+    out: "HRK"
+  - name: "case_64"
+    in:
+      columnNumber: 9215
+    out: "MPK"
+  - name: "generated_01"
+    seed: 16801
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647
+  - name: "generated_02"
+    seed: 16802
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647
+  - name: "generated_03"
+    seed: 16803
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647
+  - name: "generated_04"
+    seed: 16804
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647
+  - name: "generated_05"
+    seed: 16805
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647
+  - name: "generated_06"
+    seed: 16806
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647
+  - name: "generated_07"
+    seed: 16807
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647
+  - name: "generated_08"
+    seed: 16808
+    in:
+      columnNumber:
+        gen: "int"
+        min: 1
+        max: 2147483647

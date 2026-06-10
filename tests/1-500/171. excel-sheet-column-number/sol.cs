@@ -1,0 +1,7 @@
+public class Solution {
+    public int TitleToNumber(string columnTitle) {
+        int ans = 0;
+        foreach (char ch in columnTitle) ans = ans * 26 + (ch - 'A' + 1);
+        return ans;
+    }
+}

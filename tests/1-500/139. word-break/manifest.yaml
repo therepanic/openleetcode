@@ -1,0 +1,527 @@
+entry:
+  id: 139
+  title: "word-break"
+  params:
+    s:
+      type: "string"
+    wordDict:
+      type: "array"
+      items:
+        type: "string"
+  call:
+    cpp: "Solution().wordBreak({s}, {wordDict})"
+    rust: "Solution::word_break({s}, {wordDict})"
+    python3: "Solution().wordBreak({s}, {wordDict})"
+    python2: "Solution().wordBreak({s}, {wordDict})"
+    ruby: "word_break({s}, {wordDict})"
+    java: "new Solution().wordBreak({s}, {wordDict})"
+    csharp: "new Solution().WordBreak({s}, {wordDict})"
+    kotlin: "Solution().wordBreak({s}, {wordDict})"
+    go: "wordBreak({s}, {wordDict})"
+    dart: "Solution().wordBreak({s}, {wordDict})"
+    swift: "Solution().wordBreak({s}, {wordDict})"
+    typescript: "wordBreak({s}, {wordDict})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().wordBreak(s, wordDict, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class TrieNode:
+          def __init__(self):
+              self.isWord = False
+              self.child = defaultdict(TrieNode)
+
+          def addWord(self, word):
+              cur = self
+              for c in word:
+                  cur = cur.child[c]
+              cur.isWord = True
+
+      class Solution:
+          def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+              root = TrieNode()
+              for word in wordDict:
+                  root.addWord(word)
+
+              maxL = max(len(w) for w in wordDict)
+              n = len(s)
+              dp = [False] * (n+1)
+              dp[n] = True
+
+              for i in range(n-1, -1, -1):
+                  cur = root
+                  for j in range(i, min(i + maxL, n)):
+                      c = s[j]
+                      if c not in cur.child: break  # s[i:j+1] not exist in our trie
+                      cur = cur.child[c]
+                      if cur.isWord and dp[j+1]:
+                          dp[i] = True
+                          break
+
+              return dp[0]
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "bool"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def wordBreak(self, s, wordDict, result):
+              prepared_s = prepare_input(s, "string"); prepared_wordDict = prepare_input(wordDict, "array[string]")
+              expected = Solution().wordBreak(prepared_s, prepared_wordDict)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 139
+tests:
+  - name: "case_01"
+    in:
+      s: "leetcode"
+      wordDict: ["leet", "code"]
+    out: true
+  - name: "case_02"
+    in:
+      s: "applepenapple"
+      wordDict: ["apple", "pen"]
+    out: true
+  - name: "case_03"
+    in:
+      s: "catsandog"
+      wordDict: ["cats", "dog", "sand", "and", "cat"]
+    out: false
+  - name: "case_04"
+    in:
+      s: "abba"
+      wordDict: ["aa", "bb", "bab", "a", "ab", "b", "ba"]
+    out: true
+  - name: "case_05"
+    in:
+      s: "abbbb"
+      wordDict: ["bb", "aa", "a", "aba"]
+    out: true
+  - name: "case_06"
+    in:
+      s: "baabaaaabaaaaa"
+      wordDict: ["ba", "aa", "aba"]
+    out: true
+  - name: "case_07"
+    in:
+      s: "aba"
+      wordDict: ["b", "ab", "ba", "aba"]
+    out: true
+  - name: "case_08"
+    in:
+      s: "bbbb"
+      wordDict: ["ba", "bb", "bab"]
+    out: true
+  - name: "case_09"
+    in:
+      s: "bbaba"
+      wordDict: ["aa", "bb", "aba", "a", "bab"]
+    out: true
+  - name: "case_10"
+    in:
+      s: "baabbc"
+      wordDict: ["ba", "a", "aba", "b", "aa", "bab"]
+    out: false
+  - name: "case_11"
+    in:
+      s: "abaabaaaac"
+      wordDict: ["bab", "ba", "bb", "b", "a", "aba", "ab", "aa"]
+    out: false
+  - name: "case_12"
+    in:
+      s: "bba"
+      wordDict: ["bb", "aa", "a", "b", "ba"]
+    out: true
+  - name: "case_13"
+    in:
+      s: "baba"
+      wordDict: ["ba", "a", "b", "bb", "aba", "ab", "bab"]
+    out: true
+  - name: "case_14"
+    in:
+      s: "babbaba"
+      wordDict: ["bb", "ba", "a", "aa", "aba", "b"]
+    out: true
+  - name: "case_15"
+    in:
+      s: "bbaab"
+      wordDict: ["aa", "b", "a", "ba", "bb", "bab", "ab", "aba"]
+    out: true
+  - name: "case_16"
+    in:
+      s: "aaababac"
+      wordDict: ["aa", "aba", "b", "ab", "ba", "bab", "a", "bb"]
+    out: false
+  - name: "case_17"
+    in:
+      s: "bb"
+      wordDict: ["ba", "aa", "bb", "a", "aba", "bab"]
+    out: true
+  - name: "case_18"
+    in:
+      s: "abbbbac"
+      wordDict: ["a", "aba", "bb", "ba", "ab", "bab"]
+    out: false
+  - name: "case_19"
+    in:
+      s: "b"
+      wordDict: ["aa", "a", "b", "aba", "bab"]
+    out: true
+  - name: "case_20"
+    in:
+      s: "ba"
+      wordDict: ["ba", "bab", "a", "bb"]
+    out: true
+  - name: "case_21"
+    in:
+      s: "aaaaba"
+      wordDict: ["bab", "ab", "b", "aa", "ba", "bb"]
+    out: true
+  - name: "case_22"
+    in:
+      s: "baaaba"
+      wordDict: ["ba", "b", "aa", "aba"]
+    out: true
+  - name: "case_23"
+    in:
+      s: "babaab"
+      wordDict: ["b", "ba", "a", "bab"]
+    out: true
+  - name: "case_24"
+    in:
+      s: "babbab"
+      wordDict: ["aa", "ba", "bab"]
+    out: true
+  - name: "case_25"
+    in:
+      s: "babbbbabbab"
+      wordDict: ["bab", "ab", "bb", "a", "ba", "b"]
+    out: true
+  - name: "case_26"
+    in:
+      s: "bc"
+      wordDict: ["b", "bb", "a", "ab", "aba", "ba"]
+    out: false
+  - name: "case_27"
+    in:
+      s: "bbbbbbabba"
+      wordDict: ["bb", "ba", "aa", "a", "b"]
+    out: true
+  - name: "case_28"
+    in:
+      s: "aa"
+      wordDict: ["aa", "ab", "bab", "bb", "aba", "a"]
+    out: true
+  - name: "case_29"
+    in:
+      s: "babbbc"
+      wordDict: ["aa", "b", "bab", "ab", "bb", "aba", "a", "ba"]
+    out: false
+  - name: "case_30"
+    in:
+      s: "aa"
+      wordDict: ["bb", "b", "bab", "aba", "ab", "a", "aa", "ba"]
+    out: true
+  - name: "case_31"
+    in:
+      s: "bbaaba"
+      wordDict: ["ba", "aba", "bab", "a", "aa", "bb", "b"]
+    out: true
+  - name: "case_32"
+    in:
+      s: "ababab"
+      wordDict: ["ab", "a", "bab"]
+    out: true
+  - name: "case_33"
+    in:
+      s: "aaababb"
+      wordDict: ["ab", "b", "bb", "aa", "a", "aba", "bab", "ba"]
+    out: true
+  - name: "case_34"
+    in:
+      s: "bab"
+      wordDict: ["aa", "ba", "bab", "a", "ab", "aba", "b", "bb"]
+    out: true
+  - name: "case_35"
+    in:
+      s: "ababa"
+      wordDict: ["bab", "aa", "b", "aba", "ba", "a", "bb"]
+    out: true
+  - name: "case_36"
+    in:
+      s: "aabbbbaabaac"
+      wordDict: ["aa", "a", "ab", "bb", "aba", "bab", "ba"]
+    out: false
+  - name: "case_37"
+    in:
+      s: "babbabba"
+      wordDict: ["ba", "ab", "b", "bab"]
+    out: true
+  - name: "case_38"
+    in:
+      s: "ababaabba"
+      wordDict: ["ab", "ba", "a", "aba", "aa", "bb", "b", "bab"]
+    out: true
+  - name: "case_39"
+    in:
+      s: "ab"
+      wordDict: ["a", "aba", "ab", "bab", "ba"]
+    out: true
+  - name: "case_40"
+    in:
+      s: "aababa"
+      wordDict: ["aa", "ba", "ab", "bb", "bab", "b", "aba"]
+    out: true
+  - name: "case_41"
+    in:
+      s: "aabbaa"
+      wordDict: ["ab", "ba", "a"]
+    out: true
+  - name: "case_42"
+    in:
+      s: "aabbabbb"
+      wordDict: ["ba", "ab", "aa", "b", "aba", "bab"]
+    out: true
+  - name: "case_43"
+    in:
+      s: "aabbc"
+      wordDict: ["aa", "a", "aba", "ab", "bb", "bab", "ba", "b"]
+    out: false
+  - name: "case_44"
+    in:
+      s: "bbbbbc"
+      wordDict: ["a", "ba", "aa", "aba", "bb", "b", "bab"]
+    out: false
+  - name: "case_45"
+    in:
+      s: "aac"
+      wordDict: ["b", "bab", "ab"]
+    out: false
+  - name: "case_46"
+    in:
+      s: "aba"
+      wordDict: ["aba", "b", "a", "ba"]
+    out: true
+  - name: "case_47"
+    in:
+      s: "abbaabbab"
+      wordDict: ["bb", "bab", "ba", "a", "aa", "b"]
+    out: true
+  - name: "case_48"
+    in:
+      s: "abbaabaab"
+      wordDict: ["a", "ba", "ab"]
+    out: true
+  - name: "case_49"
+    in:
+      s: "babababbabbabbab"
+      wordDict: ["bab", "a", "b", "bb", "ba", "ab", "aa"]
+    out: true
+  - name: "case_50"
+    in:
+      s: "bbbabbabaabab"
+      wordDict: ["bb", "bab", "ab", "aa", "aba"]
+    out: true
+  - name: "case_51"
+    in:
+      s: "aa"
+      wordDict: ["b", "a", "aa", "bab", "ab", "bb"]
+    out: true
+  - name: "case_52"
+    in:
+      s: "bbabbaaabbc"
+      wordDict: ["a", "b", "ab", "bb", "bab", "aba", "ba"]
+    out: false
+  - name: "case_53"
+    in:
+      s: "ac"
+      wordDict: ["b", "ba", "aba"]
+    out: false
+  - name: "case_54"
+    in:
+      s: "bab"
+      wordDict: ["ab", "bb", "aa", "aba", "bab", "a"]
+    out: true
+  - name: "case_55"
+    in:
+      s: "abbaababb"
+      wordDict: ["aa", "ab", "bb", "b", "a", "bab", "ba", "aba"]
+    out: true
+  - name: "case_56"
+    in:
+      s: "bc"
+      wordDict: ["a", "aa", "b", "bab", "bb", "ab"]
+    out: false
+  - name: "case_57"
+    in:
+      s: "aa"
+      wordDict: ["ba", "b", "ab", "aa", "a", "bb", "bab"]
+    out: true
+  - name: "case_58"
+    in:
+      s: "babbababbab"
+      wordDict: ["ba", "ab", "bab"]
+    out: true
+  - name: "case_59"
+    in:
+      s: "ba"
+      wordDict: ["ab", "bb", "ba", "b", "a", "bab"]
+    out: true
+  - name: "case_60"
+    in:
+      s: "bababc"
+      wordDict: ["aba", "b", "ab", "ba", "bab"]
+    out: false
+  - name: "case_61"
+    in:
+      s: "bbaaabb"
+      wordDict: ["aa", "a", "ba", "ab", "b", "bb"]
+    out: true
+  - name: "case_62"
+    in:
+      s: "babaabbabbbbc"
+      wordDict: ["bab", "bb", "aa", "aba"]
+    out: false
+  - name: "case_63"
+    in:
+      s: "bb"
+      wordDict: ["b", "bb", "aba", "a", "ab", "ba"]
+    out: true
+  - name: "case_64"
+    in:
+      s: "abaabba"
+      wordDict: ["b", "ab", "bab", "bb", "a", "aba", "ba", "aa"]
+    out: true
+  - name: "case_65"
+    in:
+      s: "bbbbbc"
+      wordDict: ["a", "aba", "ab", "aa", "ba", "bab", "b"]
+    out: false
+  - name: "case_66"
+    in:
+      s: "aaabbbaabbac"
+      wordDict: ["aba", "a", "b", "bb", "ab", "bab"]
+    out: false
+  - name: "case_67"
+    in:
+      s: "aaaabbbaabb"
+      wordDict: ["bab", "aa", "ab", "ba", "aba", "b", "bb"]
+    out: true
+  - name: "case_68"
+    in:
+      s: "aa"
+      wordDict: ["ba", "aba", "bb", "bab", "ab", "b", "a", "aa"]
+    out: true
+  - name: "case_69"
+    in:
+      s: "bbbabaababbab"
+      wordDict: ["bab", "bb", "a"]
+    out: true
+  - name: "case_70"
+    in:
+      s: "bbabbbac"
+      wordDict: ["a", "aa", "ba", "bab", "b", "aba"]
+    out: false
+  - name: "case_71"
+    in:
+      s: "babaabaab"
+      wordDict: ["bab", "aa", "bb", "aba", "b", "ba", "a", "ab"]
+    out: true
+  - name: "case_72"
+    in:
+      s: "aaaabbab"
+      wordDict: ["bab", "bb", "b", "ab", "a", "aa", "ba"]
+    out: true

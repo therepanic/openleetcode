@@ -1,0 +1,920 @@
+entry:
+  id: 149
+  title: "max-points-on-a-line"
+  params:
+    points:
+      type: "array"
+      items:
+        type: "array"
+        items:
+          type: "int"
+  call:
+    cpp: "Solution().maxPoints({points})"
+    rust: "Solution::max_points({points})"
+    python3: "Solution().maxPoints({points})"
+    python2: "Solution().maxPoints({points})"
+    ruby: "max_points({points})"
+    java: "new Solution().maxPoints({points})"
+    csharp: "new Solution().MaxPoints({points})"
+    kotlin: "Solution().maxPoints({points})"
+    go: "maxPoints({points})"
+    dart: "Solution().maxPoints({points})"
+    swift: "Solution().maxPoints({points})"
+    typescript: "maxPoints({points})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().maxPoints(points, {result})"
+    checker: |
+      import copy
+
+      from typing import List
+
+      from collections import defaultdict
+      from math import gcd
+
+
+      class Solution:
+          def maxPoints(self, points: List[List[int]]) -> int:
+              n = len(points)
+              if n <= 2:
+                  return n
+
+              best = 0
+              for i in range(n):
+                  slopes = defaultdict(int)
+                  duplicates = 1
+                  local_best = 0
+                  x1, y1 = points[i]
+                  for j in range(i + 1, n):
+                      x2, y2 = points[j]
+                      dx = x2 - x1
+                      dy = y2 - y1
+                      if dx == 0 and dy == 0:
+                          duplicates += 1
+                          continue
+                      g = gcd(dx, dy)
+                      dx //= g
+                      dy //= g
+                      if dx < 0:
+                          dx = -dx
+                          dy = -dy
+                      elif dx == 0:
+                          dy = 1
+                      elif dy == 0:
+                          dx = 1
+                      slopes[(dx, dy)] += 1
+                      local_best = max(local_best, slopes[(dx, dy)])
+                  best = max(best, local_best + duplicates)
+              return best
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def maxPoints(self, points, result):
+              prepared_points = prepare_input(points, "array[array[int]]")
+              expected = Solution().maxPoints(prepared_points)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 149
+tests:
+  - name: "case_01"
+    in:
+      points:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+    out: 3
+  - name: "case_02"
+    in:
+      points:
+        - [1, 1]
+        - [3, 2]
+        - [5, 3]
+        - [4, 1]
+        - [2, 3]
+        - [1, 4]
+    out: 4
+  - name: "case_03"
+    in:
+      points:
+        - [-6, -9]
+        - [-10, -5]
+        - [8, -9]
+    out: 2
+  - name: "case_04"
+    in:
+      points:
+        - [-5, -9]
+        - [2, 0]
+    out: 2
+  - name: "case_05"
+    in:
+      points:
+        - [1, 5]
+    out: 1
+  - name: "case_06"
+    in:
+      points:
+        - [8, -10]
+        - [-5, -6]
+        - [1, -10]
+        - [9, 3]
+        - [-1, -5]
+    out: 2
+  - name: "case_07"
+    in:
+      points:
+        - [10, 9]
+        - [-3, 7]
+        - [-9, -3]
+        - [4, -9]
+        - [2, -4]
+        - [10, -3]
+        - [-8, -9]
+        - [-5, 8]
+        - [-2, -3]
+        - [-7, 5]
+        - [7, 9]
+    out: 3
+  - name: "case_08"
+    in:
+      points:
+        - [7, 5]
+    out: 1
+  - name: "case_09"
+    in:
+      points:
+        - [-4, 9]
+        - [-9, 1]
+        - [-1, -8]
+        - [4, 2]
+        - [0, -3]
+        - [-10, -8]
+        - [-5, -7]
+    out: 2
+  - name: "case_10"
+    in:
+      points:
+        - [4, 0]
+        - [0, -4]
+        - [-6, 8]
+        - [4, -4]
+        - [10, -4]
+        - [0, 2]
+        - [-6, 10]
+    out: 3
+  - name: "case_11"
+    in:
+      points:
+        - [-5, 9]
+        - [-9, -5]
+        - [7, 7]
+        - [2, 9]
+        - [0, -9]
+        - [5, 3]
+        - [-8, 8]
+        - [3, -5]
+        - [-5, 3]
+        - [1, -9]
+        - [1, 9]
+        - [-3, -1]
+    out: 3
+  - name: "case_12"
+    in:
+      points:
+        - [1, -3]
+        - [-4, 9]
+        - [0, -4]
+        - [-6, -8]
+        - [-1, 8]
+        - [4, -3]
+        - [-1, -4]
+        - [8, -1]
+        - [-6, 9]
+        - [-1, 4]
+        - [-6, 5]
+        - [3, 10]
+    out: 3
+  - name: "case_13"
+    in:
+      points:
+        - [8, -1]
+        - [6, 9]
+        - [1, 10]
+    out: 2
+  - name: "case_14"
+    in:
+      points:
+        - [-2, -3]
+        - [4, 8]
+    out: 2
+  - name: "case_15"
+    in:
+      points:
+        - [0, -9]
+        - [7, 9]
+        - [8, -9]
+        - [-9, -4]
+        - [2, 9]
+        - [-5, 2]
+        - [0, 7]
+        - [-6, 4]
+        - [5, 6]
+    out: 3
+  - name: "case_16"
+    in:
+      points:
+        - [-7, -10]
+        - [-9, -1]
+        - [-1, -4]
+    out: 2
+  - name: "case_17"
+    in:
+      points:
+        - [9, -3]
+        - [-2, 10]
+        - [-4, -7]
+        - [-7, -10]
+    out: 2
+  - name: "case_18"
+    in:
+      points:
+        - [0, 2]
+        - [10, 0]
+        - [-6, -1]
+        - [9, 2]
+        - [5, 1]
+        - [4, 4]
+        - [10, 7]
+        - [-10, -10]
+        - [-10, 5]
+    out: 4
+  - name: "case_19"
+    in:
+      points:
+        - [-4, -10]
+        - [-9, -4]
+        - [-10, 7]
+        - [4, 5]
+        - [-9, -7]
+        - [-2, 1]
+        - [-4, -9]
+    out: 2
+  - name: "case_20"
+    in:
+      points:
+        - [-6, 3]
+        - [2, 10]
+        - [-3, 0]
+        - [-3, 4]
+        - [-9, 3]
+        - [-4, 6]
+    out: 2
+  - name: "case_21"
+    in:
+      points:
+        - [-1, 10]
+        - [6, 0]
+        - [3, 0]
+        - [10, -7]
+        - [-5, 8]
+        - [2, 6]
+        - [8, -8]
+        - [2, 6]
+    out: 3
+  - name: "case_22"
+    in:
+      points:
+        - [-6, -1]
+    out: 1
+  - name: "case_23"
+    in:
+      points:
+        - [-9, -5]
+        - [1, 1]
+        - [-10, 2]
+    out: 2
+  - name: "case_24"
+    in:
+      points:
+        - [1, 4]
+        - [0, 3]
+        - [-8, 7]
+        - [4, -3]
+        - [4, -9]
+        - [-9, 3]
+        - [-7, 9]
+        - [-5, -5]
+        - [9, 3]
+    out: 3
+  - name: "case_25"
+    in:
+      points:
+        - [6, -1]
+        - [0, 2]
+    out: 2
+  - name: "case_26"
+    in:
+      points:
+        - [3, 3]
+        - [5, 5]
+        - [-6, 0]
+        - [-1, 1]
+        - [10, 2]
+        - [-2, -3]
+        - [8, 4]
+        - [-10, -5]
+        - [-8, -7]
+        - [2, 1]
+        - [-10, -9]
+    out: 3
+  - name: "case_27"
+    in:
+      points:
+        - [-9, 1]
+        - [-4, -1]
+        - [6, 5]
+    out: 2
+  - name: "case_28"
+    in:
+      points:
+        - [-3, -1]
+        - [-8, -7]
+        - [-4, -2]
+        - [4, -7]
+    out: 2
+  - name: "case_29"
+    in:
+      points:
+        - [2, 1]
+        - [0, -9]
+    out: 2
+  - name: "case_30"
+    in:
+      points:
+        - [-6, 2]
+        - [-5, 5]
+        - [-3, 4]
+        - [10, 4]
+        - [-3, -4]
+        - [4, 8]
+        - [-1, -10]
+        - [-7, -5]
+        - [5, 5]
+        - [-9, 3]
+        - [6, -8]
+    out: 2
+  - name: "case_31"
+    in:
+      points:
+        - [5, 3]
+        - [-3, -1]
+        - [2, -4]
+    out: 2
+  - name: "case_32"
+    in:
+      points:
+        - [-10, -1]
+        - [2, -9]
+        - [0, -1]
+        - [-3, 8]
+        - [-2, 10]
+        - [-5, 1]
+        - [8, -2]
+    out: 2
+  - name: "case_33"
+    in:
+      points:
+        - [0, -1]
+        - [3, -2]
+        - [10, 1]
+        - [9, 1]
+        - [-2, -6]
+        - [3, -4]
+        - [-7, 2]
+        - [2, 5]
+        - [-1, 9]
+        - [4, 6]
+        - [7, -4]
+        - [2, 10]
+    out: 3
+  - name: "case_34"
+    in:
+      points:
+        - [8, 8]
+    out: 1
+  - name: "case_35"
+    in:
+      points:
+        - [3, -2]
+        - [0, -9]
+        - [6, -10]
+        - [-2, 7]
+        - [4, -10]
+        - [-10, 6]
+        - [1, -2]
+        - [0, 0]
+        - [-1, -7]
+        - [-6, -2]
+        - [-6, -9]
+        - [7, -3]
+    out: 3
+  - name: "case_36"
+    in:
+      points:
+        - [-9, -4]
+        - [5, 8]
+        - [5, -6]
+        - [-5, 6]
+        - [10, -2]
+        - [-6, -1]
+    out: 2
+  - name: "case_37"
+    in:
+      points:
+        - [-3, 7]
+        - [5, 10]
+        - [2, -7]
+        - [9, -10]
+        - [-9, -1]
+        - [9, -8]
+    out: 2
+  - name: "case_38"
+    in:
+      points:
+        - [4, -6]
+        - [5, -4]
+        - [-5, -5]
+        - [-10, 6]
+        - [4, 4]
+        - [8, -6]
+        - [-4, -10]
+    out: 3
+  - name: "case_39"
+    in:
+      points:
+        - [9, -8]
+        - [-10, 0]
+        - [8, -5]
+        - [4, 0]
+        - [0, 4]
+        - [-9, -8]
+        - [-4, -1]
+        - [8, 10]
+        - [10, -7]
+        - [6, 4]
+        - [3, -5]
+    out: 3
+  - name: "case_40"
+    in:
+      points:
+        - [-2, 0]
+    out: 1
+  - name: "case_41"
+    in:
+      points:
+        - [6, -5]
+    out: 1
+  - name: "case_42"
+    in:
+      points:
+        - [9, 9]
+    out: 1
+  - name: "case_43"
+    in:
+      points:
+        - [-6, 3]
+    out: 1
+  - name: "case_44"
+    in:
+      points:
+        - [-8, -10]
+        - [10, -5]
+        - [-8, 0]
+    out: 2
+  - name: "case_45"
+    in:
+      points:
+        - [-8, -8]
+        - [-6, 0]
+    out: 2
+  - name: "case_46"
+    in:
+      points:
+        - [3, -4]
+        - [7, -6]
+    out: 2
+  - name: "case_47"
+    in:
+      points:
+        - [-5, -4]
+        - [8, -10]
+        - [4, 5]
+        - [8, 0]
+        - [-1, 9]
+    out: 2
+  - name: "case_48"
+    in:
+      points:
+        - [1, 7]
+        - [6, 4]
+        - [2, -1]
+        - [4, -4]
+        - [5, 4]
+        - [-2, 9]
+        - [-4, 3]
+        - [-2, 5]
+        - [-4, -1]
+        - [-3, 10]
+        - [-3, 1]
+    out: 3
+  - name: "case_49"
+    in:
+      points:
+        - [9, -7]
+        - [-9, 4]
+    out: 2
+  - name: "case_50"
+    in:
+      points:
+        - [-2, 0]
+        - [-4, -3]
+        - [2, -1]
+    out: 2
+  - name: "case_51"
+    in:
+      points:
+        - [-3, -7]
+        - [6, -5]
+        - [-8, -8]
+        - [2, 3]
+        - [-8, 9]
+        - [2, -5]
+        - [-5, -5]
+        - [1, -10]
+        - [7, -1]
+        - [-3, 1]
+        - [1, 6]
+    out: 3
+  - name: "case_52"
+    in:
+      points:
+        - [6, -1]
+        - [9, 4]
+        - [-3, 0]
+        - [-3, -6]
+        - [5, 7]
+        - [6, -5]
+        - [-10, 1]
+        - [7, -4]
+    out: 2
+  - name: "case_53"
+    in:
+      points:
+        - [3, -2]
+        - [4, -5]
+        - [-6, -6]
+        - [4, -3]
+        - [6, 7]
+        - [0, -10]
+        - [7, 7]
+        - [10, -2]
+        - [4, 3]
+    out: 3
+  - name: "case_54"
+    in:
+      points:
+        - [-9, 9]
+        - [8, -6]
+        - [-4, 1]
+        - [10, -8]
+        - [-6, 10]
+        - [6, -2]
+        - [8, 2]
+        - [-8, 0]
+        - [5, -3]
+    out: 3
+  - name: "case_55"
+    in:
+      points:
+        - [5, -1]
+        - [3, 1]
+        - [9, -6]
+        - [-3, 2]
+        - [-10, 10]
+    out: 2
+  - name: "case_56"
+    in:
+      points:
+        - [8, 2]
+        - [-6, -9]
+        - [5, 0]
+        - [5, 6]
+        - [0, -4]
+        - [6, -3]
+        - [6, 1]
+    out: 3
+  - name: "case_57"
+    in:
+      points:
+        - [-1, -3]
+        - [-4, -6]
+        - [-3, 2]
+        - [5, -7]
+        - [-8, -7]
+        - [-6, 4]
+        - [4, -9]
+        - [6, 6]
+        - [8, -5]
+    out: 2
+  - name: "case_58"
+    in:
+      points:
+        - [-4, -9]
+        - [-9, -2]
+        - [-1, -8]
+        - [5, -2]
+    out: 2
+  - name: "case_59"
+    in:
+      points:
+        - [2, 7]
+        - [0, -10]
+        - [4, -1]
+        - [10, 8]
+        - [3, 3]
+    out: 3
+  - name: "case_60"
+    in:
+      points:
+        - [1, -5]
+        - [-8, 3]
+        - [8, -4]
+        - [-9, 1]
+        - [1, -5]
+        - [-7, 1]
+    out: 3
+  - name: "case_61"
+    in:
+      points:
+        - [-4, 6]
+        - [-6, -2]
+        - [5, 5]
+        - [-10, -9]
+        - [1, 9]
+        - [8, 0]
+        - [-5, 10]
+        - [-8, 10]
+    out: 2
+  - name: "case_62"
+    in:
+      points:
+        - [-3, 3]
+        - [-2, 9]
+        - [-6, -10]
+        - [-6, -5]
+        - [-4, -3]
+        - [-4, -9]
+        - [-5, -3]
+        - [-4, 5]
+        - [-8, 9]
+        - [1, 2]
+    out: 3
+  - name: "case_63"
+    in:
+      points:
+        - [10, -8]
+        - [-4, 8]
+        - [5, -10]
+        - [5, -4]
+        - [2, 3]
+        - [-1, 4]
+        - [-7, 8]
+    out: 3
+  - name: "case_64"
+    in:
+      points:
+        - [-1, -5]
+        - [-7, 7]
+        - [-9, -2]
+        - [5, 8]
+        - [8, 7]
+    out: 2
+  - name: "generated_01"
+    seed: 14901
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000
+  - name: "generated_02"
+    seed: 14902
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000
+  - name: "generated_03"
+    seed: 14903
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000
+  - name: "generated_04"
+    seed: 14904
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000
+  - name: "generated_05"
+    seed: 14905
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000
+  - name: "generated_06"
+    seed: 14906
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000
+  - name: "generated_07"
+    seed: 14907
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000
+  - name: "generated_08"
+    seed: 14908
+    in:
+      points:
+        gen: "array"
+        elemType: "int"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: -10000
+            max: 10000

@@ -1,0 +1,705 @@
+entry:
+  id: 200
+  title: "number-of-islands"
+  params:
+    grid:
+      type: "array"
+      items:
+        type: "array"
+        items:
+          type: "string"
+  call:
+    cpp: "Solution().numIslands({grid})"
+    rust: "Solution::num_islands({grid})"
+    python3: "Solution().numIslands({grid})"
+    python2: "Solution().numIslands({grid})"
+    ruby: "num_islands({grid})"
+    java: "new Solution().numIslands({grid})"
+    csharp: "new Solution().NumIslands({grid})"
+    kotlin: "Solution().numIslands({grid})"
+    go: "numIslands({grid})"
+    dart: "Solution().numIslands({grid})"
+    swift: "Solution().numIslands({grid})"
+    typescript: "numIslands({grid})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().numIslands(grid, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def numIslands(self, grid: List[List[str]]) -> int:
+              islands = 0
+              rows, cols = len(grid), len(grid[0])
+
+              def bfs(r, c):
+                  q = deque()
+                  q.append((r, c))
+                  grid[r][c] = "0"
+
+                  while q:
+                      row, col = q.popleft()
+                      directions = [[1,0],[-1,0],[0,1],[0,-1]]
+
+                      for dr, dc in directions:
+                          r, c = row + dr, col + dc
+                          if 0 <= r < rows and 0 <= c < cols and grid[r][c] == "1":
+                              q.append((r, c))
+                              grid[r][c] = "0"
+
+              for r in range(rows):
+                  for c in range(cols):
+                      if grid[r][c] == "1":
+                          islands += 1
+                          bfs(r, c)
+
+              return islands
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def numIslands(self, grid, result):
+              prepared_grid = prepare_input(grid, "array[array[string]]")
+              expected = Solution().numIslands(prepared_grid)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 200
+tests:
+  - name: "case_01"
+    in:
+      grid:
+        - ["1", "1", "1", "1", "0"]
+        - ["1", "1", "0", "1", "0"]
+        - ["1", "1", "0", "0", "0"]
+        - ["0", "0", "0", "0", "0"]
+    out: 1
+  - name: "case_02"
+    in:
+      grid:
+        - ["1", "1", "0", "0", "0"]
+        - ["1", "1", "0", "0", "0"]
+        - ["0", "0", "1", "0", "0"]
+        - ["0", "0", "0", "1", "1"]
+    out: 3
+  - name: "case_03"
+    in:
+      grid:
+        - ["0", "1", "0"]
+        - ["0", "1", "1"]
+        - ["1", "1", "0"]
+        - ["0", "0", "1"]
+        - ["1", "1", "0"]
+    out: 3
+  - name: "case_04"
+    in:
+      grid:
+        - ["0", "0", "0"]
+        - ["0", "1", "0"]
+        - ["1", "1", "1"]
+        - ["1", "0", "0"]
+        - ["0", "1", "1"]
+    out: 2
+  - name: "case_05"
+    in:
+      grid:
+        - ["0", "0", "0"]
+        - ["1", "0", "1"]
+        - ["1", "0", "0"]
+    out: 2
+  - name: "case_06"
+    in:
+      grid:
+        - ["0", "1", "0", "0", "1"]
+        - ["0", "1", "0", "0", "1"]
+        - ["1", "0", "1", "0", "0"]
+    out: 4
+  - name: "case_07"
+    in:
+      grid:
+        - ["0"]
+        - ["0"]
+        - ["0"]
+        - ["0"]
+    out: 0
+  - name: "case_08"
+    in:
+      grid:
+        - ["0"]
+    out: 0
+  - name: "case_09"
+    in:
+      grid:
+        - ["0"]
+        - ["1"]
+        - ["0"]
+        - ["1"]
+    out: 2
+  - name: "case_10"
+    in:
+      grid:
+        - ["0", "0", "0", "0"]
+        - ["0", "1", "1", "1"]
+        - ["0", "1", "0", "1"]
+        - ["1", "1", "1", "0"]
+        - ["1", "0", "0", "1"]
+    out: 2
+  - name: "case_11"
+    in:
+      grid:
+        - ["1", "0", "1", "0"]
+        - ["1", "0", "0", "0"]
+        - ["1", "0", "0", "0"]
+        - ["0", "0", "1", "0"]
+        - ["1", "0", "1", "0"]
+    out: 4
+  - name: "case_12"
+    in:
+      grid:
+        - ["0", "1", "0"]
+        - ["1", "0", "0"]
+    out: 2
+  - name: "case_13"
+    in:
+      grid:
+        - ["1", "1", "0", "1", "0"]
+        - ["0", "0", "1", "0", "0"]
+        - ["1", "1", "1", "1", "0"]
+        - ["0", "1", "0", "1", "0"]
+    out: 3
+  - name: "case_14"
+    in:
+      grid:
+        - ["1", "0", "0", "0", "0"]
+    out: 1
+  - name: "case_15"
+    in:
+      grid:
+        - ["0", "0", "1", "0"]
+        - ["1", "0", "1", "0"]
+        - ["1", "1", "0", "0"]
+        - ["0", "0", "0", "1"]
+        - ["0", "0", "0", "0"]
+    out: 3
+  - name: "case_16"
+    in:
+      grid:
+        - ["0", "0", "1", "1"]
+        - ["1", "1", "0", "1"]
+        - ["0", "1", "1", "0"]
+        - ["0", "0", "1", "1"]
+    out: 2
+  - name: "case_17"
+    in:
+      grid:
+        - ["0", "0", "1", "0"]
+        - ["1", "1", "0", "0"]
+        - ["0", "0", "0", "0"]
+        - ["1", "1", "0", "1"]
+    out: 4
+  - name: "case_18"
+    in:
+      grid:
+        - ["1"]
+        - ["0"]
+        - ["1"]
+        - ["1"]
+    out: 2
+  - name: "case_19"
+    in:
+      grid:
+        - ["1", "1"]
+        - ["1", "1"]
+        - ["1", "1"]
+        - ["0", "1"]
+    out: 1
+  - name: "case_20"
+    in:
+      grid:
+        - ["0"]
+        - ["1"]
+        - ["1"]
+    out: 1
+  - name: "case_21"
+    in:
+      grid:
+        - ["0", "0", "1", "1"]
+        - ["1", "0", "1", "0"]
+        - ["0", "1", "1", "1"]
+    out: 2
+  - name: "case_22"
+    in:
+      grid:
+        - ["1", "0"]
+        - ["0", "0"]
+    out: 1
+  - name: "case_23"
+    in:
+      grid:
+        - ["0", "1", "0", "1"]
+        - ["0", "1", "0", "1"]
+        - ["0", "0", "0", "1"]
+        - ["1", "0", "0", "1"]
+        - ["1", "1", "1", "0"]
+    out: 3
+  - name: "case_24"
+    in:
+      grid:
+        - ["0"]
+        - ["0"]
+    out: 0
+  - name: "case_25"
+    in:
+      grid:
+        - ["0", "1", "0", "0", "0"]
+        - ["1", "1", "0", "0", "1"]
+        - ["0", "1", "1", "0", "0"]
+    out: 2
+  - name: "case_26"
+    in:
+      grid:
+        - ["1", "1", "0", "1"]
+        - ["0", "0", "0", "0"]
+        - ["1", "1", "0", "1"]
+    out: 4
+  - name: "case_27"
+    in:
+      grid:
+        - ["0"]
+        - ["1"]
+    out: 1
+  - name: "case_28"
+    in:
+      grid:
+        - ["1", "0", "0"]
+        - ["0", "1", "1"]
+        - ["0", "0", "1"]
+        - ["1", "1", "1"]
+    out: 2
+  - name: "case_29"
+    in:
+      grid:
+        - ["1"]
+        - ["0"]
+        - ["0"]
+        - ["1"]
+    out: 2
+  - name: "case_30"
+    in:
+      grid:
+        - ["0", "1", "0", "1", "0"]
+        - ["0", "0", "1", "0", "0"]
+        - ["0", "0", "0", "1", "0"]
+        - ["0", "0", "1", "0", "1"]
+        - ["0", "0", "1", "1", "1"]
+    out: 5
+  - name: "case_31"
+    in:
+      grid:
+        - ["0", "1", "1"]
+        - ["0", "1", "0"]
+    out: 1
+  - name: "case_32"
+    in:
+      grid:
+        - ["1", "0"]
+        - ["0", "1"]
+    out: 2
+  - name: "case_33"
+    in:
+      grid:
+        - ["1"]
+        - ["0"]
+        - ["1"]
+        - ["1"]
+        - ["0"]
+    out: 2
+  - name: "case_34"
+    in:
+      grid:
+        - ["0"]
+        - ["0"]
+        - ["0"]
+    out: 0
+  - name: "case_35"
+    in:
+      grid:
+        - ["1"]
+        - ["0"]
+        - ["0"]
+        - ["1"]
+        - ["1"]
+    out: 2
+  - name: "case_36"
+    in:
+      grid:
+        - ["0", "1", "1", "0"]
+        - ["1", "0", "0", "1"]
+        - ["1", "0", "0", "1"]
+    out: 3
+  - name: "case_37"
+    in:
+      grid:
+        - ["0", "1", "0", "1"]
+        - ["1", "0", "0", "1"]
+        - ["0", "0", "1", "1"]
+        - ["1", "0", "1", "1"]
+        - ["0", "0", "0", "0"]
+    out: 4
+  - name: "case_38"
+    in:
+      grid:
+        - ["1", "0"]
+        - ["0", "1"]
+        - ["1", "1"]
+        - ["1", "0"]
+        - ["1", "1"]
+    out: 2
+  - name: "case_39"
+    in:
+      grid:
+        - ["1", "0"]
+    out: 1
+  - name: "case_40"
+    in:
+      grid:
+        - ["1"]
+        - ["1"]
+        - ["0"]
+        - ["1"]
+    out: 2
+  - name: "case_41"
+    in:
+      grid:
+        - ["0", "0"]
+        - ["1", "0"]
+        - ["0", "1"]
+        - ["1", "0"]
+        - ["1", "1"]
+    out: 3
+  - name: "case_42"
+    in:
+      grid:
+        - ["1", "1", "0", "0"]
+    out: 1
+  - name: "case_43"
+    in:
+      grid:
+        - ["0"]
+        - ["0"]
+        - ["1"]
+    out: 1
+  - name: "case_44"
+    in:
+      grid:
+        - ["0", "1", "1"]
+    out: 1
+  - name: "case_45"
+    in:
+      grid:
+        - ["0", "0", "1", "1"]
+        - ["0", "0", "1", "1"]
+        - ["1", "0", "1", "0"]
+        - ["1", "0", "0", "1"]
+    out: 3
+  - name: "case_46"
+    in:
+      grid:
+        - ["0", "1", "1", "1"]
+        - ["0", "0", "1", "0"]
+    out: 1
+  - name: "case_47"
+    in:
+      grid:
+        - ["1", "1", "0"]
+        - ["1", "1", "1"]
+        - ["0", "0", "1"]
+        - ["0", "1", "1"]
+    out: 1
+  - name: "case_48"
+    in:
+      grid:
+        - ["0", "0", "0"]
+        - ["1", "1", "0"]
+        - ["0", "1", "0"]
+    out: 1
+  - name: "case_49"
+    in:
+      grid:
+        - ["0"]
+        - ["0"]
+        - ["1"]
+        - ["0"]
+    out: 1
+  - name: "case_50"
+    in:
+      grid:
+        - ["0", "0"]
+        - ["1", "1"]
+        - ["1", "1"]
+        - ["0", "0"]
+        - ["1", "1"]
+    out: 2
+  - name: "case_51"
+    in:
+      grid:
+        - ["0", "0", "0", "0", "0"]
+        - ["0", "0", "1", "0", "0"]
+        - ["1", "1", "1", "0", "0"]
+    out: 1
+  - name: "case_52"
+    in:
+      grid:
+        - ["1", "1"]
+        - ["1", "1"]
+        - ["0", "0"]
+        - ["1", "0"]
+        - ["0", "1"]
+    out: 3
+  - name: "case_53"
+    in:
+      grid:
+        - ["0", "0", "1"]
+        - ["1", "0", "1"]
+        - ["1", "0", "0"]
+    out: 2
+  - name: "case_54"
+    in:
+      grid:
+        - ["0", "1", "1", "0", "1"]
+        - ["0", "1", "0", "0", "0"]
+        - ["1", "1", "1", "1", "0"]
+        - ["0", "0", "1", "0", "0"]
+    out: 2
+  - name: "case_55"
+    in:
+      grid:
+        - ["0", "1", "1", "1"]
+        - ["1", "1", "0", "0"]
+        - ["1", "0", "0", "1"]
+        - ["0", "0", "1", "1"]
+    out: 2
+  - name: "case_56"
+    in:
+      grid:
+        - ["0", "1"]
+        - ["1", "1"]
+        - ["1", "1"]
+    out: 1
+  - name: "case_57"
+    in:
+      grid:
+        - ["1", "1", "1", "1"]
+        - ["1", "1", "0", "0"]
+    out: 1
+  - name: "case_58"
+    in:
+      grid:
+        - ["1", "0"]
+        - ["0", "1"]
+        - ["0", "1"]
+        - ["1", "0"]
+        - ["0", "1"]
+    out: 4
+  - name: "case_59"
+    in:
+      grid:
+        - ["1", "0", "1", "0", "0"]
+        - ["1", "0", "1", "0", "0"]
+        - ["0", "1", "0", "1", "1"]
+        - ["0", "0", "0", "0", "0"]
+        - ["1", "0", "0", "1", "0"]
+    out: 6
+  - name: "case_60"
+    in:
+      grid:
+        - ["0", "1", "0", "1", "0"]
+        - ["1", "1", "1", "1", "0"]
+        - ["0", "1", "0", "1", "0"]
+        - ["1", "1", "1", "1", "1"]
+        - ["1", "1", "1", "0", "0"]
+    out: 1
+  - name: "case_61"
+    in:
+      grid:
+        - ["0", "0", "0"]
+        - ["0", "0", "0"]
+        - ["1", "1", "1"]
+        - ["1", "0", "1"]
+        - ["1", "0", "0"]
+    out: 1
+  - name: "case_62"
+    in:
+      grid:
+        - ["0", "1", "0"]
+    out: 1
+  - name: "case_63"
+    in:
+      grid:
+        - ["1", "0", "1", "0"]
+        - ["0", "1", "0", "0"]
+        - ["0", "0", "0", "1"]
+        - ["0", "0", "0", "1"]
+        - ["0", "1", "0", "0"]
+    out: 5
+  - name: "case_64"
+    in:
+      grid:
+        - ["0", "1", "0", "0"]
+        - ["0", "1", "1", "0"]
+        - ["0", "1", "1", "0"]
+        - ["0", "1", "0", "0"]
+        - ["1", "0", "1", "1"]
+    out: 3
+  - name: "case_65"
+    in:
+      grid:
+        - ["0", "0"]
+        - ["0", "1"]
+        - ["1", "1"]
+        - ["1", "0"]
+        - ["1", "1"]
+    out: 1
+  - name: "case_66"
+    in:
+      grid:
+        - ["0"]
+        - ["1"]
+        - ["0"]
+        - ["1"]
+        - ["1"]
+    out: 2
+  - name: "case_67"
+    in:
+      grid:
+        - ["0", "0", "1"]
+        - ["1", "0", "1"]
+    out: 2
+  - name: "case_68"
+    in:
+      grid:
+        - ["1", "0", "0", "0"]
+        - ["1", "0", "1", "1"]
+        - ["1", "1", "1", "1"]
+        - ["1", "0", "1", "0"]
+    out: 1
+  - name: "case_69"
+    in:
+      grid:
+        - ["1"]
+        - ["0"]
+        - ["1"]
+        - ["0"]
+        - ["1"]
+    out: 3
+  - name: "case_70"
+    in:
+      grid:
+        - ["1", "1"]
+        - ["1", "0"]
+        - ["1", "1"]
+    out: 1
+  - name: "case_71"
+    in:
+      grid:
+        - ["1"]
+        - ["1"]
+    out: 1
+  - name: "case_72"
+    in:
+      grid:
+        - ["0", "0", "0"]
+    out: 0

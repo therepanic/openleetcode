@@ -1,0 +1,679 @@
+entry:
+  id: 120
+  title: "triangle"
+  params:
+    triangle:
+      type: "array"
+      items:
+        type: "array"
+        items:
+          type: "int"
+  call:
+    cpp: "Solution().minimumTotal({triangle})"
+    rust: "Solution::minimum_total({triangle})"
+    python3: "Solution().minimumTotal({triangle})"
+    python2: "Solution().minimumTotal({triangle})"
+    ruby: "minimum_total({triangle})"
+    java: "new Solution().minimumTotal({triangle})"
+    csharp: "new Solution().MinimumTotal({triangle})"
+    kotlin: "Solution().minimumTotal({triangle})"
+    go: "minimumTotal({triangle})"
+    dart: "Solution().minimumTotal({triangle})"
+    swift: "Solution().minimumTotal({triangle})"
+    typescript: "minimumTotal({triangle})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().minimumTotal(triangle, {result})"
+    checker: |
+      import copy
+
+      from typing import List
+
+
+      class Solution:
+          def minimumTotal(self, triangle: List[List[int]]) -> int:
+              dp = triangle[-1][:]
+              for row in range(len(triangle) - 2, -1, -1):
+                  for col in range(len(triangle[row])):
+                      dp[col] = triangle[row][col] + min(dp[col], dp[col + 1])
+              return dp[0]
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def minimumTotal(self, triangle, result):
+              prepared_triangle = prepare_input(triangle, "array[array[int]]")
+              expected = Solution().minimumTotal(prepared_triangle)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 120
+tests:
+  - name: "case_01"
+    in:
+      triangle:
+        - [2]
+        - [3, 4]
+        - [6, 5, 7]
+        - [4, 1, 8, 3]
+    out: 11
+  - name: "case_02"
+    in:
+      triangle:
+        - [-10]
+    out: -10
+  - name: "case_03"
+    in:
+      triangle:
+        - [-8]
+        - [20, 17]
+        - [9, -15, 0]
+        - [-7, -6, -4, 0]
+        - [3, -10, -14, 0, -1]
+    out: -26
+  - name: "case_04"
+    in:
+      triangle:
+        - [-2]
+        - [-2, -7]
+    out: -9
+  - name: "case_05"
+    in:
+      triangle:
+        - [12]
+        - [-13, 7]
+    out: -1
+  - name: "case_06"
+    in:
+      triangle:
+        - [-19]
+        - [-14, -20]
+    out: -39
+  - name: "case_07"
+    in:
+      triangle:
+        - [5]
+        - [18, 7]
+        - [4, 14, 4]
+        - [-15, -20, -19, 5]
+    out: -3
+  - name: "case_08"
+    in:
+      triangle:
+        - [-2]
+        - [18, -7]
+        - [-12, 4, 6]
+    out: -5
+  - name: "case_09"
+    in:
+      triangle:
+        - [10]
+        - [-4, 2]
+        - [7, -3, -3]
+        - [4, -3, 12, 12]
+        - [2, -17, 0, 15, -6]
+    out: -17
+  - name: "case_10"
+    in:
+      triangle:
+        - [1]
+        - [1, 13]
+        - [-2, -11, 15]
+        - [18, -15, -20, 1]
+        - [-5, 18, -14, -5, -12]
+    out: -43
+  - name: "case_11"
+    in:
+      triangle:
+        - [-17]
+        - [18, -11]
+        - [9, -15, 9]
+        - [-19, -14, 17, -8]
+    out: -57
+  - name: "case_12"
+    in:
+      triangle:
+        - [3]
+        - [1, -6]
+    out: -3
+  - name: "case_13"
+    in:
+      triangle:
+        - [13]
+        - [15, 16]
+        - [19, 18, -11]
+        - [2, -9, 5, 20]
+    out: 23
+  - name: "case_14"
+    in:
+      triangle:
+        - [-9]
+    out: -9
+  - name: "case_15"
+    in:
+      triangle:
+        - [0]
+        - [8, -1]
+        - [-20, 9, 9]
+        - [5, -6, 1, -19]
+    out: -18
+  - name: "case_16"
+    in:
+      triangle:
+        - [12]
+        - [-1, -15]
+        - [4, -1, 9]
+        - [-11, 12, -2, 20]
+        - [15, -12, -14, -10, -17]
+        - [-10, -5, -20, -12, 14, 14]
+    out: -40
+  - name: "case_17"
+    in:
+      triangle:
+        - [12]
+        - [1, -6]
+        - [-13, 2, 4]
+        - [-15, -15, -11, -3]
+        - [4, -4, 8, 11, 12]
+        - [-3, -2, 18, 5, -1, 7]
+    out: -21
+  - name: "case_18"
+    in:
+      triangle:
+        - [-5]
+        - [-7, -13]
+        - [4, 1, 17]
+        - [1, -3, -9, 14]
+        - [-3, -6, -1, -14, 7]
+    out: -40
+  - name: "case_19"
+    in:
+      triangle:
+        - [15]
+        - [19, 13]
+    out: 28
+  - name: "case_20"
+    in:
+      triangle:
+        - [14]
+        - [-8, 12]
+        - [-20, -12, -5]
+        - [-18, -4, -15, 7]
+        - [5, -5, 11, 7, 5]
+    out: -37
+  - name: "case_21"
+    in:
+      triangle:
+        - [14]
+        - [8, -15]
+        - [5, -19, -18]
+        - [-16, 18, -17, -11]
+        - [-2, -18, -9, 6, 20]
+    out: -46
+  - name: "case_22"
+    in:
+      triangle:
+        - [14]
+        - [15, -18]
+    out: -4
+  - name: "case_23"
+    in:
+      triangle:
+        - [17]
+    out: 17
+  - name: "case_24"
+    in:
+      triangle:
+        - [12]
+    out: 12
+  - name: "case_25"
+    in:
+      triangle:
+        - [-14]
+        - [4, -12]
+        - [-20, -7, 10]
+        - [-11, 14, 19, -7]
+        - [9, -10, 3, -20, 12]
+        - [-17, 20, -12, -16, 0, 4]
+    out: -63
+  - name: "case_26"
+    in:
+      triangle:
+        - [17]
+        - [2, 20]
+        - [-6, 1, 12]
+    out: 13
+  - name: "case_27"
+    in:
+      triangle:
+        - [20]
+        - [10, -8]
+        - [10, 15, 8]
+        - [-7, -14, 9, -19]
+        - [13, -17, -7, -17, -10]
+        - [10, 5, -12, 7, -11, 8]
+    out: -27
+  - name: "case_28"
+    in:
+      triangle:
+        - [7]
+        - [3, 19]
+        - [2, -12, 16]
+    out: -2
+  - name: "case_29"
+    in:
+      triangle:
+        - [8]
+        - [-2, 13]
+    out: 6
+  - name: "case_30"
+    in:
+      triangle:
+        - [11]
+        - [-13, 4]
+        - [-6, -18, 6]
+        - [1, 19, -6, -15]
+        - [-10, -4, -4, -13, 5]
+        - [-16, 20, -10, -5, 14, 11]
+    out: -44
+  - name: "case_31"
+    in:
+      triangle:
+        - [1]
+        - [-14, -10]
+        - [9, 13, 10]
+        - [-2, -1, 4, -15]
+    out: -14
+  - name: "case_32"
+    in:
+      triangle:
+        - [15]
+        - [1, -6]
+        - [-15, -14, 1]
+        - [-2, 20, -1, 13]
+    out: -6
+  - name: "case_33"
+    in:
+      triangle:
+        - [-10]
+        - [-1, 15]
+        - [15, 19, 19]
+        - [-19, 17, 18, -14]
+        - [8, -3, 3, -3, 2]
+    out: -18
+  - name: "case_34"
+    in:
+      triangle:
+        - [16]
+        - [-1, 14]
+        - [7, 1, -8]
+        - [1, 11, 17, -14]
+        - [-15, 19, 6, -14, 10]
+    out: -6
+  - name: "case_35"
+    in:
+      triangle:
+        - [9]
+        - [-10, 19]
+        - [15, 18, -14]
+    out: 14
+  - name: "case_36"
+    in:
+      triangle:
+        - [-17]
+        - [2, -6]
+    out: -23
+  - name: "case_37"
+    in:
+      triangle:
+        - [18]
+        - [15, -8]
+    out: 10
+  - name: "case_38"
+    in:
+      triangle:
+        - [-2]
+    out: -2
+  - name: "case_39"
+    in:
+      triangle:
+        - [12]
+        - [-19, -11]
+        - [18, -1, 9]
+        - [6, 3, 15, -15]
+    out: -5
+  - name: "case_40"
+    in:
+      triangle:
+        - [14]
+        - [-17, -16]
+        - [-1, -14, 11]
+        - [16, 14, 3, -18]
+    out: -14
+  - name: "case_41"
+    in:
+      triangle:
+        - [13]
+        - [10, -4]
+        - [15, -11, 6]
+        - [-5, 4, 4, 9]
+        - [-10, 3, -8, 2, 0]
+    out: -6
+  - name: "case_42"
+    in:
+      triangle:
+        - [13]
+        - [18, 4]
+        - [-7, 15, 8]
+        - [5, -14, 10, -4]
+        - [0, 14, -14, -16, -17]
+        - [-19, -11, -9, -20, 17, 9]
+    out: -24
+  - name: "case_43"
+    in:
+      triangle:
+        - [-15]
+    out: -15
+  - name: "case_44"
+    in:
+      triangle:
+        - [18]
+        - [12, -13]
+    out: 5
+  - name: "case_45"
+    in:
+      triangle:
+        - [-20]
+        - [-19, -7]
+        - [-1, 18, 9]
+        - [-17, 4, 5, -20]
+        - [-11, -16, 0, -13, 11]
+        - [-2, 2, -13, 2, 8, 2]
+    out: -86
+  - name: "case_46"
+    in:
+      triangle:
+        - [-18]
+        - [-1, 0]
+        - [-8, -9, 0]
+    out: -28
+  - name: "case_47"
+    in:
+      triangle:
+        - [1]
+        - [18, 17]
+        - [-17, -16, -18]
+    out: 0
+  - name: "case_48"
+    in:
+      triangle:
+        - [-18]
+        - [-15, -14]
+    out: -33
+  - name: "case_49"
+    in:
+      triangle:
+        - [7]
+        - [7, -12]
+    out: -5
+  - name: "case_50"
+    in:
+      triangle:
+        - [0]
+        - [2, -16]
+        - [-18, 6, 13]
+    out: -16
+  - name: "case_51"
+    in:
+      triangle:
+        - [19]
+        - [-13, -14]
+    out: 5
+  - name: "case_52"
+    in:
+      triangle:
+        - [-18]
+        - [-10, 10]
+        - [1, -7, 7]
+        - [-10, -12, -12, -3]
+        - [2, -9, 11, 0, 4]
+    out: -56
+  - name: "case_53"
+    in:
+      triangle:
+        - [-9]
+        - [-19, 12]
+        - [-7, 17, -9]
+        - [-14, 13, -13, 17]
+        - [6, 8, -15, -11, -7]
+    out: -43
+  - name: "case_54"
+    in:
+      triangle:
+        - [-10]
+        - [8, -5]
+    out: -15
+  - name: "case_55"
+    in:
+      triangle:
+        - [19]
+        - [20, 17]
+        - [-10, -15, 7]
+        - [14, 1, 19, 20]
+        - [4, -16, -9, -17, -20]
+        - [13, 6, -20, -20, 6, -13]
+    out: -14
+  - name: "case_56"
+    in:
+      triangle:
+        - [10]
+    out: 10
+  - name: "case_57"
+    in:
+      triangle:
+        - [-15]
+        - [-7, -1]
+        - [8, 2, 14]
+        - [12, -19, 2, -1]
+    out: -39
+  - name: "case_58"
+    in:
+      triangle:
+        - [-17]
+        - [-3, 13]
+        - [-11, 8, 14]
+        - [-15, 14, -16, -3]
+    out: -46
+  - name: "case_59"
+    in:
+      triangle:
+        - [-18]
+        - [-4, 14]
+        - [0, 19, -18]
+        - [-7, 3, -10, -15]
+        - [-2, -10, -12, -20, 1]
+    out: -57
+  - name: "case_60"
+    in:
+      triangle:
+        - [17]
+        - [-16, 3]
+        - [1, -4, 6]
+        - [11, -18, 12, 13]
+        - [12, 19, -18, -9, -3]
+        - [3, -19, -16, 18, -12, 8]
+    out: -55
+  - name: "case_61"
+    in:
+      triangle:
+        - [-6]
+    out: -6
+  - name: "case_62"
+    in:
+      triangle:
+        - [0]
+        - [-18, -7]
+    out: -18
+  - name: "case_63"
+    in:
+      triangle:
+        - [-10]
+        - [7, 9]
+        - [-4, -8, 11]
+        - [-20, -4, -7, 7]
+    out: -27
+  - name: "case_64"
+    in:
+      triangle:
+        - [-19]
+        - [-5, 13]
+        - [15, -5, -20]
+        - [-11, -15, 15, -3]
+        - [2, -19, 13, -5, -7]
+    out: -63
+  - name: "case_65"
+    in:
+      triangle:
+        - [-12]
+        - [19, 20]
+        - [-4, -17, -3]
+    out: -10
+  - name: "case_66"
+    in:
+      triangle:
+        - [-2]
+        - [13, -8]
+        - [4, -14, -5]
+        - [-20, 18, 0, -2]
+    out: -24
+  - name: "case_67"
+    in:
+      triangle:
+        - [12]
+        - [0, -6]
+        - [-4, 10, 20]
+        - [4, -15, 19, 2]
+        - [-11, -7, -9, -11, 10]
+    out: -16
+  - name: "case_68"
+    in:
+      triangle:
+        - [17]
+        - [4, -11]
+        - [-15, -11, -1]
+        - [11, 3, 6, 0]
+        - [-20, 0, 13, 12, -17]
+        - [7, -3, -11, 6, 20, 8]
+    out: -13
+  - name: "case_69"
+    in:
+      triangle:
+        - [-19]
+        - [1, -8]
+        - [9, -3, 6]
+        - [-20, -19, -2, -5]
+    out: -49
+  - name: "case_70"
+    in:
+      triangle:
+        - [-10]
+        - [-19, 6]
+        - [16, -18, -13]
+    out: -47
+  - name: "case_71"
+    in:
+      triangle:
+        - [8]
+        - [-1, 0]
+        - [20, -2, 11]
+        - [-18, -17, 0, -16]
+    out: -12
+  - name: "case_72"
+    in:
+      triangle:
+        - [-7]
+        - [-10, 2]
+        - [-18, 6, -15]
+        - [-5, -14, -12, -12]
+    out: -49

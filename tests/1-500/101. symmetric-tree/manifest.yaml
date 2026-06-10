@@ -1,0 +1,846 @@
+entry:
+  id: 101
+  title: "symmetric-tree"
+  params:
+    root:
+      type: "tree_node"
+  call:
+    cpp: "Solution().isSymmetric({root})"
+    rust: "Solution::is_symmetric({root})"
+    python3: "Solution().isSymmetric({root})"
+    python2: "Solution().isSymmetric({root})"
+    ruby: "is_symmetric({root})"
+    java: "new Solution().isSymmetric({root})"
+    csharp: "new Solution().IsSymmetric({root})"
+    kotlin: "Solution().isSymmetric({root})"
+    go: "isSymmetric({root})"
+    dart: "Solution().isSymmetric({root})"
+    swift: "Solution().isSymmetric({root})"
+    typescript: "isSymmetric({root})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().isSymmetric(root, {result})"
+    checker: |
+      import copy
+
+      from typing import Optional
+
+      class Solution:
+          def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+              def mirror(left: Optional[TreeNode], right: Optional[TreeNode]) -> bool:
+                  if left is None or right is None:
+                      return left is right
+                  return (
+                      left.val == right.val
+                      and mirror(left.left, right.right)
+                      and mirror(left.right, right.left)
+                  )
+
+              return True if root is None else mirror(root.left, root.right)
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "bool"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def isSymmetric(self, root, result):
+              prepared_root = prepare_input(root, "tree_node")
+              expected = Solution().isSymmetric(prepared_root)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 101
+tests:
+  - name: "case_01"
+    in:
+      root: [1, 2, 2, 3, 4, 4, 3]
+    out: true
+  - name: "case_02"
+    in:
+      root: [1, 2, 2, null, 3, null, 3]
+    out: false
+  - name: "case_03"
+    in:
+      root:
+        [
+          -3,
+          8,
+          5,
+          null,
+          -2,
+          6,
+          -3,
+          5,
+          null,
+          null,
+          null,
+          2,
+          null,
+          -2,
+          3,
+          -7,
+          0,
+          null,
+          1,
+        ]
+    out: false
+  - name: "case_04"
+    in:
+      root:
+        [
+          -1,
+          3,
+          null,
+          null,
+          4,
+          null,
+          8,
+          null,
+          2,
+          -9,
+          -5,
+          4,
+          null,
+          null,
+          null,
+          2,
+          9,
+          6,
+          7,
+          -4,
+          -9,
+          -7,
+        ]
+    out: false
+  - name: "case_05"
+    in:
+      root: [9, 5]
+    out: false
+  - name: "case_06"
+    in:
+      root: [5, -5, -3, 8]
+    out: false
+  - name: "case_07"
+    in:
+      root: [-5]
+    out: true
+  - name: "case_08"
+    in:
+      root: [1, -8, 2, -3, 1, null, -1, 4, null, 1]
+    out: false
+  - name: "case_09"
+    in:
+      root: [-6, -4, null, 5, -8, -2, 6, 8]
+    out: false
+  - name: "case_10"
+    in:
+      root:
+        [
+          8,
+          -9,
+          0,
+          2,
+          3,
+          -2,
+          -3,
+          null,
+          null,
+          2,
+          null,
+          -3,
+          2,
+          8,
+          null,
+          8,
+          0,
+          -2,
+          -3,
+        ]
+    out: false
+  - name: "case_11"
+    in:
+      root: [0, -2, null, 5, -8, -3, 5, -8, null, -1, -5, -8, null, -6, 5]
+    out: false
+  - name: "case_12"
+    in:
+      root: [7, -5, 4, null, null, 8, null, -3, -4, 9, -3]
+    out: false
+  - name: "case_13"
+    in:
+      root: [7, -6, -9, 7, 9, -5, null, 5, -7, 3, -8, null, -8, 0, -4, 3, 3]
+    out: false
+  - name: "case_14"
+    in:
+      root: [1, -2, -2, -3, -4]
+    out: false
+  - name: "case_15"
+    in:
+      root: [5, -3, -9, -3, -8, null, -8, 3, null, 2, 5, -1, -8, 0, null, 2]
+    out: false
+  - name: "case_16"
+    in:
+      root: [-8, 3]
+    out: false
+  - name: "case_17"
+    in:
+      root: [6, -6, -4, 5, -3]
+    out: false
+  - name: "case_18"
+    in:
+      root:
+        [
+          0,
+          -5,
+          7,
+          0,
+          4,
+          7,
+          null,
+          -9,
+          6,
+          2,
+          -5,
+          6,
+          -5,
+          -7,
+          6,
+          null,
+          5,
+          2,
+          -4,
+          8,
+          8,
+          4,
+        ]
+    out: false
+  - name: "case_19"
+    in:
+      root:
+        [
+          4,
+          -8,
+          9,
+          null,
+          null,
+          -4,
+          8,
+          7,
+          -2,
+          -7,
+          null,
+          null,
+          null,
+          -5,
+          0,
+          null,
+          null,
+          6,
+          -4,
+          -7,
+          -4,
+          -9,
+          -8,
+        ]
+    out: false
+  - name: "case_20"
+    in:
+      root: [-4, 4, -3, 9, 3, 9, 0, 4]
+    out: false
+  - name: "case_21"
+    in:
+      root: [-5, -9, 7, -4, 5, 9]
+    out: false
+  - name: "case_22"
+    in:
+      root: [-5, null, 3, -9, -5, 3]
+    out: false
+  - name: "case_23"
+    in:
+      root:
+        [
+          2,
+          -4,
+          null,
+          0,
+          -4,
+          3,
+          7,
+          null,
+          7,
+          -5,
+          2,
+          null,
+          -2,
+          5,
+          4,
+          2,
+          -8,
+          2,
+          -7,
+          9,
+          -7,
+          null,
+          5,
+        ]
+    out: false
+  - name: "case_24"
+    in:
+      root: [0, null, -4, -3, -5, 0, 9, null, 2, -9, 4, 0, 1]
+    out: false
+  - name: "case_25"
+    in:
+      root:
+        [
+          -5,
+          7,
+          -2,
+          -8,
+          null,
+          -3,
+          1,
+          -7,
+          0,
+          null,
+          -5,
+          -2,
+          -8,
+          0,
+          3,
+          null,
+          -6,
+          3,
+          1,
+          -7,
+          -1,
+          6,
+          -7,
+          -5,
+        ]
+    out: false
+  - name: "case_26"
+    in:
+      root: [-2]
+    out: true
+  - name: "case_27"
+    in:
+      root:
+        [
+          -4,
+          null,
+          -4,
+          9,
+          3,
+          5,
+          null,
+          null,
+          -4,
+          null,
+          null,
+          -1,
+          null,
+          -4,
+          -8,
+          -4,
+        ]
+    out: false
+  - name: "case_28"
+    in:
+      root: [7, -8, -3, null, 3, null, null, 7, 7, -6, 4, null, -4, -1]
+    out: false
+  - name: "case_29"
+    in:
+      root:
+        [9, -6, null, -4, -2, null, -9, null, null, -7, null, -2, 8, 2, -2, -4]
+    out: false
+  - name: "case_30"
+    in:
+      root: [-4, -7, -8, null, null, 3, 0, -8, -5, -6, -1, -6, 1, 1, 9]
+    out: false
+  - name: "case_31"
+    in:
+      root:
+        [
+          -2,
+          -5,
+          null,
+          -1,
+          8,
+          -2,
+          null,
+          -4,
+          1,
+          8,
+          5,
+          2,
+          4,
+          1,
+          null,
+          -9,
+          -4,
+          -6,
+          7,
+          9,
+        ]
+    out: false
+  - name: "case_32"
+    in:
+      root: [6, null, 1, 7, null, 2, 4, -6, -4, -1, null, 3, 0, -7, 0, 9, -9]
+    out: false
+  - name: "case_33"
+    in:
+      root: [6, null, 2, -1, 6]
+    out: false
+  - name: "case_34"
+    in:
+      root: [5, 4, null, -1, 4, 1, -4, 6, -2, 2, 7, -6, null, 1, 2, 9]
+    out: false
+  - name: "case_35"
+    in:
+      root: [-4, -5, 9, 0, null, 8, 8, 6, 0, -6, 6, null, -2, 5, -1, 2]
+    out: false
+  - name: "case_36"
+    in:
+      root:
+        [
+          8,
+          5,
+          7,
+          9,
+          -5,
+          2,
+          null,
+          3,
+          6,
+          7,
+          -6,
+          null,
+          -2,
+          1,
+          -8,
+          null,
+          -8,
+          -1,
+          -1,
+          -1,
+          5,
+          null,
+          -5,
+        ]
+    out: false
+  - name: "case_37"
+    in:
+      root:
+        [
+          8,
+          6,
+          null,
+          -7,
+          6,
+          -5,
+          -8,
+          -4,
+          null,
+          null,
+          7,
+          -3,
+          0,
+          -2,
+          null,
+          6,
+          -5,
+          2,
+          0,
+        ]
+    out: false
+  - name: "case_38"
+    in:
+      root:
+        [-4, -1, 6, 7, 8, 4, null, 5, null, 5, -2, -9, -9, 1, null, 6, 9, -2]
+    out: false
+  - name: "case_39"
+    in:
+      root:
+        [9, 0, 6, -3, -4, null, null, 7, 2, -6, null, -5, null, 4, -6, -9, 2]
+    out: false
+  - name: "case_40"
+    in:
+      root:
+        [
+          3,
+          7,
+          4,
+          5,
+          5,
+          -6,
+          null,
+          null,
+          2,
+          -4,
+          -6,
+          -1,
+          9,
+          null,
+          -9,
+          -7,
+          -5,
+          3,
+          -7,
+          null,
+          -6,
+          -2,
+          -6,
+        ]
+    out: false
+  - name: "case_41"
+    in:
+      root:
+        [1, -4, null, -8, 7, 7, 4, 8, -2, 2, -6, -2, 3, 2, -2, null, null, -9]
+    out: false
+  - name: "case_42"
+    in:
+      root: [3, -6, -1, null, -7, 2, 3, 7, 7, -8, -7, -5, -9, -1, -2, -3, -6]
+    out: false
+  - name: "case_43"
+    in:
+      root: [1, 9, null, 8, -2, -9, 0, -5, null, 3, 0]
+    out: false
+  - name: "case_44"
+    in:
+      root: [5, null, -7, -7]
+    out: false
+  - name: "case_45"
+    in:
+      root: [2, -9, null, -6, 3, 5, -6, -1, -6, -2, 0, -1]
+    out: false
+  - name: "case_46"
+    in:
+      root: [-7, -5, 8, -8, -4, 1, 7, -1, 5, -6, 1]
+    out: false
+  - name: "case_47"
+    in:
+      root: [0, 7, 4, 2, 6, -2, -2, 3, 6, -4, 4, 2, -7, -4]
+    out: false
+  - name: "case_48"
+    in:
+      root: [9, -8, -7, -5, null, -7, null, 6, 8]
+    out: false
+  - name: "case_49"
+    in:
+      root: [1, null, 7]
+    out: false
+  - name: "case_50"
+    in:
+      root: [1, null, -7, 2, -4, 3, null, -4, null, -3, 5, -1, -2, 4, 5, -7]
+    out: false
+  - name: "case_51"
+    in:
+      root: [-7, 1, -5, null, 7, 3, 0, 6, 8, null, 2, -8]
+    out: false
+  - name: "case_52"
+    in:
+      root: [0, null, -6, 5, 6, 0, -6, null, -8, -8, 9, -6, 3]
+    out: false
+  - name: "case_53"
+    in:
+      root:
+        [
+          -1,
+          -2,
+          -2,
+          9,
+          null,
+          -1,
+          -3,
+          -7,
+          8,
+          -8,
+          1,
+          null,
+          null,
+          2,
+          7,
+          null,
+          -4,
+          3,
+          3,
+          3,
+          -2,
+        ]
+    out: false
+  - name: "case_54"
+    in:
+      root: [0, -2, 2, 6]
+    out: false
+  - name: "case_55"
+    in:
+      root: [2, 6, 3, -6, 1, 5, -2, 4, -4, null, 1, null, 4]
+    out: false
+  - name: "case_56"
+    in:
+      root: [-6, -5, 6, -4, 7, -2, -9, 7]
+    out: false
+  - name: "case_57"
+    in:
+      root: [-6, -4, 9, 9, 1, -9, -6, -2, -4, -8, 7, 8]
+    out: false
+  - name: "case_58"
+    in:
+      root: [-2, null, -4, -6, 3, null, 2, null, 6]
+    out: false
+  - name: "case_59"
+    in:
+      root:
+        [
+          9,
+          7,
+          4,
+          4,
+          null,
+          7,
+          2,
+          1,
+          3,
+          3,
+          -5,
+          -6,
+          -3,
+          0,
+          1,
+          9,
+          3,
+          7,
+          -4,
+          9,
+          0,
+          -8,
+          null,
+          null,
+          4,
+        ]
+    out: false
+  - name: "case_60"
+    in:
+      root: [-1, 5, 3, 4, 5, -9]
+    out: false
+  - name: "case_61"
+    in:
+      root:
+        [
+          -1,
+          4,
+          -3,
+          null,
+          -4,
+          -7,
+          -6,
+          null,
+          4,
+          8,
+          7,
+          7,
+          null,
+          null,
+          9,
+          -9,
+          1,
+          0,
+          null,
+          null,
+          0,
+        ]
+    out: false
+  - name: "case_62"
+    in:
+      root: [-8, 7, 6]
+    out: false
+  - name: "case_63"
+    in:
+      root:
+        [
+          8,
+          1,
+          -8,
+          2,
+          -5,
+          0,
+          null,
+          -7,
+          -2,
+          9,
+          2,
+          -3,
+          1,
+          -2,
+          -3,
+          -2,
+          -1,
+          null,
+          -5,
+          3,
+          -5,
+        ]
+    out: false
+  - name: "case_64"
+    in:
+      root:
+        [
+          3,
+          null,
+          -2,
+          null,
+          -5,
+          null,
+          -5,
+          5,
+          4,
+          null,
+          -9,
+          6,
+          0,
+          4,
+          -5,
+          -3,
+          null,
+          -4,
+          6,
+          -5,
+          5,
+          -5,
+          -2,
+          6,
+          5,
+        ]
+    out: false
+  - name: "case_65"
+    in:
+      root: [-5, 4, -3, 4, 6, 2, 4, -9, -4, 7, 4, -6]
+    out: false
+  - name: "case_66"
+    in:
+      root: [-8]
+    out: true
+  - name: "case_67"
+    in:
+      root: [8, 2, 9, -6, null, null, 8, 3, 8, 5, -5, -5, 9, 1, -8]
+    out: false
+  - name: "case_68"
+    in:
+      root: [5, 4, 6, 3, 2, -5]
+    out: false
+  - name: "case_69"
+    in:
+      root: [-1]
+    out: true
+  - name: "case_70"
+    in:
+      root:
+        [
+          -7,
+          9,
+          null,
+          null,
+          2,
+          -1,
+          null,
+          null,
+          1,
+          3,
+          -2,
+          -7,
+          -7,
+          0,
+          -7,
+          9,
+          null,
+          -6,
+          null,
+          -2,
+        ]
+    out: false
+  - name: "case_71"
+    in:
+      root: [-2, 9, -5]
+    out: false
+  - name: "case_72"
+    in:
+      root: [3, 8]
+    out: false

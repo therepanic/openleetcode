@@ -1,0 +1,588 @@
+entry:
+  id: 203
+  title: "remove-linked-list-elements"
+  params:
+    head:
+      type: "list_node"
+    val:
+      type: "int"
+  call:
+    cpp: "listNodeToArray(Solution().removeElements({head}, {val}))"
+    rust: "ListNode::list_node_to_array(Solution::remove_elements({head}, {val}))"
+    python3: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    python2: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    ruby: "list_node_to_array(remove_elements({head}, {val}))"
+    java: "ListNode.listNodeToArray(new Solution().removeElements({head}, {val}))"
+    csharp: "ListNode.ListNodeToArray(new Solution().RemoveElements({head}, {val}))"
+    kotlin: "listNodeToArray(Solution().removeElements({head}, {val}))"
+    go: "listNodeToArray(removeElements({head}, {val}))"
+    dart: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    swift: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    typescript: "listNodeToArray(removeElements({head}, {val}))"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().removeElements(head, val, {result})"
+    checker: |
+      import copy
+
+      from typing import Optional
+
+      class Solution:
+          def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+              dummy = ListNode(0, head)
+              current = dummy
+              while current.next is not None:
+                  if current.next.val == val:
+                      current.next = current.next.next
+                  else:
+                      current = current.next
+              return dummy.next
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "list_node"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def removeElements(self, head, val, result):
+              prepared_head = prepare_input(head, "list_node"); prepared_val = prepare_input(val, "int")
+              expected = Solution().removeElements(prepared_head, prepared_val)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 203
+tests:
+  - name: "case_01"
+    in:
+      head: [1, 2, 6, 3, 4, 5, 6]
+      val: 6
+    out: [1, 2, 3, 4, 5]
+  - name: "case_02"
+    in:
+      head: []
+      val: 1
+    out: []
+  - name: "case_03"
+    in:
+      head: [7, 7, 7, 7]
+      val: 7
+    out: []
+  - name: "case_04"
+    in:
+      head: [-5, 4, -1]
+      val: 4
+    out: [-5, -1]
+  - name: "case_05"
+    in:
+      head: [0, 4, -1, 4, 1, 2, -2, 2, -4, -1, -4]
+      val: 2
+    out: [0, 4, -1, 4, 1, -2, -4, -1, -4]
+  - name: "case_06"
+    in:
+      head: [5, 1, 0, 5]
+      val: 0
+    out: [5, 1, 5]
+  - name: "case_07"
+    in:
+      head: [-5, 5, -3, -4, 5, -4, -4, 1, -2, -1, -1]
+      val: -1
+    out: [-5, 5, -3, -4, 5, -4, -4, 1, -2]
+  - name: "case_08"
+    in:
+      head: [-2, 3, -4]
+      val: 5
+    out: [-2, 3, -4]
+  - name: "case_09"
+    in:
+      head: [-2, -4, -3, 1, -4, -1, -1, 3, -4, -4, -1, -2]
+      val: -1
+    out: [-2, -4, -3, 1, -4, 3, -4, -4, -2]
+  - name: "case_10"
+    in:
+      head: [3, -5, -4, 1, 0, 0, 1, -4, -4, -1]
+      val: -2
+    out: [3, -5, -4, 1, 0, 0, 1, -4, -4, -1]
+  - name: "case_11"
+    in:
+      head: [3, 5, 5, 5, -2, -5, 5, -4, -1, 5, 4]
+      val: 3
+    out: [5, 5, 5, -2, -5, 5, -4, -1, 5, 4]
+  - name: "case_12"
+    in:
+      head: [-1, -3, 0, 2, 3]
+      val: 4
+    out: [-1, -3, 0, 2, 3]
+  - name: "case_13"
+    in:
+      head: [0, 3]
+      val: -1
+    out: [0, 3]
+  - name: "case_14"
+    in:
+      head: [0, -1, 3, 1]
+      val: -3
+    out: [0, -1, 3, 1]
+  - name: "case_15"
+    in:
+      head: [2, -1, -1, 2, -5, 2]
+      val: -2
+    out: [2, -1, -1, 2, -5, 2]
+  - name: "case_16"
+    in:
+      head: [-1, -4, -1, -3, -3, -3, -2, 1, 0]
+      val: -2
+    out: [-1, -4, -1, -3, -3, -3, 1, 0]
+  - name: "case_17"
+    in:
+      head: []
+      val: 4
+    out: []
+  - name: "case_18"
+    in:
+      head: [-4, -5]
+      val: -2
+    out: [-4, -5]
+  - name: "case_19"
+    in:
+      head: [4, 5, 2, 1, 0, 4, 4, -2]
+      val: -2
+    out: [4, 5, 2, 1, 0, 4, 4]
+  - name: "case_20"
+    in:
+      head: [-1, -3, 2, 1, 1, -3, -1, -3, 0, 2, -4]
+      val: 3
+    out: [-1, -3, 2, 1, 1, -3, -1, -3, 0, 2, -4]
+  - name: "case_21"
+    in:
+      head: [-4]
+      val: -1
+    out: [-4]
+  - name: "case_22"
+    in:
+      head: [0, 5, 0, -3, -3, 4, -5, -1, 1, -4, 4]
+      val: -4
+    out: [0, 5, 0, -3, -3, 4, -5, -1, 1, 4]
+  - name: "case_23"
+    in:
+      head: [-5, 4, 2, -3, -2, -5]
+      val: -3
+    out: [-5, 4, 2, -2, -5]
+  - name: "case_24"
+    in:
+      head: [5, 2, -2, 0, -3]
+      val: -2
+    out: [5, 2, 0, -3]
+  - name: "case_25"
+    in:
+      head: []
+      val: -4
+    out: []
+  - name: "case_26"
+    in:
+      head: [2]
+      val: -1
+    out: [2]
+  - name: "case_27"
+    in:
+      head: [1]
+      val: 5
+    out: [1]
+  - name: "case_28"
+    in:
+      head: [-1, -2, 0, 4, -3, -4, 4, 2]
+      val: -4
+    out: [-1, -2, 0, 4, -3, 4, 2]
+  - name: "case_29"
+    in:
+      head: [-4, -1, -2, 3, 5, 4, 5]
+      val: 3
+    out: [-4, -1, -2, 5, 4, 5]
+  - name: "case_30"
+    in:
+      head: [-4, 0, 0, 4, 3, 1, 1, -2, -4]
+      val: -3
+    out: [-4, 0, 0, 4, 3, 1, 1, -2, -4]
+  - name: "case_31"
+    in:
+      head: [-3, -1, 2, 2, 4, -4, 3]
+      val: -5
+    out: [-3, -1, 2, 2, 4, -4, 3]
+  - name: "case_32"
+    in:
+      head: [-3, 2, 0, 3]
+      val: 1
+    out: [-3, 2, 0, 3]
+  - name: "case_33"
+    in:
+      head: [3, -5, 1, -3, 4, -3, 4, 5, 4]
+      val: -5
+    out: [3, 1, -3, 4, -3, 4, 5, 4]
+  - name: "case_34"
+    in:
+      head: [2, 4, 4, -4, -5, -2, -4, 1, 0]
+      val: 3
+    out: [2, 4, 4, -4, -5, -2, -4, 1, 0]
+  - name: "case_35"
+    in:
+      head: [0, -1, -4]
+      val: 5
+    out: [0, -1, -4]
+  - name: "case_36"
+    in:
+      head: [2, -3, -3, 5, -5, 3, 4, -4, -4, 3, -3, 3]
+      val: -1
+    out: [2, -3, -3, 5, -5, 3, 4, -4, -4, 3, -3, 3]
+  - name: "case_37"
+    in:
+      head: [3, -2, -5, -4, 4, -4, -2]
+      val: -4
+    out: [3, -2, -5, 4, -2]
+  - name: "case_38"
+    in:
+      head: [-4, 2, 4, 4, -4]
+      val: 2
+    out: [-4, 4, 4, -4]
+  - name: "case_39"
+    in:
+      head: []
+      val: 5
+    out: []
+  - name: "case_40"
+    in:
+      head: [-3]
+      val: 4
+    out: [-3]
+  - name: "case_41"
+    in:
+      head: [4]
+      val: 5
+    out: [4]
+  - name: "case_42"
+    in:
+      head: [0, -2, 1, 1, -5, -3, -4, -2, -5, -2, 2, -2]
+      val: 1
+    out: [0, -2, -5, -3, -4, -2, -5, -2, 2, -2]
+  - name: "case_43"
+    in:
+      head: [3, -3, 3, 5, 4, -1, -4, -2]
+      val: -3
+    out: [3, 3, 5, 4, -1, -4, -2]
+  - name: "case_44"
+    in:
+      head: [0, 2, -5, -5, -2, 5, -1, 0, -3, -5]
+      val: -1
+    out: [0, 2, -5, -5, -2, 5, 0, -3, -5]
+  - name: "case_45"
+    in:
+      head: [2, 3, 5, 3]
+      val: 1
+    out: [2, 3, 5, 3]
+  - name: "case_46"
+    in:
+      head: [0, -3, 0, -4, 0]
+      val: -2
+    out: [0, -3, 0, -4, 0]
+  - name: "case_47"
+    in:
+      head: [-3, 0]
+      val: -2
+    out: [-3, 0]
+  - name: "case_48"
+    in:
+      head: [-1, 3, -5, -3, 3, 2, 3, -5, 4]
+      val: -5
+    out: [-1, 3, -3, 3, 2, 3, 4]
+  - name: "case_49"
+    in:
+      head: [0, 2, -2, -3]
+      val: -5
+    out: [0, 2, -2, -3]
+  - name: "case_50"
+    in:
+      head: [5, 3, 5, -2, -5, 0, 0, 3, -2, 4, 4]
+      val: 4
+    out: [5, 3, 5, -2, -5, 0, 0, 3, -2]
+  - name: "case_51"
+    in:
+      head: [-5, -5, 3, -1, 0, 0, 0, -3, 0]
+      val: -3
+    out: [-5, -5, 3, -1, 0, 0, 0, 0]
+  - name: "case_52"
+    in:
+      head: [4]
+      val: -3
+    out: [4]
+  - name: "case_53"
+    in:
+      head: [0, -4, 2, -2, 2]
+      val: -4
+    out: [0, 2, -2, 2]
+  - name: "case_54"
+    in:
+      head: [5, 0, -1]
+      val: -5
+    out: [5, 0, -1]
+  - name: "case_55"
+    in:
+      head: [-1, -4, 0, -1, -2, -1, -4, 2, -5, 4, -3]
+      val: 1
+    out: [-1, -4, 0, -1, -2, -1, -4, 2, -5, 4, -3]
+  - name: "case_56"
+    in:
+      head: [-1, 1, 2, 0, 0, 4, -1, -2, -3, -4]
+      val: -3
+    out: [-1, 1, 2, 0, 0, 4, -1, -2, -4]
+  - name: "case_57"
+    in:
+      head: [3, 3, 0, 3, -3, -4, 0, 1]
+      val: -4
+    out: [3, 3, 0, 3, -3, 0, 1]
+  - name: "case_58"
+    in:
+      head: [3, 4, -2, 1, 4, 2]
+      val: 1
+    out: [3, 4, -2, 4, 2]
+  - name: "case_59"
+    in:
+      head: [0, 2, 0, 4, 2]
+      val: 3
+    out: [0, 2, 0, 4, 2]
+  - name: "case_60"
+    in:
+      head: [4, -2, 4, 1, -5, -1, -1, 4, 4]
+      val: -5
+    out: [4, -2, 4, 1, -1, -1, 4, 4]
+  - name: "case_61"
+    in:
+      head: [-2]
+      val: -4
+    out: [-2]
+  - name: "case_62"
+    in:
+      head: [1, -2, 5, 2]
+      val: 2
+    out: [1, -2, 5]
+  - name: "case_63"
+    in:
+      head: [-2, 0, 3, 1, 2, 5, 5]
+      val: 3
+    out: [-2, 0, 1, 2, 5, 5]
+  - name: "case_64"
+    in:
+      head: [1, 0, 2, 2, 0, 4, -4, 1]
+      val: 3
+    out: [1, 0, 2, 2, 0, 4, -4, 1]
+  - name: "generated_01"
+    seed: 20301
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "generated_02"
+    seed: 20302
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "generated_03"
+    seed: 20303
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "generated_04"
+    seed: 20304
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "generated_05"
+    seed: 20305
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "generated_06"
+    seed: 20306
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "generated_07"
+    seed: 20307
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "generated_08"
+    seed: 20308
+    in:
+      head:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 2000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+      val:
+        gen: "int"
+        min: -1000
+        max: 1000
