@@ -1,0 +1,505 @@
+entry:
+  id: 121
+  title: "best-time-to-buy-and-sell-stock"
+  params:
+    prices:
+      type: "array"
+      items:
+        type: "int"
+  call:
+    cpp: "Solution().maxProfit({prices})"
+    rust: "Solution::max_profit({prices})"
+    python3: "Solution().maxProfit({prices})"
+    python2: "Solution().maxProfit({prices})"
+    ruby: "max_profit({prices})"
+    java: "new Solution().maxProfit({prices})"
+    csharp: "new Solution().MaxProfit({prices})"
+    kotlin: "Solution().maxProfit({prices})"
+    go: "maxProfit({prices})"
+    dart: "Solution().maxProfit({prices})"
+    swift: "Solution().maxProfit({prices})"
+    typescript: "maxProfit({prices})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().maxProfit(prices, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def maxProfit(self, prices):
+              left = 0  # Buy
+              right = 1  # Sell
+              max_profit = 0
+              while right < len(prices):
+                  current_profit = prices[right] - prices[left]
+                  if prices[left] < prices[right]:
+                      max_profit = max(current_profit, max_profit)
+                  else:
+                      left = right
+                  right += 1
+              return max_profit
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def maxProfit(self, prices, result):
+              prepared_prices = prepare_input(prices, "array[int]")
+              expected = Solution().maxProfit(prepared_prices)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 121
+tests:
+  - name: "case_01"
+    in:
+      prices: [7, 1, 5, 3, 6, 4]
+    out: 5
+  - name: "case_02"
+    in:
+      prices: [7, 6, 4, 3, 1]
+    out: 0
+  - name: "case_03"
+    in:
+      prices: [6]
+    out: 0
+  - name: "case_04"
+    in:
+      prices: [27, 12, 20, 29, 5, 19, 25, 16, 5]
+    out: 20
+  - name: "case_05"
+    in:
+      prices: [9, 5, 27, 20, 13]
+    out: 22
+  - name: "case_06"
+    in:
+      prices: [21]
+    out: 0
+  - name: "case_07"
+    in:
+      prices: [30, 27, 25, 27, 19, 13, 25, 4, 0, 15, 13]
+    out: 15
+  - name: "case_08"
+    in:
+      prices: [10, 14, 18, 7, 4, 11, 5, 13, 25, 3, 10, 29]
+    out: 26
+  - name: "case_09"
+    in:
+      prices: [20, 13, 16]
+    out: 3
+  - name: "case_10"
+    in:
+      prices: [5, 20, 10, 3, 13, 0, 4]
+    out: 15
+  - name: "case_11"
+    in:
+      prices: [14, 11, 11, 23, 19]
+    out: 12
+  - name: "case_12"
+    in:
+      prices: [0, 17, 4, 27, 27, 26, 0, 22, 8]
+    out: 27
+  - name: "case_13"
+    in:
+      prices: [18, 1, 17, 4, 6, 24]
+    out: 23
+  - name: "case_14"
+    in:
+      prices: [22, 5, 0, 6, 22, 29, 12, 6, 15, 29, 18, 19]
+    out: 29
+  - name: "case_15"
+    in:
+      prices: [3, 25, 0, 5, 7, 6, 18, 6, 20, 5]
+    out: 22
+  - name: "case_16"
+    in:
+      prices: [25]
+    out: 0
+  - name: "case_17"
+    in:
+      prices: [11, 12, 21, 12, 25, 2, 27, 10, 24, 22, 18, 14]
+    out: 25
+  - name: "case_18"
+    in:
+      prices: [12, 10, 8, 19, 28, 8, 20, 12, 30, 12, 12, 15]
+    out: 22
+  - name: "case_19"
+    in:
+      prices: [0, 11, 13, 23, 15, 18, 29, 6, 22, 15, 4, 20]
+    out: 29
+  - name: "case_20"
+    in:
+      prices: [12, 24, 3, 2, 20, 27]
+    out: 25
+  - name: "case_21"
+    in:
+      prices: [2]
+    out: 0
+  - name: "case_22"
+    in:
+      prices: [16, 18, 25, 30, 15, 11, 15, 9, 27, 5]
+    out: 18
+  - name: "case_23"
+    in:
+      prices: [8, 4, 10, 6, 18, 21, 8, 7, 5, 28]
+    out: 24
+  - name: "case_24"
+    in:
+      prices: [2, 2, 30, 23, 8, 13, 24, 22, 23, 12]
+    out: 28
+  - name: "case_25"
+    in:
+      prices: [24, 23, 0, 11, 24]
+    out: 24
+  - name: "case_26"
+    in:
+      prices: [25, 6, 16, 8, 1, 1, 0, 7, 28, 23, 11, 4]
+    out: 28
+  - name: "case_27"
+    in:
+      prices: [17, 20, 24, 28, 18, 7, 23, 9, 25, 22]
+    out: 18
+  - name: "case_28"
+    in:
+      prices: [3, 0, 21, 17, 18, 13, 26, 15, 8, 2, 4]
+    out: 26
+  - name: "case_29"
+    in:
+      prices: [1, 23, 14]
+    out: 22
+  - name: "case_30"
+    in:
+      prices: [5, 6, 24, 15, 18, 5, 12, 6]
+    out: 19
+  - name: "case_31"
+    in:
+      prices: [18, 2, 10, 4, 8]
+    out: 8
+  - name: "case_32"
+    in:
+      prices: [14, 17]
+    out: 3
+  - name: "case_33"
+    in:
+      prices: [18, 28, 24, 22, 5, 19, 12, 14, 4, 22, 3]
+    out: 18
+  - name: "case_34"
+    in:
+      prices: [11, 16, 7, 10, 27]
+    out: 20
+  - name: "case_35"
+    in:
+      prices: [9, 17, 8, 0, 21, 27]
+    out: 27
+  - name: "case_36"
+    in:
+      prices: [19, 22, 21, 0, 8, 4]
+    out: 8
+  - name: "case_37"
+    in:
+      prices: [0, 8, 4, 17, 18, 2, 23, 10, 30, 24, 17]
+    out: 30
+  - name: "case_38"
+    in:
+      prices: [28, 26, 13]
+    out: 0
+  - name: "case_39"
+    in:
+      prices: [16, 27, 30, 1, 0, 28, 29, 18, 9, 18]
+    out: 29
+  - name: "case_40"
+    in:
+      prices: [12, 29, 19, 13, 5, 29, 28]
+    out: 24
+  - name: "case_41"
+    in:
+      prices: [25, 4, 13, 15, 0, 18, 22, 20, 10, 8]
+    out: 22
+  - name: "case_42"
+    in:
+      prices: [7, 5, 8, 21, 22, 2]
+    out: 17
+  - name: "case_43"
+    in:
+      prices: [2, 19, 1, 29, 12, 22]
+    out: 28
+  - name: "case_44"
+    in:
+      prices: [26, 20, 8, 29, 2, 6, 16, 2, 5, 15, 24]
+    out: 22
+  - name: "case_45"
+    in:
+      prices: [17, 14]
+    out: 0
+  - name: "case_46"
+    in:
+      prices: [1, 6, 15, 12, 3, 26, 18, 20, 4]
+    out: 25
+  - name: "case_47"
+    in:
+      prices: [27, 17, 30, 16, 16]
+    out: 13
+  - name: "case_48"
+    in:
+      prices: [20, 21, 3, 26, 2, 11, 7, 27, 26, 3]
+    out: 25
+  - name: "case_49"
+    in:
+      prices: [0, 0, 4, 20, 1, 14]
+    out: 20
+  - name: "case_50"
+    in:
+      prices: [21, 2, 11]
+    out: 9
+  - name: "case_51"
+    in:
+      prices: [8, 16, 13, 29, 4, 6, 16, 11, 9, 26, 0]
+    out: 22
+  - name: "case_52"
+    in:
+      prices: [21, 7, 22, 7, 5, 23, 5, 13, 25, 0, 22]
+    out: 22
+  - name: "case_53"
+    in:
+      prices: [21, 29, 16, 15, 28, 12, 9]
+    out: 13
+  - name: "case_54"
+    in:
+      prices: [17, 2, 11, 27, 15, 4]
+    out: 25
+  - name: "case_55"
+    in:
+      prices: [13, 28, 14, 3]
+    out: 15
+  - name: "case_56"
+    in:
+      prices: [3, 1, 21, 1]
+    out: 20
+  - name: "case_57"
+    in:
+      prices: [28]
+    out: 0
+  - name: "case_58"
+    in:
+      prices: [17, 30, 27, 22, 21, 29, 6, 21, 7, 2]
+    out: 15
+  - name: "case_59"
+    in:
+      prices: [5, 0, 2, 29, 19, 21, 17, 27, 3, 14, 17]
+    out: 29
+  - name: "case_60"
+    in:
+      prices: [14, 18]
+    out: 4
+  - name: "case_61"
+    in:
+      prices: [9, 28, 28, 1, 18]
+    out: 19
+  - name: "case_62"
+    in:
+      prices: [20, 17, 0, 28, 16, 27, 6, 2, 7, 12, 23, 15]
+    out: 28
+  - name: "case_63"
+    in:
+      prices: [19, 12, 2, 20, 27]
+    out: 25
+  - name: "case_64"
+    in:
+      prices: [1, 24, 0, 0, 28, 16, 16, 16, 28, 5, 11]
+    out: 28
+  - name: "generated_01"
+    seed: 12101
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+  - name: "generated_02"
+    seed: 12102
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+  - name: "generated_03"
+    seed: 12103
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+  - name: "generated_04"
+    seed: 12104
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+  - name: "generated_05"
+    seed: 12105
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+  - name: "generated_06"
+    seed: 12106
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+  - name: "generated_07"
+    seed: 12107
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+  - name: "generated_08"
+    seed: 12108
+    in:
+      prices:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 4000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000

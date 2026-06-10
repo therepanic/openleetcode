@@ -1,0 +1,455 @@
+entry:
+  id: 202
+  title: "happy-number"
+  params:
+    n:
+      type: "int"
+  call:
+    cpp: "Solution().isHappy({n})"
+    rust: "Solution::is_happy({n})"
+    python3: "Solution().isHappy({n})"
+    python2: "Solution().isHappy({n})"
+    ruby: "is_happy({n})"
+    java: "new Solution().isHappy({n})"
+    csharp: "new Solution().IsHappy({n})"
+    kotlin: "Solution().isHappy({n})"
+    go: "isHappy({n})"
+    dart: "Solution().isHappy({n})"
+    swift: "Solution().isHappy({n})"
+    typescript: "isHappy({n})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().isHappy(n, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def isHappy(self, n: int) -> bool:
+              if(n==1 or n==7):
+                  return True
+              elif(n<10):
+                  return False
+              else:
+                  sum =0
+                  while(n>0):
+                      temp = n%10
+                      sum += temp*temp
+                      n= n//10
+                  return self.isHappy(sum)
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "bool"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def isHappy(self, n, result):
+              prepared_n = prepare_input(n, "int")
+              expected = Solution().isHappy(prepared_n)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 202
+tests:
+  - name: "case_01"
+    in:
+      n: 19
+    out: true
+  - name: "case_02"
+    in:
+      n: 2
+    out: false
+  - name: "case_03"
+    in:
+      n: 6317
+    out: false
+  - name: "case_04"
+    in:
+      n: 7684
+    out: false
+  - name: "case_05"
+    in:
+      n: 6709
+    out: false
+  - name: "case_06"
+    in:
+      n: 3246
+    out: false
+  - name: "case_07"
+    in:
+      n: 3211
+    out: false
+  - name: "case_08"
+    in:
+      n: 6521
+    out: false
+  - name: "case_09"
+    in:
+      n: 921
+    out: true
+  - name: "case_10"
+    in:
+      n: 7009
+    out: true
+  - name: "case_11"
+    in:
+      n: 7253
+    out: false
+  - name: "case_12"
+    in:
+      n: 7394
+    out: false
+  - name: "case_13"
+    in:
+      n: 592
+    out: false
+  - name: "case_14"
+    in:
+      n: 8648
+    out: false
+  - name: "case_15"
+    in:
+      n: 5342
+    out: false
+  - name: "case_16"
+    in:
+      n: 3303
+    out: false
+  - name: "case_17"
+    in:
+      n: 3891
+    out: false
+  - name: "case_18"
+    in:
+      n: 8099
+    out: true
+  - name: "case_19"
+    in:
+      n: 8569
+    out: false
+  - name: "case_20"
+    in:
+      n: 3150
+    out: false
+  - name: "case_21"
+    in:
+      n: 6591
+    out: false
+  - name: "case_22"
+    in:
+      n: 5354
+    out: false
+  - name: "case_23"
+    in:
+      n: 7801
+    out: false
+  - name: "case_24"
+    in:
+      n: 2104
+    out: false
+  - name: "case_25"
+    in:
+      n: 6975
+    out: false
+  - name: "case_26"
+    in:
+      n: 7618
+    out: false
+  - name: "case_27"
+    in:
+      n: 603
+    out: false
+  - name: "case_28"
+    in:
+      n: 8559
+    out: false
+  - name: "case_29"
+    in:
+      n: 4073
+    out: false
+  - name: "case_30"
+    in:
+      n: 4168
+    out: false
+  - name: "case_31"
+    in:
+      n: 7323
+    out: false
+  - name: "case_32"
+    in:
+      n: 7727
+    out: false
+  - name: "case_33"
+    in:
+      n: 8066
+    out: false
+  - name: "case_34"
+    in:
+      n: 4439
+    out: false
+  - name: "case_35"
+    in:
+      n: 752
+    out: false
+  - name: "case_36"
+    in:
+      n: 2904
+    out: false
+  - name: "case_37"
+    in:
+      n: 1637
+    out: false
+  - name: "case_38"
+    in:
+      n: 634
+    out: false
+  - name: "case_39"
+    in:
+      n: 6226
+    out: false
+  - name: "case_40"
+    in:
+      n: 4272
+    out: false
+  - name: "case_41"
+    in:
+      n: 191
+    out: false
+  - name: "case_42"
+    in:
+      n: 2897
+    out: false
+  - name: "case_43"
+    in:
+      n: 3490
+    out: false
+  - name: "case_44"
+    in:
+      n: 3305
+    out: false
+  - name: "case_45"
+    in:
+      n: 2045
+    out: false
+  - name: "case_46"
+    in:
+      n: 5864
+    out: false
+  - name: "case_47"
+    in:
+      n: 2089
+    out: false
+  - name: "case_48"
+    in:
+      n: 3616
+    out: true
+  - name: "case_49"
+    in:
+      n: 3245
+    out: false
+  - name: "case_50"
+    in:
+      n: 7139
+    out: false
+  - name: "case_51"
+    in:
+      n: 3896
+    out: true
+  - name: "case_52"
+    in:
+      n: 5049
+    out: false
+  - name: "case_53"
+    in:
+      n: 5746
+    out: false
+  - name: "case_54"
+    in:
+      n: 3144
+    out: false
+  - name: "case_55"
+    in:
+      n: 4895
+    out: false
+  - name: "case_56"
+    in:
+      n: 4786
+    out: false
+  - name: "case_57"
+    in:
+      n: 5512
+    out: false
+  - name: "case_58"
+    in:
+      n: 7537
+    out: false
+  - name: "case_59"
+    in:
+      n: 3971
+    out: false
+  - name: "case_60"
+    in:
+      n: 5727
+    out: false
+  - name: "case_61"
+    in:
+      n: 941
+    out: false
+  - name: "case_62"
+    in:
+      n: 3189
+    out: false
+  - name: "case_63"
+    in:
+      n: 6291
+    out: false
+  - name: "case_64"
+    in:
+      n: 6415
+    out: false
+  - name: "generated_01"
+    seed: 20201
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: "generated_02"
+    seed: 20202
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: "generated_03"
+    seed: 20203
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: "generated_04"
+    seed: 20204
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: "generated_05"
+    seed: 20205
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: "generated_06"
+    seed: 20206
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: "generated_07"
+    seed: 20207
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: "generated_08"
+    seed: 20208
+    in:
+      n:
+        gen: "int"
+        min: 1
+        max: 1000000

@@ -1,0 +1,553 @@
+entry:
+  id: 106
+  title: "construct-binary-tree-from-inorder-and-postorder-traversal"
+  params:
+    inorder:
+      type: "array"
+      items:
+        type: "int"
+    postorder:
+      type: "array"
+      items:
+        type: "int"
+  call:
+    cpp: "treeNodeToArray(Solution().buildTree({inorder}, {postorder}))"
+    rust: "TreeNode::tree_node_to_array(Solution::build_tree({inorder}, {postorder}))"
+    python3: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    python2: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    ruby: "tree_node_to_array(build_tree({inorder}, {postorder}))"
+    java: "TreeNode.treeNodeToArray(new Solution().buildTree({inorder}, {postorder}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().BuildTree({inorder}, {postorder}))"
+    kotlin: "treeNodeToArray(Solution().buildTree({inorder}, {postorder}))"
+    go: "treeNodeToArray(buildTree({inorder}, {postorder}))"
+    dart: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    swift: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    typescript: "treeNodeToArray(buildTree({inorder}, {postorder}))"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().buildTree(inorder, postorder, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      # Definition for a binary tree node.
+      # class TreeNode:
+      #     def __init__(self, val=0, left=None, right=None):
+      #         self.val = val
+      #         self.left = left
+      #         self.right = right
+
+      class StateNode:
+          def __init__(self, val):
+              self.val = val
+              self.left = None
+              self.right = None
+
+
+      class Solution:
+
+          def buildTree(self, inorder, postorder):
+
+              idxMap = {}
+
+              for i in range(len(inorder)):
+                  idxMap[inorder[i]] = i
+
+
+              def buildState(l, r):
+
+                  if l > r:
+                      return None
+
+                  rootVal = postorder.pop()
+
+                  node = StateNode(rootVal)
+
+                  mid = idxMap[rootVal]
+
+                  node.right = buildState(mid + 1, r)
+                  node.left = buildState(l, mid - 1)
+
+                  return node
+
+
+              def convert(node):
+
+                  if not node:
+                      return None
+
+                  root = TreeNode(node.val)
+
+                  root.left = convert(node.left)
+                  root.right = convert(node.right)
+
+                  return root
+
+
+              stateRoot = buildState(0, len(inorder) - 1)
+
+              return convert(stateRoot)
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "tree_node"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def buildTree(self, inorder, postorder, result):
+              prepared_inorder = prepare_input(inorder, "array[int]"); prepared_postorder = prepare_input(postorder, "array[int]")
+              expected = Solution().buildTree(prepared_inorder, prepared_postorder)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 106
+tests:
+  - name: "case_01"
+    in:
+      inorder: [9, 3, 15, 20, 7]
+      postorder: [9, 15, 7, 20, 3]
+    out: [3, 9, 20, null, null, 15, 7]
+  - name: "case_02"
+    in:
+      inorder: [-1]
+      postorder: [-1]
+    out: [-1]
+  - name: "case_03"
+    in:
+      inorder: [63, 83, 92, 18, 36, 24, 62, 47]
+      postorder: [63, 83, 18, 92, 24, 47, 62, 36]
+    out: [36, 92, 62, 83, 18, 24, 47, 63]
+  - name: "case_04"
+    in:
+      inorder: [12]
+      postorder: [12]
+    out: [12]
+  - name: "case_05"
+    in:
+      inorder: [63, 19, 27]
+      postorder: [63, 27, 19]
+    out: [19, 63, 27]
+  - name: "case_06"
+    in:
+      inorder: [81, 76, 46, 17, 99]
+      postorder: [81, 46, 76, 99, 17]
+    out: [17, 76, 99, 81, 46]
+  - name: "case_07"
+    in:
+      inorder: [5, 76, 94]
+      postorder: [5, 94, 76]
+    out: [76, 5, 94]
+  - name: "case_08"
+    in:
+      inorder: [38, 48, 28, 15, 17, 29, 82]
+      postorder: [38, 28, 48, 17, 82, 29, 15]
+    out: [15, 48, 29, 38, 28, 17, 82]
+  - name: "case_09"
+    in:
+      inorder: [14, 69, 39, 66, 35, 26, 6]
+      postorder: [14, 39, 69, 35, 6, 26, 66]
+    out: [66, 69, 26, 14, 39, 35, 6]
+  - name: "case_10"
+    in:
+      inorder: [98, 42, 5, 91, 35, 16]
+      postorder: [98, 5, 42, 35, 16, 91]
+    out: [91, 42, 16, 98, 5, 35]
+  - name: "case_11"
+    in:
+      inorder: [79, 41, 77, 69, 31, 46, 98, 50]
+      postorder: [79, 41, 69, 77, 46, 50, 98, 31]
+    out: [31, 77, 98, 41, 69, 46, 50, 79]
+  - name: "case_12"
+    in:
+      inorder: [85, 88, 26, 53, 15, 61, 36, 33, 98]
+      postorder: [85, 26, 88, 15, 53, 36, 98, 33, 61]
+    out: [61, 53, 33, 88, 15, 36, 98, 85, 26]
+  - name: "case_13"
+    in:
+      inorder: [81, 69]
+      postorder: [81, 69]
+    out: [69, 81]
+  - name: "case_14"
+    in:
+      inorder: [85, 77, 46, 12, 52, 70, 91, 58, 76, 60]
+      postorder: [85, 46, 77, 52, 70, 12, 58, 60, 76, 91]
+    out: [91, 12, 76, 77, 70, 58, 60, 85, 46, 52]
+  - name: "case_15"
+    in:
+      inorder: [2, 76, 7, 79, 54]
+      postorder: [2, 7, 76, 54, 79]
+    out: [79, 76, 54, 2, 7]
+  - name: "case_16"
+    in:
+      inorder: [73, 65, 1, 99, 18, 25, 38, 66, 29, 84]
+      postorder: [73, 1, 65, 18, 25, 99, 66, 84, 29, 38]
+    out: [38, 99, 29, 65, 25, 66, 84, 73, 1, 18]
+  - name: "case_17"
+    in:
+      inorder: [78, 63]
+      postorder: [78, 63]
+    out: [63, 78]
+  - name: "case_18"
+    in:
+      inorder: [60, 56, 19, 94, 23, 58, 88, 86, 63, 21]
+      postorder: [60, 19, 56, 23, 58, 94, 86, 21, 63, 88]
+    out: [88, 94, 63, 56, 58, 86, 21, 60, 19, 23]
+  - name: "case_19"
+    in:
+      inorder: [19, 29, 77, 96, 5, 40, 88]
+      postorder: [19, 77, 29, 5, 88, 40, 96]
+    out: [96, 29, 40, 19, 77, 5, 88]
+  - name: "case_20"
+    in:
+      inorder: [85, 52, 31, 2]
+      postorder: [85, 52, 2, 31]
+    out: [31, 52, 2, 85]
+  - name: "case_21"
+    in:
+      inorder: [43, 93, 87, 16, 9, 79, 90, 20, 88, 57]
+      postorder: [43, 87, 93, 9, 79, 16, 20, 57, 88, 90]
+    out: [90, 16, 88, 93, 79, 20, 57, 43, 87, 9]
+  - name: "case_22"
+    in:
+      inorder: [30, 13, 66, 74, 32, 35, 59, 22, 9]
+      postorder: [30, 66, 13, 32, 74, 59, 9, 22, 35]
+    out: [35, 74, 22, 13, 32, 59, 9, 30, 66]
+  - name: "case_23"
+    in:
+      inorder: [42, 86, 38]
+      postorder: [42, 38, 86]
+    out: [86, 42, 38]
+  - name: "case_24"
+    in:
+      inorder: [39, 57]
+      postorder: [39, 57]
+    out: [57, 39]
+  - name: "case_25"
+    in:
+      inorder: [90, 70, 83, 63]
+      postorder: [90, 70, 63, 83]
+    out: [83, 70, 63, 90]
+  - name: "case_26"
+    in:
+      inorder: [73]
+      postorder: [73]
+    out: [73]
+  - name: "case_27"
+    in:
+      inorder: [9, 94, 97, 73, 99, 93, 25, 66, 53, 62]
+      postorder: [9, 97, 94, 99, 93, 73, 66, 62, 53, 25]
+    out: [25, 73, 53, 94, 93, 66, 62, 9, 97, 99]
+  - name: "case_28"
+    in:
+      inorder: [54, 36, 42, 72]
+      postorder: [54, 36, 72, 42]
+    out: [42, 36, 72, 54]
+  - name: "case_29"
+    in:
+      inorder: [9, 53, 87, 32, 24]
+      postorder: [9, 87, 53, 24, 32]
+    out: [32, 53, 24, 9, 87]
+  - name: "case_30"
+    in:
+      inorder: [43]
+      postorder: [43]
+    out: [43]
+  - name: "case_31"
+    in:
+      inorder: [42, 32, 54, 96, 72, 66, 28]
+      postorder: [42, 54, 32, 72, 28, 66, 96]
+    out: [96, 32, 66, 42, 54, 72, 28]
+  - name: "case_32"
+    in:
+      inorder: [58, 34, 84, 59, 18, 72, 43, 14, 36]
+      postorder: [58, 84, 34, 18, 59, 43, 36, 14, 72]
+    out: [72, 59, 14, 34, 18, 43, 36, 58, 84]
+  - name: "case_33"
+    in:
+      inorder: [97, 50, 82, 54, 39, 15, 11, 12, 88]
+      postorder: [97, 82, 50, 39, 54, 11, 88, 12, 15]
+    out: [15, 54, 12, 50, 39, 11, 88, 97, 82]
+  - name: "case_34"
+    in:
+      inorder: [76, 27, 62, 92, 75, 1, 54]
+      postorder: [76, 62, 27, 75, 54, 1, 92]
+    out: [92, 27, 1, 76, 62, 75, 54]
+  - name: "case_35"
+    in:
+      inorder: [95, 70]
+      postorder: [95, 70]
+    out: [70, 95]
+  - name: "case_36"
+    in:
+      inorder: [35, 28, 42, 87, 45, 41]
+      postorder: [35, 42, 28, 45, 41, 87]
+    out: [87, 28, 41, 35, 42, 45]
+  - name: "case_37"
+    in:
+      inorder: [32, 1, 6, 88, 75, 42, 15, 83, 58, 70]
+      postorder: [32, 6, 1, 75, 42, 88, 83, 70, 58, 15]
+    out: [15, 88, 58, 1, 42, 83, 70, 32, 6, 75]
+  - name: "case_38"
+    in:
+      inorder: [50]
+      postorder: [50]
+    out: [50]
+  - name: "case_39"
+    in:
+      inorder: [31, 75, 64, 55, 63, 41, 78, 97, 79, 58]
+      postorder: [31, 64, 75, 63, 41, 55, 97, 58, 79, 78]
+    out: [78, 55, 79, 75, 41, 97, 58, 31, 64, 63]
+  - name: "case_40"
+    in:
+      inorder: [5, 49]
+      postorder: [5, 49]
+    out: [49, 5]
+  - name: "case_41"
+    in:
+      inorder: [99]
+      postorder: [99]
+    out: [99]
+  - name: "case_42"
+    in:
+      inorder: [79, 77]
+      postorder: [79, 77]
+    out: [77, 79]
+  - name: "case_43"
+    in:
+      inorder: [7, 78, 2, 54, 29, 25, 76, 59, 12, 39]
+      postorder: [7, 2, 78, 29, 25, 54, 59, 39, 12, 76]
+    out: [76, 54, 12, 78, 25, 59, 39, 7, 2, 29]
+  - name: "case_44"
+    in:
+      inorder: [36, 80, 59, 29]
+      postorder: [36, 80, 29, 59]
+    out: [59, 80, 29, 36]
+  - name: "case_45"
+    in:
+      inorder: [78, 25, 35]
+      postorder: [78, 35, 25]
+    out: [25, 78, 35]
+  - name: "case_46"
+    in:
+      inorder: [90, 73, 76]
+      postorder: [90, 76, 73]
+    out: [73, 90, 76]
+  - name: "case_47"
+    in:
+      inorder: [16, 13, 97, 93, 68, 41, 82]
+      postorder: [16, 97, 13, 68, 82, 41, 93]
+    out: [93, 13, 41, 16, 97, 68, 82]
+  - name: "case_48"
+    in:
+      inorder: [16, 41, 45, 39, 66]
+      postorder: [16, 45, 41, 66, 39]
+    out: [39, 41, 66, 16, 45]
+  - name: "case_49"
+    in:
+      inorder: [51, 76, 62, 69, 56, 57]
+      postorder: [51, 62, 76, 56, 57, 69]
+    out: [69, 76, 57, 51, 62, 56]
+  - name: "case_50"
+    in:
+      inorder: [98, 30, 34, 59, 45]
+      postorder: [98, 34, 30, 45, 59]
+    out: [59, 30, 45, 98, 34]
+  - name: "case_51"
+    in:
+      inorder: [21, 78, 80, 56, 1, 16, 98, 84, 68, 9]
+      postorder: [21, 80, 78, 1, 16, 56, 84, 9, 68, 98]
+    out: [98, 56, 68, 78, 16, 84, 9, 21, 80, 1]
+  - name: "case_52"
+    in:
+      inorder: [10, 39, 17, 99, 47]
+      postorder: [10, 17, 39, 47, 99]
+    out: [99, 39, 47, 10, 17]
+  - name: "case_53"
+    in:
+      inorder: [24, 10]
+      postorder: [24, 10]
+    out: [10, 24]
+  - name: "case_54"
+    in:
+      inorder: [74, 57, 40]
+      postorder: [74, 40, 57]
+    out: [57, 74, 40]
+  - name: "case_55"
+    in:
+      inorder: [49, 68, 28, 30, 35, 59]
+      postorder: [49, 28, 68, 35, 59, 30]
+    out: [30, 68, 59, 49, 28, 35]
+  - name: "case_56"
+    in:
+      inorder: [28, 53, 95, 44, 46, 21]
+      postorder: [28, 95, 53, 46, 21, 44]
+    out: [44, 53, 21, 28, 95, 46]
+  - name: "case_57"
+    in:
+      inorder: [96, 45, 66, 47]
+      postorder: [96, 45, 47, 66]
+    out: [66, 45, 47, 96]
+  - name: "case_58"
+    in:
+      inorder: [48, 4, 45, 69, 80, 3]
+      postorder: [48, 45, 4, 80, 3, 69]
+    out: [69, 4, 3, 48, 45, 80]
+  - name: "case_59"
+    in:
+      inorder: [28, 98, 8, 64, 42, 29, 51, 72, 92, 22]
+      postorder: [28, 8, 98, 42, 29, 64, 72, 22, 92, 51]
+    out: [51, 64, 92, 98, 29, 72, 22, 28, 8, 42]
+  - name: "case_60"
+    in:
+      inorder: [2, 12, 78]
+      postorder: [2, 78, 12]
+    out: [12, 2, 78]
+  - name: "case_61"
+    in:
+      inorder: [59, 95, 34, 81, 43, 85, 15]
+      postorder: [59, 34, 95, 43, 15, 85, 81]
+    out: [81, 95, 85, 59, 34, 43, 15]
+  - name: "case_62"
+    in:
+      inorder: [67, 37, 76, 53, 87, 51, 24]
+      postorder: [67, 76, 37, 87, 24, 51, 53]
+    out: [53, 37, 51, 67, 76, 87, 24]
+  - name: "case_63"
+    in:
+      inorder: [65, 57, 23, 21]
+      postorder: [65, 57, 21, 23]
+    out: [23, 57, 21, 65]
+  - name: "case_64"
+    in:
+      inorder: [86, 9, 51, 92, 56, 2, 85, 35, 70]
+      postorder: [86, 51, 9, 56, 92, 85, 70, 35, 2]
+    out: [2, 92, 35, 9, 56, 85, 70, 86, 51]
+  - name: "case_65"
+    in:
+      inorder: [64, 65, 68, 1, 45, 44]
+      postorder: [64, 68, 65, 45, 44, 1]
+    out: [1, 65, 44, 64, 68, 45]
+  - name: "case_66"
+    in:
+      inorder: [35, 7, 60, 14, 42, 93, 8, 58, 28, 82]
+      postorder: [35, 60, 7, 42, 93, 14, 58, 82, 28, 8]
+    out: [8, 14, 28, 7, 93, 58, 82, 35, 60, 42]
+  - name: "case_67"
+    in:
+      inorder: [13, 23, 31]
+      postorder: [13, 31, 23]
+    out: [23, 13, 31]
+  - name: "case_68"
+    in:
+      inorder: [3, 63, 61, 24, 19, 79, 25, 14, 23]
+      postorder: [3, 61, 63, 19, 24, 25, 23, 14, 79]
+    out: [79, 24, 14, 63, 19, 25, 23, 3, 61]
+  - name: "case_69"
+    in:
+      inorder: [76, 91, 20, 63, 88, 16, 98, 70, 96]
+      postorder: [76, 20, 91, 88, 63, 98, 96, 70, 16]
+    out: [16, 63, 70, 91, 88, 98, 96, 76, 20]
+  - name: "case_70"
+    in:
+      inorder: [16, 51, 64, 14]
+      postorder: [16, 51, 14, 64]
+    out: [64, 51, 14, 16]
+  - name: "case_71"
+    in:
+      inorder: [19]
+      postorder: [19]
+    out: [19]
+  - name: "case_72"
+    in:
+      inorder: [16, 77, 73, 29, 22, 64]
+      postorder: [16, 73, 77, 22, 64, 29]
+    out: [29, 77, 64, 16, 73, 22]

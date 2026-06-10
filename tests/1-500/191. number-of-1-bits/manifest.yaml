@@ -1,0 +1,451 @@
+entry:
+  id: 191
+  title: "number-of-1-bits"
+  params:
+    n:
+      type: "int"
+  call:
+    cpp: "Solution().hammingWeight({n})"
+    rust: "Solution::hamming_weight({n})"
+    python3: "Solution().hammingWeight({n})"
+    python2: "Solution().hammingWeight({n})"
+    ruby: "hamming_weight({n})"
+    java: "new Solution().hammingWeight({n})"
+    csharp: "new Solution().HammingWeight({n})"
+    kotlin: "Solution().hammingWeight({n})"
+    go: "hammingWeight({n})"
+    dart: "Solution().hammingWeight({n})"
+    swift: "Solution().hammingWeight({n})"
+    typescript: "hammingWeight({n})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().hammingWeight(n, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def hammingWeight(self, n: int) -> int:
+              res = 0
+
+              for i in range(32):
+                  if (n >> i) & 1:
+                      res += 1
+
+              return res
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def hammingWeight(self, n, result):
+              prepared_n = prepare_input(n, "int")
+              expected = Solution().hammingWeight(prepared_n)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 191
+tests:
+  - name: "case_01"
+    in:
+      n: -2138439112
+    out: 8
+  - name: "case_02"
+    in:
+      n: 2058329601
+    out: 17
+  - name: "case_03"
+    in:
+      n: 201971169
+    out: 13
+  - name: "case_04"
+    in:
+      n: 1569591339
+    out: 14
+  - name: "case_05"
+    in:
+      n: 1266181629
+    out: 19
+  - name: "case_06"
+    in:
+      n: 54443146
+    out: 15
+  - name: "case_07"
+    in:
+      n: -672547049
+    out: 22
+  - name: "case_08"
+    in:
+      n: -1616658737
+    out: 22
+  - name: "case_09"
+    in:
+      n: -64245184
+    out: 15
+  - name: "case_10"
+    in:
+      n: -1660364467
+    out: 15
+  - name: "case_11"
+    in:
+      n: 1713348396
+    out: 18
+  - name: "case_12"
+    in:
+      n: -2037207052
+    out: 17
+  - name: "case_13"
+    in:
+      n: 227157381
+    out: 12
+  - name: "case_14"
+    in:
+      n: -645703447
+    out: 16
+  - name: "case_15"
+    in:
+      n: 820563417
+    out: 16
+  - name: "case_16"
+    in:
+      n: 1574253263
+    out: 19
+  - name: "case_17"
+    in:
+      n: 716897113
+    out: 19
+  - name: "case_18"
+    in:
+      n: 195584886
+    out: 15
+  - name: "case_19"
+    in:
+      n: -1454547942
+    out: 15
+  - name: "case_20"
+    in:
+      n: 451172707
+    out: 15
+  - name: "case_21"
+    in:
+      n: 1455990173
+    out: 16
+  - name: "case_22"
+    in:
+      n: 1094197370
+    out: 11
+  - name: "case_23"
+    in:
+      n: -1762029305
+    out: 16
+  - name: "case_24"
+    in:
+      n: 1196126355
+    out: 15
+  - name: "case_25"
+    in:
+      n: 484284491
+    out: 16
+  - name: "case_26"
+    in:
+      n: -644091856
+    out: 16
+  - name: "case_27"
+    in:
+      n: -1859205142
+    out: 17
+  - name: "case_28"
+    in:
+      n: -1650085349
+    out: 17
+  - name: "case_29"
+    in:
+      n: -779707285
+    out: 16
+  - name: "case_30"
+    in:
+      n: 388731815
+    out: 17
+  - name: "case_31"
+    in:
+      n: -1922547509
+    out: 13
+  - name: "case_32"
+    in:
+      n: -1238335086
+    out: 12
+  - name: "case_33"
+    in:
+      n: 1517387635
+    out: 20
+  - name: "case_34"
+    in:
+      n: 19318913
+    out: 9
+  - name: "case_35"
+    in:
+      n: -1595214456
+    out: 15
+  - name: "case_36"
+    in:
+      n: -481781274
+    out: 16
+  - name: "case_37"
+    in:
+      n: 432672832
+    out: 9
+  - name: "case_38"
+    in:
+      n: 1525382186
+    out: 18
+  - name: "case_39"
+    in:
+      n: 2128590679
+    out: 24
+  - name: "case_40"
+    in:
+      n: -460307381
+    out: 12
+  - name: "case_41"
+    in:
+      n: 524235410
+    out: 17
+  - name: "case_42"
+    in:
+      n: 1569619992
+    out: 12
+  - name: "case_43"
+    in:
+      n: 335492425
+    out: 18
+  - name: "case_44"
+    in:
+      n: -1795068633
+    out: 14
+  - name: "case_45"
+    in:
+      n: 1659443493
+    out: 14
+  - name: "case_46"
+    in:
+      n: -1640623608
+    out: 12
+  - name: "case_47"
+    in:
+      n: -1804861374
+    out: 9
+  - name: "case_48"
+    in:
+      n: -393422298
+    out: 15
+  - name: "case_49"
+    in:
+      n: 1662477636
+    out: 14
+  - name: "case_50"
+    in:
+      n: 1720223331
+    out: 13
+  - name: "case_51"
+    in:
+      n: -185005652
+    out: 17
+  - name: "case_52"
+    in:
+      n: -994692992
+    out: 11
+  - name: "case_53"
+    in:
+      n: 1639468554
+    out: 13
+  - name: "case_54"
+    in:
+      n: 1468066556
+    out: 17
+  - name: "case_55"
+    in:
+      n: 461748877
+    out: 16
+  - name: "case_56"
+    in:
+      n: -1018831216
+    out: 15
+  - name: "case_57"
+    in:
+      n: -2095404899
+    out: 14
+  - name: "case_58"
+    in:
+      n: -1262756661
+    out: 20
+  - name: "case_59"
+    in:
+      n: -264635029
+    out: 20
+  - name: "case_60"
+    in:
+      n: -931980059
+    out: 16
+  - name: "case_61"
+    in:
+      n: 1810275207
+    out: 19
+  - name: "case_62"
+    in:
+      n: 1100911810
+    out: 13
+  - name: "case_63"
+    in:
+      n: -758101452
+    out: 13
+  - name: "case_64"
+    in:
+      n: -1010086880
+    out: 13
+  - name: "generated_01"
+    seed: 19101
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_02"
+    seed: 19102
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_03"
+    seed: 19103
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_04"
+    seed: 19104
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_05"
+    seed: 19105
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_06"
+    seed: 19106
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_07"
+    seed: 19107
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_08"
+    seed: 19108
+    in:
+      n:
+        gen: "int"
+        min: 0
+        max: 2147483647

@@ -1,0 +1,36 @@
+class Solution(object):
+    def maxPoints(self, points):
+        from collections import defaultdict
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return abs(a)
+        n = len(points)
+        if n <= 2:
+            return n
+        best = 0
+        for i in range(n):
+            count = defaultdict(int)
+            local = 0
+            duplicates = 1
+            x1, y1 = points[i]
+            for j in range(i + 1, n):
+                x2, y2 = points[j]
+                dx = x2 - x1
+                dy = y2 - y1
+                if dx == 0 and dy == 0:
+                    duplicates += 1
+                    continue
+                g = gcd(dx, dy)
+                dx //= g
+                dy //= g
+                if dx < 0:
+                    dx, dy = -dx, -dy
+                elif dx == 0:
+                    dy = 1
+                elif dy == 0:
+                    dx = 1
+                count[(dx, dy)] += 1
+                local = max(local, count[(dx, dy)])
+            best = max(best, local + duplicates)
+        return best

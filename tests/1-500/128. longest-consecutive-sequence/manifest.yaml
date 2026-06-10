@@ -1,0 +1,579 @@
+entry:
+  id: 128
+  title: "longest-consecutive-sequence"
+  params:
+    nums:
+      type: "array"
+      items:
+        type: "int"
+  call:
+    cpp: "Solution().longestConsecutive({nums})"
+    rust: "Solution::longest_consecutive({nums})"
+    python3: "Solution().longestConsecutive({nums})"
+    python2: "Solution().longestConsecutive({nums})"
+    ruby: "longest_consecutive({nums})"
+    java: "new Solution().longestConsecutive({nums})"
+    csharp: "new Solution().LongestConsecutive({nums})"
+    kotlin: "Solution().longestConsecutive({nums})"
+    go: "longestConsecutive({nums})"
+    dart: "Solution().longestConsecutive({nums})"
+    swift: "Solution().longestConsecutive({nums})"
+    typescript: "longestConsecutive({nums})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().longestConsecutive(nums, {result})"
+    checker: |
+      import copy
+
+      from typing import List
+
+      class Solution:
+          def longestConsecutive(self, nums: List[int]) -> int:
+              seen = set(nums)
+              best = 0
+              for num in seen:
+                  if num - 1 in seen:
+                      continue
+                  current = num
+                  streak = 1
+                  while current + 1 in seen:
+                      current += 1
+                      streak += 1
+                  best = max(best, streak)
+              return best
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def longestConsecutive(self, nums, result):
+              prepared_nums = prepare_input(nums, "array[int]")
+              expected = Solution().longestConsecutive(prepared_nums)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 128
+tests:
+  - name: "case_01"
+    in:
+      nums: [100, 4, 200, 1, 3, 2]
+    out: 4
+  - name: "case_02"
+    in:
+      nums: [0, 3, 7, 2, 5, 8, 4, 6, 0, 1]
+    out: 9
+  - name: "case_03"
+    in:
+      nums: [1, 0, 1, 2]
+    out: 3
+  - name: "case_04"
+    in:
+      nums: [-2, 2, -29, -21, 0, 1, 0, -1, 3, 4]
+    out: 7
+  - name: "case_05"
+    in:
+      nums: [-4, 13, -11, 23, -14, -18]
+    out: 1
+  - name: "case_06"
+    in:
+      nums: [2, -6, -26, -13, 3, -1, 6, 4, 6, 18, 29, -2, 5, -21]
+    out: 5
+  - name: "case_07"
+    in:
+      nums:
+        [
+          4,
+          -21,
+          20,
+          -12,
+          -8,
+          8,
+          -7,
+          -27,
+          -26,
+          -23,
+          -19,
+          -6,
+          6,
+          -14,
+          11,
+          27,
+          3,
+          23,
+        ]
+    out: 3
+  - name: "case_08"
+    in:
+      nums: [4, 19, 5, 8, -29, -24, 30, 12, 5, 20]
+    out: 2
+  - name: "case_09"
+    in:
+      nums: [7, -29, -27, -21]
+    out: 1
+  - name: "case_10"
+    in:
+      nums: [-16, -8, -27, -1, -4, 0, -19, -2, -21, 6]
+    out: 3
+  - name: "case_11"
+    in:
+      nums: [13, 4, -2, -4, 3, 16, -8, 2, -1, -13, -24, 3, -1, 1, 0, 27]
+    out: 7
+  - name: "case_12"
+    in:
+      nums: [1, -3, 2, 5, -13, -1, 4]
+    out: 2
+  - name: "case_13"
+    in:
+      nums: [8, 17, -2, -10, -7, -27, -1, 22, -25, 9, -8, -9, -12, 25, -15, 15]
+    out: 4
+  - name: "case_14"
+    in:
+      nums: [13, 15, 3, 9, 16, 7, 27, 20, -13, -27, -7, 2, -21, 4, -12, 1]
+    out: 4
+  - name: "case_15"
+    in:
+      nums: [-26]
+    out: 1
+  - name: "case_16"
+    in:
+      nums: [26, -15, 29, 4, -17, 21, 6, 5, 1, 0, 23, 2, 24, 1, 3, -13]
+    out: 7
+  - name: "case_17"
+    in:
+      nums: [-15, -3, 25, 5, 1, -9, -18, 4, 18, -26, 11, 30, 12]
+    out: 2
+  - name: "case_18"
+    in:
+      nums: [30, -3, 10, -23, -7, 29, 23, -6, 12, -1, -30, 20]
+    out: 2
+  - name: "case_19"
+    in:
+      nums: [19, 24, 18, -4, -5, -3, -4, -11]
+    out: 3
+  - name: "case_20"
+    in:
+      nums: [-2, -29, -1, 3, 23, 24, -24, 7, 5, -1, 2, 0, 28, -8, 20, -5, 27, 1]
+    out: 6
+  - name: "case_21"
+    in:
+      nums: [-24, -3, 24, 0, -13, 12, -2, -1, -3]
+    out: 4
+  - name: "case_22"
+    in:
+      nums: [-7, 23, -16, -26, -13, 9, 11, -25, -27, -12, 1]
+    out: 3
+  - name: "case_23"
+    in:
+      nums: [-1, 3, 0, 1, 8]
+    out: 3
+  - name: "case_24"
+    in:
+      nums: [21, -18, -2, 5, 25, 12, -17]
+    out: 2
+  - name: "case_25"
+    in:
+      nums: [-1, -20, -26, -4, 8, 0, -3, -2, 3, 16, -22, 20]
+    out: 5
+  - name: "case_26"
+    in:
+      nums: [4, -15, 6, -3, -12, -4, 23, -5, -2, -21, -6, -27, -10]
+    out: 5
+  - name: "case_27"
+    in:
+      nums: [-8, -15, 11, -10, -9, -25, -28]
+    out: 3
+  - name: "case_28"
+    in:
+      nums: [-7, -26, 8, 5, 6, -22, 6, 26]
+    out: 2
+  - name: "case_29"
+    in:
+      nums: [-28, -9, -7, -4, 30, -3, 26, -8, -6, -5]
+    out: 7
+  - name: "case_30"
+    in:
+      nums: [-13, 8, 1, 3, 7, -30, -11, 5, 4, 6, -19, 5]
+    out: 6
+  - name: "case_31"
+    in:
+      nums: [5, 3, -1, 4, 12, 2]
+    out: 4
+  - name: "case_32"
+    in:
+      nums: [16, 7]
+    out: 1
+  - name: "case_33"
+    in:
+      nums: [15, 14]
+    out: 2
+  - name: "case_34"
+    in:
+      nums: [-22, 4, 5, 9, 0, 7, 28, 8, 6, 9]
+    out: 6
+  - name: "case_35"
+    in:
+      nums: [1, -1, -19, -26, 1, 2, 19, -10, -2, 0, 22]
+    out: 5
+  - name: "case_36"
+    in:
+      nums: [11, -19, -9, -11]
+    out: 1
+  - name: "case_37"
+    in:
+      nums: [-27, 4, 5, 6, 30, 3, 9, 8, 7, -17]
+    out: 7
+  - name: "case_38"
+    in:
+      nums: [-5, -28, -3, -5, 9, -2, -4, 6]
+    out: 4
+  - name: "case_39"
+    in:
+      nums: [-22, 1, 10, -21]
+    out: 2
+  - name: "case_40"
+    in:
+      nums:
+        [
+          5,
+          17,
+          0,
+          -4,
+          -3,
+          -1,
+          6,
+          -21,
+          20,
+          30,
+          23,
+          -17,
+          1,
+          -13,
+          -2,
+          7,
+          -5,
+          -1,
+          -5,
+        ]
+    out: 7
+  - name: "case_41"
+    in:
+      nums:
+        [3, -22, 1, 21, 5, -17, 2, 14, 5, -13, 4, -23, 27, -7, -14, 16, 8, -4]
+    out: 5
+  - name: "case_42"
+    in:
+      nums: [21, -10, -21, 12, 4, -7, 28, 23, -20, -4, -25, 24, -5, 19, 30]
+    out: 2
+  - name: "case_43"
+    in:
+      nums: [-8, -11, -20, 19, -12, 26]
+    out: 2
+  - name: "case_44"
+    in:
+      nums: [-24, 3, 17, 4, 2, 5, 6, 4, 28]
+    out: 5
+  - name: "case_45"
+    in:
+      nums: [15, -11, 6, 1]
+    out: 1
+  - name: "case_46"
+    in:
+      nums: [-9, 15, 6, -25, 4, -30, -13, 16, 26, -11, -10, -12, -19, 12, 22]
+    out: 5
+  - name: "case_47"
+    in:
+      nums: [-1, 29, -3, 22, -8, -7, -4, -29, -2]
+    out: 4
+  - name: "case_48"
+    in:
+      nums: [-30, -4, -9, -15, -5, 3, -6, 9, 16, 0, 7, -3, -2, -1, -12]
+    out: 7
+  - name: "case_49"
+    in:
+      nums: [4, 3, -9, 15, 10, -19, 23, -15, -24, -1, 4, -6, 26, -23, 2, -29, 5]
+    out: 4
+  - name: "case_50"
+    in:
+      nums: [1, -9, 21, 19, 18]
+    out: 2
+  - name: "case_51"
+    in:
+      nums: [-10, 3, 21, -26, -5, -1, 29, 1, 0]
+    out: 3
+  - name: "case_52"
+    in:
+      nums:
+        [
+          -21,
+          -5,
+          -20,
+          27,
+          -7,
+          -15,
+          -8,
+          16,
+          -25,
+          -18,
+          30,
+          -11,
+          -30,
+          26,
+          -17,
+          -19,
+          -9,
+          19,
+          -6,
+        ]
+    out: 5
+  - name: "case_53"
+    in:
+      nums: [-30, -17, -28, 6, 15, -11, 0, -1, -25, -14, 24, -29, -5]
+    out: 3
+  - name: "case_54"
+    in:
+      nums: [-24, -13, -3, 24, -2]
+    out: 2
+  - name: "case_55"
+    in:
+      nums: [0, -3, 11, -1, 0, 15, 21, -5, -2, 22, -19, -10, -3, 20, 8, -6, -4]
+    out: 7
+  - name: "case_56"
+    in:
+      nums: [0, 8, 9, 21, 10, 6, 4, -11, 5, 9, 7]
+    out: 7
+  - name: "case_57"
+    in:
+      nums: [-2, 5, 10, 6, 18, 21, 4, -23, 27, -5, 14, 19]
+    out: 3
+  - name: "case_58"
+    in:
+      nums: [1, 16, 2, 15, 8, -30, 5, -27, -10, 3, 19, 6, -29, 7, 4]
+    out: 8
+  - name: "case_59"
+    in:
+      nums:
+        [-5, -6, 4, -4, -17, -3, 10, -9, -7, 18, -29, -1, -21, -2, 22, 16, 27]
+    out: 7
+  - name: "case_60"
+    in:
+      nums: [-3, -2, -15, -30, 11, -2, -25, -5, -4, 0, -27]
+    out: 4
+  - name: "case_61"
+    in:
+      nums: [-17, -3, 11, 7, 15, -12, -28, -13, 13, 28, 8, 29, 14]
+    out: 3
+  - name: "case_62"
+    in:
+      nums: [-2, 0, 3, 1, 2, 28, -2, 4, 17, -16, -8, -1]
+    out: 7
+  - name: "case_63"
+    in:
+      nums:
+        [
+          -8,
+          30,
+          -12,
+          -7,
+          28,
+          16,
+          12,
+          27,
+          13,
+          -14,
+          -8,
+          29,
+          -29,
+          -4,
+          -28,
+          -7,
+          -27,
+        ]
+    out: 4
+  - name: "case_64"
+    in:
+      nums: [-25, 3, 12, 7, 16, -7, 2, 17, -24, 0]
+    out: 2
+  - name: "generated_01"
+    seed: 12801
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+  - name: "generated_02"
+    seed: 12802
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+  - name: "generated_03"
+    seed: 12803
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+  - name: "generated_04"
+    seed: 12804
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+  - name: "generated_05"
+    seed: 12805
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+  - name: "generated_06"
+    seed: 12806
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+  - name: "generated_07"
+    seed: 12807
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+  - name: "generated_08"
+    seed: 12808
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000

@@ -1,0 +1,369 @@
+entry:
+  id: 162
+  title: "find-peak-element"
+  params:
+    nums:
+      type: "array"
+      items:
+        type: "int"
+  call:
+    cpp: "Solution().findPeakElement({nums})"
+    rust: "Solution::find_peak_element({nums})"
+    python3: "Solution().findPeakElement({nums})"
+    python2: "Solution().findPeakElement({nums})"
+    ruby: "find_peak_element({nums})"
+    java: "new Solution().findPeakElement({nums})"
+    csharp: "new Solution().FindPeakElement({nums})"
+    kotlin: "Solution().findPeakElement({nums})"
+    go: "findPeakElement({nums})"
+    dart: "Solution().findPeakElement({nums})"
+    swift: "Solution().findPeakElement({nums})"
+    typescript: "findPeakElement({nums})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().findPeakElement(nums, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def findPeakElement(self, nums: List[int]) -> int:
+              n = len(nums)
+              left = 0
+              right = n - 1
+              if len(nums) < 3:
+                  return nums.index(max(nums))
+
+              while left < right:
+                  mid = left + (right - left) // 2
+
+                  if mid > 0 and mid < n - 1 and nums[mid - 1] < nums[mid] > nums[mid + 1]:
+                      return mid
+
+                  if nums[mid] < nums[mid + 1]:
+                      left = mid + 1
+
+                  else:
+                      right = mid
+
+              return left
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def findPeakElement(self, nums, result):
+              prepared_nums = prepare_input(nums, "array[int]")
+              expected = Solution().findPeakElement(prepared_nums)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 162
+tests:
+  - name: "case_01"
+    in:
+      nums: [1, 2, 3, 1]
+  - name: "case_02"
+    in:
+      nums: [1, 2, 1, 3, 5, 6, 4]
+  - name: "case_03"
+    in:
+      nums: [38]
+  - name: "case_04"
+    in:
+      nums: [-24, 14, -25, 2, 13, 48, 28, -13, 7, 8]
+  - name: "case_05"
+    in:
+      nums: [-27]
+  - name: "case_06"
+    in:
+      nums: [3]
+  - name: "case_07"
+    in:
+      nums: [-10, 32, 21, -42, 8, 23, -48, 33, 48, -15, -41, -32]
+  - name: "case_08"
+    in:
+      nums: [8, -45, -50, -23, 33, 44]
+  - name: "case_09"
+    in:
+      nums: [14, -50]
+  - name: "case_10"
+    in:
+      nums: [-36, 7, 14, -18, -22, 21, -16, -23, 1]
+  - name: "case_11"
+    in:
+      nums: [-19, -17, 1, -26, 35, 34, 38, 27, -6, 36, 31]
+  - name: "case_12"
+    in:
+      nums: [-20, -47, -17, 41, 41, -47, 22, -22, -50]
+  - name: "case_13"
+    in:
+      nums: [-11, 38, -3, 27, 12, 2, 13, 41, -24, -19]
+  - name: "case_14"
+    in:
+      nums: [45, 13, 26, -11, -2, 37, 2, -16, -10, 25]
+  - name: "case_15"
+    in:
+      nums: [8, -28, -38, 0, 32]
+  - name: "case_16"
+    in:
+      nums: [-27, -28, -42, 26, -46, 20, -5, -16, 34, -22, -7]
+  - name: "case_17"
+    in:
+      nums: [9, -30, 14, 25, -29, 23, -17, 38, 9, 30, 2]
+  - name: "case_18"
+    in:
+      nums: [46, 4, -43, 4, 41, 36, 9, -31, 17, 15, 47]
+  - name: "case_19"
+    in:
+      nums: [28]
+  - name: "case_20"
+    in:
+      nums: [-40, 2]
+  - name: "case_21"
+    in:
+      nums: [-37, -22, 47, 14]
+  - name: "case_22"
+    in:
+      nums: [5, 49]
+  - name: "case_23"
+    in:
+      nums: [-48, -5, 38, -28, 12, -30, 29, -10, 47, -7, -8, 5]
+  - name: "case_24"
+    in:
+      nums: [-13, -31, -49, 10, 12, -46, 6, 18, 20]
+  - name: "case_25"
+    in:
+      nums: [-23, -19]
+  - name: "case_26"
+    in:
+      nums: [33, 32, -42, -29, 3, -8, -8]
+  - name: "case_27"
+    in:
+      nums: [-8, -4, -2, 49, -7]
+  - name: "case_28"
+    in:
+      nums: [26, 36, -11, 29, 0, 12, 21, -34]
+  - name: "case_29"
+    in:
+      nums: [5, 31, 0, 40, 1, 38, 40, 1, 17]
+  - name: "case_30"
+    in:
+      nums: [-8, 11, 15, 47, 30, -49, 47]
+  - name: "case_31"
+    in:
+      nums: [26, -33]
+  - name: "case_32"
+    in:
+      nums: [33, 19, 27, -2, -49, 29]
+  - name: "case_33"
+    in:
+      nums: [-47, 19]
+  - name: "case_34"
+    in:
+      nums: [27, -29, -22, -31, 38, 8, 50, -49]
+  - name: "case_35"
+    in:
+      nums: [-8, 24, 8, 7]
+  - name: "case_36"
+    in:
+      nums: [31, 31, 48]
+  - name: "case_37"
+    in:
+      nums: [-30, 29, -7, -6, -6, -28, -20]
+  - name: "case_38"
+    in:
+      nums: [-22, 32, -22, 0, -18, -9]
+  - name: "case_39"
+    in:
+      nums: [11]
+  - name: "case_40"
+    in:
+      nums: [-13, -49, -4, 45, -10, -28, -18, 48, 6, 39, 39]
+  - name: "case_41"
+    in:
+      nums: [-11, -40, -2]
+  - name: "case_42"
+    in:
+      nums: [-33, -21, -23, -45]
+  - name: "case_43"
+    in:
+      nums: [7, -1, -36, 19, -32, -25, -23, -4, 48, -21, -45, 37]
+  - name: "case_44"
+    in:
+      nums: [26, 10, 5, 42]
+  - name: "case_45"
+    in:
+      nums: [22]
+  - name: "case_46"
+    in:
+      nums: [-46, 7, 44, 19, -16]
+  - name: "case_47"
+    in:
+      nums: [-46, 6, -2, 45, 7, 33, -24, -6, -27, 4]
+  - name: "case_48"
+    in:
+      nums: [23, 25, -17, 36, 21, -43, -49, -47, -18]
+  - name: "case_49"
+    in:
+      nums: [17, -24, 43, -19]
+  - name: "case_50"
+    in:
+      nums: [37, -23]
+  - name: "case_51"
+    in:
+      nums: [-28, 28, -32]
+  - name: "case_52"
+    in:
+      nums: [13, 26, 38]
+  - name: "case_53"
+    in:
+      nums: [34, -45, -42, 45, 50, 39, 12]
+  - name: "case_54"
+    in:
+      nums: [32, 34, -43, -25, 40, -50, -29]
+  - name: "case_55"
+    in:
+      nums: [27, 23]
+  - name: "case_56"
+    in:
+      nums: [48]
+  - name: "case_57"
+    in:
+      nums: [15]
+  - name: "case_58"
+    in:
+      nums: [-30, -29]
+  - name: "case_59"
+    in:
+      nums: [-12, 6, 2]
+  - name: "case_60"
+    in:
+      nums: [45, 35]
+  - name: "case_61"
+    in:
+      nums: [46, 26, -15, 34, 17, 45, 7, -14]
+  - name: "case_62"
+    in:
+      nums: [22, 39, -45, -43, -29, 10, -18, -35, -19, 7, -49, -10]
+  - name: "case_63"
+    in:
+      nums: [-1, -23, -49, -28, -5]
+  - name: "case_64"
+    in:
+      nums: [45, 10, 30, -22, 24, -11, -35, 47]
+  - name: "case_65"
+    in:
+      nums: [19, -50, -1, 0]
+  - name: "case_66"
+    in:
+      nums: [42]
+  - name: "case_67"
+    in:
+      nums: [-25, -2, 16, 20]
+  - name: "case_68"
+    in:
+      nums: [-25, -36, -31, 12, -37, -16]
+  - name: "case_69"
+    in:
+      nums: [-31, -40, 0, -16, 27, -29, 22, -6, -22, 44]
+  - name: "case_70"
+    in:
+      nums: [-20, 29, 24, -49, -45]
+  - name: "case_71"
+    in:
+      nums: [-30, 34, -20, -39, -17, 5, -21, 48, 39, 36, 13, -44]
+  - name: "case_72"
+    in:
+      nums: [0, 3, 26, 16, 35, -9, 17, 20, 0, -47]

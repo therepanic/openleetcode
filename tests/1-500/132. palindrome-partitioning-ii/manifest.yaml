@@ -1,0 +1,485 @@
+entry:
+  id: 132
+  title: "palindrome-partitioning-ii"
+  params:
+    s:
+      type: "string"
+  call:
+    cpp: "Solution().minCut({s})"
+    rust: "Solution::min_cut({s})"
+    python3: "Solution().minCut({s})"
+    python2: "Solution().minCut({s})"
+    ruby: "min_cut({s})"
+    java: "new Solution().minCut({s})"
+    csharp: "new Solution().MinCut({s})"
+    kotlin: "Solution().minCut({s})"
+    go: "minCut({s})"
+    dart: "Solution().minCut({s})"
+    swift: "Solution().minCut({s})"
+    typescript: "minCut({s})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().minCut(s, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def minCut(self, s: str) -> int:
+              n = len(s)
+              is_pal = [[False] * n for _ in range(n)]
+              for end in range(n):
+                  for start in range(end + 1):
+                      if s[start] == s[end] and (end - start <= 2 or is_pal[start + 1][end - 1]):
+                          is_pal[start][end] = True
+
+              dp = [0] * n
+              for i in range(n):
+                  if is_pal[0][i]:
+                      dp[i] = 0
+                  else:
+                      dp[i] = i
+                      for j in range(i):
+                          if is_pal[j + 1][i]:
+                              dp[i] = min(dp[i], dp[j] + 1)
+              return dp[n - 1]
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def minCut(self, s, result):
+              prepared_s = prepare_input(s, "string")
+              expected = Solution().minCut(prepared_s)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 132
+tests:
+  - name: "case_01"
+    in:
+      s: "aab"
+    out: 1
+  - name: "case_02"
+    in:
+      s: "a"
+    out: 0
+  - name: "case_03"
+    in:
+      s: "ab"
+    out: 1
+  - name: "case_04"
+    in:
+      s: "enbfbjd"
+    out: 4
+  - name: "case_05"
+    in:
+      s: "ahoigzofv"
+    out: 8
+  - name: "case_06"
+    in:
+      s: "mhwvyptzrz"
+    out: 7
+  - name: "case_07"
+    in:
+      s: "rzlmskgwzc"
+    out: 9
+  - name: "case_08"
+    in:
+      s: "btzlvqvcs"
+    out: 6
+  - name: "case_09"
+    in:
+      s: "lcj"
+    out: 2
+  - name: "case_10"
+    in:
+      s: "lzeub"
+    out: 4
+  - name: "case_11"
+    in:
+      s: "phydoegssbkl"
+    out: 10
+  - name: "case_12"
+    in:
+      s: "ccwlvtw"
+    out: 5
+  - name: "case_13"
+    in:
+      s: "ip"
+    out: 1
+  - name: "case_14"
+    in:
+      s: "muu"
+    out: 1
+  - name: "case_15"
+    in:
+      s: "egezeytdnth"
+    out: 8
+  - name: "case_16"
+    in:
+      s: "y"
+    out: 0
+  - name: "case_17"
+    in:
+      s: "xuzrmfti"
+    out: 7
+  - name: "case_18"
+    in:
+      s: "rdyeaxzv"
+    out: 7
+  - name: "case_19"
+    in:
+      s: "dapm"
+    out: 3
+  - name: "case_20"
+    in:
+      s: "mctvppgyyq"
+    out: 7
+  - name: "case_21"
+    in:
+      s: "xyodlffexjxx"
+    out: 8
+  - name: "case_22"
+    in:
+      s: "wgrb"
+    out: 3
+  - name: "case_23"
+    in:
+      s: "kqctwbdq"
+    out: 7
+  - name: "case_24"
+    in:
+      s: "vuekm"
+    out: 4
+  - name: "case_25"
+    in:
+      s: "qqvpzgvld"
+    out: 7
+  - name: "case_26"
+    in:
+      s: "xzlwj"
+    out: 4
+  - name: "case_27"
+    in:
+      s: "fdpgwd"
+    out: 5
+  - name: "case_28"
+    in:
+      s: "dorwirnacovc"
+    out: 11
+  - name: "case_29"
+    in:
+      s: "dwtky"
+    out: 4
+  - name: "case_30"
+    in:
+      s: "uuuh"
+    out: 1
+  - name: "case_31"
+    in:
+      s: "vqcbcfyd"
+    out: 5
+  - name: "case_32"
+    in:
+      s: "g"
+    out: 0
+  - name: "case_33"
+    in:
+      s: "p"
+    out: 0
+  - name: "case_34"
+    in:
+      s: "u"
+    out: 0
+  - name: "case_35"
+    in:
+      s: "goavw"
+    out: 4
+  - name: "case_36"
+    in:
+      s: "mziyai"
+    out: 5
+  - name: "case_37"
+    in:
+      s: "yqlzxwhyqd"
+    out: 9
+  - name: "case_38"
+    in:
+      s: "oob"
+    out: 1
+  - name: "case_39"
+    in:
+      s: "zrhqzm"
+    out: 5
+  - name: "case_40"
+    in:
+      s: "tbygczitl"
+    out: 8
+  - name: "case_41"
+    in:
+      s: "umlxahrm"
+    out: 7
+  - name: "case_42"
+    in:
+      s: "dehejcrao"
+    out: 6
+  - name: "case_43"
+    in:
+      s: "jydwdyst"
+    out: 3
+  - name: "case_44"
+    in:
+      s: "bcu"
+    out: 2
+  - name: "case_45"
+    in:
+      s: "f"
+    out: 0
+  - name: "case_46"
+    in:
+      s: "rywiismhafg"
+    out: 9
+  - name: "case_47"
+    in:
+      s: "wmp"
+    out: 2
+  - name: "case_48"
+    in:
+      s: "vuluicp"
+    out: 4
+  - name: "case_49"
+    in:
+      s: "mqzyfqy"
+    out: 6
+  - name: "case_50"
+    in:
+      s: "z"
+    out: 0
+  - name: "case_51"
+    in:
+      s: "nydbja"
+    out: 5
+  - name: "case_52"
+    in:
+      s: "apsbhxd"
+    out: 6
+  - name: "case_53"
+    in:
+      s: "cnqqpk"
+    out: 4
+  - name: "case_54"
+    in:
+      s: "vzgx"
+    out: 3
+  - name: "case_55"
+    in:
+      s: "ft"
+    out: 1
+  - name: "case_56"
+    in:
+      s: "vrtzsk"
+    out: 5
+  - name: "case_57"
+    in:
+      s: "dlpkstgle"
+    out: 8
+  - name: "case_58"
+    in:
+      s: "x"
+    out: 0
+  - name: "case_59"
+    in:
+      s: "avqxlwdhaknc"
+    out: 11
+  - name: "case_60"
+    in:
+      s: "puoeqxzolj"
+    out: 9
+  - name: "case_61"
+    in:
+      s: "pumjrujuwfrl"
+    out: 9
+  - name: "case_62"
+    in:
+      s: "trundturs"
+    out: 8
+  - name: "case_63"
+    in:
+      s: "appfi"
+    out: 3
+  - name: "case_64"
+    in:
+      s: "gorcrgd"
+    out: 4
+  - name: "generated_01"
+    seed: 13201
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_02"
+    seed: 13202
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_03"
+    seed: 13203
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_04"
+    seed: 13204
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_05"
+    seed: 13205
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_06"
+    seed: 13206
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_07"
+    seed: 13207
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_08"
+    seed: 13208
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

@@ -1,0 +1,591 @@
+entry:
+  id: 205
+  title: "isomorphic-strings"
+  params:
+    s:
+      type: "string"
+    t:
+      type: "string"
+  call:
+    cpp: "Solution().isIsomorphic({s}, {t})"
+    rust: "Solution::is_isomorphic({s}, {t})"
+    python3: "Solution().isIsomorphic({s}, {t})"
+    python2: "Solution().isIsomorphic({s}, {t})"
+    ruby: "is_isomorphic({s}, {t})"
+    java: "new Solution().isIsomorphic({s}, {t})"
+    csharp: "new Solution().IsIsomorphic({s}, {t})"
+    kotlin: "Solution().isIsomorphic({s}, {t})"
+    go: "isIsomorphic({s}, {t})"
+    dart: "Solution().isIsomorphic({s}, {t})"
+    swift: "Solution().isIsomorphic({s}, {t})"
+    typescript: "isIsomorphic({s}, {t})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().isIsomorphic(s, t, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def isIsomorphic(self, s: str, t: str) -> bool:
+              return len(set(s)) == len(set(t)) == len(set(zip(s,t)))
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "bool"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def isIsomorphic(self, s, t, result):
+              prepared_s = prepare_input(s, "string"); prepared_t = prepare_input(t, "string")
+              expected = Solution().isIsomorphic(prepared_s, prepared_t)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 205
+tests:
+  - name: "case_01"
+    in:
+      s: "bbbc"
+      t: "wyyy"
+    out: false
+  - name: "case_02"
+    in:
+      s: "cadcc"
+      t: "wwxwx"
+    out: false
+  - name: "case_03"
+    in:
+      s: "dcbd"
+      t: "zwzw"
+    out: false
+  - name: "case_04"
+    in:
+      s: "ba"
+      t: "yx"
+    out: true
+  - name: "case_05"
+    in:
+      s: "bad"
+      t: "xyy"
+    out: false
+  - name: "case_06"
+    in:
+      s: "abd"
+      t: "yyy"
+    out: false
+  - name: "case_07"
+    in:
+      s: "bdaa"
+      t: "wywz"
+    out: false
+  - name: "case_08"
+    in:
+      s: "cbd"
+      t: "yxz"
+    out: true
+  - name: "case_09"
+    in:
+      s: "dccbc"
+      t: "wxxyz"
+    out: false
+  - name: "case_10"
+    in:
+      s: "d"
+      t: "y"
+    out: true
+  - name: "case_11"
+    in:
+      s: "abc"
+      t: "yxx"
+    out: false
+  - name: "case_12"
+    in:
+      s: "dda"
+      t: "zxz"
+    out: false
+  - name: "case_13"
+    in:
+      s: "d"
+      t: "z"
+    out: true
+  - name: "case_14"
+    in:
+      s: "dcccc"
+      t: "xywwy"
+    out: false
+  - name: "case_15"
+    in:
+      s: "bccca"
+      t: "xwyyw"
+    out: false
+  - name: "case_16"
+    in:
+      s: "cbac"
+      t: "yzyy"
+    out: false
+  - name: "case_17"
+    in:
+      s: "bddcdca"
+      t: "wwwxyyw"
+    out: false
+  - name: "case_18"
+    in:
+      s: "abbd"
+      t: "yxxw"
+    out: true
+  - name: "case_19"
+    in:
+      s: "dd"
+      t: "yy"
+    out: true
+  - name: "case_20"
+    in:
+      s: "dcdaa"
+      t: "wwzyy"
+    out: false
+  - name: "case_21"
+    in:
+      s: "dcbaa"
+      t: "xxzxy"
+    out: false
+  - name: "case_22"
+    in:
+      s: "bba"
+      t: "wxy"
+    out: false
+  - name: "case_23"
+    in:
+      s: "bdabbab"
+      t: "yzwzzyx"
+    out: false
+  - name: "case_24"
+    in:
+      s: "a"
+      t: "z"
+    out: true
+  - name: "case_25"
+    in:
+      s: "cdad"
+      t: "yxyz"
+    out: false
+  - name: "case_26"
+    in:
+      s: "babaacdb"
+      t: "zxwzzwww"
+    out: false
+  - name: "case_27"
+    in:
+      s: "adada"
+      t: "wwyzx"
+    out: false
+  - name: "case_28"
+    in:
+      s: "abb"
+      t: "wwz"
+    out: false
+  - name: "case_29"
+    in:
+      s: "aaccccdc"
+      t: "zxwzwyyx"
+    out: false
+  - name: "case_30"
+    in:
+      s: "bab"
+      t: "yxy"
+    out: true
+  - name: "case_31"
+    in:
+      s: "cbaccbd"
+      t: "wwyxwzx"
+    out: false
+  - name: "case_32"
+    in:
+      s: "acdbdcad"
+      t: "wxzwywzy"
+    out: false
+  - name: "case_33"
+    in:
+      s: "bcdb"
+      t: "xwwy"
+    out: false
+  - name: "case_34"
+    in:
+      s: "dcccb"
+      t: "zzyyw"
+    out: false
+  - name: "case_35"
+    in:
+      s: "aab"
+      t: "xyw"
+    out: false
+  - name: "case_36"
+    in:
+      s: "b"
+      t: "w"
+    out: true
+  - name: "case_37"
+    in:
+      s: "dda"
+      t: "yyx"
+    out: true
+  - name: "case_38"
+    in:
+      s: "badddba"
+      t: "wyzwzyw"
+    out: false
+  - name: "case_39"
+    in:
+      s: "a"
+      t: "x"
+    out: true
+  - name: "case_40"
+    in:
+      s: "c"
+      t: "y"
+    out: true
+  - name: "case_41"
+    in:
+      s: "bbcbd"
+      t: "zxzyw"
+    out: false
+  - name: "case_42"
+    in:
+      s: "cbbbba"
+      t: "zwzzxw"
+    out: false
+  - name: "case_43"
+    in:
+      s: "aca"
+      t: "wwz"
+    out: false
+  - name: "case_44"
+    in:
+      s: "cabbcdc"
+      t: "zyzxzzx"
+    out: false
+  - name: "case_45"
+    in:
+      s: "ccc"
+      t: "xyz"
+    out: false
+  - name: "case_46"
+    in:
+      s: "cdcbdd"
+      t: "ywyyzz"
+    out: false
+  - name: "case_47"
+    in:
+      s: "bcaac"
+      t: "xwwzy"
+    out: false
+  - name: "case_48"
+    in:
+      s: "abd"
+      t: "yww"
+    out: false
+  - name: "case_49"
+    in:
+      s: "c"
+      t: "x"
+    out: true
+  - name: "case_50"
+    in:
+      s: "aac"
+      t: "xxx"
+    out: false
+  - name: "case_51"
+    in:
+      s: "bdcacb"
+      t: "yzxwww"
+    out: false
+  - name: "case_52"
+    in:
+      s: "baadbaa"
+      t: "yzyxwyy"
+    out: false
+  - name: "case_53"
+    in:
+      s: "bcb"
+      t: "yyy"
+    out: false
+  - name: "case_54"
+    in:
+      s: "bd"
+      t: "zz"
+    out: false
+  - name: "case_55"
+    in:
+      s: "abacddbd"
+      t: "zwwywxyz"
+    out: false
+  - name: "case_56"
+    in:
+      s: "cddbd"
+      t: "xyyzy"
+    out: true
+  - name: "case_57"
+    in:
+      s: "cb"
+      t: "xx"
+    out: false
+  - name: "case_58"
+    in:
+      s: "cdc"
+      t: "xzx"
+    out: true
+  - name: "case_59"
+    in:
+      s: "bad"
+      t: "yzz"
+    out: false
+  - name: "case_60"
+    in:
+      s: "cddc"
+      t: "wwwy"
+    out: false
+  - name: "case_61"
+    in:
+      s: "dcddbd"
+      t: "zwyzyx"
+    out: false
+  - name: "case_62"
+    in:
+      s: "dbabd"
+      t: "zzxzz"
+    out: false
+  - name: "case_63"
+    in:
+      s: "dcdada"
+      t: "xwxxxy"
+    out: false
+  - name: "case_64"
+    in:
+      s: "dabbb"
+      t: "wwyyw"
+    out: false
+  - name: "generated_01"
+    seed: 20501
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_02"
+    seed: 20502
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_03"
+    seed: 20503
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_04"
+    seed: 20504
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_05"
+    seed: 20505
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_06"
+    seed: 20506
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_07"
+    seed: 20507
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_08"
+    seed: 20508
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      t:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 300
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

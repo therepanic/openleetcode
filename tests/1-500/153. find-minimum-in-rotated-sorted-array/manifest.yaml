@@ -1,0 +1,435 @@
+entry:
+  id: 153
+  title: "find-minimum-in-rotated-sorted-array"
+  params:
+    nums:
+      type: "array"
+      items:
+        type: "int"
+  call:
+    cpp: "Solution().findMin({nums})"
+    rust: "Solution::find_min({nums})"
+    python3: "Solution().findMin({nums})"
+    python2: "Solution().findMin({nums})"
+    ruby: "find_min({nums})"
+    java: "new Solution().findMin({nums})"
+    csharp: "new Solution().FindMin({nums})"
+    kotlin: "Solution().findMin({nums})"
+    go: "findMin({nums})"
+    dart: "Solution().findMin({nums})"
+    swift: "Solution().findMin({nums})"
+    typescript: "findMin({nums})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().findMin(nums, {result})"
+    checker: |
+      import copy
+
+
+      from typing import *
+      from collections import *
+      import copy
+      import json
+      import math
+      import bisect
+      import heapq
+      import itertools
+      import functools
+
+      class Solution:
+          def findMin(self, nums: List[int]) -> int:
+              l = 0
+              r = len(nums) - 1
+
+              while l < r:
+
+                  mid = (l + r) // 2
+
+                  if nums[mid] < nums[r]:
+                      r = mid
+                  else:
+                      l = mid + 1
+
+              return nums[l]
+
+
+      def array_to_list_node_local(values):
+          dummy = ListNode(0)
+          tail = dummy
+          for value in values:
+              tail.next = ListNode(value)
+              tail = tail.next
+          return dummy.next
+
+      def array_to_tree_node_local(values):
+          if not values:
+              return None
+          root = TreeNode(values[0])
+          queue = deque([root])
+          index = 1
+          while queue and index < len(values):
+              node = queue.popleft()
+              if index < len(values) and values[index] is not None:
+                  node.left = TreeNode(values[index])
+                  queue.append(node.left)
+              index += 1
+              if index < len(values) and values[index] is not None:
+                  node.right = TreeNode(values[index])
+                  queue.append(node.right)
+              index += 1
+          return root
+
+      def list_node_to_array_local(node):
+          out = []
+          seen = 0
+          while node is not None and seen < 100000:
+              out.append(node.val)
+              node = node.next
+              seen += 1
+          return out
+
+      def tree_node_to_array_local(root):
+          if root is None:
+              return []
+          out = []
+          q = deque([root])
+          while q:
+              node = q.popleft()
+              if node is None:
+                  out.append(None)
+                  continue
+              out.append(node.val)
+              q.append(node.left)
+              q.append(node.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+
+      def deep_sort(value):
+          if isinstance(value, list):
+              normalized = [deep_sort(item) for item in value]
+              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
+          if isinstance(value, dict):
+              return {key: deep_sort(val) for key, val in sorted(value.items())}
+          return value
+
+      def normalize_expected(value):
+          kind = "int"
+          if kind == "list_node":
+              return list_node_to_array_local(value)
+          if kind == "tree_node":
+              return tree_node_to_array_local(value)
+          return value
+
+      def normalize_actual(value):
+          return value
+
+      def prepare_input(value, kind):
+          if kind == "tree_node":
+              return array_to_tree_node_local(value)
+          if kind == "list_node":
+              return array_to_list_node_local(value)
+          return copy.deepcopy(value)
+
+      class Checker:
+          def findMin(self, nums, result):
+              prepared_nums = prepare_input(nums, "array[int]")
+              expected = Solution().findMin(prepared_nums)
+              expected = normalize_expected(expected)
+              actual = normalize_actual(result)
+              return deep_sort(expected) == deep_sort(actual)
+seed: 153
+tests:
+  - name: "case_01"
+    in:
+      nums: [3, 4, 5, 1, 2]
+    out: 1
+  - name: "case_02"
+    in:
+      nums: [4, 5, 6, 7, 0, 1, 2]
+    out: 0
+  - name: "case_03"
+    in:
+      nums: [11, 13, 15, 17]
+    out: 11
+  - name: "case_04"
+    in:
+      nums: [40, -46, -41, -17, 3, 22, 24]
+    out: -46
+  - name: "case_05"
+    in:
+      nums: [4, 15, 21, 26, 34, 48, -24, -19, -10]
+    out: -24
+  - name: "case_06"
+    in:
+      nums: [-6, 3, 22, 27, 33, 34, 41, 47, -41, -23, -22, -18]
+    out: -41
+  - name: "case_07"
+    in:
+      nums: [-5]
+    out: -5
+  - name: "case_08"
+    in:
+      nums: [-45, -29, 3, 7, 13, 22, 24, 30, 32, 46]
+    out: -45
+  - name: "case_09"
+    in:
+      nums: [-23, -1]
+    out: -23
+  - name: "case_10"
+    in:
+      nums: [-5, 20, 24, 44, -11]
+    out: -11
+  - name: "case_11"
+    in:
+      nums: [-21, -13, 3, 9, 13, 28, 41, 49, -36]
+    out: -36
+  - name: "case_12"
+    in:
+      nums: [11, 20, 6]
+    out: 6
+  - name: "case_13"
+    in:
+      nums: [25, 36, -5]
+    out: -5
+  - name: "case_14"
+    in:
+      nums: [17, 41, -50, -33, -10, 16]
+    out: -50
+  - name: "case_15"
+    in:
+      nums: [49]
+    out: 49
+  - name: "case_16"
+    in:
+      nums: [-17]
+    out: -17
+  - name: "case_17"
+    in:
+      nums: [-19, -7, 1, 2, 3, 11, 17, 23, 27, -35]
+    out: -35
+  - name: "case_18"
+    in:
+      nums: [-19, 6, 14, 18, 28, 42, 49]
+    out: -19
+  - name: "case_19"
+    in:
+      nums: [44, -47, -36, 33]
+    out: -47
+  - name: "case_20"
+    in:
+      nums: [44]
+    out: 44
+  - name: "case_21"
+    in:
+      nums: [34, 41, -50, -29, -22, -21, -19, -10, -9, 32, 33]
+    out: -50
+  - name: "case_22"
+    in:
+      nums: [-24]
+    out: -24
+  - name: "case_23"
+    in:
+      nums: [-25, -19, -15, -13, 9, 37, -47, -43]
+    out: -47
+  - name: "case_24"
+    in:
+      nums: [-35]
+    out: -35
+  - name: "case_25"
+    in:
+      nums: [49, -49, -39, 33]
+    out: -49
+  - name: "case_26"
+    in:
+      nums: [-50, -4, -2]
+    out: -50
+  - name: "case_27"
+    in:
+      nums: [22, 25, 30, 38, 43, 44, -31, -24, -1]
+    out: -31
+  - name: "case_28"
+    in:
+      nums: [14, 21, 24, -50, -48, -38, -37, -30, -28, 8, 9, 11]
+    out: -50
+  - name: "case_29"
+    in:
+      nums: [16, -10, 0]
+    out: -10
+  - name: "case_30"
+    in:
+      nums: [-30, -26, -10, 6, 11, 16, 31, 38, 46, -50]
+    out: -50
+  - name: "case_31"
+    in:
+      nums: [-39, -30, -27, -16, -1, 9, 32]
+    out: -39
+  - name: "case_32"
+    in:
+      nums: [28, 29, 33, 34, 38, -43, -35, -34, -20, -13, 15]
+    out: -43
+  - name: "case_33"
+    in:
+      nums: [-23, -13, 30, -41, -32]
+    out: -41
+  - name: "case_34"
+    in:
+      nums: [-41, -20]
+    out: -41
+  - name: "case_35"
+    in:
+      nums: [13, 37, -45]
+    out: -45
+  - name: "case_36"
+    in:
+      nums: [-47, 45]
+    out: -47
+  - name: "case_37"
+    in:
+      nums: [45, 46, -49, -48, -44, -14, -12, -6, 5, 24, 25, 40]
+    out: -49
+  - name: "case_38"
+    in:
+      nums: [-26, 42]
+    out: -26
+  - name: "case_39"
+    in:
+      nums: [38, -49, -48, -45, -28, 8, 16, 21, 35]
+    out: -49
+  - name: "case_40"
+    in:
+      nums: [-24, -18, -9, 19, 28, 31, 50, -33]
+    out: -33
+  - name: "case_41"
+    in:
+      nums: [1, 2, 25, 50, -28, -24, -22, -15, -8]
+    out: -28
+  - name: "case_42"
+    in:
+      nums: [-42, -38, -29, -19, -17, -16, 4, 31, 33, 38, -43]
+    out: -43
+  - name: "case_43"
+    in:
+      nums: [2, 7, 8, 39, -49, -41, -11]
+    out: -49
+  - name: "case_44"
+    in:
+      nums: [-20, -18]
+    out: -20
+  - name: "case_45"
+    in:
+      nums: [19, 20, 30, 33, 42, -32, -28, -2, 7, 9]
+    out: -32
+  - name: "case_46"
+    in:
+      nums: [19, -42, -34, -13, -11, -8, -7, 0, 11]
+    out: -42
+  - name: "case_47"
+    in:
+      nums: [36, 15, 16, 22]
+    out: 15
+  - name: "case_48"
+    in:
+      nums: [49, 4, 8]
+    out: 4
+  - name: "case_49"
+    in:
+      nums: [-49, -48, 33, 36, 50]
+    out: -49
+  - name: "case_50"
+    in:
+      nums: [19, 34, -44, -40, -30, -18, -4, -3, -2, 3, 17]
+    out: -44
+  - name: "case_51"
+    in:
+      nums: [21, -23]
+    out: -23
+  - name: "case_52"
+    in:
+      nums: [-28, 14, -30]
+    out: -30
+  - name: "case_53"
+    in:
+      nums: [-7, 12, 38]
+    out: -7
+  - name: "case_54"
+    in:
+      nums: [6, 14, 33, 38, -24, -8]
+    out: -24
+  - name: "case_55"
+    in:
+      nums: [18, 23, 26, 44, -47, 11]
+    out: -47
+  - name: "case_56"
+    in:
+      nums: [-20, -38, -28]
+    out: -38
+  - name: "case_57"
+    in:
+      nums: [-4, -2, 10, 12, 19, 25, 33, 35, 39, -49, -47, -21]
+    out: -49
+  - name: "case_58"
+    in:
+      nums: [-49, -33, -22, -4, 8, 12, 40, 46, -50]
+    out: -50
+  - name: "case_59"
+    in:
+      nums: [-22, -21, -18, -14, -6, 0, 15, 43]
+    out: -22
+  - name: "case_60"
+    in:
+      nums: [10]
+    out: 10
+  - name: "case_61"
+    in:
+      nums: [-24, -15, 7, 8, 28, 31, 50, -45, -43, -30, -26]
+    out: -45
+  - name: "case_62"
+    in:
+      nums: [-27, -26, -11, -9, 29, 49]
+    out: -27
+  - name: "case_63"
+    in:
+      nums: [36, 42, 43, 46, -36, -24, -9, 2, 23, 28]
+    out: -36
+  - name: "case_64"
+    in:
+      nums: [18, 19, 34, 37, 41, -46, -22, 7, 13]
+    out: -46
+  - name: "case_65"
+    in:
+      nums: [-35, -38]
+    out: -38
+  - name: "case_66"
+    in:
+      nums: [16, 19, 27, 33, 34, -41, -34, -25, -15, 0, 11, 14]
+    out: -41
+  - name: "case_67"
+    in:
+      nums: [7, 32, 49, -43, -27, -23]
+    out: -43
+  - name: "case_68"
+    in:
+      nums: [4, 18, 21, 34, -47, -40, -21, -13, -2, 3]
+    out: -47
+  - name: "case_69"
+    in:
+      nums: [-36, -32, -31, -5, 23, 47]
+    out: -36
+  - name: "case_70"
+    in:
+      nums: [28]
+    out: 28
+  - name: "case_71"
+    in:
+      nums: [-49, -44, -28, -11, -6, 21, 25, 38]
+    out: -49
+  - name: "case_72"
+    in:
+      nums: [23]
+    out: 23
