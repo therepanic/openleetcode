@@ -13,7 +13,7 @@ import Core.Executor.Piston qualified as Piston
 import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
 import Core.Test.Loader (loadTestSuite)
 import Core.Test.Runner
-  ( SolutionBatch (SolutionBatch, entryMain, python3Utilities, sbLang, solution, utilities),
+  ( SolutionBatch (SolutionBatch, entryMain, python3Utilities, sbLang, sbTimeout, solution, utilities),
     TestResult (Internal, Pass, RE, TLE, WA),
     runSuiteWithProgress,
   )
@@ -101,6 +101,7 @@ prepareSubmit ui opts = do
                                 { entryMain = entryMainStr,
                                   sbLang = lang,
                                   utilities = utilitiesStr,
+                                  sbTimeout = batchTimeoutMs,
                                   solution = solutionStr,
                                   python3Utilities = python3UtilitiesStr
                                 }
@@ -428,3 +429,6 @@ failSubmitStep Nothing failure = pure (Left failure)
 failSubmitStep (Just checklist) failure = do
   failActiveChecklistStep checklist
   pure (Left failure)
+
+batchTimeoutMs :: Int
+batchTimeoutMs = 20000

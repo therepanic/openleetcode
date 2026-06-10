@@ -7,9 +7,8 @@ import CLI.Config (ConfigOpts (ConfigSet), configKey, configValue)
 import CLI.Download (DownloadTarget (Runtimes, Tests), parseTarget)
 import CLI.Submit
 import CLI.SubmitPipeline (SubmitFailure (SubmitMissingSelector))
-import CLI.UI (ColorMode (ColorAuto), GlobalOptions (goColorMode, goNoColor, goPlain), plainLine, sanitizeSingleLine)
+import CLI.UI
 import Core.Types (Language (Python3))
-import Data.Text qualified as T
 import Options.Applicative
 import Test.Hspec
 

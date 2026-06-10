@@ -27,7 +27,7 @@ import Data.Vector qualified as V
 
 data TestResult = Pass Int | WA (Maybe Text) Text Text | TLE Text | RE Text Text | Internal Text deriving (Show, Eq)
 
-data SolutionBatch = SolutionBatch {entryMain :: Text, sbLang :: Language, solution :: Text, utilities :: Text, python3Utilities :: Text}
+data SolutionBatch = SolutionBatch {entryMain :: Text, sbLang :: Language, solution :: Text, utilities :: Text, python3Utilities :: Text, sbTimeout :: Int}
 
 data PreparedCase = PreparedCase
   { pcIdx :: Int,
@@ -165,7 +165,7 @@ runMainBatch exec batch suite cases = do
           { C.language = sbLang batch,
             C.content = buildMainProgram batch cases,
             C.files = buildMainFiles cases,
-            C.runTimeout = Just batchTimeoutMs,
+            C.runTimeout = Just (sbTimeout batch),
             C.runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
           }
       )
@@ -195,7 +195,7 @@ runOracleBatch exec _ batch suite cases mainOutputs =
               { C.language = Python3,
                 C.content = oracleProgram,
                 C.files = buildMainFiles cases,
-                C.runTimeout = Just batchTimeoutMs,
+                C.runTimeout = Just (sbTimeout batch),
                 C.runMemoryLimit = Nothing
               }
           )
@@ -490,9 +490,6 @@ parseSections markerBuilder indices stdoutText = go (T.lines stdoutText) Nothing
 
 marker :: Int -> Text
 marker idx = "SOL_CASE_" <> T.pack (show idx)
-
-batchTimeoutMs :: Int
-batchTimeoutMs = 20000
 
 buildMainStdin :: [PreparedCase] -> Maybe Text
 buildMainStdin cases =
