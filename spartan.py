@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import json
+import os
 import re
 import sys
 import urllib.request
@@ -14,6 +15,8 @@ from generate_prompt import (
 
 PROBLEMS_DIR = Path(__file__).parent / "generated_problems"
 GRAPHQL_URL = "https://leetcode.com/graphql"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+DEFAULT_MODEL = "google/gemini-3.1-flash-lite"
 DEFAULT_CONCURRENCY = 10
 
 
@@ -55,6 +58,27 @@ def fetch_problem_list(skip, limit, hide_premium):
     return data["data"]["problemsetQuestionListV2"]["questions"]
 
 
+async def generate(prompt, model, api_key):
+    payload = json.dumps(
+        {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+    ).encode()
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    def do_request():
+        req = urllib.request.Request(OPENROUTER_URL, data=payload, headers=headers)
+        with urllib.request.urlopen(req, timeout=180) as r:
+            return json.loads(r.read())
+
+    return await asyncio.get_event_loop().run_in_executor(None, do_request)
+
+
 def normalize_ref(code):
     code = code.strip()
 
@@ -67,36 +91,41 @@ def normalize_ref(code):
     return f"class Solution:\n{indented}\n"
 
 
-async def process(sem, problem):
+async def process(sem, problem, model, api_key):
     pid, slug = problem["id"], problem["titleSlug"]
     folder = PROBLEMS_DIR / f"{pid}. {slug}"
+    manifest = folder / "manifest.yml"
+
+    if manifest.exists():
+        print(f"Skip {pid}. {slug}")
+        return
 
     async with sem:
         print(f"Start {pid}. {slug}")
         try:
-            _, content, snippets = await asyncio.to_thread(get_question_details, slug)
+            _, content, snippets = get_question_details(slug)
 
             try:
-                reference = await asyncio.to_thread(get_reference_solution, slug)
+                reference = get_reference_solution(slug)
             except Exception:
-                reference = None
+                reference = "Not found"
 
             prompt = PROMPT_TEMPLATE.substitute(
                 PROBLEM_ID=pid,
                 PROBLEM_TITLE=slug,
                 PROBLEM_CONTENT=content,
                 SNIPPETS=format_snippets(snippets),
-                REFERENCE="Not found" if reference is None else reference,
+                REFERENCE=reference,
             )
+
+            data = await generate(prompt, model, api_key)
+            raw = data["choices"][0]["message"]["content"]
+            clean = re.sub(r"^```[a-zA-Z]*\n?|\n?```$", "", raw.strip())
 
             folder.mkdir(parents=True, exist_ok=True)
             (folder / "prompt.txt").write_text(prompt, encoding="utf-8")
-            if reference is None:
-                (folder / "sol.py").write_text("Not found", encoding="utf-8")
-            else:
-                (folder / "sol.py").write_text(
-                    normalize_ref(reference), encoding="utf-8"
-                )
+            (folder / "sol.py").write_text(normalize_ref(reference), encoding="utf-8")
+            manifest.write_text(clean, encoding="utf-8")
 
             print(f"Done {pid}. {slug}")
         except Exception as e:
@@ -105,11 +134,11 @@ async def process(sem, problem):
             print(f"Error {pid}. {slug}: {e}", file=sys.stderr)
 
 
-async def run(skip, limit, concurrency, hide_premium):
+async def run(skip, limit, concurrency, model, api_key, hide_premium=False):
     PROBLEMS_DIR.mkdir(parents=True, exist_ok=True)
     problems = fetch_problem_list(skip, limit, hide_premium)
     sem = asyncio.Semaphore(concurrency)
-    await asyncio.gather(*[process(sem, p) for p in problems])
+    await asyncio.gather(*[process(sem, p, model, api_key) for p in problems])
 
 
 def main():
@@ -117,14 +146,21 @@ def main():
     parser.add_argument("--skip", type=int)
     parser.add_argument("--limit", type=int)
     parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY)
+    parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--hide-premium", dest="hide_premium", action="store_true")
     args = parser.parse_args()
+
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    if not api_key:
+        sys.exit("OPENROUTER_API_KEY is not set")
 
     asyncio.run(
         run(
             args.skip,
             args.limit,
             args.concurrency,
+            args.model,
+            api_key,
             args.hide_premium,
         )
     )
