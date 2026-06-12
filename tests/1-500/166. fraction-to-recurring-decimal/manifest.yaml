@@ -1,508 +1,198 @@
 entry:
   id: 166
-  title: "fraction-to-recurring-decimal"
+  title: fraction-to-recurring-decimal
   params:
     numerator:
-      type: "int"
+      type: int
     denominator:
-      type: "int"
+      type: int
   call:
-    cpp: "Solution().fractionToDecimal({numerator}, {denominator})"
-    rust: "Solution::fraction_to_decimal({numerator}, {denominator})"
-    python3: "Solution().fractionToDecimal({numerator}, {denominator})"
-    python2: "Solution().fractionToDecimal({numerator}, {denominator})"
-    ruby: "fraction_to_decimal({numerator}, {denominator})"
-    java: "new Solution().fractionToDecimal({numerator}, {denominator})"
-    csharp: "new Solution().FractionToDecimal({numerator}, {denominator})"
-    kotlin: "Solution().fractionToDecimal({numerator}, {denominator})"
-    go: "fractionToDecimal({numerator}, {denominator})"
-    dart: "Solution().fractionToDecimal({numerator}, {denominator})"
-    swift: "Solution().fractionToDecimal({numerator}, {denominator})"
-    typescript: "fractionToDecimal({numerator}, {denominator})"
+    cpp: Solution().fractionToDecimal({numerator}, {denominator})
+    rust: Solution::fraction_to_decimal({numerator}, {denominator})
+    python3: Solution().fractionToDecimal({numerator}, {denominator})
+    python2: Solution().fractionToDecimal({numerator}, {denominator})
+    ruby: fraction_to_decimal({numerator}, {denominator})
+    java: new Solution().fractionToDecimal({numerator}, {denominator})
+    csharp: new Solution().FractionToDecimal({numerator}, {denominator})
+    kotlin: Solution().fractionToDecimal({numerator}, {denominator})
+    go: fractionToDecimal({numerator}, {denominator})
+    dart: Solution().fractionToDecimal({numerator}, {denominator})
+    swift: Solution().fractionToDecimal({numerator}, {denominator})
+    typescript: fractionToDecimal({numerator}, {denominator})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().fractionToDecimal(numerator, denominator, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution(object):
-          def fractionToDecimal(self, numerator, denominator):
-              if not numerator:
-                  return "0"
-
-              result = []
-              if (numerator < 0) ^ (denominator < 0):
-                  result.append("-")
-
-              num = abs(numerator)
-              den = abs(denominator)
-
-              result.append(str(num // den))
-              num %= den
-
-              if not num:
-                  return "".join(result)
-
-              result.append(".")
-              seen = {}
-
-              while num:
-                  if num in seen:
-                      result.insert(seen[num], "(")
-                      result.append(")")
-                      break
-                  seen[num] = len(result)
-                  num *= 10
-                  result.append(str(num // den))
-                  num %= den
-
-              return "".join(result)
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "string"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def fractionToDecimal(self, numerator, denominator, result):
-              prepared_numerator = prepare_input(numerator, "int"); prepared_denominator = prepare_input(denominator, "int")
-              expected = Solution().fractionToDecimal(prepared_numerator, prepared_denominator)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().fractionToDecimal(numerator, denominator, {result})
+    checker: "class Checker:\n    def fractionToDecimal(self, numerator, denominator, result):\n        if numerator == 0:\n            return result == \"0\"\n\n        parts = []\n        if (numerator < 0) ^ (denominator < 0):\n            parts.append(\"-\")\n\n        num = abs(numerator)\n        den = abs(denominator)\n\n        parts.append(str(num // den))\n        num %= den\n\n        if num == 0:\n            return result == \"\".join(parts)\n\n        parts.append(\".\")\n        seen = {}\n\n        while num:\n            if num in seen:\n                parts.insert(seen[num], \"(\")\n                parts.append(\")\")\n                break\n            seen[num] = len(parts)\n            num *= 10\n            parts.append(str(num // den))\n            num %= den\n\n        return result == \"\".join(parts)\n"
 seed: 166
 tests:
-  - name: "case_01"
+  - name: zero
+    in:
+      numerator: 0
+      denominator: 1
+  - name: one-over-one
+    in:
+      numerator: 1
+      denominator: 1
+  - name: negative-numerator
+    in:
+      numerator: -1
+      denominator: 1
+  - name: negative-denominator
+    in:
+      numerator: 1
+      denominator: -1
+  - name: double-negative
+    in:
+      numerator: -1
+      denominator: -1
+  - name: example-half
     in:
       numerator: 1
       denominator: 2
-  - name: "case_02"
+  - name: example-integer
     in:
       numerator: 2
       denominator: 1
-  - name: "case_03"
+  - name: example-recurring
     in:
       numerator: 4
       denominator: 333
-  - name: "case_04"
+  - name: simple-recurring
     in:
-      numerator: 54
-      denominator: -4
-  - name: "case_05"
-    in:
-      numerator: -17
-      denominator: 25
-  - name: "case_06"
-    in:
-      numerator: 90
-      denominator: 7
-  - name: "case_07"
-    in:
-      numerator: 73
-      denominator: 22
-  - name: "case_08"
-    in:
-      numerator: 88
-      denominator: -30
-  - name: "case_09"
-    in:
-      numerator: -52
-      denominator: 23
-  - name: "case_10"
-    in:
-      numerator: -69
-      denominator: -30
-  - name: "case_11"
-    in:
-      numerator: 49
-      denominator: 13
-  - name: "case_12"
-    in:
-      numerator: 54
+      numerator: 2
       denominator: 3
-  - name: "case_13"
-    in:
-      numerator: 15
-      denominator: 23
-  - name: "case_14"
-    in:
-      numerator: 33
-      denominator: -20
-  - name: "case_15"
-    in:
-      numerator: 89
-      denominator: -1
-  - name: "case_16"
-    in:
-      numerator: -33
-      denominator: -1
-  - name: "case_17"
-    in:
-      numerator: 95
-      denominator: 12
-  - name: "case_18"
-    in:
-      numerator: 60
-      denominator: 16
-  - name: "case_19"
-    in:
-      numerator: -94
-      denominator: 8
-  - name: "case_20"
-    in:
-      numerator: 26
-      denominator: -25
-  - name: "case_21"
-    in:
-      numerator: 45
-      denominator: 21
-  - name: "case_22"
-    in:
-      numerator: -5
-      denominator: -10
-  - name: "case_23"
-    in:
-      numerator: 72
-      denominator: 3
-  - name: "case_24"
-    in:
-      numerator: -32
-      denominator: -3
-  - name: "case_25"
-    in:
-      numerator: 31
-      denominator: -12
-  - name: "case_26"
-    in:
-      numerator: -10
-      denominator: -23
-  - name: "case_27"
-    in:
-      numerator: 55
-      denominator: -10
-  - name: "case_28"
-    in:
-      numerator: -13
-      denominator: -21
-  - name: "case_29"
-    in:
-      numerator: 35
-      denominator: -11
-  - name: "case_30"
-    in:
-      numerator: 79
-      denominator: -28
-  - name: "case_31"
-    in:
-      numerator: 89
-      denominator: 25
-  - name: "case_32"
+  - name: terminating-sixth
     in:
       numerator: 1
-      denominator: -17
-  - name: "case_33"
-    in:
-      numerator: -58
-      denominator: 29
-  - name: "case_34"
-    in:
-      numerator: -19
-      denominator: 23
-  - name: "case_35"
-    in:
-      numerator: 99
-      denominator: 13
-  - name: "case_36"
-    in:
-      numerator: 24
-      denominator: -23
-  - name: "case_37"
-    in:
-      numerator: 68
-      denominator: -8
-  - name: "case_38"
-    in:
-      numerator: -48
-      denominator: 25
-  - name: "case_39"
-    in:
-      numerator: 96
       denominator: 6
-  - name: "case_40"
+  - name: recurring-seventh
+    in:
+      numerator: 1
+      denominator: 7
+  - name: recurring-ninth
+    in:
+      numerator: 1
+      denominator: 9
+  - name: mixed-three-sevenths
     in:
       numerator: 22
-      denominator: 18
-  - name: "case_41"
+      denominator: 7
+  - name: negative-finite
     in:
-      numerator: -91
-      denominator: 25
-  - name: "case_42"
+      numerator: -50
+      denominator: 8
+  - name: negative-recurring
     in:
-      numerator: -41
-      denominator: 29
-  - name: "case_43"
+      numerator: 7
+      denominator: -12
+  - name: min-int-overflow-safe
     in:
-      numerator: 73
-      denominator: -28
-  - name: "case_44"
-    in:
-      numerator: 27
-      denominator: 20
-  - name: "case_45"
-    in:
-      numerator: 14
-      denominator: -28
-  - name: "case_46"
-    in:
-      numerator: 99
-      denominator: 25
-  - name: "case_47"
-    in:
-      numerator: 94
-      denominator: -13
-  - name: "case_48"
-    in:
-      numerator: 75
-      denominator: 19
-  - name: "case_49"
-    in:
-      numerator: -34
-      denominator: -22
-  - name: "case_50"
-    in:
-      numerator: -22
-      denominator: -28
-  - name: "case_51"
-    in:
-      numerator: 80
+      numerator: -2147483648
       denominator: 1
-  - name: "case_52"
+  - name: max-int
     in:
-      numerator: 31
-      denominator: 29
-  - name: "case_53"
+      numerator: 2147483647
+      denominator: 1
+  - name: max-int-half
     in:
-      numerator: -86
-      denominator: 28
-  - name: "case_54"
+      numerator: 2147483647
+      denominator: 2
+  - name: min-int-double-negative
     in:
-      numerator: 56
-      denominator: -18
-  - name: "case_55"
+      numerator: -2147483648
+      denominator: -1
+  - name: min-int-half
     in:
-      numerator: -65
-      denominator: 19
-  - name: "case_56"
+      numerator: -2147483648
+      denominator: 2
+  - name: quarter
     in:
-      numerator: -43
+      numerator: 1
+      denominator: 4
+  - name: fifth
+    in:
+      numerator: 1
+      denominator: 5
+  - name: eighth
+    in:
+      numerator: 1
+      denominator: 8
+  - name: sixteenth
+    in:
+      numerator: 1
+      denominator: 16
+  - name: one-over-125
+    in:
+      numerator: 1
+      denominator: 125
+  - name: reducible-finite
+    in:
+      numerator: 50
+      denominator: 100
+  - name: negative-half
+    in:
+      numerator: -1
+      denominator: 2
+  - name: negative-half-denominator
+    in:
+      numerator: 1
+      denominator: -2
+  - name: repeating-third
+    in:
+      numerator: 10
+      denominator: 3
+  - name: repeating-third-negative
+    in:
+      numerator: -10
+      denominator: 3
+  - name: repeating-two-digit-cycle
+    in:
+      numerator: 1
+      denominator: 11
+  - name: terminating-after-leading-zeroes
+    in:
+      numerator: 1
+      denominator: 12
+  - name: simple-fifth
+    in:
+      numerator: 2
+      denominator: 5
+  - name: mixed-decimal
+    in:
+      numerator: 29
+      denominator: 12
+  - name: seventeenth
+    in:
+      numerator: 1
       denominator: 17
-  - name: "case_57"
+  - name: nineteenth
     in:
-      numerator: -19
-      denominator: -11
-  - name: "case_58"
-    in:
-      numerator: -85
-      denominator: 9
-  - name: "case_59"
-    in:
-      numerator: 47
-      denominator: 18
-  - name: "case_60"
-    in:
-      numerator: 69
-      denominator: -9
-  - name: "case_61"
-    in:
-      numerator: 42
-      denominator: -21
-  - name: "case_62"
-    in:
-      numerator: -7
-      denominator: 22
-  - name: "case_63"
-    in:
-      numerator: -90
-      denominator: 13
-  - name: "case_64"
-    in:
-      numerator: -12
-      denominator: -4
-  - name: "generated_01"
-    seed: 16601
+      numerator: 1
+      denominator: 19
+  - name: generated_positive_denominator
+    seed: 166001
     in:
       numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
+        gen: int
+        min: -1000000
+        max: 1000000
       denominator:
-        gen: "int"
+        gen: int
         min: 1
-        max: 100000
-  - name: "generated_02"
-    seed: 16602
+        max: 1000000
+  - name: generated_negative_denominator
+    seed: 166002
     in:
       numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
+        gen: int
+        min: -1000000
+        max: 1000000
       denominator:
-        gen: "int"
-        min: 1
-        max: 100000
-  - name: "generated_03"
-    seed: 16603
-    in:
-      numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
-      denominator:
-        gen: "int"
-        min: 1
-        max: 100000
-  - name: "generated_04"
-    seed: 16604
-    in:
-      numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
-      denominator:
-        gen: "int"
-        min: 1
-        max: 100000
-  - name: "generated_05"
-    seed: 16605
-    in:
-      numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
-      denominator:
-        gen: "int"
-        min: 1
-        max: 100000
-  - name: "generated_06"
-    seed: 16606
-    in:
-      numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
-      denominator:
-        gen: "int"
-        min: 1
-        max: 100000
-  - name: "generated_07"
-    seed: 16607
-    in:
-      numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
-      denominator:
-        gen: "int"
-        min: 1
-        max: 100000
-  - name: "generated_08"
-    seed: 16608
-    in:
-      numerator:
-        gen: "int"
-        min: -1000
-        max: 1000
-      denominator:
-        gen: "int"
-        min: 1
-        max: 100000
+        gen: int
+        min: -1000000
+        max: -1

@@ -5,9 +5,9 @@ import java.io.File
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+
 import kotlin.math.*
 import java.lang.StringBuilder
-${IMPORTS}
 
 data class TestInput(@SerializedName("val") var value: Any? = null)
 

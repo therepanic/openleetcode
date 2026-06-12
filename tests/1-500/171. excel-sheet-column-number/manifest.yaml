@@ -1,477 +1,206 @@
 entry:
   id: 171
-  title: "excel-sheet-column-number"
+  title: excel-sheet-column-number
   params:
     columnTitle:
-      type: "string"
+      type: string
   call:
-    cpp: "Solution().titleToNumber({columnTitle})"
-    rust: "Solution::title_to_number({columnTitle})"
-    python3: "Solution().titleToNumber({columnTitle})"
-    python2: "Solution().titleToNumber({columnTitle})"
-    ruby: "title_to_number({columnTitle})"
-    java: "new Solution().titleToNumber({columnTitle})"
-    csharp: "new Solution().TitleToNumber({columnTitle})"
-    kotlin: "Solution().titleToNumber({columnTitle})"
-    go: "titleToNumber({columnTitle})"
-    dart: "Solution().titleToNumber({columnTitle})"
-    swift: "Solution().titleToNumber({columnTitle})"
-    typescript: "titleToNumber({columnTitle})"
+    cpp: Solution().titleToNumber({columnTitle})
+    rust: Solution::title_to_number({columnTitle})
+    python3: Solution().titleToNumber({columnTitle})
+    python2: Solution().titleToNumber({columnTitle})
+    ruby: title_to_number({columnTitle})
+    java: new Solution().titleToNumber({columnTitle})
+    csharp: new Solution().TitleToNumber({columnTitle})
+    kotlin: Solution().titleToNumber({columnTitle})
+    go: titleToNumber({columnTitle})
+    dart: Solution().titleToNumber({columnTitle})
+    swift: Solution().titleToNumber({columnTitle})
+    typescript: titleToNumber({columnTitle})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 200
+  memory_mb: 300
 oracle:
   python3:
-    call: "Checker().titleToNumber(columnTitle, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution:
-          def titleToNumber(self, columnTitle: str) -> int:
-              ans = 0
-
-              # Read left to right like normal positional numbers.
-              for ch in columnTitle:
-                  # Shift existing value one base-26 place to the left,
-                  # then add current letter value (A=1 ... Z=26).
-                  ans = ans * 26 + (ord(ch) - ord('A') + 1)
-
-              return ans
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def titleToNumber(self, columnTitle, result):
-              prepared_columnTitle = prepare_input(columnTitle, "string")
-              expected = Solution().titleToNumber(prepared_columnTitle)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
-seed: 171
+    call: Checker().titleToNumber(columnTitle, {result})
+    checker: "class Checker:\n    def titleToNumber(self, columnTitle: str, result: object) -> bool:\n        if not isinstance(result, int):\n            return False\n\n        value = 0\n        for ch in columnTitle:\n            if not isinstance(ch, str) or len(ch) != 1 or not ('A' <= ch <= 'Z'):\n                return False\n            value = value * 26 + (ord(ch) - ord('A') + 1)\n\n        return value == result\n"
+seed: 171171
 tests:
-  - name: "case_01"
+  - name: ex1_single_a
     in:
-      columnTitle: "A"
+      columnTitle: A
     out: 1
-  - name: "case_02"
+  - name: ex2_double_ab
     in:
-      columnTitle: "AB"
+      columnTitle: AB
     out: 28
-  - name: "case_03"
+  - name: ex3_double_zy
     in:
-      columnTitle: "ZY"
+      columnTitle: ZY
     out: 701
-  - name: "case_04"
+  - name: single_b
     in:
-      columnTitle: "NDSO"
-    out: 249277
-  - name: "case_05"
+      columnTitle: B
+    out: 2
+  - name: single_z
     in:
-      columnTitle: "MJ"
-    out: 348
-  - name: "case_06"
-    in:
-      columnTitle: "FFF"
-    out: 4218
-  - name: "case_07"
-    in:
-      columnTitle: "YH"
-    out: 658
-  - name: "case_08"
-    in:
-      columnTitle: "RY"
-    out: 493
-  - name: "case_09"
-    in:
-      columnTitle: "GZ"
-    out: 208
-  - name: "case_10"
-    in:
-      columnTitle: "F"
-    out: 6
-  - name: "case_11"
-    in:
-      columnTitle: "R"
-    out: 18
-  - name: "case_12"
-    in:
-      columnTitle: "CSK"
-    out: 2533
-  - name: "case_13"
-    in:
-      columnTitle: "ZDWW"
-    out: 460301
-  - name: "case_14"
-    in:
-      columnTitle: "EUEQ"
-    out: 102223
-  - name: "case_15"
-    in:
-      columnTitle: "SNWS"
-    out: 344025
-  - name: "case_16"
-    in:
-      columnTitle: "N"
-    out: 14
-  - name: "case_17"
-    in:
-      columnTitle: "AH"
-    out: 34
-  - name: "case_18"
-    in:
-      columnTitle: "PUL"
-    out: 11374
-  - name: "case_19"
-    in:
-      columnTitle: "Q"
-    out: 17
-  - name: "case_20"
-    in:
-      columnTitle: "JD"
-    out: 264
-  - name: "case_21"
-    in:
-      columnTitle: "QNRV"
-    out: 308746
-  - name: "case_22"
-    in:
-      columnTitle: "TOE"
-    out: 13915
-  - name: "case_23"
-    in:
-      columnTitle: "PK"
-    out: 427
-  - name: "case_24"
-    in:
-      columnTitle: "IYP"
-    out: 6750
-  - name: "case_25"
-    in:
-      columnTitle: "QA"
-    out: 443
-  - name: "case_26"
-    in:
-      columnTitle: "O"
-    out: 15
-  - name: "case_27"
-    in:
-      columnTitle: "Z"
+      columnTitle: Z
     out: 26
-  - name: "case_28"
+  - name: rollover_aa
     in:
-      columnTitle: "RS"
-    out: 487
-  - name: "case_29"
+      columnTitle: AA
+    out: 27
+  - name: rollover_az
     in:
-      columnTitle: "BY"
-    out: 77
-  - name: "case_30"
+      columnTitle: AZ
+    out: 52
+  - name: rollover_ba
     in:
-      columnTitle: "P"
-    out: 16
-  - name: "case_31"
+      columnTitle: BA
+    out: 53
+  - name: rollover_bz
     in:
-      columnTitle: "OB"
-    out: 392
-  - name: "case_32"
+      columnTitle: BZ
+    out: 78
+  - name: rollover_ca
     in:
-      columnTitle: "OR"
-    out: 408
-  - name: "case_33"
+      columnTitle: CA
+    out: 79
+  - name: triple_aaa
     in:
-      columnTitle: "ALQO"
-    out: 26145
-  - name: "case_34"
+      columnTitle: AAA
+    out: 703
+  - name: triple_aaz
     in:
-      columnTitle: "UNAQ"
-    out: 378603
-  - name: "case_35"
+      columnTitle: AAZ
+    out: 728
+  - name: triple_aba
     in:
-      columnTitle: "W"
-    out: 23
-  - name: "case_36"
+      columnTitle: ABA
+    out: 729
+  - name: triple_azz
     in:
-      columnTitle: "CZL"
-    out: 2716
-  - name: "case_37"
+      columnTitle: AZZ
+    out: 1378
+  - name: triple_baa
     in:
-      columnTitle: "TFOD"
-    out: 355970
-  - name: "case_38"
+      columnTitle: BAA
+    out: 1379
+  - name: triple_zzz
     in:
-      columnTitle: "ZQ"
-    out: 693
-  - name: "case_39"
+      columnTitle: ZZZ
+    out: 18278
+  - name: four_aaaa
     in:
-      columnTitle: "JAWQ"
-    out: 177051
-  - name: "case_40"
+      columnTitle: AAAA
+    out: 18279
+  - name: four_aaaz
     in:
-      columnTitle: "HT"
-    out: 228
-  - name: "case_41"
+      columnTitle: AAAZ
+    out: 18304
+  - name: four_aaba
     in:
-      columnTitle: "OJ"
-    out: 400
-  - name: "case_42"
+      columnTitle: AABA
+    out: 18305
+  - name: four_abzz
     in:
-      columnTitle: "FM"
-    out: 169
-  - name: "case_43"
+      columnTitle: ABZZ
+    out: 19630
+  - name: four_zzzz
     in:
-      columnTitle: "C"
-    out: 3
-  - name: "case_44"
+      columnTitle: ZZZZ
+    out: 475254
+  - name: five_aaaaa
     in:
-      columnTitle: "CASJ"
-    out: 53908
-  - name: "case_45"
+      columnTitle: AAAAA
+    out: 475255
+  - name: five_azzzz
     in:
-      columnTitle: "OWV"
-    out: 10760
-  - name: "case_46"
+      columnTitle: AZZZZ
+    out: 932230
+  - name: five_zzzzz
     in:
-      columnTitle: "ZM"
-    out: 689
-  - name: "case_47"
+      columnTitle: ZZZZZ
+    out: 12356630
+  - name: six_aaaaaa
     in:
-      columnTitle: "WECU"
-    out: 407727
-  - name: "case_48"
+      columnTitle: AAAAAA
+    out: 12356631
+  - name: six_aaaaaz
     in:
-      columnTitle: "U"
-    out: 21
-  - name: "case_49"
+      columnTitle: AAAAAZ
+    out: 12356656
+  - name: six_aaazzz
     in:
-      columnTitle: "ABH"
-    out: 736
-  - name: "case_50"
+      columnTitle: AAAZZZ
+    out: 12374206
+  - name: six_azzzzz
     in:
-      columnTitle: "LV"
-    out: 334
-  - name: "case_51"
+      columnTitle: AZZZZZ
+    out: 24238006
+  - name: six_zzzzzz
     in:
-      columnTitle: "K"
-    out: 11
-  - name: "case_52"
+      columnTitle: ZZZZZZ
+    out: 321272406
+  - name: seven_aaaaaaa
     in:
-      columnTitle: "MWOX"
-    out: 244450
-  - name: "case_53"
+      columnTitle: AAAAAAA
+    out: 321272407
+  - name: seven_aaaaaaz
     in:
-      columnTitle: "H"
-    out: 8
-  - name: "case_54"
+      columnTitle: AAAAAAZ
+    out: 321272432
+  - name: seven_aaaazzz
     in:
-      columnTitle: "MMEQ"
-    out: 237423
-  - name: "case_55"
+      columnTitle: AAAAZZZ
+    out: 321289982
+  - name: seven_azzzzzz
     in:
-      columnTitle: "OZ"
-    out: 416
-  - name: "case_56"
+      columnTitle: AZZZZZZ
+    out: 630188182
+  - name: seven_fxshrxw
     in:
-      columnTitle: "JDPU"
-    out: 178901
-  - name: "case_57"
+      columnTitle: FXSHRXW
+    out: 2147483647
+  - name: near_max_prev
     in:
-      columnTitle: "JAM"
-    out: 6799
-  - name: "case_58"
+      columnTitle: FXSHRXV
+    out: 2147483646
+  - name: near_max_same_prefix
     in:
-      columnTitle: "SDIA"
-    out: 336883
-  - name: "case_59"
+      columnTitle: FXSHRXA
+    out: 2147483625
+  - name: mixed_middle
     in:
-      columnTitle: "BPA"
-    out: 1769
-  - name: "case_60"
+      columnTitle: MNO
+    out: 9167
+  - name: mixed_large_transition
     in:
-      columnTitle: "SZF"
-    out: 13526
-  - name: "case_61"
+      columnTitle: QAZ
+    out: 11544
+  - name: late_alphabet
     in:
-      columnTitle: "YP"
-    out: 666
-  - name: "case_62"
-    in:
-      columnTitle: "BFG"
-    out: 1515
-  - name: "case_63"
-    in:
-      columnTitle: "XCGX"
-    out: 424058
-  - name: "case_64"
-    in:
-      columnTitle: "CLQV"
-    out: 61304
-  - name: "generated_01"
-    seed: 17101
+      columnTitle: WXYZ
+    out: 421148
+  - name: generated_len_1_to_4
+    seed: 171001
     in:
       columnTitle:
-        gen: "str"
+        gen: str
         len:
-          gen: "int"
+          gen: int
           min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  - name: "generated_02"
-    seed: 17102
+          max: 4
+        alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  - name: generated_len_5_to_6
+    seed: 171002
     in:
       columnTitle:
-        gen: "str"
+        gen: str
         len:
-          gen: "int"
-          min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  - name: "generated_03"
-    seed: 17103
-    in:
-      columnTitle:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  - name: "generated_04"
-    seed: 17104
-    in:
-      columnTitle:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  - name: "generated_05"
-    seed: 17105
-    in:
-      columnTitle:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  - name: "generated_06"
-    seed: 17106
-    in:
-      columnTitle:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  - name: "generated_07"
-    seed: 17107
-    in:
-      columnTitle:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  - name: "generated_08"
-    seed: 17108
-    in:
-      columnTitle:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+          gen: int
+          min: 5
+          max: 6
+        alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZ

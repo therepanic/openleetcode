@@ -1,452 +1,188 @@
 entry:
   id: 172
-  title: "factorial-trailing-zeroes"
+  title: factorial-trailing-zeroes
   params:
     n:
-      type: "int"
+      type: int
   call:
-    cpp: "Solution().trailingZeroes({n})"
-    rust: "Solution::trailing_zeroes({n})"
-    python3: "Solution().trailingZeroes({n})"
-    python2: "Solution().trailingZeroes({n})"
-    ruby: "trailing_zeroes({n})"
-    java: "new Solution().trailingZeroes({n})"
-    csharp: "new Solution().TrailingZeroes({n})"
-    kotlin: "Solution().trailingZeroes({n})"
-    go: "trailingZeroes({n})"
-    dart: "Solution().trailingZeroes({n})"
-    swift: "Solution().trailingZeroes({n})"
-    typescript: "trailingZeroes({n})"
+    cpp: Solution().trailingZeroes({n})
+    rust: Solution::trailing_zeroes({n})
+    python3: Solution().trailingZeroes({n})
+    python2: Solution().trailingZeroes({n})
+    ruby: trailing_zeroes({n})
+    java: new Solution().trailingZeroes({n})
+    csharp: new Solution().TrailingZeroes({n})
+    kotlin: Solution().trailingZeroes({n})
+    go: trailingZeroes({n})
+    dart: Solution().trailingZeroes({n})
+    swift: Solution().trailingZeroes({n})
+    typescript: trailingZeroes({n})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().trailingZeroes(n, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution(object):
-          def trailingZeroes(self, n):
-              count = 0
-              divisor = 5
-
-              while n >= divisor:
-                  count += n // divisor
-                  divisor *= 5
-
-              return count
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def trailingZeroes(self, n, result):
-              prepared_n = prepare_input(n, "int")
-              expected = Solution().trailingZeroes(prepared_n)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().trailingZeroes(n, {result})
+    checker: "class Checker:\n    def trailingZeroes(self, n, result):\n        if not isinstance(result, int):\n            return False\n        expected = 0\n        divisor = 5\n        while n >= divisor:\n            expected += n // divisor\n            divisor *= 5\n        return result == expected\n"
 seed: 172
 tests:
-  - name: "case_01"
-    in:
-      n: 3
-    out: 0
-  - name: "case_02"
-    in:
-      n: 5
-    out: 1
-  - name: "case_03"
+  - name: n0
     in:
       n: 0
     out: 0
-  - name: "case_04"
+  - name: n1
     in:
-      n: 46205
-    out: 11547
-  - name: "case_05"
+      n: 1
+    out: 0
+  - name: n4
     in:
-      n: 25362
-    out: 6337
-  - name: "case_06"
+      n: 4
+    out: 0
+  - name: n5
     in:
-      n: 28047
-    out: 7007
-  - name: "case_07"
+      n: 5
+    out: 1
+  - name: n6
     in:
-      n: 39270
-    out: 9814
-  - name: "case_08"
+      n: 6
+    out: 1
+  - name: n9
     in:
-      n: 46173
-    out: 11538
-  - name: "case_09"
+      n: 9
+    out: 1
+  - name: n10
     in:
-      n: 97083
-    out: 24268
-  - name: "case_10"
+      n: 10
+    out: 2
+  - name: n24
     in:
-      n: 6408
-    out: 1600
-  - name: "case_11"
+      n: 24
+    out: 4
+  - name: n25
     in:
-      n: 51236
-    out: 12805
-  - name: "case_12"
+      n: 25
+    out: 6
+  - name: n26
     in:
-      n: 60449
-    out: 15107
-  - name: "case_13"
+      n: 26
+    out: 6
+  - name: n49
     in:
-      n: 73609
-    out: 18397
-  - name: "case_14"
+      n: 49
+    out: 10
+  - name: n50
     in:
-      n: 58100
-    out: 14521
-  - name: "case_15"
+      n: 50
+    out: 12
+  - name: n51
     in:
-      n: 27485
-    out: 6867
-  - name: "case_16"
+      n: 51
+    out: 12
+  - name: n99
     in:
-      n: 75047
-    out: 18758
-  - name: "case_17"
+      n: 99
+    out: 22
+  - name: n100
     in:
-      n: 97094
-    out: 24270
-  - name: "case_18"
+      n: 100
+    out: 24
+  - name: n124
     in:
-      n: 91662
-    out: 22912
-  - name: "case_19"
+      n: 124
+    out: 28
+  - name: n125
     in:
-      n: 6487
-    out: 1619
-  - name: "case_20"
+      n: 125
+    out: 31
+  - name: n126
     in:
-      n: 57747
-    out: 14432
-  - name: "case_21"
+      n: 126
+    out: 31
+  - name: n249
     in:
-      n: 39259
-    out: 9811
-  - name: "case_22"
+      n: 249
+    out: 59
+  - name: n250
     in:
-      n: 75432
-    out: 18854
-  - name: "case_23"
+      n: 250
+    out: 62
+  - name: n251
     in:
-      n: 12446
-    out: 3107
-  - name: "case_24"
+      n: 251
+    out: 62
+  - name: n499
     in:
-      n: 55956
-    out: 13985
-  - name: "case_25"
+      n: 499
+    out: 121
+  - name: n500
     in:
-      n: 41
-    out: 9
-  - name: "case_26"
+      n: 500
+    out: 124
+  - name: n501
     in:
-      n: 69384
-    out: 17343
-  - name: "case_27"
+      n: 501
+    out: 124
+  - name: n624
     in:
-      n: 17606
-    out: 4399
-  - name: "case_28"
+      n: 624
+    out: 152
+  - name: n625
     in:
-      n: 29411
-    out: 7350
-  - name: "case_29"
+      n: 625
+    out: 156
+  - name: n626
     in:
-      n: 69004
-    out: 17248
-  - name: "case_30"
+      n: 626
+    out: 156
+  - name: n999
     in:
-      n: 57986
-    out: 14492
-  - name: "case_31"
+      n: 999
+    out: 246
+  - name: n1000
     in:
-      n: 35558
-    out: 8886
-  - name: "case_32"
+      n: 1000
+    out: 249
+  - name: n2499
     in:
-      n: 45455
-    out: 11360
-  - name: "case_33"
+      n: 2499
+    out: 620
+  - name: n2500
     in:
-      n: 44458
-    out: 11111
-  - name: "case_34"
+      n: 2500
+    out: 624
+  - name: n2501
     in:
-      n: 16140
-    out: 4033
-  - name: "case_35"
+      n: 2501
+    out: 624
+  - name: n4999
     in:
-      n: 32300
-    out: 8073
-  - name: "case_36"
+      n: 4999
+    out: 1245
+  - name: n5000
     in:
-      n: 54141
-    out: 13532
-  - name: "case_37"
+      n: 5000
+    out: 1249
+  - name: n9999
     in:
-      n: 92567
-    out: 23138
-  - name: "case_38"
+      n: 9999
+    out: 2495
+  - name: n10000
     in:
-      n: 7107
-    out: 1774
-  - name: "case_39"
-    in:
-      n: 82123
-    out: 20527
-  - name: "case_40"
-    in:
-      n: 62872
-    out: 15714
-  - name: "case_41"
-    in:
-      n: 92672
-    out: 23164
-  - name: "case_42"
-    in:
-      n: 55809
-    out: 13948
-  - name: "case_43"
-    in:
-      n: 75892
-    out: 18969
-  - name: "case_44"
-    in:
-      n: 59137
-    out: 14780
-  - name: "case_45"
-    in:
-      n: 83046
-    out: 20758
-  - name: "case_46"
-    in:
-      n: 62743
-    out: 15682
-  - name: "case_47"
-    in:
-      n: 70758
-    out: 17686
-  - name: "case_48"
-    in:
-      n: 42277
-    out: 10566
-  - name: "case_49"
-    in:
-      n: 39327
-    out: 9828
-  - name: "case_50"
-    in:
-      n: 244
-    out: 58
-  - name: "case_51"
-    in:
-      n: 51672
-    out: 12914
-  - name: "case_52"
-    in:
-      n: 3696
-    out: 921
-  - name: "case_53"
-    in:
-      n: 52263
-    out: 13062
-  - name: "case_54"
-    in:
-      n: 85816
-    out: 21451
-  - name: "case_55"
-    in:
-      n: 96239
-    out: 24055
-  - name: "case_56"
-    in:
-      n: 55324
-    out: 13826
-  - name: "case_57"
-    in:
-      n: 60659
-    out: 15161
-  - name: "case_58"
-    in:
-      n: 81518
-    out: 20377
-  - name: "case_59"
-    in:
-      n: 54363
-    out: 13586
-  - name: "case_60"
-    in:
-      n: 1980
-    out: 493
-  - name: "case_61"
-    in:
-      n: 54901
-    out: 13722
-  - name: "case_62"
-    in:
-      n: 43722
-    out: 10925
-  - name: "case_63"
-    in:
-      n: 75415
-    out: 18850
-  - name: "case_64"
-    in:
-      n: 17795
-    out: 4446
-  - name: "generated_01"
-    seed: 17201
+      n: 10000
+    out: 2499
+  - name: generated_random_small
+    seed: 172001
     in:
       n:
-        gen: "int"
+        gen: int
         min: 0
-        max: 100000
-  - name: "generated_02"
-    seed: 17202
+        max: 10000
+  - name: generated_random_medium
+    seed: 172002
     in:
       n:
-        gen: "int"
+        gen: int
         min: 0
-        max: 100000
-  - name: "generated_03"
-    seed: 17203
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 100000
-  - name: "generated_04"
-    seed: 17204
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 100000
-  - name: "generated_05"
-    seed: 17205
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 100000
-  - name: "generated_06"
-    seed: 17206
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 100000
-  - name: "generated_07"
-    seed: 17207
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 100000
-  - name: "generated_08"
-    seed: 17208
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 100000
+        max: 1000000

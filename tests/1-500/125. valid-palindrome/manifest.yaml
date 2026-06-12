@@ -1,470 +1,297 @@
 entry:
   id: 125
-  title: "valid-palindrome"
+  title: valid-palindrome
   params:
     s:
-      type: "string"
+      type: string
   call:
-    cpp: "Solution().isPalindrome({s})"
-    rust: "Solution::is_palindrome({s})"
-    python3: "Solution().isPalindrome({s})"
-    python2: "Solution().isPalindrome({s})"
-    ruby: "is_palindrome({s})"
-    java: "new Solution().isPalindrome({s})"
-    csharp: "new Solution().IsPalindrome({s})"
-    kotlin: "Solution().isPalindrome({s})"
-    go: "isPalindrome({s})"
-    dart: "Solution().isPalindrome({s})"
-    swift: "Solution().isPalindrome({s})"
-    typescript: "isPalindrome({s})"
+    cpp: Solution().isPalindrome({s})
+    rust: Solution::is_palindrome({s})
+    python3: Solution().isPalindrome({s})
+    python2: Solution().isPalindrome({s})
+    ruby: is_palindrome({s})
+    java: new Solution().isPalindrome({s})
+    csharp: new Solution().IsPalindrome({s})
+    kotlin: Solution().isPalindrome({s})
+    go: isPalindrome({s})
+    dart: Solution().isPalindrome({s})
+    swift: Solution().isPalindrome({s})
+    typescript: isPalindrome({s})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().isPalindrome(s, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution:
-          def isPalindrome(self, s: str) -> bool:
-              s = ''.join(c.lower() for c in s if c.isalnum())
-              return s == s[::-1]
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "bool"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def isPalindrome(self, s, result):
-              prepared_s = prepare_input(s, "string")
-              expected = Solution().isPalindrome(prepared_s)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().isPalindrome(s, {result})
+    checker: "class Checker:\n    def isPalindrome(self, s, result):\n        filtered = \"\".join(c.lower() for c in s if c.isalnum())\n        return result == (filtered == filtered[::-1])\n"
 seed: 125
 tests:
-  - name: "case_01"
+  - name: example_1
     in:
       s: "A man, a plan, a canal: Panama"
     out: true
-  - name: "case_02"
+    judge:
+      type: exact
+    seed: 1251
+  - name: example_2
     in:
-      s: "race a car"
+      s: race a car
     out: false
-  - name: "case_03"
+    judge:
+      type: exact
+    seed: 1252
+  - name: example_3_space_only
     in:
       s: " "
     out: true
-  - name: "case_04"
+    judge:
+      type: exact
+    seed: 1253
+  - name: single_letter
     in:
-      s: "hztj"
-    out: false
-  - name: "case_05"
-    in:
-      s: "xfletjtuac"
-    out: false
-  - name: "case_06"
-    in:
-      s: "uepqvnudyijf"
-    out: false
-  - name: "case_07"
-    in:
-      s: "fpebiwtu"
-    out: false
-  - name: "case_08"
-    in:
-      s: "nasuwywff"
-    out: false
-  - name: "case_09"
-    in:
-      s: "bn"
-    out: false
-  - name: "case_10"
-    in:
-      s: "zcmouqbpgt"
-    out: false
-  - name: "case_11"
-    in:
-      s: "xl"
-    out: false
-  - name: "case_12"
-    in:
-      s: "unyhanzrhx"
-    out: false
-  - name: "case_13"
-    in:
-      s: "upyshm"
-    out: false
-  - name: "case_14"
-    in:
-      s: "vqiwoqsxvj"
-    out: false
-  - name: "case_15"
-    in:
-      s: "lcdbnifot"
-    out: false
-  - name: "case_16"
-    in:
-      s: "olu"
-    out: false
-  - name: "case_17"
-    in:
-      s: "fwjdqht"
-    out: false
-  - name: "case_18"
-    in:
-      s: "vksmad"
-    out: false
-  - name: "case_19"
-    in:
-      s: "rfgx"
-    out: false
-  - name: "case_20"
-    in:
-      s: "os"
-    out: false
-  - name: "case_21"
-    in:
-      s: "gilwiivrky"
-    out: false
-  - name: "case_22"
-    in:
-      s: "onvxngssgo"
-    out: false
-  - name: "case_23"
-    in:
-      s: "qrzikhqb"
-    out: false
-  - name: "case_24"
-    in:
-      s: "pnoyftcqt"
-    out: false
-  - name: "case_25"
-    in:
-      s: "hcymzf"
-    out: false
-  - name: "case_26"
-    in:
-      s: "ofbspmqn"
-    out: false
-  - name: "case_27"
-    in:
-      s: "rnqcyd"
-    out: false
-  - name: "case_28"
-    in:
-      s: "zraasew"
-    out: false
-  - name: "case_29"
-    in:
-      s: "pgarvb"
-    out: false
-  - name: "case_30"
-    in:
-      s: "jo"
-    out: false
-  - name: "case_31"
-    in:
-      s: "osuy"
-    out: false
-  - name: "case_32"
-    in:
-      s: "cogbyohcz"
-    out: false
-  - name: "case_33"
-    in:
-      s: "tpfhm"
-    out: false
-  - name: "case_34"
-    in:
-      s: "prng"
-    out: false
-  - name: "case_35"
-    in:
-      s: "p"
+      s: a
     out: true
-  - name: "case_36"
+    judge:
+      type: exact
+    seed: 1254
+  - name: single_digit
     in:
-      s: "qanrcfkd"
-    out: false
-  - name: "case_37"
-    in:
-      s: "q"
+      s: "7"
     out: true
-  - name: "case_38"
+    judge:
+      type: exact
+    seed: 1255
+  - name: single_punctuation
     in:
-      s: "hundbobija"
-    out: false
-  - name: "case_39"
-    in:
-      s: "dcsnmv"
-    out: false
-  - name: "case_40"
-    in:
-      s: "gkfhvckht"
-    out: false
-  - name: "case_41"
-    in:
-      s: "gpparczae"
-    out: false
-  - name: "case_42"
-    in:
-      s: "xhhmhxxeggt"
-    out: false
-  - name: "case_43"
-    in:
-      s: "vqbpgz"
-    out: false
-  - name: "case_44"
-    in:
-      s: "wsulpywmlgo"
-    out: false
-  - name: "case_45"
-    in:
-      s: "awqbvaubx"
-    out: false
-  - name: "case_46"
-    in:
-      s: "sscky"
-    out: false
-  - name: "case_47"
-    in:
-      s: "eezklvkkfpvd"
-    out: false
-  - name: "case_48"
-    in:
-      s: "byzw"
-    out: false
-  - name: "case_49"
-    in:
-      s: "v"
+      s: .
     out: true
-  - name: "case_50"
+    judge:
+      type: exact
+    seed: 1256
+  - name: two_same_letters
     in:
-      s: "lh"
-    out: false
-  - name: "case_51"
-    in:
-      s: "adhwjyy"
-    out: false
-  - name: "case_52"
-    in:
-      s: "lgnjo"
-    out: false
-  - name: "case_53"
-    in:
-      s: "uyntfokx"
-    out: false
-  - name: "case_54"
-    in:
-      s: "hraczmfdj"
-    out: false
-  - name: "case_55"
-    in:
-      s: "i"
+      s: Aa
     out: true
-  - name: "case_56"
+    judge:
+      type: exact
+    seed: 1257
+  - name: two_different_letters
     in:
-      s: "dyz"
+      s: ab
     out: false
-  - name: "case_57"
+    judge:
+      type: exact
+    seed: 1258
+  - name: two_digits_palindrome
     in:
-      s: "dbokrvwciah"
-    out: false
-  - name: "case_58"
+      s: "11"
+    out: true
+    judge:
+      type: exact
+    seed: 1259
+  - name: two_digits_non_palindrome
     in:
-      s: "ldczzvufo"
+      s: "12"
     out: false
-  - name: "case_59"
+    judge:
+      type: exact
+    seed: 1260
+  - name: empty_after_filter
     in:
-      s: "vvlhxyxct"
-    out: false
-  - name: "case_60"
+      s: "!!!"
+    out: true
+    judge:
+      type: exact
+    seed: 1261
+  - name: classic_true_lowercase
     in:
-      s: "jgfdccxd"
-    out: false
-  - name: "case_61"
+      s: racecar
+    out: true
+    judge:
+      type: exact
+    seed: 1262
+  - name: classic_false_lowercase
     in:
-      s: "tzwnw"
+      s: racecarx
     out: false
-  - name: "case_62"
+    judge:
+      type: exact
+    seed: 1263
+  - name: mixed_case_true
     in:
-      s: "yjwgcpl"
-    out: false
-  - name: "case_63"
+      s: No lemon, no melon
+    out: true
+    judge:
+      type: exact
+    seed: 1264
+  - name: mixed_case_false
     in:
-      s: "yddics"
+      s: No lemon, no money
     out: false
-  - name: "case_64"
+    judge:
+      type: exact
+    seed: 1265
+  - name: punctuation_heavy_true
     in:
-      s: "nxhwsepd"
+      s: .,;:!?a!?::;.,
+    out: true
+    judge:
+      type: exact
+    seed: 1266
+  - name: punctuation_heavy_false
+    in:
+      s: .,;:!?ab!?::;.,
     out: false
-  - name: "generated_01"
-    seed: 12501
+    judge:
+      type: exact
+    seed: 1267
+  - name: numeric_true
+    in:
+      s: "12321"
+    out: true
+    judge:
+      type: exact
+    seed: 1268
+  - name: numeric_false
+    in:
+      s: "12341"
+    out: false
+    judge:
+      type: exact
+    seed: 1269
+  - name: alnum_with_spaces_true
+    in:
+      s: 1a2 2A1
+    out: true
+    judge:
+      type: exact
+    seed: 1270
+  - name: alnum_with_spaces_false
+    in:
+      s: 1a2 3A1
+    out: false
+    judge:
+      type: exact
+    seed: 1271
+  - name: odd_length_true
+    in:
+      s: ab@#ba
+    out: true
+    judge:
+      type: exact
+    seed: 1272
+  - name: odd_length_false
+    in:
+      s: ab@#ca
+    out: false
+    judge:
+      type: exact
+    seed: 1273
+  - name: case_sensitive_after_normalization_true
+    in:
+      s: Able was I, ere I saw Elba
+    out: true
+    judge:
+      type: exact
+    seed: 1274
+  - name: case_sensitive_after_normalization_false
+    in:
+      s: Able was I, ere I saw Elvis
+    out: false
+    judge:
+      type: exact
+    seed: 1275
+  - name: short_even_true
+    in:
+      s: xYyX
+    out: true
+    judge:
+      type: exact
+    seed: 1276
+  - name: short_even_false
+    in:
+      s: xYzX
+    out: false
+    judge:
+      type: exact
+    seed: 1277
+  - name: leading_trailing_spaces_true
+    in:
+      s: "   Madam, I'm Adam   "
+    out: true
+    judge:
+      type: exact
+    seed: 1278
+  - name: leading_trailing_spaces_false
+    in:
+      s: "   Madam, I'm Eve   "
+    out: false
+    judge:
+      type: exact
+    seed: 1279
+  - name: symbols_and_digits_true
+    in:
+      s: 0P0
+    out: true
+    judge:
+      type: exact
+    seed: 1280
+  - name: symbols_and_digits_false
+    in:
+      s: 0P1
+    out: false
+    judge:
+      type: exact
+    seed: 1281
+  - name: generated_all_symbols
     in:
       s:
-        gen: "str"
+        gen: str
         len:
-          gen: "int"
-          min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
-  - name: "generated_02"
-    seed: 12502
+          gen: int
+          min: 200000
+          max: 200000
+        alphabet: "!"
+    seed: 1282
+  - name: generated_all_a
     in:
       s:
-        gen: "str"
+        gen: str
         len:
-          gen: "int"
-          min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
-  - name: "generated_03"
-    seed: 12503
+          gen: int
+          min: 199999
+          max: 199999
+        alphabet: a
+    seed: 1283
+  - name: generated_random_ascii_short
     in:
       s:
-        gen: "str"
+        gen: str
         len:
-          gen: "int"
+          gen: int
           min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
-  - name: "generated_04"
-    seed: 12504
+          max: 50000
+        alphabet: ab1!
+    seed: 1284
+  - name: generated_random_ascii_large
     in:
       s:
-        gen: "str"
+        gen: str
         len:
-          gen: "int"
-          min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
-  - name: "generated_05"
-    seed: 12505
+          gen: int
+          min: 150000
+          max: 200000
+        alphabet: "Ab3, "
+    seed: 1285
+  - name: generated_uppercase_only
     in:
       s:
-        gen: "str"
+        gen: str
         len:
-          gen: "int"
-          min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
-  - name: "generated_06"
-    seed: 12506
-    in:
-      s:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
-  - name: "generated_07"
-    seed: 12507
-    in:
-      s:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
-  - name: "generated_08"
-    seed: 12508
-    in:
-      s:
-        gen: "str"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        alphabet: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:;!?"
+          gen: int
+          min: 200000
+          max: 200000
+        alphabet: Z
+    seed: 1286

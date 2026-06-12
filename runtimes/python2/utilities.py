@@ -1,7 +1,6 @@
 import json
 import datetime as _dt
 
-
 class TreeNode(object):
     def __init__(self, val=0, left=None, right=None):
         self.val = val
@@ -77,11 +76,7 @@ def to_json(obj):
 def _to_builtin(obj):
     if obj is None or isinstance(obj, (bool, int, float, str, unicode)):
         return obj
-    if (
-        isinstance(obj, _dt.datetime)
-        or isinstance(obj, _dt.date)
-        or isinstance(obj, _dt.time)
-    ):
+    if isinstance(obj, _dt.datetime) or isinstance(obj, _dt.date) or isinstance(obj, _dt.time):
         return obj.isoformat()
     if isinstance(obj, dict):
         out = {}

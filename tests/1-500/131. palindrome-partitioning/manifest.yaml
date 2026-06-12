@@ -1,371 +1,350 @@
 entry:
   id: 131
-  title: "palindrome-partitioning"
+  title: palindrome-partitioning
   params:
     s:
-      type: "string"
+      type: string
   call:
-    cpp: "Solution().partition({s})"
-    rust: "Solution::partition({s})"
-    python3: "Solution().partition({s})"
-    python2: "Solution().partition({s})"
-    ruby: "partition({s})"
-    java: "new Solution().partition({s})"
-    csharp: "new Solution().Partition({s})"
-    kotlin: "Solution().partition({s})"
-    go: "partition({s})"
-    dart: "Solution().partition({s})"
-    swift: "Solution().partition({s})"
-    typescript: "partition({s})"
+    cpp: Solution().partition({s})
+    rust: Solution::partition({s})
+    python3: Solution().partition({s})
+    python2: Solution().partition({s})
+    ruby: partition({s})
+    java: new Solution().partition({s})
+    csharp: new Solution().Partition({s})
+    kotlin: Solution().partition({s})
+    go: partition({s})
+    dart: Solution().partition({s})
+    swift: Solution().partition({s})
+    typescript: partition({s})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 200
+  memory_mb: 300
 oracle:
   python3:
-    call: "Checker().partition(s, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution:
-          def partition(self, s: str) -> List[List[str]]:
-              self.n = len(s)
-              res = []
-              self.backtrack(s, 0, [], res)
-              return res
-
-          def backtrack(self, s, idx, path, res):
-              if idx == self.n:
-                  res.append(path[:])
-                  return
-
-              for i in range(idx, len(s)):
-                  if self.is_palindrome(s, idx, i):
-                      path.append(s[idx:i+1])
-                      self.backtrack(s, i+1, path, res)
-                      path.pop()
-
-          def is_palindrome(self, s, l, r):
-              while l < r:
-                  if s[l] != s[r]:
-                      return False
-                  l += 1
-                  r -= 1
-              return True
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "array[array[string]]"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def partition(self, s, result):
-              prepared_s = prepare_input(s, "string")
-              expected = Solution().partition(prepared_s)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
-seed: 131
+    call: Checker().partition(s, {result})
+    checker:
+      "from typing import Any, List\n\nclass Checker:\n    def partition(self, s: str, result: Any) -> bool:\n        if not isinstance(result, list):\n            return False\n\n        expected = set()\n\n        def build(idx: int, path: List[str]) -> None:\n            if idx == len(s):\n                expected.add(tuple(path))\n                return\n            for end in range(idx + 1, len(s) + 1):\n                piece = s[idx:end]\n                if piece == piece[::-1]:\n                    path.append(piece)\n                    build(end, path)\n                    path.pop()\n\n        build(0, [])\n\n        seen = set()\n        for partition in result:\n            if not isinstance(partition, list):\n                return False\n            if tuple(partition) in seen:\n                return False\n            seen.add(tuple(partition))\n            if \"\".join(partition) != s:\n                return False\n            for piece in partition:\n          \
+      \      if not isinstance(piece, str):\n                    return False\n                if piece == \"\" or piece != piece[::-1]:\n                    return False\n\n        return seen == expected\n"
+seed: 131131
 tests:
-  - name: "case_01"
-    in:
-      s: "aab"
-  - name: "case_02"
-    in:
-      s: "a"
-  - name: "case_03"
-    in:
-      s: "lyqcmj"
-  - name: "case_04"
-    in:
-      s: "m"
-  - name: "case_05"
-    in:
-      s: "ls"
-  - name: "case_06"
-    in:
-      s: "dwfhwwrvxo"
-  - name: "case_07"
-    in:
-      s: "xghrbxfo"
-  - name: "case_08"
-    in:
-      s: "szxgunxxcaxy"
-  - name: "case_09"
-    in:
-      s: "inuceycf"
-  - name: "case_10"
-    in:
-      s: "zt"
-  - name: "case_11"
-    in:
-      s: "dyrtmg"
-  - name: "case_12"
-    in:
-      s: "tpz"
-  - name: "case_13"
-    in:
-      s: "axfoja"
-  - name: "case_14"
-    in:
-      s: "n"
-  - name: "case_15"
-    in:
-      s: "kyc"
-  - name: "case_16"
-    in:
-      s: "rsgznucq"
-  - name: "case_17"
-    in:
-      s: "cyenqmmo"
-  - name: "case_18"
-    in:
-      s: "izl"
-  - name: "case_19"
-    in:
-      s: "eiyzcwwbjbz"
-  - name: "case_20"
-    in:
-      s: "gl"
-  - name: "case_21"
-    in:
-      s: "zeoienqe"
-  - name: "case_22"
-    in:
-      s: "ubaqliogh"
-  - name: "case_23"
-    in:
-      s: "b"
-  - name: "case_24"
-    in:
-      s: "vshgolx"
-  - name: "case_25"
-    in:
-      s: "wi"
-  - name: "case_26"
-    in:
-      s: "pktqzvzsufzk"
-  - name: "case_27"
-    in:
-      s: "nphvbyxfsf"
-  - name: "case_28"
-    in:
-      s: "lecwweqttmxz"
-  - name: "case_29"
-    in:
-      s: "sfphutqjc"
-  - name: "case_30"
-    in:
-      s: "dmqgbbjarv"
-  - name: "case_31"
-    in:
-      s: "edwvidgtlx"
-  - name: "case_32"
-    in:
-      s: "au"
-  - name: "case_33"
-    in:
-      s: "vtvzemzsnf"
-  - name: "case_34"
-    in:
-      s: "kconhjzmcynf"
-  - name: "case_35"
-    in:
-      s: "i"
-  - name: "case_36"
-    in:
-      s: "dk"
-  - name: "case_37"
-    in:
-      s: "ijjbdcnprhvc"
-  - name: "case_38"
-    in:
-      s: "kj"
-  - name: "case_39"
-    in:
-      s: "yeucarhywe"
-  - name: "case_40"
-    in:
-      s: "gckq"
-  - name: "case_41"
-    in:
-      s: "gdqcpwjhmmy"
-  - name: "case_42"
-    in:
-      s: "geqvfhmu"
-  - name: "case_43"
-    in:
-      s: "blnctdlic"
-  - name: "case_44"
-    in:
-      s: "wqgzqupy"
-  - name: "case_45"
-    in:
-      s: "uhlcw"
-  - name: "case_46"
-    in:
-      s: "rvugjyhzwz"
-  - name: "case_47"
-    in:
-      s: "yonfldc"
-  - name: "case_48"
-    in:
-      s: "dojjmc"
-  - name: "case_49"
-    in:
-      s: "rej"
-  - name: "case_50"
-    in:
-      s: "fvijppswu"
-  - name: "case_51"
-    in:
-      s: "xldzjn"
-  - name: "case_52"
-    in:
-      s: "iivzaojajxg"
-  - name: "case_53"
-    in:
-      s: "wclbmblxz"
-  - name: "case_54"
-    in:
-      s: "maffqfkug"
-  - name: "case_55"
-    in:
-      s: "olmk"
-  - name: "case_56"
-    in:
-      s: "yocpdlewqx"
-  - name: "case_57"
-    in:
-      s: "amfet"
-  - name: "case_58"
-    in:
-      s: "h"
-  - name: "case_59"
-    in:
-      s: "tiwrbu"
-  - name: "case_60"
-    in:
-      s: "og"
-  - name: "case_61"
-    in:
-      s: "ezkkpjukeb"
-  - name: "case_62"
-    in:
-      s: "ndmhzg"
-  - name: "case_63"
-    in:
-      s: "zdzsqc"
-  - name: "case_64"
-    in:
-      s: "hdut"
-  - name: "case_65"
-    in:
-      s: "luwtaw"
-  - name: "case_66"
-    in:
-      s: "arnrh"
-  - name: "case_67"
-    in:
-      s: "icmdggbbo"
-  - name: "case_68"
-    in:
-      s: "gz"
-  - name: "case_69"
-    in:
-      s: "zai"
-  - name: "case_70"
-    in:
-      s: "ebohl"
-  - name: "case_71"
-    in:
-      s: "lytkojioad"
-  - name: "case_72"
-    in:
-      s: "cdtl"
+  - name: example_aab
+    in:
+      s: aab
+  - name: example_single
+    in:
+      s: a
+  - name: edge_two_distinct
+    in:
+      s: ab
+  - name: edge_two_same
+    in:
+      s: aa
+  - name: small_even_palindrome
+    in:
+      s: abba
+  - name: small_odd_palindrome
+    in:
+      s: racecar
+  - name: repeated_pattern
+    in:
+      s: ababab
+  - name: max_all_same
+    in:
+      s: aaaaaaaaaaaaaaaa
+  - name: max_mixed_palindrome
+    in:
+      s: abbaabbaabbaabba
+  - name: gen_len1_a
+    seed: 1001
+    in:
+      s:
+        gen: str
+        len: 1
+        alphabet: abc
+  - name: gen_len2_ab
+    seed: 1002
+    in:
+      s:
+        gen: str
+        len: 2
+        alphabet: abc
+  - name: gen_len3_small
+    seed: 1003
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 3
+          max: 3
+        alphabet: abc
+  - name: gen_len4_small
+    seed: 1004
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 4
+          max: 4
+        alphabet: abc
+  - name: gen_len5_small
+    seed: 1005
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 5
+          max: 5
+        alphabet: abc
+  - name: gen_len6_small
+    seed: 1006
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 6
+          max: 6
+        alphabet: abc
+  - name: gen_len7_small
+    seed: 1007
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 7
+          max: 7
+        alphabet: abc
+  - name: gen_len8_small
+    seed: 1008
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 8
+          max: 8
+        alphabet: abc
+  - name: gen_len9_medium
+    seed: 1009
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 9
+          max: 9
+        alphabet: abcd
+  - name: gen_len10_medium
+    seed: 1010
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 10
+          max: 10
+        alphabet: abcd
+  - name: gen_len11_medium
+    seed: 1011
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 11
+          max: 11
+        alphabet: abcd
+  - name: gen_len12_medium
+    seed: 1012
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 12
+          max: 12
+        alphabet: abcd
+  - name: gen_len13_medium
+    seed: 1013
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 13
+          max: 13
+        alphabet: abcd
+  - name: gen_len14_medium
+    seed: 1014
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 14
+          max: 14
+        alphabet: abcd
+  - name: gen_len15_large
+    seed: 1015
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 15
+          max: 15
+        alphabet: abcd
+  - name: gen_len16_large
+    seed: 1016
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 16
+          max: 16
+        alphabet: abcd
+  - name: gen_len16_binary
+    seed: 1017
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 16
+          max: 16
+        alphabet: ab
+  - name: gen_len16_abc
+    seed: 1018
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 16
+          max: 16
+        alphabet: abc
+  - name: gen_len12_binary
+    seed: 1019
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 12
+          max: 12
+        alphabet: ab
+  - name: gen_len10_binary
+    seed: 1020
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 10
+          max: 10
+        alphabet: ab
+  - name: gen_len8_binary
+    seed: 1021
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 8
+          max: 8
+        alphabet: ab
+  - name: gen_len6_binary
+    seed: 1022
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 6
+          max: 6
+        alphabet: ab
+  - name: gen_len4_binary
+    seed: 1023
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 4
+          max: 4
+        alphabet: ab
+  - name: gen_len3_binary
+    seed: 1024
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 3
+          max: 3
+        alphabet: ab
+  - name: gen_len2_binary
+    seed: 1025
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 2
+          max: 2
+        alphabet: ab
+  - name: gen_len1_binary
+    seed: 1026
+    in:
+      s:
+        gen: str
+        len: 1
+        alphabet: ab
+  - name: gen_len7_abc
+    seed: 1027
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 7
+          max: 7
+        alphabet: abc
+  - name: gen_len9_abc
+    seed: 1028
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 9
+          max: 9
+        alphabet: abc
+  - name: gen_len11_abc
+    seed: 1029
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 11
+          max: 11
+        alphabet: abc
+  - name: gen_len13_abc
+    seed: 1030
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 13
+          max: 13
+        alphabet: abc

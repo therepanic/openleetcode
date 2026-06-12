@@ -3,7 +3,7 @@ entry:
   title: "reverse-linked-list"
   params:
     head:
-      type: "list_node"
+      type: list_node
   call:
     cpp: "listNodeToArray(Solution().reverseList({head}))"
     rust: "ListNode::list_node_to_array(Solution::reverse_list({head}))"
@@ -20,471 +20,532 @@ entry:
 judge:
   type: "exact"
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
     call: "Checker().reverseList(head, {result})"
     checker: |
-      import copy
-
-      from typing import Optional
-
-      class Solution:
-          def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-              prev = None
-              current = head
-              while current is not None:
-                  next_node = current.next
-                  current.next = prev
-                  prev = current
-                  current = next_node
-              return prev
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "list_node"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
       class Checker:
           def reverseList(self, head, result):
-              prepared_head = prepare_input(head, "list_node")
-              expected = Solution().reverseList(prepared_head)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+              if head is None:
+                  expected = []
+              else:
+                  expected = list(head)[::-1]
+
+              if result is None:
+                  actual = []
+              elif isinstance(result, list):
+                  actual = result
+              else:
+                  actual = []
+                  seen = 0
+                  node = result
+                  while node is not None:
+                      actual.append(getattr(node, "val", None))
+                      node = getattr(node, "next", None)
+                      seen += 1
+                      if seen > 20000:
+                          return False
+
+              return actual == expected
 seed: 206
 tests:
-  - name: "case_01"
-    in:
-      head: [1, 2, 3, 4, 5]
-    out: [5, 4, 3, 2, 1]
-  - name: "case_02"
-    in:
-      head: [1, 2]
-    out: [2, 1]
-  - name: "case_03"
-    in:
-      head: []
-    out: []
-  - name: "case_04"
-    in:
-      head: [-1, -6]
-    out: [-6, -1]
-  - name: "case_05"
-    in:
-      head: [13, -12, 12, -8, -12, -5, -3, 7]
-    out: [7, -3, -5, -12, -8, 12, -12, 13]
-  - name: "case_06"
-    in:
-      head: [-7, 12, 9]
-    out: [9, 12, -7]
-  - name: "case_07"
-    in:
-      head: [-16, -18]
-    out: [-18, -16]
-  - name: "case_08"
-    in:
-      head: [-13, -12, -17, -16, -14]
-    out: [-14, -16, -17, -12, -13]
-  - name: "case_09"
-    in:
-      head: [20, -18, -20]
-    out: [-20, -18, 20]
-  - name: "case_10"
-    in:
-      head: [-9, 11, -6, 6, -5, -3, 18, 0, -5, -14, -11, -4, -8, 3, -15]
-    out: [-15, 3, -8, -4, -11, -14, -5, 0, 18, -3, -5, 6, -6, 11, -9]
-  - name: "case_11"
-    in:
-      head: [12, -10, -13]
-    out: [-13, -10, 12]
-  - name: "case_12"
-    in:
-      head: [-9, -18, 16, -2, 12, 3]
-    out: [3, 12, -2, 16, -18, -9]
-  - name: "case_13"
-    in:
-      head: [-11, -7, -5]
-    out: [-5, -7, -11]
-  - name: "case_14"
-    in:
-      head: [2]
-    out: [2]
-  - name: "case_15"
-    in:
-      head: [-18, -18, 9, -9, 12, 11, 16, 13, -7, -10, 13, -15, 20]
-    out: [20, -15, 13, -10, -7, 13, 16, 11, 12, -9, 9, -18, -18]
-  - name: "case_16"
-    in:
-      head: [16, 10, -20, 6, -16, 17, -9, -6, 19, -7, -19, 0, 1, 7]
-    out: [7, 1, 0, -19, -7, 19, -6, -9, 17, -16, 6, -20, 10, 16]
-  - name: "case_17"
-    in:
-      head: [8, 4, 20]
-    out: [20, 4, 8]
-  - name: "case_18"
-    in:
-      head: [12, 12, -8, 17, 11, -15, 18, 13, -3, 5, -17, 9, 12]
-    out: [12, 9, -17, 5, -3, 13, 18, -15, 11, 17, -8, 12, 12]
-  - name: "case_19"
-    in:
-      head: [11, 20, -12, 8, 14, 12, 20, -5, 3, 2, -20, -9]
-    out: [-9, -20, 2, 3, -5, 20, 12, 14, 8, -12, 20, 11]
-  - name: "case_20"
-    in:
-      head: [-19, -3, 17, -2, -7, 8, 6, 20, 5]
-    out: [5, 20, 6, 8, -7, -2, 17, -3, -19]
-  - name: "case_21"
-    in:
-      head: [-8, 3, 4, 13, 1, 9, -16, -8, 13, 19]
-    out: [19, 13, -8, -16, 9, 1, 13, 4, 3, -8]
-  - name: "case_22"
-    in:
-      head: [-7]
-    out: [-7]
-  - name: "case_23"
-    in:
-      head: [-17, 2, -11, -4]
-    out: [-4, -11, 2, -17]
-  - name: "case_24"
-    in:
-      head: [20, 6]
-    out: [6, 20]
-  - name: "case_25"
-    in:
-      head: [-5, -18, 8, -7, 8, -16, 5, 8, 1, 6, -12, -4]
-    out: [-4, -12, 6, 1, 8, 5, -16, 8, -7, 8, -18, -5]
-  - name: "case_26"
-    in:
-      head: [1, 0, 11, 4, 18, -14, -4, 18, 16, -9, 6]
-    out: [6, -9, 16, 18, -4, -14, 18, 4, 11, 0, 1]
-  - name: "case_27"
-    in:
-      head: [-19, -3, 19, 0, -5, 10, 3, -4, -4, 7, 1, -16, -17, 1]
-    out: [1, -17, -16, 1, 7, -4, -4, 3, 10, -5, 0, 19, -3, -19]
-  - name: "case_28"
-    in:
-      head: [-19, -10, -20, 7, 12, -9, 12, -1]
-    out: [-1, 12, -9, 12, 7, -20, -10, -19]
-  - name: "case_29"
-    in:
-      head: [-13, -12, 13, 4]
-    out: [4, 13, -12, -13]
-  - name: "case_30"
-    in:
-      head: [-17, -7, 0, -15, 3, -10, -10, -3, -18, -18, 19]
-    out: [19, -18, -18, -3, -10, -10, 3, -15, 0, -7, -17]
-  - name: "case_31"
-    in:
-      head: [7, -14, -20, 18, 9, 0, 9, 20, -9, -15, -6, -2]
-    out: [-2, -6, -15, -9, 20, 9, 0, 9, 18, -20, -14, 7]
-  - name: "case_32"
-    in:
-      head: [-6, 19, -14, -9, 11, -6, 3]
-    out: [3, -6, 11, -9, -14, 19, -6]
-  - name: "case_33"
-    in:
-      head: [-9, 9, -10]
-    out: [-10, 9, -9]
-  - name: "case_34"
-    in:
-      head: [0, -4, 18, 11]
-    out: [11, 18, -4, 0]
-  - name: "case_35"
-    in:
-      head: [-6, -10, 9, 8, -15, -11, 5, -10, 19, -1, 19, -4, 4]
-    out: [4, -4, 19, -1, 19, -10, 5, -11, -15, 8, 9, -10, -6]
-  - name: "case_36"
-    in:
-      head: [12, 5, -5, 8, 15]
-    out: [15, 8, -5, 5, 12]
-  - name: "case_37"
-    in:
-      head: [-9, 2, 9, 3, -18, 8, -17, 0, 17]
-    out: [17, 0, -17, 8, -18, 3, 9, 2, -9]
-  - name: "case_38"
-    in:
-      head: [-10, 15, 1, -8, 4, 4, 19]
-    out: [19, 4, 4, -8, 1, 15, -10]
-  - name: "case_39"
-    in:
-      head: [-15, -3, 17, -20, 11]
-    out: [11, -20, 17, -3, -15]
-  - name: "case_40"
-    in:
-      head: [-10, 14, -2, -7, 17, 13, 3, -14, -12, -1, 8, 2, 20, 6, 20]
-    out: [20, 6, 20, 2, 8, -1, -12, -14, 3, 13, 17, -7, -2, 14, -10]
-  - name: "case_41"
-    in:
-      head: [-16, -8, 2, 14]
-    out: [14, 2, -8, -16]
-  - name: "case_42"
-    in:
-      head: [2, 9, 4, 15, 0, -4, 12, -9, 15, 0, -6, 18, -15, -14, -7]
-    out: [-7, -14, -15, 18, -6, 0, 15, -9, 12, -4, 0, 15, 4, 9, 2]
-  - name: "case_43"
-    in:
-      head: [4, -6, 20]
-    out: [20, -6, 4]
-  - name: "case_44"
-    in:
-      head: [-10, 16, 11, 13, -16, -15]
-    out: [-15, -16, 13, 11, 16, -10]
-  - name: "case_45"
-    in:
-      head: [5, 15, -18, -5, -12, -18, -18, 16, 7, 0]
-    out: [0, 7, 16, -18, -18, -12, -5, -18, 15, 5]
-  - name: "case_46"
-    in:
-      head: [-14, 10, -17, 2, 0, 11, 12, 10, -15, -7, -19, -5]
-    out: [-5, -19, -7, -15, 10, 12, 11, 0, 2, -17, 10, -14]
-  - name: "case_47"
-    in:
-      head: [-7, 1, -18, -1, 2, -20, -12, 4, 18, 15, 13, 10, 8, 11]
-    out: [11, 8, 10, 13, 15, 18, 4, -12, -20, 2, -1, -18, 1, -7]
-  - name: "case_48"
-    in:
-      head: [16, 12, -9, 13, 14, 16, 16, -15, 6, -13, 0]
-    out: [0, -13, 6, -15, 16, 16, 14, 13, -9, 12, 16]
-  - name: "case_49"
-    in:
-      head: [0, -3, 3, 20, -14, 4, 15, 0, 8, -11, 16, 8, -14, -7]
-    out: [-7, -14, 8, 16, -11, 8, 0, 15, 4, -14, 20, 3, -3, 0]
-  - name: "case_50"
-    in:
-      head: [13, -11, 5, -17]
-    out: [-17, 5, -11, 13]
-  - name: "case_51"
-    in:
-      head: [14, -19, -7, 1, -16, 2, -4, 11, -1, 17, -10]
-    out: [-10, 17, -1, 11, -4, 2, -16, 1, -7, -19, 14]
-  - name: "case_52"
-    in:
-      head: [1]
-    out: [1]
-  - name: "case_53"
-    in:
-      head: [-13, 3, 15, 5, 20, -11, -19]
-    out: [-19, -11, 20, 5, 15, 3, -13]
-  - name: "case_54"
-    in:
-      head: [0, 13, 1, 17, -2, 18, 3, -10, -12, -4]
-    out: [-4, -12, -10, 3, 18, -2, 17, 1, 13, 0]
-  - name: "case_55"
-    in:
-      head: [-3, -18, -3, 14, -1, 4, 14, 15, -1, -15, -5, -2]
-    out: [-2, -5, -15, -1, 15, 14, 4, -1, 14, -3, -18, -3]
-  - name: "case_56"
-    in:
-      head: [-4, -1, 18, 3, 6, -14, 11, -8, 20, 15, -11, 8, 11, 10, 12]
-    out: [12, 10, 11, 8, -11, 15, 20, -8, 11, -14, 6, 3, 18, -1, -4]
-  - name: "case_57"
-    in:
-      head: [-9, 7, -14, -6, 20, -13, -9, 6]
-    out: [6, -9, -13, 20, -6, -14, 7, -9]
-  - name: "case_58"
-    in:
-      head: [11, 20, 18, 15, 1, 12, 11, 0, -18, 16]
-    out: [16, -18, 0, 11, 12, 1, 15, 18, 20, 11]
-  - name: "case_59"
-    in:
-      head: [-9, -2, -11, -11, 20, 16, 11, -16, 9, 15, 14, -3, 2, 5]
-    out: [5, 2, -3, 14, 15, 9, -16, 11, 16, 20, -11, -11, -2, -9]
-  - name: "case_60"
-    in:
-      head: [-12, 9, 2, -12, -6, 7, 1, -19, 4, 18, -5, 9, 8, 9]
-    out: [9, 8, 9, -5, 18, 4, -19, 1, 7, -6, -12, 2, 9, -12]
-  - name: "case_61"
-    in:
-      head: [7, 1, 7, 16, 16, 1, 20, -8, 6, 11, 15, -6, -3, -12]
-    out: [-12, -3, -6, 15, 11, 6, -8, 20, 1, 16, 16, 7, 1, 7]
-  - name: "case_62"
-    in:
-      head: [4, -19, 15, -13]
-    out: [-13, 15, -19, 4]
-  - name: "case_63"
-    in:
-      head: [8, -2, 14, 6, 15, -15, -14, 3, -15, 17]
-    out: [17, -15, 3, -14, -15, 15, 6, 14, -2, 8]
-  - name: "case_64"
-    in:
-      head: [-15, 19, 17, -1, -10, 9, -2, -5, -16, -19, 16, -15, -5, 17]
-    out: [17, -5, -15, 16, -19, -16, -5, -2, 9, -10, -1, 17, 19, -15]
-  - name: "generated_01"
-    seed: 20601
+  - name: "example1"
     in:
       head:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 0
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_02"
-    seed: 20602
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out:
+      - 5
+      - 4
+      - 3
+      - 2
+      - 1
+  - name: "example2"
     in:
       head:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 0
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_03"
-    seed: 20603
+        - 1
+        - 2
+    out:
+      - 2
+      - 1
+  - name: "example3_empty"
+    in:
+      head: null
+    out: null
+  - name: "single_node"
     in:
       head:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 0
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_04"
-    seed: 20604
+        - 7
+    out:
+      - 7
+  - name: "two_nodes_ascending"
     in:
       head:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 0
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_05"
-    seed: 20605
+        - 1
+        - 2
+    out:
+      - 2
+      - 1
+  - name: "two_nodes_descending"
     in:
       head:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 0
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_06"
-    seed: 20606
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+  - name: "three_nodes"
     in:
       head:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 0
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_07"
-    seed: 20607
+        - 1
+        - 2
+        - 3
+    out:
+      - 3
+      - 2
+      - 1
+  - name: "odd_length_five"
     in:
       head:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 0
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_08"
-    seed: 20608
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: "already_reversed_five"
     in:
       head:
-        gen: "array"
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out:
+      - 5
+      - 4
+      - 3
+      - 2
+      - 1
+  - name: "all_same_three"
+    in:
+      head:
+        - 9
+        - 9
+        - 9
+    out:
+      - 9
+      - 9
+      - 9
+  - name: "contains_zero"
+    in:
+      head:
+        - 0
+        - 1
+        - 0
+    out:
+      - 0
+      - 1
+      - 0
+  - name: "negative_values"
+    in:
+      head:
+        - -1
+        - -2
+        - -3
+        - -4
+    out:
+      - -4
+      - -3
+      - -2
+      - -1
+  - name: "mixed_signs"
+    in:
+      head:
+        - 3
+        - -1
+        - 4
+        - -2
+        - 5
+    out:
+      - 5
+      - -2
+      - 4
+      - -1
+      - 3
+  - name: "alternating_small"
+    in:
+      head:
+        - 1
+        - -1
+        - 2
+        - -2
+        - 3
+        - -3
+    out:
+      - -3
+      - 3
+      - -2
+      - 2
+      - -1
+      - 1
+  - name: "duplicates_small"
+    in:
+      head:
+        - 4
+        - 4
+        - 2
+        - 2
+        - 1
+        - 1
+    out:
+      - 1
+      - 1
+      - 2
+      - 2
+      - 4
+      - 4
+  - name: "head_tail_symmetric"
+    in:
+      head:
+        - 8
+        - 3
+        - 3
+        - 8
+    out:
+      - 8
+      - 3
+      - 3
+      - 8
+  - name: "longer_even"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+    out:
+      - 8
+      - 7
+      - 6
+      - 5
+      - 4
+      - 3
+      - 2
+      - 1
+  - name: "longer_odd"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+    out:
+      - 9
+      - 8
+      - 7
+      - 6
+      - 5
+      - 4
+      - 3
+      - 2
+      - 1
+  - name: "boundary_values"
+    in:
+      head:
+        - -5000
+        - 0
+        - 5000
+    out:
+      - 5000
+      - 0
+      - -5000
+  - name: "boundary_values_reversed"
+    in:
+      head:
+        - 5000
+        - 0
+        - -5000
+    out:
+      - -5000
+      - 0
+      - 5000
+  - name: "palindrome_shape"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - 3
+      - 2
+      - 1
+  - name: "valley_shape"
+    in:
+      head:
+        - 9
+        - 7
+        - 5
+        - 3
+        - 1
+    out:
+      - 1
+      - 3
+      - 5
+      - 7
+      - 9
+  - name: "peak_shape"
+    in:
+      head:
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+    out:
+      - 9
+      - 7
+      - 5
+      - 3
+      - 1
+  - name: "small_random_one"
+    in:
+      head:
+        - 6
+        - 1
+        - 8
+        - 0
+        - -3
+        - 4
+    out:
+      - 4
+      - -3
+      - 0
+      - 8
+      - 1
+      - 6
+  - name: "small_random_two"
+    in:
+      head:
+        - -4
+        - 11
+        - 2
+        - -9
+        - 7
+    out:
+      - 7
+      - -9
+      - 2
+      - 11
+      - -4
+  - name: "remove_no_nodes"
+    in:
+      head: null
+    out: null
+  - name: "two_zeroes"
+    in:
+      head:
+        - 0
+        - 0
+    out:
+      - 0
+      - 0
+  - name: "repeated_pattern"
+    in:
+      head:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out:
+      - 2
+      - 1
+      - 2
+      - 1
+      - 2
+      - 1
+  - name: "long_block_of_equals"
+    in:
+      head:
+        - 4
+        - 4
+        - 4
+        - 4
+        - 4
+        - 4
+        - 4
+    out:
+      - 4
+      - 4
+      - 4
+      - 4
+      - 4
+      - 4
+      - 4
+  - name: "small_increasing_with_zero"
+    in:
+      head:
+        - -1
+        - 0
+        - 1
+        - 2
+    out:
+      - 2
+      - 1
+      - 0
+      - -1
+  - name: "descending_with_duplicates"
+    in:
+      head:
+        - 5
+        - 5
+        - 4
+        - 3
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - 3
+      - 3
+      - 4
+      - 5
+      - 5
+  - name: "extreme_pair"
+    in:
+      head:
+        - -5000
+        - 5000
+    out:
+      - 5000
+      - -5000
+  - name: "three_same_then_one"
+    in:
+      head:
+        - 2
+        - 2
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - 2
+      - 2
+  - name: "four_nodes_mixed"
+    in:
+      head:
+        - 10
+        - -10
+        - 20
+        - -20
+    out:
+      - -20
+      - 20
+      - -10
+      - 10
+  - name: "six_nodes_mixed"
+    in:
+      head:
+        - 13
+        - 7
+        - -2
+        - 0
+        - 7
+        - 13
+    out:
+      - 13
+      - 7
+      - 0
+      - -2
+      - 7
+      - 13
+  - name: "generated_medium_random"
+    seed: 206001
+    in:
+      head:
+        gen: array
         len:
-          gen: "int"
-          min: 0
-          max: 2000
+          gen: int
+          min: 64
+          max: 64
         of:
-          gen: "int"
-          min: -1000
-          max: 1000
+          gen: int
+          min: -5000
+          max: 5000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated_large_random_one"
+    seed: 206002
+    in:
+      head:
+        gen: array
+        len:
+          gen: int
+          min: 5000
+          max: 5000
+        of:
+          gen: int
+          min: -5000
+          max: 5000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated_large_random_two"
+    seed: 206003
+    in:
+      head:
+        gen: array
+        len:
+          gen: int
+          min: 5000
+          max: 5000
+        of:
+          gen: int
+          min: -5000
+          max: 5000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated_large_constant"
+    seed: 206004
+    in:
+      head:
+        gen: array
+        len:
+          gen: int
+          min: 5000
+          max: 5000
+        of:
+          gen: int
+          min: 1234
+          max: 1234
+        distinct: false
+        sorted: false
+        elemType: "int"

@@ -3,7 +3,7 @@ entry:
   title: "binary-tree-level-order-traversal-ii"
   params:
     root:
-      type: "tree_node"
+      type: tree_node
   call:
     cpp: "Solution().levelOrderBottom({root})"
     rust: "Solution::level_order_bottom({root})"
@@ -20,25 +20,20 @@ entry:
 judge:
   type: "exact"
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
     call: "Checker().levelOrderBottom(root, {result})"
     checker: |
-      import copy
-
-      from typing import List, Optional
-
       from collections import deque
 
-
-      class Solution:
-          def levelOrderBottom(self, root: Optional[TreeNode]) -> List[List[int]]:
+      class Checker:
+          def levelOrderBottom(self, root, result) -> bool:
               if root is None:
-                  return []
+                  return result == []
 
-              result = deque()
+              expected = deque()
               queue = deque([root])
               while queue:
                   level = []
@@ -49,996 +44,551 @@ oracle:
                           queue.append(node.left)
                       if node.right is not None:
                           queue.append(node.right)
-                  result.appendleft(level)
-              return list(result)
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "array[array[int]]"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def levelOrderBottom(self, root, result):
-              prepared_root = prepare_input(root, "tree_node")
-              expected = Solution().levelOrderBottom(prepared_root)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+                  expected.appendleft(level)
+              return result == list(expected)
 seed: 107
 tests:
-  - name: "case_01"
+  - name: "example_tree"
     in:
-      root: [3, 9, 20, null, null, 15, 7]
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
     out:
       - [15, 7]
       - [9, 20]
       - [3]
-  - name: "case_02"
+  - name: "single_node"
     in:
-      root: [1]
+      root:
+        - 1
     out:
       - [1]
-  - name: "case_03"
+  - name: "empty_tree"
     in:
       root: []
     out: []
-  - name: "case_04"
-    in:
-      root: [9, 4, 0, 4, -6, -8, -1, -3]
-    out:
-      - [-3]
-      - [4, -6, -8, -1]
-      - [4, 0]
-      - [9]
-  - name: "case_05"
-    in:
-      root: [9]
-    out:
-      - [9]
-  - name: "case_06"
+  - name: "two_children"
     in:
       root:
-        [
-          -5,
-          -6,
-          null,
-          null,
-          -5,
-          -7,
-          4,
-          -2,
-          null,
-          0,
-          -8,
-          0,
-          null,
-          null,
-          null,
-          5,
-          -3,
-          6,
-        ]
+        - 1
+        - 2
+        - 3
     out:
-      - [6]
-      - [0, 5, -3]
-      - [-2, 0, -8]
-      - [-7, 4]
-      - [-5]
-      - [-6]
-      - [-5]
-  - name: "case_07"
-    in:
-      root: [8, 7, -9, 9, null, -6, 1, -9, 8, 0, 3, 2, 9, -2, 3, 4]
-    out:
-      - [-2, 3, 4]
-      - [-9, 8, 0, 3, 2, 9]
-      - [9, -6, 1]
-      - [7, -9]
-      - [8]
-  - name: "case_08"
-    in:
-      root: [4, 4, 4, 0]
-    out:
-      - [0]
-      - [4, 4]
-      - [4]
-  - name: "case_09"
-    in:
-      root: [-5, 3, 1]
-    out:
-      - [3, 1]
-      - [-5]
-  - name: "case_10"
-    in:
-      root: [6, null, 7, 1, 0]
-    out:
-      - [1, 0]
-      - [7]
-      - [6]
-  - name: "case_11"
-    in:
-      root: [-6]
-    out:
-      - [-6]
-  - name: "case_12"
-    in:
-      root: [9, null, -8, -6, null, -4, 5, 4, -9, -4, null, 2, 0, null, -5]
-    out:
-      - [2, 0, -5]
-      - [4, -9, -4]
-      - [-4, 5]
-      - [-6]
-      - [-8]
-      - [9]
-  - name: "case_13"
-    in:
-      root: [-5, -2, -7, -5, -8, 5]
-    out:
-      - [-5, -8, 5]
-      - [-2, -7]
-      - [-5]
-  - name: "case_14"
-    in:
-      root:
-        [
-          5,
-          2,
-          -3,
-          null,
-          -2,
-          null,
-          -6,
-          -8,
-          null,
-          -1,
-          -3,
-          -1,
-          null,
-          -1,
-          -6,
-          6,
-          -5,
-          null,
-          1,
-          null,
-          5,
-        ]
-    out:
-      - [1, 5]
-      - [-1, -1, -6, 6, -5]
-      - [-8, -1, -3]
-      - [-2, -6]
-      - [2, -3]
-      - [5]
-  - name: "case_15"
-    in:
-      root: [1, 7, 4, null, 6, 7, 1, -2, -6, -7]
-    out:
-      - [-2, -6, -7]
-      - [6, 7, 1]
-      - [7, 4]
+      - [2, 3]
       - [1]
-  - name: "case_16"
-    in:
-      root: [-8]
-    out:
-      - [-8]
-  - name: "case_17"
-    in:
-      root: [-6, -9, 5, 4, -5, 4, -1, null, -8, 7, null, -5]
-    out:
-      - [-8, 7, -5]
-      - [4, -5, 4, -1]
-      - [-9, 5]
-      - [-6]
-  - name: "case_18"
+  - name: "left_skewed_4"
     in:
       root:
-        [
-          1,
-          5,
-          3,
-          6,
-          null,
-          null,
-          null,
-          -9,
-          null,
-          1,
-          4,
-          8,
-          0,
-          -1,
-          6,
-          9,
-          5,
-          -1,
-          -5,
-          6,
-          -2,
-          -5,
-        ]
-    out:
-      - [9, 5, -1, -5, 6, -2, -5]
-      - [8, 0, -1, 6]
-      - [1, 4]
-      - [-9]
-      - [6]
-      - [5, 3]
-      - [1]
-  - name: "case_19"
-    in:
-      root: [-7, -3, null, null, -4, -6, -9, -4, 5, -9, 2, 0]
-    out:
-      - [0]
-      - [-4, 5, -9, 2]
-      - [-6, -9]
-      - [-4]
-      - [-3]
-      - [-7]
-  - name: "case_20"
-    in:
-      root: [5]
-    out:
-      - [5]
-  - name: "case_21"
-    in:
-      root: [-1, null, 6, -1, -5, -5, 4, 1, -3, 3, -3, -5, -2]
-    out:
-      - [3, -3, -5, -2]
-      - [-5, 4, 1, -3]
-      - [-1, -5]
-      - [6]
-      - [-1]
-  - name: "case_22"
-    in:
-      root:
-        [0, 1, -9, -8, null, -2, 0, 5, -3, null, 5, -7, -5, 8, -9, 5, -9, -5]
-    out:
-      - [8, -9, 5, -9, -5]
-      - [5, -3, 5, -7, -5]
-      - [-8, -2, 0]
-      - [1, -9]
-      - [0]
-  - name: "case_23"
-    in:
-      root: [-8, -8, null, 9, -8]
-    out:
-      - [9, -8]
-      - [-8]
-      - [-8]
-  - name: "case_24"
-    in:
-      root: [5, null, 6, -5, null, -6, -2, -3, 3, 8, null, 4]
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
     out:
       - [4]
-      - [-3, 3, 8]
-      - [-6, -2]
-      - [-5]
-      - [6]
-      - [5]
-  - name: "case_25"
-    in:
-      root: [-5, null, -5, -2, -4, -8, 7, -2, 1, -5, -8, 5, null, -9, 6]
-    out:
-      - [-5, -8, 5, -9, 6]
-      - [-8, 7, -2, 1]
-      - [-2, -4]
-      - [-5]
-      - [-5]
-  - name: "case_26"
-    in:
-      root: [-3]
-    out:
-      - [-3]
-  - name: "case_27"
-    in:
-      root: [-5, 8, 4, -2, null, -3, 4, 2, 3, 0, -4, -8, 7, null, 1, null, -5]
-    out:
-      - [1, -5]
-      - [2, 3, 0, -4, -8, 7]
-      - [-2, -3, 4]
-      - [8, 4]
-      - [-5]
-  - name: "case_28"
-    in:
-      root: [7]
-    out:
-      - [7]
-  - name: "case_29"
-    in:
-      root: [3, -5, null, 6]
-    out:
-      - [6]
-      - [-5]
       - [3]
-  - name: "case_30"
-    in:
-      root:
-        [
-          7,
-          -9,
-          3,
-          2,
-          1,
-          -8,
-          -2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          5,
-          -1,
-          3,
-          -6,
-          -6,
-          -2,
-          9,
-          -5,
-          -1,
-        ]
-    out:
-      - [-6, -6, -2, 9, -5, -1]
-      - [5, -1, 3]
-      - [2, 1, -8, -2]
-      - [-9, 3]
-      - [7]
-  - name: "case_31"
-    in:
-      root: [-3, 7, -7, -5, 5, -5]
-    out:
-      - [-5, 5, -5]
-      - [7, -7]
-      - [-3]
-  - name: "case_32"
-    in:
-      root: [6, 5, null, 3, -4, -4, -6, 6, null, 6, 6, 2, -6, 5, 3, -9]
-    out:
-      - [-9]
-      - [6, 6, 2, -6, 5, 3]
-      - [-4, -6, 6]
-      - [3, -4]
-      - [5]
-      - [6]
-  - name: "case_33"
-    in:
-      root: [-1, 9, 9, -8, -4, null, -7, 8, -5, -8, 8]
-    out:
-      - [8, -5, -8, 8]
-      - [-8, -4, -7]
-      - [9, 9]
-      - [-1]
-  - name: "case_34"
-    in:
-      root: [0, 1, -7, 3, 9, -1, null, 9, -2, null, 1]
-    out:
-      - [9, -2, 1]
-      - [3, 9, -1]
-      - [1, -7]
-      - [0]
-  - name: "case_35"
-    in:
-      root: [3]
-    out:
-      - [3]
-  - name: "case_36"
-    in:
-      root: [-6, 3, -7, -1, null, 5, -1, 4, 8, 2, -7]
-    out:
-      - [4, 8, 2, -7]
-      - [-1, 5, -1]
-      - [3, -7]
-      - [-6]
-  - name: "case_37"
-    in:
-      root: [-6, 5, null, 2, 6, -3]
-    out:
-      - [-3]
-      - [2, 6]
-      - [5]
-      - [-6]
-  - name: "case_38"
-    in:
-      root: [-2, -1, -4, 0, 0, null, -3, 3]
-    out:
-      - [3]
-      - [0, 0, -3]
-      - [-1, -4]
-      - [-2]
-  - name: "case_39"
-    in:
-      root: [4, 2, 8, -9, 6, -3, -1, -1, 1, 5, 5, -6]
-    out:
-      - [-1, 1, 5, 5, -6]
-      - [-9, 6, -3, -1]
-      - [2, 8]
-      - [4]
-  - name: "case_40"
-    in:
-      root: [-7, -5, -8, -1, -5, -6]
-    out:
-      - [-1, -5, -6]
-      - [-5, -8]
-      - [-7]
-  - name: "case_41"
-    in:
-      root: [7, 1, 9, 7, null, -6, 1, 1, 2, -4]
-    out:
-      - [1, 2, -4]
-      - [7, -6, 1]
-      - [1, 9]
-      - [7]
-  - name: "case_42"
-    in:
-      root: [4, -6]
-    out:
-      - [-6]
-      - [4]
-  - name: "case_43"
-    in:
-      root: [-4, -7, 0, null, 2, 2, 8, -6, 5, 9, -2]
-    out:
-      - [-6, 5, 9, -2]
-      - [2, 2, 8]
-      - [-7, 0]
-      - [-4]
-  - name: "case_44"
-    in:
-      root: [-9, 9, 4, null, -5, 6, -7, 3, 0, -6, 8, 5, 6, -8, 8]
-    out:
-      - [-8, 8]
-      - [3, 0, -6, 8, 5, 6]
-      - [-5, 6, -7]
-      - [9, 4]
-      - [-9]
-  - name: "case_45"
-    in:
-      root: [0, -4, -3, null, 8, 6, 5, 2, null, -5, 6, 9, 0, 6, -6]
-    out:
-      - [6, -6]
-      - [2, -5, 6, 9, 0]
-      - [8, 6, 5]
-      - [-4, -3]
-      - [0]
-  - name: "case_46"
-    in:
-      root:
-        [
-          -7,
-          -3,
-          -6,
-          9,
-          7,
-          0,
-          8,
-          9,
-          5,
-          null,
-          2,
-          -3,
-          -8,
-          null,
-          -7,
-          null,
-          null,
-          null,
-          -5,
-          null,
-          -1,
-          -5,
-          8,
-          -6,
-          5,
-        ]
-    out:
-      - [-5, -1, -5, 8, -6, 5]
-      - [9, 5, 2, -3, -8, -7]
-      - [9, 7, 0, 8]
-      - [-3, -6]
-      - [-7]
-  - name: "case_47"
-    in:
-      root: [8]
-    out:
-      - [8]
-  - name: "case_48"
-    in:
-      root: [8, -1, 7, -8]
-    out:
-      - [-8]
-      - [-1, 7]
-      - [8]
-  - name: "case_49"
-    in:
-      root: [7, 0, -1, -2, -9, 5, -3, -8, null, -8, 5, 2, -1]
-    out:
-      - [-8, -8, 5, 2, -1]
-      - [-2, -9, 5, -3]
-      - [0, -1]
-      - [7]
-  - name: "case_50"
-    in:
-      root: [-3, 3, -6, -4, null, -6, null, null, null, -6, -9, -9, -1, null, 9]
-    out:
-      - [-9, -1, 9]
-      - [-6, -9]
-      - [-4, -6]
-      - [3, -6]
-      - [-3]
-  - name: "case_51"
-    in:
-      root:
-        [
-          -4,
-          1,
-          -7,
-          -8,
-          -9,
-          -9,
-          null,
-          null,
-          null,
-          null,
-          -3,
-          4,
-          null,
-          7,
-          -4,
-          4,
-          6,
-          null,
-          null,
-          -8,
-          8,
-          -8,
-          4,
-        ]
-    out:
-      - [-8, 8, -8, 4]
-      - [7, -4, 4, 6]
-      - [-3, 4]
-      - [-8, -9, -9]
-      - [1, -7]
-      - [-4]
-  - name: "case_52"
-    in:
-      root:
-        [
-          3,
-          -4,
-          4,
-          -1,
-          -3,
-          -1,
-          null,
-          8,
-          7,
-          null,
-          null,
-          1,
-          9,
-          null,
-          6,
-          -1,
-          null,
-          -5,
-          8,
-          1,
-          6,
-          -4,
-          -6,
-          null,
-          3,
-        ]
-    out:
-      - [-4, -6, 3]
-      - [6, -1, -5, 8, 1, 6]
-      - [8, 7, 1, 9]
-      - [-1, -3, -1]
-      - [-4, 4]
-      - [3]
-  - name: "case_53"
-    in:
-      root: [7, -8, 5, null, -2, null, null, null, -7, -3, 7, null, 3, -8, 7]
-    out:
-      - [3, -8, 7]
-      - [-3, 7]
-      - [-7]
-      - [-2]
-      - [-8, 5]
-      - [7]
-  - name: "case_54"
-    in:
-      root: [4]
-    out:
-      - [4]
-  - name: "case_55"
-    in:
-      root: [-8, null, 8, 5, 0, -2, null, null, 3, 4, null, null, -8, -8]
-    out:
-      - [-8]
-      - [4, -8]
-      - [-2, 3]
-      - [5, 0]
-      - [8]
-      - [-8]
-  - name: "case_56"
-    in:
-      root:
-        [
-          8,
-          8,
-          -7,
-          null,
-          8,
-          -6,
-          3,
-          -8,
-          1,
-          null,
-          -9,
-          -3,
-          3,
-          null,
-          8,
-          -7,
-          null,
-          -9,
-          -5,
-          null,
-          null,
-          -7,
-          -9,
-          6,
-        ]
-    out:
-      - [6]
-      - [8, -7, -9, -5, -7, -9]
-      - [-8, 1, -9, -3, 3]
-      - [8, -6, 3]
-      - [8, -7]
-      - [8]
-  - name: "case_57"
-    in:
-      root: [0]
-    out:
-      - [0]
-  - name: "case_58"
-    in:
-      root: [9, -5, -6, 0, 1, -4, -9, 8, 7, null, null, 3, 6]
-    out:
-      - [8, 7, 3, 6]
-      - [0, 1, -4, -9]
-      - [-5, -6]
-      - [9]
-  - name: "case_59"
-    in:
-      root: [1, -3, 0, 7, -9, null, 7, 4, -8, 4, -5, 8, 7]
-    out:
-      - [4, -8, 4, -5, 8, 7]
-      - [7, -9, 7]
-      - [-3, 0]
-      - [1]
-  - name: "case_60"
-    in:
-      root: [-8, -6, -3, -7, -1, 7, -9]
-    out:
-      - [-7, -1, 7, -9]
-      - [-6, -3]
-      - [-8]
-  - name: "case_61"
-    in:
-      root:
-        [
-          -2,
-          -1,
-          -2,
-          -5,
-          -6,
-          -1,
-          3,
-          0,
-          -2,
-          -4,
-          -1,
-          3,
-          null,
-          -9,
-          -9,
-          null,
-          -3,
-          null,
-          null,
-          null,
-          null,
-          -2,
-          2,
-          null,
-          5,
-        ]
-    out:
-      - [-3, -2, 2, 5]
-      - [0, -2, -4, -1, 3, -9, -9]
-      - [-5, -6, -1, 3]
-      - [-1, -2]
-      - [-2]
-  - name: "case_62"
-    in:
-      root: [6, 9]
-    out:
-      - [9]
-      - [6]
-  - name: "case_63"
-    in:
-      root: [5, 6, 8, null, 2, 1, -9]
-    out:
-      - [2, 1, -9]
-      - [6, 8]
-      - [5]
-  - name: "case_64"
-    in:
-      root: [5, 5]
-    out:
-      - [5]
-      - [5]
-  - name: "case_65"
-    in:
-      root:
-        [
-          6,
-          null,
-          3,
-          9,
-          -7,
-          2,
-          7,
-          7,
-          null,
-          7,
-          2,
-          9,
-          -4,
-          4,
-          null,
-          null,
-          -5,
-          4,
-          6,
-          -4,
-        ]
-    out:
-      - [-5, 4, 6, -4]
-      - [7, 2, 9, -4, 4]
-      - [2, 7, 7]
-      - [9, -7]
-      - [3]
-      - [6]
-  - name: "case_66"
-    in:
-      root: [-7, -5, -8]
-    out:
-      - [-5, -8]
-      - [-7]
-  - name: "case_67"
-    in:
-      root:
-        [
-          7,
-          1,
-          -7,
-          null,
-          null,
-          0,
-          -9,
-          -3,
-          8,
-          4,
-          -2,
-          null,
-          null,
-          4,
-          9,
-          6,
-          2,
-          -5,
-          null,
-          -2,
-          0,
-        ]
-    out:
-      - [-2, 0]
-      - [4, 9, 6, 2, -5]
-      - [-3, 8, 4, -2]
-      - [0, -9]
-      - [1, -7]
-      - [7]
-  - name: "case_68"
-    in:
-      root:
-        [
-          -4,
-          -1,
-          null,
-          null,
-          3,
-          -5,
-          7,
-          null,
-          -6,
-          2,
-          1,
-          -1,
-          1,
-          8,
-          -4,
-          2,
-          null,
-          -3,
-          -1,
-        ]
-    out:
-      - [-3, -1]
-      - [-1, 1, 8, -4, 2]
-      - [-6, 2, 1]
-      - [-5, 7]
-      - [3]
-      - [-1]
-      - [-4]
-  - name: "case_69"
-    in:
-      root:
-        [
-          -2,
-          9,
-          null,
-          -4,
-          null,
-          2,
-          null,
-          9,
-          -6,
-          -3,
-          -7,
-          -5,
-          2,
-          -2,
-          5,
-          4,
-          3,
-          -7,
-          7,
-          null,
-          9,
-          -2,
-          2,
-          -9,
-        ]
-    out:
-      - [-2, 2, -9]
-      - [-2, 5, 4, 3, -7, 7, 9]
-      - [-3, -7, -5, 2]
-      - [9, -6]
       - [2]
-      - [-4]
-      - [9]
-      - [-2]
-  - name: "case_70"
-    in:
-      root: [7, 7, -7, -4]
-    out:
-      - [-4]
-      - [7, -7]
-      - [7]
-  - name: "case_71"
-    in:
-      root: [1, -3, -1]
-    out:
-      - [-3, -1]
       - [1]
-  - name: "case_72"
+  - name: "right_skewed_4"
     in:
       root:
-        [
-          -3,
-          null,
-          -5,
-          null,
-          4,
-          1,
-          7,
-          3,
-          8,
-          7,
-          0,
-          9,
-          -7,
-          0,
-          8,
-          4,
-          null,
-          -8,
-          8,
-          -8,
-        ]
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
     out:
-      - [-8]
-      - [9, -7, 0, 8, 4, -8, 8]
-      - [3, 8, 7, 0]
-      - [1, 7]
       - [4]
-      - [-5]
+      - [3]
+      - [2]
+      - [1]
+  - name: "perfect_tree_height_2"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out:
+      - [4, 5, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "missing_left_in_right_subtree"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+    out:
+      - [4, 5]
+      - [2, 3]
+      - [1]
+  - name: "missing_right_in_left_subtree"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+    out:
+      - [4, 5]
+      - [2, 3]
+      - [1]
+  - name: "sparse_mixed_tree"
+    in:
+      root:
+        - 10
+        - 6
+        - 15
+        - 3
+        - 8
+        - null
+        - 20
+        - null
+        - 4
+        - 7
+        - 9
+        - null
+        - null
+        - 18
+        - 25
+    out:
+      - [18, 25]
+      - [4, 7, 9]
+      - [3, 8, 20]
+      - [6, 15]
+      - [10]
+  - name: "negative_values"
+    in:
+      root:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+        - -7
+    out:
+      - [-4, -5, -6, -7]
+      - [-2, -3]
+      - [-1]
+  - name: "duplicate_values"
+    in:
+      root:
+        - 5
+        - 5
+        - 5
+        - 5
+        - null
+        - 5
+        - 5
+    out:
+      - [5, 5, 5]
+      - [5, 5]
+      - [5]
+  - name: "deep_left_branch_with_leaf"
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "deep_right_branch_with_leaf"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "wide_third_level"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - [8, 9, 10, 11, 12, 13, 14, 15]
+      - [4, 5, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "alternating_missing_children"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - null
+        - null
+        - null
+        - 7
+    out:
+      - [7]
+      - [5, 6]
+      - [2, 3]
+      - [1]
+  - name: "complete_five_levels"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+    out:
+      - [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+      - [8, 9, 10, 11, 12, 13, 14, 15]
+      - [4, 5, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "sparse_second_level"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - 7
+        - 8
+        - 9
+        - null
+        - null
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - [14, 15]
+      - [8, 9, 12, 13]
+      - [4, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "left_turning_path"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "right_turning_path"
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "mixed_gaps_small"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+    out:
+      - [4, 5]
+      - [2, 3]
+      - [1]
+  - name: "example_with_repeated_leaf_values"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 4
+        - 4
+        - 4
+    out:
+      - [4, 4, 4, 4]
+      - [2, 3]
+      - [1]
+  - name: "all_left_children_5"
+    in:
+      root:
+        - 9
+        - 8
+        - null
+        - 7
+        - null
+        - 6
+        - null
+        - 5
+    out:
+      - [5]
+      - [6]
+      - [7]
+      - [8]
+      - [9]
+  - name: "all_right_children_5"
+    in:
+      root:
+        - 9
+        - null
+        - 8
+        - null
+        - 7
+        - null
+        - 6
+        - null
+        - 5
+    out:
+      - [5]
+      - [6]
+      - [7]
+      - [8]
+      - [9]
+  - name: "balanced_with_holes"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 14
+        - 15
+    out:
+      - [8]
+      - [4, 7]
+      - [2, 3]
+      - [1]
+  - name: "small_sparse_two_levels"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out:
+      - [2]
+      - [1]
+  - name: "small_sparse_left"
+    in:
+      root:
+        - 1
+        - 2
+    out:
+      - [2]
+      - [1]
+  - name: "small_sparse_right"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+    out:
+      - [3]
+      - [2]
+      - [1]
+  - name: "deeper_branching_left_heavy"
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 3
+        - null
+        - 7
+        - 9
+        - 2
+    out:
+      - [2]
+      - [3, 7, 9]
+      - [4, 8]
+      - [5]
+  - name: "deeper_branching_right_heavy"
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - null
+        - 3
+        - 7
+        - 9
+        - null
+        - null
+        - 6
+    out:
+      - [6]
+      - [3, 7, 9]
+      - [4, 8]
+      - [5]
+  - name: "bushy_bottom_level"
+    in:
+      root:
+        - 11
+        - 7
+        - 15
+        - 3
+        - 9
+        - 13
+        - 18
+        - 1
+        - 4
+        - 8
+        - 10
+        - 12
+        - 14
+        - 16
+        - 20
+    out:
+      - [1, 4, 8, 10, 12, 14, 16, 20]
+      - [3, 9, 13, 18]
+      - [7, 15]
+      - [11]
+  - name: "large_sparse_chain_mix"
+    in:
+      root:
+        - 0
+        - -1
+        - 1
+        - -2
+        - null
+        - null
+        - 2
+        - -3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 3
+        - 4
+    out:
       - [-3]
+      - [-2, 2]
+      - [-1, 1]
+      - [0]
+  - name: "one_more_example_shape"
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+        - 1
+        - null
+        - null
+        - 2
+    out:
+      - [1, 2]
+      - [15, 7]
+      - [9, 20]
+      - [3]

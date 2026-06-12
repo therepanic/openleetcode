@@ -1,485 +1,451 @@
 entry:
   id: 129
-  title: "sum-root-to-leaf-numbers"
+  title: sum-root-to-leaf-numbers
   params:
     root:
-      type: "tree_node"
+      type: tree_node
   call:
-    cpp: "Solution().sumNumbers({root})"
-    rust: "Solution::sum_numbers({root})"
-    python3: "Solution().sumNumbers({root})"
-    python2: "Solution().sumNumbers({root})"
-    ruby: "sum_numbers({root})"
-    java: "new Solution().sumNumbers({root})"
-    csharp: "new Solution().SumNumbers({root})"
-    kotlin: "Solution().sumNumbers({root})"
-    go: "sumNumbers({root})"
-    dart: "Solution().sumNumbers({root})"
-    swift: "Solution().sumNumbers({root})"
-    typescript: "sumNumbers({root})"
+    cpp: Solution().sumNumbers({root})
+    rust: Solution::sum_numbers({root})
+    python3: Solution().sumNumbers({root})
+    python2: Solution().sumNumbers({root})
+    ruby: sum_numbers({root})
+    java: new Solution().sumNumbers({root})
+    csharp: new Solution().SumNumbers({root})
+    kotlin: Solution().sumNumbers({root})
+    go: sumNumbers({root})
+    dart: Solution().sumNumbers({root})
+    swift: Solution().sumNumbers({root})
+    typescript: sumNumbers({root})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().sumNumbers(root, {result})"
-    checker: |
-      import copy
-
-      from typing import Optional
-
-      class Solution:
-          def sumNumbers(self, root: Optional[TreeNode]) -> int:
-              def dfs(node: Optional[TreeNode], current: int) -> int:
-                  if node is None:
-                      return 0
-                  current = current * 10 + node.val
-                  if node.left is None and node.right is None:
-                      return current
-                  return dfs(node.left, current) + dfs(node.right, current)
-
-              return dfs(root, 0)
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def sumNumbers(self, root, result):
-              prepared_root = prepare_input(root, "tree_node")
-              expected = Solution().sumNumbers(prepared_root)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().sumNumbers(root, {result})
+    checker: "class Node:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\nclass Checker:\n    def _to_tree(self, root):\n        if root is None or root == []:\n            return None\n        if hasattr(root, 'val'):\n            return root\n        if not isinstance(root, list) or not root or root[0] is None:\n            return None\n        tree_root = Node(root[0])\n        queue = [tree_root]\n        i = 1\n        while queue and i < len(root):\n            node = queue.pop(0)\n            if i < len(root) and root[i] is not None:\n                node.left = Node(root[i])\n                queue.append(node.left)\n            i += 1\n            if i < len(root) and root[i] is not None:\n                node.right = Node(root[i])\n                queue.append(node.right)\n            i += 1\n        return tree_root\n\n    def sumNumbers(self, root, result):\n        if not isinstance(result, int):\n            return False\n        root = self._to_tree(root)\n        def dfs(node, current):\n            if node is None:\n                return 0\n            current = current * 10 + node.val\n            if node.left is None and node.right is None:\n                return current\n            return dfs(node.left, current) + dfs(node.right, current)\n        return result == dfs(root, 0)\n"
 seed: 129
 tests:
-  - name: "case_01"
+  - name: example_1
     in:
-      root: [1, 2, 3]
+      root:
+        - 1
+        - 2
+        - 3
     out: 25
-  - name: "case_02"
+  - name: example_2
     in:
-      root: [4, 9, 0, 5, 1]
+      root:
+        - 4
+        - 9
+        - 0
+        - 5
+        - 1
     out: 1026
-  - name: "case_03"
+  - name: single_zero
     in:
-      root: [7, 1, 2, null, 8, 9, 9, 7, 5, null, 2]
-    out: 22393
-  - name: "case_04"
-    in:
-      root: [3, 1, 6, null, null, 5, 0, null, 9]
-    out: 4050
-  - name: "case_05"
-    in:
-      root: [4, null, 3, null, 1, 9, 4]
-    out: 8633
-  - name: "case_06"
-    in:
-      root: [7, null, 6, 6]
-    out: 766
-  - name: "case_07"
-    in:
-      root: [9, 0]
-    out: 90
-  - name: "case_08"
-    in:
-      root: [7, 1, null, null, 6, 2, 5, 6, 3, 1, 0, 4, 9, 8, 6, 1, null, 3]
-    out: 4298021
-  - name: "case_09"
-    in:
-      root: [8, 3, 3, 6, 3, 5, 1, 0, 5, null, null, 4, 0, 6, 2, 0, 5, 7, 5, 2]
-    out: 443870
-  - name: "case_10"
-    in:
-      root: [5, 9]
-    out: 59
-  - name: "case_11"
-    in:
-      root: [9, 8, null, 3, 3, 9, null, 5, 6, 8, 4, null, 2, 5, 7]
-    out: 491876
-  - name: "case_12"
-    in:
-      root: [3, 7, null, 7, 3, 5, 2, 7]
-    out: 11284
-  - name: "case_13"
-    in:
-      root: [3]
-    out: 3
-  - name: "case_14"
-    in:
-      root: [7, 6, 6]
-    out: 152
-  - name: "case_15"
-    in:
-      root: [7]
-    out: 7
-  - name: "case_16"
-    in:
-      root: [5, null, 4, null, 2, null, 5]
-    out: 5425
-  - name: "case_17"
-    in:
-      root: [3, 9, 6, 5, 3, 7, 6, 0, 3, 0, 2, 4, 8]
-    out: 23483
-  - name: "case_18"
-    in:
-      root: [0, 6, null, null, 7, 6]
-    out: 676
-  - name: "case_19"
-    in:
-      root: [9, 1, 0]
-    out: 181
-  - name: "case_20"
-    in:
-      root: [9]
-    out: 9
-  - name: "case_21"
-    in:
-      root: [9, null, 5, 9, 0, 9, 8, 7, 6, 8, 0, 5, 5, 5, 4, 4, 4, 7, 8, 3]
-    out: 3452125
-  - name: "case_22"
-    in:
-      root: [6, null, 4]
-    out: 64
-  - name: "case_23"
-    in:
-      root: [0, 8, 4, 3, 6, 6, 5, 8, 0, 1, 3, 5]
-    out: 3902
-  - name: "case_24"
-    in:
-      root: [8]
-    out: 8
-  - name: "case_25"
-    in:
-      root: [4, 0, 7, 3, 8, null, 7, 7, 4, 9]
-    out: 12637
-  - name: "case_26"
-    in:
-      root: [8, 5, 8, 5, null, 4, 0]
-    out: 2619
-  - name: "case_27"
-    in:
-      root: [9, 4, 5, 5, null, 0]
-    out: 1895
-  - name: "case_28"
-    in:
-      root: [0, 1, null, 4, 2, 8, null, null, null, 5, 7, 4, 7, 2]
-    out: 44595
-  - name: "case_29"
-    in:
-      root: [5, 0, 0, 4, null, 9]
-    out: 1013
-  - name: "case_30"
-    in:
-      root: [5, null, 1, null, 3, 2, 1, null, null, 7, 2, null, 0, null, 2]
-    out: 1031424
-  - name: "case_31"
-    in:
-      root: [4, null, 0, null, 7]
-    out: 407
-  - name: "case_32"
-    in:
-      root: [8, 0, null, 0, 7, null, 1, null, 7, 1, 0, null, 2, 0]
-    out: 960892
-  - name: "case_33"
-    in:
-      root: [9, 3, 8, 6, null, null, null, 3, 0, null, 4, 4, null, 3, 4, 6, 3]
-    out: 3744874
-  - name: "case_34"
-    in:
-      root: [3, 2, 4, 0]
-    out: 354
-  - name: "case_35"
-    in:
-      root: [7, 1, 4, null, 3, 2]
-    out: 1455
-  - name: "case_36"
-    in:
-      root: [5, 7]
-    out: 57
-  - name: "case_37"
-    in:
-      root: [6, 5, 7, 9, 7, 6, 4, 6, 9, 7, 0, 5, null, 4, 1]
-    out: 46592
-  - name: "case_38"
-    in:
-      root: [3, null, 4, 7]
-    out: 347
-  - name: "case_39"
-    in:
-      root: [4, 6, null, 0, 6, null, 0, 5, 4]
-    out: 13929
-  - name: "case_40"
-    in:
-      root: [6, 6, null, 0, 2, 3, 3, 0, 6, 1, 1, null, 4]
-    out: 211342
-  - name: "case_41"
-    in:
-      root: [4]
-    out: 4
-  - name: "case_42"
-    in:
-      root: [3, 7, 3, 6, 8, 9, 2, 0, 8, 9, 9, 6, null, 0]
-    out: 21822
-  - name: "case_43"
-    in:
-      root: [2, null, 8, 2, 0, null, 3, 0, null, null, 8, 2, null, 7, 0, 9, 6]
-    out: 1124822
-  - name: "case_44"
-    in:
-      root: [9, 7, 4, 0, 9, 7, 3, null, 6, 2, 2, null, 9, 3, 8, 8]
-    out: 145002
-  - name: "case_45"
-    in:
-      root: [3, 6, 2]
-    out: 68
-  - name: "case_46"
-    in:
-      root: [4, 1, 9, 0, 1, null, 7, 3, 3, 9, 2, 1, 2, 8]
-    out: 63315
-  - name: "case_47"
-    in:
-      root: [7, 3, 9, 1, null, 6, null, 1, 4, 8, 3, 3, 9, 1]
-    out: 235304
-  - name: "case_48"
-    in:
-      root: [4, null, 9, 8, 2, null, null, 0]
-    out: 5418
-  - name: "case_49"
-    in:
-      root: [2]
-    out: 2
-  - name: "case_50"
-    in:
-      root: [3, 2, 5, 9, 9, null, 5, 5, 4, 4, 1, 9]
-    out: 16733
-  - name: "case_51"
-    in:
-      root: [2, 2, 8, 5, null, 5, null, 6, 4]
-    out: 4795
-  - name: "case_52"
-    in:
-      root: [1, 4, null, null, 0, null, 0, 4, null, 0, 2, null, null, 2, 7]
-    out: 2940889
-  - name: "case_53"
-    in:
-      root: [8, 7, null, 3, null, 0]
-    out: 8730
-  - name: "case_54"
-    in:
-      root: [0]
+      root:
+        - 0
     out: 0
-  - name: "case_55"
+  - name: single_nine
     in:
       root:
-        [
-          9,
-          7,
-          5,
-          2,
-          null,
-          0,
-          7,
-          4,
-          null,
-          null,
-          4,
-          4,
-          null,
-          9,
-          null,
-          7,
-          4,
-          1,
-          3,
-          4,
-        ]
-    out: 1354069
-  - name: "case_56"
-    in:
-      root: [2, 7, 3, 8, 4]
-    out: 575
-  - name: "case_57"
-    in:
-      root: [0, 7, 4, 1, 3, 8, null, 7, null, 1, null, null, 2]
-    out: 1930
-  - name: "case_58"
-    in:
-      root: [6]
-    out: 6
-  - name: "case_59"
-    in:
-      root: [5]
-    out: 5
-  - name: "case_60"
-    in:
-      root: [5, 1, 4, 8, null, 4, 4, 4, 9, 9, 7, 7, 6]
-    out: 32162
-  - name: "case_61"
-    in:
-      root: [2, null, 8, 0, 9, 5, 0, 1, 7, 6, 3]
-    out: 64697
-  - name: "case_62"
-    in:
-      root: [1, 0, null, 7, null, 6, 8, 6, 7, 8, 7, 5, 0, null, 7, 1, 7]
-    out: 549557
-  - name: "case_63"
-    in:
-      root: [9, 3, null, 8, 7, 7, 4]
-    out: 19708
-  - name: "case_64"
-    in:
-      root: [1, 6]
-    out: 16
-  - name: "case_65"
-    in:
-      root: [8, null, 2, 1]
-    out: 821
-  - name: "case_66"
+        - 9
+    out: 9
+  - name: two_nodes_left
     in:
       root:
-        [
-          7,
-          5,
-          null,
-          9,
-          null,
-          null,
-          4,
-          null,
-          2,
-          5,
-          null,
-          0,
-          null,
-          5,
-          3,
-          4,
-          2,
-          0,
-          null,
-          4,
-        ]
-    out: 9113100626
-  - name: "case_67"
-    in:
-      root: [0, 8, 5, null, 3, null, 1, null, 2, 1, 8, null, 6, 7, 5, 0]
-    out: 23738
-  - name: "case_68"
-    in:
-      root: [9, 0, 6, 1, 7, 8]
-    out: 2776
-  - name: "case_69"
-    in:
-      root: [1, 6, null, null, 0]
-    out: 160
-  - name: "case_70"
-    in:
-      root: [7, 2, 8]
-    out: 150
-  - name: "case_71"
-    in:
-      root: [1, 2, 5, 4, 5, 4]
-    out: 403
-  - name: "case_72"
+        - 1
+        - 2
+    out: 12
+  - name: two_nodes_right
     in:
       root:
-        [
-          5,
-          0,
-          null,
-          8,
-          4,
-          6,
-          8,
-          7,
-          null,
-          null,
-          7,
-          5,
-          7,
-          4,
-          null,
-          7,
-          null,
-          null,
-          4,
-          1,
-        ]
-    out: 1576876
+        - 1
+        - null
+        - 2
+    out: 12
+  - name: full_depth_3
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out: 522
+  - name: left_chain_depth_4
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out: 1234
+  - name: right_chain_depth_4
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out: 1234
+  - name: zeros_full_tree
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 0
+  - name: zeros_sparse_tree
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 0
+        - 0
+    out: 1
+  - name: example_shape_with_missing_left
+    in:
+      root:
+        - 4
+        - 9
+        - 0
+        - 5
+        - 1
+        - null
+        - null
+    out: 1026
+  - name: example_shape_with_missing_right
+    in:
+      root:
+        - 4
+        - 9
+        - 0
+        - null
+        - 1
+    out: 531
+  - name: mixed_digits_small
+    in:
+      root:
+        - 2
+        - 1
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out: 902
+  - name: deeper_left_leaf
+    in:
+      root:
+        - 8
+        - 4
+        - 9
+        - 1
+        - 3
+        - 7
+        - 2
+    out: 3473
+  - name: deeper_right_leaf
+    in:
+      root:
+        - 8
+        - 4
+        - 9
+        - 1
+        - 3
+        - 7
+        - 2
+        - null
+        - 6
+    out: 11048
+  - name: balanced_with_missing_interior
+    in:
+      root:
+        - 3
+        - 1
+        - 5
+        - 0
+        - 2
+        - null
+        - 4
+    out: 976
+  - name: all_nines_depth_3
+    in:
+      root:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+    out: 3996
+  - name: all_ones_depth_4
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 8888
+  - name: left_heavy_with_right_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 5
+        - 6
+    out: 395
+  - name: right_heavy_with_left_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - 6
+    out: 395
+  - name: internal_nodes_do_not_count
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+    out: 259
+  - name: leaf_on_one_side_only
+    in:
+      root:
+        - 5
+        - 1
+        - null
+        - 2
+    out: 512
+  - name: depth_5_left_spine
+    in:
+      root:
+        - 7
+        - 8
+        - null
+        - 9
+        - null
+        - 1
+        - null
+        - 2
+    out: 78912
+  - name: depth_5_right_spine
+    in:
+      root:
+        - 7
+        - null
+        - 8
+        - null
+        - 9
+        - null
+        - 1
+        - null
+        - 2
+    out: 78912
+  - name: sparse_three_leaves
+    in:
+      root:
+        - 1
+        - 0
+        - 4
+        - 5
+        - 6
+        - null
+        - 7
+    out: 358
+  - name: sparse_with_zero_branch
+    in:
+      root:
+        - 2
+        - 0
+        - 1
+        - 0
+        - 9
+        - null
+        - 3
+    out: 622
+  - name: narrow_tree_depth_6
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+        - null
+        - 6
+    out: 123456
+  - name: narrow_tree_depth_7
+    in:
+      root:
+        - 9
+        - null
+        - 8
+        - null
+        - 7
+        - null
+        - 6
+        - null
+        - 5
+    out: 98765
+  - name: larger_complete_tree
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+    out: 17776
+  - name: another_large_complete_tree
+    in:
+      root:
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+    out: 26664
+  - name: alternating_digits_tree
+    in:
+      root:
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out: 422
+  - name: path_sum_with_multiple_leaves
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 444
+  - name: path_sum_with_mixed_depths
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - null
+        - 2
+        - 2
+    out: 666
+  - name: max_depth_ten_shape
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+        - null
+        - 6
+    out: 123456
+  - name: generated_full_tree_digits_15
+    seed: 129001
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 15
+          max: 15
+        of:
+          gen: int
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_full_tree_digits_31
+    seed: 129002
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 31
+          max: 31
+        of:
+          gen: int
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: int

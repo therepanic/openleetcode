@@ -1,428 +1,351 @@
 entry:
   id: 136
-  title: "single-number"
+  title: single-number
   params:
     nums:
-      type: "array"
+      type: array
       items:
-        type: "int"
+        type: int
   call:
-    cpp: "Solution().singleNumber({nums})"
-    rust: "Solution::single_number({nums})"
-    python3: "Solution().singleNumber({nums})"
-    python2: "Solution().singleNumber({nums})"
-    ruby: "single_number({nums})"
-    java: "new Solution().singleNumber({nums})"
-    csharp: "new Solution().SingleNumber({nums})"
-    kotlin: "Solution().singleNumber({nums})"
-    go: "singleNumber({nums})"
-    dart: "Solution().singleNumber({nums})"
-    swift: "Solution().singleNumber({nums})"
-    typescript: "singleNumber({nums})"
+    cpp: Solution().singleNumber({nums})
+    rust: Solution::single_number({nums})
+    python3: Solution().singleNumber({nums})
+    python2: Solution().singleNumber({nums})
+    ruby: single_number({nums})
+    java: new Solution().singleNumber({nums})
+    csharp: new Solution().SingleNumber({nums})
+    kotlin: Solution().singleNumber({nums})
+    go: singleNumber({nums})
+    dart: Solution().singleNumber({nums})
+    swift: Solution().singleNumber({nums})
+    typescript: singleNumber({nums})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 200
+  memory_mb: 300
 oracle:
   python3:
-    call: "Checker().singleNumber(nums, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution:
-          def singleNumber(self, nums: List[int]) -> int:
-              res = 0
-
-              for n in nums:
-                  res ^= n
-
-              return res
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def singleNumber(self, nums, result):
-              prepared_nums = prepare_input(nums, "array[int]")
-              expected = Solution().singleNumber(prepared_nums)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().singleNumber(nums, {result})
+    checker: "class Checker:\n    def singleNumber(self, nums, result):\n        if not isinstance(result, int):\n            return False\n        xor = 0\n        for n in nums:\n            if not isinstance(n, int):\n                return False\n            xor ^= n\n        return result == xor\n"
 seed: 136
 tests:
-  - name: "case_01"
+  - name: example_1
     in:
-      nums: [-4, 5, 3, 6, -9, 3, 6, -9, 5]
-    out: -4
-  - name: "case_02"
-    in:
-      nums: [-9, -4, -4, -2, -4, 9, -2, -9, 9, 9, -4]
-    out: 9
-  - name: "case_03"
-    in:
-      nums: [-4, 6, -4, -2, 6, -1, -1]
-    out: -2
-  - name: "case_04"
-    in:
-      nums: [7, 10, 6, 6, -3, 7, -10, 8, -10, 10, 8]
-    out: -3
-  - name: "case_05"
-    in:
-      nums: [-3, 10, 3, -3, 3, -4, 10]
-    out: -4
-  - name: "case_06"
-    in:
-      nums: [-6, 0, -6, 2, 0]
-    out: 2
-  - name: "case_07"
-    in:
-      nums: [4, 4, 5]
-    out: 5
-  - name: "case_08"
-    in:
-      nums: [-8, 0, -10, 0, 1, -10, 6, 6, 0, -8, 1]
-    out: 0
-  - name: "case_09"
-    in:
-      nums: [3, 3, 2]
-    out: 2
-  - name: "case_10"
-    in:
-      nums: [3, 10, 3, -7, -7]
-    out: 10
-  - name: "case_11"
-    in:
-      nums: [7, -10, -4, -7, -8, 4, 4, -10, -7, 7, -8]
-    out: -4
-  - name: "case_12"
-    in:
-      nums: [5, 6, -9, 6, -9]
-    out: 5
-  - name: "case_13"
-    in:
-      nums: [7, 0, 1, 0, 1]
-    out: 7
-  - name: "case_14"
-    in:
-      nums: [4, 0, -8, -8, -3, -3, 0, 2, 2]
-    out: 4
-  - name: "case_15"
-    in:
-      nums: [-4, -9, 3, -9, -9, 3, -9, -4, 1]
+      nums:
+        - 2
+        - 2
+        - 1
     out: 1
-  - name: "case_16"
+  - name: example_2
     in:
-      nums: [-9, -9, 0]
-    out: 0
-  - name: "case_17"
+      nums:
+        - 4
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 4
+  - name: example_3_singleton
     in:
-      nums: [4, 10, -3, 5, -5, 5, -5, 10, -3, -5, 4]
-    out: -5
-  - name: "case_18"
+      nums:
+        - 1
+    out: 1
+  - name: pair_then_single
     in:
-      nums: [5, 7, 5]
+      nums:
+        - 5
+        - 5
+        - 7
     out: 7
-  - name: "case_19"
+  - name: singleton_first
     in:
-      nums: [7, 3, 7]
-    out: 3
-  - name: "case_20"
+      nums:
+        - 9
+        - 3
+        - 3
+        - 4
+        - 4
+    out: 9
+  - name: singleton_last
     in:
-      nums: [1, -1, 5, -1, 5, -3, 1]
-    out: -3
-  - name: "case_21"
-    in:
-      nums: [8, -9, 1, 1, -9]
+      nums:
+        - 6
+        - 6
+        - 8
     out: 8
-  - name: "case_22"
+  - name: negative_singleton
     in:
-      nums: [-6, -4, 9, -6, -3, -4, -3]
-    out: 9
-  - name: "case_23"
+      nums:
+        - -1
+        - 2
+        - 2
+    out: -1
+  - name: mixed_signs
     in:
-      nums: [7, -7, 7]
-    out: -7
-  - name: "case_24"
-    in:
-      nums: [10, 3, 10, 7, 10, 10, 0, 7, 3]
+      nums:
+        - -2
+        - -2
+        - 0
+        - 7
+        - 7
     out: 0
-  - name: "case_25"
+  - name: zero_singleton
     in:
-      nums: [-7, 9, -1, -1, -7]
-    out: 9
-  - name: "case_26"
+      nums:
+        - 0
+        - 11
+        - 11
+    out: 0
+  - name: max_bound_singleton
     in:
-      nums: [-3, 4, 4]
-    out: -3
-  - name: "case_27"
+      nums:
+        - 30000
+        - 29999
+        - 29999
+    out: 30000
+  - name: min_bound_singleton
     in:
-      nums: [-8, 4, 8, 8, -8]
-    out: 4
-  - name: "case_28"
+      nums:
+        - -30000
+        - -123
+        - -123
+    out: -30000
+  - name: unsorted_pairs_small
     in:
-      nums: [9, 9, -2]
-    out: -2
-  - name: "case_29"
-    in:
-      nums: [0, 3, -6, 5, 0, 5, -6]
-    out: 3
-  - name: "case_30"
-    in:
-      nums: [-10, -10, 5, 9, 4, 4, 1, 5, 9, 4, 4]
+      nums:
+        - 10
+        - 1
+        - 10
+        - 2
+        - 2
     out: 1
-  - name: "case_31"
+  - name: odd_length_with_duplicates
     in:
-      nums: [-3, 7, 1, 1, 7, -3, 7, -6, -6, -6, 7]
-    out: -6
-  - name: "case_32"
+      nums:
+        - 42
+        - 17
+        - 42
+        - 17
+        - 23
+    out: 23
+  - name: adjacent_pairs
     in:
-      nums: [-2, -2, -2]
-    out: -2
-  - name: "case_33"
+      nums:
+        - 12
+        - 12
+        - -7
+        - -7
+        - 5
+    out: 5
+  - name: single_pair_and_unique
     in:
-      nums: [8, 1, -3, 1, 8]
-    out: -3
-  - name: "case_34"
+      nums:
+        - 100
+        - 200
+        - 200
+    out: 100
+  - name: larger_small_case
     in:
-      nums: [6, -7, -7, 1, 1]
-    out: 6
-  - name: "case_35"
+      nums:
+        - 8
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+    out: 8
+  - name: repeated_negative_pairs
     in:
-      nums: [10, -3, -8, -9, -7, -3, -9, -7, 10, -8, 6]
-    out: 6
-  - name: "case_36"
-    in:
-      nums: [-3, -1, -1]
-    out: -3
-  - name: "case_37"
-    in:
-      nums: [-3, 10, 6, 10, -3]
-    out: 6
-  - name: "case_38"
-    in:
-      nums: [8, 8, -3]
-    out: -3
-  - name: "case_39"
-    in:
-      nums: [2, 1, -1, 2, -1, -10, 1, -10, 2, 2, -1]
-    out: -1
-  - name: "case_40"
-    in:
-      nums: [-10, -4, -10]
-    out: -4
-  - name: "case_41"
-    in:
-      nums: [4, 4, 4, -8, -2, -8, -10, 3, -2, 4, -10]
-    out: 3
-  - name: "case_42"
-    in:
-      nums: [9, 2, 2]
-    out: 9
-  - name: "case_43"
-    in:
-      nums: [7, -2, 7]
-    out: -2
-  - name: "case_44"
-    in:
-      nums: [10, -4, -4]
-    out: 10
-  - name: "case_45"
-    in:
-      nums: [-10, -10, 9]
-    out: 9
-  - name: "case_46"
-    in:
-      nums: [0, 0, -1, -7, -1]
-    out: -7
-  - name: "case_47"
-    in:
-      nums: [-2, 7, -2, 7, 7, 7, 7, 4, 4, 3, 7]
-    out: 3
-  - name: "case_48"
-    in:
-      nums: [3, 0, -10, 0, 3, 5, 5]
+      nums:
+        - -8
+        - -8
+        - -9
+        - -9
+        - -10
     out: -10
-  - name: "case_49"
+  - name: alternating_pairs
     in:
-      nums: [-6, -9, 7, -9, 0, 0, 0, 0, 7]
-    out: -6
-  - name: "case_50"
+      nums:
+        - 14
+        - 15
+        - 14
+        - 16
+        - 15
+    out: 16
+  - name: unique_near_front
     in:
-      nums: [6, 5, 3, -2, 6, 5, 3]
-    out: -2
-  - name: "case_51"
+      nums:
+        - 31
+        - 22
+        - 22
+        - 33
+        - 33
+        - 44
+        - 44
+    out: 31
+  - name: unique_near_back
     in:
-      nums: [-9, 2, -8, -9, -3, 2, -3, -8, -1]
-    out: -1
-  - name: "case_52"
+      nums:
+        - 21
+        - 21
+        - 32
+        - 32
+        - 43
+    out: 43
+  - name: small_noise_mix
     in:
-      nums: [2, 2, -6, 2, 2]
-    out: -6
-  - name: "case_53"
+      nums:
+        - -5
+        - 19
+        - -5
+        - 19
+        - 27
+    out: 27
+  - name: two_pairs_and_unique
     in:
-      nums: [-1, 10, -1]
-    out: 10
-  - name: "case_54"
+      nums:
+        - 50
+        - 60
+        - 50
+        - 70
+        - 60
+    out: 70
+  - name: dense_small_range
     in:
-      nums: [6, 4, 4, -8, 9, 6, -8]
-    out: 9
-  - name: "case_55"
-    in:
-      nums: [7, -4, -10, -4, -4, -4, -9, -9, -4, -10, -4]
-    out: 7
-  - name: "case_56"
-    in:
-      nums: [-6, 3, 3, -6, -3]
-    out: -3
-  - name: "case_57"
-    in:
-      nums: [4, -5, 2, 2, 4, -3, -5, -3, 6]
-    out: 6
-  - name: "case_58"
-    in:
-      nums: [-3, 4, -8, 2, 8, -3, 9, -8, 8, 2, 4]
-    out: 9
-  - name: "case_59"
-    in:
-      nums: [9, 9, 9, 9, 0]
-    out: 0
-  - name: "case_60"
-    in:
-      nums: [-4, 4, 5, -9, 4, 5, -9, -8, -8]
-    out: -4
-  - name: "case_61"
-    in:
-      nums: [-6, 3, -6, 4, -7, -10, 3, -7, -10]
+      nums:
+        - -3
+        - 1
+        - 2
+        - 1
+        - -3
+        - 4
+        - 2
     out: 4
-  - name: "case_62"
+  - name: all_negative_pairs
     in:
-      nums: [-5, -3, -8, -8, -5]
-    out: -3
-  - name: "case_63"
+      nums:
+        - -11
+        - -12
+        - -11
+        - -13
+        - -12
+    out: -13
+  - name: zero_in_pairs
     in:
-      nums: [0, -8, 1, 0, 1]
-    out: -8
-  - name: "case_64"
-    in:
-      nums: [10, 10, -1, -2, -2]
-    out: -1
-  - name: "case_65"
-    in:
-      nums: [2, -3, -3, 8, 9, 9, 10, -1, 10, 2, 8]
-    out: -1
-  - name: "case_66"
-    in:
-      nums: [5, -9, 5, -9, -10, -7, -10]
-    out: -7
-  - name: "case_67"
-    in:
-      nums: [1, -3, -2, 8, -3, 8, -2, 1, -5]
-    out: -5
-  - name: "case_68"
-    in:
-      nums: [-3, -7, 9, 9, -9, -3, -9, -9, -7]
-    out: -9
-  - name: "case_69"
-    in:
-      nums: [-7, -7, -8]
-    out: -8
-  - name: "case_70"
-    in:
-      nums: [-9, 8, -10, 8, -9]
-    out: -10
-  - name: "case_71"
-    in:
-      nums: [-3, 8, -1, -3, -3, 6, -1, 4, 6, 8, 4]
-    out: -3
-  - name: "case_72"
-    in:
-      nums: [0, -6, -2, -2, -6]
+      nums:
+        - 0
+        - -8
+        - -8
+        - 5
+        - 5
     out: 0
+  - name: unique_middle_longer
+    in:
+      nums:
+        - 7
+        - 14
+        - 7
+        - 21
+        - 14
+        - 28
+        - 28
+    out: 21
+  - name: unique_with_min_and_max_pairs
+    in:
+      nums:
+        - -30000
+        - 30000
+        - 30000
+        - -29999
+        - -29999
+    out: -30000
+  - name: repeated_zero_pairs_unique_negative
+    in:
+      nums:
+        - 0
+        - 0
+        - 9
+        - 9
+        - -27
+    out: -27
+  - name: spaced_pairs
+    in:
+      nums:
+        - 101
+        - 202
+        - 303
+        - 202
+        - 101
+    out: 303
+  - name: many_pairs_unique_end
+    in:
+      nums:
+        - 1
+        - 2
+        - 1
+        - 3
+        - 2
+        - 4
+        - 3
+        - 5
+        - 4
+    out: 5
+  - name: many_pairs_unique_front
+    in:
+      nums:
+        - 77
+        - 8
+        - 9
+        - 8
+        - 10
+        - 10
+        - 9
+    out: 77
+  - name: alternating_sign_pairs
+    in:
+      nums:
+        - -15
+        - 22
+        - -15
+        - -7
+        - 22
+    out: -7
+  - name: repeated_boundaries
+    in:
+      nums:
+        - 30000
+        - -30000
+        - 30000
+        - 12345
+        - 12345
+    out: -30000
+  - name: long_valid_mix
+    in:
+      nums:
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 99
+    out: 99
+  - name: unique_after_many_pairs
+    in:
+      nums:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -1
+        - -2
+        - -3
+        - -4
+        - 6
+    out: 6

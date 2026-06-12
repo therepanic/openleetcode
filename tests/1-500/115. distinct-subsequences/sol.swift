@@ -3,17 +3,28 @@ class Solution {
     func numDistinct(_ s: String, _ t: String) -> Int {
         let sChars = Array(s)
         let tChars = Array(t)
-        var dp = Array(repeating: 0, count: tChars.count + 1)
-        dp[0] = 1
         if tChars.isEmpty { return 1 }
+        if sChars.count < tChars.count { return 0 }
+
+        var dp = Array(repeating: Int64(0), count: tChars.count + 1)
+        let cap = Int64.max / 4
+        dp[0] = 1
         for ch in sChars {
-            if tChars.isEmpty { break }
-            for j in stride(from: tChars.count - 1, through: 0, by: -1) {
+            var j = tChars.count - 1
+            while j >= 0 {
                 if ch == tChars[j] {
-                    dp[j + 1] += dp[j]
+                    if dp[j + 1] > cap - dp[j] {
+                        dp[j + 1] = cap
+                    } else {
+                        dp[j + 1] += dp[j]
+                    }
                 }
+                if j == 0 {
+                    break
+                }
+                j -= 1
             }
         }
-        return dp[tChars.count]
+        return Int(dp[tChars.count])
     }
 }
