@@ -1,0 +1,653 @@
+entry:
+  id: 199
+  title: binary-tree-right-side-view
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().rightSideView({root})
+    rust: Solution::right_side_view({root})
+    python3: Solution().rightSideView({root})
+    python2: Solution().rightSideView({root})
+    ruby: right_side_view({root})
+    java: new Solution().rightSideView({root})
+    csharp: new Solution().RightSideView({root})
+    kotlin: Solution().rightSideView({root})
+    go: rightSideView({root})
+    dart: Solution().rightSideView({root})
+    swift: Solution().rightSideView({root})
+    typescript: rightSideView({root})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().rightSideView(root, {result})
+    checker:
+      "from collections import deque\n\nclass Node:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\nclass Checker:\n    def _to_tree(self, root):\n        if root is None or root == []:\n            return None\n        if hasattr(root, \"val\"):\n            return root\n        if not isinstance(root, list) or not root or root[0] is None:\n            return None\n        tree_root = Node(root[0])\n        queue = [tree_root]\n        i = 1\n        while queue and i < len(root):\n            node = queue.pop(0)\n            if i < len(root) and root[i] is not None:\n                node.left = Node(root[i])\n                queue.append(node.left)\n            i += 1\n            if i < len(root) and root[i] is not None:\n                node.right = Node(root[i])\n                queue.append(node.right)\n            i += 1\n        return tree_root\n\n    def rightSideView(self, root, result):\n\
+      \        if not isinstance(result, list):\n            return False\n        root = self._to_tree(root)\n        if root is None:\n            return result == []\n        expected = []\n        queue = deque([root])\n        while queue:\n            rightmost = None\n            for _ in range(len(queue)):\n                node = queue.popleft()\n                rightmost = node.val\n                if node.left is not None:\n                    queue.append(node.left)\n                if node.right is not None:\n                    queue.append(node.right)\n            expected.append(rightmost)\n        return result == expected\n"
+seed: 199
+tests:
+  - name: Example 1
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - null
+        - 4
+    out:
+      - 1
+      - 3
+      - 4
+  - name: Example 2
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - null
+        - 5
+    out:
+      - 1
+      - 3
+      - 4
+      - 5
+  - name: Example 3
+    in:
+      root:
+        - 1
+        - null
+        - 3
+    out:
+      - 1
+      - 3
+  - name: Example 4
+    in:
+      root: []
+    out: []
+  - name: Single node
+    in:
+      root:
+        - 7
+    out:
+      - 7
+  - name: Two nodes left child
+    in:
+      root:
+        - 1
+        - 2
+    out:
+      - 1
+      - 2
+  - name: Two nodes right child
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out:
+      - 1
+      - 2
+  - name: Perfect tree height two
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out:
+      - 1
+      - 3
+      - 7
+  - name: Left skewed chain
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: Right skewed chain
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: Balanced with interior gap
+    in:
+      root:
+        - 10
+        - 6
+        - 15
+        - 3
+        - 8
+        - null
+        - 20
+        - null
+        - 4
+        - 7
+        - 9
+        - null
+        - null
+        - 18
+        - 25
+    out:
+      - 10
+      - 15
+      - 20
+      - 9
+      - 25
+  - name: Sparse third level
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+    out:
+      - 8
+      - 12
+      - 14
+      - 15
+  - name: Negative values
+    in:
+      root:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+        - -7
+    out:
+      - -1
+      - -3
+      - -7
+  - name: Duplicate values
+    in:
+      root:
+        - 5
+        - 5
+        - 5
+        - 5
+        - null
+        - 5
+        - 5
+    out:
+      - 5
+      - 5
+      - 5
+  - name: Zigzag shape
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+        - null
+        - 6
+        - 7
+    out:
+      - 1
+      - 3
+      - 5
+      - 7
+  - name: Missing left child in right subtree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+    out:
+      - 1
+      - 3
+      - 5
+  - name: Missing right child in left subtree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+    out:
+      - 1
+      - 3
+      - 5
+  - name: Deep left branch with right leaf
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: Deep right branch with left leaf
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - null
+        - 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: Wide level three
+    in:
+      root:
+        - 50
+        - 25
+        - 75
+        - 10
+        - 30
+        - 60
+        - 90
+        - 5
+        - 15
+        - 27
+        - 35
+        - 55
+        - 65
+        - 85
+        - 95
+    out:
+      - 50
+      - 75
+      - 90
+      - 95
+  - name: Mixed sparse tree
+    in:
+      root:
+        - 9
+        - 4
+        - 12
+        - null
+        - 6
+        - 10
+        - 15
+        - null
+        - null
+        - 5
+        - 7
+        - null
+        - 11
+        - 14
+        - 16
+    out:
+      - 9
+      - 12
+      - 15
+      - 11
+      - 16
+  - name: Root with one grandchild
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+    out:
+      - 1
+      - 2
+      - 3
+  - name: Root with opposite grandchild
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+    out:
+      - 1
+      - 2
+      - 3
+  - name: Alternating nulls
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+        - 6
+    out:
+      - 1
+      - 3
+      - 5
+      - 6
+  - name: Unbalanced left heavy
+    in:
+      root:
+        - 7
+        - 3
+        - null
+        - 2
+        - null
+        - 1
+    out:
+      - 7
+      - 3
+      - 2
+      - 1
+  - name: Unbalanced right heavy
+    in:
+      root:
+        - 7
+        - null
+        - 3
+        - null
+        - 2
+        - null
+        - 1
+    out:
+      - 7
+      - 3
+      - 2
+      - 1
+  - name: Three levels with interior gap
+    in:
+      root:
+        - 11
+        - 5
+        - 17
+        - 2
+        - 7
+        - 13
+        - 19
+        - null
+        - 3
+        - 6
+        - null
+        - 12
+        - 14
+        - 18
+        - 20
+    out:
+      - 11
+      - 17
+      - 19
+      - 20
+  - name: Values at boundaries
+    in:
+      root:
+        - 100
+        - -100
+        - 100
+        - -100
+        - 100
+        - -100
+        - 100
+    out:
+      - 100
+      - 100
+      - 100
+  - name: Another sparse tree
+    in:
+      root:
+        - 2
+        - null
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+        - 6
+    out:
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  - name: Small repeated leaves
+    in:
+      root:
+        - 5
+        - 3
+        - 8
+        - 3
+        - 3
+        - 8
+        - 8
+    out:
+      - 5
+      - 8
+      - 8
+  - name: Perfect tree height three
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - 1
+      - 3
+      - 7
+      - 15
+  - name: Sparse breadth with nulls
+    in:
+      root:
+        - 13
+        - 7
+        - 19
+        - 3
+        - 9
+        - 17
+        - 23
+        - null
+        - 4
+        - 8
+        - null
+        - null
+        - 18
+        - 21
+        - 25
+    out:
+      - 13
+      - 19
+      - 23
+      - 25
+  - name: Larger balanced sample
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - 10
+        - 30
+        - 60
+        - 90
+        - 110
+        - 140
+        - 160
+        - 190
+    out:
+      - 100
+      - 150
+      - 175
+      - 190
+  - name: Deep sparse mix
+    in:
+      root:
+        - 4
+        - 2
+        - 6
+        - 1
+        - 3
+        - 5
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 7
+    out:
+      - 4
+      - 6
+      - 5
+      - 7
+  - name: Large asymmetric sample
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 8
+        - 8
+        - 7
+        - 6
+        - 5
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 13
+        - 12
+        - 11
+        - 10
+        - 9
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 18
+        - 17
+        - 16
+        - 15
+        - 14
+    out:
+      - 1
+      - 2
+      - 3
+      - 5
+      - 18
+      - 14
+  - name: Generated full tree 15
+    seed: 199001
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 15
+          max: 15
+        of:
+          gen: int
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: Generated full tree 31
+    seed: 199002
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 31
+          max: 31
+        of:
+          gen: int
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,0 +1,602 @@
+entry:
+  id: 188
+  title: "best-time-to-buy-and-sell-stock-iv"
+  params:
+    k:
+      type: int
+    prices:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxProfit({k}, {prices})"
+    rust: "Solution::max_profit({k}, {prices})"
+    python3: "Solution().maxProfit({k}, {prices})"
+    python2: "Solution().maxProfit({k}, {prices})"
+    ruby: "max_profit({k}, {prices})"
+    java: "new Solution().maxProfit({k}, {prices})"
+    csharp: "new Solution().MaxProfit({k}, {prices})"
+    kotlin: "Solution().maxProfit({k}, {prices})"
+    go: "maxProfit({k}, {prices})"
+    dart: "Solution().maxProfit({k}, {prices})"
+    swift: "Solution().maxProfit({k}, {prices})"
+    typescript: "maxProfit({k}, {prices})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maxProfit(k, prices, {result})"
+    checker: |
+      class Checker:
+          def maxProfit(self, k, prices, result) -> bool:
+              if not isinstance(result, int):
+                  return False
+              n = len(prices)
+              if k < 0 or n < 0:
+                  return False
+              if k == 0 or n < 2:
+                  return result == 0
+              if k >= n // 2:
+                  expected = sum(max(0, prices[i] - prices[i - 1]) for i in range(1, n))
+                  return result == expected
+              hold = [-(10**18)] * (k + 1)
+              free = [0] * (k + 1)
+              for price in prices:
+                  for t in range(1, k + 1):
+                      hold[t] = max(hold[t], free[t - 1] - price)
+                      free[t] = max(free[t], hold[t] + price)
+              expected = max(free)
+              return result == expected
+
+seed: 188
+
+tests:
+  - name: "example_1"
+    in:
+      k: 2
+      prices:
+        - 2
+        - 4
+        - 1
+    out: 2
+
+  - name: "example_2"
+    in:
+      k: 2
+      prices:
+        - 3
+        - 2
+        - 6
+        - 5
+        - 0
+        - 3
+    out: 7
+
+  - name: "single_day"
+    in:
+      k: 1
+      prices:
+        - 1
+    out: 0
+
+  - name: "two_days_up"
+    in:
+      k: 1
+      prices:
+        - 1
+        - 2
+    out: 1
+
+  - name: "two_days_down"
+    in:
+      k: 1
+      prices:
+        - 2
+        - 1
+    out: 0
+
+  - name: "strictly_increasing_small_k"
+    in:
+      k: 1
+      prices:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out: 4
+
+  - name: "strictly_decreasing"
+    in:
+      k: 1
+      prices:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out: 0
+
+  - name: "two_transactions_on_rise"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out: 4
+
+  - name: "all_equal"
+    in:
+      k: 3
+      prices:
+        - 7
+        - 7
+        - 7
+        - 7
+    out: 0
+
+  - name: "classic_two_peaks"
+    in:
+      k: 2
+      prices:
+        - 3
+        - 3
+        - 5
+        - 0
+        - 0
+        - 3
+        - 1
+        - 4
+    out: 6
+
+  - name: "k_equals_one_with_multiple_peaks"
+    in:
+      k: 1
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
+    out: 8
+
+  - name: "k_equals_two_with_multiple_peaks"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
+    out: 13
+
+  - name: "k_large_triggers_greedy"
+    in:
+      k: 100
+      prices:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out: 4
+
+  - name: "small_wave"
+    in:
+      k: 3
+      prices:
+        - 2
+        - 1
+        - 2
+        - 0
+        - 1
+    out: 2
+
+  - name: "zigzag_short"
+    in:
+      k: 2
+      prices:
+        - 6
+        - 1
+        - 3
+        - 2
+        - 4
+        - 7
+    out: 7
+
+  - name: "zigzag_longer"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
+    out: 13
+
+  - name: "low_high_low"
+    in:
+      k: 4
+      prices:
+        - 2
+        - 4
+        - 1
+    out: 2
+
+  - name: "sawtooth_three_days"
+    in:
+      k: 2
+      prices:
+        - 2
+        - 1
+        - 4
+    out: 3
+
+  - name: "spike_at_end"
+    in:
+      k: 2
+      prices:
+        - 2
+        - 4
+        - 1
+        - 7
+    out: 8
+
+  - name: "two_big_moves"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 3
+        - 2
+        - 8
+        - 4
+        - 9
+    out: 12
+
+  - name: "three_transactions_possible"
+    in:
+      k: 3
+      prices:
+        - 1
+        - 3
+        - 7
+        - 5
+        - 10
+        - 3
+    out: 11
+
+  - name: "tight_k_with_three_peaks"
+    in:
+      k: 3
+      prices:
+        - 2
+        - 4
+        - 1
+        - 5
+        - 2
+        - 9
+        - 7
+    out: 13
+
+  - name: "k_more_than_needed"
+    in:
+      k: 5
+      prices:
+        - 3
+        - 2
+        - 6
+        - 5
+        - 0
+        - 3
+    out: 7
+
+  - name: "flat_zeroes"
+    in:
+      k: 100
+      prices:
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 0
+
+  - name: "alternating_small"
+    in:
+      k: 50
+      prices:
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out: 4
+
+  - name: "big_single_transaction"
+    in:
+      k: 2
+      prices:
+        - 5
+        - 11
+        - 3
+        - 50
+        - 60
+        - 90
+    out: 93
+
+  - name: "up_down_up"
+    in:
+      k: 3
+      prices:
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+        - 5
+    out: 7
+
+  - name: "descending_then_rise"
+    in:
+      k: 2
+      prices:
+        - 9
+        - 8
+        - 7
+        - 1
+        - 2
+        - 3
+    out: 2
+
+  - name: "one_transaction_best_late"
+    in:
+      k: 1
+      prices:
+        - 1
+        - 3
+        - 2
+        - 8
+        - 4
+        - 9
+    out: 8
+
+  - name: "no_profit_with_large_k"
+    in:
+      k: 10
+      prices:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+        - 0
+    out: 0
+
+  - name: "almost_every_day_trade"
+    in:
+      k: 99
+      prices:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 3
+
+  - name: "two_transactions_with_reuse_trap"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 2
+
+  - name: "huge_prices"
+    in:
+      k: 3
+      prices:
+        - 1000
+        - 0
+        - 1000
+        - 0
+        - 1000
+    out: 2000
+
+  - name: "max_k_small_n"
+    in:
+      k: 100
+      prices:
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+    out: 0
+
+  - name: "large_alternating_20"
+    in:
+      k: 49
+      prices:
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+    out: 9990
+
+  - name: "k_two_on_repeating_pattern"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 5
+        - 2
+        - 3
+        - 7
+        - 2
+        - 6
+        - 4
+        - 9
+    out: 13
+
+  - name: "k_four_on_spread_peaks"
+    in:
+      k: 4
+      prices:
+        - 1
+        - 3
+        - 2
+        - 8
+        - 4
+        - 9
+        - 0
+        - 10
+    out: 23
+
+  - name: "long_monotone_greedy"
+    in:
+      k: 20
+      prices:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+    out: 19
+
+  - name: "two_days_zero_profit"
+    in:
+      k: 2
+      prices:
+        - 0
+        - 0
+    out: 0
+
+  - name: "borderline_k_switch"
+    in:
+      k: 5
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
+    out: 15
+  - name: "generated_medium_random"
+    seed: 188001
+    in:
+      k:
+        gen: int
+        min: 1
+        max: 25
+      prices:
+        gen: array
+        len:
+          gen: int
+          min: 40
+          max: 40
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: "generated_large_random"
+    seed: 188002
+    in:
+      k:
+        gen: int
+        min: 1
+        max: 50
+      prices:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int

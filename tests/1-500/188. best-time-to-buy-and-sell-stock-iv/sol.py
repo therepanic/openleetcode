@@ -1,0 +1,18 @@
+from typing import List
+
+
+class Solution:
+    def maxProfit(self, k: int, prices: List[int]) -> int:
+        n = len(prices)
+        if k == 0 or n < 2:
+            return 0
+        if k >= n // 2:
+            return sum(max(0, prices[i] - prices[i - 1]) for i in range(1, n))
+
+        hold = [-(10**18)] * (k + 1)
+        free = [0] * (k + 1)
+        for price in prices:
+            for t in range(1, k + 1):
+                hold[t] = max(hold[t], free[t - 1] - price)
+                free[t] = max(free[t], hold[t] + price)
+        return max(free)

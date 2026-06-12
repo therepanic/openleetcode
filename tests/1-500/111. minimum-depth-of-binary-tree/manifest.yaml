@@ -1,0 +1,601 @@
+entry:
+  id: 111
+  title: minimum-depth-of-binary-tree
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().minDepth({root})
+    rust: Solution::min_depth({root})
+    python3: Solution().minDepth({root})
+    python2: Solution().minDepth({root})
+    ruby: min_depth({root})
+    java: new Solution().minDepth({root})
+    csharp: new Solution().MinDepth({root})
+    kotlin: Solution().minDepth({root})
+    go: minDepth({root})
+    dart: Solution().minDepth({root})
+    swift: Solution().minDepth({root})
+    typescript: minDepth({root})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().minDepth(root, {result})
+    checker:
+      "class Checker:\n    def minDepth(self, root, result):\n        def solve(idx):\n\
+      \            if idx >= len(root) or root[idx] is None:\n                return\
+      \ 0\n            left = 2 * idx + 1\n            right = 2 * idx + 2\n     \
+      \       has_left = left < len(root) and root[left] is not None\n           \
+      \ has_right = right < len(root) and root[right] is not None\n            if\
+      \ not has_left and not has_right:\n                return 1\n            if\
+      \ not has_left:\n                return 1 + solve(right)\n            if not\
+      \ has_right:\n                return 1 + solve(left)\n            return 1 +\
+      \ min(solve(left), solve(right))\n\n        if root is None or root == []:\n\
+      \            return result == 0\n        if not isinstance(root, list):\n  \
+      \          return False\n        return isinstance(result, int) and result ==\
+      \ solve(0)\n"
+seed: 111
+tests:
+  - name: empty_tree
+    in:
+      root: []
+    out: 0
+  - name: single_node
+    in:
+      root:
+        - 1
+    out: 1
+  - name: example_1
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+    out: 2
+  - name: example_2
+    in:
+      root:
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+        - null
+        - 6
+    out: 5
+  - name: root_with_left_child_only
+    in:
+      root:
+        - 1
+        - 2
+    out: 2
+  - name: root_with_right_child_only
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out: 2
+  - name: full_tree_depth_3
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out: 3
+  - name: shallow_leaf_on_left
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 7
+    out: 3
+  - name: shallow_leaf_on_right
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - 7
+    out: 3
+  - name: left_skew_depth_3
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+    out: 3
+  - name: right_skew_depth_3
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+    out: 3
+  - name: left_skew_depth_5
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 5
+    out: 3
+  - name: right_skew_depth_5
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - null
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 4
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 5
+    out: 2
+  - name: balanced_depth_4
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out: 4
+  - name: deep_left_leaf_with_shallow_right_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 7
+        - 8
+    out: 3
+  - name: deep_right_leaf_with_shallow_left_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - null
+        - 7
+        - null
+        - null
+        - 10
+    out: 3
+  - name: zigzag_left_right_depth_4
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+        - 4
+    out: 4
+  - name: zigzag_right_left_depth_4
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+        - null
+        - null
+        - 4
+    out: 4
+  - name: balanced_with_missing_interior_nodes
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - null
+        - 14
+        - null
+        - 15
+    out: 3
+  - name: balanced_with_one_short_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+    out: 3
+  - name: almost_full_depth_5
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+    out: 5
+  - name: depth_5_with_short_leaf_on_right_subtree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 15
+        - 16
+    out: 3
+  - name: depth_5_with_short_leaf_on_left_subtree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - null
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out: 4
+  - name: unbalanced_deep_left_with_short_right_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 15
+    out: 3
+  - name: unbalanced_deep_right_with_short_left_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - 7
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 14
+        - 15
+    out: 3
+  - name: negative_values_balanced
+    in:
+      root:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+        - -7
+    out: 3
+  - name: negative_values_skewed
+    in:
+      root:
+        - -1
+        - -2
+        - null
+        - -3
+    out: 3
+  - name: duplicate_values_shallow_leaf
+    in:
+      root:
+        - 7
+        - 7
+        - 7
+        - 7
+        - null
+        - null
+        - 7
+    out: 3
+  - name: duplicate_values_deep_chain
+    in:
+      root:
+        - 7
+        - 7
+        - null
+        - 7
+        - null
+        - null
+        - null
+        - 7
+    out: 3
+  - name: max_depth_branch_not_min_depth
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 7
+        - 8
+        - null
+        - null
+        - 11
+    out: 3
+  - name: short_leaf_hidden_in_last_level
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - null
+        - 8
+        - 9
+        - null
+        - null
+        - 12
+    out: 3
+  - name: deep_tree_with_null_padding
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 5
+    out: 3
+  - name: wide_tree_with_left_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - null
+    out: 4
+  - name: wide_tree_with_right_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - null
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out: 4
+  - name: deeper_left_side_than_right_side
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - null
+        - 14
+    out: 3
+  - name: deeper_right_side_than_left_side
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - 7
+        - null
+        - null
+        - null
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out: 3
+  - name: generated_full_tree_15
+    seed: 111001
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 15
+          max: 15
+        of:
+          gen: int
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_full_tree_31
+    seed: 111002
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 31
+          max: 31
+        of:
+          gen: int
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,0 +1,752 @@
+entry:
+  id: 103
+  title: binary-tree-zigzag-level-order-traversal
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().zigzagLevelOrder({root})
+    rust: Solution::zigzag_level_order({root})
+    python3: Solution().zigzagLevelOrder({root})
+    python2: Solution().zigzagLevelOrder({root})
+    ruby: zigzag_level_order({root})
+    java: new Solution().zigzagLevelOrder({root})
+    csharp: new Solution().ZigzagLevelOrder({root})
+    kotlin: Solution().zigzagLevelOrder({root})
+    go: zigzagLevelOrder({root})
+    dart: Solution().zigzagLevelOrder({root})
+    swift: Solution().zigzagLevelOrder({root})
+    typescript: zigzagLevelOrder({root})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: Checker().zigzagLevelOrder(root, {result})
+    checker:
+      "class Checker:\n    def zigzagLevelOrder(self, root, result) -> bool:\n\
+      \        if root is None or root == []:\n            return result == []\n \
+      \       if not isinstance(root, list):\n            return False\n        expected\
+      \ = []\n        queue = [0]\n        left_to_right = True\n        while queue:\n\
+      \            level = []\n            next_queue = []\n            for idx in\
+      \ queue:\n                if idx >= len(root) or root[idx] is None:\n      \
+      \              continue\n                if left_to_right:\n               \
+      \     level.append(root[idx])\n                else:\n                    level.insert(0,\
+      \ root[idx])\n                left = 2 * idx + 1\n                right = 2\
+      \ * idx + 2\n                if left < len(root) and root[left] is not None:\n\
+      \                    next_queue.append(left)\n                if right < len(root)\
+      \ and root[right] is not None:\n                    next_queue.append(right)\n\
+      \            if not level:\n                break\n            expected.append(level)\n\
+      \            left_to_right = not left_to_right\n            queue = next_queue\n\
+      \        return result == expected\n"
+seed: 103
+tests:
+  - name: empty_tree
+    in:
+      root: null
+    out: []
+  - name: single_node
+    in:
+      root:
+        - 1
+    out:
+      - - 1
+  - name: two_nodes_left
+    in:
+      root:
+        - 1
+        - 2
+    out:
+      - - 1
+      - - 2
+  - name: two_nodes_right
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out:
+      - - 1
+      - - 2
+  - name: balanced_three_levels
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+    out:
+      - - 3
+      - - 20
+        - 9
+      - - 15
+        - 7
+  - name: complete_four_levels
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 5
+        - 6
+        - 7
+  - name: left_skewed_three
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+    out:
+      - - 1
+      - - 2
+      - - 3
+  - name: right_skewed_three
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+    out:
+      - - 1
+      - - 2
+      - - 3
+  - name: left_chain_four
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+  - name: right_chain_four
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+  - name: zigzag_mixed_depth
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 5
+  - name: odd_levels_reversal
+    in:
+      root:
+        - 10
+        - 6
+        - 14
+        - 4
+        - 8
+        - 12
+        - 16
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+        - 17
+    out:
+      - - 10
+      - - 14
+        - 6
+      - - 4
+        - 8
+        - 12
+        - 16
+      - - 17
+        - 15
+        - 13
+        - 11
+        - 9
+        - 7
+        - 5
+        - 3
+  - name: sparse_middle_nulls
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 7
+        - null
+        - 5
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 7
+      - - 5
+  - name: deeper_left_heavy
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 3
+        - null
+        - 7
+        - 9
+        - 2
+    out:
+      - - 5
+      - - 8
+        - 4
+      - - 3
+        - 7
+        - 9
+      - - 2
+  - name: deeper_right_heavy
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - null
+        - 3
+        - 7
+        - 9
+        - null
+        - null
+        - 6
+    out:
+      - - 5
+      - - 8
+        - 4
+      - - 3
+        - 7
+        - 9
+      - - 6
+  - name: full_five_levels
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 5
+        - 6
+        - 7
+      - - 15
+        - 14
+        - 13
+        - 12
+        - 11
+        - 10
+        - 9
+        - 8
+      - - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+  - name: alternating_missing_children
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - null
+        - null
+        - null
+        - 7
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 5
+        - 6
+      - - 7
+  - name: wide_second_level
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - 7
+        - 8
+        - 9
+        - null
+        - null
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 6
+        - 7
+      - - 13
+        - 12
+        - 9
+        - 8
+      - - 14
+        - 15
+  - name: right_turning_path
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+      - - 5
+  - name: left_turning_path
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+      - - 5
+  - name: mixed_balanced_sparse
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - null
+        - 3
+        - 5
+        - null
+        - 9
+        - 11
+        - 13
+        - 15
+    out:
+      - - 8
+      - - 12
+        - 4
+      - - 2
+        - 6
+        - 10
+        - 14
+      - - 15
+        - 13
+        - 11
+        - 9
+        - 5
+        - 3
+  - name: single_deep_left_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+  - name: single_deep_right_leaf
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+  - name: balanced_with_gaps
+    in:
+      root:
+        - 2
+        - 1
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+        - null
+        - null
+        - 6
+    out:
+      - - 2
+      - - 3
+        - 1
+      - - 4
+        - 5
+      - - 6
+  - name: tree_with_duplicates
+    in:
+      root:
+        - 7
+        - 7
+        - 7
+        - 7
+        - null
+        - null
+        - 7
+        - null
+        - null
+        - 7
+        - 7
+    out:
+      - - 7
+      - - 7
+        - 7
+      - - 7
+        - 7
+      - - 7
+        - 7
+  - name: non_power_of_two_complete_prefix
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 5
+        - 6
+  - name: deep_asymmetric
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 14
+        - 15
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 7
+      - - 8
+  - name: large_values
+    in:
+      root:
+        - 100000
+        - 99999
+        - 100001
+        - 88888
+        - 99998
+        - 100002
+        - 111111
+    out:
+      - - 100000
+      - - 100001
+        - 99999
+      - - 88888
+        - 99998
+        - 100002
+        - 111111
+  - name: small_values
+    in:
+      root:
+        - -10
+        - -20
+        - -30
+        - -40
+        - -50
+        - -60
+        - -70
+    out:
+      - - -10
+      - - -30
+        - -20
+      - - -40
+        - -50
+        - -60
+        - -70
+  - name: zigzag_deep_mixed
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+        - null
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - 9
+        - 10
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 5
+        - 6
+      - - 8
+        - 7
+      - - 9
+        - 10
+  - name: deep_complete_ancestor_gaps
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - null
+        - 8
+        - 9
+        - 10
+        - 11
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 5
+      - - 11
+        - 10
+        - 9
+        - 8
+  - name: wide_last_level_sparse
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - null
+        - 9
+        - null
+        - 11
+        - 12
+        - null
+        - 14
+        - 15
+    out:
+      - - 1
+      - - 3
+        - 2
+      - - 4
+        - 5
+        - 6
+        - 7
+      - - 15
+        - 14
+        - 12
+        - 11
+        - 9
+  - name: all_left_then_all_right
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 5
+    out:
+      - - 1
+      - - 2
+      - - 3
+  - name: mirror_like_shape
+    in:
+      root:
+        - 1
+        - 3
+        - 2
+        - 7
+        - 6
+        - 5
+        - 4
+    out:
+      - - 1
+      - - 2
+        - 3
+      - - 7
+        - 6
+        - 5
+        - 4
+  - name: medium_random_shape
+    in:
+      root:
+        - 6
+        - 2
+        - 9
+        - 1
+        - 4
+        - 8
+        - 10
+        - null
+        - null
+        - 3
+        - 5
+        - null
+        - null
+        - null
+        - 11
+    out:
+      - - 6
+      - - 9
+        - 2
+      - - 1
+        - 4
+        - 8
+        - 10
+      - - 11
+        - 5
+        - 3

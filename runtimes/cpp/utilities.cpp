@@ -21,30 +21,37 @@ inline string jsonToString(const _JSON_& j) {
 }
 
 inline vector<int> jsonToIntArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<int> >();
 }
 
 inline vector<long long> jsonToLongArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<long long> >();
 }
 
 inline vector<double> jsonToDoubleArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<double> >();
 }
 
 inline vector<float> jsonToFloatArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<float> >();
 }
 
 inline vector<bool> jsonToBoolArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<bool> >();
 }
 
 inline vector<string> jsonToStringArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<string> >();
 }
 
 inline vector<optional<int>> jsonToOptionalIntArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   vector<optional<int>> out;
   out.reserve(j.size());
   for (const auto& x : j) {
@@ -58,6 +65,7 @@ inline vector<optional<int>> jsonToOptionalIntArray(const _JSON_& j) {
 }
 
 inline vector<char> jsonToCharArray(const _JSON_& j) {
+  if (j.is_null()) return {};
   vector<char> out;
   out.reserve(j.size());
   for (const auto& x : j) out.push_back(jsonToChar(x));
@@ -65,30 +73,37 @@ inline vector<char> jsonToCharArray(const _JSON_& j) {
 }
 
 inline vector<vector<int>> jsonToIntMatrix(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<vector<int> > >();
 }
 
 inline vector<vector<long long>> jsonToLongMatrix(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<vector<long long> > >();
 }
 
 inline vector<vector<double>> jsonToDoubleMatrix(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<vector<double> > >();
 }
 
 inline vector<vector<float>> jsonToFloatMatrix(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<vector<float> > >();
 }
 
 inline vector<vector<bool>> jsonToBoolMatrix(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<vector<bool> > >();
 }
 
 inline vector<vector<string>> jsonToStringMatrix(const _JSON_& j) {
+  if (j.is_null()) return {};
   return j.get<vector<vector<string> > >();
 }
 
 inline vector<vector<char>> jsonToCharMatrix(const _JSON_& j) {
+  if (j.is_null()) return {};
   vector<vector<char>> out;
   out.reserve(j.size());
   for (const auto& row : j) out.push_back(jsonToCharArray(row));

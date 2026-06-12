@@ -1,0 +1,451 @@
+entry:
+  id: 129
+  title: sum-root-to-leaf-numbers
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().sumNumbers({root})
+    rust: Solution::sum_numbers({root})
+    python3: Solution().sumNumbers({root})
+    python2: Solution().sumNumbers({root})
+    ruby: sum_numbers({root})
+    java: new Solution().sumNumbers({root})
+    csharp: new Solution().SumNumbers({root})
+    kotlin: Solution().sumNumbers({root})
+    go: sumNumbers({root})
+    dart: Solution().sumNumbers({root})
+    swift: Solution().sumNumbers({root})
+    typescript: sumNumbers({root})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().sumNumbers(root, {result})
+    checker: "class Node:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\nclass Checker:\n    def _to_tree(self, root):\n        if root is None or root == []:\n            return None\n        if hasattr(root, 'val'):\n            return root\n        if not isinstance(root, list) or not root or root[0] is None:\n            return None\n        tree_root = Node(root[0])\n        queue = [tree_root]\n        i = 1\n        while queue and i < len(root):\n            node = queue.pop(0)\n            if i < len(root) and root[i] is not None:\n                node.left = Node(root[i])\n                queue.append(node.left)\n            i += 1\n            if i < len(root) and root[i] is not None:\n                node.right = Node(root[i])\n                queue.append(node.right)\n            i += 1\n        return tree_root\n\n    def sumNumbers(self, root, result):\n        if not isinstance(result, int):\n            return False\n        root = self._to_tree(root)\n        def dfs(node, current):\n            if node is None:\n                return 0\n            current = current * 10 + node.val\n            if node.left is None and node.right is None:\n                return current\n            return dfs(node.left, current) + dfs(node.right, current)\n        return result == dfs(root, 0)\n"
+seed: 129
+tests:
+  - name: example_1
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+    out: 25
+  - name: example_2
+    in:
+      root:
+        - 4
+        - 9
+        - 0
+        - 5
+        - 1
+    out: 1026
+  - name: single_zero
+    in:
+      root:
+        - 0
+    out: 0
+  - name: single_nine
+    in:
+      root:
+        - 9
+    out: 9
+  - name: two_nodes_left
+    in:
+      root:
+        - 1
+        - 2
+    out: 12
+  - name: two_nodes_right
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out: 12
+  - name: full_depth_3
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out: 522
+  - name: left_chain_depth_4
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out: 1234
+  - name: right_chain_depth_4
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out: 1234
+  - name: zeros_full_tree
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 0
+  - name: zeros_sparse_tree
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 0
+        - 0
+    out: 1
+  - name: example_shape_with_missing_left
+    in:
+      root:
+        - 4
+        - 9
+        - 0
+        - 5
+        - 1
+        - null
+        - null
+    out: 1026
+  - name: example_shape_with_missing_right
+    in:
+      root:
+        - 4
+        - 9
+        - 0
+        - null
+        - 1
+    out: 531
+  - name: mixed_digits_small
+    in:
+      root:
+        - 2
+        - 1
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out: 902
+  - name: deeper_left_leaf
+    in:
+      root:
+        - 8
+        - 4
+        - 9
+        - 1
+        - 3
+        - 7
+        - 2
+    out: 3473
+  - name: deeper_right_leaf
+    in:
+      root:
+        - 8
+        - 4
+        - 9
+        - 1
+        - 3
+        - 7
+        - 2
+        - null
+        - 6
+    out: 11048
+  - name: balanced_with_missing_interior
+    in:
+      root:
+        - 3
+        - 1
+        - 5
+        - 0
+        - 2
+        - null
+        - 4
+    out: 976
+  - name: all_nines_depth_3
+    in:
+      root:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+    out: 3996
+  - name: all_ones_depth_4
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 8888
+  - name: left_heavy_with_right_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 5
+        - 6
+    out: 395
+  - name: right_heavy_with_left_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - 6
+    out: 395
+  - name: internal_nodes_do_not_count
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+    out: 259
+  - name: leaf_on_one_side_only
+    in:
+      root:
+        - 5
+        - 1
+        - null
+        - 2
+    out: 512
+  - name: depth_5_left_spine
+    in:
+      root:
+        - 7
+        - 8
+        - null
+        - 9
+        - null
+        - 1
+        - null
+        - 2
+    out: 78912
+  - name: depth_5_right_spine
+    in:
+      root:
+        - 7
+        - null
+        - 8
+        - null
+        - 9
+        - null
+        - 1
+        - null
+        - 2
+    out: 78912
+  - name: sparse_three_leaves
+    in:
+      root:
+        - 1
+        - 0
+        - 4
+        - 5
+        - 6
+        - null
+        - 7
+    out: 358
+  - name: sparse_with_zero_branch
+    in:
+      root:
+        - 2
+        - 0
+        - 1
+        - 0
+        - 9
+        - null
+        - 3
+    out: 622
+  - name: narrow_tree_depth_6
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+        - null
+        - 6
+    out: 123456
+  - name: narrow_tree_depth_7
+    in:
+      root:
+        - 9
+        - null
+        - 8
+        - null
+        - 7
+        - null
+        - 6
+        - null
+        - 5
+    out: 98765
+  - name: larger_complete_tree
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+    out: 17776
+  - name: another_large_complete_tree
+    in:
+      root:
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+    out: 26664
+  - name: alternating_digits_tree
+    in:
+      root:
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out: 422
+  - name: path_sum_with_multiple_leaves
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 444
+  - name: path_sum_with_mixed_depths
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - null
+        - 2
+        - 2
+    out: 666
+  - name: max_depth_ten_shape
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+        - null
+        - 6
+    out: 123456
+  - name: generated_full_tree_digits_15
+    seed: 129001
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 15
+          max: 15
+        of:
+          gen: int
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_full_tree_digits_31
+    seed: 129002
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 31
+          max: 31
+        of:
+          gen: int
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,0 +1,1049 @@
+entry:
+  id: 106
+  title: Construct Binary Tree from Inorder and Postorder Traversal
+  params:
+    inorder:
+      type: array
+      items:
+        type: int
+    postorder:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "treeNodeToArray(Solution().buildTree({inorder}, {postorder}))"
+    rust: "TreeNode::tree_node_to_array(Solution::build_tree({inorder}, {postorder}))"
+    python3: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    python2: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    ruby: "tree_node_to_array(build_tree({inorder}, {postorder}))"
+    java: "TreeNode.treeNodeToArray(new Solution().buildTree({inorder}, {postorder}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().BuildTree({inorder}, {postorder}))"
+    kotlin: "treeNodeToArray(Solution().buildTree({inorder}, {postorder}))"
+    go: "treeNodeToArray(buildTree({inorder}, {postorder}))"
+    dart: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    swift: "tree_node_to_array(Solution().buildTree({inorder}, {postorder}))"
+    typescript: "treeNodeToArray(buildTree({inorder}, {postorder}))"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().buildTree(inorder, postorder, {result})"
+    checker: |
+      class Checker:
+          def buildTree(self, inorder, postorder, result):
+              if not isinstance(result, list):
+                  return False
+              if not inorder and not postorder:
+                  return result == []
+              if len(inorder) != len(postorder):
+                  return False
+              if len(result) == 0:
+                  return False
+
+              nodes = []
+              for value in result:
+                  if value is None:
+                      nodes.append(None)
+                  elif isinstance(value, int):
+                      nodes.append({"val": value, "left": None, "right": None})
+                  else:
+                      return False
+
+              if nodes[0] is None:
+                  return False
+
+              queue = [0]
+              idx = 1
+              while queue and idx < len(nodes):
+                  cur = queue.pop(0)
+                  if nodes[cur] is None:
+                      continue
+                  if idx < len(nodes):
+                      nodes[cur]["left"] = idx if nodes[idx] is not None else None
+                      if nodes[idx] is not None:
+                          queue.append(idx)
+                      idx += 1
+                  if idx < len(nodes):
+                      nodes[cur]["right"] = idx if nodes[idx] is not None else None
+                      if nodes[idx] is not None:
+                          queue.append(idx)
+                      idx += 1
+
+              def inorder_walk(i):
+                  if i is None:
+                      return []
+                  return inorder_walk(nodes[i]["left"]) + [nodes[i]["val"]] + inorder_walk(nodes[i]["right"])
+
+              def postorder_walk(i):
+                  if i is None:
+                      return []
+                  return postorder_walk(nodes[i]["left"]) + postorder_walk(nodes[i]["right"]) + [nodes[i]["val"]]
+
+              return inorder_walk(0) == inorder and postorder_walk(0) == postorder
+seed: 106
+tests:
+  - name: single-node
+    in:
+      inorder:
+        - 1
+      postorder:
+        - 1
+    out:
+      - 1
+  - name: root-with-left-child
+    in:
+      inorder:
+        - 2
+        - 1
+      postorder:
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+  - name: root-with-right-child
+    in:
+      inorder:
+        - 1
+        - 2
+      postorder:
+        - 2
+        - 1
+    out:
+      - 1
+      - null
+      - 2
+  - name: three-node-balanced
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+      postorder:
+        - 1
+        - 3
+        - 2
+    out:
+      - 2
+      - 1
+      - 3
+  - name: three-node-left-skewed
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+      postorder:
+        - 1
+        - 2
+        - 3
+    out:
+      - 3
+      - 2
+      - null
+      - 1
+  - name: three-node-right-skewed
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+      postorder:
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - null
+      - 2
+      - null
+      - 3
+  - name: mixed-six-nodes
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      postorder:
+        - 2
+        - 1
+        - 4
+        - 6
+        - 5
+        - 3
+    out:
+      - 3
+      - 1
+      - 5
+      - null
+      - 2
+      - 4
+      - 6
+  - name: perfect-fifteen
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      postorder:
+        - 1
+        - 3
+        - 2
+        - 5
+        - 7
+        - 6
+        - 4
+        - 9
+        - 11
+        - 10
+        - 13
+        - 15
+        - 14
+        - 12
+        - 8
+    out:
+      - 8
+      - 4
+      - 12
+      - 2
+      - 6
+      - 10
+      - 14
+      - 1
+      - 3
+      - 5
+      - 7
+      - 9
+      - 11
+      - 13
+      - 15
+  - name: negative-values-balanced
+    in:
+      inorder:
+        - -4
+        - -3
+        - -2
+        - -1
+        - 1
+        - 2
+        - 3
+      postorder:
+        - -4
+        - -2
+        - -3
+        - 1
+        - 3
+        - 2
+        - -1
+    out:
+      - -1
+      - -3
+      - 2
+      - -4
+      - -2
+      - 1
+      - 3
+  - name: zero-and-negatives
+    in:
+      inorder:
+        - -20
+        - -10
+        - -5
+        - 0
+        - 5
+        - 10
+        - 20
+      postorder:
+        - -20
+        - -5
+        - -10
+        - 5
+        - 20
+        - 10
+        - 0
+    out:
+      - 0
+      - -10
+      - 10
+      - -20
+      - -5
+      - 5
+      - 20
+  - name: large-middle-root
+    in:
+      inorder:
+        - 9
+        - 17
+        - 31
+        - 42
+        - 61
+        - 88
+        - 99
+      postorder:
+        - 9
+        - 31
+        - 17
+        - 61
+        - 99
+        - 88
+        - 42
+    out:
+      - 42
+      - 17
+      - 88
+      - 9
+      - 31
+      - 61
+      - 99
+  - name: uneven-small-tree
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+        - 5
+        - 7
+        - 8
+        - 9
+      postorder:
+        - 1
+        - 2
+        - 3
+        - 7
+        - 9
+        - 8
+        - 5
+    out:
+      - 5
+      - 3
+      - 8
+      - 2
+      - null
+      - 7
+      - 9
+      - 1
+  - name: six-nodes-complete
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      postorder:
+        - 1
+        - 3
+        - 2
+        - 5
+        - 6
+        - 4
+    out:
+      - 4
+      - 2
+      - 6
+      - 1
+      - 3
+      - 5
+  - name: six-nodes-right-heavy
+    in:
+      inorder:
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      postorder:
+        - 3
+        - 2
+        - 5
+        - 7
+        - 6
+        - 4
+    out:
+      - 4
+      - 2
+      - 6
+      - null
+      - 3
+      - 5
+      - 7
+  - name: twelve-nodes-balanced-odd-shape
+    in:
+      inorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 9
+        - 11
+        - 12
+        - 13
+        - 14
+      postorder:
+        - 2
+        - 1
+        - 4
+        - 6
+        - 5
+        - 3
+        - 9
+        - 12
+        - 14
+        - 13
+        - 11
+        - 7
+    out:
+      - 7
+      - 3
+      - 11
+      - 1
+      - 5
+      - 9
+      - 13
+      - null
+      - 2
+      - 4
+      - 6
+      - null
+      - null
+      - 12
+      - 14
+  - name: large-values-three-node
+    in:
+      inorder:
+        - 999999
+        - 1000000
+        - 1000001
+      postorder:
+        - 999999
+        - 1000001
+        - 1000000
+    out:
+      - 1000000
+      - 999999
+      - 1000001
+  - name: min-int-ish-left-chain
+    in:
+      inorder:
+        - -1000000000
+        - -999999999
+      postorder:
+        - -999999999
+        - -1000000000
+    out:
+      - -1000000000
+      - null
+      - -999999999
+  - name: small-signed-root
+    in:
+      inorder:
+        - -1
+        - 0
+        - 1
+      postorder:
+        - -1
+        - 1
+        - 0
+    out:
+      - 0
+      - -1
+      - 1
+  - name: four-node-left-heavy
+    in:
+      inorder:
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+  - name: four-node-left-chain
+    in:
+      inorder:
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+  - name: five-node-left-chain
+    in:
+      inorder:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+      - null
+      - 5
+  - name: six-node-left-chain
+    in:
+      inorder:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+      - null
+      - 5
+      - null
+      - 6
+  - name: seven-node-left-chain
+    in:
+      inorder:
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+      - null
+      - 5
+      - null
+      - 6
+      - null
+      - 7
+  - name: eight-node-left-chain
+    in:
+      inorder:
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+      - null
+      - 5
+      - null
+      - 6
+      - null
+      - 7
+      - null
+      - 8
+  - name: nine-node-left-chain
+    in:
+      inorder:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+      - null
+      - 5
+      - null
+      - 6
+      - null
+      - 7
+      - null
+      - 8
+      - null
+      - 9
+  - name: ten-node-left-chain
+    in:
+      inorder:
+        - 10
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 10
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 1
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+      - null
+      - 5
+      - null
+      - 6
+      - null
+      - 7
+      - null
+      - 8
+      - null
+      - 9
+      - null
+      - 10
+  - name: two-node-right-chain
+    in:
+      inorder:
+        - 2
+        - 1
+      postorder:
+        - 1
+        - 2
+    out:
+      - 2
+      - null
+      - 1
+  - name: three-node-right-chain
+    in:
+      inorder:
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 1
+        - 2
+        - 3
+    out:
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: four-node-right-chain
+    in:
+      inorder:
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 1
+        - 2
+        - 3
+        - 4
+    out:
+      - 4
+      - null
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: five-node-right-chain
+    in:
+      inorder:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out:
+      - 5
+      - null
+      - 4
+      - null
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: six-node-right-chain
+    in:
+      inorder:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    out:
+      - 6
+      - null
+      - 5
+      - null
+      - 4
+      - null
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: seven-node-right-chain
+    in:
+      inorder:
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out:
+      - 7
+      - null
+      - 6
+      - null
+      - 5
+      - null
+      - 4
+      - null
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: eight-node-right-chain
+    in:
+      inorder:
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      postorder:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+    out:
+      - 8
+      - null
+      - 7
+      - null
+      - 6
+      - null
+      - 5
+      - null
+      - 4
+      - null
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: large-balanced-seventeen-nodes
+    in:
+      inorder:
+        - 5
+        - 10
+        - 15
+        - 25
+        - 30
+        - 35
+        - 40
+        - 50
+        - 55
+        - 60
+        - 65
+        - 75
+        - 85
+        - 90
+        - 95
+      postorder:
+        - 5
+        - 15
+        - 10
+        - 30
+        - 40
+        - 35
+        - 25
+        - 55
+        - 65
+        - 60
+        - 85
+        - 95
+        - 90
+        - 75
+        - 50
+    out:
+      - 50
+      - 25
+      - 75
+      - 10
+      - 35
+      - 60
+      - 90
+      - 5
+      - 15
+      - 30
+      - 40
+      - 55
+      - 65
+      - 85
+      - 95
+  - name: medium-unbalanced-fifteen-nodes
+    in:
+      inorder:
+        - 10
+        - 20
+        - 25
+        - 30
+        - 35
+        - 40
+        - 45
+        - 50
+        - 55
+      postorder:
+        - 10
+        - 25
+        - 20
+        - 35
+        - 45
+        - 55
+        - 50
+        - 40
+        - 30
+    out:
+      - 30
+      - 20
+      - 40
+      - 10
+      - 25
+      - 35
+      - 50
+      - null
+      - null
+      - null
+      - null
+      - null
+      - null
+      - 45
+      - 55
+  - name: nine-node-complex-shape
+    in:
+      inorder:
+        - 1
+        - 3
+        - 4
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+      postorder:
+        - 1
+        - 4
+        - 3
+        - 7
+        - 8
+        - 11
+        - 10
+        - 9
+        - 6
+    out:
+      - 6
+      - 3
+      - 9
+      - 1
+      - 4
+      - 8
+      - 10
+      - null
+      - null
+      - null
+      - null
+      - 7
+      - null
+      - null
+      - 11
+  - name: fifteen-node-mixed-balanced
+    in:
+      inorder:
+        - 2
+        - 3
+        - 5
+        - 6
+        - 8
+        - 9
+        - 11
+        - 12
+        - 14
+        - 15
+        - 17
+        - 18
+        - 20
+        - 21
+        - 23
+      postorder:
+        - 2
+        - 5
+        - 3
+        - 8
+        - 11
+        - 9
+        - 6
+        - 14
+        - 17
+        - 15
+        - 20
+        - 23
+        - 21
+        - 18
+        - 12
+    out:
+      - 12
+      - 6
+      - 18
+      - 3
+      - 9
+      - 15
+      - 21
+      - 2
+      - 5
+      - 8
+      - 11
+      - 14
+      - 17
+      - 20
+      - 23

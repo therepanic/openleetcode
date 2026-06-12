@@ -1,0 +1,634 @@
+entry:
+  id: 101
+  title: "symmetric-tree"
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().isSymmetric({root})"
+    rust: "Solution::is_symmetric({root})"
+    python3: "Solution().isSymmetric({root})"
+    python2: "Solution().isSymmetric({root})"
+    ruby: "is_symmetric({root})"
+    java: "new Solution().isSymmetric({root})"
+    csharp: "new Solution().IsSymmetric({root})"
+    kotlin: "Solution().isSymmetric({root})"
+    go: "isSymmetric({root})"
+    dart: "Solution().isSymmetric({root})"
+    swift: "Solution().isSymmetric({root})"
+    typescript: "isSymmetric({root})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().isSymmetric(root, {result})"
+    checker: |
+      class Checker:
+          def isSymmetric(self, root, result) -> bool:
+              if not isinstance(result, bool):
+                  return False
+              if root is None or root == []:
+                  return result is True
+              if not isinstance(root, list):
+                  return False
+
+              def mirror(i, j):
+                  left_exists = i < len(root) and root[i] is not None
+                  right_exists = j < len(root) and root[j] is not None
+                  if not left_exists or not right_exists:
+                      return left_exists == right_exists
+                  if root[i] != root[j]:
+                      return False
+                  return mirror(2 * i + 1, 2 * j + 2) and mirror(2 * i + 2, 2 * j + 1)
+
+              return result == mirror(1, 2)
+
+seed: 101
+
+tests:
+  - name: "ex1_balanced_symmetric"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+    out: true
+
+  - name: "ex2_balanced_asymmetric"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - null
+        - 3
+        - null
+        - 3
+    out: false
+
+  - name: "single_node"
+    in:
+      root:
+        - 0
+    out: true
+
+  - name: "two_children_same_value"
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+    out: true
+
+  - name: "two_children_different_value"
+    in:
+      root:
+        - 1
+        - 1
+        - 2
+    out: false
+
+  - name: "left_child_only"
+    in:
+      root:
+        - 1
+        - 2
+    out: false
+
+  - name: "right_child_only"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out: false
+
+  - name: "three_levels_symmetric_zeroes"
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: true
+
+  - name: "three_levels_structure_mismatch"
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - null
+        - 0
+        - 0
+    out: false
+
+  - name: "deep_values_match"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 8
+        - 8
+        - 7
+        - 6
+        - 5
+    out: true
+
+  - name: "deep_leaf_value_mismatch"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+    out: false
+
+  - name: "deep_inner_value_mismatch"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 8
+        - 8
+        - 9
+        - 6
+        - 5
+    out: false
+
+  - name: "asymmetric_null_gap"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - null
+        - null
+        - 3
+    out: true
+
+  - name: "symmetric_with_inner_nulls"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - null
+        - 3
+        - 3
+        - null
+    out: true
+
+  - name: "asymmetric_with_inner_nulls"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out: false
+
+  - name: "negative_values_symmetric"
+    in:
+      root:
+        - -1
+        - -2
+        - -2
+        - -3
+        - -4
+        - -4
+        - -3
+    out: true
+
+  - name: "negative_values_asymmetric"
+    in:
+      root:
+        - -1
+        - -2
+        - -2
+        - -3
+        - -4
+        - -3
+        - -4
+    out: false
+
+  - name: "duplicate_subtrees_but_not_mirror"
+    in:
+      root:
+        - 5
+        - 7
+        - 7
+        - 8
+        - 9
+        - 8
+        - 9
+    out: false
+
+  - name: "mirror_same_values_but_different_shape"
+    in:
+      root:
+        - 2
+        - 3
+        - 3
+        - 4
+        - null
+        - null
+        - 4
+    out: true
+
+  - name: "mirror_shape_break_left_deeper"
+    in:
+      root:
+        - 2
+        - 3
+        - 3
+        - 4
+        - null
+        - null
+        - 4
+    out: true
+
+  - name: "mirror_shape_break_right_deeper"
+    in:
+      root:
+        - 2
+        - 3
+        - 3
+        - 4
+        - null
+        - 4
+        - 5
+    out: false
+
+  - name: "wide_symmetric_level_four"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 8
+        - 8
+        - 7
+        - 6
+        - 5
+        - 9
+        - 10
+        - 11
+        - 12
+        - 12
+        - 11
+        - 10
+        - 9
+    out: false
+
+  - name: "wide_asymmetric_level_four"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 8
+        - 8
+        - 7
+        - 6
+        - 5
+        - 9
+        - 10
+        - 11
+        - 12
+        - 12
+        - 11
+        - 10
+        - 8
+    out: false
+
+  - name: "null_root_absent"
+    in:
+      root:
+        - 1
+        - null
+        - 1
+        - null
+        - null
+        - null
+        - null
+    out: false
+
+  - name: "null_root_asymmetric"
+    in:
+      root:
+        - 1
+        - null
+        - 1
+        - null
+        - 2
+    out: false
+
+  - name: "empty_like_compressed_edge"
+    in:
+      root:
+        - 1
+    out: true
+
+  - name: "deep_left_right_mirror"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - null
+        - 3
+        - 3
+        - null
+        - null
+        - null
+        - 4
+        - 4
+        - null
+        - null
+        - null
+        - null
+    out: false
+
+  - name: "deep_left_right_mismatch"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - null
+        - 3
+        - 3
+        - null
+        - null
+        - null
+        - 4
+        - 5
+        - null
+        - null
+        - null
+        - null
+    out: false
+
+  - name: "balanced_with_repeated_values"
+    in:
+      root:
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+    out: true
+
+  - name: "balanced_with_repeated_values_but_break"
+    in:
+      root:
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 8
+    out: false
+
+  - name: "large_symmetric_1"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 8
+        - 8
+        - 7
+        - 6
+        - 5
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 13
+        - 12
+        - 11
+        - 10
+        - 9
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 18
+        - 17
+        - 16
+        - 15
+        - 14
+    out: false
+
+  - name: "large_asymmetric_1"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 7
+        - 8
+        - 8
+        - 7
+        - 6
+        - 5
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 13
+        - 12
+        - 11
+        - 10
+        - 9
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 18
+        - 17
+        - 16
+        - 15
+        - 13
+    out: false
+
+  - name: "large_symmetric_2"
+    in:
+      root:
+        - 4
+        - 1
+        - 1
+        - 2
+        - 3
+        - 3
+        - 2
+        - 4
+        - 5
+        - 6
+        - 7
+        - 7
+        - 6
+        - 5
+        - 4
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 12
+        - 11
+        - 10
+        - 9
+        - 8
+    out: false
+
+  - name: "large_asymmetric_2"
+    in:
+      root:
+        - 4
+        - 1
+        - 1
+        - 2
+        - 3
+        - 3
+        - 2
+        - 4
+        - 5
+        - 6
+        - 7
+        - 7
+        - 6
+        - 5
+        - 4
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 12
+        - 11
+        - 10
+        - 9
+        - 7
+    out: false
+
+  - name: "max_depth_shape_symmetric"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - null
+        - null
+        - 6
+        - 6
+        - null
+        - null
+        - 5
+    out: true
+
+  - name: "max_depth_shape_asymmetric"
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - null
+        - null
+        - 6
+        - 6
+        - null
+        - null
+        - 4
+    out: false
