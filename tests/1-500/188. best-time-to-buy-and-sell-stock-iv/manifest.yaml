@@ -3,11 +3,11 @@ entry:
   title: "best-time-to-buy-and-sell-stock-iv"
   params:
     k:
-      type: "int"
+      type: int
     prices:
-      type: "array"
+      type: array
       items:
-        type: "int"
+        type: int
   call:
     cpp: "Solution().maxProfit({k}, {prices})"
     rust: "Solution::max_profit({k}, {prices})"
@@ -21,576 +21,582 @@ entry:
     dart: "Solution().maxProfit({k}, {prices})"
     swift: "Solution().maxProfit({k}, {prices})"
     typescript: "maxProfit({k}, {prices})"
+
 judge:
   type: "exact"
+
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 200
+  memory_mb: 300
+
 oracle:
   python3:
     call: "Checker().maxProfit(k, prices, {result})"
     checker: |
-      import copy
-
-      from typing import List
-
-
-      class Solution:
-          def maxProfit(self, k: int, prices: List[int]) -> int:
+      class Checker:
+          def maxProfit(self, k, prices, result) -> bool:
+              if not isinstance(result, int):
+                  return False
               n = len(prices)
+              if k < 0 or n < 0:
+                  return False
               if k == 0 or n < 2:
-                  return 0
+                  return result == 0
               if k >= n // 2:
-                  return sum(max(0, prices[i] - prices[i - 1]) for i in range(1, n))
-
-              hold = [-10**18] * (k + 1)
+                  expected = sum(max(0, prices[i] - prices[i - 1]) for i in range(1, n))
+                  return result == expected
+              hold = [-(10**18)] * (k + 1)
               free = [0] * (k + 1)
               for price in prices:
                   for t in range(1, k + 1):
                       hold[t] = max(hold[t], free[t - 1] - price)
                       free[t] = max(free[t], hold[t] + price)
-              return max(free)
+              expected = max(free)
+              return result == expected
 
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def maxProfit(self, k, prices, result):
-              prepared_k = prepare_input(k, "int"); prepared_prices = prepare_input(prices, "array[int]")
-              expected = Solution().maxProfit(prepared_k, prepared_prices)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
 seed: 188
+
 tests:
-  - name: "case_01"
+  - name: "example_1"
     in:
       k: 2
-      prices: [2, 4, 1]
+      prices:
+        - 2
+        - 4
+        - 1
     out: 2
-  - name: "case_02"
+
+  - name: "example_2"
     in:
       k: 2
-      prices: [3, 2, 6, 5, 0, 3]
+      prices:
+        - 3
+        - 2
+        - 6
+        - 5
+        - 0
+        - 3
     out: 7
-  - name: "case_03"
-    in:
-      k: 2
-      prices: [22, 8]
-    out: 0
-  - name: "case_04"
+
+  - name: "single_day"
     in:
       k: 1
-      prices: [0, 22]
-    out: 22
-  - name: "case_05"
-    in:
-      k: 2
-      prices: [15, 21, 28, 21, 18, 2, 6, 1, 29]
-    out: 41
-  - name: "case_06"
-    in:
-      k: 6
-      prices: [3, 18, 7, 0, 24, 16, 25, 15, 25, 25, 8, 7, 26, 12]
-    out: 77
-  - name: "case_07"
-    in:
-      k: 4
-      prices: [5, 13, 19, 1, 25, 28, 23, 30, 15, 20, 10]
-    out: 53
-  - name: "case_08"
-    in:
-      k: 5
-      prices: [2, 3, 24, 26, 24, 0, 24, 2, 13, 12, 29]
-    out: 76
-  - name: "case_09"
-    in:
-      k: 2
-      prices: [17, 15, 25, 25, 27, 24]
-    out: 12
-  - name: "case_10"
-    in:
-      k: 5
-      prices: [21, 19, 20, 16, 27, 12, 28, 13, 24, 11, 16, 2]
-    out: 44
-  - name: "case_11"
+      prices:
+        - 1
+    out: 0
+
+  - name: "two_days_up"
     in:
       k: 1
-      prices: [3]
-    out: 0
-  - name: "case_12"
+      prices:
+        - 1
+        - 2
+    out: 1
+
+  - name: "two_days_down"
     in:
       k: 1
-      prices: [20, 9, 12, 29, 11, 29, 30, 29, 29, 3, 27]
-    out: 24
-  - name: "case_13"
+      prices:
+        - 2
+        - 1
+    out: 0
+
+  - name: "strictly_increasing_small_k"
     in:
       k: 1
-      prices: [26, 25, 24, 14, 16]
-    out: 2
-  - name: "case_14"
-    in:
-      k: 2
-      prices: [9]
-    out: 0
-  - name: "case_15"
-    in:
-      k: 4
-      prices: [9, 9, 14, 5, 6, 8, 30, 12, 12, 30, 13]
-    out: 48
-  - name: "case_16"
-    in:
-      k: 3
-      prices: [14, 25, 24, 27, 20, 8, 27, 0]
-    out: 33
-  - name: "case_17"
-    in:
-      k: 2
-      prices: [19, 21, 0, 8, 17, 8, 21, 0, 28, 5, 8, 3]
-    out: 49
-  - name: "case_18"
-    in:
-      k: 6
-      prices: [7, 16, 0, 12, 13, 15, 29, 17, 27, 14, 29, 28]
-    out: 63
-  - name: "case_19"
-    in:
-      k: 3
-      prices: [28, 17, 28, 8, 30, 17, 5, 25, 8, 3]
-    out: 53
-  - name: "case_20"
-    in:
-      k: 5
-      prices: [2, 9, 27, 0, 1]
-    out: 26
-  - name: "case_21"
-    in:
-      k: 3
-      prices: [17, 15, 23, 12, 25, 16, 9, 4, 5, 30]
-    out: 47
-  - name: "case_22"
-    in:
-      k: 6
-      prices: [8, 21]
-    out: 13
-  - name: "case_23"
-    in:
-      k: 5
-      prices: [21]
-    out: 0
-  - name: "case_24"
-    in:
-      k: 2
-      prices: [6, 20, 21, 15, 1]
-    out: 15
-  - name: "case_25"
-    in:
-      k: 5
-      prices: [27]
-    out: 0
-  - name: "case_26"
-    in:
-      k: 2
-      prices: [12, 30, 26, 21, 21, 6, 17, 1, 6, 30, 26, 22, 14]
-    out: 47
-  - name: "case_27"
-    in:
-      k: 4
-      prices: [15, 27, 18, 22, 16, 3, 29, 5, 8, 12]
-    out: 49
-  - name: "case_28"
-    in:
-      k: 5
-      prices: [26, 16, 0, 1, 28, 25, 29, 11, 4, 19, 30, 4, 6, 17, 6]
-    out: 71
-  - name: "case_29"
-    in:
-      k: 1
-      prices: [29, 23, 0, 19, 26, 20, 4, 18, 27, 12, 25, 12, 5, 30, 4]
-    out: 30
-  - name: "case_30"
-    in:
-      k: 2
-      prices: [16, 30, 4, 15, 3, 26, 13, 30, 19, 29]
-    out: 41
-  - name: "case_31"
-    in:
-      k: 2
-      prices: [25, 0, 1, 29, 21]
-    out: 29
-  - name: "case_32"
-    in:
-      k: 6
-      prices: [13, 30, 12, 0, 4, 28, 20, 16, 17, 23, 2]
-    out: 52
-  - name: "case_33"
-    in:
-      k: 6
-      prices: [11]
-    out: 0
-  - name: "case_34"
-    in:
-      k: 4
-      prices: [25, 29]
+      prices:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
     out: 4
-  - name: "case_35"
+
+  - name: "strictly_decreasing"
     in:
-      k: 2
-      prices: [3, 14, 5, 0, 17, 5, 0, 24, 20, 30]
-    out: 47
-  - name: "case_36"
-    in:
-      k: 6
-      prices: [25, 12, 22, 30]
-    out: 18
-  - name: "case_37"
-    in:
-      k: 2
-      prices: [1, 27, 6, 9, 6, 10]
-    out: 30
-  - name: "case_38"
-    in:
-      k: 4
-      prices: [18, 24, 11, 29, 30, 17, 3, 29, 1, 24, 17, 29, 4]
-    out: 80
-  - name: "case_39"
-    in:
-      k: 6
-      prices: [29, 22]
+      k: 1
+      prices:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
     out: 0
-  - name: "case_40"
+
+  - name: "two_transactions_on_rise"
     in:
-      k: 1
-      prices: [30, 12, 23, 25, 11, 9, 24, 29]
-    out: 20
-  - name: "case_41"
+      k: 2
+      prices:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out: 4
+
+  - name: "all_equal"
     in:
-      k: 5
-      prices: [4]
+      k: 3
+      prices:
+        - 7
+        - 7
+        - 7
+        - 7
     out: 0
-  - name: "case_42"
-    in:
-      k: 5
-      prices: [26, 26, 30, 23, 5, 3, 2, 12, 19, 24, 27, 15, 26, 10]
-    out: 40
-  - name: "case_43"
-    in:
-      k: 6
-      prices: [26, 12, 1, 7, 28, 14, 22, 18, 0, 21]
-    out: 56
-  - name: "case_44"
-    in:
-      k: 3
-      prices: [23, 17, 26, 29, 19]
-    out: 12
-  - name: "case_45"
+
+  - name: "classic_two_peaks"
     in:
       k: 2
-      prices: [10, 19, 19, 1, 24, 8, 19, 9, 4]
-    out: 34
-  - name: "case_46"
+      prices:
+        - 3
+        - 3
+        - 5
+        - 0
+        - 0
+        - 3
+        - 1
+        - 4
+    out: 6
+
+  - name: "k_equals_one_with_multiple_peaks"
     in:
       k: 1
-      prices: [8, 11, 20]
-    out: 12
-  - name: "case_47"
-    in:
-      k: 5
-      prices: [11, 17, 0, 8, 5, 9]
-    out: 18
-  - name: "case_48"
-    in:
-      k: 4
-      prices: [19, 26, 5, 24, 7, 11, 10, 21, 13, 1, 18, 9, 23]
-    out: 64
-  - name: "case_49"
-    in:
-      k: 4
-      prices: [25, 3, 11, 27, 4, 14]
-    out: 34
-  - name: "case_50"
-    in:
-      k: 6
-      prices: [21, 6, 23, 29, 21, 25, 3, 9, 24, 30, 2, 5]
-    out: 57
-  - name: "case_51"
-    in:
-      k: 3
-      prices: [9, 18, 18, 2, 12, 15, 9, 26, 14, 13, 0, 26, 19]
-    out: 59
-  - name: "case_52"
-    in:
-      k: 3
-      prices: [4, 16, 11, 9, 4, 20, 30, 25, 1, 10, 17, 15]
-    out: 54
-  - name: "case_53"
-    in:
-      k: 4
-      prices: [20, 3, 23, 15, 21]
-    out: 26
-  - name: "case_54"
-    in:
-      k: 2
-      prices: [29, 30, 6, 19, 22, 19]
-    out: 17
-  - name: "case_55"
-    in:
-      k: 1
-      prices: [24, 4, 0, 8, 0, 5]
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
     out: 8
-  - name: "case_56"
-    in:
-      k: 1
-      prices: [9, 28, 16, 21]
-    out: 19
-  - name: "case_57"
+
+  - name: "k_equals_two_with_multiple_peaks"
     in:
       k: 2
-      prices: [24, 24, 23, 8, 17, 7, 9, 30, 11, 11, 10, 2]
-    out: 32
-  - name: "case_58"
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
+    out: 13
+
+  - name: "k_large_triggers_greedy"
     in:
-      k: 1
-      prices: [10, 21, 2, 27, 9, 18, 6, 30, 2, 19, 24, 19, 11, 4]
-    out: 28
-  - name: "case_59"
+      k: 100
+      prices:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out: 4
+
+  - name: "small_wave"
     in:
-      k: 5
-      prices: [28, 25, 25, 15, 27, 23]
-    out: 12
-  - name: "case_60"
+      k: 3
+      prices:
+        - 2
+        - 1
+        - 2
+        - 0
+        - 1
+    out: 2
+
+  - name: "zigzag_short"
     in:
-      k: 5
-      prices: [14, 11, 1, 3, 4, 1, 6, 25, 29, 16, 16, 21, 20, 12, 12]
-    out: 36
-  - name: "case_61"
+      k: 2
+      prices:
+        - 6
+        - 1
+        - 3
+        - 2
+        - 4
+        - 7
+    out: 7
+
+  - name: "zigzag_longer"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
+    out: 13
+
+  - name: "low_high_low"
     in:
       k: 4
-      prices: [8, 16, 29, 16, 10, 18, 4, 30, 20, 17, 28, 7]
-    out: 66
-  - name: "case_62"
+      prices:
+        - 2
+        - 4
+        - 1
+    out: 2
+
+  - name: "sawtooth_three_days"
+    in:
+      k: 2
+      prices:
+        - 2
+        - 1
+        - 4
+    out: 3
+
+  - name: "spike_at_end"
+    in:
+      k: 2
+      prices:
+        - 2
+        - 4
+        - 1
+        - 7
+    out: 8
+
+  - name: "two_big_moves"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 3
+        - 2
+        - 8
+        - 4
+        - 9
+    out: 12
+
+  - name: "three_transactions_possible"
+    in:
+      k: 3
+      prices:
+        - 1
+        - 3
+        - 7
+        - 5
+        - 10
+        - 3
+    out: 11
+
+  - name: "tight_k_with_three_peaks"
+    in:
+      k: 3
+      prices:
+        - 2
+        - 4
+        - 1
+        - 5
+        - 2
+        - 9
+        - 7
+    out: 13
+
+  - name: "k_more_than_needed"
+    in:
+      k: 5
+      prices:
+        - 3
+        - 2
+        - 6
+        - 5
+        - 0
+        - 3
+    out: 7
+
+  - name: "flat_zeroes"
+    in:
+      k: 100
+      prices:
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 0
+
+  - name: "alternating_small"
+    in:
+      k: 50
+      prices:
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out: 4
+
+  - name: "big_single_transaction"
+    in:
+      k: 2
+      prices:
+        - 5
+        - 11
+        - 3
+        - 50
+        - 60
+        - 90
+    out: 93
+
+  - name: "up_down_up"
+    in:
+      k: 3
+      prices:
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+        - 5
+    out: 7
+
+  - name: "descending_then_rise"
+    in:
+      k: 2
+      prices:
+        - 9
+        - 8
+        - 7
+        - 1
+        - 2
+        - 3
+    out: 2
+
+  - name: "one_transaction_best_late"
     in:
       k: 1
-      prices: [14, 0, 8, 5, 18, 13, 6, 11]
-    out: 18
-  - name: "case_63"
+      prices:
+        - 1
+        - 3
+        - 2
+        - 8
+        - 4
+        - 9
+    out: 8
+
+  - name: "no_profit_with_large_k"
     in:
-      k: 1
-      prices: [1, 5, 16, 21]
-    out: 20
-  - name: "case_64"
+      k: 10
+      prices:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+        - 0
+    out: 0
+
+  - name: "almost_every_day_trade"
     in:
-      k: 1
-      prices: [30, 9, 16, 2, 15, 14, 28, 24, 3, 4, 22, 7]
-    out: 26
-  - name: "generated_01"
-    seed: 18801
+      k: 99
+      prices:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 3
+
+  - name: "two_transactions_with_reuse_trap"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 2
+
+  - name: "huge_prices"
+    in:
+      k: 3
+      prices:
+        - 1000
+        - 0
+        - 1000
+        - 0
+        - 1000
+    out: 2000
+
+  - name: "max_k_small_n"
+    in:
+      k: 100
+      prices:
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+    out: 0
+
+  - name: "large_alternating_20"
+    in:
+      k: 49
+      prices:
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+    out: 9990
+
+  - name: "k_two_on_repeating_pattern"
+    in:
+      k: 2
+      prices:
+        - 1
+        - 5
+        - 2
+        - 3
+        - 7
+        - 2
+        - 6
+        - 4
+        - 9
+    out: 13
+
+  - name: "k_four_on_spread_peaks"
+    in:
+      k: 4
+      prices:
+        - 1
+        - 3
+        - 2
+        - 8
+        - 4
+        - 9
+        - 0
+        - 10
+    out: 23
+
+  - name: "long_monotone_greedy"
+    in:
+      k: 20
+      prices:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+    out: 19
+
+  - name: "two_days_zero_profit"
+    in:
+      k: 2
+      prices:
+        - 0
+        - 0
+    out: 0
+
+  - name: "borderline_k_switch"
+    in:
+      k: 5
+      prices:
+        - 1
+        - 2
+        - 4
+        - 2
+        - 5
+        - 7
+        - 2
+        - 4
+        - 9
+        - 0
+    out: 15
+  - name: "generated_medium_random"
+    seed: 188001
     in:
       k:
-        gen: "int"
+        gen: int
         min: 1
-        max: 100
+        max: 25
       prices:
-        gen: "array"
+        gen: array
         len:
-          gen: "int"
-          min: 1
-          max: 1000
+          gen: int
+          min: 40
+          max: 40
         of:
-          gen: "int"
+          gen: int
           min: 0
           max: 1000
-  - name: "generated_02"
-    seed: 18802
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: "generated_large_random"
+    seed: 188002
     in:
       k:
-        gen: "int"
+        gen: int
         min: 1
-        max: 100
+        max: 50
       prices:
-        gen: "array"
+        gen: array
         len:
-          gen: "int"
-          min: 1
-          max: 1000
+          gen: int
+          min: 100
+          max: 100
         of:
-          gen: "int"
+          gen: int
           min: 0
           max: 1000
-  - name: "generated_03"
-    seed: 18803
-    in:
-      k:
-        gen: "int"
-        min: 1
-        max: 100
-      prices:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000
-  - name: "generated_04"
-    seed: 18804
-    in:
-      k:
-        gen: "int"
-        min: 1
-        max: 100
-      prices:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000
-  - name: "generated_05"
-    seed: 18805
-    in:
-      k:
-        gen: "int"
-        min: 1
-        max: 100
-      prices:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000
-  - name: "generated_06"
-    seed: 18806
-    in:
-      k:
-        gen: "int"
-        min: 1
-        max: 100
-      prices:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000
-  - name: "generated_07"
-    seed: 18807
-    in:
-      k:
-        gen: "int"
-        min: 1
-        max: 100
-      prices:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000
-  - name: "generated_08"
-    seed: 18808
-    in:
-      k:
-        gen: "int"
-        min: 1
-        max: 100
-      prices:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int

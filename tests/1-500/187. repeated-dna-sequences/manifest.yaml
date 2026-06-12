@@ -1,363 +1,250 @@
 entry:
   id: 187
-  title: "repeated-dna-sequences"
+  title: repeated-dna-sequences
   params:
     s:
-      type: "string"
+      type: string
   call:
-    cpp: "Solution().findRepeatedDnaSequences({s})"
-    rust: "Solution::find_repeated_dna_sequences({s})"
-    python3: "Solution().findRepeatedDnaSequences({s})"
-    python2: "Solution().findRepeatedDnaSequences({s})"
-    ruby: "find_repeated_dna_sequences({s})"
-    java: "new Solution().findRepeatedDnaSequences({s})"
-    csharp: "new Solution().FindRepeatedDnaSequences({s})"
-    kotlin: "Solution().findRepeatedDnaSequences({s})"
-    go: "findRepeatedDnaSequences({s})"
-    dart: "Solution().findRepeatedDnaSequences({s})"
-    swift: "Solution().findRepeatedDnaSequences({s})"
-    typescript: "findRepeatedDnaSequences({s})"
+    cpp: Solution().findRepeatedDnaSequences({s})
+    rust: Solution::find_repeated_dna_sequences({s})
+    python3: Solution().findRepeatedDnaSequences({s})
+    python2: Solution().findRepeatedDnaSequences({s})
+    ruby: find_repeated_dna_sequences({s})
+    java: new Solution().findRepeatedDnaSequences({s})
+    csharp: new Solution().FindRepeatedDnaSequences({s})
+    kotlin: Solution().findRepeatedDnaSequences({s})
+    go: findRepeatedDnaSequences({s})
+    dart: Solution().findRepeatedDnaSequences({s})
+    swift: Solution().findRepeatedDnaSequences({s})
+    typescript: findRepeatedDnaSequences({s})
 judge:
-  type: "exact"
+  type: ignore_order
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().findRepeatedDnaSequences(s, {result})"
+    call: Checker().findRepeatedDnaSequences(s, {result})
     checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution:
-          def findRepeatedDnaSequences(self, s: str) -> List[str]:
-              left = 0
-              res = []
-              n = len(s)
-              count = {}
-
-              for right in range(9, n):
-                  curr = s[left:right+1]
-                  if curr not in count:
-                      count[curr] = 1
-                  else:
-                      if count[curr] == 1:
-                          res.append(curr[:])
-                          count[curr] += 1
-                  left += 1
-              return res
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "array[string]"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
       class Checker:
           def findRepeatedDnaSequences(self, s, result):
-              prepared_s = prepare_input(s, "string")
-              expected = Solution().findRepeatedDnaSequences(prepared_s)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+              def repeated_sequences(text):
+                  seen = {}
+                  repeated = []
+                  for i in range(len(text) - 9):
+                      seq = text[i:i + 10]
+                      if seq not in seen:
+                          seen[seq] = 1
+                      elif seen[seq] == 1:
+                          repeated.append(seq)
+                          seen[seq] = 2
+                  return repeated
+
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, str) for x in result):
+                  return False
+              if any(len(x) != 10 for x in result):
+                  return False
+              if any(set(x) - set("ACGT") for x in result):
+                  return False
+
+              expected = repeated_sequences(s)
+              return sorted(result) == sorted(expected) and len(result) == len(set(result))
 seed: 187
 tests:
-  - name: "case_01"
+  - name: example-1
     in:
-      s: "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
-  - name: "case_02"
+      s: AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT
+  - name: example-2
     in:
-      s: "AAAAAAAAAAAAA"
-  - name: "case_03"
+      s: AAAAAAAAAAAAA
+  - name: no-repeat-short
     in:
-      s: "TCGGGACTAGGGTGTAACGGGGGGTAATGTATCCGGAAGG"
-  - name: "case_04"
+      s: ACGTACGTA
+  - name: exactly-ten
     in:
-      s: "ATACCAGGAATTAGGGCCGG"
-  - name: "case_05"
+      s: ACGTACGTAC
+  - name: two-overlapping-repeats
     in:
-      s: "TTGACACGAGTA"
-  - name: "case_06"
+      s: AAAAAAAAACAAAAAAAACAAAAAAAAC
+  - name: one-repeat-at-start
     in:
-      s: "AGGGCGTGTCTACTTT"
-  - name: "case_07"
+      s: TTTTTTTTTTTTT
+  - name: one-repeat-at-end
     in:
-      s: "CAAACCCACACAAAGCGATACTAGGATCTGCAATA"
-  - name: "case_08"
+      s: CCCCCCCCCCCCCC
+  - name: alternating-ac
     in:
-      s: "CCAAATGAGGCGTATATGCGG"
-  - name: "case_09"
+      s: ACACACACACACACACACAC
+  - name: alternating-ag
     in:
-      s: "AGGAGCGTTGTTCACAGTGACGCCTTGCCTACTGACTC"
-  - name: "case_10"
+      s: AGAGAGAGAGAGAGAGAGAG
+  - name: alternating-at
     in:
-      s: "CGCGTCGGTTATCAAATAGTCGGAGAAAGATGTAC"
-  - name: "case_11"
+      s: ATATATATATATATATATAT
+  - name: alternating-cg
     in:
-      s: "CAATTTCAAC"
-  - name: "case_12"
+      s: CGCGCGCGCGCGCGCGCGCG
+  - name: mixed-small-1
     in:
-      s: "GCATAAAGGTATTCCCCGCCATCGAAGGCT"
-  - name: "case_13"
+      s: ACGTACGTAAAAACGTACGT
+  - name: mixed-small-2
     in:
-      s: "TTGTTTGAGGCCCGCGA"
-  - name: "case_14"
+      s: GATTACAGATTACAGATTACA
+  - name: mixed-small-3
     in:
-      s: "GCTCGGACCCGCTCCAGAGACTCT"
-  - name: "case_15"
+      s: TGCATGCATGCAAAAATGCATGCATGCA
+  - name: mixed-small-4
     in:
-      s: "TACTATCAGG"
-  - name: "case_16"
+      s: AAAACCCCGGGGTTTTAAAACCCCGGGG
+  - name: repeated-window-shift
     in:
-      s: "GTGGGTTCGTATA"
-  - name: "case_17"
+      s: AACCGGTTAACCGGTTAAACCGGTTAACCGGTT
+  - name: no-repeat-longer-than-ten
     in:
-      s: "TTTAACGGGAGATGCGAA"
-  - name: "case_18"
+      s: ACGTACGTACG
+  - name: all-a-11
     in:
-      s: "GCCGGTACAGCCGATA"
-  - name: "case_19"
-    in:
-      s: "TGCTTCGGACGTCAGTACTTATGGGTTGCGCAACGCATA"
-  - name: "case_20"
-    in:
-      s: "CCGAAGAAGGC"
-  - name: "case_21"
-    in:
-      s: "TCCGTAGCGGACAAGACCACGGGAAACCAGTCGGGAA"
-  - name: "case_22"
-    in:
-      s: "AACCAACACACGCCG"
-  - name: "case_23"
-    in:
-      s: "GCCCGAAGAGG"
-  - name: "case_24"
-    in:
-      s: "GGTATTGGAATGGATCAGTCTACTTCTAGTCGCTTCC"
-  - name: "case_25"
-    in:
-      s: "CAGAATTCCGCCCCAAGT"
-  - name: "case_26"
-    in:
-      s: "GCCCGCCACACTACACT"
-  - name: "case_27"
-    in:
-      s: "GACAGATCATATGGTGTTATC"
-  - name: "case_28"
-    in:
-      s: "CGAAGATTGGGTGTCCTCTAACAGT"
-  - name: "case_29"
-    in:
-      s: "ATAGCCAACTACTCGCTCG"
-  - name: "case_30"
-    in:
-      s: "GTGGGTCAAAACTCCACGTCTT"
-  - name: "case_31"
-    in:
-      s: "CTACATGAATCAACGGTAGGTCA"
-  - name: "case_32"
-    in:
-      s: "TGGAGTCGACGACTTCACGAGGAACACT"
-  - name: "case_33"
-    in:
-      s: "GGAGAGTCTTTTTGAGAAAAACCTCACGCCA"
-  - name: "case_34"
-    in:
-      s: "TTGATAGTTAGGCATTTTATTATG"
-  - name: "case_35"
-    in:
-      s: "CCTGAATAACGGGGCAGCCAG"
-  - name: "case_36"
-    in:
-      s: "ATGCCATGACGGGACTGCTAA"
-  - name: "case_37"
-    in:
-      s: "TTCTGGCCCCGGGCTAGTCA"
-  - name: "case_38"
-    in:
-      s: "CACATTGTACACTCGGCGTGGAGTGAAACGAT"
-  - name: "case_39"
-    in:
-      s: "AGGCTATCGATGGGTC"
-  - name: "case_40"
-    in:
-      s: "AATAACGAACCGTAG"
-  - name: "case_41"
-    in:
-      s: "CCATACGTGTACTATCGTGGCCTATGGTGACGCACCA"
-  - name: "case_42"
-    in:
-      s: "TTCAAAGCTGAATAGCGAGTAGGACTACTC"
-  - name: "case_43"
-    in:
-      s: "AAGTATAGGATTTATGTAATATTTG"
-  - name: "case_44"
-    in:
-      s: "AATGTGCTTGCAATGTCCCCTCTGGAC"
-  - name: "case_45"
-    in:
-      s: "AGTTATGCACGTGGCGTCGAACTATAGCGGCTCCTGACC"
-  - name: "case_46"
-    in:
-      s: "AAAAGGAGTCGTAAACCATCTCAGCTCCGAC"
-  - name: "case_47"
-    in:
-      s: "CTGTCCCAATA"
-  - name: "case_48"
-    in:
-      s: "TTCAGCGTGCATTGAGTCGACGAGTGACC"
-  - name: "case_49"
-    in:
-      s: "CAAGCTATCGTTTTCTCGTGACGGTATTAC"
-  - name: "case_50"
-    in:
-      s: "ACAATCGCTAT"
-  - name: "case_51"
-    in:
-      s: "TATCTGGGCGCCC"
-  - name: "case_52"
-    in:
-      s: "GCGATACTGTGTA"
-  - name: "case_53"
-    in:
-      s: "GGGCAAGGCTGCGGTGT"
-  - name: "case_54"
-    in:
-      s: "TAAAAGATAG"
-  - name: "case_55"
-    in:
-      s: "TGACGAATCGCGGATCCGCGACTGGCGT"
-  - name: "case_56"
-    in:
-      s: "ACGCTCTACTGTCAAATCGGAATTATACATCT"
-  - name: "case_57"
-    in:
-      s: "CGCAATACTATAGTCTCTAATAGTGCGAGGGTCAACTCA"
-  - name: "case_58"
-    in:
-      s: "CAAGAACAACGGTAGCTATCTTAGGGGCAGCCTTGTA"
-  - name: "case_59"
-    in:
-      s: "TCGTAAAGTATTCTGT"
-  - name: "case_60"
-    in:
-      s: "CGAAGCACAAGGCACATAATACTCGACC"
-  - name: "case_61"
-    in:
-      s: "GCAAGGGGCTGATATTCGCTGGAAACTACGCGTAT"
-  - name: "case_62"
-    in:
-      s: "GGGGAGGTCGGCAGCGAGAGTACGCCGC"
-  - name: "case_63"
-    in:
-      s: "TGACAGGTACACTTCCCGGATCATG"
-  - name: "case_64"
-    in:
-      s: "AAATCAATGGTGTGGCCCGTCCTCGTGCTAATGCATT"
-  - name: "case_65"
-    in:
-      s: "ACAGCTATCTTCGTG"
-  - name: "case_66"
-    in:
-      s: "ACGCTGTTAGACGAGCATTTCTGTGGGGTACAAA"
-  - name: "case_67"
-    in:
-      s: "CCGGATTTCTGTGGTTGCCCTG"
-  - name: "case_68"
-    in:
-      s: "CGCCCCTTCTATAGACAGTACCCGGA"
-  - name: "case_69"
-    in:
-      s: "AAAATGTCGACGCTTATTTTGTGTGACT"
-  - name: "case_70"
-    in:
-      s: "GTTAGGGTACCAAACAAGACTGACCCCGAATCAA"
-  - name: "case_71"
-    in:
-      s: "TAAGACAGAT"
-  - name: "case_72"
-    in:
-      s: "GAAAGTGACTGCCAGATACGCCTAACAATC"
+      s: AAAAAAAAAAA
+  - name: all-c-15
+    in:
+      s: CCCCCCCCCCCCCCC
+  - name: all-g-20
+    in:
+      s: GGGGGGGGGGGGGGGGGGGG
+  - name: all-t-30
+    in:
+      s: TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+  - name: two-distinct-repeats
+    in:
+      s: AAAAACCCCCAAAAACCCCCAAAAACCCCC
+  - name: three-distinct-repeats
+    in:
+      s: AAAAACCCCCAAAAAGGGGGAAAAACCCCCAAAAAGGGGG
+  - name: periodic-4
+    in:
+      s: ACGTACGTACGTACGTACGTACGTACGTACGT
+  - name: periodic-5
+    in:
+      s: AACGTAACGTAACGTAACGTAACGTA
+  - name: periodic-6
+    in:
+      s: ACGTTAACGTTAACGTTAACGTTAA
+  - name: periodic-7
+    in:
+      s: AAAAAACAAAAAACAAAAAACAAAAAAC
+  - name: periodic-8
+    in:
+      s: CGTACGTACGTACGTACGTACGTACGTA
+  - name: periodic-9
+    in:
+      s: TGCATGCATGCATGCATGCATGCATGCA
+  - name: periodic-10
+    in:
+      s: ACGTACGTAAACGTACGTAAACGTACGTAA
+  - name: periodic-11
+    in:
+      s: GGGTTTAAAACCCGGGTTTAAAACCCGGGTTTAAAA
+  - name: generated-medium-1
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 50
+          max: 80
+        alphabet: ACGT
+  - name: generated-medium-2
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 90
+          max: 120
+        alphabet: ACGT
+  - name: generated-medium-3
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 150
+          max: 220
+        alphabet: ACGT
+  - name: generated-medium-4
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 300
+          max: 400
+        alphabet: ACGT
+  - name: generated-medium-5
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 500
+          max: 800
+        alphabet: ACGT
+  - name: generated-large-1
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 99990
+          max: 100000
+        alphabet: ACGT
+  - name: generated-large-2
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 95000
+          max: 100000
+        alphabet: ACGT
+  - name: generated-large-3
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 70000
+          max: 90000
+        alphabet: ACGT
+  - name: generated-large-4
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 60000
+          max: 80000
+        alphabet: ACGT
+  - name: generated-large-5
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 80000
+          max: 100000
+        alphabet: ACGT
+  - name: edge-no-repeat-10
+    in:
+      s: ACGTACGTAA
+  - name: edge-one-repeat-11
+    in:
+      s: ACGTACGTAAA
+  - name: edge-many-overlaps
+    in:
+      s: AAAAAGAAAAAGAAAAAGAAAAAG
+  - name: edge-multiple-results
+    in:
+      s: AAAAAAAAACCCCCCCCCCAAAAAAAAACCCCCCCCCC

@@ -1,505 +1,228 @@
 entry:
   id: 201
-  title: "bitwise-and-of-numbers-range"
+  title: bitwise-and-of-numbers-range
   params:
     left:
-      type: "int"
+      type: int
     right:
-      type: "int"
+      type: int
   call:
-    cpp: "Solution().rangeBitwiseAnd({left}, {right})"
-    rust: "Solution::range_bitwise_and({left}, {right})"
-    python3: "Solution().rangeBitwiseAnd({left}, {right})"
-    python2: "Solution().rangeBitwiseAnd({left}, {right})"
-    ruby: "range_bitwise_and({left}, {right})"
-    java: "new Solution().rangeBitwiseAnd({left}, {right})"
-    csharp: "new Solution().RangeBitwiseAnd({left}, {right})"
-    kotlin: "Solution().rangeBitwiseAnd({left}, {right})"
-    go: "rangeBitwiseAnd({left}, {right})"
-    dart: "Solution().rangeBitwiseAnd({left}, {right})"
-    swift: "Solution().rangeBitwiseAnd({left}, {right})"
-    typescript: "rangeBitwiseAnd({left}, {right})"
+    cpp: Solution().rangeBitwiseAnd({left}, {right})
+    rust: Solution::range_bitwise_and({left}, {right})
+    python3: Solution().rangeBitwiseAnd({left}, {right})
+    python2: Solution().rangeBitwiseAnd({left}, {right})
+    ruby: range_bitwise_and({left}, {right})
+    java: new Solution().rangeBitwiseAnd({left}, {right})
+    csharp: new Solution().RangeBitwiseAnd({left}, {right})
+    kotlin: Solution().rangeBitwiseAnd({left}, {right})
+    go: rangeBitwiseAnd({left}, {right})
+    dart: Solution().rangeBitwiseAnd({left}, {right})
+    swift: Solution().rangeBitwiseAnd({left}, {right})
+    typescript: rangeBitwiseAnd({left}, {right})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().rangeBitwiseAnd(left, right, {result})"
+    call: Checker().rangeBitwiseAnd(left, right, result)
     checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution(object):
-          def rangeBitwiseAnd(self, left, right):
-              """
-              :type left: int
-              :type right: int
-              :rtype: int
-              """
-              shift = 0
-              while left < right:
-                  left >>= 1
-                  right >>= 1
-                  shift += 1
-              return left << shift
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
       class Checker:
           def rangeBitwiseAnd(self, left, right, result):
-              prepared_left = prepare_input(left, "int"); prepared_right = prepare_input(right, "int")
-              expected = Solution().rangeBitwiseAnd(prepared_left, prepared_right)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+              shift = 0
+              expected_left = left
+              expected_right = right
+              while expected_left < expected_right:
+                  expected_left >>= 1
+                  expected_right >>= 1
+                  shift += 1
+              expected = expected_left << shift
+              return expected == result
 seed: 201
 tests:
-  - name: "case_01"
+  - name: example-1
     in:
       left: 5
       right: 7
     out: 4
-  - name: "case_02"
+  - name: example-2
     in:
       left: 0
       right: 0
     out: 0
-  - name: "case_03"
+  - name: example-3
     in:
       left: 1
       right: 2147483647
     out: 0
-  - name: "case_04"
+  - name: same-single-1
     in:
-      left: 5334
-      right: 5764
-    out: 5120
-  - name: "case_05"
+      left: 1
+      right: 1
+    out: 1
+  - name: same-single-2
     in:
-      left: 4633
-      right: 4967
-    out: 4608
-  - name: "case_06"
+      left: 2
+      right: 2
+    out: 2
+  - name: same-single-3
     in:
-      left: 7698
-      right: 8333
+      left: 3
+      right: 3
+    out: 3
+  - name: small-window-1
+    in:
+      left: 6
+      right: 7
+    out: 6
+  - name: boundary-cross-1
+    in:
+      left: 7
+      right: 8
     out: 0
-  - name: "case_07"
+  - name: power-block-1
     in:
-      left: 7389
-      right: 7882
-    out: 7168
-  - name: "case_08"
+      left: 8
+      right: 15
+    out: 8
+  - name: power-block-2
     in:
-      left: 7768
-      right: 7910
-    out: 7680
-  - name: "case_09"
+      left: 10
+      right: 15
+    out: 8
+  - name: power-block-3
     in:
-      left: 1020
-      right: 1568
+      left: 12
+      right: 15
+    out: 12
+  - name: aligned-boundary-1
+    in:
+      left: 16
+      right: 16
+    out: 16
+  - name: aligned-boundary-2
+    in:
+      left: 16
+      right: 17
+    out: 16
+  - name: crossing-mid-1
+    in:
+      left: 17
+      right: 31
+    out: 16
+  - name: crossing-mid-2
+    in:
+      left: 24
+      right: 31
+    out: 24
+  - name: crossing-mid-3
+    in:
+      left: 32
+      right: 63
+    out: 32
+  - name: crossing-mid-4
+    in:
+      left: 63
+      right: 64
     out: 0
-  - name: "case_10"
+  - name: crossing-mid-5
     in:
-      left: 3093
-      right: 3107
-    out: 3072
-  - name: "case_11"
+      left: 64
+      right: 127
+    out: 64
+  - name: small-random-1
     in:
-      left: 3925
-      right: 4496
+      left: 100
+      right: 123
+    out: 96
+  - name: power-two-range-1
+    in:
+      left: 128
+      right: 255
+    out: 128
+  - name: power-two-cross-1
+    in:
+      left: 255
+      right: 256
     out: 0
-  - name: "case_12"
+  - name: power-two-range-2
     in:
-      left: 7900
-      right: 8581
+      left: 256
+      right: 511
+    out: 256
+  - name: power-two-range-3
+    in:
+      left: 512
+      right: 1023
+    out: 512
+  - name: power-two-cross-2
+    in:
+      left: 1023
+      right: 1024
     out: 0
-  - name: "case_13"
+  - name: power-two-range-4
     in:
-      left: 9428
-      right: 10341
-    out: 8192
-  - name: "case_14"
-    in:
-      left: 6674
-      right: 7186
-    out: 6144
-  - name: "case_15"
-    in:
-      left: 9141
-      right: 9840
-    out: 8192
-  - name: "case_16"
-    in:
-      left: 7949
-      right: 8045
-    out: 7936
-  - name: "case_17"
-    in:
-      left: 5114
-      right: 5661
-    out: 4096
-  - name: "case_18"
-    in:
-      left: 6172
-      right: 6364
-    out: 6144
-  - name: "case_19"
-    in:
-      left: 7221
-      right: 7948
-    out: 7168
-  - name: "case_20"
-    in:
-      left: 4426
-      right: 4439
-    out: 4416
-  - name: "case_21"
-    in:
-      left: 2287
-      right: 3150
-    out: 2048
-  - name: "case_22"
-    in:
-      left: 8287
-      right: 8299
-    out: 8256
-  - name: "case_23"
-    in:
-      left: 9693
-      right: 10336
-    out: 8192
-  - name: "case_24"
-    in:
-      left: 4399
-      right: 4749
-    out: 4096
-  - name: "case_25"
-    in:
-      left: 9627
-      right: 9662
-    out: 9600
-  - name: "case_26"
-    in:
-      left: 8027
-      right: 8471
-    out: 0
-  - name: "case_27"
-    in:
-      left: 9347
-      right: 10198
-    out: 9216
-  - name: "case_28"
-    in:
-      left: 1194
-      right: 1575
+      left: 1024
+      right: 2047
     out: 1024
-  - name: "case_29"
+  - name: exact-large-1
     in:
-      left: 2929
-      right: 3731
-    out: 2048
-  - name: "case_30"
+      left: 12345
+      right: 12345
+    out: 12345
+  - name: small-span-2
     in:
-      left: 612
-      right: 1160
+      left: 12345
+      right: 12346
+    out: 12344
+  - name: medium-span-1
+    in:
+      left: 12345
+      right: 12399
+    out: 12288
+  - name: exact-large-2
+    in:
+      left: 65535
+      right: 65535
+    out: 65535
+  - name: power-two-cross-3
+    in:
+      left: 65535
+      right: 65536
     out: 0
-  - name: "case_31"
+  - name: crossing-17bit
     in:
-      left: 8012
-      right: 8475
+      left: 65536
+      right: 131071
+    out: 65536
+  - name: power-two-cross-4
+    in:
+      left: 1048575
+      right: 1048576
     out: 0
-  - name: "case_32"
+  - name: large-single-1
     in:
-      left: 3585
-      right: 4343
+      left: 1000000000
+      right: 1000000000
+    out: 1000000000
+  - name: large-span-1
+    in:
+      left: 1000000000
+      right: 1000000123
+    out: 1000000000
+  - name: max-power-single
+    in:
+      left: 1073741824
+      right: 1073741824
+    out: 1073741824
+  - name: near-max
+    in:
+      left: 2147483646
+      right: 2147483647
+    out: 2147483646
+  - name: full-range
+    in:
+      left: 1
+      right: 2147483647
     out: 0
-  - name: "case_33"
-    in:
-      left: 7556
-      right: 8155
-    out: 7168
-  - name: "case_34"
-    in:
-      left: 5666
-      right: 6472
-    out: 4096
-  - name: "case_35"
-    in:
-      left: 936
-      right: 1101
-    out: 0
-  - name: "case_36"
-    in:
-      left: 1849
-      right: 2067
-    out: 0
-  - name: "case_37"
-    in:
-      left: 5871
-      right: 6315
-    out: 4096
-  - name: "case_38"
-    in:
-      left: 78
-      right: 1026
-    out: 0
-  - name: "case_39"
-    in:
-      left: 3365
-      right: 3677
-    out: 3072
-  - name: "case_40"
-    in:
-      left: 805
-      right: 1239
-    out: 0
-  - name: "case_41"
-    in:
-      left: 3056
-      right: 3468
-    out: 2048
-  - name: "case_42"
-    in:
-      left: 3896
-      right: 4331
-    out: 0
-  - name: "case_43"
-    in:
-      left: 9830
-      right: 10735
-    out: 8192
-  - name: "case_44"
-    in:
-      left: 3919
-      right: 4098
-    out: 0
-  - name: "case_45"
-    in:
-      left: 8342
-      right: 9271
-    out: 8192
-  - name: "case_46"
-    in:
-      left: 1075
-      right: 1691
-    out: 1024
-  - name: "case_47"
-    in:
-      left: 9996
-      right: 10393
-    out: 8192
-  - name: "case_48"
-    in:
-      left: 5765
-      right: 6569
-    out: 4096
-  - name: "case_49"
-    in:
-      left: 5100
-      right: 5241
-    out: 4096
-  - name: "case_50"
-    in:
-      left: 8354
-      right: 8384
-    out: 8320
-  - name: "case_51"
-    in:
-      left: 3194
-      right: 4061
-    out: 3072
-  - name: "case_52"
-    in:
-      left: 4579
-      right: 4715
-    out: 4096
-  - name: "case_53"
-    in:
-      left: 9002
-      right: 9678
-    out: 8192
-  - name: "case_54"
-    in:
-      left: 7813
-      right: 7985
-    out: 7680
-  - name: "case_55"
-    in:
-      left: 246
-      right: 969
-    out: 0
-  - name: "case_56"
-    in:
-      left: 1672
-      right: 2383
-    out: 0
-  - name: "case_57"
-    in:
-      left: 2860
-      right: 3402
-    out: 2048
-  - name: "case_58"
-    in:
-      left: 1654
-      right: 2148
-    out: 0
-  - name: "case_59"
-    in:
-      left: 3686
-      right: 3987
-    out: 3584
-  - name: "case_60"
-    in:
-      left: 8034
-      right: 8265
-    out: 0
-  - name: "case_61"
-    in:
-      left: 4907
-      right: 5784
-    out: 4096
-  - name: "case_62"
-    in:
-      left: 3603
-      right: 4557
-    out: 0
-  - name: "case_63"
-    in:
-      left: 13
-      right: 533
-    out: 0
-  - name: "case_64"
-    in:
-      left: 9460
-      right: 10336
-    out: 8192
-  - name: "case_65"
-    in:
-      left: 3047
-      right: 3753
-    out: 2048
-  - name: "case_66"
-    in:
-      left: 6300
-      right: 6744
-    out: 6144
-  - name: "case_67"
-    in:
-      left: 9246
-      right: 9783
-    out: 9216
-  - name: "case_68"
-    in:
-      left: 5015
-      right: 5750
-    out: 4096
-  - name: "case_69"
-    in:
-      left: 939
-      right: 1529
-    out: 0
-  - name: "case_70"
-    in:
-      left: 6540
-      right: 6580
-    out: 6528
-  - name: "case_71"
-    in:
-      left: 5546
-      right: 5552
-    out: 5536
-  - name: "case_72"
-    in:
-      left: 8205
-      right: 8762
-    out: 8192

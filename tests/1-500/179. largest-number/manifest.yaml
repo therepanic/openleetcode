@@ -1,11 +1,11 @@
 entry:
   id: 179
-  title: "largest-number"
+  title: largest-number
   params:
     nums:
-      type: "array"
+      type: array
       items:
-        type: "int"
+        type: int
   call:
     cpp: "Solution().largestNumber({nums})"
     rust: "Solution::largest_number({nums})"
@@ -20,39 +20,20 @@ entry:
     swift: "Solution().largestNumber({nums})"
     typescript: "largestNumber({nums})"
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
     call: "Checker().largestNumber(nums, {result})"
     checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution:
-          def largestNumber(self, nums: List[int]) -> str:
-              # Convert all integers to strings once.
+      class Checker:
+          def largestNumber(self, nums, result):
               arr = list(map(str, nums))
-
-              # Python sort needs a key, so we use cmp_to_key for custom comparison.
-              # For two strings a and b:
-              # - If a+b is larger than b+a, a should come first.
-              # - Else b should come first.
               from functools import cmp_to_key
 
-              def cmp(a: str, b: str) -> int:
+              def cmp(a, b):
                   ab = a + b
                   ba = b + a
                   if ab > ba:
@@ -62,395 +43,438 @@ oracle:
                   return 0
 
               arr.sort(key=cmp_to_key(cmp))
-
-              # Edge case: if the largest piece is "0", all are zeros.
-              if arr[0] == "0":
-                  return "0"
-
-              # Join once for linear-time string build.
-              return "".join(arr)
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "string"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def largestNumber(self, nums, result):
-              prepared_nums = prepare_input(nums, "array[int]")
-              expected = Solution().largestNumber(prepared_nums)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+              expected = "0" if arr[0] == "0" else "".join(arr)
+              return result == expected
 seed: 179
 tests:
-  - name: "case_01"
-    in:
-      nums: [10, 2]
-  - name: "case_02"
-    in:
-      nums: [3, 30, 34, 5, 9]
-  - name: "case_03"
-    in:
-      nums: [127, 844, 66]
-  - name: "case_04"
-    in:
-      nums: [941]
-  - name: "case_05"
-    in:
-      nums: [311, 454, 898, 49, 598, 828, 827, 996]
-  - name: "case_06"
-    in:
-      nums: [225, 869, 579, 249]
-  - name: "case_07"
-    in:
-      nums: [320, 561, 510, 747]
-  - name: "case_08"
-    in:
-      nums: [337, 904]
-  - name: "case_09"
-    in:
-      nums: [611, 632]
-  - name: "case_10"
-    in:
-      nums: [267, 170, 180, 199, 82, 311, 30, 784, 62]
-  - name: "case_11"
-    in:
-      nums: [495, 108, 855, 707, 786, 53, 545, 718, 604, 565, 692, 26]
-  - name: "case_12"
-    in:
-      nums: [78, 117, 568, 831, 806, 15, 973]
-  - name: "case_13"
-    in:
-      nums: [90, 542, 577, 259, 176, 337, 236, 882, 147, 824, 653, 127]
-  - name: "case_14"
-    in:
-      nums: [528, 155, 652, 98, 622, 865, 403, 759]
-  - name: "case_15"
-    in:
-      nums: [773, 458, 581, 626, 36, 478, 487, 771]
-  - name: "case_16"
-    in:
-      nums: [799, 359, 107, 627, 866, 688, 786, 898]
-  - name: "case_17"
-    in:
-      nums: [412, 773]
-  - name: "case_18"
-    in:
-      nums: [75]
-  - name: "case_19"
-    in:
-      nums: [201]
-  - name: "case_20"
-    in:
-      nums: [937, 68]
-  - name: "case_21"
-    in:
-      nums: [891, 249, 113, 361, 789, 228, 136, 601]
-  - name: "case_22"
-    in:
-      nums: [655, 695, 637, 876]
-  - name: "case_23"
-    in:
-      nums: [784, 694, 167, 640, 265]
-  - name: "case_24"
-    in:
-      nums: [183, 715]
-  - name: "case_25"
-    in:
-      nums: [499, 545]
-  - name: "case_26"
-    in:
-      nums: [772, 308, 336, 518, 195, 893, 218, 786, 195]
-  - name: "case_27"
-    in:
-      nums: [624, 723]
-  - name: "case_28"
-    in:
-      nums: [142, 407, 909, 38, 534, 210, 227, 368, 538]
-  - name: "case_29"
-    in:
-      nums: [50, 2, 547, 769]
-  - name: "case_30"
-    in:
-      nums: [336, 116, 677, 982, 213, 980, 702, 608, 58, 310, 67, 465]
-  - name: "case_31"
-    in:
-      nums: [514, 201, 919]
-  - name: "case_32"
-    in:
-      nums: [941, 659, 574, 338, 433, 783, 823, 629, 812, 234, 183, 833]
-  - name: "case_33"
-    in:
-      nums: [299, 641, 178, 299]
-  - name: "case_34"
-    in:
-      nums: [683, 1, 345, 532, 349, 521, 520, 270, 727, 690, 200]
-  - name: "case_35"
-    in:
-      nums: [440, 578, 536, 600, 431, 621, 919, 965, 391]
-  - name: "case_36"
-    in:
-      nums: [458, 570, 636, 714, 189, 435, 846, 140, 189, 236]
-  - name: "case_37"
-    in:
-      nums: [34, 648, 382, 875, 205, 635, 476, 771]
-  - name: "case_38"
-    in:
-      nums: [191, 700, 576, 476, 913, 534, 713, 880]
-  - name: "case_39"
-    in:
-      nums: [730, 703, 717, 333]
-  - name: "case_40"
-    in:
-      nums: [8, 173, 912, 569, 823, 703, 846, 130, 717]
-  - name: "case_41"
-    in:
-      nums: [159, 697, 90, 160, 559, 93, 334, 250, 340, 814]
-  - name: "case_42"
-    in:
-      nums: [445, 157, 139]
-  - name: "case_43"
-    in:
-      nums: [899, 107, 368, 469, 410, 487, 768, 637, 376, 842, 466]
-  - name: "case_44"
-    in:
-      nums: [152]
-  - name: "case_45"
-    in:
-      nums: [114, 751, 758, 38, 671, 952, 212, 530, 691, 569]
-  - name: "case_46"
-    in:
-      nums: [182, 942, 674, 557, 593, 222, 483, 734, 173]
-  - name: "case_47"
-    in:
-      nums: [243, 979]
-  - name: "case_48"
-    in:
-      nums: [8, 687, 616]
-  - name: "case_49"
-    in:
-      nums: [845, 609, 699, 638, 611, 917, 521, 987, 59]
-  - name: "case_50"
-    in:
-      nums: [625, 678]
-  - name: "case_51"
-    in:
-      nums: [210]
-  - name: "case_52"
-    in:
-      nums: [441, 722, 395, 413, 641, 156]
-  - name: "case_53"
-    in:
-      nums: [349, 430]
-  - name: "case_54"
-    in:
-      nums: [249, 215, 618, 930, 765, 535, 597, 736]
-  - name: "case_55"
-    in:
-      nums: [130, 592, 57, 127, 795, 103]
-  - name: "case_56"
-    in:
-      nums: [787, 336, 857, 588, 720, 161, 48, 378, 333, 455, 121, 108]
-  - name: "case_57"
-    in:
-      nums: [39, 477]
-  - name: "case_58"
-    in:
-      nums: [830, 76, 848, 940, 911, 779]
-  - name: "case_59"
-    in:
-      nums: [825, 108, 22, 334, 525, 269, 285, 250, 635, 380]
-  - name: "case_60"
-    in:
-      nums: [744, 341, 94]
-  - name: "case_61"
-    in:
-      nums: [893, 864, 560, 568, 34, 209, 205, 901]
-  - name: "case_62"
-    in:
-      nums: [563, 363, 997]
-  - name: "case_63"
-    in:
-      nums: [963, 196, 101, 310, 238, 693, 965, 105]
-  - name: "case_64"
-    in:
-      nums: [87, 448, 443, 6, 771]
-  - name: "generated_01"
-    seed: 17901
+  - name: example_1
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000000000
-  - name: "generated_02"
-    seed: 17902
+        - 10
+        - 2
+  - name: example_2
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000000000
-  - name: "generated_03"
-    seed: 17903
+        - 3
+        - 30
+        - 34
+        - 5
+        - 9
+  - name: single_zero
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000000000
-  - name: "generated_04"
-    seed: 17904
+        - 0
+  - name: all_zeros_two
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000000000
-  - name: "generated_05"
-    seed: 17905
+        - 0
+        - 0
+  - name: zeros_and_one
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000000000
-  - name: "generated_06"
-    seed: 17906
+        - 0
+        - 1
+  - name: prefix_vs_suffix
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000000000
-  - name: "generated_07"
-    seed: 17907
+        - 12
+        - 121
+  - name: comparator_chain_a
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 1000
-        of:
-          gen: "int"
-          min: 0
-          max: 1000000000
-  - name: "generated_08"
-    seed: 17908
+        - 8308
+        - 830
+        - 83
+  - name: comparator_chain_b
     in:
       nums:
-        gen: "array"
+        - 343
+        - 34
+        - 3
+  - name: comparator_chain_c
+    in:
+      nums:
+        - 121
+        - 12
+        - 120
+  - name: comparator_chain_d
+    in:
+      nums:
+        - 9
+        - 91
+        - 90
+  - name: generated_small_1
+    in:
+      nums:
+        gen: array
         len:
-          gen: "int"
+          gen: int
           min: 1
-          max: 1000
+          max: 8
         of:
-          gen: "int"
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_small_2
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 10
+        of:
+          gen: int
           min: 0
           max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_small_3
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 2
+          max: 12
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_small_4
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 3
+          max: 15
+        of:
+          gen: int
+          min: 0
+          max: 999999999
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_small_5
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 4
+          max: 18
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large_all_zeros
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 0
+          max: 0
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large_random_1
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large_random_2
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large_random_3
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large_random_4
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large_random_5
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_zero_heavy_1
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 20
+          max: 30
+        of:
+          gen: int
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_zero_heavy_2
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 20
+          max: 35
+        of:
+          gen: int
+          min: 0
+          max: 99
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_1
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 5
+          max: 10
+        of:
+          gen: int
+          min: 10
+          max: 9999
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_2
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 6
+          max: 14
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_3
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 7
+          max: 16
+        of:
+          gen: int
+          min: 0
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_4
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 8
+          max: 18
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_5
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 9
+          max: 20
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_6
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 10
+          max: 25
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_7
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 11
+          max: 28
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_8
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 12
+          max: 30
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_9
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 13
+          max: 32
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_10
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 14
+          max: 34
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_11
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 15
+          max: 36
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: mixed_prefix_12
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 16
+          max: 38
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int

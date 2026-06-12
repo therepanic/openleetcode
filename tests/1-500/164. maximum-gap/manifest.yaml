@@ -1,521 +1,365 @@
 entry:
   id: 164
-  title: "maximum-gap"
+  title: maximum-gap
   params:
     nums:
-      type: "array"
+      type: array
       items:
-        type: "int"
+        type: int
   call:
-    cpp: "Solution().maximumGap({nums})"
-    rust: "Solution::maximum_gap({nums})"
-    python3: "Solution().maximumGap({nums})"
-    python2: "Solution().maximumGap({nums})"
-    ruby: "maximum_gap({nums})"
-    java: "new Solution().maximumGap({nums})"
-    csharp: "new Solution().MaximumGap({nums})"
-    kotlin: "Solution().maximumGap({nums})"
-    go: "maximumGap({nums})"
-    dart: "Solution().maximumGap({nums})"
-    swift: "Solution().maximumGap({nums})"
-    typescript: "maximumGap({nums})"
+    cpp: Solution().maximumGap({nums})
+    rust: Solution::maximum_gap({nums})
+    python3: Solution().maximumGap({nums})
+    python2: Solution().maximumGap({nums})
+    ruby: maximum_gap({nums})
+    java: new Solution().maximumGap({nums})
+    csharp: new Solution().MaximumGap({nums})
+    kotlin: Solution().maximumGap({nums})
+    go: maximumGap({nums})
+    dart: Solution().maximumGap({nums})
+    swift: Solution().maximumGap({nums})
+    typescript: maximumGap({nums})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().maximumGap(nums, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution(object):
-          def maximumGap(self, nums):
-              if len(nums) < 2:
-                  return 0
-
-              min_num, max_num = min(nums), max(nums)
-              if min_num == max_num:
-                  return 0
-
-              gap = max(1, (max_num - min_num) // (len(nums) - 1))
-              buckets = [[None, None] for _ in range((max_num - min_num) // gap + 1)]
-
-              for num in nums:
-                  idx = (num - min_num) // gap
-                  if buckets[idx][0] is None:
-                      buckets[idx][0] = buckets[idx][1] = num
-                  else:
-                      buckets[idx][0] = min(buckets[idx][0], num)
-                      buckets[idx][1] = max(buckets[idx][1], num)
-
-              max_gap = 0
-              prev_max = min_num
-
-              for bucket in buckets:
-                  if bucket[0] is not None:
-                      max_gap = max(max_gap, bucket[0] - prev_max)
-                      prev_max = bucket[1]
-
-              return max_gap
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def maximumGap(self, nums, result):
-              prepared_nums = prepare_input(nums, "array[int]")
-              expected = Solution().maximumGap(prepared_nums)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().maximumGap(nums, {result})
+    checker: "class Checker:\n    def maximumGap(self, nums, result):\n        if len(nums) < 2:\n            return result == 0\n        nums = sorted(nums)\n        expected = max(nums[i + 1] - nums[i] for i in range(len(nums) - 1))\n        return result == expected\n"
 seed: 164
 tests:
-  - name: "case_01"
+  - name: example1
     in:
-      nums: [3, 6, 9, 1]
+      nums:
+        - 3
+        - 6
+        - 9
+        - 1
     out: 3
-  - name: "case_02"
+  - name: example2
     in:
-      nums: [10]
+      nums:
+        - 10
     out: 0
-  - name: "case_03"
+  - name: two_equal
     in:
-      nums: [44]
+      nums:
+        - 1
+        - 1
     out: 0
-  - name: "case_04"
+  - name: two_extreme
     in:
-      nums: [-18, 9, 12, 27]
-    out: 27
-  - name: "case_05"
+      nums:
+        - 1
+        - 1000000000
+    out: 999999999
+  - name: all_equal_four
     in:
-      nums: [-35, -40, 3, 0, -50, 25]
-    out: 35
-  - name: "case_06"
-    in:
-      nums: [-31, -11, -10]
-    out: 20
-  - name: "case_07"
-    in:
-      nums: [-36, 7, 27, -41, 40, 20, -36, 40, -39, 38]
-    out: 43
-  - name: "case_08"
-    in:
-      nums: [48, 48, -43, -14, 39]
-    out: 53
-  - name: "case_09"
-    in:
-      nums: [39]
+      nums:
+        - 0
+        - 0
+        - 0
+        - 0
     out: 0
-  - name: "case_10"
+  - name: sorted_consecutive
     in:
-      nums: [-35, 20, 17, 46, -25]
-    out: 42
-  - name: "case_11"
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+    out: 1
+  - name: reverse_consecutive
     in:
-      nums: [-40, -35, -46, -26, -15, -40, -25]
-    out: 10
-  - name: "case_12"
+      nums:
+        - 4
+        - 3
+        - 2
+        - 1
+    out: 1
+  - name: small_sparse
     in:
-      nums: [-45, 36, 36, 7, -21, 0, -43, -32, 33, -1]
-    out: 26
-  - name: "case_13"
+      nums:
+        - 1
+        - 3
+        - 100
+    out: 97
+  - name: adjacent_big_gap
     in:
-      nums: [-43, 8, -33, 26, 38]
-    out: 41
-  - name: "case_14"
+      nums:
+        - 1
+        - 100
+        - 101
+    out: 99
+  - name: duplicates_small
     in:
-      nums: [36, -7, -7, -29, 28, 47, -38, -1, 0, -10, -39]
-    out: 28
-  - name: "case_15"
+      nums:
+        - 1
+        - 1
+        - 2
+        - 2
+    out: 1
+  - name: duplicates_with_tail
     in:
-      nums: [44, 6, 21, -12, -7, 42]
-    out: 21
-  - name: "case_16"
+      nums:
+        - 1
+        - 1
+        - 1
+        - 2
+    out: 1
+  - name: spread_tail
     in:
-      nums: [-2, -9, -25, -8]
-    out: 16
-  - name: "case_17"
+      nums:
+        - 2
+        - 2
+        - 2
+        - 3
+        - 10
+    out: 7
+  - name: unsorted_small
     in:
-      nums: [33]
-    out: 0
-  - name: "case_18"
-    in:
-      nums: [-15, -18, -22]
+      nums:
+        - 10
+        - 7
+        - 3
+        - 1
     out: 4
-  - name: "case_19"
+  - name: max_and_zero
     in:
-      nums: [50]
-    out: 0
-  - name: "case_20"
+      nums:
+        - 1000000000
+        - 0
+        - 999999999
+    out: 999999999
+  - name: arithmetic_step_five
     in:
-      nums: [17, 40, 14, 32, -41, -24, -7, -46]
-    out: 21
-  - name: "case_21"
+      nums:
+        - 0
+        - 5
+        - 10
+        - 15
+        - 20
+    out: 5
+  - name: min_max_middle
     in:
-      nums: [35, -23, -35]
-    out: 58
-  - name: "case_22"
+      nums:
+        - 0
+        - 1
+        - 1000000000
+    out: 999999999
+  - name: clustered_high
     in:
-      nums: [30]
-    out: 0
-  - name: "case_23"
+      nums:
+        - 100
+        - 100
+        - 101
+        - 102
+        - 1000
+    out: 898
+  - name: mixed_small
     in:
-      nums: [38, -11, 27, 28, -27, 4, -37]
-    out: 23
-  - name: "case_24"
+      nums:
+        - 8
+        - 1
+        - 9
+        - 3
+        - 10
+    out: 5
+  - name: big_tail
     in:
-      nums: [31, 28, -30, -11, 11, -30, -41, 4]
-    out: 19
-  - name: "case_25"
+      nums:
+        - 100
+        - 1
+        - 2
+        - 3
+        - 4
+        - 1000
+    out: 900
+  - name: repeats_mid
     in:
-      nums: [-41, 42, 9, 16]
-    out: 50
-  - name: "case_26"
+      nums:
+        - 1
+        - 2
+        - 2
+        - 2
+        - 100
+    out: 98
+  - name: powers_two
     in:
-      nums: [17, 35, 46, -3, 1, -28]
-    out: 25
-  - name: "case_27"
+      nums:
+        - 1
+        - 2
+        - 4
+        - 8
+        - 16
+    out: 8
+  - name: end_duplicate
     in:
-      nums: [-42, 28, 41, 33, 43, -46, -2]
-    out: 40
-  - name: "case_28"
+      nums:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 10
+    out: 1
+  - name: high_cluster_extremes
     in:
-      nums: [12, -21, 3, 24, 5, -1, 11, 18, 30, -31, -43, -49]
-    out: 20
-  - name: "case_29"
+      nums:
+        - 0
+        - 999999999
+        - 1000000000
+    out: 999999999
+  - name: repeated_small_gap
     in:
-      nums: [-16, 5, -31, 10, 31]
-    out: 21
-  - name: "case_30"
+      nums:
+        - 5
+        - 5
+        - 5
+        - 6
+        - 7
+        - 100
+    out: 93
+  - name: doubling_sequence
     in:
-      nums: [-42, 25, -31, 46, 26, -13, 3, 1, 13, -37]
-    out: 20
-  - name: "case_31"
+      nums:
+        - 0
+        - 2
+        - 4
+        - 8
+        - 16
+        - 32
+    out: 16
+  - name: arithmetic_step_eleven
     in:
-      nums: [16, 17, -7, 0, 30, -22, 6, -5, -18]
-    out: 13
-  - name: "case_32"
-    in:
-      nums: [35, -47, -9, 17, 28, -27, -46, 48, 9, -17, 46, -34]
-    out: 18
-  - name: "case_33"
-    in:
-      nums: [-38]
-    out: 0
-  - name: "case_34"
-    in:
-      nums: [20, 44, 10, -22]
-    out: 32
-  - name: "case_35"
-    in:
-      nums: [29]
-    out: 0
-  - name: "case_36"
-    in:
-      nums: [-9]
-    out: 0
-  - name: "case_37"
-    in:
-      nums: [-7, 20, -14, -47, 49, 27, 31, 37, 27, -43, -50, 28]
-    out: 29
-  - name: "case_38"
-    in:
-      nums: [43]
-    out: 0
-  - name: "case_39"
-    in:
-      nums: [-20]
-    out: 0
-  - name: "case_40"
-    in:
-      nums: [-17, 36, 5, 24, 9]
-    out: 22
-  - name: "case_41"
-    in:
-      nums: [-19, 23, -31, 40, 42, 17]
-    out: 36
-  - name: "case_42"
-    in:
-      nums: [-22, 2, -43, -36, -30, -33, 41]
-    out: 39
-  - name: "case_43"
-    in:
-      nums: [40, 5]
-    out: 35
-  - name: "case_44"
-    in:
-      nums: [28, 30, 32, 47, 46, -14, -41]
-    out: 42
-  - name: "case_45"
-    in:
-      nums: [27, -40, -12, -39, 39, 27, -23, 12, -30, -47, -48, 23]
-    out: 24
-  - name: "case_46"
-    in:
-      nums: [-18, 39, -6, 47, 32, 44, -4, 18, -20]
-    out: 22
-  - name: "case_47"
-    in:
-      nums: [4, -47, -20, 17, 32]
-    out: 27
-  - name: "case_48"
-    in:
-      nums: [14]
-    out: 0
-  - name: "case_49"
-    in:
-      nums: [-48, 29, 22, 31, -27, -35, -15, 10]
-    out: 25
-  - name: "case_50"
-    in:
-      nums: [-18, -33, 14, -14, -41, -49, 50, 10, 23, -16, 3, -21]
-    out: 27
-  - name: "case_51"
-    in:
-      nums: [37, 22, -48, -26, 35, 39]
-    out: 48
-  - name: "case_52"
-    in:
-      nums: [15, -5, -48, -19, 47, 21, -39, -36, -8]
-    out: 26
-  - name: "case_53"
-    in:
-      nums: [-4, 8, 14, -14, 44, 45, -9, -10, 26, 2]
-    out: 18
-  - name: "case_54"
-    in:
-      nums: [-17, 19, -35, 2, -41, 3]
-    out: 19
-  - name: "case_55"
-    in:
-      nums: [-42]
-    out: 0
-  - name: "case_56"
-    in:
-      nums: [8, 42, -31, 16, 44, -44, 0, 46, -44, 33, 6, 15]
-    out: 31
-  - name: "case_57"
-    in:
-      nums: [-9, 29]
-    out: 38
-  - name: "case_58"
-    in:
-      nums: [26, 8, 19, 31, -16, 10]
-    out: 24
-  - name: "case_59"
-    in:
-      nums: [-2, 0, 35, 14, -17]
-    out: 21
-  - name: "case_60"
-    in:
-      nums: [-24, -33, 9, 9, -37, -29]
-    out: 33
-  - name: "case_61"
-    in:
-      nums: [-5]
-    out: 0
-  - name: "case_62"
-    in:
-      nums: [-12, -33, -23]
+      nums:
+        - 11
+        - 22
+        - 33
+        - 44
+        - 55
     out: 11
-  - name: "case_63"
-    in:
-      nums: [34, 21, -18, 19, -48, -21, 6]
-    out: 27
-  - name: "case_64"
-    in:
-      nums: [-48, 24, 43, -14, 24, 47, -12, -28, -38, 34, -1]
-    out: 25
-  - name: "generated_01"
-    seed: 16401
+  - name: tail_after_cluster
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
-  - name: "generated_02"
-    seed: 16402
+        - 1
+        - 50
+        - 51
+        - 52
+        - 100
+    out: 49
+  - name: plateau_then_jump
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
-  - name: "generated_03"
-    seed: 16403
+        - 0
+        - 3
+        - 3
+        - 3
+        - 9
+    out: 6
+  - name: wide_unsorted
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
-  - name: "generated_04"
-    seed: 16404
+        - 1000
+        - 1
+        - 100
+        - 10
+        - 10000
+    out: 9000
+  - name: tiny_to_huge
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
-  - name: "generated_05"
-    seed: 16405
+        - 2
+        - 1000000000
+        - 3
+        - 4
+        - 5
+    out: 999999995
+  - name: near_max_cluster
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
-  - name: "generated_06"
-    seed: 16406
+        - 123456789
+        - 123456790
+        - 999999999
+    out: 876543209
+  - name: half_million_jump
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
-  - name: "generated_07"
-    seed: 16407
+        - 0
+        - 500000000
+        - 1000000000
+    out: 500000000
+  - name: many_duplicates_then_max
     in:
       nums:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 5000
-        of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
-  - name: "generated_08"
-    seed: 16408
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1000000000
+    out: 999999999
+  - name: duplicate_pairs
     in:
       nums:
-        gen: "array"
+        - 7
+        - 7
+        - 8
+        - 8
+        - 9
+        - 100
+    out: 91
+  - name: repeated_extremes
+    in:
+      nums:
+        - 6
+        - 1
+        - 9
+        - 1
+        - 6
+        - 9
+        - 100
+    out: 91
+  - name: dense_low_with_max
+    in:
+      nums:
+        - 0
+        - 1
+        - 1
+        - 1
+        - 2
+        - 1000000000
+    out: 999999998
+  - name: generated_random_medium
+    seed: 164001
+    in:
+      nums:
+        gen: array
         len:
-          gen: "int"
-          min: 1
-          max: 5000
+          gen: int
+          min: 128
+          max: 128
         of:
-          gen: "int"
-          min: -1000000
-          max: 1000000
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_random_large
+    seed: 164002
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 100000
+          max: 100000
+        of:
+          gen: int
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,11 +1,11 @@
 entry:
   id: 112
-  title: "path-sum"
+  title: path-sum
   params:
     root:
-      type: "tree_node"
+      type: tree_node
     targetSum:
-      type: "int"
+      type: int
   call:
     cpp: "Solution().hasPathSum({root}, {targetSum})"
     rust: "Solution::has_path_sum({root}, {targetSum})"
@@ -20,643 +20,651 @@ entry:
     swift: "Solution().hasPathSum({root}, {targetSum})"
     typescript: "hasPathSum({root}, {targetSum})"
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
     call: "Checker().hasPathSum(root, targetSum, {result})"
     checker: |
-      import copy
-
-      from typing import Optional
-
-      class Solution:
-          def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
-              if root is None:
-                  return False
-              if root.left is None and root.right is None:
-                  return root.val == targetSum
-              remaining = targetSum - root.val
-              return self.hasPathSum(root.left, remaining) or self.hasPathSum(root.right, remaining)
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "bool"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
       class Checker:
           def hasPathSum(self, root, targetSum, result):
-              prepared_root = prepare_input(root, "tree_node"); prepared_targetSum = prepare_input(targetSum, "int")
-              expected = Solution().hasPathSum(prepared_root, prepared_targetSum)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+              if not isinstance(result, bool):
+                  return False
+              if root is None or root == []:
+                  return result is False
+              if not isinstance(root, list):
+                  return False
+
+              def dfs(i, acc):
+                  if i >= len(root) or root[i] is None:
+                      return False
+                  acc += root[i]
+                  left = 2 * i + 1
+                  right = 2 * i + 2
+                  has_left = left < len(root) and root[left] is not None
+                  has_right = right < len(root) and root[right] is not None
+                  if not has_left and not has_right:
+                      return acc == targetSum
+                  return dfs(left, acc) or dfs(right, acc)
+
+              return result == dfs(0, 0)
 seed: 112
 tests:
-  - name: "case_01"
+  - name: example_1
     in:
-      root: [5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1]
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
       targetSum: 22
     out: true
-  - name: "case_02"
+  - name: example_2
     in:
-      root: [1, 2, 3]
+      root:
+        - 1
+        - 2
+        - 3
       targetSum: 5
     out: false
-  - name: "case_03"
+  - name: example_3_empty_tree
     in:
       root: []
       targetSum: 0
     out: false
-  - name: "case_04"
-    in:
-      root: [-7]
-      targetSum: 30
-    out: false
-  - name: "case_05"
+  - name: single_node_exact_match
     in:
       root:
-        [
-          -1,
-          9,
-          null,
-          -4,
-          1,
-          -7,
-          8,
-          6,
-          null,
-          7,
-          null,
-          null,
-          -9,
-          2,
-          6,
-          7,
-          null,
-          -7,
-          null,
-          4,
-        ]
-      targetSum: -3
-    out: false
-  - name: "case_06"
-    in:
-      root: [-3, 6, 2, null, 4, -8, -1]
-      targetSum: -15
-    out: false
-  - name: "case_07"
-    in:
-      root: [-3, 4, 4, null, -3]
+        - 7
       targetSum: 7
-    out: false
-  - name: "case_08"
+    out: true
+  - name: single_node_mismatch
     in:
-      root: [3, -8]
-      targetSum: -19
+      root:
+        - 7
+      targetSum: 8
     out: false
-  - name: "case_09"
+  - name: single_negative_node_exact_match
     in:
-      root: [1, -5, -8, 9, null, 6, -3, -7, 1, 6, -1, 0]
-      targetSum: -8
+      root:
+        - -3
+      targetSum: -3
+    out: true
+  - name: root_with_left_child_only_match
+    in:
+      root:
+        - 1
+        - 2
+      targetSum: 3
+    out: true
+  - name: root_with_left_child_only_mismatch
+    in:
+      root:
+        - 1
+        - 2
+      targetSum: 4
     out: false
-  - name: "case_10"
+  - name: root_with_right_child_only_match
     in:
-      root: [1, -8, -7, 2, 8, 8, 5, -5, 2, 4, null, null, -4, null, 1]
-      targetSum: 14
+      root:
+        - 1
+        - null
+        - 2
+      targetSum: 3
+    out: true
+  - name: root_with_right_child_only_mismatch
+    in:
+      root:
+        - 1
+        - null
+        - 2
+      targetSum: 1
     out: false
-  - name: "case_11"
+  - name: leaf_not_on_root_to_leaf_path
     in:
-      root: [1, 7, -8, -5, -6, 1, -9, -8, -7, -7, -9, -9, -5, 1]
-      targetSum: 22
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+      targetSum: 7
+    out: true
+  - name: path_exists_on_left_branch
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 18
+    out: true
+  - name: path_exists_on_right_branch
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 20
     out: false
-  - name: "case_12"
+  - name: internal_node_sum_is_not_enough
     in:
-      root: [7, -4, 9, -9, 1, -6, -9, -2, 7, null, -6, 3, 1, null, null, 7]
+      root:
+        - 1
+        - 2
+        - 3
+      targetSum: 1
+    out: false
+  - name: negative_values_simple_true
+    in:
+      root:
+        - -2
+        - null
+        - -3
+      targetSum: -5
+    out: true
+  - name: negative_values_simple_false
+    in:
+      root:
+        - -2
+        - null
+        - -3
+      targetSum: -2
+    out: false
+  - name: zeros_with_true_path
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      targetSum: 0
+    out: true
+  - name: zeros_with_false_target
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      targetSum: 1
+    out: false
+  - name: duplicated_values_true
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      targetSum: 6
+    out: true
+  - name: duplicated_values_false
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
       targetSum: 5
     out: false
-  - name: "case_13"
-    in:
-      root: [-8, -2, null, 8, null, -7, 7, 0, -3, null, 2, 9, null, 3, 5, 2]
-      targetSum: 11
-    out: false
-  - name: "case_14"
-    in:
-      root: [9, 2, 8, 8, 6]
-      targetSum: -9
-    out: false
-  - name: "case_15"
-    in:
-      root: [-5, null, -8, 8, 2, 9, -6, null, -1, -4]
-      targetSum: -15
-    out: false
-  - name: "case_16"
-    in:
-      root: [-7]
-      targetSum: 3
-    out: false
-  - name: "case_17"
-    in:
-      root: [2, 1, 2, -9, null, 5, 4, null, 4, null, 4, -1, null, -6, 5, -9, -7]
-      targetSum: -25
-    out: false
-  - name: "case_18"
-    in:
-      root: [-6, 4, 7, 3, 7, 2, -4, -2, -9, 0, null, -6, -6, 2, -1]
-      targetSum: 29
-    out: false
-  - name: "case_19"
+  - name: deep_left_skew_true
     in:
       root:
-        [
-          4,
-          -2,
-          null,
-          -3,
-          null,
-          8,
-          8,
-          7,
-          -3,
-          -7,
-          null,
-          -8,
-          0,
-          2,
-          null,
-          -2,
-          -4,
-          5,
-        ]
-      targetSum: 6
-    out: true
-  - name: "case_20"
-    in:
-      root: [-8, 4, -9, 1, 6, -5, 2, 0, 4, 2]
-      targetSum: 29
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+      targetSum: 10
     out: false
-  - name: "case_21"
-    in:
-      root: [1, null, -4]
-      targetSum: 22
-    out: false
-  - name: "case_22"
-    in:
-      root: [3, 7, -4, -9, 4, null, 2, -1, 2, 3, 0, 1, -9, -5, 8, -1]
-      targetSum: -23
-    out: false
-  - name: "case_23"
-    in:
-      root: [-8, 5, 7, 9, -2, 0, null, -2, 7, 1, -6, -9, 3, 9, -4, 3]
-      targetSum: 24
-    out: false
-  - name: "case_24"
-    in:
-      root: [-7, null, 4, 0, -5, 1, -7, 9, -5, -9, 5, null, -2, null, 1, -1]
-      targetSum: -12
-    out: true
-  - name: "case_25"
+  - name: deep_left_skew_false
     in:
       root:
-        [0, null, 0, -6, 6, -3, -7, -6, null, -3, -7, null, 1, 8, -7, -1, -5]
-      targetSum: -19
-    out: false
-  - name: "case_26"
-    in:
-      root: [8, 9, -7, 9, 0, 0, null, -4, null, 9, -8, 5, -5]
-      targetSum: 8
-    out: false
-  - name: "case_27"
-    in:
-      root: [2, -1]
-      targetSum: 17
-    out: false
-  - name: "case_28"
-    in:
-      root: [0, -7, null, 8, -9]
-      targetSum: -28
-    out: false
-  - name: "case_29"
-    in:
-      root: [2, -1, 2, null, 9, null, 5, 0, -9, 1, 5, -5, null, -5, 3, 2, 2]
-      targetSum: 7
-    out: false
-  - name: "case_30"
-    in:
-      root: [2, -8, 2, null, null, 8, -8, -7, -2, -7, 6]
-      targetSum: -10
-    out: false
-  - name: "case_31"
-    in:
-      root: [5, -4, -5, 0]
-      targetSum: 21
-    out: false
-  - name: "case_32"
-    in:
-      root: [9, null, 1, null, -6, null, 1, null, 5]
-      targetSum: -20
-    out: false
-  - name: "case_33"
-    in:
-      root: [4, -6, -8, -6, -5]
-      targetSum: -15
-    out: false
-  - name: "case_34"
-    in:
-      root:
-        [
-          -7,
-          -7,
-          4,
-          6,
-          -8,
-          null,
-          null,
-          -6,
-          null,
-          -1,
-          -8,
-          -5,
-          null,
-          -8,
-          7,
-          null,
-          8,
-          -8,
-          9,
-        ]
-      targetSum: 14
-    out: false
-  - name: "case_35"
-    in:
-      root: [8, -6, null, 7, 6, null, null, 8, -7, null, -5]
-      targetSum: -1
-    out: false
-  - name: "case_36"
-    in:
-      root:
-        [
-          -5,
-          -2,
-          1,
-          7,
-          -3,
-          null,
-          -2,
-          6,
-          null,
-          -3,
-          null,
-          -2,
-          null,
-          -4,
-          -1,
-          -1,
-          3,
-          -2,
-          null,
-          7,
-        ]
-      targetSum: -23
-    out: false
-  - name: "case_37"
-    in:
-      root: [-3, 7, -1, null, 8, null, -3, 4, -2, -3, null, null, -4, 3]
-      targetSum: -20
-    out: false
-  - name: "case_38"
-    in:
-      root:
-        [
-          5,
-          -8,
-          null,
-          null,
-          -3,
-          1,
-          2,
-          0,
-          -1,
-          -7,
-          -3,
-          -3,
-          -3,
-          -8,
-          6,
-          5,
-          8,
-          null,
-          5,
-        ]
-      targetSum: -7
-    out: false
-  - name: "case_39"
-    in:
-      root: [-2, -5, 1, -5, 9, -6, 0, -6, 0, -9, 8, 7, -9, -2, 9, 8, null, 9]
-      targetSum: 11
-    out: false
-  - name: "case_40"
-    in:
-      root: [9, -3, -2]
-      targetSum: -8
-    out: false
-  - name: "case_41"
-    in:
-      root: [1, 9, 0, null, -7]
-      targetSum: -18
-    out: false
-  - name: "case_42"
-    in:
-      root: [-2]
-      targetSum: -7
-    out: false
-  - name: "case_43"
-    in:
-      root: [-6, 7, null, 6, 1, -5]
-      targetSum: 21
-    out: false
-  - name: "case_44"
-    in:
-      root: [-1, -4, -3, -8, -9, -7, null, null, 5, null, null, -8, -2, -8]
-      targetSum: -2
-    out: false
-  - name: "case_45"
-    in:
-      root: [7, null, 7, null, 0, null, -8, null, -7, null, 4, -5]
-      targetSum: -29
-    out: false
-  - name: "case_46"
-    in:
-      root: [0, 1, -1, -1, 4, -7, -6, 3, -5, -7]
-      targetSum: -22
-    out: false
-  - name: "case_47"
-    in:
-      root: [3, 3, -7, -3, -6, -3, 0, 6, 3, null, 8, 6]
-      targetSum: 13
-    out: false
-  - name: "case_48"
-    in:
-      root: [0, 6, 2]
-      targetSum: -4
-    out: false
-  - name: "case_49"
-    in:
-      root:
-        [
-          6,
-          2,
-          -1,
-          -9,
-          4,
-          -1,
-          -8,
-          -3,
-          -4,
-          -2,
-          -1,
-          -2,
-          -5,
-          null,
-          7,
-          -5,
-          -6,
-          4,
-          -2,
-          2,
-        ]
-      targetSum: 23
-    out: false
-  - name: "case_50"
-    in:
-      root: [6, null, -2, 3, -2, 3, null, -9]
-      targetSum: 15
-    out: false
-  - name: "case_51"
-    in:
-      root: [8]
-      targetSum: 6
-    out: false
-  - name: "case_52"
-    in:
-      root: [-6, null, 4, null, -2, null, 3]
-      targetSum: -3
-    out: false
-  - name: "case_53"
-    in:
-      root: [-6, -5, null, -8, -5, 1, -3, null, 5, 6, null, null, 9, 9]
-      targetSum: -27
-    out: false
-  - name: "case_54"
-    in:
-      root: [1]
-      targetSum: 8
-    out: false
-  - name: "case_55"
-    in:
-      root:
-        [
-          -5,
-          6,
-          -2,
-          -2,
-          5,
-          -1,
-          -5,
-          null,
-          -6,
-          6,
-          null,
-          -9,
-          9,
-          4,
-          null,
-          -4,
-          -1,
-          null,
-          null,
-          5,
-        ]
-      targetSum: 30
-    out: false
-  - name: "case_56"
-    in:
-      root: [-6, -8, null, -2, null, 0, -2, -7, 8, 9, 1, -1, 5, 0, -9]
-      targetSum: -4
-    out: false
-  - name: "case_57"
-    in:
-      root: [-2, 6, 7, 5, -4, -3, -9, null, -2, 2, -1, 4, -4, -6]
-      targetSum: -2
-    out: true
-  - name: "case_58"
-    in:
-      root: [-8, 3, null, -7, -4, 5, -5]
-      targetSum: 24
-    out: false
-  - name: "case_59"
-    in:
-      root: [1, -3, -6, -7, -4, 9, null, null, null, 2]
-      targetSum: -5
-    out: false
-  - name: "case_60"
-    in:
-      root:
-        [
-          8,
-          -6,
-          -8,
-          3,
-          6,
-          null,
-          6,
-          -7,
-          -8,
-          -9,
-          -8,
-          3,
-          4,
-          null,
-          1,
-          -7,
-          -4,
-          -3,
-          -2,
-        ]
-      targetSum: 19
-    out: false
-  - name: "case_61"
-    in:
-      root: [2, -4, null, -7, null, 9, 9, -4, -8, null, 1, 6, 5, 2]
-      targetSum: 7
-    out: false
-  - name: "case_62"
-    in:
-      root: [5, -3, -6, 0, null, -3, null, -4, 8, null, 6, null, 7]
-      targetSum: 25
-    out: false
-  - name: "case_63"
-    in:
-      root: [-8, 7, null, -8, -6, null, -2, -9, null, 1, 3, -3, 7, 0, -5, -4]
-      targetSum: 23
-    out: false
-  - name: "case_64"
-    in:
-      root: [2, null, 7, null, -3, -4, -2, null, 0, -8, -6, 8, null, null, 5]
-      targetSum: -15
-    out: false
-  - name: "case_65"
-    in:
-      root: [4, 8, -7, -8, 9, 4, -2, 7, null, 9, null, -9, -8]
-      targetSum: -14
-    out: false
-  - name: "case_66"
-    in:
-      root: [-4, -1]
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
       targetSum: 9
     out: false
-  - name: "case_67"
+  - name: deep_right_skew_true
     in:
-      root: [-4, null, -7, 2, -2, 0]
-      targetSum: -18
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - null
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 4
+      targetSum: 10
     out: false
-  - name: "case_68"
+  - name: deep_right_skew_false
     in:
-      root: [0, 9, 0, 7, -4, 7]
-      targetSum: -7
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - null
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 4
+      targetSum: 11
     out: false
-  - name: "case_69"
+  - name: shallow_leaf_competes_with_deeper_branch_true
     in:
-      root: [1]
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+      targetSum: 7
+    out: true
+  - name: shallow_leaf_competes_with_deeper_branch_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+      targetSum: 8
+    out: true
+  - name: path_requires_leaf_not_internal_node
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 27
+    out: true
+  - name: target_zero_with_nonzero_tree_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+      targetSum: 0
+    out: false
+  - name: larger_balanced_true
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      targetSum: 15
+    out: true
+  - name: larger_balanced_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      targetSum: 16
+    out: true
+  - name: left_heavy_with_right_leaf_true
+    in:
+      root:
+        - 10
+        - 5
+        - 20
+        - 3
+        - null
+        - 15
+        - 25
+        - 2
+        - 1
+        - null
+        - null
+        - 14
+        - 1
+        - null
+        - 4
+      targetSum: 21
+    out: false
+  - name: left_heavy_with_right_leaf_false
+    in:
+      root:
+        - 10
+        - 5
+        - 20
+        - 3
+        - null
+        - 15
+        - 25
+        - 2
+        - 1
+        - null
+        - null
+        - 14
+        - 1
+        - null
+        - 4
+      targetSum: 22
+    out: false
+  - name: all_negative_path_true
+    in:
+      root:
+        - -10
+        - -20
+        - -30
+        - -5
+        - -15
+        - -25
+        - -35
+      targetSum: -35
+    out: true
+  - name: all_negative_path_false
+    in:
+      root:
+        - -10
+        - -20
+        - -30
+        - -5
+        - -15
+        - -25
+        - -35
+      targetSum: -34
+    out: false
+  - name: zero_root_with_zero_leaf_false_due_to_not_leaf_path
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 0
+        - 0
+      targetSum: 1
+    out: true
+  - name: zero_root_with_zero_leaf_false
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 0
+        - 0
       targetSum: 2
     out: false
-  - name: "case_70"
+  - name: path_in_right_subtree_only
     in:
-      root: [-2, null, -6, -8, -5]
-      targetSum: -6
+      root:
+        - 8
+        - 4
+        - 10
+        - 2
+        - 6
+        - null
+        - 14
+        - null
+        - null
+        - 5
+        - 7
+        - null
+        - null
+        - 13
+        - 15
+      targetSum: 37
     out: false
-  - name: "case_71"
+  - name: path_in_right_subtree_only_false
     in:
-      root: [8, 6, 7, -1, 5, -8, null, 6, -4, -9, 0, 1, 0]
-      targetSum: -16
+      root:
+        - 8
+        - 4
+        - 10
+        - 2
+        - 6
+        - null
+        - 14
+        - null
+        - null
+        - 5
+        - 7
+        - null
+        - null
+        - 13
+        - 15
+      targetSum: 38
+    out: true
+  - name: complete_tree_large_true
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 6
+        - 5
+        - 5
+        - 6
+        - 6
+        - 5
+        - 7
+        - 8
+        - 8
+        - 7
+        - 7
+        - 8
+        - 8
+        - 7
+        - 9
+        - 10
+        - 10
+        - 9
+        - 9
+        - 10
+        - 10
+        - 9
+      targetSum: 16
     out: false
-  - name: "case_72"
+  - name: complete_tree_large_false
     in:
-      root: [3, -8, 3, -7, null, 4, 5, 4]
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 6
+        - 5
+        - 5
+        - 6
+        - 6
+        - 5
+        - 7
+        - 8
+        - 8
+        - 7
+        - 7
+        - 8
+        - 8
+        - 7
+        - 9
+        - 10
+        - 10
+        - 9
+        - 9
+        - 10
+        - 10
+        - 9
+      targetSum: 17
+    out: false
+  - name: sparse_tree_with_null_gaps_true
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+        - null
+        - null
+        - null
+        - null
+      targetSum: 30
+    out: true
+  - name: sparse_tree_with_null_gaps_false
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+        - null
+        - null
+        - null
+        - null
+      targetSum: 31
+    out: false
+  - name: target_matches_internal_prefix_only_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+      targetSum: 7
+    out: true
+  - name: target_matches_deep_left_leaf_true
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 5
       targetSum: 15
     out: false

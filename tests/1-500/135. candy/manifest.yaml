@@ -1,505 +1,445 @@
 entry:
   id: 135
-  title: "candy"
+  title: candy
   params:
     ratings:
-      type: "array"
+      type: array
       items:
-        type: "int"
+        type: int
   call:
-    cpp: "Solution().candy({ratings})"
-    rust: "Solution::candy({ratings})"
-    python3: "Solution().candy({ratings})"
-    python2: "Solution().candy({ratings})"
-    ruby: "candy({ratings})"
-    java: "new Solution().candy({ratings})"
-    csharp: "new Solution().Candy({ratings})"
-    kotlin: "Solution().candy({ratings})"
-    go: "candy({ratings})"
-    dart: "Solution().candy({ratings})"
-    swift: "Solution().candy({ratings})"
-    typescript: "candy({ratings})"
+    cpp: Solution().candy({ratings})
+    rust: Solution::candy({ratings})
+    python3: Solution().candy({ratings})
+    python2: Solution().candy({ratings})
+    ruby: candy({ratings})
+    java: new Solution().candy({ratings})
+    csharp: new Solution().Candy({ratings})
+    kotlin: Solution().candy({ratings})
+    go: candy({ratings})
+    dart: Solution().candy({ratings})
+    swift: Solution().candy({ratings})
+    typescript: candy({ratings})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().candy(ratings, {result})"
-    checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution(object):
-          def candy(self, ratings):
-              n = len(ratings)
-              cnt = 0
-              candies = [1] * n
-              for i in range(1, n):
-                  if ratings[i] > ratings[i - 1]:
-                      candies[i] = candies[i - 1] + 1
-              for i in range(n - 1, 0, -1):
-                  if ratings[i - 1] > ratings[i]:
-                      candies[i - 1] = max(candies[i] + 1, candies[i - 1])
-                  cnt += candies[i - 1]
-              return cnt + candies[n - 1]
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def candy(self, ratings, result):
-              prepared_ratings = prepare_input(ratings, "array[int]")
-              expected = Solution().candy(prepared_ratings)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().candy(ratings, {result})
+    checker: "from typing import Any, List\n\nclass Checker:\n    def candy(self, ratings: List[int], result: Any) -> bool:\n        if not isinstance(result, int):\n            return False\n        n = len(ratings)\n        if n == 0:\n            return False\n        candies = [1] * n\n        for i in range(1, n):\n            if ratings[i] > ratings[i - 1]:\n                candies[i] = candies[i - 1] + 1\n        total = candies[-1]\n        for i in range(n - 1, 0, -1):\n            if ratings[i - 1] > ratings[i]:\n                candies[i - 1] = max(candies[i - 1], candies[i] + 1)\n            total += candies[i - 1]\n        return total == result\n"
 seed: 135
 tests:
-  - name: "case_01"
+  - name: example_1
     in:
-      ratings: [1, 0, 2]
+      ratings:
+        - 1
+        - 0
+        - 2
     out: 5
-  - name: "case_02"
+  - name: example_2
     in:
-      ratings: [1, 2, 2]
+      ratings:
+        - 1
+        - 2
+        - 2
     out: 4
-  - name: "case_03"
+  - name: single_child
     in:
-      ratings: [-3, 30, 32, 24, -15, 12, -13, 40, -35, 7]
-    out: 17
-  - name: "case_04"
+      ratings:
+        - 7
+    out: 1
+  - name: two_increasing
     in:
-      ratings: [-49, 25, -31, -3]
-    out: 6
-  - name: "case_05"
+      ratings:
+        - 1
+        - 2
+    out: 3
+  - name: two_decreasing
     in:
-      ratings: [-17, -4, -6, -11, -16, 25, -15, -18, -15, -46]
-    out: 20
-  - name: "case_06"
+      ratings:
+        - 2
+        - 1
+    out: 3
+  - name: two_equal
     in:
-      ratings: [-14, -50, -18]
+      ratings:
+        - 4
+        - 4
+    out: 2
+  - name: all_equal_small
+    in:
+      ratings:
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
     out: 5
-  - name: "case_07"
+  - name: strictly_increasing_small
     in:
-      ratings: [-40, -13, -17, 42, 47, -5, 35, -7]
-    out: 13
-  - name: "case_08"
+      ratings:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out: 15
+  - name: strictly_decreasing_small
     in:
-      ratings: [-21]
-    out: 1
-  - name: "case_09"
+      ratings:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out: 15
+  - name: hill_shape
     in:
-      ratings: [-40, -22, 41, -27, 41, 38, -1, 22, -35, -44, 41, 10]
-    out: 22
-  - name: "case_10"
+      ratings:
+        - 1
+        - 2
+        - 3
+        - 2
+        - 1
+    out: 9
+  - name: valley_shape
     in:
-      ratings: [4, 43, -11, -30, -46, -20, 44, -12, -33, -20]
-    out: 21
-  - name: "case_11"
+      ratings:
+        - 3
+        - 2
+        - 1
+        - 2
+        - 3
+    out: 11
+  - name: plateau_peak
     in:
-      ratings: [17, -31, -8, -15, -40, -27, -14]
-    out: 14
-  - name: "case_12"
+      ratings:
+        - 1
+        - 2
+        - 2
+        - 2
+        - 1
+    out: 7
+  - name: plateau_valley
     in:
-      ratings: [-26]
-    out: 1
-  - name: "case_13"
+      ratings:
+        - 2
+        - 1
+        - 1
+        - 1
+        - 2
+    out: 7
+  - name: long_flat_then_rise
     in:
-      ratings: [30, -28, 1, -46, 13, -40, -35, 34, -27, -17, 16]
-    out: 20
-  - name: "case_14"
+      ratings:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 3
+    out: 9
+  - name: rise_then_flat
     in:
-      ratings: [-49, 7, 7]
-    out: 4
-  - name: "case_15"
-    in:
-      ratings: [37, -31, 25, -23, 10]
+      ratings:
+        - 1
+        - 2
+        - 3
+        - 3
+        - 3
     out: 8
-  - name: "case_16"
+  - name: rise_then_drop_then_flat
     in:
-      ratings: [0, 38, -4, -23, 47, 13, 27, -20, 17, -33]
-    out: 16
-  - name: "case_17"
+      ratings:
+        - 1
+        - 3
+        - 2
+        - 2
+        - 2
+    out: 6
+  - name: drop_then_rise
     in:
-      ratings: [8, -27, -32, 20, -48, 27, 28, 11, 28, -7, 7, -39]
-    out: 21
-  - name: "case_18"
+      ratings:
+        - 4
+        - 3
+        - 2
+        - 3
+        - 4
+    out: 11
+  - name: alternating_peaks
     in:
-      ratings: [47, 3, -39, -18, 30, 46, 24, 23, 24, -40]
-    out: 21
-  - name: "case_19"
-    in:
-      ratings: [-23]
-    out: 1
-  - name: "case_20"
-    in:
-      ratings: [15, -40, -15, -8, 46, 3, -7, -4, -24]
-    out: 18
-  - name: "case_21"
-    in:
-      ratings: [-23, 10, 33, -29, -18, 36, 18, -2, -32, -46]
-    out: 24
-  - name: "case_22"
-    in:
-      ratings: [4, 4, 36, 13]
-    out: 5
-  - name: "case_23"
-    in:
-      ratings: [-42, 25, -20, 46, -11]
-    out: 7
-  - name: "case_24"
-    in:
-      ratings: [21, 27, -16, -17, -23, -39, 10, 48, -9, 3, 21]
-    out: 27
-  - name: "case_25"
-    in:
-      ratings: [9, -12, -13, -10, 29, 16]
-    out: 12
-  - name: "case_26"
-    in:
-      ratings: [-17, 30, 17, -5, -29, 50]
-    out: 13
-  - name: "case_27"
-    in:
-      ratings: [-30, -7]
-    out: 3
-  - name: "case_28"
-    in:
-      ratings: [50, -19, -41, -34, 18, 10, -50, 42, -1]
-    out: 17
-  - name: "case_29"
-    in:
-      ratings: [-10, -8, -12]
-    out: 4
-  - name: "case_30"
-    in:
-      ratings: [7, -18, 25]
-    out: 5
-  - name: "case_31"
-    in:
-      ratings: [-32, 18, -21, -26, -27, 32, -26, -44, 13, 33]
-    out: 22
-  - name: "case_32"
-    in:
-      ratings: [50, -15, 2, 30, -26]
-    out: 9
-  - name: "case_33"
-    in:
-      ratings: [14, 28, -22, -34, 9, 19]
-    out: 12
-  - name: "case_34"
-    in:
-      ratings: [-17, 46, -50, 32, 5, -32, -22, -46, 2, -46, 39, 18]
-    out: 19
-  - name: "case_35"
-    in:
-      ratings: [41, -45, 0]
-    out: 5
-  - name: "case_36"
-    in:
-      ratings: [11, 41, -10, 8, 12]
-    out: 9
-  - name: "case_37"
-    in:
-      ratings: [12, 8, -6, -49, 20, -35]
-    out: 13
-  - name: "case_38"
-    in:
-      ratings: [-12, -46, 50, 1, -17, -27, 16, 41, -50]
-    out: 19
-  - name: "case_39"
-    in:
-      ratings: [45, -17, 33, 47, 9, -18, 5, 15, -2, -24, 5, -13]
-    out: 22
-  - name: "case_40"
-    in:
-      ratings: [-50, 18, 35, -37]
-    out: 7
-  - name: "case_41"
-    in:
-      ratings: [23, -7]
-    out: 3
-  - name: "case_42"
-    in:
-      ratings: [-42, 10, 11, -6, 28, 32]
-    out: 12
-  - name: "case_43"
-    in:
-      ratings: [-38]
-    out: 1
-  - name: "case_44"
-    in:
-      ratings: [-4, -28, 24, 35, 16, 48, -24, -16, -5]
-    out: 17
-  - name: "case_45"
-    in:
-      ratings: [-10, -4, 48, 12, -36, -17, -27, 38, 24, 14]
-    out: 18
-  - name: "case_46"
-    in:
-      ratings: [9, -37, 31, 0, 41, 15]
-    out: 9
-  - name: "case_47"
-    in:
-      ratings: [7, -49]
-    out: 3
-  - name: "case_48"
-    in:
-      ratings: [-15, -16, 5, 2, 26, 47, 46, -14, -14]
-    out: 15
-  - name: "case_49"
-    in:
-      ratings: [4, -8, -37, 28, 47, -7, -5, -21, -33, 32, 1, 32]
-    out: 23
-  - name: "case_50"
-    in:
-      ratings: [16, 19, -46, -41, -22, -5]
-    out: 13
-  - name: "case_51"
-    in:
-      ratings: [20, -6, 26]
-    out: 5
-  - name: "case_52"
-    in:
-      ratings: [-34, -22, -23, -16, -17, 3, -35, -16, -48, 30, -44]
-    out: 16
-  - name: "case_53"
-    in:
-      ratings: [20, -43, 8, 4, 1]
-    out: 9
-  - name: "case_54"
-    in:
-      ratings: [9, -33, 28, -13, 35, -27, -27, -28]
-    out: 12
-  - name: "case_55"
-    in:
-      ratings: [-29]
-    out: 1
-  - name: "case_56"
-    in:
-      ratings: [-28, -36, -31, 9, 23, -25, 30]
-    out: 15
-  - name: "case_57"
-    in:
-      ratings: [-6]
-    out: 1
-  - name: "case_58"
-    in:
-      ratings: [6, 13, -37, -19, 16, 2, -39, -13, 14]
-    out: 17
-  - name: "case_59"
-    in:
-      ratings: [-2, -29]
-    out: 3
-  - name: "case_60"
-    in:
-      ratings: [-43, -42, 12, -24, 13]
-    out: 9
-  - name: "case_61"
-    in:
-      ratings: [18, -27, 39, -9, 5, -36, 34, 6, 22]
-    out: 14
-  - name: "case_62"
-    in:
-      ratings: [-35]
-    out: 1
-  - name: "case_63"
-    in:
-      ratings: [-16, -35, -25, 47, 43, -41, -28, 44, 18, 26, 22]
-    out: 20
-  - name: "case_64"
-    in:
-      ratings: [-20, 17, -1, 19, 48, 41]
+      ratings:
+        - 1
+        - 3
+        - 2
+        - 4
+        - 3
+        - 5
+        - 4
     out: 10
-  - name: "generated_01"
-    seed: 13501
+  - name: alternating_valleys
     in:
       ratings:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_02"
-    seed: 13502
+        - 5
+        - 3
+        - 4
+        - 2
+        - 3
+        - 1
+        - 2
+    out: 11
+  - name: equal_blocks
     in:
       ratings:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_03"
-    seed: 13503
+        - 2
+        - 2
+        - 3
+        - 3
+        - 2
+        - 2
+    out: 8
+  - name: mountain_with_plateau_top
     in:
       ratings:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_04"
-    seed: 13504
+        - 1
+        - 2
+        - 3
+        - 3
+        - 2
+        - 1
+    out: 12
+  - name: mountain_with_plateau_bottom
     in:
       ratings:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_05"
-    seed: 13505
+        - 3
+        - 2
+        - 1
+        - 1
+        - 2
+        - 3
+    out: 12
+  - name: deep_valley_center
     in:
       ratings:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_06"
-    seed: 13506
+        - 4
+        - 3
+        - 2
+        - 1
+        - 2
+        - 3
+        - 4
+    out: 19
+  - name: deep_peak_center
     in:
       ratings:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_07"
-    seed: 13507
+        - 1
+        - 2
+        - 3
+        - 4
+        - 3
+        - 2
+        - 1
+    out: 16
+  - name: multiple_same_minima
     in:
       ratings:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 2000
-        of:
-          gen: "int"
-          min: -1000
-          max: 1000
-  - name: "generated_08"
-    seed: 13508
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 11
+  - name: multiple_same_maxima
     in:
       ratings:
-        gen: "array"
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+    out: 10
+  - name: lower_bound_values
+    in:
+      ratings:
+        - 0
+        - 0
+        - 0
+        - 1
+        - 0
+        - 0
+    out: 7
+  - name: upper_bound_values
+    in:
+      ratings:
+        - 20000
+        - 20000
+        - 19999
+        - 20000
+        - 0
+    out: 7
+  - name: large_drop_then_rise_small
+    in:
+      ratings:
+        - 9
+        - 8
+        - 7
+        - 1
+        - 2
+        - 3
+    out: 15
+  - name: large_rise_then_drop_small
+    in:
+      ratings:
+        - 1
+        - 2
+        - 3
+        - 9
+        - 8
+        - 7
+    out: 13
+  - name: random_small_1
+    in:
+      ratings:
+        - 2
+        - 4
+        - 2
+        - 6
+        - 1
+        - 7
+        - 2
+    out: 10
+  - name: random_small_2
+    in:
+      ratings:
+        - 6
+        - 1
+        - 4
+        - 2
+        - 3
+        - 5
+        - 2
+        - 1
+    out: 14
+  - name: random_small_3
+    in:
+      ratings:
+        - 1
+        - 6
+        - 10
+        - 8
+        - 7
+        - 3
+        - 2
+    out: 18
+  - name: random_small_4
+    in:
+      ratings:
+        - 1
+        - 3
+        - 4
+        - 5
+        - 2
+    out: 11
+  - name: random_small_5
+    in:
+      ratings:
+        - 5
+        - 1
+        - 2
+        - 3
+        - 2
+        - 1
+    out: 11
+  - name: random_small_6
+    in:
+      ratings:
+        - 1
+        - 0
+        - 2
+        - 2
+        - 3
+        - 1
+    out: 9
+  - name: generated_large_1
+    seed: 135001
+    in:
+      ratings:
+        gen: array
         len:
-          gen: "int"
-          min: 1
-          max: 2000
+          gen: int
+          min: 20000
+          max: 20000
         of:
-          gen: "int"
-          min: -1000
-          max: 1000
+          gen: int
+          min: 0
+          max: 20000
+  - name: generated_large_2
+    seed: 135002
+    in:
+      ratings:
+        gen: array
+        len:
+          gen: int
+          min: 20000
+          max: 20000
+        of:
+          gen: int
+          min: 0
+          max: 20000
+  - name: generated_large_3
+    seed: 135003
+    in:
+      ratings:
+        gen: array
+        len:
+          gen: int
+          min: 20000
+          max: 20000
+        of:
+          gen: int
+          min: 0
+          max: 20000
+  - name: generated_large_4
+    seed: 135004
+    in:
+      ratings:
+        gen: array
+        len:
+          gen: int
+          min: 20000
+          max: 20000
+        of:
+          gen: int
+          min: 0
+          max: 20000
+  - name: generated_large_5
+    seed: 135005
+    in:
+      ratings:
+        gen: array
+        len:
+          gen: int
+          min: 20000
+          max: 20000
+        of:
+          gen: int
+          min: 0
+          max: 20000
+  - name: generated_large_6
+    seed: 135006
+    in:
+      ratings:
+        gen: array
+        len:
+          gen: int
+          min: 20000
+          max: 20000
+        of:
+          gen: int
+          min: 0
+          max: 20000

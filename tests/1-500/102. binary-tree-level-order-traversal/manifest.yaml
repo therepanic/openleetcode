@@ -1,1206 +1,752 @@
 entry:
   id: 102
-  title: "binary-tree-level-order-traversal"
+  title: binary-tree-level-order-traversal
   params:
     root:
-      type: "tree_node"
+      type: tree_node
   call:
-    cpp: "Solution().levelOrder({root})"
-    rust: "Solution::level_order({root})"
-    python3: "Solution().levelOrder({root})"
-    python2: "Solution().levelOrder({root})"
-    ruby: "level_order({root})"
-    java: "new Solution().levelOrder({root})"
-    csharp: "new Solution().LevelOrder({root})"
-    kotlin: "Solution().levelOrder({root})"
-    go: "levelOrder({root})"
-    dart: "Solution().levelOrder({root})"
-    swift: "Solution().levelOrder({root})"
-    typescript: "levelOrder({root})"
+    cpp: Solution().levelOrder({root})
+    rust: Solution::level_order({root})
+    python3: Solution().levelOrder({root})
+    python2: Solution().levelOrder({root})
+    ruby: level_order({root})
+    java: new Solution().levelOrder({root})
+    csharp: new Solution().LevelOrder({root})
+    kotlin: Solution().levelOrder({root})
+    go: levelOrder({root})
+    dart: Solution().levelOrder({root})
+    swift: Solution().levelOrder({root})
+    typescript: levelOrder({root})
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
-    call: "Checker().levelOrder(root, {result})"
-    checker: |
-      import copy
-
-      from typing import List, Optional
-
-      from collections import deque
-
-
-      class Solution:
-          def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
-              if root is None:
-                  return []
-
-              result = []
-              queue = deque([root])
-              while queue:
-                  level = []
-                  for _ in range(len(queue)):
-                      node = queue.popleft()
-                      level.append(node.val)
-                      if node.left is not None:
-                          queue.append(node.left)
-                      if node.right is not None:
-                          queue.append(node.right)
-                  result.append(level)
-              return result
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "array[array[int]]"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value
-
-      def normalize_actual(value):
-          return value
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
-      class Checker:
-          def levelOrder(self, root, result):
-              prepared_root = prepare_input(root, "tree_node")
-              expected = Solution().levelOrder(prepared_root)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+    call: Checker().levelOrder(root, {result})
+    checker:
+      "class Checker:\n    def levelOrder(self, root, result):\n        if\
+      \ root is None or root == []:\n            return result == []\n        if not\
+      \ isinstance(root, list):\n            return False\n        expected = []\n\
+      \        queue = [0]\n        while queue:\n            level = []\n       \
+      \     next_queue = []\n            for idx in queue:\n                if idx\
+      \ >= len(root) or root[idx] is None:\n                    continue\n       \
+      \         level.append(root[idx])\n                left = 2 * idx + 1\n    \
+      \            right = 2 * idx + 2\n                if left < len(root) and root[left]\
+      \ is not None:\n                    next_queue.append(left)\n              \
+      \  if right < len(root) and root[right] is not None:\n                    next_queue.append(right)\n\
+      \            if not level:\n                break\n            expected.append(level)\n\
+      \            queue = next_queue\n        return result == expected\n"
 seed: 102
 tests:
-  - name: "case_01"
+  - name: Example 1
     in:
-      root: [3, 9, 20, null, null, 15, 7]
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
     out:
-      - [3]
-      - [9, 20]
-      - [15, 7]
-  - name: "case_02"
+      - - 3
+      - - 9
+        - 20
+      - - 15
+        - 7
+  - name: Example 2
     in:
-      root: [1]
+      root:
+        - 1
     out:
-      - [1]
-  - name: "case_03"
+      - - 1
+  - name: Example 3
     in:
       root: []
     out: []
-  - name: "case_04"
-    in:
-      root: [2, null, -4, 4, -8]
-    out:
-      - [2]
-      - [-4]
-      - [4, -8]
-  - name: "case_05"
+  - name: Root with two children
     in:
       root:
-        [
-          7,
-          7,
-          -4,
-          3,
-          7,
-          null,
-          -4,
-          5,
-          -2,
-          7,
-          null,
-          6,
-          -2,
-          1,
-          -3,
-          4,
-          -5,
-          -4,
-          -7,
-          0,
-          8,
-          -1,
-          6,
-          8,
-        ]
+        - 1
+        - 2
+        - 3
     out:
-      - [7]
-      - [7, -4]
-      - [3, 7, -4]
-      - [5, -2, 7, 6, -2]
-      - [1, -3, 4, -5, -4, -7, 0, 8, -1, 6]
-      - [8]
-  - name: "case_06"
-    in:
-      root: [7, 3, -3, 8, 8, 2, 3, null, -4, 7, 3, 4, -4, null, -4]
-    out:
-      - [7]
-      - [3, -3]
-      - [8, 8, 2, 3]
-      - [-4, 7, 3, 4, -4, -4]
-  - name: "case_07"
-    in:
-      root: [7, -5, 8, null, null, -5, null, -9]
-    out:
-      - [7]
-      - [-5, 8]
-      - [-5]
-      - [-9]
-  - name: "case_08"
-    in:
-      root: [-1, 5, -2, 0, -3, null, null, 5, -3, -2, -4, 3, 6]
-    out:
-      - [-1]
-      - [5, -2]
-      - [0, -3]
-      - [5, -3, -2, -4]
-      - [3, 6]
-  - name: "case_09"
-    in:
-      root: [-1, -4, -2, -7, 6, null, null, -4, -8]
-    out:
-      - [-1]
-      - [-4, -2]
-      - [-7, 6]
-      - [-4, -8]
-  - name: "case_10"
+      - - 1
+      - - 2
+        - 3
+  - name: Left skewed chain of four
     in:
       root:
-        [
-          -3,
-          -5,
-          null,
-          3,
-          -7,
-          1,
-          5,
-          5,
-          -5,
-          -1,
-          -1,
-          -5,
-          6,
-          -3,
-          null,
-          -3,
-          -9,
-          6,
-          -4,
-          -1,
-          null,
-          -4,
-          8,
-        ]
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
     out:
-      - [-3]
-      - [-5]
-      - [3, -7]
-      - [1, 5, 5, -5]
-      - [-1, -1, -5, 6, -3, -3, -9]
-      - [6, -4, -1, -4, 8]
-  - name: "case_11"
-    in:
-      root: [-6, null, -3]
-    out:
-      - [-6]
-      - [-3]
-  - name: "case_12"
-    in:
-      root: [-7, 3, null, -5, 6]
-    out:
-      - [-7]
-      - [3]
-      - [-5, 6]
-  - name: "case_13"
-    in:
-      root: [2, 5, 6, 3, null, 1, 8, -7, 5]
-    out:
-      - [2]
-      - [5, 6]
-      - [3, 1, 8]
-      - [-7, 5]
-  - name: "case_14"
-    in:
-      root: [-9, -9, 0, -9, null, 3]
-    out:
-      - [-9]
-      - [-9, 0]
-      - [-9, 3]
-  - name: "case_15"
-    in:
-      root: [5, -2, -4, -3, -3, -7]
-    out:
-      - [5]
-      - [-2, -4]
-      - [-3, -3, -7]
-  - name: "case_16"
-    in:
-      root: [-1, 7, -3, null, 8, null, -1, -9, 5, 3, -2, -4, 6, -9, -9, 0, 7, 4]
-    out:
-      - [-1]
-      - [7, -3]
-      - [8, -1]
-      - [-9, 5, 3, -2]
-      - [-4, 6, -9, -9, 0, 7, 4]
-  - name: "case_17"
-    in:
-      root: [3, -7, -7, -2]
-    out:
-      - [3]
-      - [-7, -7]
-      - [-2]
-  - name: "case_18"
-    in:
-      root: [-9, -6, 1, 6, -8, -3, null, 3, -5, -7, 0, -8]
-    out:
-      - [-9]
-      - [-6, 1]
-      - [6, -8, -3]
-      - [3, -5, -7, 0, -8]
-  - name: "case_19"
-    in:
-      root: [3, -8, -9, 2, 8, -1, -6, -2, -3, null, 3, 3, 2, null, 4, -4]
-    out:
-      - [3]
-      - [-8, -9]
-      - [2, 8, -1, -6]
-      - [-2, -3, 3, 3, 2, 4]
-      - [-4]
-  - name: "case_20"
-    in:
-      root: [2, 3, -5, -9, 8, -8, -3, -9, 5, 7]
-    out:
-      - [2]
-      - [3, -5]
-      - [-9, 8, -8, -3]
-      - [-9, 5, 7]
-  - name: "case_21"
-    in:
-      root: [-6, -5, 2, -4, null, 4]
-    out:
-      - [-6]
-      - [-5, 2]
-      - [-4, 4]
-  - name: "case_22"
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+  - name: Right skewed chain of four
     in:
       root:
-        [
-          -3,
-          -4,
-          2,
-          null,
-          6,
-          null,
-          -6,
-          null,
-          9,
-          -6,
-          7,
-          -2,
-          1,
-          0,
-          6,
-          -5,
-          null,
-          -7,
-          2,
-          0,
-          9,
-          6,
-          7,
-        ]
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
     out:
-      - [-3]
-      - [-4, 2]
-      - [6, -6]
-      - [9, -6, 7]
-      - [-2, 1, 0, 6, -5]
-      - [-7, 2, 0, 9, 6, 7]
-  - name: "case_23"
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+  - name: Perfect tree height two
     in:
       root:
-        [
-          4,
-          3,
-          -9,
-          4,
-          6,
-          -9,
-          null,
-          -2,
-          9,
-          null,
-          9,
-          -4,
-          -6,
-          6,
-          5,
-          -6,
-          null,
-          4,
-          null,
-          null,
-          4,
-          3,
-        ]
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
     out:
-      - [4]
-      - [3, -9]
-      - [4, 6, -9]
-      - [-2, 9, 9, -4, -6]
-      - [6, 5, -6, 4, 4, 3]
-  - name: "case_24"
-    in:
-      root: [1, -3, null, 3, -6, 6, -2, 6, 7, -4, -2, null, null, -7, -5, -2]
-    out:
-      - [1]
-      - [-3]
-      - [3, -6]
-      - [6, -2, 6, 7]
-      - [-4, -2, -7, -5, -2]
-  - name: "case_25"
+      - - 1
+      - - 2
+        - 3
+      - - 4
+        - 5
+        - 6
+        - 7
+  - name: Missing left child in right subtree
     in:
       root:
-        [
-          -3,
-          1,
-          null,
-          9,
-          -1,
-          6,
-          0,
-          -2,
-          -2,
-          null,
-          -3,
-          7,
-          null,
-          null,
-          6,
-          null,
-          -4,
-          -2,
-          -8,
-          -1,
-          null,
-          -5,
-          null,
-          3,
-        ]
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
     out:
-      - [-3]
-      - [1]
-      - [9, -1]
-      - [6, 0, -2, -2]
-      - [-3, 7, 6, -4]
-      - [-2, -8, -1, -5, 3]
-  - name: "case_26"
+      - - 1
+      - - 2
+        - 3
+      - - 4
+        - 5
+  - name: Missing right child in left subtree
     in:
       root:
-        [
-          -4,
-          null,
-          -6,
-          -8,
-          9,
-          -5,
-          5,
-          -1,
-          -1,
-          null,
-          3,
-          4,
-          -9,
-          5,
-          -3,
-          -2,
-          -6,
-          4,
-          -2,
-          null,
-          5,
-          4,
-        ]
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
     out:
-      - [-4]
-      - [-6]
-      - [-8, 9]
-      - [-5, 5, -1, -1]
-      - [3, 4, -9, 5, -3, -2, -6]
-      - [4, -2, 5, 4]
-  - name: "case_27"
-    in:
-      root: [-2, 7, null, 7, -1, null, -5, -1, 1, 0, 9, 8, 9, 3]
-    out:
-      - [-2]
-      - [7]
-      - [7, -1]
-      - [-5, -1, 1]
-      - [0, 9, 8, 9, 3]
-  - name: "case_28"
-    in:
-      root: [-6]
-    out:
-      - [-6]
-  - name: "case_29"
-    in:
-      root: [4, null, 6, -6, 3, 7, 3, -6, 3, -2, 6, -1, 1, -3, -3, -3, 2, 5]
-    out:
-      - [4]
-      - [6]
-      - [-6, 3]
-      - [7, 3, -6, 3]
-      - [-2, 6, -1, 1, -3, -3, -3, 2]
-      - [5]
-  - name: "case_30"
+      - - 1
+      - - 2
+        - 3
+      - - 4
+        - 5
+  - name: Mixed sparse tree
     in:
       root:
-        [
-          9,
-          -5,
-          -2,
-          -4,
-          null,
-          -7,
-          -8,
-          null,
-          -9,
-          9,
-          null,
-          null,
-          0,
-          null,
-          -4,
-          -1,
-          null,
-          -2,
-        ]
+        - 10
+        - 6
+        - 15
+        - 3
+        - 8
+        - null
+        - 20
+        - null
+        - 4
+        - 7
+        - 9
+        - null
+        - null
+        - 18
+        - 25
     out:
-      - [9]
-      - [-5, -2]
-      - [-4, -7, -8]
-      - [-9, 9, 0]
-      - [-4, -1, -2]
-  - name: "case_31"
-    in:
-      root: [-1, -9, -9, null, -8, 9, null, -4, -5, 6, null, -9, null, 7, -3]
-    out:
-      - [-1]
-      - [-9, -9]
-      - [-8, 9]
-      - [-4, -5, 6]
-      - [-9, 7, -3]
-  - name: "case_32"
+      - - 10
+      - - 6
+        - 15
+      - - 3
+        - 8
+        - 20
+      - - 4
+        - 7
+        - 9
+      - - 18
+        - 25
+  - name: Negative values
     in:
       root:
-        [
-          7,
-          -7,
-          9,
-          -9,
-          0,
-          9,
-          null,
-          -5,
-          -4,
-          -5,
-          9,
-          null,
-          -2,
-          -6,
-          -5,
-          7,
-          4,
-          8,
-          -7,
-          6,
-          null,
-          -8,
-        ]
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+        - -7
     out:
-      - [7]
-      - [-7, 9]
-      - [-9, 0, 9]
-      - [-5, -4, -5, 9, -2]
-      - [-6, -5, 7, 4, 8, -7, 6, -8]
-  - name: "case_33"
-    in:
-      root: [0, 0, -8, null, -4, 3, -2, null, null, -7, -7, -8, -1]
-    out:
-      - [0]
-      - [0, -8]
-      - [-4, 3, -2]
-      - [-7, -7, -8, -1]
-  - name: "case_34"
-    in:
-      root: [3, 3, 0, -6, -5, 9, null, null, 9, 6, 5, null, -7, null, 6]
-    out:
-      - [3]
-      - [3, 0]
-      - [-6, -5, 9]
-      - [9, 6, 5, -7]
-      - [6]
-  - name: "case_35"
+      - - -1
+      - - -2
+        - -3
+      - - -4
+        - -5
+        - -6
+        - -7
+  - name: Duplicate values
     in:
       root:
-        [
-          7,
-          -6,
-          3,
-          -8,
-          1,
-          null,
-          1,
-          8,
-          -3,
-          -7,
-          -5,
-          9,
-          null,
-          -8,
-          -5,
-          1,
-          8,
-          null,
-          1,
-          3,
-          4,
-          3,
-          7,
-          -8,
-          7,
-        ]
+        - 5
+        - 5
+        - 5
+        - 5
+        - null
+        - 5
+        - 5
     out:
-      - [7]
-      - [-6, 3]
-      - [-8, 1, 1]
-      - [8, -3, -7, -5, 9]
-      - [-8, -5, 1, 8, 1, 3, 4, 3, 7]
-      - [-8, 7]
-  - name: "case_36"
+      - - 5
+      - - 5
+        - 5
+      - - 5
+        - 5
+        - 5
+  - name: Deep left branch with a right leaf
     in:
       root:
-        [
-          6,
-          6,
-          6,
-          1,
-          -4,
-          -4,
-          7,
-          2,
-          6,
-          null,
-          7,
-          7,
-          2,
-          -1,
-          2,
-          5,
-          -6,
-          -4,
-          2,
-          null,
-          -8,
-        ]
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
     out:
-      - [6]
-      - [6, 6]
-      - [1, -4, -4, 7]
-      - [2, 6, 7, 7, 2, -1, 2]
-      - [5, -6, -4, 2, -8]
-  - name: "case_37"
-    in:
-      root: [-9, -9, -3, null, -8, -7, -4, -6, -9, 9]
-    out:
-      - [-9]
-      - [-9, -3]
-      - [-8, -7, -4]
-      - [-6, -9, 9]
-  - name: "case_38"
-    in:
-      root: [-9, -5, -8, -4, 9]
-    out:
-      - [-9]
-      - [-5, -8]
-      - [-4, 9]
-  - name: "case_39"
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+      - - 5
+  - name: Deep right branch with a left leaf
     in:
       root:
-        [-1, -2, null, 0, null, 7, null, -7, 3, null, null, -8, 6, 2, 9, 3, -6]
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - null
+        - 5
     out:
-      - [-1]
-      - [-2]
-      - [0]
-      - [7]
-      - [-7, 3]
-      - [-8, 6]
-      - [2, 9, 3, -6]
-  - name: "case_40"
-    in:
-      root: [7, 8, -6, 7, null, null, -7, 4]
-    out:
-      - [7]
-      - [8, -6]
-      - [7, -7]
-      - [4]
-  - name: "case_41"
-    in:
-      root: [0, -4, null, 4, -6, 7, -3, -9, null, -8, 5, null, -9, -1, null, -3]
-    out:
-      - [0]
-      - [-4]
-      - [4, -6]
-      - [7, -3, -9]
-      - [-8, 5, -9, -1]
-      - [-3]
-  - name: "case_42"
+      - - 1
+      - - 2
+      - - 3
+      - - 4
+  - name: Wide third level
     in:
       root:
-        [
-          -7,
-          -6,
-          -3,
-          -2,
-          1,
-          1,
-          9,
-          -9,
-          3,
-          4,
-          -8,
-          -1,
-          null,
-          -7,
-          -2,
-          4,
-          4,
-          -6,
-          7,
-          -6,
-        ]
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
     out:
-      - [-7]
-      - [-6, -3]
-      - [-2, 1, 1, 9]
-      - [-9, 3, 4, -8, -1, -7, -2]
-      - [4, 4, -6, 7, -6]
-  - name: "case_43"
-    in:
-      root: [-2, null, 7, 9, 2, 3, -5, null, null, 3, -7, 1, 3, 9, -9]
-    out:
-      - [-2]
-      - [7]
-      - [9, 2]
-      - [3, -5]
-      - [3, -7, 1, 3]
-      - [9, -9]
-  - name: "case_44"
-    in:
-      root: [4, 7, -3, -7]
-    out:
-      - [4]
-      - [7, -3]
-      - [-7]
-  - name: "case_45"
-    in:
-      root: [-8, null, 6, null, 5, -1, 8, null, null, -6, -1, -4, -1]
-    out:
-      - [-8]
-      - [6]
-      - [5]
-      - [-1, 8]
-      - [-6, -1]
-      - [-4, -1]
-  - name: "case_46"
-    in:
-      root: [-9, null, 2, 7, -8, -9]
-    out:
-      - [-9]
-      - [2]
-      - [7, -8]
-      - [-9]
-  - name: "case_47"
-    in:
-      root: [6, null, 5, -6, 3, null, 3, 4]
-    out:
-      - [6]
-      - [5]
-      - [-6, 3]
-      - [3, 4]
-  - name: "case_48"
-    in:
-      root: [-5]
-    out:
-      - [-5]
-  - name: "case_49"
+      - - 8
+      - - 4
+        - 12
+      - - 2
+        - 6
+        - 10
+        - 14
+      - - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+  - name: Zigzag shaped but level-order output
     in:
       root:
-        [
-          1,
-          1,
-          5,
-          2,
-          6,
-          0,
-          7,
-          null,
-          -9,
-          3,
-          -7,
-          1,
-          null,
-          -8,
-          -9,
-          3,
-          null,
-          -7,
-          4,
-          4,
-          5,
-          -8,
-          5,
-          -6,
-        ]
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+        - null
+        - 6
+        - 7
     out:
-      - [1]
-      - [1, 5]
-      - [2, 6, 0, 7]
-      - [-9, 3, -7, 1, -8, -9]
-      - [3, -7, 4, 4, 5, -8, 5, -6]
-  - name: "case_50"
-    in:
-      root: [-5, -4, -9, -7, 8, 3, 3, -4, 4, 3, -4, 9, -7, -7, 6, -6, -5]
-    out:
-      - [-5]
-      - [-4, -9]
-      - [-7, 8, 3, 3]
-      - [-4, 4, 3, -4, 9, -7, -7, 6]
-      - [-6, -5]
-  - name: "case_51"
-    in:
-      root: [4, -9, -2, 7]
-    out:
-      - [4]
-      - [-9, -2]
-      - [7]
-  - name: "case_52"
+      - - 1
+      - - 2
+        - 3
+      - - 4
+        - 5
+      - - 6
+        - 7
+  - name: Single child on each side
     in:
       root:
-        [
-          -5,
-          7,
-          -7,
-          -1,
-          null,
-          -5,
-          -8,
-          0,
-          null,
-          -4,
-          -1,
-          -5,
-          null,
-          -6,
-          null,
-          8,
-          null,
-          null,
-          -3,
-          null,
-          0,
-          6,
-          -8,
-          5,
-        ]
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - null
+        - 5
     out:
-      - [-5]
-      - [7, -7]
-      - [-1, -5, -8]
-      - [0, -4, -1, -5]
-      - [-6, 8, -3, 0]
-      - [6, -8, 5]
-  - name: "case_53"
-    in:
-      root: [2, -5, 0, 5, -1, 3, -5, 2]
-    out:
-      - [2]
-      - [-5, 0]
-      - [5, -1, 3, -5]
-      - [2]
-  - name: "case_54"
-    in:
-      root: [0]
-    out:
-      - [0]
-  - name: "case_55"
-    in:
-      root: [2, -5]
-    out:
-      - [2]
-      - [-5]
-  - name: "case_56"
-    in:
-      root: [1, 3, -5, -1, -7, 1, 0, 7, -2, 0, -6, 6, -8, 1, -4, 0]
-    out:
-      - [1]
-      - [3, -5]
-      - [-1, -7, 1, 0]
-      - [7, -2, 0, -6, 6, -8, 1, -4]
-      - [0]
-  - name: "case_57"
+      - - 1
+      - - 2
+        - 3
+      - - 4
+        - 5
+  - name: Root negative with mixed children
     in:
       root:
-        [
-          -8,
-          -3,
-          7,
-          4,
-          -4,
-          -9,
-          null,
-          1,
-          2,
-          5,
-          -5,
-          2,
-          -3,
-          -3,
-          -2,
-          2,
-          null,
-          2,
-          -2,
-          null,
-          null,
-          5,
-          -6,
-          null,
-          8,
-        ]
+        - -10
+        - -20
+        - 30
+        - null
+        - -15
+        - 25
+        - 40
     out:
-      - [-8]
-      - [-3, 7]
-      - [4, -4, -9]
-      - [1, 2, 5, -5, 2, -3]
-      - [-3, -2, 2, 2, -2, 5, -6, 8]
-  - name: "case_58"
-    in:
-      root: [-6, 9, 3, null, -5, 6]
-    out:
-      - [-6]
-      - [9, 3]
-      - [-5, 6]
-  - name: "case_59"
-    in:
-      root: [-3, 1, 7, 3]
-    out:
-      - [-3]
-      - [1, 7]
-      - [3]
-  - name: "case_60"
-    in:
-      root: [-1, -1, 2, null, -3, -6]
-    out:
-      - [-1]
-      - [-1, 2]
-      - [-3, -6]
-  - name: "case_61"
-    in:
-      root: [7, -4, null, 9, null, 9, -4, 9, null, null, 2]
-    out:
-      - [7]
-      - [-4]
-      - [9]
-      - [9, -4]
-      - [9, 2]
-  - name: "case_62"
-    in:
-      root: [-1, 2, 4, 9, 4, null, 0, null, -1, 0, -8, -5, -1, 5, -8, -1]
-    out:
-      - [-1]
-      - [2, 4]
-      - [9, 4, 0]
-      - [-1, 0, -8, -5, -1]
-      - [5, -8, -1]
-  - name: "case_63"
-    in:
-      root: [5, -4, -2, 0, null, 1, 7, -8, null, -5, -1, 6, 7, 0, 1, 6, 2]
-    out:
-      - [5]
-      - [-4, -2]
-      - [0, 1, 7]
-      - [-8, -5, -1, 6, 7]
-      - [0, 1, 6, 2]
-  - name: "case_64"
+      - - -10
+      - - -20
+        - 30
+      - - -15
+        - 25
+        - 40
+  - name: Missing left and right alternation
     in:
       root:
-        [
-          5,
-          -3,
-          -1,
-          -7,
-          9,
-          null,
-          0,
-          null,
-          null,
-          1,
-          -7,
-          4,
-          -9,
-          -2,
-          1,
-          6,
-          1,
-          2,
-          null,
-          -2,
-          null,
-          3,
-          2,
-        ]
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+        - 6
     out:
-      - [5]
-      - [-3, -1]
-      - [-7, 9, 0]
-      - [1, -7, 4, -9]
-      - [-2, 1, 6, 1, 2, -2]
-      - [3, 2]
-  - name: "case_65"
-    in:
-      root: [2, 1, null, 5, -6, -9, null, -6, 1, null, 4, 4, -2]
-    out:
-      - [2]
-      - [1]
-      - [5, -6]
-      - [-9, -6, 1]
-      - [4, 4, -2]
-  - name: "case_66"
-    in:
-      root: [-7, null, 9, null, -1, -2]
-    out:
-      - [-7]
-      - [9]
-      - [-1]
-      - [-2]
-  - name: "case_67"
-    in:
-      root: [-1, 9, 0, 7, 5, 0, 0, -8, null, -7, null, 2, 9]
-    out:
-      - [-1]
-      - [9, 0]
-      - [7, 5, 0, 0]
-      - [-8, -7, 2, 9]
-  - name: "case_68"
+      - - 1
+      - - 2
+        - 3
+      - - 4
+        - 5
+      - - 6
+  - name: Unbalanced left-heavy tree
     in:
       root:
-        [
-          8,
-          3,
-          2,
-          0,
-          -1,
-          -2,
-          -1,
-          -5,
-          7,
-          -8,
-          7,
-          6,
-          null,
-          null,
-          2,
-          6,
-          8,
-          9,
-          -9,
-          null,
-          4,
-          -6,
-          -6,
-          null,
-          -9,
-        ]
+        - 7
+        - 3
+        - null
+        - 2
+        - null
+        - 1
     out:
-      - [8]
-      - [3, 2]
-      - [0, -1, -2, -1]
-      - [-5, 7, -8, 7, 6, 2]
-      - [6, 8, 9, -9, 4, -6, -6, -9]
-  - name: "case_69"
+      - - 7
+      - - 3
+      - - 2
+      - - 1
+  - name: Unbalanced right-heavy tree
     in:
       root:
-        [
-          3,
-          -3,
-          -4,
-          null,
-          null,
-          -6,
-          0,
-          4,
-          -3,
-          5,
-          null,
-          5,
-          null,
-          9,
-          -8,
-          3,
-          null,
-          7,
-          -6,
-          null,
-          null,
-          9,
-          0,
-        ]
+        - 7
+        - null
+        - 3
+        - null
+        - 2
+        - null
+        - 1
     out:
-      - [3]
-      - [-3, -4]
-      - [-6, 0]
-      - [4, -3, 5]
-      - [5, 9, -8, 3]
-      - [7, -6, 9, 0]
-  - name: "case_70"
+      - - 7
+      - - 3
+      - - 2
+      - - 1
+  - name: Three levels with interior gap
     in:
       root:
-        [
-          -7,
-          7,
-          8,
-          -2,
-          -3,
-          -2,
-          9,
-          null,
-          -6,
-          9,
-          -4,
-          7,
-          null,
-          2,
-          null,
-          9,
-          4,
-          null,
-          2,
-          -5,
-          -8,
-          -6,
-        ]
+        - 11
+        - 5
+        - 17
+        - 2
+        - 7
+        - 13
+        - 19
+        - null
+        - 3
+        - 6
+        - null
+        - 12
+        - 14
+        - 18
+        - 20
     out:
-      - [-7]
-      - [7, 8]
-      - [-2, -3, -2, 9]
-      - [-6, 9, -4, 7, 2]
-      - [9, 4, 2, -5, -8, -6]
-  - name: "case_71"
+      - - 11
+      - - 5
+        - 17
+      - - 2
+        - 7
+        - 13
+        - 19
+      - - 3
+        - 6
+        - 12
+        - 14
+        - 18
+        - 20
+  - name: Values at constraint boundaries
     in:
       root:
-        [
-          9,
-          3,
-          4,
-          9,
-          -5,
-          5,
-          -9,
-          null,
-          6,
-          -8,
-          -6,
-          2,
-          null,
-          6,
-          null,
-          -7,
-          null,
-          -9,
-          null,
-          4,
-          -6,
-          null,
-          8,
-          -7,
-        ]
+        - 1000
+        - -1000
+        - 1000
+        - -1000
+        - 1000
+        - -1000
+        - 1000
     out:
-      - [9]
-      - [3, 4]
-      - [9, -5, 5, -9]
-      - [6, -8, -6, 2, 6]
-      - [-7, -9, 4, -6, 8, -7]
-  - name: "case_72"
+      - - 1000
+      - - -1000
+        - 1000
+      - - -1000
+        - 1000
+        - -1000
+        - 1000
+  - name: Alternating duplicates
     in:
-      root: [-8]
+      root:
+        - 2
+        - 1
+        - 1
+        - 2
+        - 2
+        - 1
+        - 1
     out:
-      - [-8]
+      - - 2
+      - - 1
+        - 1
+      - - 2
+        - 2
+        - 1
+        - 1
+  - name: Asymmetric tree
+    in:
+      root:
+        - 4
+        - 2
+        - 6
+        - 1
+        - 3
+        - 5
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 7
+    out:
+      - - 4
+      - - 2
+        - 6
+      - - 1
+        - 3
+        - 5
+      - - 7
+  - name: Sparse breadth with nulls
+    in:
+      root:
+        - 9
+        - 4
+        - 12
+        - null
+        - 6
+        - 10
+        - 15
+        - null
+        - null
+        - 5
+        - 7
+        - null
+        - 11
+        - 14
+        - 16
+    out:
+      - - 9
+      - - 4
+        - 12
+      - - 6
+        - 10
+        - 15
+      - - 5
+        - 7
+        - 11
+      - - 14
+        - 16
+  - name: Perfect tree height three
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - - 1
+      - - 2
+        - 3
+      - - 4
+        - 5
+        - 6
+        - 7
+      - - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+  - name: Perfect tree with negatives
+    in:
+      root:
+        - 0
+        - -1
+        - 1
+        - -2
+        - 2
+        - -3
+        - 3
+    out:
+      - - 0
+      - - -1
+        - 1
+      - - -2
+        - 2
+        - -3
+        - 3
+  - name: Root and one grandchild
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+    out:
+      - - 1
+      - - 2
+      - - 3
+  - name: Root and opposite grandchild
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+    out:
+      - - 1
+      - - 2
+      - - 3
+  - name: Balanced with middle gaps
+    in:
+      root:
+        - 6
+        - 3
+        - 9
+        - 1
+        - 4
+        - 8
+        - 10
+        - null
+        - 2
+        - null
+        - 5
+        - 7
+        - null
+        - null
+        - 11
+    out:
+      - - 6
+      - - 3
+        - 9
+      - - 1
+        - 4
+        - 8
+        - 10
+      - - 2
+        - 5
+        - 7
+        - 11
+  - name: Small tree with repeated leaves
+    in:
+      root:
+        - 5
+        - 3
+        - 8
+        - 3
+        - 3
+        - 8
+        - 8
+    out:
+      - - 5
+      - - 3
+        - 8
+      - - 3
+        - 3
+        - 8
+        - 8
+  - name: Larger balanced sample
+    in:
+      root:
+        - 50
+        - 25
+        - 75
+        - 10
+        - 30
+        - 60
+        - 90
+        - 5
+        - 15
+        - 27
+        - 35
+        - 55
+        - 65
+        - 85
+        - 95
+    out:
+      - - 50
+      - - 25
+        - 75
+      - - 10
+        - 30
+        - 60
+        - 90
+      - - 5
+        - 15
+        - 27
+        - 35
+        - 55
+        - 65
+        - 85
+        - 95
+  - name: Sparse 4-level tree
+    in:
+      root:
+        - 13
+        - 7
+        - 19
+        - 3
+        - 9
+        - 17
+        - 23
+        - null
+        - 4
+        - 8
+        - null
+        - null
+        - 18
+        - 21
+        - 25
+    out:
+      - - 13
+      - - 7
+        - 19
+      - - 3
+        - 9
+        - 17
+        - 23
+      - - 4
+        - 8
+        - 18
+        - 21
+        - 25
+  - name: Another mixed sparse tree
+    in:
+      root:
+        - 2
+        - null
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+        - 6
+    out:
+      - - 2
+      - - 3
+      - - 4
+      - - 5
+      - - 6
+  - name: Multi-branch mid-size tree
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - null
+        - 30
+        - 60
+        - 90
+        - 110
+        - 140
+        - 160
+        - 190
+    out:
+      - - 100
+      - - 50
+        - 150
+      - - 25
+        - 75
+        - 125
+        - 175
+      - - 30
+        - 60
+        - 90
+        - 110
+        - 140
+        - 160
+        - 190

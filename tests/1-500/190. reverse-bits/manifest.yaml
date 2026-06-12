@@ -1,9 +1,9 @@
 entry:
   id: 190
-  title: "reverse-bits"
+  title: reverse-bits
   params:
     n:
-      type: "int"
+      type: int
   call:
     cpp: "Solution().reverseBits({n})"
     rust: "Solution::reverse_bits({n})"
@@ -18,432 +18,169 @@ entry:
     swift: "Solution().reverseBits({n})"
     typescript: "reverseBits({n})"
 judge:
-  type: "exact"
+  type: exact
 limits:
-  time_ms: 2000
-  memory_mb: 512
+  time_ms: 1000
+  memory_mb: 256
 oracle:
   python3:
     call: "Checker().reverseBits(n, {result})"
     checker: |
-      import copy
-
-
-      from typing import *
-      from collections import *
-      import copy
-      import json
-      import math
-      import bisect
-      import heapq
-      import itertools
-      import functools
-
-      class Solution:
-          def reverseBits(self, n: int) -> int:
-              res = 0
-              for i in range(32):
-                  res = (res << 1) | (n & 1)
-                  n >>= 1
-              return res
-
-
-      def array_to_list_node_local(values):
-          dummy = ListNode(0)
-          tail = dummy
-          for value in values:
-              tail.next = ListNode(value)
-              tail = tail.next
-          return dummy.next
-
-      def array_to_tree_node_local(values):
-          if not values:
-              return None
-          root = TreeNode(values[0])
-          queue = deque([root])
-          index = 1
-          while queue and index < len(values):
-              node = queue.popleft()
-              if index < len(values) and values[index] is not None:
-                  node.left = TreeNode(values[index])
-                  queue.append(node.left)
-              index += 1
-              if index < len(values) and values[index] is not None:
-                  node.right = TreeNode(values[index])
-                  queue.append(node.right)
-              index += 1
-          return root
-
-      def list_node_to_array_local(node):
-          out = []
-          seen = 0
-          while node is not None and seen < 100000:
-              out.append(node.val)
-              node = node.next
-              seen += 1
-          return out
-
-      def tree_node_to_array_local(root):
-          if root is None:
-              return []
-          out = []
-          q = deque([root])
-          while q:
-              node = q.popleft()
-              if node is None:
-                  out.append(None)
-                  continue
-              out.append(node.val)
-              q.append(node.left)
-              q.append(node.right)
-          while out and out[-1] is None:
-              out.pop()
-          return out
-
-      def deep_sort(value):
-          if isinstance(value, list):
-              normalized = [deep_sort(item) for item in value]
-              return sorted(normalized, key=lambda item: json.dumps(item, sort_keys=True))
-          if isinstance(value, dict):
-              return {key: deep_sort(val) for key, val in sorted(value.items())}
-          return value
-
-      def normalize_expected(value):
-          kind = "int"
-          if kind == "list_node":
-              return list_node_to_array_local(value)
-          if kind == "tree_node":
-              return tree_node_to_array_local(value)
-          return value & 0xFFFFFFFF
-
-      def normalize_actual(value):
-          return value & 0xFFFFFFFF
-
-      def prepare_input(value, kind):
-          if kind == "tree_node":
-              return array_to_tree_node_local(value)
-          if kind == "list_node":
-              return array_to_list_node_local(value)
-          return copy.deepcopy(value)
-
       class Checker:
           def reverseBits(self, n, result):
-              prepared_n = prepare_input(n, "int")
-              expected = Solution().reverseBits(prepared_n)
-              expected = normalize_expected(expected)
-              actual = normalize_actual(result)
-              return deep_sort(expected) == deep_sort(actual)
+              if not isinstance(n, int) or not isinstance(result, int):
+                  return False
+              if n < 0 or n > 2147483646 or (n & 1) != 0:
+                  return False
+              expected = 0
+              x = n
+              for _ in range(32):
+                  expected = (expected << 1) | (x & 1)
+                  x >>= 1
+              return result == expected
 seed: 190
 tests:
-  - name: "case_01"
-    in:
-      n: 1586693669
-    out: 2757806458
-  - name: "case_02"
-    in:
-      n: 2030176116
-    out: 786448542
-  - name: "case_03"
-    in:
-      n: 663714923
-    out: 3594449380
-  - name: "case_04"
-    in:
-      n: -1075398108
-    out: 610101245
-  - name: "case_05"
-    in:
-      n: 1336864470
-    out: 1802991090
-  - name: "case_06"
-    in:
-      n: 1465688968
-    out: 298138346
-  - name: "case_07"
-    in:
-      n: -1315842169
-    out: 3790309773
-  - name: "case_08"
-    in:
-      n: -578345935
-    out: 2351227323
-  - name: "case_09"
-    in:
-      n: 573292939
-    out: 3515077700
-  - name: "case_10"
-    in:
-      n: -1509091044
-    out: 949530725
-  - name: "case_11"
-    in:
-      n: 862047050
-    out: 1389594316
-  - name: "case_12"
-    in:
-      n: -514084133
-    out: 3679312519
-  - name: "case_13"
-    in:
-      n: 1183640701
-    out: 3191288162
-  - name: "case_14"
-    in:
-      n: 708439292
-    out: 1060609108
-  - name: "case_15"
-    in:
-      n: -10573822
-    out: 1075149567
-  - name: "case_16"
-    in:
-      n: 998311106
-    out: 1126203868
-  - name: "case_17"
-    in:
-      n: -1960785022
-    out: 1104348369
-  - name: "case_18"
-    in:
-      n: -1223816089
-    out: 3861934317
-  - name: "case_19"
-    in:
-      n: -1258675650
-    out: 2084855597
-  - name: "case_20"
-    in:
-      n: 1917029781
-    out: 2846999118
-  - name: "case_21"
-    in:
-      n: -2054318028
-    out: 739881377
-  - name: "case_22"
-    in:
-      n: 1716678380
-    out: 930499174
-  - name: "case_23"
-    in:
-      n: 726137777
-    out: 2380260052
-  - name: "case_24"
-    in:
-      n: -300607483
-    out: 2685970551
-  - name: "case_25"
-    in:
-      n: -1472245689
-    out: 3792370709
-  - name: "case_26"
-    in:
-      n: -1303037307
-    out: 2707204685
-  - name: "case_27"
-    in:
-      n: -1547541519
-    out: 2412135365
-  - name: "case_28"
-    in:
-      n: -1285208549
-    out: 3630343885
-  - name: "case_29"
-    in:
-      n: 2090309600
-    out: 132770110
-  - name: "case_30"
-    in:
-      n: 109149450
-    out: 1354662240
-  - name: "case_31"
-    in:
-      n: 1246911321
-    out: 2597997138
-  - name: "case_32"
-    in:
-      n: 62516913
-    out: 2373426624
-  - name: "case_33"
-    in:
-      n: -459202235
-    out: 2726593831
-  - name: "case_34"
-    in:
-      n: 733127354
-    out: 1564822996
-  - name: "case_35"
-    in:
-      n: -2083361171
-    out: 3061205953
-  - name: "case_36"
-    in:
-      n: -1623744325
-    out: 3708153081
-  - name: "case_37"
-    in:
-      n: -577089562
-    out: 1743935931
-  - name: "case_38"
-    in:
-      n: -1786883597
-    out: 3481960105
-  - name: "case_39"
-    in:
-      n: -1063845964
-    out: 771713283
-  - name: "case_40"
-    in:
-      n: 679446131
-    out: 3462528532
-  - name: "case_41"
-    in:
-      n: 722258705
-    out: 2295541972
-  - name: "case_42"
-    in:
-      n: -615031993
-    out: 3805997787
-  - name: "case_43"
-    in:
-      n: 1194034614
-    out: 1839322338
-  - name: "case_44"
-    in:
-      n: 1547845474
-    out: 1190937146
-  - name: "case_45"
-    in:
-      n: 1807616789
-    out: 2832235990
-  - name: "case_46"
-    in:
-      n: -1773841220
-    out: 1026204265
-  - name: "case_47"
-    in:
-      n: -682101093
-    out: 3647990507
-  - name: "case_48"
-    in:
-      n: -846545496
-    out: 364728755
-  - name: "case_49"
-    in:
-      n: -1325779364
-    out: 980180749
-  - name: "case_50"
-    in:
-      n: -1060308252
-    out: 660550403
-  - name: "case_51"
-    in:
-      n: 1739799249
-    out: 2338115046
-  - name: "case_52"
-    in:
-      n: 1207745550
-    out: 1883062242
-  - name: "case_53"
-    in:
-      n: -1169458348
-    out: 719245917
-  - name: "case_54"
-    in:
-      n: -167713001
-    out: 3907453039
-  - name: "case_55"
-    in:
-      n: 887846468
-    out: 577689388
-  - name: "case_56"
-    in:
-      n: -161532842
-    out: 1781332591
-  - name: "case_57"
-    in:
-      n: -2018748296
-    out: 505034209
-  - name: "case_58"
-    in:
-      n: -450593937
-    out: 4141753511
-  - name: "case_59"
-    in:
-      n: 1283012624
-    out: 136093234
-  - name: "case_60"
-    in:
-      n: -2028547275
-    out: 2899011809
-  - name: "case_61"
-    in:
-      n: -617181177
-    out: 3758714075
-  - name: "case_62"
-    in:
-      n: -844860684
-    out: 793650611
-  - name: "case_63"
-    in:
-      n: -1392776083
-    out: 3057114933
-  - name: "case_64"
-    in:
-      n: 353290821
-    out: 2723377320
-  - name: "generated_01"
-    seed: 19001
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
-  - name: "generated_02"
-    seed: 19002
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
-  - name: "generated_03"
-    seed: 19003
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
-  - name: "generated_04"
-    seed: 19004
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
-  - name: "generated_05"
-    seed: 19005
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
-  - name: "generated_06"
-    seed: 19006
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
-  - name: "generated_07"
-    seed: 19007
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
-  - name: "generated_08"
-    seed: 19008
-    in:
-      n:
-        gen: "int"
-        min: 0
-        max: 2147483647
+  - name: example1
+    in:
+      n: 43261596
+    out: 964176192
+  - name: example2
+    in:
+      n: 2147483644
+    out: 1073741822
+  - name: zero
+    in:
+      n: 0
+    out: 0
+  - name: low_bit_only
+    in:
+      n: 2
+    out: 1073741824
+  - name: low_pair
+    in:
+      n: 6
+    out: 1610612736
+  - name: power_of_two
+    in:
+      n: 8
+    out: 268435456
+  - name: shifted_nibble
+    in:
+      n: 16
+    out: 134217728
+  - name: sparse_low
+    in:
+      n: 18
+    out: 1207959552
+  - name: answer_to_life
+    in:
+      n: 42
+    out: 1409286144
+  - name: alternating_byte
+    in:
+      n: 170
+    out: 1426063360
+  - name: byte_boundary_even
+    in:
+      n: 254
+    out: 2130706432
+  - name: sparse_mid
+    in:
+      n: 1026
+    out: 1075838976
+  - name: alternating_halfword
+    in:
+      n: 43690
+    out: 1431633920
+  - name: all_low_sixteen_except_one
+    in:
+      n: 65534
+    out: 2147418112
+  - name: single_middle_bit
+    in:
+      n: 65536
+    out: 32768
+  - name: sparse_high
+    in:
+      n: 262146
+    out: 1073750016
+  - name: near_2p20
+    in:
+      n: 1048574
+    out: 2147479552
+  - name: exact_2p20
+    in:
+      n: 1048576
+    out: 2048
+  - name: near_2p24
+    in:
+      n: 16777214
+    out: 2147483392
+  - name: exact_2p24
+    in:
+      n: 16777216
+    out: 128
+  - name: pattern_0011
+    in:
+      n: 286331152
+    out: 143165576
+  - name: pattern_0101
+    in:
+      n: 572662306
+    out: 1145324612
+  - name: pattern_0110
+    in:
+      n: 858993458
+    out: 1288490188
+  - name: pattern_1000
+    in:
+      n: 1145324612
+    out: 572662306
+  - name: just_below_half_max
+    in:
+      n: 1073741822
+    out: 2147483644
+  - name: exact_half_max
+    in:
+      n: 1073741824
+    out: 2
+  - name: pattern_1010
+    in:
+      n: 1431655762
+    out: 1252698794
+  - name: pattern_1010_shifted
+    in:
+      n: 1431655764
+    out: 715827882
+  - name: pattern_1100
+    in:
+      n: 1717986918
+    out: 1717986918
+  - name: mixed_high_pattern
+    in:
+      n: 2004318070
+    out: 1861152494
+  - name: near_sign_boundary_minus_ten
+    in:
+      n: 2147483634
+    out: 1342177278
+  - name: near_sign_boundary_minus_eight
+    in:
+      n: 2147483636
+    out: 805306366
+  - name: near_sign_boundary_minus_six
+    in:
+      n: 2147483638
+    out: 1879048190
+  - name: near_sign_boundary_minus_four
+    in:
+      n: 2147483640
+    out: 536870910
+  - name: near_sign_boundary_minus_two_alt
+    in:
+      n: 2147483642
+    out: 1610612734
+  - name: max_even_input
+    in:
+      n: 2147483646
+    out: 2147483646
