@@ -42,7 +42,7 @@ You are helping generate a test manifest for the openleetcode project.
 
 openleetcode is a CLI tool to run LeetCode solutions locally. Test suites are YAML manifests. Supported languages: cpp, rust, python3, python2, ruby, java, csharp, kotlin, go, dart, swift, typescript.
 
-Generate 30-35 tests.
+Generate 35-40 tests.
 
 CRITICAL YAML RULE:
 Never use flow-style mappings { } anywhere in the output.
@@ -430,7 +430,7 @@ Trees: compressed BFS, null marks absent child, trailing nulls stripped.
 - All problem examples as static tests
 - Use `out` only when the problem has exactly one correct answer
 - Use oracle for problems where multiple valid answers exist
-- 25-30 tests total covering edge cases:
+- 35-40 tests total covering edge cases:
   - min/max values
   - single element
   - duplicates
