@@ -92,6 +92,7 @@ mkUI opts = do
         uiSymbols = symbolsFor symbolSet
       }
 
+-- Source: https://github.com/sindresorhus/is-unicode-supported/blob/main/index.js
 supportsUnicodeSymbols :: Handle -> IO Bool
 supportsUnicodeSymbols handle = do
   if os /= "mingw32"
@@ -174,7 +175,6 @@ plainLine scope section msg =
         then ": "
         else ": " <> section <> ": "
 
--- Source: https://github.com/sindresorhus/is-unicode-supported/blob/main/index.js
 symbolsFor :: SymbolSet -> UISymbols
 symbolsFor UnicodeSymbols =
   UISymbols
