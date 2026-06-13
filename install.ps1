@@ -45,11 +45,11 @@ function info ($msg) {
 }
 
 function success ($msg) {
-    Write-Host "${GREEN}✓ $msg${RESET}"
+    Write-Host "${GREEN}√ $msg${RESET}"
 }
 
 function error ($msg) {
-    Write-Host "${RED}✗ $msg${RESET}"
+    Write-Host "${RED}x $msg${RESET}"
 }
 
 banner
