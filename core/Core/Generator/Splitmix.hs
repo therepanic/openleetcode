@@ -80,12 +80,10 @@ generateArr (GenArr distinct sortedRows l (GenArrInfo inner) et) lang gen =
       (rows, gen'') = generateNestedRows distinct len inner lang gen'
       rendered = applySorted sortedRows rows
    in (renderNestedArr lang et rendered, gen'')
-generateArr (GenArr True sortedVals l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
+generateArr (GenArr True _ l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
   let (v, gen') = generateIntegral l gen
       len = min (read (T.unpack v) :: Int) (fromIntegral (hi - lo + 1))
-      vec = V.fromList [lo .. hi]
-      (shuffled, gen'') = fisherYates vec gen'
-      nums = applySorted sortedVals (V.toList (V.take len shuffled))
+      (nums, gen'') = generateDistinctIntegrals len lo hi gen'
       result = T.intercalate ", " (map (T.pack . show) nums)
    in (result, gen'')
 generateArr (GenArr False sortedVals l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
@@ -221,6 +219,17 @@ generateIntegralInRange lo hi gen =
       val = lo + fromIntegral (mod w range)
    in (val, gen')
 
+generateDistinctIntegrals :: Int -> Integer -> Integer -> SMGen -> ([Integer], SMGen)
+generateDistinctIntegrals len lo hi = go S.empty [] len
+  where
+    go seen acc remaining g
+      | remaining <= 0 = (reverse acc, g)
+      | otherwise =
+          let (val, g') = generateIntegralInRange lo hi g
+           in if S.member val seen
+                then go seen acc remaining g'
+                else go (S.insert val seen) (val : acc) (remaining - 1) g'
+
 generateFloatInRange :: Double -> Double -> Int -> SMGen -> (Double, SMGen)
 generateFloatInRange lo hi prec gen =
   let factor = 10 ^ prec
@@ -251,13 +260,15 @@ generateNestedRows :: Bool -> Int -> GenArr -> Language -> SMGen -> ([Text], SMG
 generateNestedRows distinct len inner lang gen
   | distinct = goDistinct S.empty [] len (len * 20 + 100) gen
   | otherwise =
-      foldl'
-        ( \(acc, g) _ ->
-            let (row, g') = generateArr inner lang g
-             in (acc ++ [row], g')
-        )
-        (([] :: [Text]), gen)
-        [1 .. len]
+      let (rows, g') =
+            foldl'
+              ( \(acc, g) _ ->
+                  let (row, g'') = generateArr inner lang g
+                   in (row : acc, g'')
+              )
+              ([] :: [Text], gen)
+              [1 .. len]
+       in (reverse rows, g')
   where
     goDistinct _ acc 0 _ g = (reverse acc, g)
     goDistinct _ acc _ 0 g = (reverse acc, g)
