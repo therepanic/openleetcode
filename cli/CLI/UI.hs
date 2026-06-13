@@ -282,7 +282,7 @@ updateChecklistStep checklist idx newStatus newText =
 stopChecklist :: Checklist -> IO ()
 stopChecklist checklist = do
   writeIORef (clStopRef checklist) True
-  withMVar (clRenderLock checklist) $ \_ -> moveCursorToChecklistBottom checklist
+  withMVar (clRenderLock checklist) $ \_ -> pure ()
 
 failActiveChecklistStep :: Checklist -> IO ()
 failActiveChecklistStep checklist =
@@ -337,13 +337,6 @@ renderChecklistLineLocked checklist idx = do
       TIO.putStr (cursorDown (total - idx))
       TIO.putStr "\r"
       hFlush stdout
-
-moveCursorToChecklistBottom :: Checklist -> IO ()
-moveCursorToChecklistBottom checklist = do
-  steps <- readIORef (clStepsRef checklist)
-  TIO.putStr (cursorDown (length steps))
-  TIO.putStr "\r"
-  hFlush stdout
 
 checklistBlock :: Checklist -> [ChecklistStep] -> Int -> Text
 checklistBlock checklist steps frameIdx =
