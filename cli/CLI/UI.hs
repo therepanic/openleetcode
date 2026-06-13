@@ -14,7 +14,7 @@ import Data.Char (toLower)
 import Data.Foldable (for_)
 import Data.IORef (IORef, atomicModifyIORef', modifyIORef', newIORef, readIORef, writeIORef)
 import Data.List (isInfixOf)
-import Data.Maybe (isNothing)
+import Data.Maybe (isJust, isNothing)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
@@ -40,7 +40,8 @@ data GlobalOptions = GlobalOptions
 
 data UI = UI
   { uiMode :: OutputMode,
-    uiUseColor :: Bool
+    uiUseColor :: Bool,
+    uiSymbols :: UISymbols
   }
 
 data StepStatus = StepPending | StepActive | StepDone | StepFailed
@@ -61,6 +62,15 @@ data Checklist = Checklist
     clRenderLock :: MVar ()
   }
 
+data SymbolSet = UnicodeSymbols | AsciiSymbols deriving (Eq, Show)
+
+data UISymbols = UISymbols
+  { symSuccess :: Char,
+    symError :: Char,
+    symPending :: Char,
+    symSpinnerFrames :: String
+  }
+
 data ExitCodeKind = ExitOk | ExitInput | ExitInfra | ExitVerdict
 
 mkUI :: GlobalOptions -> IO UI
@@ -70,7 +80,41 @@ mkUI opts = do
   let richAllowed = stdoutSupportsRich && not (goPlain opts)
   let mode = if richAllowed then Rich else Plain
   let useColor = mode == Rich && not (goNoColor opts) && isNothing noColorEnv
-  pure UI {uiMode = mode, uiUseColor = useColor}
+  unicodeOk <- supportsUnicodeSymbols stdout
+  let symbolSet =
+        if mode == Rich && unicodeOk
+          then UnicodeSymbols
+          else AsciiSymbols
+  pure
+    UI
+      { uiMode = mode,
+        uiUseColor = useColor,
+        uiSymbols = symbolsFor symbolSet
+      }
+
+-- Source: https://github.com/sindresorhus/is-unicode-supported/blob/main/index.js
+supportsUnicodeSymbols :: Handle -> IO Bool
+supportsUnicodeSymbols handle = do
+  if os /= "mingw32"
+    then hIsTerminalDevice handle
+    else do
+      wtSession <- lookupEnv "WT_SESSION"
+      terminusSublime <- lookupEnv "TERMINUS_SUBLIME"
+      conEmuTask <- lookupEnv "ConEmuTask"
+      termProgram <- lookupEnv "TERM_PROGRAM"
+      term <- lookupEnv "TERM"
+      terminalEmulator <- lookupEnv "TERMINAL_EMULATOR"
+      pure $
+        isJust wtSession
+          || isJust terminusSublime
+          || conEmuTask == Just "{cmd::Cmder}"
+          || termProgram == Just "Terminus-Sublime"
+          || termProgram == Just "vscode"
+          || term == Just "xterm-256color"
+          || term == Just "alacritty"
+          || term == Just "rxvt-unicode"
+          || term == Just "rxvt-unicode-256color"
+          || terminalEmulator == Just "JetBrains-JediTerm"
 
 stdinIsInteractive :: IO Bool
 stdinIsInteractive = supportsInteractiveInput stdin
@@ -131,6 +175,22 @@ plainLine scope section msg =
         then ": "
         else ": " <> section <> ": "
 
+symbolsFor :: SymbolSet -> UISymbols
+symbolsFor UnicodeSymbols =
+  UISymbols
+    { symSuccess = '✓',
+      symError = '✗',
+      symPending = '·',
+      symSpinnerFrames = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    }
+symbolsFor AsciiSymbols =
+  UISymbols
+    { symSuccess = '√',
+      symError = 'x',
+      symPending = '.',
+      symSpinnerFrames = "|/-\\"
+    }
+
 putPlain :: Text -> Text -> Text -> IO ()
 putPlain scope section msg = TIO.putStrLn (plainLine scope section msg)
 
@@ -138,10 +198,10 @@ putInfo :: UI -> Text -> IO ()
 putInfo ui msg = TIO.putStrLn (style ui OrangeBold msg)
 
 putSuccess :: UI -> Text -> IO ()
-putSuccess ui msg = TIO.putStrLn (style ui Green ("✓ " <> msg))
+putSuccess ui msg = TIO.putStrLn (style ui Green (T.singleton (symSuccess (uiSymbols ui)) <> " " <> msg))
 
 putErrorLine :: UI -> Text -> IO ()
-putErrorLine ui msg = TIO.putStrLn (style ui Red ("✗ " <> msg))
+putErrorLine ui msg = TIO.putStrLn (style ui Red (T.singleton (symError (uiSymbols ui)) <> " " <> msg))
 
 putDim :: UI -> Text -> IO ()
 putDim ui msg = TIO.putStrLn (style ui Dim msg)
@@ -158,7 +218,7 @@ style ui ansi msg
       Green -> "\ESC[32m"
       Red -> "\ESC[31m"
       Yellow -> "\ESC[33m"
-      Dim -> "\ESC[2m"
+      Dim -> "\ESC[38;5;245m"
       Gray -> "\ESC[38;2;159;159;159m"
       OrangeBold -> "\ESC[1;38;2;255;161;22m"
 
@@ -296,7 +356,7 @@ checklistBlock checklist steps frameIdx =
 renderStepText :: UI -> Int -> ChecklistStep -> Text
 renderStepText ui frameIdx step =
   "  "
-    <> style ui (markerStyle (csStatus step)) (T.singleton (markerChar frameIdx (csStatus step)))
+    <> style ui (markerStyle (csStatus step)) (T.singleton (markerChar ui frameIdx (csStatus step)))
     <> " "
     <> csText step
 
@@ -308,14 +368,15 @@ activeStepIndex = go 0
       | csStatus x == StepActive = Just n
       | otherwise = go (n + 1) xs
 
-markerChar :: Int -> StepStatus -> Char
-markerChar frameIdx = \case
-  StepPending -> '·'
-  StepActive -> spinnerFrames !! (frameIdx `mod` length spinnerFrames)
-  StepDone -> '✓'
-  StepFailed -> '✗'
+markerChar :: UI -> Int -> StepStatus -> Char
+markerChar ui frameIdx = \case
+  StepPending -> symPending symbols
+  StepActive -> frames !! (frameIdx `mod` length frames)
+  StepDone -> symSuccess symbols
+  StepFailed -> symError symbols
   where
-    spinnerFrames = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    symbols = uiSymbols ui
+    frames = symSpinnerFrames symbols
 
 markerStyle :: StepStatus -> AnsiStyle
 markerStyle = \case
