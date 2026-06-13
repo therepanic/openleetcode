@@ -218,7 +218,7 @@ style ui ansi msg
       Green -> "\ESC[32m"
       Red -> "\ESC[31m"
       Yellow -> "\ESC[33m"
-      Dim -> "\ESC[2m"
+      Dim -> "\ESC[38;5;245m"
       Gray -> "\ESC[38;2;159;159;159m"
       OrangeBold -> "\ESC[1;38;2;255;161;22m"
 
