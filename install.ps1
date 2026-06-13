@@ -40,16 +40,39 @@ function banner {
     Write-Host ""
 }
 
+function Test-Utf8Console {
+    return [bool]$env:WT_SESSION `
+        -or [bool]$env:TERMINUS_SUBLIME `
+        -or $env:ConEmuTask -eq '{cmd::Cmder}' `
+        -or $env:TERM_PROGRAM -eq 'Terminus-Sublime' `
+        -or $env:TERM_PROGRAM -eq 'vscode' `
+        -or $env:TERM -eq 'xterm-256color' `
+        -or $env:TERM -eq 'alacritty' `
+        -or $env:TERM -eq 'rxvt-unicode' `
+        -or $env:TERM -eq 'rxvt-unicode-256color' `
+        -or $env:TERMINAL_EMULATOR -eq 'JetBrains-JediTerm'
+}
+
+if (Test-Utf8Console) {
+    $SYMBOL_INFO = '›'
+    $SYMBOL_SUCCESS = '✓'
+    $SYMBOL_ERROR = '✗'
+} else {
+    $SYMBOL_INFO = '›'
+    $SYMBOL_SUCCESS = '√'
+    $SYMBOL_ERROR = 'x'
+}
+
 function info ($msg) {
-    Write-Host "${ORANGE}›${RESET} $msg"
+    Write-Host "${ORANGE}${SYMBOL_INFO}${RESET} $msg"
 }
 
 function success ($msg) {
-    Write-Host "${GREEN}√ $msg${RESET}"
+    Write-Host "${GREEN}${SYMBOL_SUCCESS} $msg${RESET}"
 }
 
 function error ($msg) {
-    Write-Host "${RED}x $msg${RESET}"
+    [Console]::Error.WriteLine("${RED}${SYMBOL_ERROR} $msg${RESET}")
 }
 
 banner

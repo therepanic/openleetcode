@@ -10,14 +10,12 @@ if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
   ORANGE="$(printf '\033[38;2;255;161;22m')"
   GREEN="$(printf '\033[32m')"
   RED="$(printf '\033[31m')"
-  DIM="$(printf '\033[2m')"
   RESET="$(printf '\033[0m')"
 else
   GRAY=""
   ORANGE=""
   GREEN=""
   RED=""
-  DIM=""
   RESET=""
 fi
 
