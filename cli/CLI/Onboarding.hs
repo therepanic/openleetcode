@@ -54,7 +54,7 @@ emitWelcome ui root = case uiMode ui of
     mapM_ (TIO.putStrLn . renderOnboardingBannerLine ui) (T.lines onboardingBanner)
     TIO.putStrLn (style ui OrangeBold "Welcome to openleetcode.")
     TIO.putStrLn (style ui Dim ("Data directory: " <> T.pack root))
-    TIO.putStrLn (style ui Yellow "Tests and runtimes are not installed yet.")
+    TIO.putStrLn (style ui Yellow "Tests and runtimes are not installed yet")
   Plain -> do
     putPlain "onboarding" "" "welcome"
     putPlain "onboarding" "" ("data directory: " <> T.pack root)
@@ -63,7 +63,7 @@ emitWelcome ui root = case uiMode ui of
 emitSkip :: UI -> IO ()
 emitSkip ui = case uiMode ui of
   Rich -> do
-    TIO.putStrLn (style ui Yellow "Skipping download.")
+    TIO.putStrLn (style ui Yellow "Skipping download")
     TIO.putStrLn (style ui Dim "You can install later with:")
     TIO.putStrLn (style ui Dim "  openleetcode download all")
   Plain -> do
@@ -76,7 +76,7 @@ installAll ui = do
     Rich ->
       startChecklist
         ui
-        "Installing"
+        "Installing…"
         [ ChecklistStep StepActive "Downloading repository archive",
           ChecklistStep StepPending "Verifying archive",
           ChecklistStep StepPending "Extracting runtimes",
@@ -112,8 +112,8 @@ installAll ui = do
         case checklist of
           Just cl -> updateChecklistStep cl 3 StepDone "Extracting tests"
           Nothing -> pure ()
-        putSuccess ui "openleetcode is ready."
-        putDim ui "Tip: run `openleetcode --help` or `openleetcode submit <file> --id <id>`."
+        putSuccess ui "openleetcode is ready"
+        putDim ui "Tip: run `openleetcode --help` or `openleetcode submit <file> --id <id>`"
       Plain -> do
         putPlain "onboarding" "installing" "done"
         putPlain "onboarding" "tip" "run `openleetcode --help`"

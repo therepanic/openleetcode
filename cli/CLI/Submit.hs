@@ -295,7 +295,7 @@ renderSubmitFailure :: UI -> SubmitFailure -> IO ()
 renderSubmitFailure ui failure = case failure of
   SubmitMissingSelector -> do
     renderErrorHeader ui "submit" "Missing problem selector."
-    emitDetail ui "submit" "Provide either --id <number> or --title \"<substring>\"."
+    emitDetail ui "submit" "Provide either --id <number> or --title \"<substring>\""
     emitDetail ui "submit" "Example:"
     emitDetail ui "submit" "  openleetcode submit ./solution.py --id 1"
   SubmitSolutionReadError path reason -> do
@@ -303,14 +303,14 @@ renderSubmitFailure ui failure = case failure of
     emitDetail ui "submit" (T.unpack reason)
   SubmitUnknownExtension ext -> do
     renderErrorHeader ui "submit" ("Unknown file extension for language detection: '" ++ T.unpack ext ++ "'")
-    emitDetail ui "submit" "Use --lang <LANG> (see --help for supported values)."
+    emitDetail ui "submit" "Use --lang <LANG> (see --help for supported values)"
   SubmitSuiteNotFoundById taskId ->
-    renderErrorHeader ui "submit" ("Test suite not found for problem id " ++ show taskId ++ ".")
+    renderErrorHeader ui "submit" ("Test suite not found for problem id " ++ show taskId)
   SubmitSuiteNotFoundByTitle title ->
-    renderErrorHeader ui "submit" ("Test suite not found for title matching: \"" ++ T.unpack title ++ "\".")
+    renderErrorHeader ui "submit" ("Test suite not found for title matching: \"" ++ T.unpack title)
   SubmitBackendUnavailable backendUrl -> do
     renderErrorHeader ui "submit" ("Backend is not reachable: " ++ T.unpack backendUrl)
-    emitDetail ui "submit" "Check `openleetcode config list` and your backend service."
+    emitDetail ui "submit" "Check `openleetcode config list` and your backend service"
   SubmitJudgeInternal maybeIdx msg -> do
     renderErrorHeader ui "submit" $
       case maybeIdx of

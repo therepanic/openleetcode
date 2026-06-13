@@ -31,7 +31,7 @@ run runtime opts = do
       Rich ->
         startChecklist
           ui
-          "Downloading"
+          "Downloading…"
           [ ChecklistStep StepActive "Fetching repository archive",
             ChecklistStep StepPending "Writing into data directory"
           ]
@@ -61,9 +61,9 @@ run runtime opts = do
             Nothing -> pure ()
           root <- defaultConfigRoot
           case downloadTarget opts of
-            All -> putSuccess ui "Runtimes and tests updated."
-            Runtimes -> putSuccess ui "Runtimes updated."
-            Tests -> putSuccess ui "Tests updated."
+            All -> putSuccess ui "Runtimes and tests updated"
+            Runtimes -> putSuccess ui "Runtimes updated"
+            Tests -> putSuccess ui "Tests updated"
           putDim ui ("Data directory: " <> T.pack root)
         Plain ->
           putPlain "download" "" $
@@ -78,8 +78,8 @@ run runtime opts = do
       case uiMode ui of
         Rich -> do
           putErrorLine ui ("Download failed: " <> reason)
-          putDim ui "Check your network connection and try again."
+          putDim ui "Check your network connection and try again"
         Plain -> do
           putPlain "download" "error" reason
-          putPlain "download" "" "Check your network connection and try again."
+          putPlain "download" "" "Check your network connection and try again"
       pure (renderExitCode ExitInfra)

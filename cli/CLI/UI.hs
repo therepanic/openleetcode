@@ -409,8 +409,8 @@ emitConfigWarning ui result = case clrWarning result of
   Just warn ->
     case uiMode ui of
       Rich -> do
-        TIO.putStrLn "Warning: could not parse config file, using defaults."
+        TIO.putStrLn "Warning: could not parse config file, using defaults"
         TIO.putStrLn ("Details: " <> sanitizeSingleLine warn)
       Plain -> do
-        putPlain "config" "warning" "could not parse config file, using defaults."
+        putPlain "config" "warning" "could not parse config file, using defaults"
         putPlain "config" "warning" ("Details: " <> sanitizeSingleLine warn)
