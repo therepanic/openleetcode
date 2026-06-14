@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: light)" srcset="assets/logo_light.svg">
-    <img alt="openleetcode" src="assets/logo_dark.svg" width="800">
+    <img alt="openleetcode" src="assets/logo_dark.svg" width="760">
   </picture>
   <br>
   <em>"There are no magic machines and no magic operators." - DHH</em>
