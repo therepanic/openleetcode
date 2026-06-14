@@ -12,8 +12,6 @@
   <a href="https://unlicense.org/"><img alt="License Unlicense" src="https://img.shields.io/badge/license-Unlicense-lightgrey?style=flat"></a>
 </p>
 
----
-
 openleetcode is a local LeetCode runner built around open test suites, made in Haskell.
 
 It takes a normal solution file, finds the matching problem manifest, builds a tiny language-specific harness, sends it to a pluggable execution backend, and judges the result locally. The tests live in the repo. The runtime templates live in the repo. The CLI is just the glue.
