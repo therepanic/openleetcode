@@ -116,7 +116,7 @@ $ cabal test cli-tests
 Run the built executable directly:
 
 ```console
-$ cabal run openleetcode 
+$ cabal run openleetcode
 ```
 
 ## Contributing Without Code
@@ -130,7 +130,6 @@ tests/1-500/1. two-sum/manifest.yaml
 tests/1-500/1. two-sum/sol.py
 tests/1-500/1. two-sum/sol.cpp
 ```
-
 
 There are helper scripts too, because we are all human and writing the 39th edge case by hand is how people start bargaining with spreadsheets.
 
