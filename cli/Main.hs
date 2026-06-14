@@ -5,7 +5,7 @@ module Main where
 import CLI.Commands
 import CLI.Config qualified as Config
 import CLI.Download qualified as Download
-import CLI.Onboarding (runOnboarding)
+import CLI.Onboarding (OnboardingResult (OnboardingExit, OnboardingHandled), runOnboarding)
 import CLI.Runtime (Runtime, mkRuntime)
 import CLI.Submit qualified as Submit
 import CLI.Update qualified as Update
@@ -34,10 +34,12 @@ main = do
             <> footerDoc (Just cliHelpFooter)
         )
   runtime <- mkRuntime (cliGlobalOptions opts)
-  onboardingCode <- runOnboarding runtime
-  if onboardingCode /= 0
-    then exitWith (ExitFailure onboardingCode)
-    else do
+  onboardingResult <- runOnboarding runtime
+  case onboardingResult of
+    OnboardingExit code -> exitWith (ExitFailure code)
+    OnboardingHandled
+      | shouldSkipCommandAfterOnboarding (cliCommand opts) -> exitWith ExitSuccess
+    _ -> do
       code <- dispatch runtime (cliCommand opts)
       exitWith $
         if code == 0
@@ -75,6 +77,10 @@ initConsoleEncoding = do
   _ <- try (hSetEncoding stdout utf8) :: IO (Either SomeException ())
   _ <- try (hSetEncoding stderr utf8) :: IO (Either SomeException ())
   pure ()
+
+shouldSkipCommandAfterOnboarding :: Command -> Bool
+shouldSkipCommandAfterOnboarding (Download _) = True
+shouldSkipCommandAfterOnboarding _ = False
 
 setupWindowsCP :: IO ()
 #if defined(mingw32_HOST_OS)

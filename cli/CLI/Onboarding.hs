@@ -14,21 +14,26 @@ import Data.Text.IO qualified as TIO
 import System.Directory
 import System.IO (hFlush, stdout)
 
-runOnboarding :: Runtime -> IO Int
+data OnboardingResult
+  = OnboardingContinue
+  | OnboardingExit Int
+  | OnboardingHandled
+
+runOnboarding :: Runtime -> IO OnboardingResult
 runOnboarding runtime = do
   let ui = rtUI runtime
   root <- defaultConfigRoot
   exist <- doesDirectoryExist root
   createDirectoryIfMissing False root
   if exist
-    then pure (renderExitCode ExitOk)
+    then pure OnboardingContinue
     else do
       emitWelcome ui root
       interactive <- stdinIsInteractive
       if not interactive
         then do
           putPlain "onboarding" "" "non-interactive stdin, skipping automatic download (run `openleetcode download all`)"
-          pure (renderExitCode ExitOk)
+          pure OnboardingContinue
         else do
           TIO.putStr (renderPrompt ui "Download them now? [Y/n] ")
           hFlush stdout
@@ -36,17 +41,17 @@ runOnboarding runtime = do
           if isSkip answer
             then do
               emitSkip ui
-              pure (renderExitCode ExitOk)
+              pure OnboardingHandled
             else do
               result <- try (installAll ui) :: IO (Either SomeException ())
               case result of
-                Right _ -> pure (renderExitCode ExitOk)
+                Right _ -> pure OnboardingHandled
                 Left exc -> do
                   let reason = classifyException exc
                   case uiMode ui of
                     Rich -> putErrorLine ui ("Setup failed: " <> reason)
                     Plain -> putPlain "onboarding" "error" ("setup failed: " <> reason)
-                  pure (renderExitCode ExitInfra)
+                  pure (OnboardingExit (renderExitCode ExitInfra))
 
 emitWelcome :: UI -> FilePath -> IO ()
 emitWelcome ui root = case uiMode ui of
