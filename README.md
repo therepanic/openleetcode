@@ -74,7 +74,7 @@ Run a solution by problem id:
 $ openleetcode submit ./two_sum.py --id 1
 ```
 
-Run a solution by title substring:
+Run a solution by title:
 
 ```console
 $ openleetcode submit ./solution.cpp --title "two-sum"
@@ -83,7 +83,7 @@ $ openleetcode submit ./solution.cpp --title "two-sum"
 Override language detection when the file extension is ambiguous:
 
 ```console
-$ openleetcode submit ./main.py --id 1 --lang python3
+$ openleetcode submit ./main.abc --id 1 --lang python3
 ```
 
 ## Languages
@@ -94,7 +94,7 @@ The runner has templates for:
 cpp, rust, python3, python2, ruby, java, csharp, kotlin, go, dart, swift, typescript
 ```
 
-Each runtime provides the small compatibility layer LeetCode problems tend to need: JSON output, arrays, matrices, linked lists, and binary trees. A solution should look like a normal LeetCode submission, not a custom openleetcode program.
+Each runtime provides the small compatibility layer LeetCode problems tend to need: JSON output, arrays, matrices, linked lists, binary trees, etc. Imports and common libraries are kept close to the [official LeetCode environments](https://support.leetcode.com/hc/en-us/articles/360011833974-What-are-the-environments-for-the-programming-languages), so a solution should look like a normal LeetCode submission, not a custom openleetcode program.
 
 ## Contributing
 
@@ -129,7 +129,6 @@ tests/1-500/1. two-sum/sol.py
 tests/1-500/1. two-sum/sol.cpp
 ```
 
-If a test needs linked lists, binary trees, generated arrays, matrix type hints, or an oracle checker, do not infer the shape from vibes. Open [TEST_FORMAT.md](TEST_FORMAT.md), steal the closest pattern, then make the manifest boring.
 
 There are helper scripts too, because we are all human and writing the 39th edge case by hand is how people start bargaining with spreadsheets.
 
