@@ -7,16 +7,12 @@
   <em>"There are no magic machines and no magic operators." - DHH</em>
   <br>
   <br>
-  <a href="https://www.haskell.org/" style="text-decoration: none;">
-    <img alt="Made in Haskell" src="https://img.shields.io/badge/made%20in-Haskell-5e5086?style=flat">
-  </a>
-  <a href="https://www.haskell.org/cabal/" style="text-decoration: none;">
-    <img alt="Build with Cabal" src="https://img.shields.io/badge/build-Cabal-1f6feb?style=flat">
-  </a>
-  <a href="https://unlicense.org/" style="text-decoration: none;">
-    <img alt="License Unlicense" src="https://img.shields.io/badge/license-Unlicense-lightgrey?style=flat">
-  </a>
+  <a href="https://www.haskell.org/"><img alt="Made in Haskell" src="https://img.shields.io/badge/made%20in-Haskell-5e5086?style=flat"></a>
+  <a href="https://www.haskell.org/cabal/"><img alt="Build with Cabal" src="https://img.shields.io/badge/build-Cabal-1f6feb?style=flat"></a>
+  <a href="https://unlicense.org/"><img alt="License Unlicense" src="https://img.shields.io/badge/license-Unlicense-lightgrey?style=flat"></a>
 </p>
+
+---
 
 openleetcode is a local LeetCode runner built around open test suites, made in Haskell.
 
