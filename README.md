@@ -62,7 +62,7 @@ $ openleetcode config set backend.url http://localhost:2000
 
 ## Usage
 
-Download the public data assets:
+Download the latest public data assets:
 
 ```console
 $ openleetcode download all
@@ -84,6 +84,12 @@ Override language detection when the file extension is ambiguous:
 
 ```console
 $ openleetcode submit ./main.abc --id 1 --lang python3
+```
+
+Update openleetcode:
+
+```console
+$ openleetcode update
 ```
 
 ## Languages
