@@ -98,6 +98,8 @@ Each runtime provides the small compatibility layer LeetCode problems tend to ne
 
 ## Contributing
 
+For code changes, you need a Haskell toolchain with Cabal.
+
 Build the CLI:
 
 ```console
@@ -114,7 +116,7 @@ $ cabal test cli-tests
 Run the built executable directly:
 
 ```console
-$ cabal run openleetcode --help
+$ cabal run openleetcode 
 ```
 
 ## Contributing Without Code
