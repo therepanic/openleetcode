@@ -24,7 +24,7 @@ SNIPPET_LANGS = [
 
 SUPPORTED_LANGS = {
     "python3": "python3",
-    "python2": "python",
+    "python": "python",
     "ruby": "ruby",
     "cpp": "cpp",
     "java": "java",
