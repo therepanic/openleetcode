@@ -232,7 +232,7 @@ generateDistinctIntegrals len lo hi = go S.empty [] len
 
 generateFloatInRange :: Double -> Double -> Int -> SMGen -> (Double, SMGen)
 generateFloatInRange lo hi prec gen =
-  let factor = 10 ^ prec
+  let factor = (10 :: Integer) ^ prec
       loI = round (lo * fromIntegral factor) :: Integer
       hiI = round (hi * fromIntegral factor) :: Integer
       (n, gen') = generateIntegralInRange loI hiI gen

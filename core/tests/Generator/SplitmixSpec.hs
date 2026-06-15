@@ -19,7 +19,7 @@ spec = do
       val (GenIntegralInfo (GenIntegralConst 42)) `shouldBe` "42"
 
     it "range stays within bounds" $ do
-      let n = read . T.unpack $ val (GenIntegralInfo (GenIntegralRange 5 10))
+      let n = read . T.unpack $ val (GenIntegralInfo (GenIntegralRange 5 10)) :: Int
       n `shouldSatisfy` (\x -> x >= 5 && x <= 10)
 
   describe "float" $ do
@@ -27,7 +27,7 @@ spec = do
       val (GenFloatInfo (GenFloatConst 3.14)) `shouldBe` "3.14"
 
     it "range stays within bounds" $ do
-      let n = read . T.unpack $ val (GenFloatInfo (GenFloatRange 0.0 1.0 2))
+      let n = read . T.unpack $ val (GenFloatInfo (GenFloatRange 0.0 1.0 2)) :: Double
       n `shouldSatisfy` (\x -> x >= 0.0 && x <= 1.0)
 
   describe "boolean" $ do
@@ -73,7 +73,7 @@ spec = do
     it "distinct boolean array capped at 2" $ do
       let v = val (GenArrInfo (GenArr True False (GenIntegralConst 10) (GenBoolInfo GenBoolGen) Nothing))
       let parts = splitOn ',' (T.unpack v)
-      length parts `shouldSatisfy` (\l -> l <= 2)
+      length parts `shouldSatisfy` (<= 2)
 
     it "non-distinct array has correct length" $ do
       let v = val (GenArrInfo (GenArr False False (GenIntegralConst 5) (GenIntegralInfo (GenIntegralRange 0 100)) Nothing))
@@ -175,7 +175,7 @@ mkData :: Int -> GenInfo -> GenData
 mkData s i = GenData {seed = s, info = i, lang = Python3}
 
 val :: GenInfo -> Text
-val i = val' 42 i
+val = val' 42
 
 val' :: Int -> GenInfo -> Text
 val' s i = generate SplitmixGenerator (mkData s i)

@@ -148,13 +148,13 @@ instance ToJSON PistonExecuteRequest where
       [ "language" .= pistonRequestLanguage req,
         "version" .= pistonRequestVersion req,
         "files"
-          .= ( [object ["content" .= pistonRequestContent req]]
-                 ++ [ object
-                        [ "name" .= E.fileName extraFile,
-                          "content" .= E.fileContent extraFile
-                        ]
-                    | extraFile <- pistonRequestFiles req
-                    ]
+          .= ( object ["content" .= pistonRequestContent req]
+                 : [ object
+                       [ "name" .= E.fileName extraFile,
+                         "content" .= E.fileContent extraFile
+                       ]
+                   | extraFile <- pistonRequestFiles req
+                   ]
              ),
         "run_timeout" .= pistonRequestRunTimeout req,
         "run_memory_limit" .= pistonRequestRunMemoryLimit req

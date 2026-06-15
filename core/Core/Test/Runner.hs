@@ -74,7 +74,7 @@ runSuiteWithProgress exec gen batch suite onProgress = do
       let total = length preparedCases
       let timeLimit = Types.tlTimeMs (Types.tsLimits suite)
       results <- mapM (evaluateCase timeLimit oracleFailure oracleOutputs mainOutputs) preparedCases
-      mapM_ (\done -> onProgress done total) [1 .. total]
+      mapM_ (`onProgress` total) [1 .. total]
       pure $
         case Data.List.find (\(_, res) -> case res of Pass _ -> False; _ -> True) results of
           Just failed -> [failed]
@@ -227,9 +227,12 @@ evaluateCase timeLimit oracleFailure oracleOutputs mainOutputs pc =
             case oracleFailure of
               Just msg -> pure (pcIdx pc, Internal msg)
               Nothing ->
-                case fromJust (M.lookup (pcIdx pc) oracleOutputs) of
-                  True -> pure (pcIdx pc, Pass (mcoTimeMs out))
-                  False -> pure (pcIdx pc, WA Nothing (mcoResult out) (mcoStdout out))
+                ( if fromJust (M.lookup (pcIdx pc) oracleOutputs)
+                    then
+                      pure (pcIdx pc, Pass (mcoTimeMs out))
+                    else
+                      pure (pcIdx pc, WA Nothing (mcoResult out) (mcoStdout out))
+                )
 
 buildMainProgram :: SolutionBatch -> [PreparedCase] -> Text
 buildMainProgram batch cases =
@@ -463,8 +466,8 @@ parseBatchOutputs ::
   IO (M.Map Int a)
 parseBatchOutputs markerBuilder cases stdoutText parseSection = do
   sections <- parseSections markerBuilder (map pcIdx cases) stdoutText
-  fmap M.fromList $
-    mapM
+  M.fromList
+    <$> mapM
       ( \pc -> do
           parsed <- parseSection (pcIdx pc) (fromJust (M.lookup (pcIdx pc) sections))
           pure (pcIdx pc, parsed)
@@ -561,7 +564,7 @@ parseGeneratedRendered schema rendered =
     Types.TPTTreeNode -> textToJsonValue ("[" <> rendered <> "]")
 
 splitTopLevelItems :: Text -> [Text]
-splitTopLevelItems raw = go 0 T.empty [] (T.unpack raw)
+splitTopLevelItems raw = go (0 :: Int) T.empty [] (T.unpack raw)
   where
     go _ current acc [] =
       let item = T.strip current
@@ -626,7 +629,7 @@ jsonAccessorKotlin :: Int -> Text -> Text
 jsonAccessorKotlin idx name = "testVal(\"" <> T.pack (show idx) <> "\", \"" <> name <> "\")"
 
 buildParamPrelude :: Language -> Int -> M.Map Text Types.TestParams -> [Text]
-buildParamPrelude lang idx params = map (\(name, p) -> renderParamDecl lang idx name p) (M.toList params)
+buildParamPrelude lang idx params = map (uncurry (renderParamDecl lang idx)) (M.toList params)
 
 renderParamDecl :: Language -> Int -> Text -> Types.TestParams -> Text
 renderParamDecl Java idx name params = renderJavaDecl (jsonVarName idx name) (jsonAccessorJava idx name) params

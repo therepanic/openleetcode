@@ -14,7 +14,7 @@ import Data.Vector (toList)
 
 data JudgeType = Exact | IgnoreOrder
 
-data Judge = Judge {jType :: JudgeType}
+newtype Judge = Judge {jType :: JudgeType}
 
 data TestLimits = TestLimits {tlTimeMs :: Int, tlMemoryMb :: Int}
 

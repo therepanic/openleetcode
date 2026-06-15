@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Core.Types where
@@ -97,10 +97,9 @@ renderGeneratedCharElem lang c =
     _ -> pack (show c)
 
 instance FromJSON ExecutorType where
-  parseJSON = withText "BackendType" $ \t ->
-    case t of
-      "piston" -> pure Piston
-      other -> fail $ "Unknown backend type: " ++ show other
+  parseJSON = withText "BackendType" $ \case
+    "piston" -> pure Piston
+    other -> fail $ "Unknown backend type: " ++ show other
 
 instance ToJSON ExecutorType where
   toJSON :: ExecutorType -> Value
@@ -114,41 +113,39 @@ instance Read ExecutorType where
   readsPrec _ _ = []
 
 instance FromJSON Language where
-  parseJSON = withText "Language" $ \t ->
-    case t of
-      "python" -> pure Python3
-      "python2" -> pure Python2
-      "cpp" -> pure Cpp
-      "c++" -> pure Cpp
-      "rust" -> pure Rust
-      "ruby" -> pure Ruby
-      "java" -> pure Java
-      "csharp" -> pure CSharp
-      "go" -> pure Go
-      "dart" -> pure Dart
-      "kotlin" -> pure Kotlin
-      "swift" -> pure Swift
-      "typescript" -> pure TypeScript
-      _ -> pure Default
+  parseJSON = withText "Language" $ \case
+    "python" -> pure Python3
+    "python2" -> pure Python2
+    "cpp" -> pure Cpp
+    "c++" -> pure Cpp
+    "rust" -> pure Rust
+    "ruby" -> pure Ruby
+    "java" -> pure Java
+    "csharp" -> pure CSharp
+    "go" -> pure Go
+    "dart" -> pure Dart
+    "kotlin" -> pure Kotlin
+    "swift" -> pure Swift
+    "typescript" -> pure TypeScript
+    _ -> pure Default
 
 instance FromJSONKey Language where
-  fromJSONKey = FromJSONKeyTextParser $ \t ->
-    case t of
-      "python" -> pure Python3
-      "python2" -> pure Python2
-      "cpp" -> pure Cpp
-      "c++" -> pure Cpp
-      "rust" -> pure Rust
-      "python3" -> pure Python3
-      "ruby" -> pure Ruby
-      "java" -> pure Java
-      "csharp" -> pure CSharp
-      "go" -> pure Go
-      "dart" -> pure Dart
-      "kotlin" -> pure Kotlin
-      "swift" -> pure Swift
-      "typescript" -> pure TypeScript
-      _ -> pure Default
+  fromJSONKey = FromJSONKeyTextParser $ \case
+    "python" -> pure Python3
+    "python2" -> pure Python2
+    "cpp" -> pure Cpp
+    "c++" -> pure Cpp
+    "rust" -> pure Rust
+    "python3" -> pure Python3
+    "ruby" -> pure Ruby
+    "java" -> pure Java
+    "csharp" -> pure CSharp
+    "go" -> pure Go
+    "dart" -> pure Dart
+    "kotlin" -> pure Kotlin
+    "swift" -> pure Swift
+    "typescript" -> pure TypeScript
+    _ -> pure Default
 
 instance ToJSON Language where
   toJSON Python3 = "python"
