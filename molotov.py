@@ -1,0 +1,212 @@
+import argparse
+import concurrent.futures
+import json
+import os
+import re
+import sys
+import urllib.request
+from pathlib import Path
+from string import Template
+
+PROBLEMS_DIR = Path(__file__).parent / "generated_problems"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+DEFAULT_MODEL = "deepseek/deepseek-v4-pro"
+DEFAULT_CONCURRENCY = 10
+DEFAULT_LIMIT = None
+TARGET_LANGS = [
+    "python",
+    "ruby",
+    "java",
+    "kotlin",
+    "go",
+    "dart",
+    "swift",
+    "typescript",
+    "rust",
+    "cpp",
+    "csharp",
+]
+OUTPUT_EXTENSIONS = {
+    "python": "py2",
+    "ruby": "rb",
+    "java": "java",
+    "kotlin": "kt",
+    "go": "go",
+    "dart": "dart",
+    "swift": "swift",
+    "typescript": "ts",
+    "rust": "rs",
+    "cpp": "cpp",
+    "csharp": "cs",
+}
+FENCE_PATTERN = re.compile(r"```([a-zA-Z0-9_+-]+)\n(.*?)```", re.DOTALL)
+
+PROMPT_TEMPLATE = Template("""
+You are a code generator.
+
+Input:
+$SNIPPETS
+
+$PYTHON_SOLUTION
+
+Task:
+Implement ALL languages in SNIPPETS except python3 using logic from PYTHON_SOLUTION.
+
+Rules:
+- no explanations
+- no python3 output
+- only fill function bodies
+- keep exact signatures
+- LeetCode-style solutions, no imports / includes / package declarations
+- All necessary imports have already been imported
+- output all languages in one block of code
+- code block language must match the snippet name, e.g. ```java, ```go, ```ruby
+- must be equivalent to Python logic
+
+Return ONLY code.
+""")
+
+
+def generate(prompt, model, api_key):
+    payload = json.dumps(
+        {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "reasoning": {"effort": "low"},
+        }
+    ).encode()
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    req = urllib.request.Request(
+        OPENROUTER_URL,
+        data=payload,
+        headers=headers,
+    )
+
+    with urllib.request.urlopen(req, timeout=180) as r:
+        return json.loads(r.read())
+
+
+def extract_snippets(prompt_text):
+    start_marker = "### Code snippets"
+    end_marker = "### Reference solution"
+    start = prompt_text.find(start_marker)
+    start += len(start_marker)
+    end = prompt_text.find(end_marker, start)
+    snippets = prompt_text[start:end].strip()
+    return snippets
+
+
+def extract_requested_langs(snippets):
+    langs = []
+    for lang in TARGET_LANGS:
+        if re.search(rf"^### {re.escape(lang)}\s*$", snippets, re.MULTILINE):
+            langs.append(lang)
+    return langs
+
+
+def parse_generated_blocks(raw):
+    blocks = {}
+    for lang, code in FENCE_PATTERN.findall(raw):
+        blocks[lang.strip().lower()] = code.strip() + "\n"
+    return blocks
+
+
+def output_path(folder, lang):
+    ext = OUTPUT_EXTENSIONS.get(lang, lang)
+    return folder / f"sol.{ext}"
+
+
+def process(folder, model, api_key):
+    print(f"Start {folder.name}")
+
+    prompt_path = folder / "prompt.txt"
+    python_solution_path = folder / "sol.py"
+
+    prompt_text = prompt_path.read_text(encoding="utf-8")
+    snippets = extract_snippets(prompt_text)
+    langs = extract_requested_langs(snippets)
+
+    python_solution = python_solution_path.read_text(encoding="utf-8").strip()
+
+    prompt = PROMPT_TEMPLATE.substitute(
+        SNIPPETS=snippets,
+        PYTHON_SOLUTION=python_solution,
+    )
+
+    data = generate(prompt, model, api_key)
+    raw = data["choices"][0]["message"]["content"].strip()
+    blocks = parse_generated_blocks(raw)
+
+    missing = [lang for lang in langs if lang not in blocks]
+    if missing:
+        raise ValueError(f"Missing code blocks for languages: {', '.join(missing)}")
+
+    for lang in langs:
+        output_path(folder, lang).write_text(
+            blocks[lang],
+            encoding="utf-8",
+        )
+
+    print(f"Done {folder.name}")
+
+
+def run(concurrency, model, api_key, limit):
+    if not PROBLEMS_DIR.exists():
+        raise FileNotFoundError(f"{PROBLEMS_DIR} does not exist")
+
+    problems = sorted(path for path in PROBLEMS_DIR.iterdir() if path.is_dir())
+    if limit is not None:
+        problems = problems[:limit]
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
+        futures = [
+            executor.submit(
+                process,
+                folder,
+                model,
+                api_key,
+            )
+            for folder in problems
+        ]
+        for future in concurrent.futures.as_completed(futures):
+            future.result()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=DEFAULT_CONCURRENCY,
+    )
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=DEFAULT_LIMIT,
+    )
+
+    args = parser.parse_args()
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+
+    if not api_key:
+        sys.exit("OPENROUTER_API_KEY is not set")
+
+    run(
+        args.concurrency,
+        args.model,
+        api_key,
+        args.limit,
+    )
+
+
+if __name__ == "__main__":
+    main()
