@@ -1,5 +1,5 @@
 import argparse
-import asyncio
+import concurrent.futures
 import json
 import os
 import re
@@ -69,7 +69,7 @@ def fetch_problem_list(skip, limit, hide_premium):
     return data["data"]["problemsetQuestionListV2"]["questions"]
 
 
-async def generate(prompt, model, api_key):
+def generate(prompt, model, api_key):
     payload = json.dumps(
         {
             "model": model,
@@ -92,7 +92,7 @@ async def generate(prompt, model, api_key):
         with urllib.request.urlopen(req, timeout=180) as r:
             return json.loads(r.read())
 
-    return await asyncio.get_event_loop().run_in_executor(None, do_request)
+    return do_request()
 
 
 def normalize_ref(code):
@@ -108,7 +108,7 @@ def normalize_ref(code):
     return f"class Solution:\n{indented}\n"
 
 
-async def process(sem, problem, model, api_key, no_generate):
+def process(problem, model, api_key, no_generate):
     pid, slug = problem["id"], problem["titleSlug"]
 
     folder = PROBLEMS_DIR / f"{pid}. {slug}"
@@ -118,65 +118,64 @@ async def process(sem, problem, model, api_key, no_generate):
         print(f"Skip {pid}. {slug}")
         return
 
-    async with sem:
-        print(f"Start {pid}. {slug}")
+    print(f"Start {pid}. {slug}")
+
+    try:
+        _, content, snippets = get_question_details(slug)
 
         try:
-            _, content, snippets = get_question_details(slug)
+            reference = get_reference_solution(slug)
+        except Exception:
+            reference = "Not found"
 
-            try:
-                reference = get_reference_solution(slug)
-            except Exception:
-                reference = "Not found"
+        prompt = PROMPT_TEMPLATE.substitute(
+            PROBLEM_ID=pid,
+            PROBLEM_TITLE=slug,
+            PROBLEM_CONTENT=content,
+            SNIPPETS=format_snippets(snippets),
+            REFERENCE=reference,
+        )
 
-            prompt = PROMPT_TEMPLATE.substitute(
-                PROBLEM_ID=pid,
-                PROBLEM_TITLE=slug,
-                PROBLEM_CONTENT=content,
-                SNIPPETS=format_snippets(snippets),
-                REFERENCE=reference,
+        folder.mkdir(parents=True, exist_ok=True)
+
+        (folder / "prompt.txt").write_text(
+            prompt,
+            encoding="utf-8",
+        )
+
+        (folder / "sol.py").write_text(
+            normalize_ref(reference),
+            encoding="utf-8",
+        )
+
+        if not no_generate:
+            data = generate(prompt, model, api_key)
+            raw = data["choices"][0]["message"]["content"]
+            clean = re.sub(
+                r"^```[a-zA-Z]*\n?|\n?```$",
+                "",
+                raw.strip(),
             )
 
-            folder.mkdir(parents=True, exist_ok=True)
-
-            (folder / "prompt.txt").write_text(
-                prompt,
+            manifest.write_text(
+                clean,
                 encoding="utf-8",
             )
 
-            (folder / "sol.py").write_text(
-                normalize_ref(reference),
-                encoding="utf-8",
-            )
+        print(f"Done {pid}. {slug}")
 
-            if not no_generate:
-                data = await generate(prompt, model, api_key)
-                raw = data["choices"][0]["message"]["content"]
-                clean = re.sub(
-                    r"^```[a-zA-Z]*\n?|\n?```$",
-                    "",
-                    raw.strip(),
-                )
+    except Exception as e:
+        folder.mkdir(parents=True, exist_ok=True)
 
-                manifest.write_text(
-                    clean,
-                    encoding="utf-8",
-                )
+        (folder / "error.txt").write_text(
+            str(e),
+            encoding="utf-8",
+        )
 
-            print(f"Done {pid}. {slug}")
-
-        except Exception as e:
-            folder.mkdir(parents=True, exist_ok=True)
-
-            (folder / "error.txt").write_text(
-                str(e),
-                encoding="utf-8",
-            )
-
-            print(f"Error {pid}. {slug}: {e}", file=sys.stderr)
+        print(f"Error {pid}. {slug}: {e}", file=sys.stderr)
 
 
-async def run(
+def run(
     skip,
     limit,
     concurrency,
@@ -188,12 +187,10 @@ async def run(
     PROBLEMS_DIR.mkdir(parents=True, exist_ok=True)
 
     problems = fetch_problem_list(skip, limit, hide_premium)
-    sem = asyncio.Semaphore(concurrency)
-
-    await asyncio.gather(
-        *[
-            process(
-                sem,
+    with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
+        futures = [
+            executor.submit(
+                process,
                 p,
                 model,
                 api_key,
@@ -201,7 +198,8 @@ async def run(
             )
             for p in problems
         ]
-    )
+        for future in concurrent.futures.as_completed(futures):
+            future.result()
 
 
 def main():
@@ -236,16 +234,14 @@ def main():
     if not args.no_generate and not api_key:
         sys.exit("OPENROUTER_API_KEY is not set")
 
-    asyncio.run(
-        run(
-            args.skip,
-            args.limit,
-            args.concurrency,
-            args.model,
-            api_key,
-            args.hide_premium,
-            args.no_generate,
-        )
+    run(
+        args.skip,
+        args.limit,
+        args.concurrency,
+        args.model,
+        api_key,
+        args.hide_premium,
+        args.no_generate,
     )
 
 
