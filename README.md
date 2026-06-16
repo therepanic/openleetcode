@@ -41,7 +41,7 @@ On Windows, the installer only installs the CLI. Bring Docker yourself and start
 
 ## Backend
 
-openleetcode currently uses [Piston](https://github.com/engineer-man/piston) as its execution backend. The default config points to:
+openleetcode currently uses [Piston](/backends/piston/docker-compose.yml) as its execution backend. The default config points to:
 
 ```text
 http://localhost:2000
