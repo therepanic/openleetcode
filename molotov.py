@@ -71,7 +71,7 @@ def generate(prompt, model, api_key):
         {
             "model": model,
             "messages": [{"role": "user", "content": prompt}],
-            "reasoning": {"effort": "low"},
+            "reasoning": {"effort": "none"},
         }
     ).encode()
 
