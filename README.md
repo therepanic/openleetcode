@@ -141,8 +141,8 @@ There are helper scripts too, because we are all human and writing the 39th edge
 
 ```console
 $ python generate_prompt.py two-sum
-$ python spartan.py --skip 0 --limit 10 --no-generate
-$ python molotov.py --limit 5 --concurrency 5
+$ python spartan.py --skip 0 --limit 10 --no-generate --concurrency 5
+$ python molotov.py --skip 0 --limit 10 --concurrency 5
 ```
 
 `generate_prompt.py` builds a prompt for one LeetCode problem from its statement, code snippets, and a reference Python solution. `spartan.py` does the same in batches and can ask an LLM through [OpenRouter](https://openrouter.ai/) to draft manifests into `generated_problems/` when `OPENROUTER_API_KEY` is set. `molotov.py` fills in `sol.{lang}` files from those generated folders, reusing `prompt.txt` and `sol.py`. Treat the output like a junior contributor with infinite patience: useful, fast, and still very much in need of review.

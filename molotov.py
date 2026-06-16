@@ -12,7 +12,6 @@ PROBLEMS_DIR = Path(__file__).parent / "generated_problems"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "deepseek/deepseek-v4-pro"
 DEFAULT_CONCURRENCY = 10
-DEFAULT_LIMIT = None
 TARGET_LANGS = [
     "python",
     "ruby",
@@ -155,13 +154,16 @@ def process(folder, model, api_key):
     print(f"Done {folder.name}")
 
 
-def run(concurrency, model, api_key, limit):
+def run(concurrency, model, api_key, limit, skip):
     if not PROBLEMS_DIR.exists():
         raise FileNotFoundError(f"{PROBLEMS_DIR} does not exist")
 
     problems = sorted(path for path in PROBLEMS_DIR.iterdir() if path.is_dir())
+    skip = skip or 0
     if limit is not None:
-        problems = problems[:limit]
+        problems = problems[skip : skip + limit]
+    else:
+        problems = problems[skip:]
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
         futures = [
@@ -191,7 +193,12 @@ def main():
     parser.add_argument(
         "--limit",
         type=int,
-        default=DEFAULT_LIMIT,
+        default=None,
+    )
+    parser.add_argument(
+        "--skip",
+        type=int,
+        default=None,
     )
 
     args = parser.parse_args()
@@ -200,12 +207,7 @@ def main():
     if not api_key:
         sys.exit("OPENROUTER_API_KEY is not set")
 
-    run(
-        args.concurrency,
-        args.model,
-        api_key,
-        args.limit,
-    )
+    run(args.concurrency, args.model, api_key, args.limit, args.skip)
 
 
 if __name__ == "__main__":
