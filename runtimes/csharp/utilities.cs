@@ -143,6 +143,7 @@ partial class _Runner {
     }
 
     static int?[] ToNullableIntArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<int?>();
         return ((JArray)el).Select(x => x == null || x.Type == JTokenType.Null ? (int?)null : ToInt(x)).ToArray();
     }
 
