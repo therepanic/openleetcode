@@ -7,7 +7,8 @@ class ListNode {
   }
 }
 
-function toListNode(arr: number[]): ListNode | null {
+function toListNode(arr: number[] | null | undefined): ListNode | null {
+  if (arr == null) return null;
   if (arr.length === 0) return null;
   const head = new ListNode(arr[0]);
   let cur = head;
@@ -41,8 +42,8 @@ class TreeNode {
   }
 }
 
-function toTreeNode(arr: (number | null)[] | null): TreeNode | null {
-  if (arr === null) return null;
+function toTreeNode(arr: (number | null)[] | null | undefined): TreeNode | null {
+  if (arr == null) return null;
   if (arr.length === 0 || arr[0] === null) return null;
   const root = new TreeNode(arr[0]);
   const queue: TreeNode[] = [root];

@@ -7,7 +7,7 @@ public class ListNode {
     }
 
     public static ListNode ToListNode(int[] arr) {
-        if (arr.Length == 0) return null;
+        if (arr == null || arr.Length == 0) return null;
         var head = new ListNode(arr[0]);
         var cur = head;
         for (int i = 1; i < arr.Length; i++) {
@@ -40,7 +40,7 @@ public class TreeNode {
     }
 
     public static TreeNode ToTreeNode(int?[] arr) {
-        if (arr.Length == 0 || arr[0] == null) return null;
+        if (arr == null || arr.Length == 0 || arr[0] == null) return null;
         var root = new TreeNode(arr[0].Value);
         var queue = new Queue<TreeNode>();
         queue.Enqueue(root);
@@ -119,26 +119,32 @@ partial class _Runner {
     }
 
     static int[] ToIntArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<int>();
         return ((JArray)el).Select(ToInt).ToArray();
     }
 
     static long[] ToLongArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<long>();
         return ((JArray)el).Select(ToLong).ToArray();
     }
 
     static double[] ToDoubleArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<double>();
         return ((JArray)el).Select(ToDouble).ToArray();
     }
 
     static float[] ToFloatArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<float>();
         return ((JArray)el).Select(ToFloat).ToArray();
     }
 
     static bool[] ToBoolArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<bool>();
         return ((JArray)el).Select(ToBool).ToArray();
     }
 
     static string[] ToStringArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<string>();
         return ((JArray)el).Select(ToStringValue).ToArray();
     }
 
@@ -148,34 +154,42 @@ partial class _Runner {
     }
 
     static int[][] ToIntMatrix(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<int[]>();
         return ((JArray)el).Select(ToIntArray).ToArray();
     }
 
     static long[][] ToLongMatrix(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<long[]>();
         return ((JArray)el).Select(ToLongArray).ToArray();
     }
 
     static double[][] ToDoubleMatrix(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<double[]>();
         return ((JArray)el).Select(ToDoubleArray).ToArray();
     }
 
     static float[][] ToFloatMatrix(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<float[]>();
         return ((JArray)el).Select(ToFloatArray).ToArray();
     }
 
     static bool[][] ToBoolMatrix(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<bool[]>();
         return ((JArray)el).Select(ToBoolArray).ToArray();
     }
 
     static string[][] ToStringMatrix(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<string[]>();
         return ((JArray)el).Select(ToStringArray).ToArray();
     }
 
     static char[] ToCharArray(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<char>();
         return ((JArray)el).Select(ToChar).ToArray();
     }
 
     static char[][] ToCharMatrix(JToken el) {
+        if (el == null || el.Type == JTokenType.Null) return Array.Empty<char[]>();
         return ((JArray)el).Select(ToCharArray).ToArray();
     }
 
