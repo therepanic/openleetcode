@@ -50,6 +50,7 @@ List<bool> toBoolArrayValue(dynamic value) {
 }
 
 List<dynamic> toDynamicListValue(dynamic value) {
+  if (value == null) return [];
   return (value as List).toList();
 }
 

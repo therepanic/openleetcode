@@ -54,7 +54,10 @@ fun toBoolArrayValue(value: Any?): BooleanArray =
     (value as List<*>).map { toBoolValue(it) }.toBooleanArray()
 
 fun toNullableIntArrayValue(value: Any?): Array<Int?> =
-    (value as List<*>).map { if (it == null) null else toIntValue(it) }.toTypedArray()
+    when (value) {
+        null -> emptyArray()
+        else -> (value as List<*>).map { if (it == null) null else toIntValue(it) }.toTypedArray()
+    }
 
 fun toIntMatrixValue(value: Any?): Array<IntArray> =
     (value as List<*>).map { row -> toIntArrayValue(row) }.toTypedArray()

@@ -64,6 +64,7 @@ func anyToBoolArray(_ value: Any) -> [Bool] {
 }
 
 func anyToOptionalIntArray(_ value: Any) -> [Int?] {
+    if value is NSNull { return [] }
     return (value as! [Any]).map { item in
         if item is NSNull { return nil }
         return anyToInt(item)

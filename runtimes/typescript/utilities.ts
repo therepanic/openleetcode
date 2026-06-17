@@ -41,7 +41,8 @@ class TreeNode {
   }
 }
 
-function toTreeNode(arr: (number | null)[]): TreeNode | null {
+function toTreeNode(arr: (number | null)[] | null): TreeNode | null {
+  if (arr === null) return null;
   if (arr.length === 0 || arr[0] === null) return null;
   const root = new TreeNode(arr[0]);
   const queue: TreeNode[] = [root];
