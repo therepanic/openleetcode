@@ -10,6 +10,14 @@ use std::fs;
 
 ${IMPORTS}
 
+fn test_val(
+    tests: &BTreeMap<String, BTreeMap<String, TestInput>>,
+    case_id: &str,
+    name: &str,
+) -> JsonValue {
+    tests[case_id][name].val.clone()
+}
+
 fn main() {
     let _TEST_ = load_test_data("test.json");
     ${INSERTION}
@@ -18,3 +26,4 @@ fn main() {
 ${SOLUTION}
 
 ${UTILITIES}
+
