@@ -1,6 +1,6 @@
 class Solution:
     def maxNumber(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
-        
+
         def getDeq(nums: List[int], q: int) -> Deque[int]:
             stack = []
             if q > 0:
@@ -20,7 +20,6 @@ class Solution:
                 else:
                     output.append(b.popleft())
             return output
-            
 
         ans = []
         m, n = len(nums1), len(nums2)

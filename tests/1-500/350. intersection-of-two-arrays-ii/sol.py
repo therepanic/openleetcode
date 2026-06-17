@@ -1,5 +1,6 @@
 from collections import Counter
 
+
 class Solution(object):
     def intersect(self, nums1, nums2):
         counts = Counter(nums1)

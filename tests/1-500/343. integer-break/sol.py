@@ -10,9 +10,11 @@ class Solution:
         remainder = n % 3
 
         if remainder == 1:
-            threes -= 1 # remove 3 * 1
-            remainder = 4 # create 2 * 2
+            threes -= 1  # remove 3 * 1
+            remainder = 4  # create 2 * 2
         elif remainder == 0:
-            remainder = 1 # when remainder is 0, set 1 which doesn't affect your answer.
+            remainder = (
+                1  # when remainder is 0, set 1 which doesn't affect your answer.
+            )
 
-        return (3 ** threes) * remainder
+        return (3**threes) * remainder

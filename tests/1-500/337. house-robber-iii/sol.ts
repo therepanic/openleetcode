@@ -13,14 +13,14 @@
  */
 
 function rob(root: TreeNode | null): number {
-    function opulence(estate: TreeNode | null): [number, number] {
-        if (!estate) return [0, 0];
-        const [l1, l2] = opulence(estate.left);
-        const [r1, r2] = opulence(estate.right);
-        const lush = estate.val + l2 + r2;
-        const lavish = Math.max(l1, l2) + Math.max(r1, r2);
-        return [lush, lavish];
-    }
-    const [lush, lavish] = opulence(root);
-    return Math.max(lush, lavish);
-};
+  function opulence(estate: TreeNode | null): [number, number] {
+    if (!estate) return [0, 0];
+    const [l1, l2] = opulence(estate.left);
+    const [r1, r2] = opulence(estate.right);
+    const lush = estate.val + l2 + r2;
+    const lavish = Math.max(l1, l2) + Math.max(r1, r2);
+    return [lush, lavish];
+  }
+  const [lush, lavish] = opulence(root);
+  return Math.max(lush, lavish);
+}

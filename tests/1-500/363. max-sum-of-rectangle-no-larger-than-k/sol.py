@@ -1,9 +1,11 @@
 from bisect import bisect_left
 from sortedcontainers import SortedSet
+
+
 class Solution:
     def maxSumSubmatrix(self, matrix, k):
         m, n = len(matrix), len(matrix[0])
-        ans = float('-inf')
+        ans = float("-inf")
 
         # Ensure we iterate over the smaller dimension for efficiency
         for left in range(n):
@@ -12,7 +14,7 @@ class Solution:
                 for i in range(m):
                     rowSum[i] += matrix[i][right]
 
-                s=SortedSet([0])
+                s = SortedSet([0])
                 curr = 0
                 for x in rowSum:
                     curr += x

@@ -1,5 +1,6 @@
 import heapq
 
+
 class Solution(object):
     def kSmallestPairs(self, nums1, nums2, k):
         if not nums1 or not nums2:

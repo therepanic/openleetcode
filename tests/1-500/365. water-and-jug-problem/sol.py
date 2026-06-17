@@ -1,5 +1,6 @@
 from collections import deque
 
+
 class Solution:
     def canMeasureWater(self, x, y, target):
         if target > x + y:

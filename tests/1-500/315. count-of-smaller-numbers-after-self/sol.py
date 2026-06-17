@@ -1,7 +1,9 @@
 from sortedcontainers import SortedList
+
+
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
-        
+
         sorted_list = SortedList()
         ans = []
         for n in reversed(nums):

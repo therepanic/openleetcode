@@ -7,4 +7,9 @@ class Solution:
                 freq[x] = 0
                 first[x] = i
             freq[x] += 1
-        return [x for x, _ in sorted(freq.items(), key=lambda item: (-item[1], first[item[0]]))[:k]]
+        return [
+            x
+            for x, _ in sorted(
+                freq.items(), key=lambda item: (-item[1], first[item[0]])
+            )[:k]
+        ]

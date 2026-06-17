@@ -13,11 +13,15 @@
  */
 
 function kthSmallest(root: TreeNode | null, k: number): number {
-    const inorderTraversal = (node: TreeNode | null): number[] => {
-        if (!node) return [];
-        return [...inorderTraversal(node.left), node.val, ...inorderTraversal(node.right)];
-    };
-    
-    const sortedElements = inorderTraversal(root);
-    return sortedElements[k - 1];
-};
+  const inorderTraversal = (node: TreeNode | null): number[] => {
+    if (!node) return [];
+    return [
+      ...inorderTraversal(node.left),
+      node.val,
+      ...inorderTraversal(node.right),
+    ];
+  };
+
+  const sortedElements = inorderTraversal(root);
+  return sortedElements[k - 1];
+}

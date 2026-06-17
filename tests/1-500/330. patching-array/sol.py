@@ -1,8 +1,8 @@
 class Solution:
     def minPatches(self, nums: List[int], n: int) -> int:
         currentSum = 1  # Tracks the smallest number that cannot be formed
-        patches = 0     # Number of patches added
-        index = 0       # Index to iterate through the nums array
+        patches = 0  # Number of patches added
+        index = 0  # Index to iterate through the nums array
 
         # Continue until we can form numbers up to n
         while currentSum <= n:

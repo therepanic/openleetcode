@@ -13,25 +13,25 @@
  */
 
 function countNodes(root: TreeNode | null): number {
-    if (root === null) {
-        return 0;
-    }
-    
-    const leftDepth = getDepth(root.left);
-    const rightDepth = getDepth(root.right);
-    
-    if (leftDepth === rightDepth) {
-        return (1 << leftDepth) + countNodes(root.right);
-    } else {
-        return (1 << rightDepth) + countNodes(root.left);
-    }
-};
+  if (root === null) {
+    return 0;
+  }
+
+  const leftDepth = getDepth(root.left);
+  const rightDepth = getDepth(root.right);
+
+  if (leftDepth === rightDepth) {
+    return (1 << leftDepth) + countNodes(root.right);
+  } else {
+    return (1 << rightDepth) + countNodes(root.left);
+  }
+}
 
 function getDepth(node: TreeNode | null): number {
-    let depth = 0;
-    while (node !== null) {
-        depth++;
-        node = node.left;
-    }
-    return depth;
+  let depth = 0;
+  while (node !== null) {
+    depth++;
+    node = node.left;
+  }
+  return depth;
 }

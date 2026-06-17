@@ -7,6 +7,6 @@ class Solution(object):
         result = 10
         current = 9
         for i in range(2, n + 1):
-            current *= (10 - (i - 1))
+            current *= 10 - (i - 1)
             result += current
         return result

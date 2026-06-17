@@ -13,22 +13,22 @@
  */
 
 function binaryTreePaths(root: TreeNode | null): string[] {
-    const res: string[] = [];
-    if (!root) {
-        return res;
-    }
-    const stack: [TreeNode, string][] = [[root, root.val.toString()]];
-    while (stack.length > 0) {
-        const [node, path] = stack.pop()!;
-        if (!node.left && !node.right) {
-            res.push(path);
-        }
-        if (node.right) {
-            stack.push([node.right, path + "->" + node.right.val]);
-        }
-        if (node.left) {
-            stack.push([node.left, path + "->" + node.left.val]);
-        }
-    }
+  const res: string[] = [];
+  if (!root) {
     return res;
-};
+  }
+  const stack: [TreeNode, string][] = [[root, root.val.toString()]];
+  while (stack.length > 0) {
+    const [node, path] = stack.pop()!;
+    if (!node.left && !node.right) {
+      res.push(path);
+    }
+    if (node.right) {
+      stack.push([node.right, path + "->" + node.right.val]);
+    }
+    if (node.left) {
+      stack.push([node.left, path + "->" + node.left.val]);
+    }
+  }
+  return res;
+}

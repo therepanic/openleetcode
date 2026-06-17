@@ -5,7 +5,7 @@ class Solution:
 
         # Record the last occurrence of each character
         for i, char in enumerate(s):
-            last_occur[char] = i        
+            last_occur[char] = i
 
         stack = []  # Stack to store characters in the desired order
         visited = set()  # Set to keep track of visited characters
@@ -20,5 +20,5 @@ class Solution:
 
             visited.add(s[i])  # Mark as visited
             stack.append(s[i])  # Add to the stack
-        
-        return ''.join(stack)  # Concatenate the characters remaining in the stack
+
+        return "".join(stack)  # Concatenate the characters remaining in the stack

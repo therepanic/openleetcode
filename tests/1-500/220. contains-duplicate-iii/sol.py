@@ -1,5 +1,7 @@
 class Solution:
-    def containsNearbyAlmostDuplicate(self, nums: List[int], indexDiff: int, valueDiff: int) -> bool:
+    def containsNearbyAlmostDuplicate(
+        self, nums: List[int], indexDiff: int, valueDiff: int
+    ) -> bool:
         if indexDiff <= 0 or valueDiff < 0:
             return False
 
