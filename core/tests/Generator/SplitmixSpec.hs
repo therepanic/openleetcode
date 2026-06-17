@@ -84,6 +84,11 @@ spec = do
       let nums = parseNums (T.unpack v)
       length nums `shouldBe` length (nub nums)
 
+    it "distinct sorted int array is actually sorted" $ do
+      let v = val (GenArrInfo (GenArr True True (GenIntegralConst 10) (GenIntegralInfo (GenIntegralRange 1 100)) Nothing))
+      let nums = parseNums (T.unpack v)
+      nums `shouldBe` sort nums
+
   describe "determinism" $ do
     it "same seed produces same result" $ do
       let d = mkData 99 (GenIntegralInfo (GenIntegralRange 0 1000))

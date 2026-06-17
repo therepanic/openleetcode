@@ -80,11 +80,11 @@ generateArr (GenArr distinct sortedRows l (GenArrInfo inner) et) lang gen =
       (rows, gen'') = generateNestedRows distinct len inner lang gen'
       rendered = applySorted sortedRows rows
    in (renderNestedArr lang et rendered, gen'')
-generateArr (GenArr True _ l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
+generateArr (GenArr True sortedVals l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
   let (v, gen') = generateIntegral l gen
       len = min (read (T.unpack v) :: Int) (fromIntegral (hi - lo + 1))
       (nums, gen'') = generateDistinctIntegrals len lo hi gen'
-      result = T.intercalate ", " (map (T.pack . show) nums)
+      result = T.intercalate ", " (map (T.pack . show) (applySorted sortedVals nums))
    in (result, gen'')
 generateArr (GenArr False sortedVals l (GenIntegralInfo (GenIntegralRange lo hi)) _) _ gen =
   let (v, gen') = generateIntegral l gen
