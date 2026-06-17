@@ -30,36 +30,30 @@ bool toBoolValue(dynamic value) {
 }
 
 List<int> toIntArrayValue(dynamic value) {
-  if (value == null) return <int>[];
   final list = value as List;
   return list.map((item) => toIntValue(item)).toList();
 }
 
 List<double> toDoubleArrayValue(dynamic value) {
-  if (value == null) return <double>[];
   final list = value as List;
   return list.map((item) => toDoubleValue(item)).toList();
 }
 
 List<String> toStringArrayValue(dynamic value) {
-  if (value == null) return <String>[];
   final list = value as List;
   return list.map((item) => toStringValue(item)).toList();
 }
 
 List<bool> toBoolArrayValue(dynamic value) {
-  if (value == null) return <bool>[];
   final list = value as List;
   return list.map((item) => toBoolValue(item)).toList();
 }
 
 List<dynamic> toDynamicListValue(dynamic value) {
-  if (value == null) return <dynamic>[];
   return (value as List).toList();
 }
 
 List<List<String>> toStringMatrixValue(dynamic value) {
-  if (value == null) return <List<String>>[];
   final rows = value as List;
   return rows
       .map((row) => (row as List).map((cell) => toStringValue(cell)).toList())
@@ -67,19 +61,16 @@ List<List<String>> toStringMatrixValue(dynamic value) {
 }
 
 List<List<int>> toIntMatrixValue(dynamic value) {
-  if (value == null) return <List<int>>[];
   final rows = value as List;
   return rows.map((row) => toIntArrayValue(row)).toList();
 }
 
 List<List<double>> toDoubleMatrixValue(dynamic value) {
-  if (value == null) return <List<double>>[];
   final rows = value as List;
   return rows.map((row) => toDoubleArrayValue(row)).toList();
 }
 
 List<List<bool>> toBoolMatrixValue(dynamic value) {
-  if (value == null) return <List<bool>>[];
   final rows = value as List;
   return rows.map((row) => toBoolArrayValue(row)).toList();
 }

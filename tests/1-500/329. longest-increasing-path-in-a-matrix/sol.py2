@@ -1,0 +1,51 @@
+class Solution(object):
+    def longestIncreasingPath(self, matrix):
+        """
+        :type matrix: List[List[int]]
+        :rtype: int
+        """
+        row=len(matrix)
+        col=len(matrix[0])
+        dp=[[0]*col for _ in range(row)]
+        
+        def graph(i,j):
+            if(dp[i][j]!=0):
+                return dp[i][j]
+            if(i-1>=0 and matrix[i-1][j]>matrix[i][j]):
+                if dp[i-1][j]==0:
+                    dp[i-1][j]=graph(i-1,j)
+                top=dp[i-1][j]
+            else:
+                top=0
+
+            if(i+1<row and matrix[i+1][j]>matrix[i][j]):
+                if dp[i+1][j]==0:
+                    dp[i+1][j]=graph(i+1,j)
+                down=dp[i+1][j]
+            else:
+                down=0
+
+            if(j-1>=0 and matrix[i][j-1]>matrix[i][j]):
+                if dp[i][j-1]==0:
+                    dp[i][j-1]=graph(i,j-1)
+                left=dp[i][j-1]
+            else:
+                left=0
+
+            if(j+1<col and matrix[i][j+1]>matrix[i][j]):
+                if dp[i][j+1]==0:
+                    dp[i][j+1]=graph(i,j+1)
+                right=dp[i][j+1]
+            else:
+                right=0
+
+            dp[i][j]=1+max(top,down,left,right)
+            return dp[i][j]
+
+        maxi=0
+        for i in range(row):
+            for j in range(col):
+                num=graph(i,j)
+                maxi=max(maxi,num)
+
+        return maxi

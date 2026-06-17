@@ -1,0 +1,293 @@
+entry:
+  id: 239
+  title: "sliding-window-maximum"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxSlidingWindow({nums}, {k})"
+    rust: "Solution::max_sliding_window({nums}, {k})"
+    python3: "Solution().maxSlidingWindow({nums}, {k})"
+    python2: "Solution().maxSlidingWindow({nums}, {k})"
+    ruby: "max_sliding_window({nums}, {k})"
+    java: "new Solution().maxSlidingWindow({nums}, {k})"
+    csharp: "new Solution().MaxSlidingWindow({nums}, {k})"
+    kotlin: "Solution().maxSlidingWindow({nums}, {k})"
+    go: "maxSlidingWindow({nums}, {k})"
+    dart: "Solution().maxSlidingWindow({nums}, {k})"
+    swift: "Solution().maxSlidingWindow({nums}, {k})"
+    typescript: "maxSlidingWindow({nums}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().check(nums, k, {result})"
+    checker: |
+      from collections import deque
+      from typing import Any, List
+
+      class Checker:
+          def check(self, nums: List[int], k: int, result: Any) -> bool:
+              if not isinstance(nums, list) or not isinstance(k, int):
+                  return False
+              if k < 1 or k > len(nums):
+                  return False
+              if not isinstance(result, list):
+                  return False
+              if len(result) != len(nums) - k + 1:
+                  return False
+              if any(not isinstance(x, int) for x in result):
+                  return False
+
+              expected = []
+              q = deque()
+              for idx, num in enumerate(nums):
+                  while q and q[-1] < num:
+                      q.pop()
+                  q.append(num)
+                  if idx >= k and nums[idx - k] == q[0]:
+                      q.popleft()
+                  if idx >= k - 1:
+                      expected.append(q[0])
+              return result == expected
+
+seed: 239239
+
+tests:
+  - name: "ex1"
+    in:
+      nums: [1, 3, -1, -3, 5, 3, 6, 7]
+      k: 3
+    out: [3, 3, 5, 5, 6, 7]
+
+  - name: "ex2"
+    in:
+      nums: [1]
+      k: 1
+    out: [1]
+
+  - name: "t03"
+    in:
+      nums: [9, 11]
+      k: 2
+    out: [11]
+
+  - name: "t04"
+    in:
+      nums: [4, -2]
+      k: 1
+    out: [4, -2]
+
+  - name: "t05"
+    in:
+      nums: [4, 2, 12, 3]
+      k: 2
+    out: [4, 12, 12]
+
+  - name: "t06"
+    in:
+      nums: [4, 2, 12, 3]
+      k: 3
+    out: [12, 12]
+
+  - name: "t07"
+    in:
+      nums: [7, 7, 7, 7]
+      k: 2
+    out: [7, 7, 7]
+
+  - name: "t08"
+    in:
+      nums: [10, 9, 8, 7, 6]
+      k: 2
+    out: [10, 9, 8, 7]
+
+  - name: "t09"
+    in:
+      nums: [-1, -3, -5, -2, -8]
+      k: 3
+    out: [-1, -2, -2]
+
+  - name: "t10"
+    in:
+      nums: [1, 3, 1, 2, 0, 5]
+      k: 3
+    out: [3, 3, 2, 5]
+
+  - name: "t11"
+    in:
+      nums: [2, 1, 2, 1, 2]
+      k: 1
+    out: [2, 1, 2, 1, 2]
+
+  - name: "t12"
+    in:
+      nums: [2, 1, 2, 1, 2]
+      k: 5
+    out: [2]
+
+  - name: "t13"
+    in:
+      nums: [10000, -10000, 9999, -9999, 5000]
+      k: 2
+    out: [10000, 9999, 9999, 5000]
+
+  - name: "t14"
+    in:
+      nums: [5, 4, 3, 2, 1, 2, 3, 4, 5]
+      k: 4
+    out: [5, 4, 3, 3, 4, 5]
+
+  - name: "t15"
+    in:
+      nums: [0, 0, 0, 0, 0]
+      k: 3
+    out: [0, 0, 0]
+
+  - name: "t16"
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      k: 6
+    out: [6]
+
+  - name: "t17"
+    in:
+      nums: [6, 5, 4, 3, 2, 1]
+      k: 6
+    out: [6]
+
+  - name: "t18"
+    in:
+      nums: [-4, -2, -5, -1, -3]
+      k: 2
+    out: [-2, -2, -1, -1]
+
+  - name: "t19"
+    in:
+      nums: [8, 1, 3, 5, 7, 2, 6, 4]
+      k: 4
+    out: [8, 7, 7, 7, 7]
+
+  - name: "t20"
+    in:
+      nums: [5, 5, 5, 5, 5, 5, 5]
+      k: 2
+    out: [5, 5, 5, 5, 5, 5]
+
+  - name: "t21"
+    in:
+      nums: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 3
+    out: [9, 8, 7, 6, 5, 4, 3]
+
+  - name: "t22"
+    in:
+      nums: [1, 2, 3, 2, 2, 2, 4, 4, 4, 1]
+      k: 3
+    out: [3, 3, 3, 2, 4, 4, 4, 4]
+
+  - name: "t23"
+    in:
+      nums: [2, 2, 2, 2, 2, 3]
+      k: 4
+    out: [2, 2, 3]
+
+  - name: "t24"
+    in:
+      nums: [3, 1, 4, 1, 5, 9, 2, 6, 5]
+      k: 5
+    out: [5, 9, 9, 9, 9]
+
+  - name: "t25"
+    in:
+      nums: [-10000, 10000, -10000, 10000]
+      k: 2
+    out: [10000, 10000, 10000]
+
+  - name: "t26"
+    in:
+      nums: [1, 4, 2, 3, 6, 2, 5, 1]
+      k: 3
+    out: [4, 4, 6, 6, 6, 5]
+
+  - name: "t27"
+    in:
+      nums: [5]
+      k: 1
+    out: [5]
+
+  - name: "t28"
+    in:
+      nums: [2, 3, 1, 2, 4, 3]
+      k: 3
+    out: [3, 3, 4, 4]
+
+  - name: "t29"
+    in:
+      nums: [1, 2, 1, 2, 1, 2, 1, 2]
+      k: 2
+    out: [2, 2, 2, 2, 2, 2, 2]
+
+  - name: "t30"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+      k: 5
+    out: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+  - name: "t31"
+    in:
+      nums: [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 5
+    out: [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5]
+
+  - name: "t32"
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      k: 7
+    out: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+  - name: "t33"
+    in:
+      nums: [0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1, -2, -3, 0, -1]
+      k: 10
+    out: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+  - name: "large_increasing"
+    seed: 239001
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      k: 50000
+
+  - name: "large_constant"
+    seed: 239002
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 99999

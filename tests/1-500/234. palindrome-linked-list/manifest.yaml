@@ -1,0 +1,278 @@
+entry:
+  id: 234
+  title: palindrome-linked-list
+  params:
+    head:
+      type: list_node
+  call:
+    cpp: Solution().isPalindrome({head})
+    rust: Solution::is_palindrome({head})
+    python3: Solution().isPalindrome({head})
+    python2: Solution().isPalindrome({head})
+    ruby: is_palindrome({head})
+    java: new Solution().isPalindrome({head})
+    csharp: new Solution().IsPalindrome({head})
+    kotlin: Solution().isPalindrome({head})
+    go: isPalindrome({head})
+    dart: Solution().isPalindrome({head})
+    swift: Solution().isPalindrome({head})
+    typescript: isPalindrome({head})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().isPalindrome(head, {result})
+    checker: |
+      from typing import Any
+
+      class Checker:
+          def isPalindrome(self, head: Any, result: Any) -> bool:
+              if not isinstance(result, bool):
+                  return False
+
+              def to_values(node: Any) -> list:
+                  if node is None:
+                      return []
+                  if hasattr(node, "val") and hasattr(node, "next"):
+                      values = []
+                      seen = 0
+                      while node is not None:
+                          values.append(node.val)
+                          node = node.next
+                          seen += 1
+                          if seen > 100000:
+                              return []
+                      return values
+                  if isinstance(node, list) or isinstance(node, tuple):
+                      if len(node) == 0:
+                          return []
+                      if len(node) == 2 and not all(isinstance(x, (int, bool, float, str)) for x in node):
+                          return [node[0]] + to_values(node[1])
+                      return list(node)
+                  return []
+
+              values = to_values(head)
+              return result == (values == values[::-1])
+seed: 234
+tests:
+  - name: example_1
+    in:
+      head: [1, 2, 2, 1]
+    out: true
+  - name: example_2
+    in:
+      head: [1, 2]
+    out: false
+  - name: single_zero
+    in:
+      head: [0]
+    out: true
+  - name: single_nine
+    in:
+      head: [9]
+    out: true
+  - name: two_equal
+    in:
+      head: [4, 4]
+    out: true
+  - name: two_different
+    in:
+      head: [4, 5]
+    out: false
+  - name: odd_pal_1
+    in:
+      head: [1, 2, 1]
+    out: true
+  - name: odd_pal_2
+    in:
+      head: [1, 2, 3, 2, 1]
+    out: true
+  - name: even_pal_1
+    in:
+      head: [1, 2, 3, 3, 2, 1]
+    out: true
+  - name: even_pal_2
+    in:
+      head: [9, 8, 8, 9]
+    out: true
+  - name: odd_nonpal_middle
+    in:
+      head: [1, 2, 3, 4, 1]
+    out: false
+  - name: even_nonpal_left
+    in:
+      head: [1, 2, 2, 2]
+    out: false
+  - name: even_nonpal_right
+    in:
+      head: [1, 1, 2, 1]
+    out: false
+  - name: leading_zero_pal
+    in:
+      head: [0, 1, 0]
+    out: true
+  - name: trailing_zero_pal
+    in:
+      head: [0, 0]
+    out: true
+  - name: all_same_len5
+    in:
+      head: [7, 7, 7, 7, 7]
+    out: true
+  - name: all_same_len6
+    in:
+      head: [3, 3, 3, 3, 3, 3]
+    out: true
+  - name: near_pal_1
+    in:
+      head: [1, 2, 3, 3, 2, 2]
+    out: false
+  - name: near_pal_2
+    in:
+      head: [6, 5, 4, 5, 6, 7]
+    out: false
+  - name: near_pal_3
+    in:
+      head: [8, 1, 0, 1, 9]
+    out: false
+  - name: small_pal_1
+    in:
+      head: [2, 4, 6, 4, 2]
+    out: true
+  - name: small_pal_2
+    in:
+      head: [2, 4, 6, 6, 4, 2]
+    out: true
+  - name: small_nonpal_1
+    in:
+      head: [2, 4, 6, 4, 3]
+    out: false
+  - name: small_nonpal_2
+    in:
+      head: [2, 4, 6, 6, 4, 3]
+    out: false
+  - name: generated_pal_1
+    seed: 101
+    in:
+      head:
+        gen: array
+        len: 11
+        of:
+          gen: int
+          min: 0
+          max: 9
+  - name: generated_pal_2
+    seed: 102
+    in:
+      head:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: 0
+          max: 9
+  - name: generated_pal_3
+    seed: 103
+    in:
+      head:
+        gen: array
+        len: 31
+        of:
+          gen: int
+          min: 0
+          max: 9
+  - name: generated_pal_4
+    seed: 104
+    in:
+      head:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: 0
+          max: 9
+  - name: generated_pal_5
+    seed: 105
+    in:
+      head:
+        gen: array
+        len: 99999
+        of:
+          gen: int
+          min: 0
+          max: 9
+  - name: max_len_pal_even
+    in:
+      head:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 0
+          max: 0
+  - name: max_len_nonpal_even
+    in:
+      head:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 0
+          max: 0
+  - name: long_alt_nonpal_1
+    in:
+      head:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 0
+          max: 1
+  - name: long_alt_nonpal_2
+    in:
+      head:
+        gen: array
+        len: 50001
+        of:
+          gen: int
+          min: 0
+          max: 1
+  - name: long_zero_pal
+    in:
+      head:
+        gen: array
+        len: 75000
+        of:
+          gen: int
+          min: 0
+          max: 0
+  - name: long_nine_pal
+    in:
+      head:
+        gen: array
+        len: 75001
+        of:
+          gen: int
+          min: 9
+          max: 9
+  - name: long_edge_nonpal
+    in:
+      head:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 0
+          max: 9
+  - name: long_mixed_nonpal
+    in:
+      head:
+        gen: array
+        len: 60000
+        of:
+          gen: int
+          min: 0
+          max: 9

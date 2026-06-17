@@ -1,0 +1,246 @@
+entry:
+  id: 316
+  title: "remove-duplicate-letters"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().removeDuplicateLetters({s})"
+    rust: "Solution::remove_duplicate_letters({s})"
+    python3: "Solution().removeDuplicateLetters({s})"
+    python2: "Solution().removeDuplicateLetters({s})"
+    ruby: "remove_duplicate_letters({s})"
+    java: "new Solution().removeDuplicateLetters({s})"
+    csharp: "new Solution().RemoveDuplicateLetters({s})"
+    kotlin: "Solution().removeDuplicateLetters({s})"
+    go: "removeDuplicateLetters({s})"
+    dart: "Solution().removeDuplicateLetters({s})"
+    swift: "Solution().removeDuplicateLetters({s})"
+    typescript: "removeDuplicateLetters({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(s, {result})"
+    checker: |
+      from typing import Any
+
+      class Checker:
+          def check(self, s: str, result: Any) -> bool:
+              if not isinstance(result, str):
+                  return False
+              if any(not ('a' <= ch <= 'z') for ch in s):
+                  return False
+              if any(not ('a' <= ch <= 'z') for ch in result):
+                  return False
+
+              seen = set()
+              for ch in result:
+                  if ch in seen:
+                      return False
+                  seen.add(ch)
+
+              idx = 0
+              for ch in s:
+                  if idx < len(result) and ch == result[idx]:
+                      idx += 1
+              if idx != len(result):
+                  return False
+
+              last = {}
+              for i, ch in enumerate(s):
+                  last[ch] = i
+              stack = []
+              in_stack = set()
+              for i, ch in enumerate(s):
+                  if ch in in_stack:
+                      continue
+                  while stack and ch < stack[-1] and i < last[stack[-1]]:
+                      in_stack.remove(stack.pop())
+                  stack.append(ch)
+                  in_stack.add(ch)
+              return ''.join(stack) == result
+
+seed: 316316
+
+tests:
+  - name: "example_1"
+    in:
+      s: "bcabc"
+    out: "abc"
+
+  - name: "example_2"
+    in:
+      s: "cbacdcbc"
+    out: "acdb"
+
+  - name: "single_letter"
+    in:
+      s: "a"
+    out: "a"
+
+  - name: "all_same_small"
+    in:
+      s: "aaaaa"
+    out: "a"
+
+  - name: "already_distinct_in_order"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "reverse_distinct"
+    in:
+      s: "zyxwvutsrqponmlkjihgfedcba"
+    out: "zyxwvutsrqponmlkjihgfedcba"
+
+  - name: "simple_duplicate_front"
+    in:
+      s: "abacb"
+    out: "abc"
+
+  - name: "repeat_with_smallest_late"
+    in:
+      s: "bbcaac"
+    out: "bac"
+
+  - name: "classic_stack_pop"
+    in:
+      s: "cdadabcc"
+    out: "adbc"
+
+  - name: "interleaved_duplicates"
+    in:
+      s: "ecbacba"
+    out: "eacb"
+
+  - name: "many_duplicates_one_letter_each_cluster"
+    in:
+      s: "leetcode"
+    out: "letcod"
+
+  - name: "two_letters_many_times"
+    in:
+      s: "bbbbbaaaaa"
+    out: "ba"
+
+  - name: "two_letters_alternating"
+    in:
+      s: "abababab"
+    out: "ab"
+
+  - name: "small_lexicographic_reorder"
+    in:
+      s: "cbcbcaba"
+    out: "bca"
+
+  - name: "near_minimal_with_tail"
+    in:
+      s: "bcabca"
+    out: "abc"
+
+  - name: "prefix_pops_multiple"
+    in:
+      s: "thesqtitxyetpxloeevdeqifkz"
+    out: "hesitxyplovdqfkz"
+
+  - name: "all_letters_twice_in_order"
+    in:
+      s: "aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "all_letters_twice_reverse_blocks"
+    in:
+      s: "zzyyxxwwvvuuttssrrqqppoonnmmllkkjjiihhggffeeddccbbaa"
+    out: "zyxwvutsrqponmlkjihgfedcba"
+
+  - name: "starts_with_large_letters_then_small"
+    in:
+      s: "zzzzaabc"
+    out: "zabc"
+
+  - name: "repeated_prefix_suffix"
+    in:
+      s: "cabca"
+    out: "abc"
+
+  - name: "duplicate_blocks_then_tail"
+    in:
+      s: "ddccbbbaaa"
+    out: "dcba"
+
+  - name: "mixed_order_small"
+    in:
+      s: "babc"
+    out: "abc"
+
+  - name: "mixed_order_medium"
+    in:
+      s: "cbcbac"
+    out: "bac"
+
+  - name: "all_letters_three_times_ordered"
+    in:
+      s: "aaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "all_letters_three_times_reversed"
+    in:
+      s: "zzzyyyxxxwwwvvvuuutttsssrrrqqqpppooonnnmmmlllkkkjjjiiihhhgggfffeeedddcccbbbaaa"
+    out: "zyxwvutsrqponmlkjihgfedcba"
+
+  - name: "stress_1_patterned_long"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "stress_2_reverse_patterned_long"
+    in:
+      s: "zyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcba"
+    out: "abcdefghizyxwvutsrqponmlkj"
+
+  - name: "stress_3_two_phase_long"
+    in:
+      s: "mmmmmmmmmmmmmmmmmmmmnnnnnnnnnnnnnnnnnnnnaaaaaaaaaabbbbbbbbbbbbbbbbbbbb"
+    out: "mnab"
+
+  - name: "stress_4_tail_forces_keep_late"
+    in:
+      s: "aaaaaaaaabbbbbbbbbcccccccccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "stress_5_front_forces_pops"
+    in:
+      s: "zzzzzzzzzzzaaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeee"
+    out: "zabcde"
+
+  - name: "stress_6_sparse_duplicates"
+    in:
+      s: "abacdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "stress_7_duplicate_last_char"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzb"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "stress_8_duplicate_first_char"
+    in:
+      s: "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+    out: "abcdefghijklmnopqrstuvwxyz"
+
+  - name: "stress_9_mixed_clusters"
+    in:
+      s: "cccbbaaaazzzzyyyxxxwwvvuuttssrrqqppoonnmmllkkjjiihhggffeedd"
+    out: "cbazyxwvutsrqponmlkjihgfed"
+
+  - name: "stress_10_long_single_cycle"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcba"
+    out: "abcdefghijklmnopqrstuvwxyz"

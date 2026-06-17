@@ -1,5 +1,3 @@
-#![allow(non_snake_case)]
-
 pub struct Solution;
 
 use std::time::Instant;

@@ -204,20 +204,6 @@ pub fn load_test_data(path: &str) -> BTreeMap<String, BTreeMap<String, TestInput
     out
 }
 
-pub fn test_val(
-    tests: &BTreeMap<String, BTreeMap<String, TestInput>>,
-    case_id: &str,
-    name: &str,
-) -> JsonValue {
-    tests
-        .get(case_id)
-        .unwrap()
-        .get(name)
-        .unwrap()
-        .val
-        .clone()
-}
-
 pub fn json_to_i32(v: &JsonValue) -> i32 {
     match v {
         JsonValue::Number(n) => *n as i32,

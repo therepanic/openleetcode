@@ -1,0 +1,300 @@
+entry:
+  id: 373
+  title: "find-k-pairs-with-smallest-sums"
+  params:
+    nums1:
+      type: array
+      items:
+        type: int
+    nums2:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().kSmallestPairs({nums1}, {nums2}, {k})"
+    rust: "Solution::k_smallest_pairs({nums1}, {nums2}, {k})"
+    python3: "Solution().kSmallestPairs({nums1}, {nums2}, {k})"
+    python2: "Solution().kSmallestPairs({nums1}, {nums2}, {k})"
+    ruby: "k_smallest_pairs({nums1}, {nums2}, {k})"
+    java: "new Solution().kSmallestPairs({nums1}, {nums2}, {k})"
+    csharp: "new Solution().KSmallestPairs({nums1}, {nums2}, {k})"
+    kotlin: "Solution().kSmallestPairs({nums1}, {nums2}, {k})"
+    go: "kSmallestPairs({nums1}, {nums2}, {k})"
+    dart: "Solution().kSmallestPairs({nums1}, {nums2}, {k})"
+    swift: "Solution().kSmallestPairs({nums1}, {nums2}, {k})"
+    typescript: "kSmallestPairs({nums1}, {nums2}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().kSmallestPairs(nums1, nums2, k, {result})"
+    checker: |
+      import heapq
+      from typing import Any, List
+
+      class Checker:
+          def kSmallestPairs(self, nums1: List[int], nums2: List[int], k: int, result: Any) -> bool:
+              if not isinstance(nums1, list) or not isinstance(nums2, list) or not isinstance(k, int):
+                  return False
+              if k < 1 or len(nums1) < 1 or len(nums2) < 1:
+                  return False
+              if len(nums1) > 100000 or len(nums2) > 100000 or k > 10000:
+                  return False
+              if any(not isinstance(x, int) for x in nums1) or any(not isinstance(x, int) for x in nums2):
+                  return False
+              if any(nums1[i] > nums1[i + 1] for i in range(len(nums1) - 1)):
+                  return False
+              if any(nums2[i] > nums2[i + 1] for i in range(len(nums2) - 1)):
+                  return False
+              if k > len(nums1) * len(nums2):
+                  return False
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(p, list) or len(p) != 2 or any(not isinstance(x, int) for x in p) for p in result):
+                  return False
+
+              expected = []
+              heap = []
+              visited = set()
+              heapq.heappush(heap, (nums1[0] + nums2[0], 0, 0))
+              visited.add((0, 0))
+              while heap and len(expected) < k:
+                  _, i, j = heapq.heappop(heap)
+                  expected.append([nums1[i], nums2[j]])
+                  if j + 1 < len(nums2) and (i, j + 1) not in visited:
+                      visited.add((i, j + 1))
+                      heapq.heappush(heap, (nums1[i] + nums2[j + 1], i, j + 1))
+                  if i + 1 < len(nums1) and (i + 1, j) not in visited:
+                      visited.add((i + 1, j))
+                      heapq.heappush(heap, (nums1[i + 1] + nums2[j], i + 1, j))
+              return result == expected
+
+seed: 373373
+
+tests:
+  - name: "ex1"
+    in:
+      nums1: [1, 7, 11]
+      nums2: [2, 4, 6]
+      k: 3
+  - name: "ex2"
+    in:
+      nums1: [1, 1, 2]
+      nums2: [1, 2, 3]
+      k: 2
+  - name: "min_pair"
+    in:
+      nums1: [1]
+      nums2: [1]
+      k: 1
+  - name: "two_by_two_small"
+    in:
+      nums1: [1, 2]
+      nums2: [3, 4]
+      k: 1
+  - name: "k_equals_all"
+    in:
+      nums1: [1, 2]
+      nums2: [3, 4]
+      k: 4
+  - name: "duplicates_left"
+    in:
+      nums1: [1, 1, 1]
+      nums2: [2, 3]
+      k: 4
+  - name: "duplicates_right"
+    in:
+      nums1: [2, 3]
+      nums2: [1, 1, 1]
+      k: 4
+  - name: "all_equal"
+    in:
+      nums1: [5, 5, 5]
+      nums2: [5, 5]
+      k: 5
+  - name: "negatives_only"
+    in:
+      nums1: [-8, -4, -1]
+      nums2: [-7, -3, -2]
+      k: 4
+  - name: "mixed_signs"
+    in:
+      nums1: [-10, -1, 2]
+      nums2: [-5, 0, 6]
+      k: 5
+  - name: "zeroes"
+    in:
+      nums1: [0, 0, 0]
+      nums2: [0, 0]
+      k: 3
+  - name: "short_k_middle"
+    in:
+      nums1: [1, 7, 11]
+      nums2: [2, 4, 6]
+      k: 4
+  - name: "tie_sums"
+    in:
+      nums1: [1, 2, 3]
+      nums2: [1, 2, 3]
+      k: 6
+  - name: "increasing_pairs"
+    in:
+      nums1: [1, 2, 4]
+      nums2: [1, 3, 5]
+      k: 7
+  - name: "one_side_sparse"
+    in:
+      nums1: [1, 100, 1000]
+      nums2: [2, 3, 4]
+      k: 5
+  - name: "one_side_dense"
+    in:
+      nums1: [1, 2, 3]
+      nums2: [100, 200, 300]
+      k: 4
+  - name: "small_plateau"
+    in:
+      nums1: [1, 1, 2]
+      nums2: [1, 1, 2]
+      k: 5
+  - name: "ascending_vs_descending_sums"
+    in:
+      nums1: [1, 4, 9]
+      nums2: [2, 3, 8]
+      k: 6
+  - name: "large_values_positive"
+    in:
+      nums1: [1000000000, 1000000000]
+      nums2: [1000000000, 1000000000]
+      k: 3
+  - name: "large_values_negative"
+    in:
+      nums1: [-1000000000, -999999999]
+      nums2: [-1000000000, -999999998]
+      k: 3
+  - name: "mixed_large_values"
+    in:
+      nums1: [-1000000000, 0, 1000000000]
+      nums2: [-1000000000, 0, 1000000000]
+      k: 8
+  - name: "single_pair_repeated_sum"
+    in:
+      nums1: [1, 1, 2, 2]
+      nums2: [1, 1, 2]
+      k: 6
+  - name: "frontier_shift"
+    in:
+      nums1: [1, 2, 8, 16]
+      nums2: [1, 3, 4, 32]
+      k: 7
+  - name: "boundary_k_one"
+    in:
+      nums1: [2, 3, 4]
+      nums2: [1, 2, 3]
+      k: 1
+  - name: "boundary_k_product"
+    in:
+      nums1: [2, 3, 4]
+      nums2: [1, 2, 3]
+      k: 9
+  - name: "long_first_short_second"
+    in:
+      nums1: [1, 2, 3, 4, 5, 6]
+      nums2: [1, 10]
+      k: 8
+  - name: "short_first_long_second"
+    in:
+      nums1: [1, 10]
+      nums2: [1, 2, 3, 4, 5, 6]
+      k: 8
+  - name: "interleaved_ties"
+    in:
+      nums1: [1, 3, 5]
+      nums2: [2, 4, 6]
+      k: 8
+  - name: "more_duplicates"
+    in:
+      nums1: [1, 2, 2, 2]
+      nums2: [1, 1, 2, 2]
+      k: 8
+  - name: "wide_gap"
+    in:
+      nums1: [1, 2, 100]
+      nums2: [3, 4, 5, 6]
+      k: 6
+  - name: "deep_frontier"
+    in:
+      nums1: [1, 2, 3, 1000]
+      nums2: [1, 2, 3, 4, 5]
+      k: 10
+  - name: "small_big_mix"
+    in:
+      nums1: [-5, -4, 10, 11]
+      nums2: [-6, -1, 0, 20]
+      k: 9
+  - name: "single_step_growth"
+    in:
+      nums1: [1, 2, 3, 4, 5]
+      nums2: [1, 1, 1, 1, 1]
+      k: 10
+  - name: "near_max_k_small_product"
+    in:
+      nums1: [1, 2, 3, 4, 5]
+      nums2: [10, 20, 30, 40, 50]
+      k: 12
+  - name: "generated_large_1"
+    seed: 373001
+    in:
+      nums1:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      k: 10000
+  - name: "generated_large_2"
+    seed: 373002
+    in:
+      nums1:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      k: 9999

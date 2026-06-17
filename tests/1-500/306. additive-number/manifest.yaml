@@ -1,0 +1,214 @@
+entry:
+  id: 306
+  title: additive-number
+  params:
+    num:
+      type: string
+  call:
+    cpp: "Solution().isAdditiveNumber({num})"
+    rust: "Solution::is_additive_number({num}.to_string())"
+    python3: "Solution().isAdditiveNumber({num})"
+    python2: "Solution().isAdditiveNumber({num})"
+    ruby: "is_additive_number({num})"
+    java: "new Solution().isAdditiveNumber({num})"
+    csharp: "new Solution().IsAdditiveNumber({num})"
+    kotlin: "Solution().isAdditiveNumber({num})"
+    go: "isAdditiveNumber({num})"
+    dart: "Solution().isAdditiveNumber({num})"
+    swift: "Solution().isAdditiveNumber({num})"
+    typescript: "isAdditiveNumber({num})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().isAdditiveNumber(num, {result})"
+    checker: |
+      class Checker:
+          def isAdditiveNumber(self, num, result):
+              if not isinstance(result, bool):
+                  return False
+
+              def add_strings(a, b):
+                  i, j = len(a) - 1, len(b) - 1
+                  carry = 0
+                  out = []
+                  while i >= 0 or j >= 0 or carry:
+                      s = carry
+                      if i >= 0:
+                          s += ord(a[i]) - 48
+                          i -= 1
+                      if j >= 0:
+                          s += ord(b[j]) - 48
+                          j -= 1
+                      out.append(chr(48 + (s % 10)))
+                      carry = s // 10
+                  return ''.join(reversed(out))
+
+              n = len(num)
+              expected = False
+              for i in range(1, n):
+                  if num[0] == '0' and i > 1:
+                      break
+                  for j in range(i + 1, n):
+                      if num[i] == '0' and j > i + 1:
+                          break
+                      a = num[:i]
+                      b = num[i:j]
+                      k = j
+                      count = 2
+                      while k < n:
+                          c = add_strings(a, b)
+                          if not num.startswith(c, k):
+                              break
+                          k += len(c)
+                          a, b = b, c
+                          count += 1
+                      if k == n and count >= 3:
+                          expected = True
+                          return result == expected
+              return result == expected
+seed: 306306
+tests:
+  - name: example 1
+    in:
+      num: "112358"
+    out: true
+  - name: example 2
+    in:
+      num: "199100199"
+    out: true
+  - name: too short
+    in:
+      num: "1"
+    out: false
+  - name: two digits
+    in:
+      num: "12"
+    out: false
+  - name: simple additive
+    in:
+      num: "123"
+    out: true
+  - name: leading zero trio
+    in:
+      num: "000"
+    out: true
+  - name: leading zero invalid
+    in:
+      num: "010"
+    out: false
+  - name: leading zero in second number
+    in:
+      num: "1023"
+    out: false
+  - name: additive with zero
+    in:
+      num: "101"
+    out: true
+  - name: additive with zeros
+    in:
+      num: "101202303"
+    out: true
+  - name: classic false
+    in:
+      num: "102030"
+    out: true
+  - name: classic true
+    in:
+      num: "12122436"
+    out: true
+  - name: false with trailing mismatch
+    in:
+      num: "1123581"
+    out: false
+  - name: false due to wrong next sum
+    in:
+      num: "112359"
+    out: false
+  - name: false due to too many digits
+    in:
+      num: "199100198"
+    out: false
+  - name: large true fibonacci prefix
+    in:
+      num: "112358132134558914423337761098715972584418167651094617711286"
+    out: false
+  - name: large false fibonacci prefix
+    in:
+      num: "112358132134558914423337761098715972584418167651094617711287"
+    out: false
+  - name: many leading zeros invalid
+    in:
+      num: "0001"
+    out: false
+  - name: zero and one
+    in:
+      num: "011235"
+    out: true
+  - name: hidden leading zero invalid
+    in:
+      num: "120122436"
+    out: false
+  - name: true mixed sizes
+    in:
+      num: "198019823962"
+    out: true
+  - name: false mixed sizes
+    in:
+      num: "198019823961"
+    out: false
+  - name: true long carry chain
+    in:
+      num: "12122436601096516155"
+    out: false
+  - name: false long carry chain
+    in:
+      num: "12122436601096516156"
+    out: false
+  - name: all zeros longer
+    in:
+      num: "000000"
+    out: true
+  - name: all zeros with extra digit
+    in:
+      num: "0000001"
+    out: false
+  - name: true with larger first term
+    in:
+      num: "123581321"
+    out: true
+  - name: false with larger first term
+    in:
+      num: "123581322"
+    out: false
+  - name: true from 1 99 100
+    in:
+      num: "199100299399"
+    out: true
+  - name: false from 1 99 100
+    in:
+      num: "199100299398"
+    out: false
+  - name: false tiny zeroes
+    in:
+      num: "01"
+    out: false
+  - name: true nested carry
+    in:
+      num: "1122243360"
+    out: false
+  - name: false nested carry
+    in:
+      num: "1122243361"
+    out: false
+  - name: true alternating small
+    in:
+      num: "111122335588"
+    out: true
+  - name: false with non additive middle
+    in:
+      num: "1234565790"
+    out: false

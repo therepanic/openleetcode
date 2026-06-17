@@ -1,0 +1,267 @@
+entry:
+  id: 368
+  title: largest-divisible-subset
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().largestDivisibleSubset({nums})
+    rust: Solution::largest_divisible_subset({nums})
+    python3: Solution().largestDivisibleSubset({nums})
+    python2: Solution().largestDivisibleSubset({nums})
+    ruby: largest_divisible_subset({nums})
+    java: new Solution().largestDivisibleSubset({nums})
+    csharp: new Solution().LargestDivisibleSubset({nums})
+    kotlin: Solution().largestDivisibleSubset({nums})
+    go: largestDivisibleSubset({nums})
+    dart: Solution().largestDivisibleSubset({nums})
+    swift: Solution().largestDivisibleSubset({nums})
+    typescript: largestDivisibleSubset({nums})
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: Checker().largestDivisibleSubset(nums, {result})
+    checker: |
+      class Checker:
+          def largestDivisibleSubset(self, nums, result):
+              if not isinstance(nums, list) or not isinstance(result, list):
+                  return False
+              if len(nums) == 0:
+                  return False
+              if len(set(nums)) != len(nums):
+                  return False
+              input_set = set(nums)
+              if len(result) == 0:
+                  return False
+              if any(x not in input_set for x in result):
+                  return False
+              if len(set(result)) != len(result):
+                  return False
+              for i in range(len(result)):
+                  for j in range(i + 1, len(result)):
+                      a = result[i]
+                      b = result[j]
+                      if a % b != 0 and b % a != 0:
+                          return False
+              nums = sorted(nums)
+              dp = [1] * len(nums)
+              best = 1
+              for i in range(len(nums)):
+                  for j in range(i):
+                      if nums[i] % nums[j] == 0 and dp[i] < dp[j] + 1:
+                          dp[i] = dp[j] + 1
+                  if dp[i] > best:
+                      best = dp[i]
+              return len(result) == best
+
+seed: 368368
+
+tests:
+  - name: example_1
+    in:
+      nums: [1, 2, 3]
+
+  - name: example_2
+    in:
+      nums: [1, 2, 4, 8]
+
+  - name: single_element
+    in:
+      nums: [7]
+
+  - name: two_coprime_numbers
+    in:
+      nums: [5, 7]
+
+  - name: two_divisible_numbers
+    in:
+      nums: [2, 8]
+
+  - name: powers_of_two_small
+    in:
+      nums: [1, 2, 4, 8, 16]
+
+  - name: prime_numbers_small
+    in:
+      nums: [2, 3, 5, 7, 11, 13]
+
+  - name: unsorted_example_like
+    in:
+      nums: [3, 1, 2]
+
+  - name: chain_with_noise
+    in:
+      nums: [6, 1, 12, 3, 24, 18]
+
+  - name: multiple_chains_same_length
+    in:
+      nums: [1, 2, 3, 6, 9, 18]
+
+  - name: odd_powers_chain
+    in:
+      nums: [1, 3, 9, 27, 81]
+
+  - name: mixed_small_primes_and_powers
+    in:
+      nums: [1, 2, 6, 18, 54, 5, 25]
+
+  - name: boundary_values_low_high
+    in:
+      nums: [1, 2, 214748364, 2147483640]
+
+  - name: powers_then_prime_tail
+    in:
+      nums: [1, 2, 4, 8, 16, 31]
+
+  - name: chain_with_branch
+    in:
+      nums: [1, 2, 4, 7, 14, 28]
+
+  - name: large_chain_16
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
+
+  - name: large_sparse_primes
+    in:
+      nums: [999999937, 999999929, 999999893, 999999883, 999999797, 999999761, 999999757, 999999751, 999999739, 999999733, 999999721, 999999719, 999999677, 999999667, 999999653, 999999641]
+
+  - name: chain_of_six
+    in:
+      nums: [1, 2, 4, 8, 16, 32]
+
+  - name: chain_with_extra_coprime
+    in:
+      nums: [1, 2, 4, 8, 16, 33]
+
+  - name: branch_at_middle
+    in:
+      nums: [1, 2, 3, 4, 6, 12]
+
+  - name: branch_with_larger_tail
+    in:
+      nums: [1, 2, 4, 6, 12, 24]
+
+  - name: pairwise_divisible_triplet
+    in:
+      nums: [2, 6, 18]
+
+  - name: pairwise_non_divisible_triplet
+    in:
+      nums: [2, 3, 5]
+
+  - name: sorted_random_small
+    in:
+      nums: [2, 4, 7, 8, 16, 32, 64]
+
+  - name: unsorted_random_small
+    in:
+      nums: [64, 2, 16, 7, 4, 32, 8]
+
+  - name: many_powers_of_three
+    in:
+      nums: [1, 3, 9, 27, 81, 243, 729]
+
+  - name: powers_of_five
+    in:
+      nums: [1, 5, 25, 125, 625, 3125]
+
+  - name: mixed_chain_one
+    in:
+      nums: [1, 2, 6, 24, 72, 216]
+
+  - name: mixed_chain_two
+    in:
+      nums: [1, 4, 8, 32, 128, 512]
+
+  - name: mixed_noise_small
+    in:
+      nums: [14, 7, 1, 28, 56, 9, 18]
+
+  - name: large_chain_20
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288]
+
+  - name: large_chain_with_noise
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 3, 5, 7, 11, 13, 17, 19, 23]
+
+  - name: boundary_large_prime_mix
+    in:
+      nums: [2147483647, 2147483629, 2147483587, 2147483579]
+
+  - name: boundary_large_multiples
+    in:
+      nums: [1000000000, 500000000, 250000000, 125000000]
+
+  - name: maximal_like_small_divisibility
+    in:
+      nums: [1, 3, 6, 12, 24, 48, 96, 192]
+
+  - name: mixed_medium_1
+    in:
+      nums: [2, 3, 4, 9, 8, 27, 16, 81]
+
+  - name: mixed_medium_2
+    in:
+      nums: [10, 20, 40, 80, 7, 14, 28, 56]
+
+  - name: mixed_medium_3
+    in:
+      nums: [15, 30, 60, 120, 240, 11, 22, 44]
+
+  - name: mixed_medium_4
+    in:
+      nums: [12, 24, 48, 96, 192, 384, 5, 25]
+
+  - name: mixed_medium_5
+    in:
+      nums: [18, 36, 72, 144, 288, 9, 27, 81]
+
+  - name: mixed_medium_6
+    in:
+      nums: [21, 42, 84, 168, 336, 3, 6, 12]
+
+  - name: mixed_medium_7
+    in:
+      nums: [22, 44, 88, 176, 352, 7, 14, 28]
+
+  - name: mixed_medium_8
+    in:
+      nums: [26, 52, 104, 208, 416, 13, 39, 117]
+
+  - name: mixed_medium_9
+    in:
+      nums: [30, 60, 120, 240, 480, 15, 75, 375]
+
+  - name: mixed_medium_10
+    in:
+      nums: [42, 84, 168, 336, 672, 21, 63, 189]
+
+  - name: mixed_medium_11
+    in:
+      nums: [45, 90, 180, 360, 720, 9, 18, 36]
+
+  - name: mixed_medium_12
+    in:
+      nums: [49, 98, 196, 392, 784, 7, 14, 21]
+
+  - name: mixed_medium_13
+    in:
+      nums: [50, 100, 200, 400, 800, 25, 125, 625]
+
+  - name: mixed_medium_14
+    in:
+      nums: [63, 126, 252, 504, 1008, 9, 27, 81]
+
+  - name: mixed_medium_15
+    in:
+      nums: [70, 140, 280, 560, 1120, 35, 175, 875]

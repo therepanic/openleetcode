@@ -1,0 +1,1623 @@
+entry:
+  id: 332
+  title: reconstruct-itinerary
+  params:
+    tickets:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+  call:
+    cpp: "Solution().findItinerary({tickets})"
+    rust: "Solution::find_itinerary({tickets})"
+    python3: "Solution().findItinerary({tickets})"
+    python2: "Solution().findItinerary({tickets})"
+    ruby: "find_itinerary({tickets})"
+    java: "new Solution().findItinerary({tickets})"
+    csharp: "new Solution().FindItinerary({tickets})"
+    kotlin: "Solution().findItinerary({tickets})"
+    go: "findItinerary({tickets})"
+    dart: "Solution().findItinerary({tickets})"
+    swift: "Solution().findItinerary({tickets})"
+    typescript: "findItinerary({tickets})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().findItinerary(tickets, {result})"
+    checker: |
+      from collections import defaultdict
+      class Checker:
+          def findItinerary(self, tickets, result):
+              if not isinstance(result, list) or not result or result[0] != "JFK" or len(result) != len(tickets) + 1:
+                  return False
+              for airport in result:
+                  if not isinstance(airport, str) or len(airport) != 3 or not airport.isupper():
+                      return False
+              graph = defaultdict(list)
+              for departure, arrival in sorted(tickets, reverse=True):
+                  graph[departure].append(arrival)
+              st = ["JFK"]
+              expected = []
+              while st:
+                  if graph[st[-1]]:
+                      st.append(graph[st[-1]].pop())
+                  else:
+                      expected.append(st.pop())
+              expected.reverse()
+              return result == expected
+seed: 332
+tests:
+  - name: example1
+    in:
+      tickets:
+        - [MUC, LHR]
+        - [JFK, MUC]
+        - [SFO, SJC]
+        - [LHR, SFO]
+    out:
+      - JFK
+      - MUC
+      - LHR
+      - SFO
+      - SJC
+  - name: example2
+    in:
+      tickets:
+        - [JFK, SFO]
+        - [JFK, ATL]
+        - [SFO, ATL]
+        - [ATL, JFK]
+        - [ATL, SFO]
+    out:
+      - JFK
+      - ATL
+      - JFK
+      - SFO
+      - ATL
+      - SFO
+  - name: two_tickets_chain
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+    out:
+      - JFK
+      - AAA
+      - BBB
+  - name: simple_choice_lex1
+    in:
+      tickets:
+        - [JFK, KUL]
+        - [JFK, NRT]
+        - [NRT, JFK]
+    out:
+      - JFK
+      - NRT
+      - JFK
+      - KUL
+  - name: simple_cycle
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, JFK]
+    out:
+      - JFK
+      - AAA
+      - JFK
+  - name: three_step_chain
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, CCC]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - CCC
+  - name: branching_small
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [JFK, AAB]
+        - [AAA, JFK]
+        - [AAB, AAA]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - AAB
+      - AAA
+  - name: dup_dest
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [JFK, AAA]
+        - [AAA, JFK]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - AAA
+  - name: three_from_jfk
+    in:
+      tickets:
+        - [JFK, BBB]
+        - [JFK, AAA]
+        - [JFK, CCC]
+        - [AAA, JFK]
+        - [BBB, JFK]
+        - [CCC, JFK]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - BBB
+      - JFK
+      - CCC
+      - JFK
+  - name: lex_deep_choice
+    in:
+      tickets:
+        - [JFK, AAB]
+        - [JFK, AAA]
+        - [AAA, JFK]
+        - [AAB, AAC]
+        - [AAC, JFK]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - AAB
+      - AAC
+      - JFK
+  - name: interleaved_cycle
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, JFK]
+        - [JFK, CCC]
+        - [CCC, JFK]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - JFK
+      - CCC
+      - JFK
+  - name: ticket_order_irrelevant
+    in:
+      tickets:
+        - [SFO, ATL]
+        - [JFK, SFO]
+        - [ATL, JFK]
+    out:
+      - JFK
+      - SFO
+      - ATL
+      - JFK
+  - name: longer_tail
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, AAA]
+        - [AAA, CCC]
+        - [CCC, DDD]
+        - [DDD, JFK]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - AAA
+      - CCC
+      - DDD
+      - JFK
+  - name: many_same_from
+    in:
+      tickets:
+        - [JFK, AAB]
+        - [JFK, AAA]
+        - [JFK, AAC]
+        - [AAA, JFK]
+        - [AAB, AAA]
+        - [AAC, AAB]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - AAC
+      - AAB
+      - AAB
+      - AAA
+  - name: lex_backtrack
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, CCC]
+        - [CCC, AAA]
+        - [AAA, BBB]
+        - [BBB, JFK]
+    out:
+      - JFK
+      - AAA
+      - CCC
+      - AAA
+      - BBB
+      - JFK
+  - name: example_like_alt
+    in:
+      tickets:
+        - [JFK, KUL]
+        - [KUL, JFK]
+        - [JFK, NRT]
+        - [NRT, KUL]
+    out:
+      - JFK
+      - KUL
+      - JFK
+      - NRT
+      - KUL
+  - name: small_lollipop
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, CCC]
+        - [CCC, BBB]
+        - [BBB, JFK]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - CCC
+      - BBB
+      - JFK
+  - name: multiple_returns
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, JFK]
+        - [JFK, BBB]
+        - [BBB, JFK]
+        - [JFK, CCC]
+        - [CCC, JFK]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - BBB
+      - JFK
+      - CCC
+      - JFK
+  - name: alphabetical_chain
+    in:
+      tickets:
+        - [JFK, ABA]
+        - [ABA, ABB]
+        - [ABB, ABC]
+        - [ABC, JFK]
+    out:
+      - JFK
+      - ABA
+      - ABB
+      - ABC
+      - JFK
+  - name: fork_join
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [JFK, AAB]
+        - [AAA, AAC]
+        - [AAB, AAC]
+        - [AAC, JFK]
+    out:
+      - JFK
+      - AAA
+      - AAC
+      - JFK
+      - AAB
+      - AAC
+  - name: euler_path_not_cycle
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, JFK]
+        - [JFK, CCC]
+        - [CCC, DDD]
+        - [DDD, CCC]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - JFK
+      - CCC
+      - DDD
+      - CCC
+  - name: repeated_edges_pair
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, JFK]
+        - [JFK, AAA]
+        - [AAA, CCC]
+        - [CCC, JFK]
+    out:
+      - JFK
+      - AAA
+      - CCC
+      - JFK
+      - AAA
+      - JFK
+  - name: wide_then_deep
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [JFK, AAB]
+        - [JFK, AAC]
+        - [AAA, AAD]
+        - [AAD, JFK]
+        - [AAB, JFK]
+        - [AAC, JFK]
+    out:
+      - JFK
+      - AAA
+      - AAD
+      - JFK
+      - AAB
+      - JFK
+      - AAC
+      - JFK
+  - name: cycle_with_tail
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, AAA]
+        - [AAA, JFK]
+        - [JFK, CCC]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - AAA
+      - JFK
+      - CCC
+  - name: alt_start_choices
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, CCC]
+        - [CCC, AAA]
+        - [AAA, JFK]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - CCC
+      - AAA
+      - JFK
+  - name: minimal_jfk
+    in:
+      tickets:
+        - [JFK, AAA]
+    out:
+      - JFK
+      - AAA
+  - name: almost_chain_choice
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, AAB]
+        - [AAB, AAC]
+        - [AAC, AAA]
+        - [AAA, AAD]
+        - [AAD, JFK]
+    out:
+      - JFK
+      - AAA
+      - AAB
+      - AAC
+      - AAA
+      - AAD
+      - JFK
+  - name: two_cycles_shared
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, JFK]
+        - [JFK, BBB]
+        - [BBB, CCC]
+        - [CCC, BBB]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - BBB
+      - CCC
+      - BBB
+  - name: lex_choice_with_tail
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [JFK, AAB]
+        - [AAA, JFK]
+        - [AAB, AAC]
+        - [AAC, AAD]
+        - [AAD, JFK]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - AAB
+      - AAC
+      - AAD
+      - JFK
+  - name: branched_loop
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, AAA]
+        - [AAA, AAC]
+        - [AAC, JFK]
+        - [JFK, AAD]
+        - [AAD, JFK]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - AAA
+      - AAC
+      - JFK
+      - AAD
+      - JFK
+  - name: deep_cycle
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, AAB]
+        - [AAB, AAC]
+        - [AAC, AAA]
+        - [AAA, JFK]
+    out:
+      - JFK
+      - AAA
+      - AAB
+      - AAC
+      - AAA
+      - JFK
+  - name: crossing_cycles
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, BBB]
+        - [BBB, JFK]
+        - [JFK, AAB]
+        - [AAB, AAA]
+        - [AAA, JFK]
+    out:
+      - JFK
+      - AAA
+      - BBB
+      - JFK
+      - AAB
+      - AAA
+      - JFK
+  - name: forked_cycle
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [JFK, AAB]
+        - [AAA, AAC]
+        - [AAC, AAA]
+        - [AAB, JFK]
+  - name: lex_smallest_not_first_added
+    in:
+      tickets:
+        - [JFK, CCC]
+        - [JFK, BBB]
+        - [JFK, AAA]
+        - [AAA, JFK]
+        - [BBB, JFK]
+        - [CCC, JFK]
+    out:
+      - JFK
+      - AAA
+      - JFK
+      - BBB
+      - JFK
+      - CCC
+      - JFK
+  - name: large_linear_300_a
+    in:
+      tickets:
+        - [JFK, AAA]
+        - [AAA, AAB]
+        - [AAB, AAC]
+        - [AAC, AAD]
+        - [AAD, AAE]
+        - [AAE, AAF]
+        - [AAF, AAG]
+        - [AAG, AAH]
+        - [AAH, AAI]
+        - [AAI, AAJ]
+        - [AAJ, AAK]
+        - [AAK, AAL]
+        - [AAL, AAM]
+        - [AAM, AAN]
+        - [AAN, AAO]
+        - [AAO, AAP]
+        - [AAP, AAQ]
+        - [AAQ, AAR]
+        - [AAR, AAS]
+        - [AAS, AAT]
+        - [AAT, AAU]
+        - [AAU, AAV]
+        - [AAV, AAW]
+        - [AAW, AAX]
+        - [AAX, AAY]
+        - [AAY, AAZ]
+        - [AAZ, ABA]
+        - [ABA, ABB]
+        - [ABB, ABC]
+        - [ABC, ABD]
+        - [ABD, ABE]
+        - [ABE, ABF]
+        - [ABF, ABG]
+        - [ABG, ABH]
+        - [ABH, ABI]
+        - [ABI, ABJ]
+        - [ABJ, ABK]
+        - [ABK, ABL]
+        - [ABL, ABM]
+        - [ABM, ABN]
+        - [ABN, ABO]
+        - [ABO, ABP]
+        - [ABP, ABQ]
+        - [ABQ, ABR]
+        - [ABR, ABS]
+        - [ABS, ABT]
+        - [ABT, ABU]
+        - [ABU, ABV]
+        - [ABV, ABW]
+        - [ABW, ABX]
+        - [ABX, ABY]
+        - [ABY, ABZ]
+        - [ABZ, ACA]
+        - [ACA, ACB]
+        - [ACB, ACC]
+        - [ACC, ACD]
+        - [ACD, ACE]
+        - [ACE, ACF]
+        - [ACF, ACG]
+        - [ACG, ACH]
+        - [ACH, ACI]
+        - [ACI, ACJ]
+        - [ACJ, ACK]
+        - [ACK, ACL]
+        - [ACL, ACM]
+        - [ACM, ACN]
+        - [ACN, ACO]
+        - [ACO, ACP]
+        - [ACP, ACQ]
+        - [ACQ, ACR]
+        - [ACR, ACS]
+        - [ACS, ACT]
+        - [ACT, ACU]
+        - [ACU, ACV]
+        - [ACV, ACW]
+        - [ACW, ACX]
+        - [ACX, ACY]
+        - [ACY, ACZ]
+        - [ACZ, ADA]
+        - [ADA, ADB]
+        - [ADB, ADC]
+        - [ADC, ADD]
+        - [ADD, ADE]
+        - [ADE, ADF]
+        - [ADF, ADG]
+        - [ADG, ADH]
+        - [ADH, ADI]
+        - [ADI, ADJ]
+        - [ADJ, ADK]
+        - [ADK, ADL]
+        - [ADL, ADM]
+        - [ADM, ADN]
+        - [ADN, ADO]
+        - [ADO, ADP]
+        - [ADP, ADQ]
+        - [ADQ, ADR]
+        - [ADR, ADS]
+        - [ADS, ADT]
+        - [ADT, ADU]
+        - [ADU, ADV]
+        - [ADV, ADW]
+        - [ADW, ADX]
+        - [ADX, ADY]
+        - [ADY, ADZ]
+        - [ADZ, AEA]
+        - [AEA, AEB]
+        - [AEB, AEC]
+        - [AEC, AED]
+        - [AED, AEE]
+        - [AEE, AEF]
+        - [AEF, AEG]
+        - [AEG, AEH]
+        - [AEH, AEI]
+        - [AEI, AEJ]
+        - [AEJ, AEK]
+        - [AEK, AEL]
+        - [AEL, AEM]
+        - [AEM, AEN]
+        - [AEN, AEO]
+        - [AEO, AEP]
+        - [AEP, AEQ]
+        - [AEQ, AER]
+        - [AER, AES]
+        - [AES, AET]
+        - [AET, AEU]
+        - [AEU, AEV]
+        - [AEV, AEW]
+        - [AEW, AEX]
+        - [AEX, AEY]
+        - [AEY, AEZ]
+        - [AEZ, AFA]
+        - [AFA, AFB]
+        - [AFB, AFC]
+        - [AFC, AFD]
+        - [AFD, AFE]
+        - [AFE, AFF]
+        - [AFF, AFG]
+        - [AFG, AFH]
+        - [AFH, AFI]
+        - [AFI, AFJ]
+        - [AFJ, AFK]
+        - [AFK, AFL]
+        - [AFL, AFM]
+        - [AFM, AFN]
+        - [AFN, AFO]
+        - [AFO, AFP]
+        - [AFP, AFQ]
+        - [AFQ, AFR]
+        - [AFR, AFS]
+        - [AFS, AFT]
+        - [AFT, AFU]
+        - [AFU, AFV]
+        - [AFV, AFW]
+        - [AFW, AFX]
+        - [AFX, AFY]
+        - [AFY, AFZ]
+        - [AFZ, AGA]
+        - [AGA, AGB]
+        - [AGB, AGC]
+        - [AGC, AGD]
+        - [AGD, AGE]
+        - [AGE, AGF]
+        - [AGF, AGG]
+        - [AGG, AGH]
+        - [AGH, AGI]
+        - [AGI, AGJ]
+        - [AGJ, AGK]
+        - [AGK, AGL]
+        - [AGL, AGM]
+        - [AGM, AGN]
+        - [AGN, AGO]
+        - [AGO, AGP]
+        - [AGP, AGQ]
+        - [AGQ, AGR]
+        - [AGR, AGS]
+        - [AGS, AGT]
+        - [AGT, AGU]
+        - [AGU, AGV]
+        - [AGV, AGW]
+        - [AGW, AGX]
+        - [AGX, AGY]
+        - [AGY, AGZ]
+        - [AGZ, AHA]
+        - [AHA, AHB]
+        - [AHB, AHC]
+        - [AHC, AHD]
+        - [AHD, AHE]
+        - [AHE, AHF]
+        - [AHF, AHG]
+        - [AHG, AHH]
+        - [AHH, AHI]
+        - [AHI, AHJ]
+        - [AHJ, AHK]
+        - [AHK, AHL]
+        - [AHL, AHM]
+        - [AHM, AHN]
+        - [AHN, AHO]
+        - [AHO, AHP]
+        - [AHP, AHQ]
+        - [AHQ, AHR]
+        - [AHR, AHS]
+        - [AHS, AHT]
+        - [AHT, AHU]
+        - [AHU, AHV]
+        - [AHV, AHW]
+        - [AHW, AHX]
+        - [AHX, AHY]
+        - [AHY, AHZ]
+        - [AHZ, AIA]
+        - [AIA, AIB]
+        - [AIB, AIC]
+        - [AIC, AID]
+        - [AID, AIE]
+        - [AIE, AIF]
+        - [AIF, AIG]
+        - [AIG, AIH]
+        - [AIH, AII]
+        - [AII, AIJ]
+        - [AIJ, AIK]
+        - [AIK, AIL]
+        - [AIL, AIM]
+        - [AIM, AIN]
+        - [AIN, AIO]
+        - [AIO, AIP]
+        - [AIP, AIQ]
+        - [AIQ, AIR]
+        - [AIR, AIS]
+        - [AIS, AIT]
+        - [AIT, AIU]
+        - [AIU, AIV]
+        - [AIV, AIW]
+        - [AIW, AIX]
+        - [AIX, AIY]
+        - [AIY, AIZ]
+        - [AIZ, AJA]
+        - [AJA, AJB]
+        - [AJB, AJC]
+        - [AJC, AJD]
+        - [AJD, AJE]
+        - [AJE, AJF]
+        - [AJF, AJG]
+        - [AJG, AJH]
+        - [AJH, AJI]
+        - [AJI, AJJ]
+        - [AJJ, AJK]
+        - [AJK, AJL]
+        - [AJL, AJM]
+        - [AJM, AJN]
+        - [AJN, AJO]
+        - [AJO, AJP]
+        - [AJP, AJQ]
+        - [AJQ, AJR]
+        - [AJR, AJS]
+        - [AJS, AJT]
+        - [AJT, AJU]
+        - [AJU, AJV]
+        - [AJV, AJW]
+        - [AJW, AJX]
+        - [AJX, AJY]
+        - [AJY, AJZ]
+        - [AJZ, AKA]
+        - [AKA, AKB]
+        - [AKB, AKC]
+        - [AKC, AKD]
+        - [AKD, AKE]
+        - [AKE, AKF]
+        - [AKF, AKG]
+        - [AKG, AKH]
+        - [AKH, AKI]
+        - [AKI, AKJ]
+        - [AKJ, AKK]
+        - [AKK, AKL]
+        - [AKL, AKM]
+        - [AKM, AKN]
+        - [AKN, AKO]
+        - [AKO, AKP]
+        - [AKP, AKQ]
+        - [AKQ, AKR]
+        - [AKR, AKS]
+        - [AKS, AKT]
+        - [AKT, AKU]
+        - [AKU, AKV]
+        - [AKV, AKW]
+        - [AKW, AKX]
+        - [AKX, AKY]
+        - [AKY, AKZ]
+        - [AKZ, ALA]
+    out:
+      - JFK
+      - AAA
+      - AAB
+      - AAC
+      - AAD
+      - AAE
+      - AAF
+      - AAG
+      - AAH
+      - AAI
+      - AAJ
+      - AAK
+      - AAL
+      - AAM
+      - AAN
+      - AAO
+      - AAP
+      - AAQ
+      - AAR
+      - AAS
+      - AAT
+      - AAU
+      - AAV
+      - AAW
+      - AAX
+      - AAY
+      - AAZ
+      - ABA
+      - ABB
+      - ABC
+      - ABD
+      - ABE
+      - ABF
+      - ABG
+      - ABH
+      - ABI
+      - ABJ
+      - ABK
+      - ABL
+      - ABM
+      - ABN
+      - ABO
+      - ABP
+      - ABQ
+      - ABR
+      - ABS
+      - ABT
+      - ABU
+      - ABV
+      - ABW
+      - ABX
+      - ABY
+      - ABZ
+      - ACA
+      - ACB
+      - ACC
+      - ACD
+      - ACE
+      - ACF
+      - ACG
+      - ACH
+      - ACI
+      - ACJ
+      - ACK
+      - ACL
+      - ACM
+      - ACN
+      - ACO
+      - ACP
+      - ACQ
+      - ACR
+      - ACS
+      - ACT
+      - ACU
+      - ACV
+      - ACW
+      - ACX
+      - ACY
+      - ACZ
+      - ADA
+      - ADB
+      - ADC
+      - ADD
+      - ADE
+      - ADF
+      - ADG
+      - ADH
+      - ADI
+      - ADJ
+      - ADK
+      - ADL
+      - ADM
+      - ADN
+      - ADO
+      - ADP
+      - ADQ
+      - ADR
+      - ADS
+      - ADT
+      - ADU
+      - ADV
+      - ADW
+      - ADX
+      - ADY
+      - ADZ
+      - AEA
+      - AEB
+      - AEC
+      - AED
+      - AEE
+      - AEF
+      - AEG
+      - AEH
+      - AEI
+      - AEJ
+      - AEK
+      - AEL
+      - AEM
+      - AEN
+      - AEO
+      - AEP
+      - AEQ
+      - AER
+      - AES
+      - AET
+      - AEU
+      - AEV
+      - AEW
+      - AEX
+      - AEY
+      - AEZ
+      - AFA
+      - AFB
+      - AFC
+      - AFD
+      - AFE
+      - AFF
+      - AFG
+      - AFH
+      - AFI
+      - AFJ
+      - AFK
+      - AFL
+      - AFM
+      - AFN
+      - AFO
+      - AFP
+      - AFQ
+      - AFR
+      - AFS
+      - AFT
+      - AFU
+      - AFV
+      - AFW
+      - AFX
+      - AFY
+      - AFZ
+      - AGA
+      - AGB
+      - AGC
+      - AGD
+      - AGE
+      - AGF
+      - AGG
+      - AGH
+      - AGI
+      - AGJ
+      - AGK
+      - AGL
+      - AGM
+      - AGN
+      - AGO
+      - AGP
+      - AGQ
+      - AGR
+      - AGS
+      - AGT
+      - AGU
+      - AGV
+      - AGW
+      - AGX
+      - AGY
+      - AGZ
+      - AHA
+      - AHB
+      - AHC
+      - AHD
+      - AHE
+      - AHF
+      - AHG
+      - AHH
+      - AHI
+      - AHJ
+      - AHK
+      - AHL
+      - AHM
+      - AHN
+      - AHO
+      - AHP
+      - AHQ
+      - AHR
+      - AHS
+      - AHT
+      - AHU
+      - AHV
+      - AHW
+      - AHX
+      - AHY
+      - AHZ
+      - AIA
+      - AIB
+      - AIC
+      - AID
+      - AIE
+      - AIF
+      - AIG
+      - AIH
+      - AII
+      - AIJ
+      - AIK
+      - AIL
+      - AIM
+      - AIN
+      - AIO
+      - AIP
+      - AIQ
+      - AIR
+      - AIS
+      - AIT
+      - AIU
+      - AIV
+      - AIW
+      - AIX
+      - AIY
+      - AIZ
+      - AJA
+      - AJB
+      - AJC
+      - AJD
+      - AJE
+      - AJF
+      - AJG
+      - AJH
+      - AJI
+      - AJJ
+      - AJK
+      - AJL
+      - AJM
+      - AJN
+      - AJO
+      - AJP
+      - AJQ
+      - AJR
+      - AJS
+      - AJT
+      - AJU
+      - AJV
+      - AJW
+      - AJX
+      - AJY
+      - AJZ
+      - AKA
+      - AKB
+      - AKC
+      - AKD
+      - AKE
+      - AKF
+      - AKG
+      - AKH
+      - AKI
+      - AKJ
+      - AKK
+      - AKL
+      - AKM
+      - AKN
+      - AKO
+      - AKP
+      - AKQ
+      - AKR
+      - AKS
+      - AKT
+      - AKU
+      - AKV
+      - AKW
+      - AKX
+      - AKY
+      - AKZ
+      - ALA
+  - name: large_linear_300_b
+    in:
+      tickets:
+        - [JFK, ALL]
+        - [ALL, ALM]
+        - [ALM, ALN]
+        - [ALN, ALO]
+        - [ALO, ALP]
+        - [ALP, ALQ]
+        - [ALQ, ALR]
+        - [ALR, ALS]
+        - [ALS, ALT]
+        - [ALT, ALU]
+        - [ALU, ALV]
+        - [ALV, ALW]
+        - [ALW, ALX]
+        - [ALX, ALY]
+        - [ALY, ALZ]
+        - [ALZ, AMA]
+        - [AMA, AMB]
+        - [AMB, AMC]
+        - [AMC, AMD]
+        - [AMD, AME]
+        - [AME, AMF]
+        - [AMF, AMG]
+        - [AMG, AMH]
+        - [AMH, AMI]
+        - [AMI, AMJ]
+        - [AMJ, AMK]
+        - [AMK, AML]
+        - [AML, AMM]
+        - [AMM, AMN]
+        - [AMN, AMO]
+        - [AMO, AMP]
+        - [AMP, AMQ]
+        - [AMQ, AMR]
+        - [AMR, AMS]
+        - [AMS, AMT]
+        - [AMT, AMU]
+        - [AMU, AMV]
+        - [AMV, AMW]
+        - [AMW, AMX]
+        - [AMX, AMY]
+        - [AMY, AMZ]
+        - [AMZ, ANA]
+        - [ANA, ANB]
+        - [ANB, ANC]
+        - [ANC, AND]
+        - [AND, ANE]
+        - [ANE, ANF]
+        - [ANF, ANG]
+        - [ANG, ANH]
+        - [ANH, ANI]
+        - [ANI, ANJ]
+        - [ANJ, ANK]
+        - [ANK, ANL]
+        - [ANL, ANM]
+        - [ANM, ANN]
+        - [ANN, ANO]
+        - [ANO, ANP]
+        - [ANP, ANQ]
+        - [ANQ, ANR]
+        - [ANR, ANS]
+        - [ANS, ANT]
+        - [ANT, ANU]
+        - [ANU, ANV]
+        - [ANV, ANW]
+        - [ANW, ANX]
+        - [ANX, ANY]
+        - [ANY, ANZ]
+        - [ANZ, AOA]
+        - [AOA, AOB]
+        - [AOB, AOC]
+        - [AOC, AOD]
+        - [AOD, AOE]
+        - [AOE, AOF]
+        - [AOF, AOG]
+        - [AOG, AOH]
+        - [AOH, AOI]
+        - [AOI, AOJ]
+        - [AOJ, AOK]
+        - [AOK, AOL]
+        - [AOL, AOM]
+        - [AOM, AON]
+        - [AON, AOO]
+        - [AOO, AOP]
+        - [AOP, AOQ]
+        - [AOQ, AOR]
+        - [AOR, AOS]
+        - [AOS, AOT]
+        - [AOT, AOU]
+        - [AOU, AOV]
+        - [AOV, AOW]
+        - [AOW, AOX]
+        - [AOX, AOY]
+        - [AOY, AOZ]
+        - [AOZ, APA]
+        - [APA, APB]
+        - [APB, APC]
+        - [APC, APD]
+        - [APD, APE]
+        - [APE, APF]
+        - [APF, APG]
+        - [APG, APH]
+        - [APH, API]
+        - [API, APJ]
+        - [APJ, APK]
+        - [APK, APL]
+        - [APL, APM]
+        - [APM, APN]
+        - [APN, APO]
+        - [APO, APP]
+        - [APP, APQ]
+        - [APQ, APR]
+        - [APR, APS]
+        - [APS, APT]
+        - [APT, APU]
+        - [APU, APV]
+        - [APV, APW]
+        - [APW, APX]
+        - [APX, APY]
+        - [APY, APZ]
+        - [APZ, AQA]
+        - [AQA, AQB]
+        - [AQB, AQC]
+        - [AQC, AQD]
+        - [AQD, AQE]
+        - [AQE, AQF]
+        - [AQF, AQG]
+        - [AQG, AQH]
+        - [AQH, AQI]
+        - [AQI, AQJ]
+        - [AQJ, AQK]
+        - [AQK, AQL]
+        - [AQL, AQM]
+        - [AQM, AQN]
+        - [AQN, AQO]
+        - [AQO, AQP]
+        - [AQP, AQQ]
+        - [AQQ, AQR]
+        - [AQR, AQS]
+        - [AQS, AQT]
+        - [AQT, AQU]
+        - [AQU, AQV]
+        - [AQV, AQW]
+        - [AQW, AQX]
+        - [AQX, AQY]
+        - [AQY, AQZ]
+        - [AQZ, ARA]
+        - [ARA, ARB]
+        - [ARB, ARC]
+        - [ARC, ARD]
+        - [ARD, ARE]
+        - [ARE, ARF]
+        - [ARF, ARG]
+        - [ARG, ARH]
+        - [ARH, ARI]
+        - [ARI, ARJ]
+        - [ARJ, ARK]
+        - [ARK, ARL]
+        - [ARL, ARM]
+        - [ARM, ARN]
+        - [ARN, ARO]
+        - [ARO, ARP]
+        - [ARP, ARQ]
+        - [ARQ, ARR]
+        - [ARR, ARS]
+        - [ARS, ART]
+        - [ART, ARU]
+        - [ARU, ARV]
+        - [ARV, ARW]
+        - [ARW, ARX]
+        - [ARX, ARY]
+        - [ARY, ARZ]
+        - [ARZ, ASA]
+        - [ASA, ASB]
+        - [ASB, ASC]
+        - [ASC, ASD]
+        - [ASD, ASE]
+        - [ASE, ASF]
+        - [ASF, ASG]
+        - [ASG, ASH]
+        - [ASH, ASI]
+        - [ASI, ASJ]
+        - [ASJ, ASK]
+        - [ASK, ASL]
+        - [ASL, ASM]
+        - [ASM, ASN]
+        - [ASN, ASO]
+        - [ASO, ASP]
+        - [ASP, ASQ]
+        - [ASQ, ASR]
+        - [ASR, ASS]
+        - [ASS, AST]
+        - [AST, ASU]
+        - [ASU, ASV]
+        - [ASV, ASW]
+        - [ASW, ASX]
+        - [ASX, ASY]
+        - [ASY, ASZ]
+        - [ASZ, ATA]
+        - [ATA, ATB]
+        - [ATB, ATC]
+        - [ATC, ATD]
+        - [ATD, ATE]
+        - [ATE, ATF]
+        - [ATF, ATG]
+        - [ATG, ATH]
+        - [ATH, ATI]
+        - [ATI, ATJ]
+        - [ATJ, ATK]
+        - [ATK, ATL]
+        - [ATL, ATM]
+        - [ATM, ATN]
+        - [ATN, ATO]
+        - [ATO, ATP]
+        - [ATP, ATQ]
+        - [ATQ, ATR]
+        - [ATR, ATS]
+        - [ATS, ATT]
+        - [ATT, ATU]
+        - [ATU, ATV]
+        - [ATV, ATW]
+        - [ATW, ATX]
+        - [ATX, ATY]
+        - [ATY, ATZ]
+        - [ATZ, AUA]
+        - [AUA, AUB]
+        - [AUB, AUC]
+        - [AUC, AUD]
+        - [AUD, AUE]
+        - [AUE, AUF]
+        - [AUF, AUG]
+        - [AUG, AUH]
+        - [AUH, AUI]
+        - [AUI, AUJ]
+        - [AUJ, AUK]
+        - [AUK, AUL]
+        - [AUL, AUM]
+        - [AUM, AUN]
+        - [AUN, AUO]
+        - [AUO, AUP]
+        - [AUP, AUQ]
+        - [AUQ, AUR]
+        - [AUR, AUS]
+        - [AUS, AUT]
+        - [AUT, AUU]
+        - [AUU, AUV]
+        - [AUV, AUW]
+        - [AUW, AUX]
+        - [AUX, AUY]
+        - [AUY, AUZ]
+        - [AUZ, AVA]
+    out:
+      - JFK
+      - ALL
+      - ALM
+      - ALN
+      - ALO
+      - ALP
+      - ALQ
+      - ALR
+      - ALS
+      - ALT
+      - ALU
+      - ALV
+      - ALW
+      - ALX
+      - ALY
+      - ALZ
+      - AMA
+      - AMB
+      - AMC
+      - AMD
+      - AME
+      - AMF
+      - AMG
+      - AMH
+      - AMI
+      - AMJ
+      - AMK
+      - AML
+      - AMM
+      - AMN
+      - AMO
+      - AMP
+      - AMQ
+      - AMR
+      - AMS
+      - AMT
+      - AMU
+      - AMV
+      - AMW
+      - AMX
+      - AMY
+      - AMZ
+      - ANA
+      - ANB
+      - ANC
+      - AND
+      - ANE
+      - ANF
+      - ANG
+      - ANH
+      - ANI
+      - ANJ
+      - ANK
+      - ANL
+      - ANM
+      - ANN
+      - ANO
+      - ANP
+      - ANQ
+      - ANR
+      - ANS
+      - ANT
+      - ANU
+      - ANV
+      - ANW
+      - ANX
+      - ANY
+      - ANZ
+      - AOA
+      - AOB
+      - AOC
+      - AOD
+      - AOE
+      - AOF
+      - AOG
+      - AOH
+      - AOI
+      - AOJ
+      - AOK
+      - AOL
+      - AOM
+      - AON
+      - AOO
+      - AOP
+      - AOQ
+      - AOR
+      - AOS
+      - AOT
+      - AOU
+      - AOV
+      - AOW
+      - AOX
+      - AOY
+      - AOZ
+      - APA
+      - APB
+      - APC
+      - APD
+      - APE
+      - APF
+      - APG
+      - APH
+      - API
+      - APJ
+      - APK
+      - APL
+      - APM
+      - APN
+      - APO
+      - APP
+      - APQ
+      - APR
+      - APS
+      - APT
+      - APU
+      - APV
+      - APW
+      - APX
+      - APY
+      - APZ
+      - AQA
+      - AQB
+      - AQC
+      - AQD
+      - AQE
+      - AQF
+      - AQG
+      - AQH
+      - AQI
+      - AQJ
+      - AQK
+      - AQL
+      - AQM
+      - AQN
+      - AQO
+      - AQP
+      - AQQ
+      - AQR
+      - AQS
+      - AQT
+      - AQU
+      - AQV
+      - AQW
+      - AQX
+      - AQY
+      - AQZ
+      - ARA
+      - ARB
+      - ARC
+      - ARD
+      - ARE
+      - ARF
+      - ARG
+      - ARH
+      - ARI
+      - ARJ
+      - ARK
+      - ARL
+      - ARM
+      - ARN
+      - ARO
+      - ARP
+      - ARQ
+      - ARR
+      - ARS
+      - ART
+      - ARU
+      - ARV
+      - ARW
+      - ARX
+      - ARY
+      - ARZ
+      - ASA
+      - ASB
+      - ASC
+      - ASD
+      - ASE
+      - ASF
+      - ASG
+      - ASH
+      - ASI
+      - ASJ
+      - ASK
+      - ASL
+      - ASM
+      - ASN
+      - ASO
+      - ASP
+      - ASQ
+      - ASR
+      - ASS
+      - AST
+      - ASU
+      - ASV
+      - ASW
+      - ASX
+      - ASY
+      - ASZ
+      - ATA
+      - ATB
+      - ATC
+      - ATD
+      - ATE
+      - ATF
+      - ATG
+      - ATH
+      - ATI
+      - ATJ
+      - ATK
+      - ATL
+      - ATM
+      - ATN
+      - ATO
+      - ATP
+      - ATQ
+      - ATR
+      - ATS
+      - ATT
+      - ATU
+      - ATV
+      - ATW
+      - ATX
+      - ATY
+      - ATZ
+      - AUA
+      - AUB
+      - AUC
+      - AUD
+      - AUE
+      - AUF
+      - AUG
+      - AUH
+      - AUI
+      - AUJ
+      - AUK
+      - AUL
+      - AUM
+      - AUN
+      - AUO
+      - AUP
+      - AUQ
+      - AUR
+      - AUS
+      - AUT
+      - AUU
+      - AUV
+      - AUW
+      - AUX
+      - AUY
+      - AUZ
+      - AVA

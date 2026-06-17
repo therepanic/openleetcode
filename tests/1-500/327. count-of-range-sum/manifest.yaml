@@ -1,0 +1,389 @@
+entry:
+  id: 327
+  title: "count-of-range-sum"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    lower:
+      type: int
+    upper:
+      type: int
+  call:
+    cpp: "Solution().countRangeSum({nums}, {lower}, {upper})"
+    rust: "Solution::count_range_sum({nums}, {lower}, {upper})"
+    python3: "Solution().countRangeSum({nums}, {lower}, {upper})"
+    python2: "Solution().countRangeSum({nums}, {lower}, {upper})"
+    ruby: "count_range_sum({nums}, {lower}, {upper})"
+    java: "new Solution().countRangeSum({nums}, {lower}, {upper})"
+    csharp: "new Solution().CountRangeSum({nums}, {lower}, {upper})"
+    kotlin: "Solution().countRangeSum({nums}, {lower}, {upper})"
+    go: "countRangeSum({nums}, {lower}, {upper})"
+    dart: "Solution().countRangeSum({nums}, {lower}, {upper})"
+    swift: "Solution().countRangeSum({nums}, {lower}, {upper})"
+    typescript: "countRangeSum({nums}, {lower}, {upper})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(nums, lower, upper, {result})"
+    checker: |
+      class Checker:
+          def check(self, nums, lower, upper, result):
+              if not isinstance(result, int):
+                  return False
+              if not isinstance(nums, list):
+                  return False
+              if not isinstance(lower, int) or not isinstance(upper, int):
+                  return False
+              if lower > upper:
+                  return False
+
+              prefix = [0]
+              total = 0
+              for x in nums:
+                  if not isinstance(x, int):
+                      return False
+                  total += x
+                  prefix.append(total)
+
+              def sort_count(arr):
+                  n = len(arr)
+                  if n <= 1:
+                      return arr, 0
+                  mid = n // 2
+                  left, left_count = sort_count(arr[:mid])
+                  right, right_count = sort_count(arr[mid:])
+                  count = left_count + right_count
+
+                  lo = 0
+                  hi = 0
+                  for value in left:
+                      while lo < len(right) and right[lo] - value < lower:
+                          lo += 1
+                      while hi < len(right) and right[hi] - value <= upper:
+                          hi += 1
+                      count += hi - lo
+
+                  merged = []
+                  i = 0
+                  j = 0
+                  while i < len(left) and j < len(right):
+                      if left[i] <= right[j]:
+                          merged.append(left[i])
+                          i += 1
+                      else:
+                          merged.append(right[j])
+                          j += 1
+                  if i < len(left):
+                      merged.extend(left[i:])
+                  if j < len(right):
+                      merged.extend(right[j:])
+                  return merged, count
+
+              expected = sort_count(prefix)[1]
+              return result == expected
+
+seed: 327
+
+tests:
+  - name: "example-1"
+    in:
+      nums: [-2, 5, -1]
+      lower: -2
+      upper: 2
+
+  - name: "example-2"
+    in:
+      nums: [0]
+      lower: 0
+      upper: 0
+
+  - name: "single-positive-exact"
+    in:
+      nums: [1]
+      lower: 1
+      upper: 1
+
+  - name: "single-negative-exact"
+    in:
+      nums: [-1]
+      lower: -1
+      upper: -1
+
+  - name: "two-cancel-to-zero"
+    in:
+      nums: [1, -1]
+      lower: 0
+      upper: 0
+
+  - name: "ascending-small"
+    in:
+      nums: [1, 2, 3]
+      lower: 3
+      upper: 6
+
+  - name: "all-negative-small"
+    in:
+      nums: [-3, -2, -1]
+      lower: -6
+      upper: -3
+
+  - name: "all-zeros"
+    in:
+      nums: [0, 0, 0]
+      lower: 0
+      upper: 0
+
+  - name: "mixed-five"
+    in:
+      nums: [4, -1, -3, 2, 5]
+      lower: 1
+      upper: 4
+
+  - name: "alternating-signs"
+    in:
+      nums: [1, -2, 3, -4, 5, -6]
+      lower: -3
+      upper: 2
+
+  - name: "canceling-tens"
+    in:
+      nums: [10, -10, 10, -10]
+      lower: 0
+      upper: 0
+
+  - name: "all-twos"
+    in:
+      nums: [2, 2, 2, 2]
+      lower: 4
+      upper: 6
+
+  - name: "all-negative-twos"
+    in:
+      nums: [-2, -2, -2, -2]
+      lower: -8
+      upper: -2
+
+  - name: "repeated-plus-minus-five"
+    in:
+      nums: [5, -5, 5, -5, 5]
+      lower: 5
+      upper: 5
+
+  - name: "mixed-six-wide-window"
+    in:
+      nums: [7, -3, 2, -1, 4, -2]
+      lower: 3
+      upper: 7
+
+  - name: "hundreds-balance"
+    in:
+      nums: [100, -50, -25, -25]
+      lower: 0
+      upper: 50
+
+  - name: "all-ones"
+    in:
+      nums: [1, 1, 1, 1, 1, 1]
+      lower: 2
+      upper: 4
+
+  - name: "all-minus-ones"
+    in:
+      nums: [-1, -1, -1, -1]
+      lower: -3
+      upper: -1
+
+  - name: "mixed-six-tight-window"
+    in:
+      nums: [3, -1, -2, 5, -4, 6]
+      lower: -2
+      upper: 4
+
+  - name: "oscillating-eights"
+    in:
+      nums: [8, -8, 8, -8, 8, -8]
+      lower: 0
+      upper: 8
+
+  - name: "strictly-increasing-neg-to-pos"
+    in:
+      nums: [-3, -2, -1, 0, 1, 2, 3]
+      lower: -3
+      upper: 3
+
+  - name: "strictly-decreasing-pos-to-neg"
+    in:
+      nums: [6, 4, 2, 0, -2, -4, -6]
+      lower: -4
+      upper: 6
+
+  - name: "wide-bounds-all-subarrays"
+    in:
+      nums: [9, -4, 7, -3]
+      lower: -100
+      upper: 100
+
+  - name: "narrow-no-hits"
+    in:
+      nums: [9, -4, 7, -3]
+      lower: 100
+      upper: 101
+
+  - name: "large-values-near-int32"
+    in:
+      nums: [2147483647, -2147483647, 2147483647, -2147483647]
+      lower: -1
+      upper: 1
+
+  - name: "prefix-heavy"
+    in:
+      nums: [5, 1, -1, -1, -1, -1, -1]
+      lower: 1
+      upper: 3
+
+  - name: "suffix-heavy"
+    in:
+      nums: [-1, -1, -1, -1, -1, 1, 5]
+      lower: -3
+      upper: 1
+
+  - name: "sawtooth-nine"
+    in:
+      nums: [4, -1, 4, -1, 4, -1, 4, -1, 4]
+      lower: 3
+      upper: 8
+
+  - name: "generated-small-centered"
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        of:
+          gen: "int"
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: "int"
+      lower: -10
+      upper: 10
+
+  - name: "generated-small-nonnegative-window"
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
+        of:
+          gen: "int"
+          min: -20
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: "int"
+      lower: 0
+      upper: 15
+
+  - name: "generated-small-negative-window"
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
+        of:
+          gen: "int"
+          min: -20
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: "int"
+      lower: -15
+      upper: -1
+
+  - name: "generated-medium-balanced"
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 200
+          max: 400
+        of:
+          gen: "int"
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+      lower: -50
+      upper: 50
+
+  - name: "generated-medium-wide"
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 300
+          max: 600
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      lower: -500
+      upper: 500
+
+  - name: "generated-large-50000-zero-window"
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50000
+          max: 50000
+        of:
+          gen: "int"
+          min: -5
+          max: 5
+        distinct: false
+        sorted: false
+        elemType: "int"
+      lower: 0
+      upper: 0
+
+  - name: "generated-large-100000-wide-window"
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100000
+          max: 100000
+        of:
+          gen: "int"
+          min: -2
+          max: 2
+        distinct: false
+        sorted: false
+        elemType: "int"
+      lower: -10
+      upper: 10

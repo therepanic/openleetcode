@@ -1,0 +1,20 @@
+class Solution(object):
+    def countRangeSum(self, nums, lower, upper):
+        """
+        :type nums: List[int]
+        :type lower: int
+        :type upper: int
+        :rtype: int
+        """
+        from bisect import bisect_left, bisect_right
+        psum = [0]
+        for num in nums:
+            psum.append(psum[-1] + num)
+
+        slist = []
+        result = 0
+        for pval in reversed(psum):
+            result += bisect_right(slist, pval + upper) - bisect_left(slist, pval + lower)
+            slist.insert(bisect_left(slist, pval), pval)
+
+        return result

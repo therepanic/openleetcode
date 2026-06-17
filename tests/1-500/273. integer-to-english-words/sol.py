@@ -1,0 +1,95 @@
+class Solution:
+    ones = [
+        "Zero",
+        "One",
+        "Two", 
+        "Three", 
+        "Four", 
+        "Five", 
+        "Six", 
+        "Seven", 
+        "Eight", 
+        "Nine", 
+        "Ten", 
+        "Eleven", 
+        "Twelve", 
+        "Thirteen", 
+        "Fourteen", 
+        "Fifteen", 
+        "Sixteen", 
+        "Seventeen", 
+        "Eighteen", 
+        "Nineteen"
+    ]
+
+    tens = [
+        "Zero",
+        "Ten",
+        "Twenty",
+        "Thirty", 
+        "Forty", 
+        "Fifty", 
+        "Sixty", 
+        "Seventy", 
+        "Eighty", 
+        "Ninety"
+    ]
+
+    magnitude = [
+        "",
+        "Thousand",
+        "Million",
+        "Billion",
+        "Trillion"
+    ]
+
+    def helper3Digit(self, n: int) -> str:
+        num = n
+        ans = ""
+        count = 0
+        rem, prevRem = 0, 0
+
+        while num > 0:
+            count += 1
+            rem = num % 10
+            num = num // 10
+
+            if rem == 0:
+                continue
+
+            elif count == 1:
+                ans += self.ones[rem]
+
+            elif count == 2:
+                if rem == 1 or rem == 0:
+                    ans = self.ones[(rem * 10) + prevRem]
+
+                else:
+                    ans = self.tens[rem] + " " + ans
+
+            elif count == 3:
+                ans = self.ones[rem] + " Hundred " + ans
+        
+            prevRem = rem
+
+        return ans.strip()
+    
+    def numberToWords(self, num: int) -> str:
+        if num == 0:
+            return "Zero"
+
+        n = num
+        ans = ""
+        count = 0
+
+        while n > 0:
+            rem = n % 1000
+            if rem == 0:
+                pass # The given chunk is 000, hence no word should be added to the final string
+            else:
+                ans = self.helper3Digit(rem) + " " + self.magnitude[count] + " " + ans
+
+            n = n // 1000
+            count += 1
+
+        return ans.strip()

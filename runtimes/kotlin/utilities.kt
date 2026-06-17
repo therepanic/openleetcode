@@ -33,28 +33,28 @@ fun toBoolValue(value: Any?): Boolean = when (value) {
 }
 
 fun toIntArrayValue(value: Any?): IntArray =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { toIntValue(it) }.toIntArray()
+    (value as List<*>).map { toIntValue(it) }.toIntArray()
 
 fun toLongArrayValue(value: Any?): LongArray =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { toLongValue(it) }.toLongArray()
+    (value as List<*>).map { toLongValue(it) }.toLongArray()
 
 fun toDoubleArrayValue(value: Any?): DoubleArray =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { toDoubleValue(it) }.toDoubleArray()
+    (value as List<*>).map { toDoubleValue(it) }.toDoubleArray()
 
 fun toFloatArrayValue(value: Any?): FloatArray =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { toFloatValue(it) }.toFloatArray()
+    (value as List<*>).map { toFloatValue(it) }.toFloatArray()
 
 fun toStringArrayValue(value: Any?): Array<String> =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { toStringValue(it) }.toTypedArray()
+    (value as List<*>).map { toStringValue(it) }.toTypedArray()
 
 fun toCharArrayValue(value: Any?): CharArray =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { toCharValue(it) }.toCharArray()
+    (value as List<*>).map { toCharValue(it) }.toCharArray()
 
 fun toBoolArrayValue(value: Any?): BooleanArray =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { toBoolValue(it) }.toBooleanArray()
+    (value as List<*>).map { toBoolValue(it) }.toBooleanArray()
 
 fun toNullableIntArrayValue(value: Any?): Array<Int?> =
-    ((value as? List<*>) ?: emptyList<Any?>()).map { if (it == null) null else toIntValue(it) }.toTypedArray()
+    (value as List<*>).map { if (it == null) null else toIntValue(it) }.toTypedArray()
 
 fun toIntMatrixValue(value: Any?): Array<IntArray> =
     (value as List<*>).map { row -> toIntArrayValue(row) }.toTypedArray()

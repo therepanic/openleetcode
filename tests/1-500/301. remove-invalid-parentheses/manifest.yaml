@@ -1,0 +1,172 @@
+entry:
+  id: 301
+  title: remove-invalid-parentheses
+  params:
+    s:
+      type: string
+  call:
+    cpp: Solution().removeInvalidParentheses({s})
+    rust: Solution::remove_invalid_parentheses({s})
+    python3: Solution().removeInvalidParentheses({s})
+    python2: Solution().removeInvalidParentheses({s})
+    ruby: remove_invalid_parentheses({s})
+    java: new Solution().removeInvalidParentheses({s})
+    csharp: new Solution().RemoveInvalidParentheses({s})
+    kotlin: Solution().removeInvalidParentheses({s})
+    go: removeInvalidParentheses({s})
+    dart: Solution().removeInvalidParentheses({s})
+    swift: Solution().removeInvalidParentheses({s})
+    typescript: removeInvalidParentheses({s})
+judge:
+  type: ignore_order
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().removeInvalidParentheses(s, {result})
+    checker: |
+      class Checker:
+          def removeInvalidParentheses(self, s, result):
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, str) for x in result):
+                  return False
+              if len(result) != len(set(result)):
+                  return False
+
+              def is_valid(text):
+                  bal = 0
+                  for ch in text:
+                      if ch == "(":
+                          bal += 1
+                      elif ch == ")":
+                          bal -= 1
+                          if bal < 0:
+                              return False
+                  return bal == 0
+
+              level = {s}
+              while True:
+                  valid = {x for x in level if is_valid(x)}
+                  if valid:
+                      return set(result) == valid
+                  next_level = set()
+                  for text in level:
+                      for i, ch in enumerate(text):
+                          if ch in "()":
+                              next_level.add(text[:i] + text[i + 1:])
+                  level = next_level
+seed: 301
+tests:
+  - name: example-1
+    in:
+      s: "()())()"
+  - name: example-2
+    in:
+      s: "(a)())()"
+  - name: example-3
+    in:
+      s: ")("
+  - name: single-letter
+    in:
+      s: "a"
+  - name: balanced-simple
+    in:
+      s: "()"
+  - name: already-valid-nested
+    in:
+      s: "(())"
+  - name: leading-close
+    in:
+      s: ")a"
+  - name: trailing-open
+    in:
+      s: "a("
+  - name: all-closes
+    in:
+      s: "))))"
+  - name: all-opens
+    in:
+      s: "(((("
+  - name: no-parentheses
+    in:
+      s: "abcde"
+  - name: mixed-letters-1
+    in:
+      s: "a)b(c)d"
+  - name: mixed-letters-2
+    in:
+      s: "(a(b)c)d"
+  - name: min-remove-one
+    in:
+      s: "())"
+  - name: min-remove-one-2
+    in:
+      s: "(()"
+  - name: alternating-valid
+    in:
+      s: "()()"
+  - name: alternating-valid-2
+    in:
+      s: "(()())"
+  - name: invalid-with-letter
+    in:
+      s: "a)bc(d"
+  - name: invalid-prefix
+    in:
+      s: ")(()"
+  - name: invalid-suffix
+    in:
+      s: "((())"
+  - name: valid-with-letters
+    in:
+      s: "a((b))"
+  - name: invalid-close-middle
+    in:
+      s: "a((b)c)d)"
+  - name: invalid-open-middle
+    in:
+      s: "a)()()("
+  - name: example-like-1
+    in:
+      s: "((a)())())"
+  - name: example-like-2
+    in:
+      s: "a)b(c)d)e)f"
+  - name: long-balanced
+    in:
+      s: "((((((((((abcde))))))))))"
+  - name: long-unbalanced-closes
+    in:
+      s: "))))))))))abcde(((((((((("
+  - name: long-many-letters
+    in:
+      s: "ab(c)d(e)f(g)h(i)j"
+  - name: long-all-invalid-mix
+    in:
+      s: "x(x(x(x(x(x("
+  - name: long-all-invalid-closes
+    in:
+      s: "))))abc"
+  - name: dense-valid
+    in:
+      s: "(((())))(()())"
+  - name: dense-invalid
+    in:
+      s: "(a(b(c)d)e"
+  - name: letters-around
+    in:
+      s: "m)no(p)q)r(s)t"
+  - name: maxish-balanced
+    in:
+      s: "((((a((((b))))c))))"
+  - name: maxish-unbalanced
+    in:
+      s: "((((a((((b))))c)))))"
+  - name: single-close-followed-by-letters
+    in:
+      s: ")abc"
+  - name: many-letters-and-opens
+    in:
+      s: "abcd((((("

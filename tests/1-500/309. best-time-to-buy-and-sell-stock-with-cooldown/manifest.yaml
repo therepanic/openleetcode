@@ -1,0 +1,404 @@
+entry:
+  id: 309
+  title: best-time-to-buy-and-sell-stock-with-cooldown
+  params:
+    prices:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxProfit({prices})"
+    rust: "Solution::max_profit({prices})"
+    python3: "Solution().maxProfit({prices})"
+    python2: "Solution().maxProfit({prices})"
+    ruby: "max_profit({prices})"
+    java: "new Solution().maxProfit({prices})"
+    csharp: "new Solution().MaxProfit({prices})"
+    kotlin: "Solution().maxProfit({prices})"
+    go: "maxProfit({prices})"
+    dart: "Solution().maxProfit({prices})"
+    swift: "Solution().maxProfit({prices})"
+    typescript: "maxProfit({prices})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxProfit(prices, {result})"
+    checker: |
+      class Checker:
+          def maxProfit(self, prices, result):
+              if not isinstance(result, int):
+                  return False
+              hold = float('-inf')
+              sold = 0
+              rest = 0
+              for price in prices:
+                  prev_hold = hold
+                  hold = max(hold, rest - price)
+                  sold = prev_hold + price
+                  rest = max(rest, prev_hold if prev_hold != float('-inf') else 0)
+              expected = max(sold, rest)
+              return result == expected
+seed: 309
+tests:
+  - name: Example 1
+    in:
+      prices:
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+    out: 3
+  - name: Example 2
+    in:
+      prices:
+        - 1
+    out: 0
+  - name: Two days profit
+    in:
+      prices:
+        - 1
+        - 2
+    out: 1
+  - name: Two days loss
+    in:
+      prices:
+        - 2
+        - 1
+    out: 0
+  - name: Increasing five
+    in:
+      prices:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out: 4
+  - name: Decreasing five
+    in:
+      prices:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out: 0
+  - name: Short climb
+    in:
+      prices:
+        - 1
+        - 2
+        - 4
+    out: 3
+  - name: Valley and peak
+    in:
+      prices:
+        - 6
+        - 1
+        - 6
+        - 4
+        - 3
+        - 0
+        - 2
+    out: 7
+  - name: Small cooldown trap
+    in:
+      prices:
+        - 2
+        - 1
+        - 4
+    out: 3
+  - name: Alternating short
+    in:
+      prices:
+        - 2
+        - 1
+        - 2
+        - 1
+        - 0
+        - 1
+        - 2
+    out: 3
+  - name: Example extension
+    in:
+      prices:
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+        - 1
+        - 4
+    out: 5
+  - name: Two cycles
+    in:
+      prices:
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+        - 3
+        - 0
+        - 2
+    out: 5
+  - name: Two trades with gap
+    in:
+      prices:
+        - 1
+        - 4
+        - 2
+        - 7
+    out: 6
+  - name: Classic mixed
+    in:
+      prices:
+        - 3
+        - 2
+        - 6
+        - 5
+        - 0
+        - 3
+    out: 7
+  - name: Flat three
+    in:
+      prices:
+        - 0
+        - 0
+        - 0
+    out: 0
+  - name: Alternating zero one
+    in:
+      prices:
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out: 2
+  - name: Alternating one zero
+    in:
+      prices:
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out: 2
+  - name: Peak then drop
+    in:
+      prices:
+        - 2
+        - 4
+        - 1
+    out: 2
+  - name: Peak with late rise
+    in:
+      prices:
+        - 2
+        - 4
+        - 1
+        - 7
+    out: 6
+  - name: Large swings
+    in:
+      prices:
+        - 1
+        - 7
+        - 2
+        - 8
+        - 4
+        - 9
+    out: 11
+  - name: Mixed seven
+    in:
+      prices:
+        - 2
+        - 1
+        - 4
+        - 5
+        - 2
+        - 9
+        - 7
+    out: 10
+  - name: Mixed six
+    in:
+      prices:
+        - 1
+        - 3
+        - 2
+        - 8
+        - 4
+        - 9
+    out: 8
+  - name: Descending five
+    in:
+      prices:
+        - 8
+        - 6
+        - 4
+        - 2
+        - 1
+    out: 0
+  - name: Zero two repeat
+    in:
+      prices:
+        - 0
+        - 2
+        - 0
+        - 2
+        - 0
+        - 2
+    out: 4
+  - name: Six days rising then drop
+    in:
+      prices:
+        - 1
+        - 3
+        - 7
+        - 5
+        - 10
+        - 3
+    out: 9
+  - name: Nine days repeating climb
+    in:
+      prices:
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+    out: 4
+  - name: Wide swings
+    in:
+      prices:
+        - 4
+        - 1
+        - 2
+        - 7
+        - 5
+        - 3
+        - 6
+        - 4
+    out: 9
+  - name: Cooldown overlap
+    in:
+      prices:
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+        - 4
+        - 0
+        - 3
+    out: 6
+  - name: Max value edge
+    in:
+      prices:
+        - 1000
+        - 0
+        - 1000
+    out: 1000
+  - name: Max value alternating
+    in:
+      prices:
+        - 0
+        - 1000
+        - 0
+        - 1000
+        - 0
+    out: 1000
+  - name: Near max alternating peaks
+    in:
+      prices:
+        - 999
+        - 0
+        - 999
+        - 0
+        - 999
+    out: 999
+  - name: Repeating small hill
+    in:
+      prices:
+        - 0
+        - 1
+        - 2
+        - 0
+        - 1
+        - 2
+        - 0
+        - 1
+        - 2
+    out: 4
+  - name: Late double peak
+    in:
+      prices:
+        - 3
+        - 8
+        - 5
+        - 1
+        - 7
+        - 8
+    out: 12
+  - name: Eight day mixed
+    in:
+      prices:
+        - 1
+        - 6
+        - 2
+        - 8
+        - 4
+        - 9
+        - 0
+        - 3
+    out: 10
+  - name: Repeating highs
+    in:
+      prices:
+        - 5
+        - 1
+        - 5
+        - 1
+        - 5
+        - 1
+        - 5
+    out: 8
+  - name: Rising with reset
+    in:
+      prices:
+        - 2
+        - 5
+        - 0
+        - 3
+        - 1
+        - 4
+        - 0
+        - 6
+    out: 9
+  - name: Ten day mixed
+    in:
+      prices:
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+        - 1
+        - 2
+        - 3
+        - 0
+        - 2
+    out: 5

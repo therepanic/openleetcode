@@ -1,0 +1,444 @@
+entry:
+  id: 315
+  title: count-of-smaller-numbers-after-self
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().countSmaller({nums})"
+    rust: "Solution::count_smaller({nums})"
+    python3: "Solution().countSmaller({nums})"
+    python2: "Solution().countSmaller({nums})"
+    ruby: "count_smaller({nums})"
+    java: "new Solution().countSmaller({nums})"
+    csharp: "new Solution().CountSmaller({nums})"
+    kotlin: "Solution().countSmaller({nums})"
+    go: "countSmaller({nums})"
+    dart: "Solution().countSmaller({nums})"
+    swift: "Solution().countSmaller({nums})"
+    typescript: "countSmaller({nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().countSmaller(nums, {result})"
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def _expected(self, nums: List[int]) -> List[int]:
+              values = sorted(set(nums))
+              index = {v: i + 1 for i, v in enumerate(values)}
+              bit = [0] * (len(values) + 2)
+
+              def add(i: int, delta: int) -> None:
+                  while i < len(bit):
+                      bit[i] += delta
+                      i += i & -i
+
+              def sum_(i: int) -> int:
+                  s = 0
+                  while i > 0:
+                      s += bit[i]
+                      i -= i & -i
+                  return s
+
+              ans = []
+              for x in reversed(nums):
+                  ix = index[x]
+                  ans.append(sum_(ix - 1))
+                  add(ix, 1)
+              ans.reverse()
+              return ans
+
+          def countSmaller(self, nums: Any, result: Any) -> bool:
+              if not isinstance(nums, list) or not isinstance(result, list):
+                  return False
+              if len(result) != len(nums):
+                  return False
+              if any(not isinstance(x, int) for x in nums):
+                  return False
+              if any(not isinstance(x, int) for x in result):
+                  return False
+              if any(x < 0 or x > len(nums) for x in result):
+                  return False
+              return result == self._expected(nums)
+seed: 315315
+tests:
+  - name: example-1
+    in:
+      nums: [5, 2, 6, 1]
+    out:
+      - 2
+      - 1
+      - 1
+      - 0
+  - name: example-2
+    in:
+      nums: [-1]
+    out:
+      - 0
+  - name: example-3
+    in:
+      nums: [-1, -1]
+    out:
+      - 0
+      - 0
+  - name: ascending-five
+    in:
+      nums: [1, 2, 3, 4, 5]
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+  - name: descending-five
+    in:
+      nums: [5, 4, 3, 2, 1]
+    out:
+      - 4
+      - 3
+      - 2
+      - 1
+      - 0
+  - name: all-duplicates
+    in:
+      nums: [2, 2, 2, 2]
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+  - name: mixed-small
+    in:
+      nums: [3, 1, 2, 2, 0]
+    out:
+      - 4
+      - 1
+      - 1
+      - 1
+      - 0
+  - name: negatives-only
+    in:
+      nums: [-4, -2, -5, -1, -3]
+    out:
+      - 1
+      - 2
+      - 0
+      - 1
+      - 0
+  - name: extremes-mixed
+    in:
+      nums: [10000, -10000, 0, 10000, -10000]
+    out:
+      - 3
+      - 0
+      - 1
+      - 1
+      - 0
+  - name: zigzag
+    in:
+      nums: [4, 1, 3, 2, 5]
+    out:
+      - 3
+      - 0
+      - 1
+      - 0
+      - 0
+  - name: plateau
+    in:
+      nums: [1, 3, 3, 3, 2]
+    out:
+      - 0
+      - 1
+      - 1
+      - 1
+      - 0
+  - name: negative-mix
+    in:
+      nums: [0, -1, -1, 2, -2]
+    out:
+      - 3
+      - 1
+      - 1
+      - 1
+      - 0
+  - name: two-elements-desc
+    in:
+      nums: [8, 7]
+    out:
+      - 1
+      - 0
+  - name: two-elements-asc
+    in:
+      nums: [7, 8]
+    out:
+      - 0
+      - 0
+  - name: single-zero
+    in:
+      nums: [0]
+    out:
+      - 0
+  - name: single-max
+    in:
+      nums: [10000]
+    out:
+      - 0
+  - name: single-min
+    in:
+      nums: [-10000]
+    out:
+      - 0
+  - name: duplicate-pair
+    in:
+      nums: [7, 7]
+    out:
+      - 0
+      - 0
+  - name: repeated-blocks
+    in:
+      nums: [5, 5, 4, 4, 3, 3, 2, 2, 1, 1]
+    out:
+      - 8
+      - 8
+      - 6
+      - 6
+      - 4
+      - 4
+      - 2
+      - 2
+      - 0
+      - 0
+  - name: alternating-small
+    in:
+      nums: [2, 1, 2, 1, 2, 1]
+    out:
+      - 3
+      - 0
+      - 2
+      - 0
+      - 1
+      - 0
+  - name: random-static-1
+    in:
+      nums: [9, 4, 7, 1, 8, 3]
+    out:
+      - 5
+      - 2
+      - 2
+      - 0
+      - 1
+      - 0
+  - name: random-static-2
+    in:
+      nums: [6, 0, 5, 2, 4, 1, 3]
+    out:
+      - 6
+      - 0
+      - 4
+      - 1
+      - 2
+      - 0
+      - 0
+  - name: oracle-generated-1
+    seed: 31501
+    in:
+      nums:
+        gen: array
+        len: 25
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-2
+    seed: 31502
+    in:
+      nums:
+        gen: array
+        len: 50
+        of:
+          gen: int
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-3
+    seed: 31503
+    in:
+      nums:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-4
+    seed: 31504
+    in:
+      nums:
+        gen: array
+        len: 250
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-5
+    seed: 31505
+    in:
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-6
+    seed: 31506
+    in:
+      nums:
+        gen: array
+        len: 5000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-7
+    seed: 31507
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-8
+    seed: 31508
+    in:
+      nums:
+        gen: array
+        len: 25000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-9
+    seed: 31509
+    in:
+      nums:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-10
+    seed: 31510
+    in:
+      nums:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-11
+    seed: 31511
+    in:
+      nums:
+        gen: array
+        len: 3
+        of:
+          gen: int
+          min: -1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-12
+    seed: 31512
+    in:
+      nums:
+        gen: array
+        len: 7
+        of:
+          gen: int
+          min: -5
+          max: 5
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-13
+    seed: 31513
+    in:
+      nums:
+        gen: array
+        len: 31
+        of:
+          gen: int
+          min: -50
+          max: 50
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-14
+    seed: 31514
+    in:
+      nums:
+        gen: array
+        len: 777
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: oracle-generated-15
+    seed: 31515
+    in:
+      nums:
+        gen: array
+        len: 99999
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,0 +1,388 @@
+entry:
+  id: 363
+  title: max-sum-of-rectangle-no-larger-than-k
+  params:
+    matrix:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxSumSubmatrix({matrix}, {k})"
+    rust: "Solution::max_sum_submatrix({matrix}, {k})"
+    python3: "Solution().maxSumSubmatrix({matrix}, {k})"
+    python2: "Solution().maxSumSubmatrix({matrix}, {k})"
+    ruby: "max_sum_submatrix({matrix}, {k})"
+    java: "new Solution().maxSumSubmatrix({matrix}, {k})"
+    csharp: "new Solution().MaxSumSubmatrix({matrix}, {k})"
+    kotlin: "Solution().maxSumSubmatrix({matrix}, {k})"
+    go: "maxSumSubmatrix({matrix}, {k})"
+    dart: "Solution().maxSumSubmatrix({matrix}, {k})"
+    swift: "Solution().maxSumSubmatrix({matrix}, {k})"
+    typescript: "maxSumSubmatrix({matrix}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().maxSumSubmatrix(matrix, k, {result})"
+    checker: |
+      class Checker:
+          def maxSumSubmatrix(self, matrix, k, result):
+              m = len(matrix)
+              n = len(matrix[0])
+              best = float('-inf')
+              for top in range(m):
+                  col = [0] * n
+                  for bottom in range(top, m):
+                      for c in range(n):
+                          col[c] += matrix[bottom][c]
+                      for left in range(n):
+                          s = 0
+                          for right in range(left, n):
+                              s += col[right]
+                              if s <= k and s > best:
+                                  best = s
+              return result == best
+seed: 363
+tests:
+  - name: example1
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 0, 1]
+          - [0, -2, 3]
+      k: 2
+    out: 2
+  - name: example2
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, 2, -1]
+      k: 3
+    out: 3
+  - name: single_cell_equal
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [5]
+      k: 5
+    out: 5
+  - name: single_cell_negative_gt_k
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-5]
+      k: -2
+    out: -5
+  - name: single_cell_negative_equal
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-5]
+      k: -5
+    out: -5
+  - name: small_positive_large_k
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+      k: 100
+    out: 10
+  - name: small_positive_exact
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+      k: 7
+    out: 7
+  - name: small_positive_one_under
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+      k: 6
+    out: 6
+  - name: small_positive_tight
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+      k: 5
+    out: 4
+  - name: all_negative_small
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-1, -2]
+          - [-3, -4]
+      k: -2
+    out: -2
+  - name: all_negative_tight
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-1, -2]
+          - [-3, -4]
+      k: -6
+    out: -6
+  - name: mixed_2x2_exact
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, -1]
+          - [1, 3]
+      k: 3
+    out: 3
+  - name: mixed_2x2_plus_one
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, -1]
+          - [1, 3]
+      k: 4
+    out: 4
+  - name: mixed_2x2_high
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, -1]
+          - [1, 3]
+      k: 5
+    out: 5
+  - name: zero_matrix
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [0, 0, 0]
+          - [0, 0, 0]
+      k: 0
+    out: 0
+  - name: alternating_row
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, -1, 1, -1, 1]
+      k: 1
+    out: 1
+  - name: alternating_row_zero
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, -1, 1, -1, 1]
+      k: 0
+    out: 0
+  - name: alternating_col
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1]
+          - [-1]
+          - [1]
+          - [-1]
+          - [1]
+      k: 1
+    out: 1
+  - name: alternating_col_zero
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1]
+          - [-1]
+          - [1]
+          - [-1]
+          - [1]
+      k: 0
+    out: 0
+  - name: larger_mixed_exact
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [3, -2, 5]
+          - [-1, 4, -3]
+          - [2, -5, 6]
+      k: 7
+    out: 6
+  - name: larger_mixed_plus_one
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [3, -2, 5]
+          - [-1, 4, -3]
+          - [2, -5, 6]
+      k: 8
+    out: 8
+  - name: larger_mixed_tight
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [3, -2, 5]
+          - [-1, 4, -3]
+          - [2, -5, 6]
+      k: 6
+    out: 6
+  - name: asymmetric_3x4_exact
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [8, -3, 4, -2]
+          - [-5, 6, -1, 7]
+          - [3, -4, 2, -6]
+      k: 9
+    out: 9
+  - name: asymmetric_3x4_plus_one
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [8, -3, 4, -2]
+          - [-5, 6, -1, 7]
+          - [3, -4, 2, -6]
+      k: 10
+    out: 10
+  - name: asymmetric_3x4_tight
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [8, -3, 4, -2]
+          - [-5, 6, -1, 7]
+          - [3, -4, 2, -6]
+      k: 8
+    out: 8
+  - name: banded_3x4_exact
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, 2, 2, 2]
+          - [-1, -1, -1, -1]
+          - [3, 3, 3, 3]
+      k: 8
+    out: 8
+  - name: banded_3x4_plus_one
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, 2, 2, 2]
+          - [-1, -1, -1, -1]
+          - [3, 3, 3, 3]
+      k: 7
+    out: 6
+  - name: banded_3x4_tight
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, 2, 2, 2]
+          - [-1, -1, -1, -1]
+          - [3, 3, 3, 3]
+      k: 6
+    out: 6
+  - name: all_ones_3x3_tight
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+      k: 4
+    out: 4
+  - name: all_ones_3x3_mid
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+      k: 5
+    out: 4
+  - name: all_ones_3x3_large
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+      k: 9
+    out: 9
+  - name: checkerboard_5x5_exact
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [10, -10, 10, -10, 10]
+          - [-10, 10, -10, 10, -10]
+          - [10, -10, 10, -10, 10]
+          - [-10, 10, -10, 10, -10]
+          - [10, -10, 10, -10, 10]
+      k: 10
+    out: 10
+  - name: checkerboard_5x5_zero
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [10, -10, 10, -10, 10]
+          - [-10, 10, -10, 10, -10]
+          - [10, -10, 10, -10, 10]
+          - [-10, 10, -10, 10, -10]
+          - [10, -10, 10, -10, 10]
+      k: 0
+    out: 0
+  - name: mixed_3x3_boundary
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [4, -1, 2]
+          - [1, -3, 4]
+          - [-2, 5, -6]
+      k: 5
+    out: 5
+  - name: mixed_3x4_boundary
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [7, -8, 9, -10]
+          - [6, -5, 4, -3]
+          - [-2, 1, -1, 2]
+      k: 7
+    out: 7

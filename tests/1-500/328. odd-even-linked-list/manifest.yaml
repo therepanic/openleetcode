@@ -1,0 +1,403 @@
+entry:
+  id: 328
+  title: odd-even-linked-list
+  params:
+    head:
+      type: list_node
+  call:
+    cpp: listNodeToArray(Solution().oddEvenList({head}))
+    rust: ListNode::list_node_to_array(Solution::odd_even_list({head}))
+    python3: list_node_to_array(Solution().oddEvenList({head}))
+    python2: list_node_to_array(Solution().oddEvenList({head}))
+    ruby: list_node_to_array(odd_even_list({head}))
+    java: ListNode.listNodeToArray(new Solution().oddEvenList({head}))
+    csharp: ListNode.ListNodeToArray(new Solution().OddEvenList({head}))
+    kotlin: listNodeToArray(Solution().oddEvenList({head}))
+    go: listNodeToArray(oddEvenList({head}))
+    dart: list_node_to_array(Solution().oddEvenList({head}))
+    swift: list_node_to_array(Solution().oddEvenList({head}))
+    typescript: listNodeToArray(oddEvenList({head}))
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(head, {result})
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def _to_values(self, node: Any) -> List[int]:
+              if node is None:
+                  return []
+              if isinstance(node, (list, tuple)):
+                  return list(node)
+              values = []
+              seen = 0
+              while node is not None:
+                  if not hasattr(node, "val") or not hasattr(node, "next"):
+                      return []
+                  values.append(node.val)
+                  node = node.next
+                  seen += 1
+                  if seen > 200000:
+                      return []
+              return values
+
+          def check(self, head: Any, result: Any) -> bool:
+              src = self._to_values(head)
+              got = self._to_values(result)
+              if len(src) != len(got):
+                  return False
+              expected = src[::2] + src[1::2]
+              return got == expected
+seed: 328328
+tests:
+  - name: example_1
+    in:
+      head: [1, 2, 3, 4, 5]
+    out:
+      - 1
+      - 3
+      - 5
+      - 2
+      - 4
+  - name: example_2
+    in:
+      head: [2, 1, 3, 5, 6, 4, 7]
+    out:
+      - 2
+      - 3
+      - 6
+      - 7
+      - 1
+      - 5
+      - 4
+  - name: empty_list
+    in:
+      head: []
+    out: []
+  - name: single_node
+    in:
+      head: [9]
+    out:
+      - 9
+  - name: two_nodes
+    in:
+      head: [1, 2]
+    out:
+      - 1
+      - 2
+  - name: three_nodes
+    in:
+      head: [1, 2, 3]
+    out:
+      - 1
+      - 3
+      - 2
+  - name: four_nodes
+    in:
+      head: [1, 2, 3, 4]
+    out:
+      - 1
+      - 3
+      - 2
+      - 4
+  - name: six_nodes
+    in:
+      head: [1, 2, 3, 4, 5, 6]
+    out:
+      - 1
+      - 3
+      - 5
+      - 2
+      - 4
+      - 6
+  - name: seven_nodes
+    in:
+      head: [1, 2, 3, 4, 5, 6, 7]
+    out:
+      - 1
+      - 3
+      - 5
+      - 7
+      - 2
+      - 4
+      - 6
+  - name: all_same_len_5
+    in:
+      head: [7, 7, 7, 7, 7]
+    out:
+      - 7
+      - 7
+      - 7
+      - 7
+      - 7
+  - name: alternating_small
+    in:
+      head: [1, 9, 2, 8, 3, 7]
+    out:
+      - 1
+      - 2
+      - 3
+      - 9
+      - 8
+      - 7
+  - name: negatives
+    in:
+      head: [-1, -2, -3, -4, -5]
+    out:
+      - -1
+      - -3
+      - -5
+      - -2
+      - -4
+  - name: zeros_and_ones
+    in:
+      head: [0, 1, 0, 1, 0, 1, 0, 1]
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: increasing_len_8
+    in:
+      head: [1, 2, 3, 4, 5, 6, 7, 8]
+    out:
+      - 1
+      - 3
+      - 5
+      - 7
+      - 2
+      - 4
+      - 6
+      - 8
+  - name: decreasing_len_9
+    in:
+      head: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out:
+      - 9
+      - 7
+      - 5
+      - 3
+      - 1
+      - 8
+      - 6
+      - 4
+      - 2
+  - name: repeated_pairs
+    in:
+      head: [5, 5, 6, 6, 7, 7, 8, 8]
+    out:
+      - 5
+      - 6
+      - 7
+      - 8
+      - 5
+      - 6
+      - 7
+      - 8
+  - name: mixed_signs
+    in:
+      head: [10, -10, 20, -20, 30, -30, 40]
+    out:
+      - 10
+      - 20
+      - 30
+      - 40
+      - -10
+      - -20
+      - -30
+  - name: large_gap_values
+    in:
+      head: [1000000, -1000000, 500000, -500000, 250000, -250000]
+    out:
+      - 1000000
+      - 500000
+      - 250000
+      - -1000000
+      - -500000
+      - -250000
+  - name: two_equal
+    in:
+      head: [4, 4]
+    out:
+      - 4
+      - 4
+  - name: two_equal_negative
+    in:
+      head: [-3, -3]
+    out:
+      - -3
+      - -3
+  - name: odd_length_11
+    in:
+      head: [1, 4, 2, 5, 3, 6, 7, 8, 9, 10, 11]
+    out:
+      - 1
+      - 2
+      - 3
+      - 7
+      - 9
+      - 11
+      - 4
+      - 5
+      - 6
+      - 8
+      - 10
+  - name: even_length_12
+    in:
+      head: [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+    out:
+      - 11
+      - 9
+      - 7
+      - 5
+      - 3
+      - 1
+      - 10
+      - 8
+      - 6
+      - 4
+      - 2
+      - 0
+  - name: palindromic_values
+    in:
+      head: [1, 2, 3, 2, 1, 2, 3, 2, 1]
+    out:
+      - 1
+      - 3
+      - 1
+      - 3
+      - 1
+      - 2
+      - 2
+      - 2
+      - 2
+  - name: zeros_then_nonzeros
+    in:
+      head: [0, 0, 0, 4, 5, 6, 7]
+    out:
+      - 0
+      - 0
+      - 5
+      - 7
+      - 0
+      - 4
+      - 6
+  - name: edge_pattern_1
+    in:
+      head: [2, 3, 2, 3, 2, 3, 2]
+    out:
+      - 2
+      - 2
+      - 2
+      - 2
+      - 3
+      - 3
+      - 3
+  - name: edge_pattern_2
+    in:
+      head: [8, 1, 8, 1, 8, 1, 8, 1, 8]
+    out:
+      - 8
+      - 8
+      - 8
+      - 8
+      - 8
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: single_zero
+    in:
+      head: [0]
+    out:
+      - 0
+  - name: three_same
+    in:
+      head: [6, 6, 6]
+    out:
+      - 6
+      - 6
+      - 6
+  - name: longish_even_small
+    in:
+      head: [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
+    out:
+      - 3
+      - 4
+      - 5
+      - 2
+      - 5
+      - 1
+      - 1
+      - 9
+      - 6
+      - 3
+  - name: generated_large_1
+    seed: 328001
+    in:
+      head:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+  - name: generated_large_2
+    seed: 328002
+    in:
+      head:
+        gen: array
+        len: 99999
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+  - name: generated_large_3
+    seed: 328003
+    in:
+      head:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+  - name: generated_large_4
+    seed: 328004
+    in:
+      head:
+        gen: array
+        len: 75000
+        of:
+          gen: int
+          min: 0
+          max: 9
+  - name: generated_large_5
+    seed: 328005
+    in:
+      head:
+        gen: array
+        len: 60001
+        of:
+          gen: int
+          min: -50
+          max: 50
+  - name: generated_large_6
+    seed: 328006
+    in:
+      head:
+        gen: array
+        len: 80000
+        of:
+          gen: int
+          min: -1
+          max: 1
