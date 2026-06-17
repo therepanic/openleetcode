@@ -131,7 +131,8 @@ class ListNode {
   ListNode([this.val = 0, this.next]);
 }
 
-ListNode? to_list_node(List<int> arr) {
+ListNode? to_list_node(List<int>? arr) {
+  if (arr == null) return null;
   if (arr.isEmpty) return null;
   ListNode head = ListNode(arr[0]);
   ListNode? cur = head;
@@ -152,7 +153,7 @@ List<int> list_node_to_array(ListNode? head) {
   return res;
 }
 
-List<ListNode?> to_list_nodes(List<List<int>> arrs) {
+List<ListNode?> to_list_nodes(List<List<int>?> arrs) {
   return arrs.map((arr) => to_list_node(arr)).toList();
 }
 

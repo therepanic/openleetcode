@@ -57,6 +57,7 @@ class TreeNode {
     }
 
     public static List<List<Integer>> treeNodesArrayToArrayList(List<TreeNode> roots) {
+        if (roots == null) return new java.util.ArrayList<>();
         List<List<Integer>> res = new java.util.ArrayList<>(roots.size());
         for (TreeNode root : roots) {
             res.add(treeNodeToArray(root));
@@ -100,6 +101,7 @@ class ListNode {
     }
 
     public static ListNode[] toListNodes(int[][] arrs) {
+        if (arrs == null) return new ListNode[0];
         ListNode[] result = new ListNode[arrs.length];
         for (int i = 0; i < arrs.length; i++) {
             result[i] = toListNode(arrs[i]);

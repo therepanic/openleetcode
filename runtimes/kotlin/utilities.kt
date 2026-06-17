@@ -57,25 +57,25 @@ fun toNullableIntArrayValue(value: Any?): Array<Int?> =
     ((value as? List<*>) ?: emptyList<Any?>()).map { if (it == null) null else toIntValue(it) }.toTypedArray()
 
 fun toIntMatrixValue(value: Any?): Array<IntArray> =
-    (value as List<*>).map { row -> toIntArrayValue(row) }.toTypedArray()
+    ((value as? List<*>) ?: emptyList<Any?>()).map { row -> toIntArrayValue(row) }.toTypedArray()
 
 fun toLongMatrixValue(value: Any?): Array<LongArray> =
-    (value as List<*>).map { row -> toLongArrayValue(row) }.toTypedArray()
+    ((value as? List<*>) ?: emptyList<Any?>()).map { row -> toLongArrayValue(row) }.toTypedArray()
 
 fun toDoubleMatrixValue(value: Any?): Array<DoubleArray> =
-    (value as List<*>).map { row -> toDoubleArrayValue(row) }.toTypedArray()
+    ((value as? List<*>) ?: emptyList<Any?>()).map { row -> toDoubleArrayValue(row) }.toTypedArray()
 
 fun toFloatMatrixValue(value: Any?): Array<FloatArray> =
-    (value as List<*>).map { row -> toFloatArrayValue(row) }.toTypedArray()
+    ((value as? List<*>) ?: emptyList<Any?>()).map { row -> toFloatArrayValue(row) }.toTypedArray()
 
 fun toStringMatrixValue(value: Any?): Array<Array<String>> =
-    (value as List<*>).map { row -> toStringArrayValue(row) }.toTypedArray()
+    ((value as? List<*>) ?: emptyList<Any?>()).map { row -> toStringArrayValue(row) }.toTypedArray()
 
 fun toBoolMatrixValue(value: Any?): Array<BooleanArray> =
-    (value as List<*>).map { row -> toBoolArrayValue(row) }.toTypedArray()
+    ((value as? List<*>) ?: emptyList<Any?>()).map { row -> toBoolArrayValue(row) }.toTypedArray()
 
 fun toCharMatrixValue(value: Any?): Array<CharArray> =
-    (value as List<*>)
+    ((value as? List<*>) ?: emptyList<Any?>())
         .map { row -> toCharArrayValue(row) }
         .toTypedArray()
 

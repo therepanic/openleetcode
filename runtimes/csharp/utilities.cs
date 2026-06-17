@@ -25,6 +25,7 @@ public class ListNode {
     }
 
     public static ListNode[] ToListNodes(int[][] arrs) {
+        if (arrs == null) return Array.Empty<ListNode>();
         return arrs.Select(ToListNode).ToArray();
     }
 }
@@ -82,6 +83,7 @@ public class TreeNode {
     }
 
     public static List<int?[]> TreeNodeListToArrayList(IList<TreeNode> roots) {
+        if (roots == null) return new List<int?[]>();
         return roots.Select(TreeNodeToArray).ToList();
     }
 }
