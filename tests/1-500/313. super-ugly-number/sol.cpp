@@ -3,14 +3,19 @@ public:
     int nthSuperUglyNumber(int n, vector<int>& primes) {
         vector<int> ugly(n, 1);
         vector<int> idx(primes.size(), 0);
-        vector<int> val(primes.begin(), primes.end());
+        vector<long long> val(primes.begin(), primes.end());
         for (int i = 1; i < n; i++) {
-            int m = *min_element(val.begin(), val.end());
-            ugly[i] = m;
-            for (int j = 0; j < primes.size(); j++) {
+            long long m = val[0];
+            for (int j = 1; j < (int)val.size(); j++) {
+                if (val[j] < m) {
+                    m = val[j];
+                }
+            }
+            ugly[i] = (int)m;
+            for (int j = 0; j < (int)primes.size(); j++) {
                 if (val[j] == m) {
                     idx[j]++;
-                    val[j] = ugly[idx[j]] * primes[j];
+                    val[j] = 1LL * ugly[idx[j]] * primes[j];
                 }
             }
         }

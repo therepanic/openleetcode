@@ -1,54 +1,62 @@
 class Solution {
     fun countRangeSum(nums: IntArray, lower: Int, upper: Int): Int {
-        val psum = LongArray(nums.size + 1)
-        psum[0] = 0L
+        val prefix = LongArray(nums.size + 1)
         for (i in nums.indices) {
-            psum[i + 1] = psum[i] + nums[i]
+            prefix[i + 1] = prefix[i] + nums[i]
         }
 
-        val slist = mutableListOf<Long>()
-        var result = 0
-        for (i in psum.lastIndex downTo 0) {
-            val pval = psum[i]
-            val lo = pval + lower
-            val hi = pval + upper
-
-            val left = slist.bisectLeft(lo)
-            val right = slist.bisectRight(hi)
-            result += right - left
-
-            val idx = slist.bisectLeft(pval)
-            slist.add(idx, pval)
-        }
-
-        return result
+        val buffer = LongArray(prefix.size)
+        return countWhileMergeSort(prefix, buffer, 0, prefix.size, lower.toLong(), upper.toLong()).toInt()
     }
-}
 
-private fun List<Long>.bisectLeft(target: Long): Int {
-    var lo = 0
-    var hi = size
-    while (lo < hi) {
-        val mid = lo + (hi - lo) / 2
-        if (this[mid] < target) {
-            lo = mid + 1
-        } else {
-            hi = mid
+    private fun countWhileMergeSort(
+        prefix: LongArray,
+        buffer: LongArray,
+        left: Int,
+        right: Int,
+        lower: Long,
+        upper: Long
+    ): Long {
+        if (right - left <= 1) {
+            return 0L
         }
-    }
-    return lo
-}
 
-private fun List<Long>.bisectRight(target: Long): Int {
-    var lo = 0
-    var hi = size
-    while (lo < hi) {
-        val mid = lo + (hi - lo) / 2
-        if (this[mid] <= target) {
-            lo = mid + 1
-        } else {
-            hi = mid
+        val mid = left + (right - left) / 2
+        var count = countWhileMergeSort(prefix, buffer, left, mid, lower, upper) +
+                countWhileMergeSort(prefix, buffer, mid, right, lower, upper)
+
+        var low = mid
+        var high = mid
+        for (i in left until mid) {
+            while (low < right && prefix[low] - prefix[i] < lower) {
+                low++
+            }
+            while (high < right && prefix[high] - prefix[i] <= upper) {
+                high++
+            }
+            count += (high - low).toLong()
         }
+
+        var p1 = left
+        var p2 = mid
+        var idx = left
+        while (p1 < mid && p2 < right) {
+            if (prefix[p1] <= prefix[p2]) {
+                buffer[idx++] = prefix[p1++]
+            } else {
+                buffer[idx++] = prefix[p2++]
+            }
+        }
+        while (p1 < mid) {
+            buffer[idx++] = prefix[p1++]
+        }
+        while (p2 < right) {
+            buffer[idx++] = prefix[p2++]
+        }
+        for (i in left until right) {
+            prefix[i] = buffer[i]
+        }
+
+        return count
     }
-    return lo
 }

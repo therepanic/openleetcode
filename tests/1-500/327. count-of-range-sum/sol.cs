@@ -1,52 +1,56 @@
 public class Solution {
     public int CountRangeSum(int[] nums, int lower, int upper) {
-        long[] psum = new long[nums.Length + 1];
-        psum[0] = 0;
+        long[] prefix = new long[nums.Length + 1];
         for (int i = 0; i < nums.Length; i++) {
-            psum[i + 1] = psum[i] + nums[i];
+            prefix[i + 1] = prefix[i] + nums[i];
         }
 
-        List<long> slist = new List<long>();
-        int result = 0;
-        for (int i = psum.Length - 1; i >= 0; i--) {
-            long pval = psum[i];
-            long lo = pval + lower;
-            long hi = pval + upper;
-
-            int left = BisectLeft(slist, lo);
-            int right = BisectRight(slist, hi);
-            result += right - left;
-
-            int idx = BisectLeft(slist, pval);
-            slist.Insert(idx, pval);
-        }
-
-        return result;
+        long[] buffer = new long[prefix.Length];
+        long count = CountWhileMergeSort(prefix, buffer, 0, prefix.Length, lower, upper);
+        return (int)count;
     }
 
-    private int BisectLeft(List<long> list, long target) {
-        int lo = 0, hi = list.Count;
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            if (list[mid] < target) {
-                lo = mid + 1;
-            } else {
-                hi = mid;
-            }
+    private long CountWhileMergeSort(long[] prefix, long[] buffer, int left, int right, int lower, int upper) {
+        if (right - left <= 1) {
+            return 0;
         }
-        return lo;
-    }
 
-    private int BisectRight(List<long> list, long target) {
-        int lo = 0, hi = list.Count;
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            if (list[mid] <= target) {
-                lo = mid + 1;
+        int mid = left + (right - left) / 2;
+        long count = CountWhileMergeSort(prefix, buffer, left, mid, lower, upper)
+                   + CountWhileMergeSort(prefix, buffer, mid, right, lower, upper);
+
+        int low = mid;
+        int high = mid;
+        for (int i = left; i < mid; i++) {
+            while (low < right && prefix[low] - prefix[i] < lower) {
+                low++;
+            }
+            while (high < right && prefix[high] - prefix[i] <= upper) {
+                high++;
+            }
+            count += high - low;
+        }
+
+        int p1 = left;
+        int p2 = mid;
+        int idx = left;
+        while (p1 < mid && p2 < right) {
+            if (prefix[p1] <= prefix[p2]) {
+                buffer[idx++] = prefix[p1++];
             } else {
-                hi = mid;
+                buffer[idx++] = prefix[p2++];
             }
         }
-        return lo;
+        while (p1 < mid) {
+            buffer[idx++] = prefix[p1++];
+        }
+        while (p2 < right) {
+            buffer[idx++] = prefix[p2++];
+        }
+        for (int i = left; i < right; i++) {
+            prefix[i] = buffer[i];
+        }
+
+        return count;
     }
 }

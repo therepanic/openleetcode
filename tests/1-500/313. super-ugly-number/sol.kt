@@ -3,14 +3,19 @@ class Solution {
         val ugly = IntArray(n)
         ugly[0] = 1
         val idx = IntArray(primes.size)
-        val vals = IntArray(primes.size) { primes[it] }
+        val vals = LongArray(primes.size) { primes[it].toLong() }
         for (i in 1 until n) {
-            val m = vals.minOrNull()!!
-            ugly[i] = m
+            var m = vals[0]
+            for (j in 1 until vals.size) {
+                if (vals[j] < m) {
+                    m = vals[j]
+                }
+            }
+            ugly[i] = m.toInt()
             for (j in primes.indices) {
                 if (vals[j] == m) {
                     idx[j]++
-                    vals[j] = ugly[idx[j]] * primes[j]
+                    vals[j] = ugly[idx[j]].toLong() * primes[j].toLong()
                 }
             }
         }

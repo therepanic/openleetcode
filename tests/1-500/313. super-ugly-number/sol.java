@@ -3,22 +3,23 @@ class Solution {
         int[] ugly = new int[n];
         ugly[0] = 1;
         int[] idx = new int[primes.length];
-        int[] val = new int[primes.length];
+        long[] val = new long[primes.length];
         for (int j = 0; j < primes.length; j++) {
             val[j] = primes[j];
         }
         for (int i = 1; i < n; i++) {
-            int m = Integer.MAX_VALUE;
-            for (int v : val) {
+            long m = val[0];
+            for (int j = 1; j < val.length; j++) {
+                long v = val[j];
                 if (v < m) {
                     m = v;
                 }
             }
-            ugly[i] = m;
+            ugly[i] = (int)m;
             for (int j = 0; j < primes.length; j++) {
                 if (val[j] == m) {
                     idx[j]++;
-                    val[j] = ugly[idx[j]] * primes[j];
+                    val[j] = (long)ugly[idx[j]] * primes[j];
                 }
             }
         }

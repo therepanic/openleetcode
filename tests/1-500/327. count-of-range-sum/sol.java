@@ -1,52 +1,54 @@
 class Solution {
     public int countRangeSum(int[] nums, int lower, int upper) {
-        long[] psum = new long[nums.length + 1];
-        psum[0] = 0;
+        long[] prefix = new long[nums.length + 1];
         for (int i = 0; i < nums.length; i++) {
-            psum[i + 1] = psum[i] + nums[i];
+            prefix[i + 1] = prefix[i] + nums[i];
         }
 
-        List<Long> slist = new ArrayList<>();
-        int result = 0;
-        for (int i = psum.length - 1; i >= 0; i--) {
-            long pval = psum[i];
-            long lo = pval + lower;
-            long hi = pval + upper;
-
-            int left = bisectLeft(slist, lo);
-            int right = bisectRight(slist, hi);
-            result += right - left;
-
-            int idx = bisectLeft(slist, pval);
-            slist.add(idx, pval);
-        }
-
-        return result;
+        long[] buffer = new long[prefix.length];
+        long count = countWhileMergeSort(prefix, buffer, 0, prefix.length, lower, upper);
+        return (int)count;
     }
 
-    private int bisectLeft(List<Long> list, long target) {
-        int lo = 0, hi = list.size();
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            if (list.get(mid) < target) {
-                lo = mid + 1;
-            } else {
-                hi = mid;
-            }
+    private long countWhileMergeSort(long[] prefix, long[] buffer, int left, int right, int lower, int upper) {
+        if (right - left <= 1) {
+            return 0L;
         }
-        return lo;
-    }
 
-    private int bisectRight(List<Long> list, long target) {
-        int lo = 0, hi = list.size();
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            if (list.get(mid) <= target) {
-                lo = mid + 1;
+        int mid = left + (right - left) / 2;
+        long count = countWhileMergeSort(prefix, buffer, left, mid, lower, upper)
+                   + countWhileMergeSort(prefix, buffer, mid, right, lower, upper);
+
+        int low = mid;
+        int high = mid;
+        for (int i = left; i < mid; i++) {
+            while (low < right && prefix[low] - prefix[i] < lower) {
+                low++;
+            }
+            while (high < right && prefix[high] - prefix[i] <= upper) {
+                high++;
+            }
+            count += high - low;
+        }
+
+        int p1 = left;
+        int p2 = mid;
+        int idx = left;
+        while (p1 < mid && p2 < right) {
+            if (prefix[p1] <= prefix[p2]) {
+                buffer[idx++] = prefix[p1++];
             } else {
-                hi = mid;
+                buffer[idx++] = prefix[p2++];
             }
         }
-        return lo;
+        while (p1 < mid) {
+            buffer[idx++] = prefix[p1++];
+        }
+        while (p2 < right) {
+            buffer[idx++] = prefix[p2++];
+        }
+        System.arraycopy(buffer, left, prefix, left, right - left);
+
+        return count;
     }
 }
