@@ -55,8 +55,8 @@ run runtime opts = do
             Left failure -> do
               renderSubmitFailure ui failure
               pure (submitFailureExitCode failure)
-            Right maxTime -> do
-              renderAccepted ui maxTime
+            Right totalTime -> do
+              renderAccepted ui totalTime
               pure (renderExitCode ExitOk)
 
 validateSubmit :: SubmitOpts -> Maybe SubmitFailure
@@ -148,7 +148,7 @@ executeSubmit ui resolved = do
                       | isOracleExecutionMessage msg -> SubmitInternalWhileJudging (Just idx) (stripOracleExecutionPrefix msg)
                       | otherwise -> SubmitJudgeInternal (Just idx) (stripOracleExecutionPrefix msg)
                     _ -> SubmitVerdict idx verdict
-              Nothing -> pure (Right (maximum [t | (_, Pass t) <- results]))
+              Nothing -> pure (Right (sum [t | (_, Pass t) <- results]))
 
 loadRuntimeTemplates :: FilePath -> Language -> IO (Either SubmitFailure (Text, Text, Text))
 loadRuntimeTemplates root lang = do
