@@ -359,7 +359,7 @@ gen: "array"
 distinct: false
 sorted: false
 elemType: "int" # mainly for Java/Kotlin typed inner arrays in 2D cases
-len: { gen: "int", min: 1, max: 20 }
+len: 100000
 of: { gen: "int", min: 0, max: 9 }
 ```
 
@@ -393,12 +393,12 @@ in:
     distinct: false
     sorted: false
     elemType: "int"
-    len: { gen: "int", min: 1, max: 4 }
+    len: 100
     of:
       gen: "array"
       distinct: false
       sorted: false
-      len: { gen: "int", min: 1, max: 5 }
+      len: 100
       of: { gen: "int", min: 0, max: 9 }
 ```
 
@@ -421,10 +421,10 @@ in:
   matrixFloatGen:
     gen: "array"
     elemType: "float"
-    len: { gen: "int", min: 1, max: 3 }
+    len: 100
     of:
       gen: "array"
-      len: { gen: "int", min: 1, max: 4 }
+      len: 100
       of: { gen: "float", min: -10.0, max: 10.0, precision: 2 }
 ```
 
@@ -446,13 +446,13 @@ in:
   matrixStringGen:
     gen: "array"
     elemType: "string"
-    len: { gen: "int", min: 1, max: 3 }
+    len: 100
     of:
       gen: "array"
-      len: { gen: "int", min: 1, max: 4 }
+      len: 100
       of:
         gen: "str"
-        len: { gen: "int", min: 1, max: 3 }
+        len: 100
         alphabet: ["a", "b", "c", "d"]
 ```
 
@@ -472,10 +472,10 @@ in:
   matrixCharGen:
     gen: "array"
     elemType: "char"
-    len: { gen: "int", min: 1, max: 3 }
+    len: 100
     of:
       gen: "array"
-      len: { gen: "int", min: 1, max: 4 }
+      len: 100
       of:
         gen: "char"
         variety: ["a", "b", "c", "d", "e"]
@@ -497,10 +497,10 @@ in:
   matrixBoolGen:
     gen: "array"
     elemType: "bool"
-    len: { gen: "int", min: 1, max: 3 }
+    len: 100
     of:
       gen: "array"
-      len: { gen: "int", min: 1, max: 4 }
+      len: 100
       of: { gen: "bool" }
 ```
 
@@ -590,7 +590,7 @@ tests:
         gen: "array"
         distinct: false
         sorted: false
-        len: { gen: "int", min: 2, max: 20 }
+        len: 100000
         of: { gen: "int", min: -100, max: 100 }
       target: { gen: "int", min: -200, max: 200 }
 
@@ -601,7 +601,7 @@ tests:
         gen: "array"
         distinct: false
         sorted: false
-        len: { gen: "int", min: 80000, max: 100000 }
+        len: 100000
         of: { gen: "int", min: 0, max: 1000000000 }
       target: { gen: "int", min: 0, max: 2000000000 }
 ```

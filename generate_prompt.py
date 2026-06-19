@@ -284,10 +284,7 @@ max: 1.0
 precision: 2
 
 gen: "str"
-len:
-  gen: "int"
-  min: 1
-  max: 10
+len: 10000
 alphabet: ["a","b","c"]
 
 gen: "char"
@@ -300,10 +297,7 @@ gen: "bool"
 1D array:
 
 gen: "array"
-len:
-  gen: "int"
-  min: 1
-  max: 20
+len: 10000
 of:
   gen: "int"
   min: 0
