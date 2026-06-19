@@ -40,8 +40,25 @@ OUTPUT_EXTENSIONS = {
 }
 FENCE_PATTERN = re.compile(r"```([a-zA-Z0-9_+-]+)\n(.*?)```", re.DOTALL)
 
+RUNTIME_CONTEXT = """
+Runtime:
+cpp C++23; rust 1.88 edition 2024; python3 3.14; python2 2.7;
+ruby 3.2; java 25; csharp .NET 10; kotlin 2.1; go 1.23;
+dart 3.2; swift 6.0; typescript 5.7 ES2024.
+
+Available extras:
+python sortedcontainers; rust rand/regex/itertools; go gods;
+dart collection; swift algorithms/collections/numerics;
+typescript lodash/datastructures-js; java Pair; ruby Algorithms.
+
+No imports/includes/package declarations unless already in snippet.
+"""
+
 PROMPT_TEMPLATE = Template("""
 You are a code generator.
+
+Runtime:
+$RUNTIME_CONTEXT
 
 Input:
 $SNIPPETS
@@ -133,6 +150,7 @@ def process(folder, model, api_key):
     python_solution = python_solution_path.read_text(encoding="utf-8").strip()
 
     prompt = PROMPT_TEMPLATE.substitute(
+        RUNTIME_CONTEXT=RUNTIME_CONTEXT.strip(),
         SNIPPETS=snippets,
         PYTHON_SOLUTION=python_solution,
     )
