@@ -9,6 +9,7 @@
   <br>
   <a href="https://www.haskell.org/"><img alt="Made in Haskell" src="https://img.shields.io/badge/made%20in-Haskell-5e5086?style=flat"></a>
   <a href="https://www.haskell.org/cabal/"><img alt="Build with Cabal" src="https://img.shields.io/badge/build-Cabal-1f6feb?style=flat"></a>
+  <a href="https://github.com/therepanic/openleetcode/actions/workflows/ci.yml"><img alt="ci" src="https://img.shields.io/github/actions/workflow/status/therepanic/openleetcode/ci.yml?branch=main&label=ci&style=flat&logo=github&logoColor=white"></a>
   <a href="https://unlicense.org/"><img alt="License Unlicense" src="https://img.shields.io/badge/license-Unlicense-lightgrey?style=flat"></a>
 </p>
 
