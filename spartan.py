@@ -35,7 +35,7 @@ def fetch_problem_list(skip, limit, hide_premium):
             "query": """
             query problemsetQuestionListV2($filters: QuestionFilterInput, $limit: Int, $skip: Int, $categorySlug: String) {
                 problemsetQuestionListV2(filters: $filters, limit: $limit, skip: $skip, categorySlug: $categorySlug) {
-                    questions { id titleSlug }
+                    questions { id questionFrontendId titleSlug }
                 }
             }
         """,
@@ -109,7 +109,7 @@ def normalize_ref(code):
 
 
 def process(problem, model, api_key, no_generate):
-    pid, slug = problem["id"], problem["titleSlug"]
+    pid, slug = int(problem["questionFrontendId"]), problem["titleSlug"]
 
     folder = PROBLEMS_DIR / f"{pid}. {slug}"
     manifest = folder / "manifest.yml"
