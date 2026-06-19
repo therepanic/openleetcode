@@ -1,0 +1,234 @@
+entry:
+  id: 395
+  title: longest-substring-with-at-least-k-repeating-characters
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().longestSubstring({s}, {k})"
+    rust: "Solution::longestSubstring({s}, {k})"
+    python3: "Solution().longestSubstring({s}, {k})"
+    python2: "Solution().longestSubstring({s}, {k})"
+    ruby: "longestSubstring({s}, {k})"
+    java: "new Solution().longestSubstring({s}, {k})"
+    csharp: "new Solution().longestSubstring({s}, {k})"
+    kotlin: "Solution().longestSubstring({s}, {k})"
+    go: "longestSubstring({s}, {k})"
+    dart: "Solution().longestSubstring({s}, {k})"
+    swift: "Solution().longestSubstring({s}, {k})"
+    typescript: "longestSubstring({s}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().longestSubstring(s, k, {result})"
+    checker: |
+      class Checker:
+          def longestSubstring(self, s, k, result):
+              n = len(s)
+              best = 0
+              for i in range(n + 1):
+                  freq = [0] * 26
+                  for j in range(i, n):
+                      idx = ord(s[j]) - ord('a')
+                      freq[idx] += 1
+                      ok = True
+                      for count in freq:
+                          if 0 < count < k:
+                              ok = False
+                              break
+                      if ok:
+                          best = max(best, j - i + 1)
+              return result == best
+seed: 395
+tests:
+  - name: empty-string-k1
+    in:
+      s: ""
+      k: 1
+    out: 0
+  - name: single-char-k1
+    in:
+      s: a
+      k: 1
+    out: 1
+  - name: single-char-too-large-k
+    in:
+      s: a
+      k: 2
+    out: 0
+  - name: pair-all-valid
+    in:
+      s: aa
+      k: 2
+    out: 2
+  - name: pair-distinct-k1
+    in:
+      s: ab
+      k: 1
+    out: 2
+  - name: pair-distinct-k2
+    in:
+      s: ab
+      k: 2
+    out: 0
+  - name: simple-full-string
+    in:
+      s: aaabbb
+      k: 3
+    out: 6
+  - name: simple-no-solution
+    in:
+      s: aaabbb
+      k: 4
+    out: 0
+  - name: split-required
+    in:
+      s: ababacb
+      k: 3
+    out: 0
+  - name: sample-zero
+    in:
+      s: weitong
+      k: 2
+    out: 0
+  - name: middle-window
+    in:
+      s: bbaaacbd
+      k: 3
+    out: 3
+  - name: sample-three
+    in:
+      s: aaabb
+      k: 3
+    out: 3
+  - name: sample-five
+    in:
+      s: ababbc
+      k: 2
+    out: 5
+  - name: repeated-pattern-full
+    in:
+      s: abcabcabc
+      k: 3
+    out: 9
+  - name: repeated-pattern-none
+    in:
+      s: abcabcabc
+      k: 4
+    out: 0
+  - name: all-one-char-k1
+    in:
+      s: zzzzzz
+      k: 1
+    out: 6
+  - name: all-one-char-exact
+    in:
+      s: zzzzzz
+      k: 6
+    out: 6
+  - name: all-one-char-too-large
+    in:
+      s: zzzzzz
+      k: 7
+    out: 0
+  - name: mixed-blocks-short
+    in:
+      s: aaabbbcddddeee
+      k: 3
+    out: 7
+  - name: mixed-blocks-wide
+    in:
+      s: aabbbccccdddde
+      k: 2
+    out: 13
+  - name: mixed-blocks-partial
+    in:
+      s: aabbbccccdddde
+      k: 4
+    out: 8
+  - name: all-pairs
+    in:
+      s: aabbccddeeff
+      k: 2
+    out: 12
+  - name: all-pairs-impossible
+    in:
+      s: aabbccddeeff
+      k: 3
+    out: 0
+  - name: all-unique-k1
+    in:
+      s: abcdefghijklmnop
+      k: 1
+    out: 16
+  - name: all-unique-k2
+    in:
+      s: abcdefghijklmnop
+      k: 2
+    out: 0
+  - name: five-blocks-exact
+    in:
+      s: aaaaabbbbbcccccdddddeeeee
+      k: 5
+    out: 25
+  - name: five-blocks-too-high
+    in:
+      s: aaaaabbbbbcccccdddddeeeee
+      k: 6
+    out: 0
+  - name: overlapping-middles
+    in:
+      s: aaabbaaaabbaaa
+      k: 3
+    out: 14
+  - name: overlapping-middles-k4
+    in:
+      s: aaabbaaaabbaaa
+      k: 4
+    out: 14
+  - name: repeated-six-blocks
+    in:
+      s: qwertyqwertyqwerty
+      k: 3
+    out: 18
+  - name: repeated-six-blocks-none
+    in:
+      s: qwertyqwertyqwerty
+      k: 4
+    out: 0
+  - name: mississippi-k2
+    in:
+      s: mississippi
+      k: 2
+    out: 10
+  - name: mississippi-k3
+    in:
+      s: mississippi
+      k: 3
+    out: 7
+  - name: tripled-blocks
+    in:
+      s: ppqqqrrrssstttuuu
+      k: 3
+    out: 15
+  - name: tripled-blocks-none
+    in:
+      s: ppqqqrrrssstttuuu
+      k: 4
+    out: 0
+  - name: small-central-run
+    in:
+      s: abcdefffffghij
+      k: 2
+    out: 5
+  - name: small-central-run-exact
+    in:
+      s: abcdefffffghij
+      k: 5
+    out: 5

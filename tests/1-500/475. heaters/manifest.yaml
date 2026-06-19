@@ -1,0 +1,340 @@
+entry:
+  id: 475
+  title: heaters
+  params:
+    houses:
+      type: array
+      items:
+        type: int
+    heaters:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().findRadius({houses}, {heaters})"
+    rust: "Solution::find_radius({houses}, {heaters})"
+    python3: "Solution().findRadius({houses}, {heaters})"
+    python2: "Solution().findRadius({houses}, {heaters})"
+    ruby: "find_radius({houses}, {heaters})"
+    java: "new Solution().findRadius({houses}, {heaters})"
+    csharp: "new Solution().FindRadius({houses}, {heaters})"
+    kotlin: "Solution().findRadius({houses}, {heaters})"
+    go: "findRadius({houses}, {heaters})"
+    dart: "Solution().findRadius({houses}, {heaters})"
+    swift: "Solution().findRadius({houses}, {heaters})"
+    typescript: "findRadius({houses}, {heaters})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().findRadius(houses, heaters, {result})"
+    checker: |
+      class Checker:
+          def findRadius(self, houses, heaters, result):
+              if not isinstance(result, int):
+                  return False
+              if not isinstance(houses, list) or not isinstance(heaters, list):
+                  return False
+              if len(houses) < 1 or len(heaters) < 1:
+                  return False
+              if len(houses) > 30000 or len(heaters) > 30000:
+                  return False
+              for x in houses:
+                  if not isinstance(x, int) or x < 1 or x > 1000000000:
+                      return False
+              for x in heaters:
+                  if not isinstance(x, int) or x < 1 or x > 1000000000:
+                      return False
+              expected = 0
+              hs = sorted(houses)
+              ht = sorted(heaters)
+              for house in hs:
+                  left = 0
+                  right = len(ht) - 1
+                  while left < right:
+                      mid = (left + right) // 2
+                      if ht[mid] < house:
+                          left = mid + 1
+                      else:
+                          right = mid
+                  dist = abs(ht[left] - house)
+                  if left > 0:
+                      alt = abs(ht[left - 1] - house)
+                      if alt < dist:
+                          dist = alt
+                  if dist > expected:
+                      expected = dist
+              return result == expected
+seed: 475
+tests:
+  - name: example1
+    in:
+      houses: [1, 2, 3]
+      heaters: [2]
+  - name: example2
+    in:
+      houses: [1, 2, 3, 4]
+      heaters: [1, 4]
+  - name: example3
+    in:
+      houses: [1, 5]
+      heaters: [2]
+  - name: single_house_exact
+    in:
+      houses: [7]
+      heaters: [7]
+  - name: single_house_left
+    in:
+      houses: [1]
+      heaters: [10]
+  - name: single_house_right
+    in:
+      houses: [10]
+      heaters: [1]
+  - name: one_heater_between
+    in:
+      houses: [1, 4, 10]
+      heaters: [6]
+  - name: heater_at_left_edge
+    in:
+      houses: [1, 2, 3, 4]
+      heaters: [1]
+  - name: heater_at_right_edge
+    in:
+      houses: [1, 2, 3, 4]
+      heaters: [4]
+  - name: duplicate_houses
+    in:
+      houses: [1, 1, 1, 10]
+      heaters: [5]
+  - name: duplicate_heaters
+    in:
+      houses: [2, 8]
+      heaters: [5, 5, 5]
+  - name: unsorted_inputs
+    in:
+      houses: [9, 1, 5]
+      heaters: [10, 2]
+  - name: houses_on_heaters
+    in:
+      houses: [1, 2, 3, 4, 5]
+      heaters: [1, 3, 5]
+  - name: two_heaters_far_apart
+    in:
+      houses: [1, 10, 20, 30]
+      heaters: [5, 25]
+  - name: clustered_houses
+    in:
+      houses: [100, 101, 102, 103]
+      heaters: [1, 200]
+  - name: boundary_low_values
+    in:
+      houses: [1, 2, 3]
+      heaters: [3]
+  - name: boundary_high_values
+    in:
+      houses: [999999998, 999999999, 1000000000]
+      heaters: [999999999]
+  - name: mixed_boundaries
+    in:
+      houses: [1, 1000000000]
+      heaters: [1, 1000000000]
+  - name: more_houses_than_heaters
+    in:
+      houses: [2, 4, 6, 8, 10, 12]
+      heaters: [3, 11]
+  - name: one_heater_center
+    in:
+      houses: [2, 3, 4, 5, 6]
+      heaters: [4]
+  - name: spaced_evenly
+    in:
+      houses: [1, 4, 7, 10]
+      heaters: [2, 8]
+  - name: heater_before_all
+    in:
+      houses: [5, 6, 7]
+      heaters: [1, 2]
+  - name: heater_after_all
+    in:
+      houses: [5, 6, 7]
+      heaters: [10, 20]
+  - name: alternating_nearest
+    in:
+      houses: [1, 3, 6, 9, 12]
+      heaters: [2, 8, 13]
+  - name: repeated_house_positions
+    in:
+      houses: [4, 4, 4, 4]
+      heaters: [1, 10]
+  - name: repeated_heater_positions
+    in:
+      houses: [3, 6, 9]
+      heaters: [6, 6, 6]
+  - name: large_gap_single_heater
+    in:
+      houses: [1, 100, 200, 300]
+      heaters: [150]
+  - name: houses_cover_heaters
+    in:
+      houses: [2, 5, 8, 11, 14]
+      heaters: [4, 10]
+  - name: center_and_edges
+    in:
+      houses: [1, 50, 100]
+      heaters: [25, 75]
+  - name: small_dense
+    in:
+      houses: [1, 2, 3, 4, 5, 6]
+      heaters: [2, 5]
+  - name: one_apart_each_side
+    in:
+      houses: [10, 20, 30]
+      heaters: [11, 29]
+  - name: exact_match_many
+    in:
+      houses: [5, 15, 25, 35]
+      heaters: [5, 15, 25, 35]
+  - name: gen_large_uniform_a
+    in:
+      houses:
+        gen: array
+        len:
+          gen: int
+          min: 30000
+          max: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      heaters:
+        gen: array
+        len:
+          gen: int
+          min: 30000
+          max: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: gen_large_uniform_b
+    in:
+      houses:
+        gen: array
+        len:
+          gen: int
+          min: 29999
+          max: 29999
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      heaters:
+        gen: array
+        len:
+          gen: int
+          min: 30000
+          max: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: gen_large_skewed_a
+    in:
+      houses:
+        gen: array
+        len:
+          gen: int
+          min: 30000
+          max: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      heaters:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 1
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: gen_large_skewed_b
+    in:
+      houses:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 1
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      heaters:
+        gen: array
+        len:
+          gen: int
+          min: 30000
+          max: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: gen_large_mixed
+    in:
+      houses:
+        gen: array
+        len:
+          gen: int
+          min: 20000
+          max: 20000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      heaters:
+        gen: array
+        len:
+          gen: int
+          min: 20000
+          max: 20000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int

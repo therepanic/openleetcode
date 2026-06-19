@@ -1,0 +1,25 @@
+class Solution:
+    def findAnagrams(self, s: str, p: str):
+        n1, n2 = len(s), len(p)
+        if n1 < n2:
+            return []
+
+        a = [0] * 26
+        b = [0] * 26
+        res = []
+
+        for i in range(n2):
+            a[ord(p[i]) - 97] += 1
+            b[ord(s[i]) - 97] += 1
+
+        if a == b:
+            res.append(0)
+
+        for i in range(n2, n1):
+            b[ord(s[i]) - 97] += 1
+            b[ord(s[i - n2]) - 97] -= 1
+
+            if a == b:
+                res.append(i - n2 + 1)
+
+        return res

@@ -1,0 +1,713 @@
+entry:
+  id: 498
+  title: "diagonal-traverse"
+  params:
+    mat:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().findDiagonalOrder({mat})"
+    rust: "Solution::find_diagonal_order({mat})"
+    python3: "Solution().findDiagonalOrder({mat})"
+    python2: "Solution().findDiagonalOrder({mat})"
+    ruby: "find_diagonal_order({mat})"
+    java: "new Solution().findDiagonalOrder({mat})"
+    csharp: "new Solution().FindDiagonalOrder({mat})"
+    kotlin: "Solution().findDiagonalOrder({mat})"
+    go: "findDiagonalOrder({mat})"
+    dart: "Solution().findDiagonalOrder({mat})"
+    swift: "Solution().findDiagonalOrder({mat})"
+    typescript: "findDiagonalOrder({mat})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(mat, {result})"
+    checker: |
+      class Checker:
+          def check(self, mat, result):
+              if not mat or not mat[0]:
+                  return result == []
+              m = len(mat)
+              n = len(mat[0])
+              expected = []
+              row = 0
+              col = 0
+              for _ in range(m * n):
+                  expected.append(mat[row][col])
+                  if (row + col) % 2 == 0:
+                      if col == n - 1:
+                          row += 1
+                      elif row == 0:
+                          col += 1
+                      else:
+                          row -= 1
+                          col += 1
+                  else:
+                      if row == m - 1:
+                          col += 1
+                      elif col == 0:
+                          row += 1
+                      else:
+                          row += 1
+                          col -= 1
+              return result == expected
+
+seed: 498
+
+tests:
+  - name: "example-1"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+          - [7, 8, 9]
+    out:
+      - 1
+      - 2
+      - 4
+      - 7
+      - 5
+      - 3
+      - 6
+      - 8
+      - 9
+  - name: "example-2"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 4]
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: "single-cell"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [5]
+    out:
+      - 5
+  - name: "single-row-two"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2]
+    out:
+      - 1
+      - 2
+  - name: "single-row-many"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5, 6]
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  - name: "single-column-two"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1]
+          - [2]
+    out:
+      - 1
+      - 2
+  - name: "single-column-many"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1]
+          - [2]
+          - [3]
+          - [4]
+          - [5]
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: "two-by-three"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+    out:
+      - 1
+      - 2
+      - 4
+      - 5
+      - 3
+      - 6
+  - name: "three-by-two"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [5, 6]
+    out:
+      - 1
+      - 2
+      - 3
+      - 5
+      - 4
+      - 6
+  - name: "rectangular-2x4"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4]
+          - [5, 6, 7, 8]
+    out:
+      - 1
+      - 2
+      - 5
+      - 6
+      - 3
+      - 4
+      - 7
+      - 8
+  - name: "rectangular-4x2"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [5, 6]
+          - [7, 8]
+    out:
+      - 1
+      - 2
+      - 3
+      - 5
+      - 4
+      - 6
+      - 7
+      - 8
+  - name: "zeros-and-negatives"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, -1, -2]
+          - [-3, 4, 5]
+          - [6, -7, 8]
+    out:
+      - 0
+      - -1
+      - -3
+      - 6
+      - 4
+      - -2
+      - 5
+      - -7
+      - 8
+  - name: "ascending-3x4"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4]
+          - [5, 6, 7, 8]
+          - [9, 10, 11, 12]
+    out:
+      - 1
+      - 2
+      - 5
+      - 9
+      - 6
+      - 3
+      - 4
+      - 7
+      - 10
+      - 11
+      - 8
+      - 12
+  - name: "descending-4x3"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [12, 11, 10]
+          - [9, 8, 7]
+          - [6, 5, 4]
+          - [3, 2, 1]
+    out:
+      - 12
+      - 11
+      - 9
+      - 6
+      - 8
+      - 10
+      - 7
+      - 5
+      - 3
+      - 2
+      - 4
+      - 1
+  - name: "boundary-values"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [-100000, 100000]
+          - [99999, -99999]
+    out:
+      - -100000
+      - 100000
+      - 99999
+      - -99999
+  - name: "zigzag-3x3"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 0, 1]
+          - [0, 1, 0]
+          - [1, 0, 1]
+    out:
+      - 1
+      - 0
+      - 0
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 1
+  - name: "tall-2x5"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5]
+          - [6, 7, 8, 9, 10]
+    out:
+      - 1
+      - 2
+      - 6
+      - 7
+      - 3
+      - 4
+      - 8
+      - 9
+      - 5
+      - 10
+  - name: "wide-5x2"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [5, 6]
+          - [7, 8]
+          - [9, 10]
+    out:
+      - 1
+      - 2
+      - 3
+      - 5
+      - 4
+      - 6
+      - 7
+      - 9
+      - 8
+      - 10
+  - name: "mixed-4x4"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4]
+          - [5, 6, 7, 8]
+          - [9, 10, 11, 12]
+          - [13, 14, 15, 16]
+    out:
+      - 1
+      - 2
+      - 5
+      - 9
+      - 6
+      - 3
+      - 4
+      - 7
+      - 10
+      - 13
+      - 14
+      - 11
+      - 8
+      - 12
+      - 15
+      - 16
+  - name: "mixed-4x5"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5]
+          - [6, 7, 8, 9, 10]
+          - [11, 12, 13, 14, 15]
+          - [16, 17, 18, 19, 20]
+    out:
+      - 1
+      - 2
+      - 6
+      - 11
+      - 7
+      - 3
+      - 4
+      - 8
+      - 12
+      - 16
+      - 17
+      - 13
+      - 9
+      - 5
+      - 10
+      - 14
+      - 18
+      - 19
+      - 15
+      - 20
+  - name: "mixed-5x4"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4]
+          - [5, 6, 7, 8]
+          - [9, 10, 11, 12]
+          - [13, 14, 15, 16]
+          - [17, 18, 19, 20]
+    out:
+      - 1
+      - 2
+      - 5
+      - 9
+      - 6
+      - 3
+      - 4
+      - 7
+      - 10
+      - 13
+      - 17
+      - 14
+      - 11
+      - 8
+      - 12
+      - 15
+      - 18
+      - 19
+      - 16
+      - 20
+  - name: "small-random-1"
+    seed: 498001
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 3
+          max: 3
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 4
+            max: 4
+          of:
+            gen: "int"
+            min: -20
+            max: 20
+          elemType: "int"
+        elemType: "int"
+  - name: "small-random-2"
+    seed: 498002
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 4
+          max: 4
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 3
+            max: 3
+          of:
+            gen: "int"
+            min: -50
+            max: 50
+          elemType: "int"
+        elemType: "int"
+  - name: "medium-random-1"
+    seed: 498003
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 20
+          max: 20
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 20
+            max: 20
+          of:
+            gen: "int"
+            min: -100000
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+  - name: "medium-random-2"
+    seed: 498004
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 25
+          max: 25
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 10
+            max: 10
+          of:
+            gen: "int"
+            min: -100000
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+  - name: "large-row-1x10000"
+    seed: 498005
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 1
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 10000
+            max: 10000
+          of:
+            gen: "int"
+            min: -100000
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+  - name: "large-col-10000x1"
+    seed: 498006
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 10000
+          max: 10000
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          of:
+            gen: "int"
+            min: -100000
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+  - name: "large-square-100x100"
+    seed: 498007
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 100
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 100
+            max: 100
+          of:
+            gen: "int"
+            min: -100000
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+  - name: "generated-6x7"
+    seed: 498008
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 6
+          max: 6
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 7
+            max: 7
+          of:
+            gen: "int"
+            min: -200
+            max: 200
+          elemType: "int"
+        elemType: "int"
+  - name: "generated-7x6"
+    seed: 498009
+    in:
+      mat:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 7
+          max: 7
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 6
+            max: 6
+          of:
+            gen: "int"
+            min: -200
+            max: 200
+          elemType: "int"
+        elemType: "int"
+  - name: "three-by-five"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5]
+          - [6, 7, 8, 9, 10]
+          - [11, 12, 13, 14, 15]
+    out:
+      - 1
+      - 2
+      - 6
+      - 11
+      - 7
+      - 3
+      - 4
+      - 8
+      - 12
+      - 13
+      - 9
+      - 5
+      - 10
+      - 14
+      - 15
+  - name: "five-by-three"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+          - [7, 8, 9]
+          - [10, 11, 12]
+          - [13, 14, 15]
+    out:
+      - 1
+      - 2
+      - 4
+      - 7
+      - 5
+      - 3
+      - 6
+      - 8
+      - 10
+      - 13
+      - 11
+      - 9
+      - 12
+      - 14
+      - 15
+  - name: "corner-heavy-2x2"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [9, 8]
+          - [7, 6]
+    out:
+      - 9
+      - 8
+      - 7
+      - 6
+  - name: "corner-heavy-3x2"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 4]
+          - [2, 5]
+          - [3, 6]
+    out:
+      - 1
+      - 4
+      - 2
+      - 3
+      - 5
+      - 6
+  - name: "corner-heavy-2x3"
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 4, 7]
+          - [2, 5, 8]
+    out:
+      - 1
+      - 4
+      - 2
+      - 5
+      - 7
+      - 8

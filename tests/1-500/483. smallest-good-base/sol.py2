@@ -1,0 +1,29 @@
+class Solution(object):
+    def smallestGoodBase(self, n):
+        num = int(n)
+        max_m = num.bit_length() - 1
+        for m in xrange(max_m, 0, -1):
+            left = 2
+            right = int(num ** (1.0 / m)) + 1
+            while left <= right:
+                mid = left + (right - left) // 2
+                cmp = self._compare(mid, m, num)
+                if cmp == 0:
+                    return str(mid)
+                if cmp < 0:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+        return str(num - 1)
+
+    def _compare(self, base, m, num):
+        total = 1
+        cur = 1
+        for _ in xrange(m):
+            cur *= base
+            total += cur
+            if total > num:
+                return 1
+        if total == num:
+            return 0
+        return -1

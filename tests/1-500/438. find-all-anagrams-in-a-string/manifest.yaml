@@ -1,0 +1,357 @@
+entry:
+  id: 438
+  title: find-all-anagrams-in-a-string
+  params:
+    s:
+      type: string
+    p:
+      type: string
+  call:
+    cpp: Solution().findAnagrams({s}, {p})
+    rust: Solution::find_anagrams({s}, {p})
+    python3: Solution().findAnagrams({s}, {p})
+    python2: Solution().findAnagrams({s}, {p})
+    ruby: find_anagrams({s}, {p})
+    java: new Solution().findAnagrams({s}, {p})
+    csharp: new Solution().FindAnagrams({s}, {p})
+    kotlin: Solution().findAnagrams({s}, {p})
+    go: findAnagrams({s}, {p})
+    dart: Solution().findAnagrams({s}, {p})
+    swift: Solution().findAnagrams({s}, {p})
+    typescript: findAnagrams({s}, {p})
+
+judge:
+  type: ignore_order
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: Checker().findAnagrams(s, p, {result})
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def findAnagrams(self, s: str, p: str, result: Any) -> bool:
+              if not isinstance(result, list):
+                  return False
+              if not all(isinstance(x, int) for x in result):
+                  return False
+              n1 = len(s)
+              n2 = len(p)
+              if n1 < n2:
+                  return result == []
+              need = [0] * 26
+              for ch in p:
+                  need[ord(ch) - 97] += 1
+              expected = []
+              for i in range(n1 - n2 + 1):
+                  window = [0] * 26
+                  for ch in s[i:i + n2]:
+                      window[ord(ch) - 97] += 1
+                  if window == need:
+                      expected.append(i)
+              return sorted(result) == expected
+
+seed: 438
+
+tests:
+  - name: ex1
+    in:
+      s: cbaebabacd
+      p: abc
+    out:
+      - 0
+      - 6
+  - name: ex2
+    in:
+      s: abab
+      p: ab
+    out:
+      - 0
+      - 1
+      - 2
+  - name: single_match_start
+    in:
+      s: abcd
+      p: abc
+    out:
+      - 0
+  - name: single_match_end
+    in:
+      s: zzabc
+      p: abc
+    out:
+      - 2
+  - name: no_match_distinct
+    in:
+      s: abcdef
+      p: gh
+    out: []
+  - name: p_equals_s
+    in:
+      s: aaaa
+      p: aaaa
+    out:
+      - 0
+  - name: overlapping_many
+    in:
+      s: aabaa
+      p: aa
+    out:
+      - 0
+      - 3
+  - name: repeated_pattern
+    in:
+      s: bbbbb
+      p: bb
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+  - name: alternating_windows
+    in:
+      s: abcabcabc
+      p: bca
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  - name: empty_result_short_s
+    in:
+      s: a
+      p: aa
+    out: []
+  - name: two_letter_swap
+    in:
+      s: ba
+      p: ab
+    out:
+      - 0
+  - name: no_anagram_due_counts
+    in:
+      s: aaabbb
+      p: aab
+    out:
+      - 1
+  - name: edge_window_at_end
+    in:
+      s: qqqwq
+      p: qwq
+    out:
+      - 1
+      - 2
+  - name: all_positions_same_char
+    in:
+      s: aaaaa
+      p: a
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: one_char_no_match
+    in:
+      s: aaaaa
+      p: b
+    out: []
+  - name: mixed_duplicates_1
+    in:
+      s: cabcba
+      p: abc
+    out:
+      - 0
+      - 1
+      - 3
+  - name: mixed_duplicates_2
+    in:
+      s: ccccabcc
+      p: ccb
+    out:
+      - 5
+  - name: non_overlapping_hits
+    in:
+      s: xyzabcuvwabc
+      p: abc
+    out:
+      - 3
+      - 9
+  - name: many_prefix_noise
+    in:
+      s: zzzzzabczz
+      p: cab
+    out:
+      - 5
+  - name: many_suffix_noise
+    in:
+      s: abczzzzzzz
+      p: bca
+    out:
+      - 0
+  - name: alternating_noise
+    in:
+      s: abxaba
+      p: ab
+    out:
+      - 0
+      - 3
+      - 4
+  - name: repeated_triple
+    in:
+      s: aaabaaa
+      p: aaa
+    out:
+      - 0
+      - 4
+  - name: near_boundary_left
+    in:
+      s: xabc
+      p: cba
+    out:
+      - 1
+  - name: near_boundary_right
+    in:
+      s: cabx
+      p: abc
+    out:
+      - 0
+  - name: small_duplicate_case
+    in:
+      s: aab
+      p: aba
+    out:
+      - 0
+  - name: letter_gap
+    in:
+      s: abcdedcba
+      p: bed
+    out: []
+  - name: repeating_blocks
+    in:
+      s: abcxabcxabc
+      p: cxa
+    out:
+      - 2
+      - 6
+  - name: single_letter_long
+    in:
+      s: mmmmmmmm
+      p: m
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+  - name: single_letter_absent
+    in:
+      s: mmmmmmmm
+      p: n
+    out: []
+  - name: long_run_a_then_b
+    in:
+      s: aaaaaaaaaab
+      p: aaab
+    out:
+      - 7
+  - name: long_run_b_then_a
+    in:
+      s: baaaaaaaaaa
+      p: aaab
+    out:
+      - 0
+  - name: count_match_only_once
+    in:
+      s: abcda
+      p: aabc
+    out: []
+  - name: count_match_middle
+    in:
+      s: zzzaabczz
+      p: abca
+    out:
+      - 3
+  - name: repeated_with_gaps
+    in:
+      s: aaxaaaxaaa
+      p: aaa
+    out:
+      - 3
+      - 7
+  - name: many_false_positives
+    in:
+      s: abcacbabc
+      p: cab
+    out:
+      - 0
+      - 1
+      - 3
+      - 4
+      - 6
+  - name: boundary_large_left
+    in:
+      s: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzabc
+      p: abc
+    out:
+      - 31
+  - name: boundary_large_right
+    in:
+      s: abczzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+      p: cba
+    out:
+      - 0
+  - name: long_exact_repeat
+    in:
+      s: abcabcabcabc
+      p: abcabc
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  - name: long_window_same_counts
+    in:
+      s: aabbaabb
+      p: abba
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: alternating_two_chars
+    in:
+      s: babaabab
+      p: aab
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: no_overlap_counts
+    in:
+      s: abcdefghijklmnopqrstuvwxyz
+      p: zyx
+    out:
+      - 23
+  - name: final_case
+    in:
+      s: qwertyqwerty
+      p: tre
+    out:
+      - 2
+      - 8

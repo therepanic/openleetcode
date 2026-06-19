@@ -1,0 +1,228 @@
+entry:
+  id: 402
+  title: remove-k-digits
+  params:
+    num:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: Solution().removeKdigits({num}, {k})
+    rust: Solution::remove_kdigits({num}, {k})
+    python3: Solution().removeKdigits({num}, {k})
+    python2: Solution().removeKdigits({num}, {k})
+    ruby: remove_kdigits({num}, {k})
+    java: new Solution().RemoveKdigits({num}, {k})
+    csharp: new Solution().RemoveKdigits({num}, {k})
+    kotlin: Solution().removeKdigits({num}, {k})
+    go: removeKdigits({num}, {k})
+    dart: Solution().removeKdigits({num}, {k})
+    swift: Solution().removeKdigits({num}, {k})
+    typescript: removeKdigits({num}, {k})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().removeKdigits(num, k, {result})
+    checker: |
+      class Checker:
+          def removeKdigits(self, num, k, result):
+              if not isinstance(num, str) or not isinstance(k, int) or not isinstance(result, str):
+                  return False
+              if not num or not num.isdigit():
+                  return False
+              if k < 1 or k > len(num):
+                  return False
+              if len(num) > 1 and num[0] == '0':
+                  return False
+              stack = []
+              kk = k
+              for ch in num:
+                  while kk and stack and stack[-1] > ch:
+                      stack.pop()
+                      kk -= 1
+                  stack.append(ch)
+              expected = ''.join(stack[:len(stack) - kk]).lstrip('0') or '0'
+              if result == '':
+                  return False
+              return result == expected and (result == '0' or result[0] != '0')
+seed: 402
+tests:
+  - name: example-1
+    in:
+      num: "1432219"
+      k: 3
+    out: '"1219"'
+  - name: example-2
+    in:
+      num: "10200"
+      k: 1
+    out: '"200"'
+  - name: example-3
+    in:
+      num: "10"
+      k: 2
+    out: '"0"'
+  - name: single-digit-remove-one
+    in:
+      num: "9"
+      k: 1
+    out: '"0"'
+  - name: already-increasing-remove-three
+    in:
+      num: "123456"
+      k: 3
+    out: '"123"'
+  - name: leading-zero-collapse-to-one
+    in:
+      num: "10001"
+      k: 1
+    out: '"1"'
+  - name: leading-zero-collapse-to-zero-1
+    in:
+      num: "10001"
+      k: 2
+    out: '"0"'
+  - name: leading-zero-collapse-to-zero-2
+    in:
+      num: "10001"
+      k: 3
+    out: '"0"'
+  - name: leading-zero-collapse-to-zero-3
+    in:
+      num: "10001"
+      k: 4
+    out: '"0"'
+  - name: embedded-zeros-remove-one
+    in:
+      num: "100200300"
+      k: 1
+    out: '"200300"'
+  - name: embedded-zeros-remove-two
+    in:
+      num: "100200300"
+      k: 2
+    out: '"300"'
+  - name: embedded-zeros-remove-three
+    in:
+      num: "100200300"
+      k: 3
+    out: '"0"'
+  - name: alternating-descending
+    in:
+      num: "765028321"
+      k: 5
+    out: '"221"'
+  - name: alternating-descending-four
+    in:
+      num: "765028321"
+      k: 4
+    out: '"2321"'
+  - name: leading-zero-strip-to-zero
+    in:
+      num: "100000000000000000000"
+      k: 1
+    out: '"0"'
+  - name: long-single-nonzero-tail
+    in:
+      num: "1234500000"
+      k: 5
+    out: '"0"'
+  - name: strictly-descending-high-k
+    in:
+      num: "9876543210"
+      k: 9
+    out: '"0"'
+  - name: remove-all-digits-long
+    in:
+      num: "100000000000000000000"
+      k: 20
+    out: '"0"'
+  - name: remove-almost-all-long
+    in:
+      num: "100000000000000000000"
+      k: 19
+    out: '"0"'
+  - name: mixed-zeros-remove-one
+    in:
+      num: "100200"
+      k: 1
+    out: '"200"'
+  - name: mixed-zeros-remove-two
+    in:
+      num: "100200"
+      k: 2
+    out: '"0"'
+  - name: mixed-zeros-remove-five
+    in:
+      num: "100200"
+      k: 5
+    out: '"0"'
+  - name: alternating-ones
+    in:
+      num: "1010101"
+      k: 3
+    out: '"1"'
+  - name: alternating-nines-and-zeros
+    in:
+      num: "909090"
+      k: 2
+    out: '"90"'
+  - name: mixed-random-medium
+    in:
+      num: "1029384756"
+      k: 4
+    out: '"23456"'
+  - name: long-ascending-remove-half
+    in:
+      num: "123123123123123123123"
+      k: 10
+    out: '"11111123123"'
+  - name: grouped-digits-remove-half
+    in:
+      num: "200300400500"
+      k: 6
+    out: '"0"'
+  - name: repeated-pattern-long
+    in:
+      num: "111222333444555666777888999000"
+      k: 15
+    out: '"111222333444000"'
+  - name: massive-leading-digit-remove-many
+    in:
+      num: "400000000000000000000000000000"
+      k: 29
+    out: '"0"'
+  - name: digits-with-zero-middle
+    in:
+      num: "12345678901234567890"
+      k: 10
+    out: '"123456780"'
+  - name: descending-seven-remove-six
+    in:
+      num: "7654321"
+      k: 6
+    out: '"1"'
+  - name: descending-seven-remove-all
+    in:
+      num: "7654321"
+      k: 7
+    out: '"0"'
+  - name: tiny-leading-zero-case
+    in:
+      num: "1001"
+      k: 1
+    out: '"1"'
+  - name: two-leading-ones-remove-one
+    in:
+      num: "1100"
+      k: 1
+    out: '"100"'
+  - name: two-leading-ones-remove-two
+    in:
+      num: "1100"
+      k: 2
+    out: '"0"'

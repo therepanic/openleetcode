@@ -1,0 +1,371 @@
+entry:
+  id: 464
+  title: "can-i-win"
+  params:
+    maxChoosableInteger:
+      type: int
+    desiredTotal:
+      type: int
+  call:
+    cpp: "Solution().canIWin({maxChoosableInteger}, {desiredTotal})"
+    rust: "Solution::can_i_win({maxChoosableInteger}, {desiredTotal})"
+    python3: "Solution().canIWin({maxChoosableInteger}, {desiredTotal})"
+    python2: "Solution().canIWin({maxChoosableInteger}, {desiredTotal})"
+    ruby: "can_i_win({maxChoosableInteger}, {desiredTotal})"
+    java: "new Solution().canIWin({maxChoosableInteger}, {desiredTotal})"
+    csharp: "new Solution().CanIWin({maxChoosableInteger}, {desiredTotal})"
+    kotlin: "Solution().canIWin({maxChoosableInteger}, {desiredTotal})"
+    go: "canIWin({maxChoosableInteger}, {desiredTotal})"
+    dart: "Solution().canIWin({maxChoosableInteger}, {desiredTotal})"
+    swift: "Solution().canIWin({maxChoosableInteger}, {desiredTotal})"
+    typescript: "canIWin({maxChoosableInteger}, {desiredTotal})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().canIWin(maxChoosableInteger, desiredTotal, {result})"
+    checker: |
+      class Checker:
+          def canIWin(self, maxChoosableInteger, desiredTotal, result):
+              if not isinstance(result, bool):
+                  return False
+
+              if desiredTotal <= 0:
+                  return result is True
+
+              if maxChoosableInteger * (maxChoosableInteger + 1) // 2 < desiredTotal:
+                  return result is False
+
+              memo = {}
+
+              def can_win(mask, total):
+                  key = (mask, total)
+                  if key in memo:
+                      return memo[key]
+                  for i in range(maxChoosableInteger):
+                      bit = 1 << i
+                      if mask & bit:
+                          continue
+                      pick = i + 1
+                      if pick >= total or not can_win(mask | bit, total - pick):
+                          memo[key] = True
+                          return True
+                  memo[key] = False
+                  return False
+
+              return result is can_win(0, desiredTotal)
+
+seed: 464
+
+tests:
+  - name: "ex1_false"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 11
+    out: false
+  - name: "ex2_true_zero"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 0
+    out: true
+  - name: "ex3_true_one"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 1
+    out: true
+  - name: "n1_zero"
+    in:
+      maxChoosableInteger: 1
+      desiredTotal: 0
+    out: true
+  - name: "n1_exact"
+    in:
+      maxChoosableInteger: 1
+      desiredTotal: 1
+    out: true
+  - name: "n1_impossible"
+    in:
+      maxChoosableInteger: 1
+      desiredTotal: 2
+    out: false
+  - name: "n2_zero"
+    in:
+      maxChoosableInteger: 2
+      desiredTotal: 0
+    out: true
+  - name: "n2_one"
+    in:
+      maxChoosableInteger: 2
+      desiredTotal: 1
+    out: true
+  - name: "n2_two"
+    in:
+      maxChoosableInteger: 2
+      desiredTotal: 2
+    out: true
+  - name: "n2_three"
+    in:
+      maxChoosableInteger: 2
+      desiredTotal: 3
+    out: false
+  - name: "n2_four"
+    in:
+      maxChoosableInteger: 2
+      desiredTotal: 4
+    out: false
+  - name: "n2_five"
+    in:
+      maxChoosableInteger: 2
+      desiredTotal: 5
+    out: false
+  - name: "n3_zero"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 0
+    out: true
+  - name: "n3_one"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 1
+    out: true
+  - name: "n3_two"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 2
+    out: true
+  - name: "n3_three"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 3
+    out: true
+  - name: "n3_four"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 4
+    out: false
+  - name: "n3_five"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 5
+    out: true
+  - name: "n3_six"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 6
+    out: true
+  - name: "n3_seven"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 7
+    out: false
+  - name: "n3_eight"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 8
+    out: false
+  - name: "n3_nine"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 9
+    out: false
+  - name: "n3_ten"
+    in:
+      maxChoosableInteger: 3
+      desiredTotal: 10
+    out: false
+  - name: "n4_four"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 4
+    out: true
+  - name: "n4_five"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 5
+    out: false
+  - name: "n4_six"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 6
+    out: true
+  - name: "n4_seven"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 7
+    out: true
+  - name: "n4_eight"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 8
+    out: true
+  - name: "n4_nine"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 9
+    out: false
+  - name: "n4_ten"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 10
+    out: false
+  - name: "n4_eleven"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 11
+    out: false
+  - name: "n4_twelve"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 12
+    out: false
+  - name: "n4_thirteen"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 13
+    out: false
+  - name: "n4_fourteen"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 14
+    out: false
+  - name: "n4_fifteen"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 15
+    out: false
+  - name: "n4_sixteen"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 16
+    out: false
+  - name: "n4_seventeen"
+    in:
+      maxChoosableInteger: 4
+      desiredTotal: 17
+    out: false
+  - name: "n5_six"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 6
+    out: false
+  - name: "n5_seven"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 7
+    out: true
+  - name: "n5_eight"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 8
+    out: true
+  - name: "n5_nine"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 9
+    out: true
+  - name: "n5_ten"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 10
+    out: true
+  - name: "n5_eleven"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 11
+    out: false
+  - name: "n5_twelve"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 12
+    out: true
+  - name: "n5_thirteen"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 13
+    out: true
+  - name: "n5_fourteen"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 14
+    out: true
+  - name: "n5_fifteen"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 15
+    out: true
+  - name: "n5_sixteen"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 16
+    out: false
+  - name: "n5_seventeen"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 17
+    out: false
+  - name: "n5_eighteen"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 18
+    out: false
+  - name: "n5_nineteen"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 19
+    out: false
+  - name: "n5_twenty"
+    in:
+      maxChoosableInteger: 5
+      desiredTotal: 20
+    out: false
+  - name: "n10_eleven"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 11
+    out: false
+  - name: "n10_zero"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 0
+    out: true
+  - name: "n10_one"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 1
+    out: true
+  - name: "n10_fifty_four"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 54
+    out: false
+  - name: "n10_fifty_five"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 55
+    out: false
+  - name: "n10_fifty_six"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 56
+    out: false
+  - name: "n10_hundred"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 100
+    out: false
+  - name: "n10_hundred_one"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 101
+    out: false
+  - name: "n10_three_hundred"
+    in:
+      maxChoosableInteger: 10
+      desiredTotal: 300
+    out: false

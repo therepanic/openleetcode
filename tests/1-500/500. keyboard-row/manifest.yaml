@@ -1,0 +1,235 @@
+entry:
+  id: 500
+  title: "keyboard-row"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().findWords({words})"
+    rust: "Solution::find_words({words})"
+    python3: "Solution().findWords({words})"
+    python2: "Solution().findWords({words})"
+    ruby: "find_words({words})"
+    java: "new Solution().findWords({words})"
+    csharp: "new Solution().FindWords({words})"
+    kotlin: "Solution().findWords({words})"
+    go: "findWords({words})"
+    dart: "Solution().findWords({words})"
+    swift: "Solution().findWords({words})"
+    typescript: "findWords({words})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().findWords(words, {result})"
+    checker: |
+      class Checker:
+          def findWords(self, words, result):
+              if not isinstance(result, list):
+                  return False
+
+              rows = {
+                  **{c: 1 for c in "qwertyuiop"},
+                  **{c: 2 for c in "asdfghjkl"},
+                  **{c: 3 for c in "zxcvbnm"},
+              }
+
+              expected = []
+              for w in words:
+                  if not isinstance(w, str) or not w:
+                      return False
+                  lw = w.lower()
+                  row = rows.get(lw[0])
+                  if row is None or any(rows.get(ch) != row for ch in lw):
+                      continue
+                  expected.append(w)
+
+              return result == expected
+seed: 500
+tests:
+  - name: "ex1_mixed_rows"
+    in:
+      words: ["Hello", "Alaska", "Dad", "Peace"]
+    out: ["Alaska", "Dad"]
+  - name: "ex2_single_none"
+    in:
+      words: ["omk"]
+    out: []
+  - name: "ex3_all_valid"
+    in:
+      words: ["adsdf", "sfd"]
+    out: ["adsdf", "sfd"]
+  - name: "single_top_row"
+    in:
+      words: ["Q", "w", "E", "R", "t", "Y", "u", "I", "o", "P"]
+    out: ["Q", "w", "E", "R", "t", "Y", "u", "I", "o", "P"]
+  - name: "single_middle_row"
+    in:
+      words: ["a", "S", "d", "F", "g", "H", "j", "K", "l"]
+    out: ["a", "S", "d", "F", "g", "H", "j", "K", "l"]
+  - name: "single_bottom_row"
+    in:
+      words: ["z", "X", "c", "V", "b", "N", "m"]
+    out: ["z", "X", "c", "V", "b", "N", "m"]
+  - name: "one_letter_mixed"
+    in:
+      words: ["a", "B", "z", "M"]
+    out: ["a", "B", "z", "M"]
+  - name: "one_valid_one_invalid"
+    in:
+      words: ["Dad", "Peace"]
+    out: ["Dad"]
+  - name: "common_examples_reordered"
+    in:
+      words: ["Peace", "Hello", "Dad", "Alaska"]
+    out: ["Dad", "Alaska"]
+  - name: "uppercase_only_valid"
+    in:
+      words: ["TYPE", "ROW", "QWERTY", "ASDF", "ZXCV"]
+    out: ["TYPE", "ROW", "QWERTY", "ASDF", "ZXCV"]
+  - name: "uppercase_only_mixed"
+    in:
+      words: ["MOM", "POP", "FAD", "BAG"]
+    out: ["POP", "FAD"]
+  - name: "middle_row_with_invalids"
+    in:
+      words: ["asdf", "sad", "fa", "gk", "hj", "lol", "lkl"]
+    out: ["asdf", "sad", "fa", "gk", "hj", "lkl"]
+  - name: "top_row_with_invalids"
+    in:
+      words: ["qwerty", "uiop", "type", "row", "pop", "quiet", "tom"]
+    out: ["qwerty", "uiop", "type", "row", "pop", "quiet"]
+  - name: "bottom_row_with_invalids"
+    in:
+      words: ["zxcv", "bnm", "zzz", "mama", "vbn", "cvc", "zxq"]
+    out: ["zxcv", "bnm", "zzz", "vbn", "cvc"]
+  - name: "alternating_case_valid"
+    in:
+      words: ["AaAa", "SsSs", "ZzZz", "QqQq", "MmMm"]
+    out: ["AaAa", "SsSs", "ZzZz", "QqQq", "MmMm"]
+  - name: "alternating_case_invalid"
+    in:
+      words: ["AlAsKa", "HeLLo", "PeAcE", "DaD"]
+    out: ["AlAsKa", "DaD"]
+  - name: "two_letter_valids"
+    in:
+      words: ["ad", "gf", "zx", "qp", "lk", "mn"]
+    out: ["ad", "gf", "zx", "qp", "lk", "mn"]
+  - name: "two_letter_invalids"
+    in:
+      words: ["az", "qg", "jm", "dw", "xn"]
+    out: ["xn"]
+  - name: "length_three_valids"
+    in:
+      words: ["dad", "mom", "pop", "sas", "wow", "zzz"]
+    out: ["dad", "pop", "sas", "wow", "zzz"]
+  - name: "length_three_invalids"
+    in:
+      words: ["cat", "dog", "pig", "hen", "owl", "car"]
+    out: []
+  - name: "length_four_valids"
+    in:
+      words: ["tree", "book", "moon", "back", "fool"]
+    out: ["tree"]
+  - name: "length_four_invalids"
+    in:
+      words: ["tree", "book", "moon", "back", "fool", "face"]
+    out: ["tree"]
+  - name: "length_five_valids"
+    in:
+      words: ["qwert", "asdfg", "zxcvb", "poiuy", "lkjhg"]
+    out: ["qwert", "asdfg", "zxcvb", "poiuy", "lkjhg"]
+  - name: "length_five_invalids"
+    in:
+      words: ["qwert", "asdfg", "zxcvb", "poiuy", "lkjhg", "hello"]
+    out: ["qwert", "asdfg", "zxcvb", "poiuy", "lkjhg"]
+  - name: "length_six_valids"
+    in:
+      words: ["qwerty", "asdfgh", "zxcvbn", "uiopui", "jkljkl"]
+    out: ["qwerty", "asdfgh", "zxcvbn", "uiopui", "jkljkl"]
+  - name: "length_six_invalids"
+    in:
+      words: ["qwerty", "asdfgh", "zxcvbn", "uiopui", "jkljkl", "peaces"]
+    out: ["qwerty", "asdfgh", "zxcvbn", "uiopui", "jkljkl"]
+  - name: "length_seven_valids"
+    in:
+      words: ["qwertyu", "asdfghj", "zxcvbnm"]
+    out: ["qwertyu", "asdfghj", "zxcvbnm"]
+  - name: "length_seven_invalids"
+    in:
+      words: ["qwertyu", "asdfghj", "zxcvbnm", "alaska", "hello"]
+    out: ["qwertyu", "asdfghj", "zxcvbnm", "alaska"]
+  - name: "length_eight_valids"
+    in:
+      words: ["QWERTYUI", "ASDFGHJK", "ZXCVBNMZ"]
+    out: ["QWERTYUI", "ASDFGHJK", "ZXCVBNMZ"]
+  - name: "length_eight_invalids"
+    in:
+      words: ["QWERTYUI", "ASDFGHJK", "ZXCVBNMZ", "MiXeDRow"]
+    out: ["QWERTYUI", "ASDFGHJK", "ZXCVBNMZ"]
+  - name: "length_nine_valids"
+    in:
+      words: ["qwertyuio", "asdfghjkl", "zxcvbnmzx"]
+    out: ["qwertyuio", "asdfghjkl", "zxcvbnmzx"]
+  - name: "length_nine_invalids"
+    in:
+      words: ["qwertyuio", "asdfghjkl", "zxcvbnmzx", "hellohell"]
+    out: ["qwertyuio", "asdfghjkl", "zxcvbnmzx"]
+  - name: "length_ten_valids"
+    in:
+      words: ["qwertyuiop", "asdfghjkl", "zxcvbnmzxq"]
+    out: ["qwertyuiop", "asdfghjkl"]
+  - name: "length_ten_invalids"
+    in:
+      words: ["qwertyuiop", "asdfghjkl", "zxcvbnmzxq", "peacepeace"]
+    out: ["qwertyuiop", "asdfghjkl"]
+  - name: "long_top_row"
+    in:
+      words:
+        [
+          "qwertyuiopqwertyuiop",
+          "QWERTYUIOPQWERTYUIOP",
+          "qweqweqweqweqweqweqwe",
+        ]
+    out:
+      ["qwertyuiopqwertyuiop", "QWERTYUIOPQWERTYUIOP", "qweqweqweqweqweqweqwe"]
+  - name: "long_middle_row"
+    in:
+      words: ["asdfghjklasdfghjkl", "ASDFGHJKLASDFGHJKL", "sadasdasdasdasdasd"]
+    out: ["asdfghjklasdfghjkl", "ASDFGHJKLASDFGHJKL", "sadasdasdasdasdasd"]
+  - name: "long_bottom_row"
+    in:
+      words: ["zxcvbnmzxcvbnm", "ZXCVBNMZXCVBNM", "mnbvcmnbvcmnbvc"]
+    out: ["zxcvbnmzxcvbnm", "ZXCVBNMZXCVBNM", "mnbvcmnbvcmnbvc"]
+  - name: "mixed_many_invalids"
+    in:
+      words:
+        [
+          "Hello",
+          "World",
+          "Alaska",
+          "Dad",
+          "Peace",
+          "Quiz",
+          "Mom",
+          "Type",
+          "Row",
+        ]
+    out: ["Alaska", "Dad", "Type", "Row"]
+  - name: "mixed_many_valids"
+    in:
+      words: ["MOM", "Dad", "sSs", "qwerty", "ASDF", "zxcvbn", "UiOp", "JKL"]
+    out: ["Dad", "sSs", "qwerty", "ASDF", "zxcvbn", "UiOp", "JKL"]
+  - name: "edge_letters"
+    in:
+      words: ["q", "a", "z", "p", "l", "m"]
+    out: ["q", "a", "z", "p", "l", "m"]
+  - name: "edge_mixed_boundary"
+    in:
+      words: ["qp", "al", "zm", "qa", "az", "pm", "lz"]
+    out: ["qp", "al", "zm"]

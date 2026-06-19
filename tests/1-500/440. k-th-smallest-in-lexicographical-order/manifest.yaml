@@ -1,0 +1,286 @@
+entry:
+  id: 440
+  title: "k-th-smallest-in-lexicographical-order"
+  params:
+    n:
+      type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().findKthNumber({n}, {k})"
+    rust: "Solution::find_kth_number({n}, {k})"
+    python3: "Solution().findKthNumber({n}, {k})"
+    python2: "Solution().findKthNumber({n}, {k})"
+    ruby: "find_kth_number({n}, {k})"
+    java: "new Solution().findKthNumber({n}, {k})"
+    csharp: "new Solution().FindKthNumber({n}, {k})"
+    kotlin: "Solution().findKthNumber({n}, {k})"
+    go: "findKthNumber({n}, {k})"
+    dart: "Solution().findKthNumber({n}, {k})"
+    swift: "Solution().findKthNumber({n}, {k})"
+    typescript: "findKthNumber({n}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().findKthNumber(n, k, {result})"
+    checker: |
+      class Checker:
+          def findKthNumber(self, n, k, result):
+              if not isinstance(result, int):
+                  return False
+              if not (1 <= k <= n <= 1000000000):
+                  return False
+              curr = 1
+              kk = k - 1
+
+              def count(prefix, limit):
+                  cur = prefix
+                  nxt = prefix + 1
+                  total = 0
+                  while cur <= limit:
+                      total += min(limit + 1, nxt) - cur
+                      cur *= 10
+                      nxt *= 10
+                  return total
+
+              while kk > 0:
+                  c = count(curr, n)
+                  if c <= kk:
+                      curr += 1
+                      kk -= c
+                  else:
+                      curr *= 10
+                      kk -= 1
+              return curr == result
+
+seed: 440
+
+tests:
+  - name: "ex1"
+    in:
+      n: 13
+      k: 2
+    out: 10
+
+  - name: "ex2"
+    in:
+      n: 1
+      k: 1
+    out: 1
+
+  - name: "min_n1"
+    in:
+      n: 1
+      k: 1
+    out: 1
+
+  - name: "two_first"
+    in:
+      n: 2
+      k: 1
+    out: 1
+
+  - name: "two_second"
+    in:
+      n: 2
+      k: 2
+    out: 2
+
+  - name: "single_digit_max"
+    in:
+      n: 9
+      k: 9
+    out: 9
+
+  - name: "ten_first"
+    in:
+      n: 10
+      k: 1
+    out: 1
+
+  - name: "ten_second"
+    in:
+      n: 10
+      k: 2
+    out: 10
+
+  - name: "ten_last"
+    in:
+      n: 10
+      k: 10
+    out: 9
+
+  - name: "eleven_first"
+    in:
+      n: 11
+      k: 1
+    out: 1
+
+  - name: "eleven_second"
+    in:
+      n: 11
+      k: 2
+    out: 10
+
+  - name: "thirteen_six"
+    in:
+      n: 13
+      k: 6
+    out: 2
+
+  - name: "thirteen_seven"
+    in:
+      n: 13
+      k: 7
+    out: 3
+
+  - name: "thirteen_ten"
+    in:
+      n: 13
+      k: 10
+    out: 6
+
+  - name: "thirteen_last"
+    in:
+      n: 13
+      k: 13
+    out: 9
+
+  - name: "nineteen_middle"
+    in:
+      n: 19
+      k: 10
+    out: 18
+
+  - name: "twenty_first"
+    in:
+      n: 20
+      k: 1
+    out: 1
+
+  - name: "twenty_second"
+    in:
+      n: 20
+      k: 2
+    out: 10
+
+  - name: "twenty_third"
+    in:
+      n: 20
+      k: 3
+    out: 11
+
+  - name: "twenty_eleventh"
+    in:
+      n: 20
+      k: 11
+    out: 19
+
+  - name: "twentyone_twelve"
+    in:
+      n: 21
+      k: 12
+    out: 2
+
+  - name: "hundred_first"
+    in:
+      n: 100
+      k: 1
+    out: 1
+
+  - name: "hundred_second"
+    in:
+      n: 100
+      k: 2
+    out: 10
+
+  - name: "hundred_tenth"
+    in:
+      n: 100
+      k: 10
+    out: 17
+
+  - name: "hundred_eleventh"
+    in:
+      n: 100
+      k: 11
+    out: 18
+
+  - name: "hundred_twentieth"
+    in:
+      n: 100
+      k: 20
+    out: 26
+
+  - name: "hundred_fiftyfifth"
+    in:
+      n: 100
+      k: 55
+    out: 58
+
+  - name: "hundredone_tenth"
+    in:
+      n: 101
+      k: 10
+    out: 16
+
+  - name: "hundrednine_last"
+    in:
+      n: 109
+      k: 100
+    out: 90
+
+  - name: "hundredeleven_last"
+    in:
+      n: 111
+      k: 111
+    out: 99
+
+  - name: "fivehundred_mid"
+    in:
+      n: 500
+      k: 123
+    out: 209
+
+  - name: "ninehundredninetynine_last"
+    in:
+      n: 999
+      k: 999
+    out: 999
+
+  - name: "thousand_first"
+    in:
+      n: 1000
+      k: 1
+    out: 1
+
+  - name: "thousand_hundred"
+    in:
+      n: 1000
+      k: 100
+    out: 188
+
+  - name: "thousand_999"
+    in:
+      n: 1000
+      k: 999
+    out: 998
+
+  - name: "large_first"
+    in:
+      n: 1000000000
+      k: 1
+    out: 1
+
+  - name: "large_near_end"
+    in:
+      n: 1000000000
+      k: 999999999
+    out: 999999998

@@ -1,0 +1,413 @@
+entry:
+  id: 403
+  title: frog-jump
+  params:
+    stones:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().canCross({stones})
+    rust: Solution::can_cross({stones})
+    python3: Solution().canCross({stones})
+    python2: Solution().canCross({stones})
+    ruby: can_cross({stones})
+    java: new Solution().canCross({stones})
+    csharp: new Solution().CanCross({stones})
+    kotlin: Solution().canCross({stones})
+    go: canCross({stones})
+    dart: Solution().canCross({stones})
+    swift: Solution().canCross({stones})
+    typescript: canCross({stones})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().canCross(stones, {result})
+    checker: |
+      class Checker:
+          def canCross(self, stones, result):
+              if not isinstance(stones, list) or len(stones) < 2:
+                  return False
+              if not isinstance(result, bool):
+                  return False
+              if stones[0] != 0:
+                  return False
+              if any(not isinstance(x, int) for x in stones):
+                  return False
+              if any(stones[i] >= stones[i + 1] for i in range(len(stones) - 1)):
+                  return False
+              dp = {stone: set() for stone in stones}
+              dp[0] = {0}
+              for stone in stones:
+                  for jump in dp[stone]:
+                      for jump_distance in (jump - 1, jump, jump + 1):
+                          if jump_distance > 0 and stone + jump_distance in dp:
+                              dp[stone + jump_distance].add(jump_distance)
+              expected = len(dp[stones[-1]]) > 0
+              return result is expected
+seed: 403
+tests:
+  - name: example-1
+    in:
+      stones: [0, 1, 3, 5, 6, 8, 12, 17]
+    out: true
+  - name: example-2
+    in:
+      stones: [0, 1, 2, 3, 4, 8, 9, 11]
+    out: false
+  - name: min-length-2-valid
+    in:
+      stones: [0, 1]
+    out: true
+  - name: min-length-2-invalid
+    in:
+      stones: [0, 2]
+    out: false
+  - name: short-valid-1
+    in:
+      stones: [0, 1, 2]
+    out: true
+  - name: short-invalid-1
+    in:
+      stones: [0, 1, 3]
+    out: true
+  - name: short-valid-2
+    in:
+      stones: [0, 1, 3]
+    out: true
+  - name: short-invalid-2
+    in:
+      stones: [0, 1, 4]
+    out: false
+  - name: stair-1
+    in:
+      stones: [0, 1, 2, 4]
+    out: true
+  - name: stair-2
+    in:
+      stones: [0, 1, 3, 6]
+    out: true
+  - name: stair-3
+    in:
+      stones: [0, 1, 3, 6, 7]
+    out: false
+  - name: stair-4
+    in:
+      stones: [0, 1, 3, 6, 8]
+    out: true
+  - name: classic-triangle-1
+    in:
+      stones: [0, 1, 3, 6, 10]
+    out: true
+  - name: classic-triangle-2
+    in:
+      stones: [0, 1, 3, 6, 10, 15]
+    out: true
+  - name: classic-triangle-3
+    in:
+      stones: [0, 1, 3, 6, 10, 15, 21]
+    out: true
+  - name: classic-triangle-gap
+    in:
+      stones: [0, 1, 3, 6, 10, 15, 21, 29]
+    out: false
+  - name: early-failure-gap
+    in:
+      stones: [0, 1, 2, 3, 4, 9]
+    out: false
+  - name: early-failure-gap-2
+    in:
+      stones: [0, 1, 2, 3, 5, 9]
+    out: false
+  - name: medium-valid-branching
+    in:
+      stones: [0, 1, 2, 3, 5, 6, 8, 12, 17]
+    out: true
+  - name: medium-invalid-branching
+    in:
+      stones: [0, 1, 2, 3, 5, 6, 8, 13]
+    out: false
+  - name: duplicate-gap-pattern-1
+    in:
+      stones: [0, 1, 2, 4, 7, 11, 16]
+    out: true
+  - name: duplicate-gap-pattern-2
+    in:
+      stones: [0, 1, 2, 4, 7, 11, 17]
+    out: false
+  - name: dense-prefix-sparse-tail
+    in:
+      stones: [0, 1, 2, 3, 4, 5, 6, 7, 15]
+    out: false
+  - name: dense-prefix-valid-tail
+    in:
+      stones: [0, 1, 2, 3, 4, 5, 6, 7, 12]
+    out: false
+  - name: big-gap-near-end
+    in:
+      stones:
+        [
+          0,
+          1,
+          3,
+          4,
+          5,
+          7,
+          9,
+          12,
+          16,
+          21,
+          27,
+          34,
+          42,
+          51,
+          61,
+          72,
+          84,
+          97,
+          111,
+          126,
+          142,
+          159,
+          177,
+          196,
+          216,
+          237,
+          259,
+          282,
+          306,
+          331,
+        ]
+    out: true
+  - name: big-gap-near-end-fail
+    in:
+      stones:
+        [
+          0,
+          1,
+          3,
+          4,
+          5,
+          7,
+          9,
+          12,
+          16,
+          21,
+          27,
+          34,
+          42,
+          51,
+          61,
+          72,
+          84,
+          97,
+          111,
+          126,
+          142,
+          159,
+          177,
+          196,
+          216,
+          237,
+          259,
+          282,
+          306,
+          350,
+        ]
+    out: false
+  - name: wide-spread-valid-small
+    in:
+      stones: [0, 1, 3, 4, 6, 8, 11, 15, 20, 26]
+    out: true
+  - name: wide-spread-invalid-small
+    in:
+      stones: [0, 1, 3, 4, 6, 8, 11, 15, 20, 27]
+    out: false
+  - name: late-stretch-valid
+    in:
+      stones: [0, 1, 2, 4, 7, 11, 16, 22, 29, 37]
+    out: true
+  - name: late-stretch-invalid
+    in:
+      stones: [0, 1, 2, 4, 7, 11, 16, 22, 29, 38]
+    out: false
+  - name: large-valid-1
+    in:
+      stones:
+        [
+          0,
+          1,
+          3,
+          6,
+          10,
+          15,
+          21,
+          28,
+          36,
+          45,
+          55,
+          66,
+          78,
+          91,
+          105,
+          120,
+          136,
+          153,
+          171,
+          190,
+        ]
+    out: true
+  - name: large-invalid-1
+    in:
+      stones:
+        [
+          0,
+          1,
+          3,
+          6,
+          10,
+          15,
+          21,
+          28,
+          36,
+          45,
+          55,
+          66,
+          78,
+          91,
+          105,
+          120,
+          136,
+          153,
+          171,
+          191,
+        ]
+    out: false
+  - name: large-valid-2
+    in:
+      stones:
+        [
+          0,
+          1,
+          2,
+          4,
+          7,
+          11,
+          16,
+          22,
+          29,
+          37,
+          46,
+          56,
+          67,
+          79,
+          92,
+          106,
+          121,
+          137,
+          154,
+          172,
+          191,
+        ]
+    out: true
+  - name: large-invalid-2
+    in:
+      stones:
+        [
+          0,
+          1,
+          2,
+          4,
+          7,
+          11,
+          16,
+          22,
+          29,
+          37,
+          46,
+          56,
+          67,
+          79,
+          92,
+          106,
+          121,
+          137,
+          154,
+          172,
+          192,
+        ]
+    out: false
+  - name: sparse-fail-1
+    in:
+      stones: [0, 1, 3, 5, 9, 14, 20]
+    out: false
+  - name: sparse-fail-2
+    in:
+      stones: [0, 1, 3, 5, 9, 15, 22]
+    out: false
+  - name: dense-valid-1
+    in:
+      stones: [0, 1, 2, 3, 4, 6, 9, 13, 18]
+    out: true
+  - name: dense-invalid-1
+    in:
+      stones: [0, 1, 2, 3, 4, 6, 9, 13, 19]
+    out: false
+  - name: final-gap-valid
+    in:
+      stones:
+        [
+          0,
+          1,
+          3,
+          6,
+          7,
+          9,
+          12,
+          16,
+          21,
+          27,
+          34,
+          42,
+          51,
+          61,
+          72,
+          84,
+          97,
+          111,
+          126,
+          142,
+          159,
+        ]
+    out: true
+  - name: final-gap-invalid
+    in:
+      stones:
+        [
+          0,
+          1,
+          3,
+          6,
+          7,
+          9,
+          12,
+          16,
+          21,
+          27,
+          34,
+          42,
+          51,
+          61,
+          72,
+          84,
+          97,
+          111,
+          126,
+          142,
+          160,
+        ]
+    out: false

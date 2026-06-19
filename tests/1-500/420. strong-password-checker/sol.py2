@@ -1,0 +1,54 @@
+class Solution:
+    def strongPasswordChecker(self, s):
+        missing_lower = 1
+        missing_upper = 1
+        missing_digit = 1
+
+        for ch in s:
+            if 'a' <= ch <= 'z':
+                missing_lower = 0
+            elif 'A' <= ch <= 'Z':
+                missing_upper = 0
+            elif '0' <= ch <= '9':
+                missing_digit = 0
+
+        missing_types = missing_lower + missing_upper + missing_digit
+        n = len(s)
+
+        repeats = []
+        i = 0
+        while i < n:
+            j = i
+            while j < n and s[j] == s[i]:
+                j += 1
+            repeats.append(j - i)
+            i = j
+
+        if n < 6:
+            return max(missing_types, 6 - n)
+
+        replace = 0
+        mods = [0, 0, 0]
+        for length in repeats:
+            if length >= 3:
+                replace += length // 3
+                mods[length % 3] += 1
+
+        if n <= 20:
+            return max(missing_types, replace)
+
+        delete = n - 20
+        remaining_delete = delete
+
+        use = min(mods[0], remaining_delete)
+        replace -= use
+        remaining_delete -= use
+
+        use = min(mods[1] * 2, remaining_delete)
+        replace -= use // 2
+        remaining_delete -= use
+
+        use = min(replace * 3, remaining_delete)
+        replace -= use // 3
+
+        return delete + max(missing_types, replace)

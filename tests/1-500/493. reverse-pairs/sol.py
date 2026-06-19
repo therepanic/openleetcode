@@ -1,0 +1,37 @@
+class Solution:
+    def reversePairs(self, nums):
+        def sort_count(arr):
+            n = len(arr)
+            if n <= 1:
+                return arr, 0
+
+            mid = n // 2
+            left, left_count = sort_count(arr[:mid])
+            right, right_count = sort_count(arr[mid:])
+
+            count = left_count + right_count
+
+            j = 0
+            for x in left:
+                while j < len(right) and x > 2 * right[j]:
+                    j += 1
+                count += j
+
+            merged = []
+            i = j = 0
+            while i < len(left) and j < len(right):
+                if left[i] <= right[j]:
+                    merged.append(left[i])
+                    i += 1
+                else:
+                    merged.append(right[j])
+                    j += 1
+
+            if i < len(left):
+                merged.extend(left[i:])
+            if j < len(right):
+                merged.extend(right[j:])
+
+            return merged, count
+
+        return sort_count(nums)[1]

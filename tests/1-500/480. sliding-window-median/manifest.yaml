@@ -1,0 +1,485 @@
+entry:
+  id: 480
+  title: "sliding-window-median"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().medianSlidingWindow({nums}, {k})"
+    rust: "Solution::median_sliding_window({nums}, {k})"
+    python3: "Solution().medianSlidingWindow({nums}, {k})"
+    python2: "Solution().medianSlidingWindow({nums}, {k})"
+    ruby: "median_sliding_window({nums}, {k})"
+    java: "new Solution().medianSlidingWindow({nums}, {k})"
+    csharp: "new Solution().MedianSlidingWindow({nums}, {k})"
+    kotlin: "Solution().medianSlidingWindow({nums}, {k})"
+    go: "medianSlidingWindow({nums}, {k})"
+    dart: "Solution().medianSlidingWindow({nums}, {k})"
+    swift: "Solution().medianSlidingWindow({nums}, {k})"
+    typescript: "medianSlidingWindow({nums}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 4000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().check(nums, k, {result})"
+    checker: |
+      import heapq
+      from typing import Any, List
+
+      class DualHeap:
+          def __init__(self, k: int):
+              self.small = []
+              self.large = []
+              self.delayed = {}
+              self.k = k
+              self.small_size = 0
+              self.large_size = 0
+
+          def prune(self, heap):
+              while heap:
+                  num = -heap[0] if heap is self.small else heap[0]
+                  if self.delayed.get(num, 0) == 0:
+                      break
+                  self.delayed[num] -= 1
+                  if self.delayed[num] == 0:
+                      del self.delayed[num]
+                  heapq.heappop(heap)
+
+          def make_balance(self):
+              if self.small_size > self.large_size + 1:
+                  heapq.heappush(self.large, -heapq.heappop(self.small))
+                  self.small_size -= 1
+                  self.large_size += 1
+                  self.prune(self.small)
+              elif self.small_size < self.large_size:
+                  heapq.heappush(self.small, -heapq.heappop(self.large))
+                  self.small_size += 1
+                  self.large_size -= 1
+                  self.prune(self.large)
+
+          def insert(self, num: int):
+              if not self.small or num <= -self.small[0]:
+                  heapq.heappush(self.small, -num)
+                  self.small_size += 1
+              else:
+                  heapq.heappush(self.large, num)
+                  self.large_size += 1
+              self.make_balance()
+
+          def erase(self, num: int):
+              self.delayed[num] = self.delayed.get(num, 0) + 1
+              if num <= -self.small[0]:
+                  self.small_size -= 1
+                  if num == -self.small[0]:
+                      self.prune(self.small)
+              else:
+                  self.large_size -= 1
+                  if self.large and num == self.large[0]:
+                      self.prune(self.large)
+              self.make_balance()
+
+          def median(self) -> float:
+              if self.k % 2 == 1:
+                  return float(-self.small[0])
+              return (-self.small[0] + self.large[0]) / 2.0
+
+      class Checker:
+          def check(self, nums: List[int], k: int, result: Any) -> bool:
+              if not isinstance(result, list):
+                  return False
+              expected_len = len(nums) - k + 1
+              if expected_len < 0 or len(result) != expected_len:
+                  return False
+              if expected_len == 0:
+                  return result == []
+              for value in result:
+                  if not isinstance(value, (int, float)):
+                      return False
+
+              dh = DualHeap(k)
+              for i in range(k):
+                  dh.insert(nums[i])
+
+              if abs(float(result[0]) - dh.median()) > 1e-5:
+                  return False
+
+              idx = 1
+              for i in range(k, len(nums)):
+                  dh.insert(nums[i])
+                  dh.erase(nums[i - k])
+                  if abs(float(result[idx]) - dh.median()) > 1e-5:
+                      return False
+                  idx += 1
+              return True
+seed: 480
+tests:
+  - name: "example_1"
+    in:
+      nums: [1, 3, -1, -3, 5, 3, 6, 7]
+      k: 3
+    out:
+      - 1.0
+      - -1.0
+      - -1.0
+      - 3.0
+      - 5.0
+      - 6.0
+  - name: "example_2"
+    in:
+      nums: [1, 2, 3, 4, 2, 3, 1, 4, 2]
+      k: 3
+    out:
+      - 2.0
+      - 3.0
+      - 3.0
+      - 3.0
+      - 2.0
+      - 3.0
+      - 2.0
+  - name: "single_element"
+    in:
+      nums: [5]
+      k: 1
+    out:
+      - 5.0
+  - name: "two_elements_even"
+    in:
+      nums: [1, 4]
+      k: 2
+    out:
+      - 2.5
+  - name: "all_equal"
+    in:
+      nums: [7, 7, 7, 7, 7]
+      k: 4
+    out:
+      - 7.0
+      - 7.0
+  - name: "negatives_and_duplicates"
+    in:
+      nums: [-5, -1, -5, -1, -5]
+      k: 3
+    out:
+      - -5.0
+      - -1.0
+      - -5.0
+  - name: "k_equals_n_odd"
+    in:
+      nums: [10, 0, -10, 20, 30]
+      k: 5
+    out:
+      - 10.0
+  - name: "k_one"
+    in:
+      nums: [9, -2, 0, 4, 8]
+      k: 1
+    out:
+      - 9.0
+      - -2.0
+      - 0.0
+      - 4.0
+      - 8.0
+  - name: "gen_small_01"
+    seed: 1001
+    in:
+      nums:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 2
+  - name: "gen_small_02"
+    seed: 1002
+    in:
+      nums:
+        gen: "array"
+        len: 3
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 2
+  - name: "gen_small_03"
+    seed: 1003
+    in:
+      nums:
+        gen: "array"
+        len: 4
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 3
+  - name: "gen_small_04"
+    seed: 1004
+    in:
+      nums:
+        gen: "array"
+        len: 5
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 4
+  - name: "gen_small_05"
+    seed: 1005
+    in:
+      nums:
+        gen: "array"
+        len: 6
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 5
+  - name: "gen_small_06"
+    seed: 1006
+    in:
+      nums:
+        gen: "array"
+        len: 7
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 3
+  - name: "gen_small_07"
+    seed: 1007
+    in:
+      nums:
+        gen: "array"
+        len: 8
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 6
+  - name: "gen_small_08"
+    seed: 1008
+    in:
+      nums:
+        gen: "array"
+        len: 9
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 4
+  - name: "gen_small_09"
+    seed: 1009
+    in:
+      nums:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 5
+  - name: "gen_small_10"
+    seed: 1010
+    in:
+      nums:
+        gen: "array"
+        len: 12
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 7
+  - name: "gen_small_11"
+    seed: 1011
+    in:
+      nums:
+        gen: "array"
+        len: 13
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 6
+  - name: "gen_small_12"
+    seed: 1012
+    in:
+      nums:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 8
+  - name: "gen_small_13"
+    seed: 1013
+    in:
+      nums:
+        gen: "array"
+        len: 15
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 7
+  - name: "gen_small_14"
+    seed: 1014
+    in:
+      nums:
+        gen: "array"
+        len: 16
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 8
+  - name: "gen_small_15"
+    seed: 1015
+    in:
+      nums:
+        gen: "array"
+        len: 17
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 9
+  - name: "gen_small_16"
+    seed: 1016
+    in:
+      nums:
+        gen: "array"
+        len: 18
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 9
+  - name: "gen_small_17"
+    seed: 1017
+    in:
+      nums:
+        gen: "array"
+        len: 19
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 10
+  - name: "gen_small_18"
+    seed: 1018
+    in:
+      nums:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 11
+  - name: "gen_medium_01"
+    seed: 2001
+    in:
+      nums:
+        gen: "array"
+        len: 64
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 32
+  - name: "gen_medium_02"
+    seed: 2002
+    in:
+      nums:
+        gen: "array"
+        len: 96
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 17
+  - name: "gen_medium_03"
+    seed: 2003
+    in:
+      nums:
+        gen: "array"
+        len: 128
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 64
+  - name: "gen_medium_04"
+    seed: 2004
+    in:
+      nums:
+        gen: "array"
+        len: 192
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 95
+  - name: "gen_medium_05"
+    seed: 2005
+    in:
+      nums:
+        gen: "array"
+        len: 256
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 127
+  - name: "gen_large_01"
+    seed: 9001
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 50000
+  - name: "gen_large_02"
+    seed: 9002
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 99999
+  - name: "gen_small_19"
+    seed: 1019
+    in:
+      nums:
+        gen: "array"
+        len: 21
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 11
+  - name: "gen_small_20"
+    seed: 1020
+    in:
+      nums:
+        gen: "array"
+        len: 22
+        of:
+          gen: "int"
+          min: -2147483648
+          max: 2147483647
+      k: 12

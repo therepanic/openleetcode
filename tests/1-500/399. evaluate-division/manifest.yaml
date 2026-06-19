@@ -1,0 +1,486 @@
+entry:
+  id: 399
+  title: evaluate-division
+  params:
+    equations:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+    values:
+      type: array
+      items:
+        type: float
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+  call:
+    cpp: "Solution().calcEquation({equations}, {values}, {queries})"
+    rust: "Solution::calc_equation({equations}, {values}, {queries})"
+    python3: "Solution().calcEquation({equations}, {values}, {queries})"
+    python2: "Solution().calcEquation({equations}, {values}, {queries})"
+    ruby: "calc_equation({equations}, {values}, {queries})"
+    java: "new Solution().calcEquation({equations}, {values}, {queries})"
+    csharp: "new Solution().CalcEquation({equations}, {values}, {queries})"
+    kotlin: "Solution().calcEquation({equations}, {values}, {queries})"
+    go: "calcEquation({equations}, {values}, {queries})"
+    dart: "Solution().calcEquation({equations}, {values}, {queries})"
+    swift: "Solution().calcEquation({equations}, {values}, {queries})"
+    typescript: "calcEquation({equations}, {values}, {queries})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().calcEquation(equations, values, queries, {result})"
+    checker: |
+      class Checker:
+          def calcEquation(self, equations, values, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              g = {}
+              for pair, value in zip(equations, values):
+                  if not isinstance(pair, list) or len(pair) != 2:
+                      return False
+                  a, b = pair
+                  g.setdefault(a, {})[b] = value
+                  g.setdefault(b, {})[a] = 1.0 / value
+
+              def expected(x, y):
+                  if x not in g or y not in g:
+                      return -1.0
+                  stack = [(x, 1.0)]
+                  seen = set()
+                  while stack:
+                      node, ratio = stack.pop()
+                      if node == y:
+                          return ratio
+                      if node in seen:
+                          continue
+                      seen.add(node)
+                      for nxt, weight in g[node].items():
+                          if nxt not in seen:
+                              stack.append((nxt, ratio * weight))
+                  return -1.0
+
+              for (a, b), actual in zip(queries, result):
+                  if not isinstance(actual, (int, float)):
+                      return False
+                  exp = expected(a, b)
+                  if exp == -1.0:
+                      if actual != -1.0:
+                          return False
+                  else:
+                      if abs(actual - exp) > 1e-9:
+                          return False
+              return True
+seed: 399
+tests:
+  - name: ex1
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+      values: [2, 3]
+      queries:
+        - ["a", "c"]
+        - ["b", "a"]
+        - ["a", "e"]
+        - ["a", "a"]
+        - ["x", "x"]
+  - name: ex2
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+        - ["bc", "cd"]
+      values: [3, 5, 10]
+      queries:
+        - ["a", "c"]
+        - ["c", "b"]
+        - ["bc", "cd"]
+        - ["cd", "bc"]
+  - name: ex3
+    in:
+      equations:
+        - ["a", "b"]
+      values: [5]
+      queries:
+        - ["a", "b"]
+        - ["b", "a"]
+        - ["a", "c"]
+        - ["x", "y"]
+  - name: direct_and_inverse
+    in:
+      equations:
+        - ["x", "y"]
+      values: [4]
+      queries:
+        - ["x", "y"]
+        - ["y", "x"]
+        - ["x", "x"]
+        - ["y", "y"]
+  - name: unknown_both
+    in:
+      equations:
+        - ["a", "b"]
+      values: [3]
+      queries:
+        - ["u", "v"]
+        - ["a", "u"]
+        - ["v", "b"]
+  - name: unknown_rhs
+    in:
+      equations:
+        - ["m", "n"]
+      values: [7]
+      queries:
+        - ["m", "z"]
+        - ["z", "m"]
+        - ["z", "z"]
+  - name: disconnected_components
+    in:
+      equations:
+        - ["a", "b"]
+        - ["c", "d"]
+      values: [2, 4]
+      queries:
+        - ["a", "b"]
+        - ["b", "a"]
+        - ["c", "d"]
+        - ["d", "c"]
+        - ["a", "c"]
+        - ["b", "d"]
+  - name: chain_three
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+        - ["c", "d"]
+      values: [2, 3, 4]
+      queries:
+        - ["a", "d"]
+        - ["d", "a"]
+        - ["b", "d"]
+        - ["a", "c"]
+  - name: chain_with_self
+    in:
+      equations:
+        - ["p", "q"]
+        - ["q", "r"]
+      values: [100, 1]
+      queries:
+        - ["p", "r"]
+        - ["r", "p"]
+        - ["q", "q"]
+        - ["p", "p"]
+  - name: nontrivial_cycle_free
+    in:
+      equations:
+        - ["aa", "bb"]
+        - ["bb", "cc"]
+        - ["cc", "dd"]
+      values: [12, 25, 5]
+      queries:
+        - ["aa", "cc"]
+        - ["cc", "aa"]
+        - ["bb", "dd"]
+        - ["dd", "bb"]
+  - name: digits_in_names
+    in:
+      equations:
+        - ["a1", "b2"]
+        - ["b2", "c3"]
+      values: [25, 40]
+      queries:
+        - ["a1", "c3"]
+        - ["c3", "a1"]
+        - ["b2", "a1"]
+        - ["a1", "a1"]
+  - name: branch_graph
+    in:
+      equations:
+        - ["a", "b"]
+        - ["a", "c"]
+        - ["b", "d"]
+      values: [2, 3, 4]
+      queries:
+        - ["c", "d"]
+        - ["d", "c"]
+        - ["b", "c"]
+        - ["c", "a"]
+  - name: repeated_queries
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+      values: [8, 5]
+      queries:
+        - ["a", "c"]
+        - ["a", "c"]
+        - ["c", "a"]
+        - ["b", "c"]
+        - ["b", "c"]
+  - name: single_edge_many_queries
+    in:
+      equations:
+        - ["k", "l"]
+      values: [125]
+      queries:
+        - ["k", "l"]
+        - ["l", "k"]
+        - ["k", "z"]
+        - ["z", "k"]
+        - ["z", "z"]
+  - name: long_chain_4
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+        - ["c", "d"]
+        - ["d", "e"]
+      values: [11, 12, 13, 14]
+      queries:
+        - ["a", "e"]
+        - ["e", "a"]
+        - ["b", "d"]
+        - ["c", "e"]
+  - name: bridge_component
+    in:
+      equations:
+        - ["m", "n"]
+        - ["n", "o"]
+        - ["x", "y"]
+      values: [5, 2, 7]
+      queries:
+        - ["m", "o"]
+        - ["o", "m"]
+        - ["x", "y"]
+        - ["y", "x"]
+        - ["m", "x"]
+  - name: all_unknown_queries
+    in:
+      equations:
+        - ["a", "b"]
+      values: [9]
+      queries:
+        - ["u", "u"]
+        - ["u", "v"]
+        - ["v", "u"]
+        - ["w", "w"]
+  - name: loopless_star
+    in:
+      equations:
+        - ["c", "a"]
+        - ["c", "b"]
+        - ["c", "d"]
+      values: [2, 3, 4]
+      queries:
+        - ["a", "b"]
+        - ["b", "a"]
+        - ["a", "d"]
+        - ["d", "b"]
+  - name: multiple_path_same_answer
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+        - ["a", "c"]
+      values: [2, 3, 6]
+      queries:
+        - ["a", "c"]
+        - ["c", "a"]
+        - ["b", "a"]
+        - ["c", "b"]
+  - name: long_chain_5
+    in:
+      equations:
+        - ["v0", "v1"]
+        - ["v1", "v2"]
+        - ["v2", "v3"]
+        - ["v3", "v4"]
+        - ["v4", "v5"]
+      values: [2, 2, 2, 2, 2]
+      queries:
+        - ["v0", "v5"]
+        - ["v5", "v0"]
+        - ["v1", "v4"]
+        - ["v2", "v2"]
+  - name: mixed_letters_digits
+    in:
+      equations:
+        - ["a9", "b8"]
+        - ["b8", "c7"]
+      values: [2, 4]
+      queries:
+        - ["a9", "c7"]
+        - ["c7", "a9"]
+        - ["a9", "b8"]
+        - ["c7", "b8"]
+  - name: large_values
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+      values: [20, 20]
+      queries:
+        - ["a", "c"]
+        - ["c", "a"]
+        - ["b", "a"]
+  - name: small_values
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+      values: [50, 25]
+      queries:
+        - ["a", "c"]
+        - ["c", "a"]
+        - ["b", "c"]
+        - ["c", "b"]
+  - name: non_overlapping_queries
+    in:
+      equations:
+        - ["a", "b"]
+        - ["c", "d"]
+      values: [11, 13]
+      queries:
+        - ["a", "d"]
+        - ["c", "b"]
+        - ["b", "d"]
+        - ["d", "a"]
+  - name: triangle_consistent
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+        - ["a", "c"]
+      values: [2, 3, 6]
+      queries:
+        - ["a", "b"]
+        - ["b", "c"]
+        - ["a", "c"]
+        - ["c", "a"]
+        - ["b", "a"]
+  - name: medium_mix_1
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+        - ["d", "e"]
+        - ["e", "f"]
+      values: [3, 4, 5, 6]
+      queries:
+        - ["a", "c"]
+        - ["c", "a"]
+        - ["d", "f"]
+        - ["f", "d"]
+        - ["a", "e"]
+  - name: medium_mix_2
+    in:
+      equations:
+        - ["u", "v"]
+        - ["v", "w"]
+        - ["w", "x"]
+      values: [125, 80, 500]
+      queries:
+        - ["u", "x"]
+        - ["x", "u"]
+        - ["v", "x"]
+        - ["u", "u"]
+  - name: medium_mix_3
+    in:
+      equations:
+        - ["p", "q"]
+        - ["r", "s"]
+        - ["s", "t"]
+      values: [22, 33, 44]
+      queries:
+        - ["p", "q"]
+        - ["q", "p"]
+        - ["r", "t"]
+        - ["t", "r"]
+        - ["p", "r"]
+  - name: medium_mix_4
+    in:
+      equations:
+        - ["h", "i"]
+        - ["i", "j"]
+        - ["j", "k"]
+      values: [9, 11, 13]
+      queries:
+        - ["h", "k"]
+        - ["k", "h"]
+        - ["i", "k"]
+        - ["k", "i"]
+  - name: medium_mix_5
+    in:
+      equations:
+        - ["a", "b"]
+        - ["c", "d"]
+        - ["e", "f"]
+        - ["f", "g"]
+        - ["g", "h"]
+      values: [25, 35, 15, 25, 40]
+      queries:
+        - ["e", "h"]
+        - ["h", "e"]
+        - ["a", "d"]
+        - ["b", "a"]
+        - ["x", "x"]
+  - name: longer_chain_6
+    in:
+      equations:
+        - ["n0", "n1"]
+        - ["n1", "n2"]
+        - ["n2", "n3"]
+        - ["n3", "n4"]
+        - ["n4", "n5"]
+        - ["n5", "n6"]
+      values: [15, 15, 15, 15, 15, 15]
+      queries:
+        - ["n0", "n6"]
+        - ["n6", "n0"]
+        - ["n2", "n5"]
+        - ["n3", "n3"]
+  - name: chain_plus_unknowns
+    in:
+      equations:
+        - ["a", "b"]
+        - ["b", "c"]
+      values: [6, 7]
+      queries:
+        - ["a", "c"]
+        - ["c", "a"]
+        - ["a", "z"]
+        - ["z", "z"]
+        - ["y", "a"]
+  - name: many_isolated_query_pairs
+    in:
+      equations:
+        - ["a", "b"]
+      values: [175]
+      queries:
+        - ["a", "b"]
+        - ["b", "a"]
+        - ["c", "d"]
+        - ["e", "e"]
+        - ["a", "e"]
+  - name: component_with_self_bridge
+    in:
+      equations:
+        - ["q", "r"]
+        - ["r", "s"]
+        - ["s", "t"]
+      values: [2, 2, 2]
+      queries:
+        - ["q", "t"]
+        - ["t", "q"]
+        - ["r", "s"]
+        - ["s", "s"]

@@ -1,0 +1,835 @@
+entry:
+  id: 442
+  title: find-all-duplicates-in-an-array
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().findDuplicates({nums})
+    rust: Solution::find_duplicates({nums})
+    python3: Solution().findDuplicates({nums})
+    python2: Solution().findDuplicates({nums})
+    ruby: find_duplicates({nums})
+    java: new Solution().findDuplicates({nums})
+    csharp: new Solution().FindDuplicates({nums})
+    kotlin: Solution().findDuplicates({nums})
+    go: findDuplicates({nums})
+    dart: Solution().findDuplicates({nums})
+    swift: Solution().findDuplicates({nums})
+    typescript: findDuplicates({nums})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: Checker().findDuplicates(nums, {result})
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def findDuplicates(self, nums: List[int], result: Any) -> bool:
+              if not isinstance(result, list):
+                  return False
+              n = len(nums)
+              if any((not isinstance(x, int)) for x in result):
+                  return False
+              seen = [0] * (n + 1)
+              for x in nums:
+                  if not isinstance(x, int) or x < 1 or x > n:
+                      return False
+                  seen[x] += 1
+                  if seen[x] > 2:
+                      return False
+              expected = [i for i in range(1, n + 1) if seen[i] == 2]
+              return result == expected
+seed: 442
+tests:
+  - name: ex1
+    in:
+      nums:
+        - 4
+        - 3
+        - 2
+        - 7
+        - 8
+        - 2
+        - 3
+        - 1
+    out:
+      - 2
+      - 3
+  - name: ex2
+    in:
+      nums:
+        - 1
+        - 1
+        - 2
+    out:
+      - 1
+  - name: ex3
+    in:
+      nums:
+        - 1
+    out: []
+  - name: sorted_no_dups_small
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+    out: []
+  - name: pair_at_start
+    in:
+      nums:
+        - 1
+        - 1
+        - 2
+        - 3
+    out:
+      - 1
+  - name: pair_at_end
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 4
+    out:
+      - 4
+  - name: two_pairs_ordered
+    in:
+      nums:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+    out:
+      - 2
+      - 4
+  - name: two_pairs_reverse
+    in:
+      nums:
+        - 2
+        - 1
+        - 2
+        - 1
+    out:
+      - 2
+      - 1
+  - name: duplicate_last_after_gap
+    in:
+      nums:
+        - 1
+        - 3
+        - 4
+        - 2
+        - 2
+    out:
+      - 2
+  - name: duplicate_first_middle
+    in:
+      nums:
+        - 2
+        - 1
+        - 3
+        - 2
+        - 4
+    out:
+      - 2
+  - name: many_adjacent_pairs
+    in:
+      nums:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+    out:
+      - 1
+      - 2
+      - 3
+  - name: alternating_pairs
+    in:
+      nums:
+        - 1
+        - 2
+        - 1
+        - 3
+        - 2
+        - 4
+        - 3
+        - 4
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: unsorted_with_gaps
+    in:
+      nums:
+        - 5
+        - 4
+        - 7
+        - 2
+        - 3
+        - 5
+        - 1
+        - 6
+        - 7
+        - 8
+    out:
+      - 5
+      - 7
+  - name: max_value_duplicate
+    in:
+      nums:
+        - 1
+        - 5
+        - 3
+        - 4
+        - 2
+        - 5
+    out:
+      - 5
+  - name: min_and_max_duplicates
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 1
+        - 5
+    out:
+      - 1
+      - 5
+  - name: reverse_order_duplicates
+    in:
+      nums:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 6
+      - 5
+      - 4
+      - 3
+      - 2
+      - 1
+  - name: six_element_single_dup
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 5
+    out:
+      - 5
+  - name: repeated_pattern_small
+    in:
+      nums:
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    out:
+      - 2
+      - 3
+  - name: duplicate_in_first_half
+    in:
+      nums:
+        - 2
+        - 4
+        - 1
+        - 3
+        - 4
+    out:
+      - 4
+  - name: duplicate_in_second_half
+    in:
+      nums:
+        - 3
+        - 1
+        - 2
+        - 5
+        - 4
+        - 3
+    out:
+      - 3
+  - name: multiple_dups_interleaved
+    in:
+      nums:
+        - 1
+        - 3
+        - 2
+        - 2
+        - 5
+        - 4
+        - 1
+        - 6
+        - 7
+        - 7
+    out:
+      - 2
+      - 1
+      - 7
+  - name: all_pairs_small
+    in:
+      nums:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+        - 4
+        - 4
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: single_duplicate_tail
+    in:
+      nums:
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+        - 8
+    out:
+      - 8
+  - name: single_duplicate_head
+    in:
+      nums:
+        - 2
+        - 1
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 2
+    out:
+      - 2
+  - name: mixed_three_duplicates
+    in:
+      nums:
+        - 9
+        - 1
+        - 2
+        - 3
+        - 9
+        - 4
+        - 5
+        - 1
+        - 6
+        - 7
+        - 8
+        - 2
+    out:
+      - 9
+      - 1
+      - 2
+  - name: staggered_pairs
+    in:
+      nums:
+        - 1
+        - 4
+        - 2
+        - 5
+        - 3
+        - 6
+        - 1
+        - 7
+        - 4
+        - 8
+        - 2
+        - 5
+    out:
+      - 1
+      - 4
+      - 2
+      - 5
+  - name: no_duplicates_six
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    out: []
+  - name: no_duplicates_ten
+    in:
+      nums:
+        - 10
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out: []
+  - name: repeated_even_numbers
+    in:
+      nums:
+        - 2
+        - 4
+        - 6
+        - 8
+        - 10
+        - 2
+        - 4
+        - 6
+        - 8
+        - 10
+    out:
+      - 2
+      - 4
+      - 6
+      - 8
+      - 10
+  - name: repeated_odd_numbers
+    in:
+      nums:
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+    out:
+      - 1
+      - 3
+      - 5
+      - 7
+      - 9
+  - name: small_large_mix
+    in:
+      nums:
+        - 1
+        - 6
+        - 5
+        - 4
+        - 3
+        - 6
+    out:
+      - 6
+  - name: alternating_big_small
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+  - name: long_prefix_no_dups
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+    out: []
+  - name: long_many_dups
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+  - name: large_block_100
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+        - 32
+        - 33
+        - 34
+        - 35
+        - 36
+        - 37
+        - 38
+        - 39
+        - 40
+        - 41
+        - 42
+        - 43
+        - 44
+        - 45
+        - 46
+        - 47
+        - 48
+        - 49
+        - 50
+        - 51
+        - 52
+        - 53
+        - 54
+        - 55
+        - 56
+        - 57
+        - 58
+        - 59
+        - 60
+        - 61
+        - 62
+        - 63
+        - 64
+        - 65
+        - 66
+        - 67
+        - 68
+        - 69
+        - 70
+        - 71
+        - 72
+        - 73
+        - 74
+        - 75
+        - 76
+        - 77
+        - 78
+        - 79
+        - 80
+        - 81
+        - 82
+        - 83
+        - 84
+        - 85
+        - 86
+        - 87
+        - 88
+        - 89
+        - 90
+        - 91
+        - 92
+        - 93
+        - 94
+        - 95
+        - 96
+        - 97
+        - 98
+        - 99
+        - 100
+    out: []
+  - name: large_block_100_dups
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+        - 32
+        - 33
+        - 34
+        - 35
+        - 36
+        - 37
+        - 38
+        - 39
+        - 40
+        - 41
+        - 42
+        - 43
+        - 44
+        - 45
+        - 46
+        - 47
+        - 48
+        - 49
+        - 50
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+        - 32
+        - 33
+        - 34
+        - 35
+        - 36
+        - 37
+        - 38
+        - 39
+        - 40
+        - 41
+        - 42
+        - 43
+        - 44
+        - 45
+        - 46
+        - 47
+        - 48
+        - 49
+        - 50
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32
+      - 33
+      - 34
+      - 35
+      - 36
+      - 37
+      - 38
+      - 39
+      - 40
+      - 41
+      - 42
+      - 43
+      - 44
+      - 45
+      - 46
+      - 47
+      - 48
+      - 49
+      - 50

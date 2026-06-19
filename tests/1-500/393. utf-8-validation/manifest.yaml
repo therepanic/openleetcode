@@ -1,0 +1,254 @@
+entry:
+  id: 393
+  title: utf-8-validation
+  params:
+    data:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().validUtf8({data})
+    rust: Solution::valid_utf8({data})
+    python3: Solution().validUtf8({data})
+    python2: Solution().validUtf8({data})
+    ruby: valid_utf8({data})
+    java: new Solution().validUtf8({data})
+    csharp: new Solution().ValidUtf8({data})
+    kotlin: Solution().validUtf8({data})
+    go: validUtf8({data})
+    dart: Solution().validUtf8({data})
+    swift: Solution().validUtf8({data})
+    typescript: validUtf8({data})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(data, {result})"
+    checker: |
+      class Checker:
+          def check(self, data, result):
+              i = 0
+              n = len(data)
+              while i < n:
+                  b = data[i]
+                  if b < 0 or b > 255:
+                      return result is False
+                  if b >> 7 == 0:
+                      need = 0
+                  elif b >> 5 == 0b110:
+                      need = 1
+                  elif b >> 4 == 0b1110:
+                      need = 2
+                  elif b >> 3 == 0b11110:
+                      need = 3
+                  else:
+                      return result is False
+                  if i + need >= n:
+                      return result is False
+                  for j in range(1, need + 1):
+                      if data[i + j] < 0 or data[i + j] > 255 or data[i + j] >> 6 != 0b10:
+                          return result is False
+                  i += need + 1
+              return result is True
+seed: 393
+tests:
+  - name: example-1
+    in:
+      data: [197, 130, 1]
+    out: true
+  - name: example-2
+    in:
+      data: [235, 140, 4]
+    out: false
+  - name: single-ascii-zero
+    in:
+      data: [0]
+    out: true
+  - name: single-ascii-max
+    in:
+      data: [127]
+    out: true
+  - name: single-two-byte-start-truncated
+    in:
+      data: [194]
+    out: false
+  - name: single-three-byte-start-truncated
+    in:
+      data: [224]
+    out: false
+  - name: single-four-byte-start-truncated
+    in:
+      data: [240]
+    out: false
+  - name: invalid-leading-continuation
+    in:
+      data: [128]
+    out: false
+  - name: invalid-leading-continuation-255
+    in:
+      data: [255]
+    out: false
+  - name: valid-two-byte-boundary-low
+    in:
+      data: [194, 128]
+    out: true
+  - name: valid-two-byte-boundary-high
+    in:
+      data: [223, 191]
+    out: true
+  - name: invalid-two-byte-bad-continuation
+    in:
+      data: [194, 127]
+    out: false
+  - name: invalid-two-byte-extra-byte
+    in:
+      data: [194, 128, 0]
+    out: true
+  - name: valid-three-byte-low
+    in:
+      data: [224, 160, 128]
+    out: true
+  - name: valid-three-byte-high
+    in:
+      data: [239, 191, 191]
+    out: true
+  - name: invalid-three-byte-first-continuation
+    in:
+      data: [224, 159, 128]
+    out: true
+  - name: invalid-three-byte-second-continuation
+    in:
+      data: [224, 160, 127]
+    out: false
+  - name: valid-four-byte-low
+    in:
+      data: [240, 144, 128, 128]
+    out: true
+  - name: valid-four-byte-high
+    in:
+      data: [244, 143, 191, 191]
+    out: true
+  - name: invalid-four-byte-first-continuation
+    in:
+      data: [240, 143, 128, 128]
+    out: true
+  - name: invalid-four-byte-short
+    in:
+      data: [240, 144, 128]
+    out: false
+  - name: mixed-valid-sequence-1
+    in:
+      data: [65, 194, 162, 226, 130, 172, 240, 159, 146, 169]
+    out: true
+  - name: mixed-valid-sequence-2
+    in:
+      data: [0, 127, 194, 128, 224, 160, 128, 240, 144, 128, 128, 33]
+    out: true
+  - name: mixed-invalid-after-valid
+    in:
+      data: [65, 194, 162, 226, 130, 172, 240, 159, 146, 169, 192]
+    out: false
+  - name: mixed-invalid-middle-byte
+    in:
+      data: [65, 194, 162, 226, 130, 172, 240, 159, 0, 169]
+    out: false
+  - name: sequence-of-single-bytes
+    in:
+      data: [1, 2, 3, 4, 5, 6, 7, 8]
+    out: true
+  - name: alternating-valid-blocks
+    in:
+      data: [194, 160, 65, 224, 160, 128, 66, 240, 144, 128, 128, 67]
+    out: true
+  - name: invalid-overlong-starter-192-alone
+    in:
+      data: [192]
+    out: false
+  - name: invalid-overlong-starter-193-alone
+    in:
+      data: [193]
+    out: false
+  - name: invalid-five-byte-like-prefix
+    in:
+      data: [248]
+    out: false
+  - name: invalid-continuation-alone-followed-by-ascii
+    in:
+      data: [128, 65]
+    out: false
+  - name: valid-long-mixed-repetition
+    in:
+      data: [65, 194, 128, 66, 226, 130, 172, 67, 240, 159, 152, 128, 68, 69]
+    out: true
+  - name: invalid-long-mixed-repetition
+    in:
+      data:
+        [65, 194, 128, 66, 226, 130, 172, 67, 240, 159, 152, 128, 68, 70, 128]
+    out: false
+  - name: max-byte-values-valid-end
+    in:
+      data: [127, 194, 128, 239, 191, 191, 244, 143, 191, 191]
+    out: true
+  - name: max-byte-values-invalid-end
+    in:
+      data: [127, 194, 128, 239, 191, 191, 244, 143, 191, 192]
+    out: false
+  - name: long-valid-ascii-run
+    in:
+      data:
+        [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100,
+          110,
+          120,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+        ]
+    out: true
+  - name: long-invalid-start-near-end
+    in:
+      data:
+        [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100,
+          110,
+          120,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          224,
+        ]
+    out: false
+  - name: invalid-continuation-with-high-bit-clear
+    in:
+      data: [226, 130, 44]
+    out: false

@@ -1,0 +1,176 @@
+entry:
+  id: 491
+  title: non-decreasing-subsequences
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().findSubsequences({nums})
+    rust: Solution::find_subsequences({nums})
+    python3: Solution().findSubsequences({nums})
+    python2: Solution().findSubsequences({nums})
+    ruby: find_subsequences({nums})
+    java: new Solution().findSubsequences({nums})
+    csharp: new Solution().FindSubsequences({nums})
+    kotlin: Solution().findSubsequences({nums})
+    go: findSubsequences({nums})
+    dart: Solution().findSubsequences({nums})
+    swift: Solution().findSubsequences({nums})
+    typescript: findSubsequences({nums})
+judge:
+  type: ignore_order
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().findSubsequences(nums, {result})
+    checker: |
+      class Checker:
+          def findSubsequences(self, nums, result):
+              if not isinstance(result, list):
+                  return False
+
+              seen = set()
+              for subseq in result:
+                  if not isinstance(subseq, list) or len(subseq) < 2:
+                      return False
+                  if any(not isinstance(x, int) for x in subseq):
+                      return False
+                  if any(subseq[i] > subseq[i + 1] for i in range(len(subseq) - 1)):
+                      return False
+                  t = tuple(subseq)
+                  if t in seen:
+                      return False
+                  seen.add(t)
+
+              expected = set()
+
+              def backtrack(index, path):
+                  if len(path) >= 2:
+                      expected.add(tuple(path))
+                  used = set()
+                  last = path[-1] if path else None
+                  for i in range(index, len(nums)):
+                      if nums[i] in used:
+                          continue
+                      if last is None or nums[i] >= last:
+                          used.add(nums[i])
+                          path.append(nums[i])
+                          backtrack(i + 1, path)
+                          path.pop()
+
+              backtrack(0, [])
+              return seen == expected
+seed: 491
+tests:
+  - name: example-1
+    in:
+      nums: [4, 6, 7, 7]
+  - name: example-2
+    in:
+      nums: [4, 4, 3, 2, 1]
+  - name: single-element
+    in:
+      nums: [1]
+  - name: two-increasing
+    in:
+      nums: [1, 2]
+  - name: two-decreasing
+    in:
+      nums: [2, 1]
+  - name: all-equal-three
+    in:
+      nums: [5, 5, 5]
+  - name: all-equal-four
+    in:
+      nums: [0, 0, 0, 0]
+  - name: strictly-increasing-five
+    in:
+      nums: [1, 2, 3, 4, 5]
+  - name: strictly-decreasing-five
+    in:
+      nums: [5, 4, 3, 2, 1]
+  - name: mixed-small-1
+    in:
+      nums: [1, 3, 2]
+  - name: mixed-small-2
+    in:
+      nums: [3, 1, 2]
+  - name: duplicates-in-middle
+    in:
+      nums: [1, 2, 2, 1]
+  - name: negatives-and-duplicates
+    in:
+      nums: [-1, -1, 0]
+  - name: negatives-increasing
+    in:
+      nums: [-3, -2, -2, -1]
+  - name: alternating-peaks
+    in:
+      nums: [1, 3, 1, 3]
+  - name: valley-shape
+    in:
+      nums: [3, 1, 1, 2]
+  - name: plateau-then-rise
+    in:
+      nums: [2, 2, 2, 3]
+  - name: rise-then-plateau
+    in:
+      nums: [1, 2, 2, 2]
+  - name: repeated-pairs
+    in:
+      nums: [1, 1, 2, 2]
+  - name: repeated-triples
+    in:
+      nums: [2, 2, 2, 1, 1]
+  - name: wide-range-small
+    in:
+      nums: [-100, 0, 100]
+  - name: wide-range-with-dup
+    in:
+      nums: [-100, -100, 100]
+  - name: late-small-value
+    in:
+      nums: [1, 2, 3, 0]
+  - name: early-small-value
+    in:
+      nums: [0, 3, 3, 4]
+  - name: random-ish-1
+    in:
+      nums: [4, 5, 6, 1, 2]
+  - name: random-ish-2
+    in:
+      nums: [6, 7, 7, 8, 6]
+  - name: random-ish-3
+    in:
+      nums: [2, 1, 2, 1, 2]
+  - name: random-ish-4
+    in:
+      nums: [7, 6, 7, 6, 7]
+  - name: random-ish-5
+    in:
+      nums: [1, 4, 2, 3, 3]
+  - name: length-6-increasing
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+  - name: length-6-decreasing
+    in:
+      nums: [6, 5, 4, 3, 2, 1]
+  - name: length-6-mixed
+    in:
+      nums: [1, 5, 3, 4, 2, 6]
+  - name: length-7-dups
+    in:
+      nums: [1, 1, 1, 2, 2, 3, 3]
+  - name: length-7-negatives
+    in:
+      nums: [-5, -4, -4, -3, -2, -1, 0]
+  - name: length-8-zigzag
+    in:
+      nums: [1, 2, 1, 2, 1, 2, 1, 2]
+  - name: length-8-ramp
+    in:
+      nums: [0, 1, 1, 2, 3, 5, 5, 8]
