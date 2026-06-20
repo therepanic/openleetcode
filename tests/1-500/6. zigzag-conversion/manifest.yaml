@@ -1,181 +1,233 @@
 entry:
   id: 6
-  title: zigzag-conversion
+  title: "zigzag-conversion"
   params:
     s:
       type: string
     numRows:
       type: int
   call:
-    cpp: Solution().convert({s}, {numRows})
-    rust: Solution::convert({s}.to_string(), {numRows})
-    python3: Solution().convert({s}, {numRows})
-    python2: Solution().convert({s}, {numRows})
-    ruby: convert({s}, {numRows})
-    java: new Solution().convert({s}, {numRows})
-    csharp: new Solution().Convert({s}, {numRows})
-    kotlin: Solution().convert({s}, {numRows})
-    go: convert({s}, {numRows})
-    dart: Solution().convert({s}, {numRows})
-    swift: Solution().convert({s}, {numRows})
-    typescript: convert({s}, {numRows})
+    cpp: "Solution().convert({s}, {numRows})"
+    rust: "Solution::convert({s}, {numRows})"
+    python3: "Solution().convert({s}, {numRows})"
+    python2: "Solution().convert({s}, {numRows})"
+    ruby: "convert({s}, {numRows})"
+    java: "new Solution().convert({s}, {numRows})"
+    csharp: "new Solution().Convert({s}, {numRows})"
+    kotlin: "Solution().convert({s}, {numRows})"
+    go: "convert({s}, {numRows})"
+    dart: "Solution().convert({s}, {numRows})"
+    swift: "Solution().convert({s}, {numRows})"
+    typescript: "convert({s}, {numRows})"
+
 judge:
-  type: exact
+  type: "exact"
+
 limits:
-  time_ms: 1000
-  memory_mb: 256
+  time_ms: 200
+  memory_mb: 300
+
 oracle:
   python3:
-    call: Checker().convert(s, numRows, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n            if isinstance(result,\
-      \ str):\n                low = result.strip().lower()\n                if low\
-      \ == 'true':\n                    return True\n                if low == 'false':\n\
-      \                    return False\n                if low.lstrip('-').isdigit():\n\
-      \                    return int(low)\n        return result\n\n    def convert(self,\
-      \ s, numRows, result):\n        result = self._norm(result)\n        if numRows\
-      \ == 1 or numRows >= len(s):\n            return result == s\n        idx, d\
-      \ = 0, 1\n        rows = [''] * numRows\n        for char in s:\n          \
-      \  rows[idx] += char\n            if idx == 0:\n                d = 1\n    \
-      \        elif idx == numRows - 1:\n                d = -1\n            idx +=\
-      \ d\n        return result == ''.join(rows)\n"
-seed: 42
+    call: "Checker().convert(s, numRows, {result})"
+    checker: |
+      class Checker:
+          def convert(self, s: str, numRows: int, result: str) -> bool:
+              if not isinstance(result, str):
+                  return False
+              if numRows == 1 or numRows >= len(s):
+                  return result == s
+              idx, direction = 0, 1
+              rows = [""] * numRows
+              for ch in s:
+                  rows[idx] += ch
+                  if idx == 0:
+                      direction = 1
+                  elif idx == numRows - 1:
+                      direction = -1
+                  idx += direction
+              return result == "".join(rows)
+
+seed: 6
+
 tests:
-  - name: example 1
+  - name: "ex1_paypal_3"
     in:
-      s: PAYPALISHIRING
+      s: "PAYPALISHIRING"
       numRows: 3
-  - name: example 2
+    out: "PAHNAPLSIIGYIR"
+  - name: "ex2_paypal_4"
     in:
-      s: PAYPALISHIRING
+      s: "PAYPALISHIRING"
       numRows: 4
-  - name: example 3
+    out: "PINALSIGYAHRPI"
+  - name: "ex3_single_char"
     in:
-      s: A
+      s: "A"
       numRows: 1
-  - name: single char multi row
+    out: "A"
+  - name: "row_one_two_chars"
     in:
-      s: B
-      numRows: 2
-  - name: two chars two rows
-    in:
-      s: AB
-      numRows: 2
-  - name: three chars two rows
-    in:
-      s: ABC
-      numRows: 2
-  - name: short string many rows
-    in:
-      s: CODE
-      numRows: 10
-  - name: numRows equals length
-    in:
-      s: ABCDE
-      numRows: 5
-  - name: numRows exceeds length
-    in:
-      s: HELLO
-      numRows: 10
-  - name: two rows long string
-    in:
-      s: ABCDEF
-      numRows: 2
-  - name: special chars
-    in:
-      s: A.B,C
-      numRows: 2
-  - name: edge case 1
-    in:
-      s: PAYPAL
-      numRows: 2
-  - name: edge case 2
-    in:
-      s: PAYPAL
-      numRows: 5
-  - name: large input n=1
-    in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: ABC
+      s: "AB"
       numRows: 1
-  - name: large input n=2
+    out: "AB"
+  - name: "two_rows_two_chars"
     in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: XY
+      s: "AB"
       numRows: 2
-  - name: large input n=500
+    out: "AB"
+  - name: "two_rows_three_chars"
     in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: AB
-      numRows: 500
-  - name: max constraints
+      s: "ABC"
+      numRows: 2
+    out: "ACB"
+  - name: "two_rows_five_chars"
     in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: ABC
-      numRows: 1000
-  - name: gen short 1
+      s: "ABCDE"
+      numRows: 2
+    out: "ACEBD"
+  - name: "three_rows_five_chars"
     in:
-      s:
-        gen: str
-        len: 10
-        alphabet: AB
+      s: "ABCDE"
       numRows: 3
-  - name: gen short 2
+    out: "AEBDC"
+  - name: "four_rows_five_chars"
     in:
-      s:
-        gen: str
-        len: 15
-        alphabet: PQ
+      s: "ABCDE"
       numRows: 4
-  - name: gen small 3
+    out: "ABCED"
+  - name: "rows_equal_len"
     in:
-      s:
-        gen: str
-        len: 20
-        alphabet: AD
+      s: "ABCDE"
       numRows: 5
-  - name: gen medium 1
+    out: "ABCDE"
+  - name: "short_eight_rows3"
     in:
-      s:
-        gen: str
-        len: 100
-        alphabet: AB
+      s: "ABCDEFGH"
+      numRows: 3
+    out: "AEBDFHCG"
+  - name: "short_eight_rows4"
+    in:
+      s: "ABCDEFGH"
+      numRows: 4
+    out: "AGBFHCED"
+  - name: "eleven_rows3"
+    in:
+      s: "ABCDEFGHIJK"
+      numRows: 3
+    out: "AEIBDFHJCGK"
+  - name: "eleven_rows5"
+    in:
+      s: "ABCDEFGHIJK"
+      numRows: 5
+    out: "AIBHJCGKDFE"
+  - name: "alphabet_rows2"
+    in:
+      s: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      numRows: 2
+    out: "ACEGIKMOQSUWYBDFHJLNPRTVXZ"
+  - name: "alphabet_rows3"
+    in:
+      s: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      numRows: 3
+    out: "AEIMQUYBDFHJLNPRTVXZCGKOSW"
+  - name: "alphabet_rows4"
+    in:
+      s: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      numRows: 4
+    out: "AGMSYBFHLNRTXZCEIKOQUWDJPV"
+  - name: "alphabet_rows5"
+    in:
+      s: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      numRows: 5
+    out: "AIQYBHJPRXZCGKOSWDFLNTVEMU"
+  - name: "lower_rows6"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+      numRows: 6
+    out: "akubjltvcimswdhnrxegoqyfpz"
+  - name: "lower_rows7"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+      numRows: 7
+    out: "amyblnxzckowdjpveiqufhrtgs"
+  - name: "mixedcase_rows4"
+    in:
+      s: "AaBbCcDdEeFfGgHhIiJj"
+      numRows: 4
+    out: "ADGJacdfgijBCEFHIbeh"
+  - name: "leetcode_rows2"
+    in:
+      s: "leetcode"
+      numRows: 2
+    out: "lecdetoe"
+  - name: "leetcode_rows3"
+    in:
+      s: "leetcode"
+      numRows: 3
+    out: "lcetoeed"
+  - name: "leetcode_rows4"
+    in:
+      s: "leetcode"
+      numRows: 4
+    out: "ldeoeect"
+  - name: "punct_rows3"
+    in:
+      s: "hello,world."
+      numRows: 3
+    out: "horel,ol.lwd"
+  - name: "punct_rows4"
+    in:
+      s: "OpenAI,ChatGPT."
+      numRows: 4
+    out: "O,PpICGTeAht.na"
+  - name: "pangram_rows5"
+    in:
+      s: "TheQuickBrownFoxJumpsOverTheLazyDog"
+      numRows: 5
+    out: "TBJrDhkrxueTyoecoomvhzgQiwFpOeaunsL"
+  - name: "repeated_z_rows3"
+    in:
+      s: "zzzzzzzzzz"
+      numRows: 3
+    out: "zzzzzzzzzz"
+  - name: "mixed_punct_rows2"
+    in:
+      s: "AbaC,De.fG"
+      numRows: 2
+    out: "Aa,efbCD.G"
+  - name: "mixed_punct_rows9"
+    in:
+      s: "AbaC,De.fG"
+      numRows: 9
+    out: "AbaC,De.Gf"
+  - name: "repeat_x_rows7"
+    in:
+      s: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      numRows: 7
+    out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  - name: "zigzag_60_rows8"
+    in:
+      s: "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGH"
+      numRows: 8
+    out: "AOCQEBNPBDPRDFCMQAEOSCGDLRZFNTBHEKSYGMUAFJTXHLVZGIUWIKWYHVJX"
+  - name: "zigzag_80_rows10"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab"
       numRows: 10
-  - name: gen medium 2
+    out: "askcubrtjlbdtvcquimaeswdpvhnzfrxeowgoygqyfnxfpxhpzgmyeqwioahlzdrvjnbikacsukmjbtl"
+  - name: "zigzag_120_rows12"
     in:
-      s:
-        gen: str
-        len: 250
-        alphabet: XYZ
-      numRows: 20
-  - name: gen medium 3
+      s: "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOP"
+      numRows: 12
+    out: "AWSOKGBVXRTNPJLFHCUYQUMQIMEIDTZPVLRHNDJESAOWKSGOCKFRBNXJTFPBLGQCMYIUEQAMHPDLZHVDRZNIOEKAGWCSYOJNFJBFXBTXPKMGICEYAUWLHDZV"
+  - name: "near_max_rows_equal_len"
     in:
-      s:
-        gen: str
-        len: 500
-        alphabet: AB
-      numRows: 50
-  - name: large input n=1000
-    in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: ABC
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl"
       numRows: 1000
-  - name: large input n=999
+    out: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl"
+  - name: "near_max_rows_one"
     in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: ABC
-      numRows: 999
+      s: "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLM"
+      numRows: 1
+    out: "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLM"

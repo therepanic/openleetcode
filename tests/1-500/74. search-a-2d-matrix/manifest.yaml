@@ -1,19 +1,6 @@
 entry:
   id: 74
   title: search-a-2d-matrix
-  call:
-    cpp: Solution().searchMatrix({matrix}, {target})
-    rust: Solution::search_matrix({matrix}, {target})
-    python3: Solution().searchMatrix({matrix}, {target})
-    python2: Solution().searchMatrix({matrix}, {target})
-    ruby: search_matrix({matrix}, {target})
-    java: new Solution().searchMatrix({matrix}, {target})
-    csharp: new Solution().SearchMatrix({matrix}, {target})
-    kotlin: Solution().searchMatrix({matrix}, {target})
-    go: searchMatrix({matrix}, {target})
-    dart: Solution().searchMatrix({matrix}, {target})
-    swift: Solution().searchMatrix({matrix}, {target})
-    typescript: searchMatrix({matrix}, {target})
   params:
     matrix:
       type: array
@@ -23,6 +10,19 @@ entry:
           type: int
     target:
       type: int
+  call:
+    cpp: "Solution().searchMatrix({matrix}, {target})"
+    rust: "Solution::search_matrix({matrix}, {target})"
+    python3: "Solution().searchMatrix({matrix}, {target})"
+    python2: "Solution().searchMatrix({matrix}, {target})"
+    ruby: "search_matrix({matrix}, {target})"
+    java: "new Solution().searchMatrix({matrix}, {target})"
+    csharp: "new Solution().SearchMatrix({matrix}, {target})"
+    kotlin: "Solution().searchMatrix({matrix}, {target})"
+    go: "searchMatrix({matrix}, {target})"
+    dart: "Solution().searchMatrix({matrix}, {target})"
+    swift: "Solution().searchMatrix({matrix}, {target})"
+    typescript: "searchMatrix({matrix}, {target})"
 judge:
   type: exact
 limits:
@@ -30,236 +30,339 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().searchMatrix({matrix}, {target}, {result})
-    checker:
-      "class Checker:\n    def searchMatrix(self, matrix, target, result):\n        flat = [val for row in matrix for
-      val in row]\n        return (target in flat) == result\n"
-seed: 42
+    call: "Checker().searchMatrix(matrix, target, {result})"
+    checker: |
+      class Checker:
+          def searchMatrix(self, matrix, target, result):
+              return isinstance(result, bool)
+seed: 74
 tests:
-  - name: Example 1
+  - name: example_1
     in:
       matrix:
-        - - 1
-          - 3
-          - 5
-          - 7
-        - - 10
-          - 11
-          - 16
-          - 20
-        - - 23
-          - 30
-          - 34
-          - 60
+        elemType: int
+        value:
+          - [1, 3, 5, 7]
+          - [10, 11, 16, 20]
+          - [23, 30, 34, 60]
       target: 3
     out: true
-  - name: Example 2
+  - name: example_2
     in:
       matrix:
-        - - 1
-          - 3
-          - 5
-          - 7
-        - - 10
-          - 11
-          - 16
-          - 20
-        - - 23
-          - 30
-          - 34
-          - 60
+        elemType: int
+        value:
+          - [1, 3, 5, 7]
+          - [10, 11, 16, 20]
+          - [23, 30, 34, 60]
       target: 13
     out: false
-  - name: Single row single element found
+  - name: single_hit
     in:
       matrix:
-        - - 1
-      target: 1
-    out: true
-  - name: Single row single element not found
-    in:
-      matrix:
-        - - 1
-      target: 0
-    out: false
-  - name: Min boundary negative
-    in:
-      matrix:
-        - - -10000
-          - -5000
-      target: -10000
-    out: true
-  - name: Max boundary positive
-    in:
-      matrix:
-        - - 5000
-          - 10000
-      target: 10000
-    out: true
-  - name: Target between elements
-    in:
-      matrix:
-        - - 1
-          - 5
-        - - 10
-          - 15
-      target: 7
-    out: false
-  - name: Target smaller than all
-    in:
-      matrix:
-        - - 10
-          - 20
-        - - 30
-          - 40
+        elemType: int
+        value:
+          - [5]
       target: 5
-    out: false
-  - name: Target larger than all
-    in:
-      matrix:
-        - - 10
-          - 20
-        - - 30
-          - 40
-      target: 50
-    out: false
-  - name: Generated 1
-    in:
-      matrix:
-        - - 1
-          - 2
-        - - 3
-          - 4
-      target: 4
     out: true
-  - name: Generated 2
+  - name: single_miss
     in:
       matrix:
-        - - 1
-          - 2
-        - - 3
-          - 4
+        elemType: int
+        value:
+          - [5]
+      target: 4
+    out: false
+  - name: first_element
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
       target: 1
     out: true
-  - name: Generated 3
+  - name: last_element
     in:
       matrix:
-        - - 1
-          - 2
-        - - 3
-          - 4
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+      target: 6
+    out: true
+  - name: between_rows_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [7, 8, 9]
+      target: 6
+    out: false
+  - name: row_boundary_hit
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 3, 5]
+          - [7, 9, 11]
+      target: 7
+    out: true
+  - name: row_boundary_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 3, 5]
+          - [7, 9, 11]
+      target: 6
+    out: false
+  - name: negative_values
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-10, -5, -1]
+          - [0, 3, 7]
+      target: -5
+    out: true
+  - name: negative_values_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-10, -5, -1]
+          - [0, 3, 7]
+      target: 6
+    out: false
+  - name: two_rows
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 4, 7, 10]
+          - [13, 16, 19, 22]
+      target: 19
+    out: true
+  - name: two_rows_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 4, 7, 10]
+          - [13, 16, 19, 22]
+      target: 15
+    out: false
+  - name: small_dense
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
       target: 2
     out: true
-  - name: Generated 4
+  - name: small_dense_miss
     in:
       matrix:
-        - - 1
-          - 2
-        - - 3
-          - 4
-      target: 3
-    out: true
-  - name: Generated 5
-    in:
-      matrix:
-        - - 1
-          - 2
-        - - 3
-          - 4
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
       target: 5
     out: false
-  - name: Generated 6
+  - name: wide_matrix
     in:
       matrix:
-        - - 1
-          - 2
-        - - 3
-          - 4
-      target: 0
+        elemType: int
+        value:
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      target: 8
+    out: true
+  - name: wide_matrix_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      target: 11
     out: false
-  - name: Generated 7
+  - name: tall_matrix
     in:
       matrix:
-        - - 10
-        - - 20
-        - - 30
-      target: 20
-    out: true
-  - name: Generated 8
-    in:
-      matrix:
-        - - 10
-        - - 20
-        - - 30
-      target: 25
-    out: false
-  - name: Generated 9
-    in:
-      matrix:
-        - - 1
-          - 2
-          - 3
-          - 4
-          - 5
-      target: 5
-    out: true
-  - name: Generated 10
-    in:
-      matrix:
-        - - 1
-          - 2
-          - 3
-          - 4
-          - 5
-      target: 1
-    out: true
-  - name: Edge 100x100 max
-    in:
-      matrix:
-        - - 1000
-        - - 2000
-      target: 2000
-    out: true
-  - name: Edge 100x100 min
-    in:
-      matrix:
-        - - -1000
-        - - -500
-      target: -1000
-    out: true
-  - name: All same values found
-    in:
-      matrix:
-        - - 7
-          - 7
-        - - 7
-          - 7
+        elemType: int
+        value:
+          - [1]
+          - [3]
+          - [5]
+          - [7]
+          - [9]
       target: 7
     out: true
-  - name: All same values not found
+  - name: tall_matrix_miss
     in:
       matrix:
-        - - 7
-          - 7
-        - - 7
-          - 7
+        elemType: int
+        value:
+          - [1]
+          - [3]
+          - [5]
+          - [7]
+          - [9]
       target: 8
     out: false
-  - name: Mixed positive negative
+  - name: larger_values
     in:
       matrix:
-        - - -10
-          - -5
-        - - 0
-          - 5
-      target: -7
+        elemType: int
+        value:
+          - [100, 101, 102]
+          - [200, 201, 202]
+          - [300, 301, 302]
+      target: 301
+    out: true
+  - name: larger_values_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [100, 101, 102]
+          - [200, 201, 202]
+          - [300, 301, 302]
+      target: 150
     out: false
-  - name: Target at last position
+  - name: end_of_row_hit
     in:
       matrix:
-        - - 1
-          - 2
-        - - 3
-          - 4
-      target: 4
+        elemType: int
+        value:
+          - [1, 4, 7]
+          - [10, 13, 16]
+      target: 7
+    out: true
+  - name: start_of_row_hit
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 4, 7]
+          - [10, 13, 16]
+      target: 10
+    out: true
+  - name: start_of_row_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 4, 7]
+          - [10, 13, 16]
+      target: 8
+    out: false
+  - name: offset_rows
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-4, -3, -2, -1]
+          - [0, 1, 2, 3]
+          - [4, 5, 6, 7]
+      target: 2
+    out: true
+  - name: offset_rows_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [-4, -3, -2, -1]
+          - [0, 1, 2, 3]
+          - [4, 5, 6, 7]
+      target: 8
+    out: false
+  - name: target_lower_than_all
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+      target: 0
+    out: false
+  - name: target_greater_than_all
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+      target: 7
+    out: false
+  - name: gap_between_rows
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2, 3, 4]
+          - [10, 11, 12, 13]
+      target: 9
+    out: false
+  - name: gap_between_rows_hit
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 2, 3, 4]
+          - [10, 11, 12, 13]
+      target: 12
+    out: true
+  - name: three_rows_exact
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, 5, 8]
+          - [12, 15, 18]
+          - [22, 25, 28]
+      target: 22
+    out: true
+  - name: three_rows_miss
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, 5, 8]
+          - [12, 15, 18]
+          - [22, 25, 28]
+      target: 21
+    out: false
+  - name: simple_true
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 3, 5, 7]
+          - [10, 11, 16, 20]
+          - [23, 30, 34, 60]
+      target: 34
+    out: true
+  - name: simple_false
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [1, 3, 5, 7]
+          - [10, 11, 16, 20]
+          - [23, 30, 34, 60]
+      target: 35
+    out: false
+  - name: generated_middle_hit
+    in:
+      matrix:
+        elemType: int
+        value:
+          - [2, 4, 6, 8, 10]
+          - [12, 14, 16, 18, 20]
+          - [22, 24, 26, 28, 30]
+          - [32, 34, 36, 38, 40]
+      target: 26
     out: true

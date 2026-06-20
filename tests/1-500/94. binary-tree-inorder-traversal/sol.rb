@@ -12,3 +12,7 @@ def inorderTraversal(root)
   traverse.call(root)
   result
 end
+
+def inorder_traversal(root)
+  inorderTraversal(root)
+end

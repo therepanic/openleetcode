@@ -18,135 +18,281 @@ entry:
     swift: Solution().generateParenthesis({n})
     typescript: generateParenthesis({n})
 judge:
-  type: ignore_order
+  type: exact
 limits:
-  time_ms: 2000
+  time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check(n, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n        return result\n\
-      \n    def check(self, n, result):\n        result = self._norm(result)\n   \
-      \     if not isinstance(result, list): return False\n        def is_valid(s):\n\
-      \            count = 0\n            for char in s:\n                if char\
-      \ == '(':\n                    count += 1\n                else:\n         \
-      \           count -= 1\n                if count < 0:\n                    return\
-      \ False\n            return count == 0\n        def catalan(n):\n          \
-      \  if n <= 1:\n                return 1\n            res = 0\n            for\
-      \ i in range(n):\n                res += catalan(i) * catalan(n - 1 - i)\n \
-      \           return res\n        if len(result) != catalan(n): return False\n\
-      \        return all(is_valid(s) for s in result) and len(set(result)) == len(result)\n"
-seed: 42
+    call: Checker().generateParenthesis(n, {result})
+    checker: |
+      class Checker:
+          def generateParenthesis(self, n, result):
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, str) for x in result):
+                  return False
+
+              expected = []
+
+              def backtrack(s, open_count, close_count):
+                  if open_count == n and close_count == n:
+                      expected.append(s)
+                      return
+                  if open_count < n:
+                      backtrack(s + "(", open_count + 1, close_count)
+                  if close_count < open_count:
+                      backtrack(s + ")", open_count, close_count + 1)
+
+              backtrack("", 0, 0)
+              return sorted(result) == sorted(expected) and len(result) == len(set(result))
+seed: 22
 tests:
-  - name: n=1
-    in:
-      n: 1
-    out:
-      - ()
-  - name: n=2
-    in:
-      n: 2
-    out:
-      - (())
-      - ()()
-  - name: n=3
+  - name: example 1
     in:
       n: 3
-    out:
-      - ((()))
-      - (()())
-      - (())()
-      - ()(())
-      - ()()()
-  - name: n=4_gen
+  - name: example 2
+    in:
+      n: 1
+  - name: n equals 2
+    in:
+      n: 2
+  - name: n equals 4
     in:
       n: 4
-  - name: n=5_gen
+  - name: n equals 5
     in:
       n: 5
-  - name: n=6_gen
+  - name: n equals 6
     in:
       n: 6
-  - name: n=7_gen
+  - name: n equals 7
     in:
       n: 7
-  - name: n=8_max
+  - name: n equals 8
     in:
       n: 8
-  - name: n=1_rep
+  - name: generated 01
+    seed: 101
     in:
-      n: 1
-    out:
-      - ()
-  - name: n=2_rep
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 02
+    seed: 102
     in:
-      n: 2
-    out:
-      - (())
-      - ()()
-  - name: n=3_rep
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 03
+    seed: 103
     in:
-      n: 3
-    out:
-      - ((()))
-      - (()())
-      - (())()
-      - ()(())
-      - ()()()
-  - name: n=4_extra
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 04
+    seed: 104
     in:
-      n: 4
-  - name: n=5_extra
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 05
+    seed: 105
     in:
-      n: 5
-  - name: n=6_extra
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 06
+    seed: 106
     in:
-      n: 6
-  - name: n=7_extra
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 07
+    seed: 107
     in:
-      n: 7
-  - name: n=8_extra
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 08
+    seed: 108
     in:
-      n: 8
-  - name: n=1_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 09
+    seed: 109
     in:
-      n: 1
-  - name: n=2_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 10
+    seed: 110
     in:
-      n: 2
-  - name: n=3_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 11
+    seed: 111
     in:
-      n: 3
-  - name: n=4_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 12
+    seed: 112
     in:
-      n: 4
-  - name: n=5_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 13
+    seed: 113
     in:
-      n: 5
-  - name: n=6_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 14
+    seed: 114
     in:
-      n: 6
-  - name: n=7_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 15
+    seed: 115
     in:
-      n: 7
-  - name: n=8_loop
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 16
+    seed: 116
     in:
-      n: 8
-  - name: n=1_final
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 17
+    seed: 117
     in:
-      n: 1
-  - name: n=2_final
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 18
+    seed: 118
     in:
-      n: 2
-  - name: n=3_final
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 19
+    seed: 119
     in:
-      n: 3
-  - name: n=4_final
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 20
+    seed: 120
     in:
-      n: 4
-  - name: n=5_final
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 21
+    seed: 121
     in:
-      n: 5
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 22
+    seed: 122
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 23
+    seed: 123
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 24
+    seed: 124
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 25
+    seed: 125
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 26
+    seed: 126
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 27
+    seed: 127
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 28
+    seed: 128
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 29
+    seed: 129
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 30
+    seed: 130
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 31
+    seed: 131
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: generated 32
+    seed: 132
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8

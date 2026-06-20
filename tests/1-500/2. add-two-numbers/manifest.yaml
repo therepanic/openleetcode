@@ -1,81 +1,93 @@
 entry:
   id: 2
-  title: add-two-numbers
+  title: "add-two-numbers"
   params:
     l1:
       type: list_node
     l2:
       type: list_node
   call:
-    cpp: listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))
-    rust: ListNode::list_node_to_array(Solution::add_two_numbers({l1}, {l2}))
-    python3: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
-    python2: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
-    ruby: list_node_to_array(add_two_numbers({l1}, {l2}))
-    java: ListNode.listNodeToArray(new Solution().addTwoNumbers({l1}, {l2}))
-    csharp: ListNode.ListNodeToArray(new Solution().AddTwoNumbers({l1}, {l2}))
-    kotlin: listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))
-    go: listNodeToArray(addTwoNumbers({l1}, {l2}))
-    dart: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
-    swift: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
-    typescript: listNodeToArray(addTwoNumbers({l1}, {l2}))
+    cpp: "listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))"
+    rust: "ListNode::list_node_to_array(Solution::add_two_numbers({l1}, {l2}))"
+    python3: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    python2: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    ruby: "list_node_to_array(add_two_numbers({l1}, {l2}))"
+    java: "ListNode.listNodeToArray(new Solution().addTwoNumbers({l1}, {l2}))"
+    csharp: "ListNode.ListNodeToArray(new Solution().AddTwoNumbers({l1}, {l2}))"
+    kotlin: "listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))"
+    go: "listNodeToArray(addTwoNumbers({l1}, {l2}))"
+    dart: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    swift: "list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))"
+    typescript: "listNodeToArray(addTwoNumbers({l1}, {l2}))"
+
 judge:
   type: exact
+
 limits:
-  time_ms: 1000
-  memory_mb: 256
+  time_ms: 200
+  memory_mb: 300
+
 oracle:
   python3:
-    call: Checker().check(l1, l2, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, res):\n        if isinstance(res,\
-      \ str):\n            try:\n                res = json.loads(res)\n         \
-      \   except Exception:\n                pass\n        return res\n\n    def check(self,\
-      \ l1, l2, res):\n        res = self._norm(res)\n        def to_int(arr):\n \
-      \           return sum(d * (10**i) for i, d in enumerate(arr))\n        def\
-      \ to_arr(n):\n            if n == 0: return [0]\n            out = []\n    \
-      \        while n > 0:\n                out.append(n % 10)\n                n\
-      \ //= 10\n            return out\n        return to_arr(to_int(l1) + to_int(l2))\
-      \ == res\n"
-seed: 42
+    call: "Checker().addTwoNumbers(l1, l2, {result})"
+    checker: |
+      class Checker:
+          def addTwoNumbers(self, l1, l2, result) -> bool:
+              def to_digits(node):
+                  digits = []
+                  seen = 0
+                  while node is not None:
+                      if not hasattr(node, 'val') or not hasattr(node, 'next'):
+                          return None
+                      val = node.val
+                      if not isinstance(val, int) or val < 0 or val > 9:
+                          return None
+                      digits.append(val)
+                      node = node.next
+                      seen += 1
+                      if seen > 200:
+                          return None
+                  return digits
+
+              a = to_digits(l1)
+              b = to_digits(l2)
+              r = to_digits(result)
+              if a is None or b is None or r is None:
+                  return False
+
+              i = 0
+              carry = 0
+              expected = []
+              while i < len(a) or i < len(b) or carry:
+                  x = a[i] if i < len(a) else 0
+                  y = b[i] if i < len(b) else 0
+                  total = x + y + carry
+                  expected.append(total % 10)
+                  carry = total // 10
+                  i += 1
+              return r == expected
+
+seed: 2002
+
 tests:
-  - name: example 1
+  - name: "example_1"
     in:
-      l1:
-        - 2
-        - 4
-        - 3
-      l2:
-        - 5
-        - 6
-        - 4
+      l1: [2, 4, 3]
+      l2: [5, 6, 4]
     out:
       - 7
       - 0
       - 8
-  - name: example 2
+  - name: "example_2"
     in:
-      l1:
-        - 0
-      l2:
-        - 0
+      l1: [0]
+      l2: [0]
     out:
       - 0
-  - name: example 3
+  - name: "example_3"
     in:
-      l1:
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-      l2:
-        - 9
-        - 9
-        - 9
-        - 9
+      l1: [9, 9, 9, 9, 9, 9, 9]
+      l2: [9, 9, 9, 9]
     out:
       - 8
       - 9
@@ -85,339 +97,770 @@ tests:
       - 0
       - 0
       - 1
-  - name: different lengths
+  - name: "single_digit_no_carry"
     in:
-      l1:
-        - 1
-        - 2
-      l2:
-        - 0
-        - 8
-        - 5
+      l1: [1]
+      l2: [2]
     out:
-      - 1
-      - 0
-      - 6
-  - name: single digit carry
+      - 3
+  - name: "single_digit_with_carry"
     in:
-      l1:
-        - 5
-      l2:
-        - 5
+      l1: [5]
+      l2: [5]
     out:
       - 0
       - 1
-  - name: trailing zero result
+  - name: "one_list_longer_1"
     in:
-      l1:
-        - 9
-        - 9
-      l2:
-        - 1
+      l1: [1, 8]
+      l2: [0]
+    out:
+      - 1
+      - 8
+  - name: "one_list_longer_2"
+    in:
+      l1: [0]
+      l2: [1, 8]
+    out:
+      - 1
+      - 8
+  - name: "different_lengths_with_carry"
+    in:
+      l1: [9, 9]
+      l2: [1]
     out:
       - 0
       - 0
       - 1
-  - name: max length single digit
+  - name: "same_length_final_carry"
     in:
-      l1:
-        - 1
-      l2:
-        - 8
+      l1: [1, 2, 3]
+      l2: [9, 9, 9]
     out:
+      - 0
+      - 2
+      - 3
+      - 1
+  - name: "alternating_digits"
+    in:
+      l1: [1, 0, 1, 0, 1]
+      l2: [9, 9, 9, 9, 9]
+    out:
+      - 0
+      - 0
+      - 1
+      - 0
+      - 1
+      - 1
+  - name: "carry_chain_short"
+    in:
+      l1: [9, 9, 1]
+      l2: [1]
+    out:
+      - 0
+      - 0
+      - 2
+  - name: "carry_chain_middle"
+    in:
+      l1: [2, 9, 9]
+      l2: [8, 0, 1]
+    out:
+      - 0
+      - 0
+      - 1
+      - 1
+  - name: "zeros_and_carry"
+    in:
+      l1: [0, 0, 1]
+      l2: [0, 0, 9]
+    out:
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "ends_with_carry"
+    in:
+      l1: [9, 9, 9]
+      l2: [1, 0, 0]
+    out:
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "mixed_lengths_1"
+    in:
+      l1: [3, 4, 2]
+      l2: [4, 6, 5]
+    out:
+      - 7
+      - 0
+      - 8
+  - name: "mixed_lengths_2"
+    in:
+      l1: [8, 1]
+      l2: [0, 8, 9]
+    out:
+      - 8
       - 9
-  - name: random small lists
+      - 9
+  - name: "mixed_lengths_3"
     in:
-      l1:
-        - 1
-        - 2
-        - 3
-      l2:
-        - 4
-        - 5
-        - 6
+      l1: [6, 7, 8]
+      l2: [4, 5]
     out:
+      - 0
+      - 3
+      - 9
+  - name: "carry_stops_midway"
+    in:
+      l1: [5, 5, 5]
+      l2: [5, 5, 4]
+    out:
+      - 0
+      - 1
+      - 0
+      - 1
+  - name: "all_nines_small"
+    in:
+      l1: [9, 9, 9]
+      l2: [9, 9, 9]
+    out:
+      - 8
+      - 9
+      - 9
+      - 1
+  - name: "longer_left_no_final_carry"
+    in:
+      l1: [7, 3, 2, 5]
+      l2: [1, 6, 7]
+    out:
+      - 8
+      - 9
+      - 9
       - 5
-      - 7
+  - name: "longer_right_no_final_carry"
+    in:
+      l1: [1, 6, 7]
+      l2: [7, 3, 2, 5]
+    out:
+      - 8
       - 9
-  - name: all nines
+      - 9
+      - 5
+  - name: "alternating_carry_1"
+    in:
+      l1: [9, 0, 9, 0, 9]
+      l2: [1, 9, 1, 9, 1]
+    out:
+      - 0
+      - 0
+      - 1
+      - 0
+      - 1
+      - 1
+  - name: "alternating_carry_2"
+    in:
+      l1: [4, 9, 4, 9]
+      l2: [6, 0, 6, 0]
+    out:
+      - 0
+      - 0
+      - 1
+      - 0
+      - 1
+  - name: "zero_padded_middle"
+    in:
+      l1: [0, 1, 0, 1, 0]
+      l2: [0, 9, 0, 9, 0]
+    out:
+      - 0
+      - 0
+      - 1
+      - 0
+      - 1
+  - name: "trailing_carry_only"
+    in:
+      l1: [9, 9, 8]
+      l2: [2]
+    out:
+      - 1
+      - 0
+      - 9
+  - name: "borrow_like_shape_1"
+    in:
+      l1: [1, 0, 0, 0]
+      l2: [9, 9, 9]
+    out:
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "borrow_like_shape_2"
+    in:
+      l1: [2, 0, 0, 0]
+      l2: [8, 9, 9]
+    out:
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "many_zeros_1"
+    in:
+      l1: [0, 0, 0, 0, 0]
+      l2: [0, 0, 0, 0, 0]
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+  - name: "many_zeros_2"
+    in:
+      l1: [0, 0, 0, 1]
+      l2: [0, 0, 0, 9]
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "max_length_left_simple"
     in:
       l1:
         - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+      l2: [1]
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "max_length_right_simple"
+    in:
+      l1: [1]
       l2:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "long_carry_mix_1"
+    in:
+      l1: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+      l2: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out:
+      - 0
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: "long_carry_mix_2"
+    in:
+      l1: [5, 4, 3, 2, 1]
+      l2: [5, 5, 6, 7, 8]
+    out:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: "long_carry_mix_3"
+    in:
+      l1: [1, 1, 1, 1, 1, 1]
+      l2: [9, 9, 9, 9, 9, 9]
+    out:
+      - 0
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: "long_carry_mix_4"
+    in:
+      l1: [8, 6, 7, 5, 3, 0, 9]
+      l2: [2, 4, 3, 5, 7, 0, 1]
+    out:
+      - 0
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+  - name: "long_carry_mix_5"
+    in:
+      l1: [4, 4, 4, 4, 4, 4, 4, 4]
+      l2: [6, 6, 6, 6, 6, 6, 6, 6]
+    out:
+      - 0
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: "near_limit_all_nines_1"
+    in:
+      l1:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+      l2:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
         - 9
         - 9
         - 9
     out:
       - 8
-      - 0
-      - 0
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
       - 1
-  - name: l1 longer
+  - name: "near_limit_all_nines_2"
     in:
       l1:
-        - 1
-        - 1
-        - 1
-        - 1
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
       l2:
-        - 2
-        - 2
-    out:
-      - 3
-      - 3
-      - 1
-      - 1
-  - name: l2 longer
-    in:
-      l1:
-        - 3
-        - 3
-      l2:
         - 1
-        - 1
-        - 1
-        - 1
-    out:
-      - 4
-      - 4
-      - 1
-      - 1
-  - name: l1 is zero prefix ignored
-    in:
-      l1:
         - 0
-        - 1
-      l2:
-        - 2
-    out:
-      - 2
-      - 1
-  - name: carry at middle
-    in:
-      l1:
-        - 4
-        - 5
-      l2:
-        - 6
-        - 4
-    out:
-      - 0
-      - 0
-      - 1
-  - name: oracle short valid
-    in:
-      l1:
-        - 2
-        - 1
-        - 4
-      l2:
-        - 5
-        - 8
-        - 3
-    out:
-      - 7
-      - 9
-      - 7
-  - name: oracle medium valid
-    in:
-      l1:
-        - 6
-        - 5
-        - 4
-        - 3
-        - 2
-        - 1
-      l2:
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-    out:
-      - 9
-      - 9
-      - 9
-      - 9
-      - 9
-      - 1
-  - name: oracle carry stress
-    in:
-      l1:
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-      l2:
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-    out:
-      - 8
-      - 9
-      - 9
-      - 9
-      - 9
-      - 9
-      - 1
-  - name: oracle mixed lengths
-    in:
-      l1:
-        - 7
-        - 3
-        - 8
-        - 5
-        - 9
-        - 1
-        - 4
-      l2:
-        - 5
-        - 6
-        - 2
-    out:
-      - 2
-      - 0
-      - 1
-      - 6
-      - 9
-      - 1
-      - 4
-  - name: oracle zeros and nines
-    in:
-      l1:
         - 0
-        - 9
         - 0
-        - 9
         - 0
-        - 9
-        - 1
-      l2:
-        - 9
         - 0
-        - 9
         - 0
-        - 9
         - 0
-        - 1
-    out:
-      - 9
-      - 9
-      - 9
-      - 9
-      - 9
-      - 9
-      - 2
-  - name: large 1
-    in:
-      l1:
-        - 1
-      l2:
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
     out:
       - 0
       - 0
@@ -467,142 +910,6 @@ tests:
       - 0
       - 0
       - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 1
-  - name: large 2
-    in:
-      l1:
-        - 0
-      l2:
-        - 1
-    out:
-      - 1
-  - name: large 3
-    in:
-      l1:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-      l2:
-        - 6
-        - 7
-        - 8
-        - 9
-        - 0
-    out:
-      - 7
-      - 9
-      - 1
-      - 4
-      - 6
-  - name: small carry chain
-    in:
-      l1:
-        - 5
-        - 5
-        - 5
-      l2:
-        - 5
-        - 5
-        - 5
-    out:
-      - 0
-      - 1
-      - 1
-      - 1
-  - name: zero plus hundred
-    in:
-      l1:
-        - 0
-      l2:
-        - 0
-        - 0
-        - 1
-    out:
-      - 0
-      - 0
-      - 1
-  - name: alternating
-    in:
-      l1:
-        - 1
-        - 0
-        - 1
-        - 0
-        - 1
-      l2:
-        - 0
-        - 1
-        - 0
-        - 1
-        - 0
-    out:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-  - name: unequal length carry
-    in:
-      l1:
-        - 9
-        - 9
-      l2:
-        - 1
-    out:
       - 0
       - 0
       - 1

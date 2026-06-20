@@ -1,6 +1,13 @@
 entry:
   id: 40
   title: combination-sum-ii
+  params:
+    candidates:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
   call:
     cpp: Solution().combinationSum2({candidates}, {target})
     rust: Solution::combination_sum2({candidates}, {target})
@@ -14,261 +21,320 @@ entry:
     dart: Solution().combinationSum2({candidates}, {target})
     swift: Solution().combinationSum2({candidates}, {target})
     typescript: combinationSum2({candidates}, {target})
-  params:
-    candidates:
-      type: array
-      items:
-        type: int
-    target:
-      type: int
+
 judge:
-  type: ignore_order
+  type: exact
+
 limits:
-  time_ms: 2000
-  memory_mb: 256
+  time_ms: 200
+  memory_mb: 300
+
 oracle:
   python3:
-    call: Checker().combinationSum2({candidates}, {target}, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if isinstance(result, str):\n           \
-      \ try:\n                result = json.loads(result)\n            except Exception:\n                pass\n        return
-      result\n\n    def combinationSum2(self, candidates, target, result):\n        result = self._norm(result)\n        if
-      not isinstance(result, list): return False\n        for combo in result:\n            if sum(combo) != target: return
-      False\n        from collections import Counter\n        cand_counts = Counter(candidates)\n        for combo in result:\n\
-      \            combo_counts = Counter(combo)\n            for num, count in combo_counts.items():\n                if
-      count > cand_counts[num]: return False\n        seen = set()\n        for combo in result:\n            s = tuple(sorted(combo))\n\
-      \            if s in seen: return False\n            seen.add(s)\n        return True\n"
-seed: 42
+    call: Checker().combinationSum2(candidates, target, {result})
+    checker: |
+      class Checker:
+          def combinationSum2(self, candidates, target, result) -> bool:
+              if not isinstance(result, list):
+                  return False
+
+              def normalize_combo(combo):
+                  if not isinstance(combo, list):
+                      return None
+                  if any((not isinstance(x, int)) for x in combo):
+                      return None
+                  if any(combo[i] > combo[i + 1] for i in range(len(combo) - 1)):
+                      return None
+                  return tuple(combo)
+
+              seen = set()
+              normalized = []
+              for combo in result:
+                  norm = normalize_combo(combo)
+                  if norm is None:
+                      return False
+                  if sum(norm) != target:
+                      return False
+                  used = {}
+                  for x in norm:
+                      used[x] = used.get(x, 0) + 1
+                  for x, cnt in used.items():
+                      if cnt > candidates.count(x):
+                          return False
+                  if norm in seen:
+                      return False
+                  seen.add(norm)
+                  normalized.append(norm)
+
+              expected = []
+              n = len(candidates)
+              candidates = sorted(candidates)
+
+              def backtrack(start, remaining, path):
+                  if remaining == 0:
+                      expected.append(tuple(path))
+                      return
+                  prev = None
+                  for i in range(start, n):
+                      x = candidates[i]
+                      if prev == x:
+                          continue
+                      if x > remaining:
+                          break
+                      path.append(x)
+                      backtrack(i + 1, remaining - x, path)
+                      path.pop()
+                      prev = x
+
+              backtrack(0, target, [])
+              return set(normalized) == set(expected)
+
+seed: 40
+
 tests:
-  - name: Example 1
+  - name: ex1_basic
     in:
-      candidates:
-        - 10
-        - 1
-        - 2
-        - 7
-        - 6
-        - 1
-        - 5
+      candidates: [10, 1, 2, 7, 6, 1, 5]
       target: 8
-    out:
-      - - 1
-        - 1
-        - 6
-      - - 1
-        - 2
-        - 5
-      - - 1
-        - 7
-      - - 2
-        - 6
-  - name: Example 2
+
+  - name: ex2_basic
     in:
-      candidates:
-        - 2
-        - 5
-        - 2
-        - 1
-        - 2
+      candidates: [2, 5, 2, 1, 2]
       target: 5
-    out:
-      - - 1
-        - 2
-        - 2
-      - - 5
-  - name: Single element match
+
+  - name: single_exact_match
     in:
-      candidates:
-        - 5
-      target: 5
-    out:
-      - - 5
-  - name: Single element no match
-    in:
-      candidates:
-        - 5
+      candidates: [3]
       target: 3
-    out: []
-  - name: All same values targets
+
+  - name: single_no_match
     in:
-      candidates:
-        - 1
-        - 1
-        - 1
-        - 1
+      candidates: [4]
+      target: 3
+
+  - name: all_duplicates_one_solution
+    in:
+      candidates: [1, 1, 1, 1, 1]
       target: 2
-    out:
-      - - 1
-        - 1
-  - name: Target unreachable with small values
+
+  - name: all_duplicates_many_copies
     in:
-      candidates:
-        - 1
-        - 1
-        - 1
+      candidates: [2, 2, 2, 2, 2, 2]
       target: 4
-    out: []
-  - name: Target unreachable with large values
+
+  - name: no_solution_small
     in:
-      candidates:
-        - 10
-        - 20
-        - 30
+      candidates: [9, 10, 11]
+      target: 8
+
+  - name: uses_each_once_only
+    in:
+      candidates: [1, 2, 3, 4]
       target: 5
-    out: []
-  - name: Exact target sum
+
+  - name: many_paths_same_sum
     in:
-      candidates:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-      target: 15
-    out:
-      - - 1
-        - 2
-        - 3
-        - 4
-        - 5
-  - name: Subset sum exists
-    in:
-      candidates:
-        - 2
-        - 3
-        - 6
-        - 7
-      target: 7
-    out:
-      - - 7
-  - name: Multiple small combinations
-    in:
-      candidates:
-        - 1
-        - 2
-        - 3
-      target: 3
-    out:
-      - - 1
-        - 2
-      - - 3
-  - name: Duplicate candidates handling strictly once
-    in:
-      candidates:
-        - 2
-        - 2
-        - 2
-        - 2
+      candidates: [1, 1, 2, 2, 3, 3]
       target: 4
-    out:
-      - - 2
-        - 2
-  - name: Large target impossible
+
+  - name: target_one
     in:
-      candidates:
-        - 1
-        - 1
-        - 1
-      target: 30
-    out: []
-  - name: Mixed small candidates
-    in:
-      candidates:
-        - 1
-        - 1
-        - 2
-        - 2
-        - 3
-      target: 4
-    out:
-      - - 1
-        - 1
-        - 2
-      - - 1
-        - 3
-      - - 2
-        - 2
-  - name: Single candidate repeated
-    in:
-      candidates:
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-      target: 2
-    out:
-      - - 1
-        - 1
-  - name: Descending inputs
-    in:
-      candidates:
-        - 5
-        - 4
-        - 3
-        - 2
-        - 1
-      target: 3
-    out:
-      - - 1
-        - 2
-      - - 3
-  - name: Generated test 1
+      candidates: [1, 2, 2, 3]
+      target: 1
+
+  - name: generated_small_1
+    seed: 101
     in:
       candidates:
         gen: array
+        distinct: false
+        sorted: false
         len:
           gen: int
-          min: 5
-          max: 10
+          min: 1
+          max: 12
         of:
           gen: int
           min: 1
-          max: 10
-      target: 10
-  - name: Generated test 2
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_small_2
+    seed: 102
     in:
       candidates:
         gen: array
+        distinct: false
+        sorted: false
         len:
           gen: int
-          min: 5
-          max: 10
+          min: 1
+          max: 12
         of:
           gen: int
           min: 1
-          max: 5
-      target: 5
-  - name: Generated test 3
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_small_3
+    seed: 103
     in:
       candidates:
         gen: array
+        distinct: false
+        sorted: false
         len:
-          gen: int
-          min: 10
-          max: 20
-        of:
           gen: int
           min: 1
-          max: 8
-      target: 12
-  - name: Generated test 4
-    in:
-      candidates:
-        gen: array
-        len:
-          gen: int
-          min: 10
           max: 15
         of:
           gen: int
           min: 1
-          max: 5
-      target: 8
-  - name: Generated test 5
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_small_4
+    seed: 104
     in:
       candidates:
         gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 1
+          max: 15
+        of:
+          gen: int
+          min: 1
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_small_5
+    seed: 105
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 1
+          max: 15
+        of:
+          gen: int
+          min: 1
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: stress_all_large_values
+    seed: 201
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 50
+          max: 50
+      target: 30
+
+  - name: stress_max_size_dense_duplicates
+    seed: 202
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 20
+      target: 20
+
+  - name: stress_max_size_sparse
+    seed: 203
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 50
+      target: 30
+
+  - name: edge_high_target_no_solution
+    in:
+      candidates: [50, 50, 50, 50, 50]
+      target: 1
+
+  - name: edge_all_ones_target_three
+    in:
+      candidates: [1, 1, 1, 1, 1, 1, 1, 1]
+      target: 3
+
+  - name: edge_pair_with_duplicates
+    in:
+      candidates: [1, 1, 2, 2, 2, 3]
+      target: 4
+
+  - name: edge_three_way_combo
+    in:
+      candidates: [1, 2, 2, 3, 4, 4]
+      target: 6
+
+  - name: edge_multiple_same_value_paths
+    in:
+      candidates: [2, 2, 2, 3, 3, 4]
+      target: 7
+
+  - name: edge_target_equals_max_single
+    in:
+      candidates: [5, 6, 7, 8]
+      target: 8
+
+  - name: edge_target_needs_two_duplicates
+    in:
+      candidates: [4, 4, 4, 4]
+      target: 8
+
+  - name: generated_medium_1
+    seed: 301
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
         len:
           gen: int
           min: 20
@@ -276,61 +342,137 @@ tests:
         of:
           gen: int
           min: 1
-          max: 10
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_medium_2
+    seed: 302
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 20
+          max: 30
+        of:
+          gen: int
+          min: 1
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_medium_3
+    seed: 303
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 20
+          max: 30
+        of:
+          gen: int
+          min: 1
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_medium_4
+    seed: 304
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 20
+          max: 30
+        of:
+          gen: int
+          min: 1
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: generated_medium_5
+    seed: 305
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 20
+          max: 30
+        of:
+          gen: int
+          min: 1
+          max: 50
+      target:
+        gen: int
+        min: 1
+        max: 30
+
+  - name: stress_target_midrange
+    seed: 401
+    in:
+      candidates:
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 50
       target: 15
-  - name: Minimum constraints
+
+  - name: stress_target_upper_bound
+    seed: 402
     in:
       candidates:
-        - 1
-      target: 1
-    out:
-      - - 1
-  - name: Maximum target
-    in:
-      candidates:
-        - 30
-        - 1
+        gen: array
+        distinct: false
+        sorted: false
+        len:
+          gen: int
+          min: 100
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 50
       target: 30
-    out:
-      - - 30
-  - name: All same values many duplicates
+
+  - name: edge_only_high_values
     in:
-      candidates:
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-      target: 4
-    out:
-      - - 2
-        - 2
-  - name: Sparse values
+      candidates: [30, 30, 30, 30, 30]
+      target: 30
+
+  - name: edge_solution_requires_skipping_duplicates
     in:
-      candidates:
-        - 1
-        - 50
-        - 1
-        - 50
-      target: 51
-    out:
-      - - 1
-        - 50
-  - name: Just over max candidate length
+      candidates: [1, 1, 1, 2, 2, 5]
+      target: 6
+
+  - name: edge_exactly_two_items
     in:
-      candidates:
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 2
-      target: 3
-    out:
-      - - 1
-        - 1
-        - 1
-      - - 1
-        - 2
+      candidates: [6, 1, 4, 2]
+      target: 6

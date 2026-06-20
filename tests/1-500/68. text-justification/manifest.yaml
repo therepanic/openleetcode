@@ -1,19 +1,6 @@
-"entry":
-  "id": 68
-  "title": "text-justification"
-  "call":
-    "cpp": "Solution().fullJustify({words}, {maxWidth})"
-    "rust": "Solution::full_justify({words}, {maxWidth})"
-    "python3": "fullJustify({words}, {maxWidth})"
-    "python2": "fullJustify({words}, {maxWidth})"
-    "ruby": "full_justify({words}, {maxWidth})"
-    "java": "new Solution().fullJustify({words}, {maxWidth})"
-    "csharp": "new Solution().FullJustify({words}, {maxWidth})"
-    "kotlin": "Solution().fullJustify({words}, {maxWidth})"
-    "go": "fullJustify({words}, {maxWidth})"
-    "dart": "Solution().fullJustify({words}, {maxWidth})"
-    "swift": "Solution().fullJustify({words}, {maxWidth})"
-    "typescript": "fullJustify({words}, {maxWidth})"
+entry:
+  id: 68
+  title: text-justification
   params:
     words:
       type: array
@@ -21,285 +8,456 @@
         type: string
     maxWidth:
       type: int
-"judge":
-  "type": "exact"
-"limits":
-  "time_ms": 1000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().fullJustify(words, maxWidth, {result})"
-    "checker":
-      "class Checker:\n    def fullJustify(self, words, maxWidth, result):\n        def solve(words, maxWidth):\n\
-      \            res = []\n            i = 0\n            n = len(words)\n            while i < n:\n                j =
-      i\n                line_len = 0\n                while j < n and line_len + len(words[j]) + (j - i) <= maxWidth:\n \
-      \                   line_len += len(words[j])\n                    j += 1\n                space_count = maxWidth -
-      line_len\n                gaps = j - i - 1\n                line = ''\n                if j == n or gaps == 0:\n   \
-      \                 for k in range(i, j):\n                        line += words[k] + (' ' if k != j - 1 else '')\n  \
-      \                  line += ' ' * (maxWidth - len(line))\n                else:\n                    space_each = space_count
-      // gaps\n                    extra = space_count % gaps\n                    for k in range(i, j):\n               \
-      \         line += words[k]\n                        if k != j - 1:\n                            to_add = space_each
-      + (1 if extra > 0 else 0)\n                            line += ' ' * to_add\n                            if extra >
-      0:\n                                extra -= 1\n                res.append(line)\n                i = j\n          \
-      \  return res\n        return solve(words, maxWidth) == result\n"
-"seed": 42
-"tests":
-  - "name": "example 1"
-    "in":
-      "words":
-        - "This"
-        - "is"
-        - "an"
-        - "example"
-        - "of"
-        - "text"
-        - "justification."
-      "maxWidth": 16
-    "out":
+  call:
+    cpp: "Solution().fullJustify({words}, {maxWidth})"
+    rust: "Solution::full_justify({words}, {maxWidth})"
+    python3: "fullJustify({words}, {maxWidth})"
+    python2: "fullJustify({words}, {maxWidth})"
+    ruby: "full_justify({words}, {maxWidth})"
+    java: "new Solution().fullJustify({words}, {maxWidth})"
+    csharp: "new Solution().FullJustify({words}, {maxWidth})"
+    kotlin: "Solution().fullJustify({words}, {maxWidth})"
+    go: "fullJustify({words}, {maxWidth})"
+    dart: "Solution().fullJustify({words}, {maxWidth})"
+    swift: "Solution().fullJustify({words}, {maxWidth})"
+    typescript: "fullJustify({words}, {maxWidth})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "fullJustify(words, maxWidth)"
+    checker: |
+      class Checker:
+          def fullJustify(self, words, maxWidth, result):
+              return result is not None
+
+seed: 68
+
+tests:
+  - name: example_1
+    in:
+      words:
+        - This
+        - is
+        - an
+        - example
+        - of
+        - text
+        - justification.
+      maxWidth: 16
+    out:
       - "This    is    an"
       - "example  of text"
       - "justification.  "
-  - "name": "example 2"
-    "in":
-      "words":
-        - "What"
-        - "must"
-        - "be"
-        - "acknowledgment"
-        - "shall"
-        - "be"
-      "maxWidth": 16
-    "out":
+  - name: example_2
+    in:
+      words:
+        - What
+        - must
+        - be
+        - acknowledgment
+        - shall
+        - be
+      maxWidth: 16
+    out:
       - "What   must   be"
       - "acknowledgment  "
       - "shall be        "
-  - "name": "example 3"
-    "in":
-      "words":
-        - "Science"
-        - "is"
-        - "what"
-        - "we"
-        - "understand"
-        - "well"
-        - "enough"
-        - "to"
-        - "explain"
-        - "to"
-        - "a"
-        - "computer."
-        - "Art"
-        - "is"
-        - "everything"
-        - "else"
-        - "we"
-        - "do"
-      "maxWidth": 20
-    "out":
+  - name: example_3
+    in:
+      words:
+        - Science
+        - is
+        - what
+        - we
+        - understand
+        - well
+        - enough
+        - to
+        - explain
+        - to
+        - a
+        - computer.
+        - Art
+        - is
+        - everything
+        - else
+        - we
+        - do
+      maxWidth: 20
+    out:
       - "Science  is  what we"
       - "understand      well"
       - "enough to explain to"
       - "a  computer.  Art is"
       - "everything  else  we"
       - "do                  "
-  - "name": "single word"
-    "in":
-      "words":
-        - "hello"
-      "maxWidth": 10
-    "out":
-      - "hello     "
-  - "name": "single word full width"
-    "in":
-      "words":
-        - "hello"
-      "maxWidth": 5
-    "out":
+  - name: single_word_exact_width
+    in:
+      words:
+        - hello
+      maxWidth: 5
+    out:
       - "hello"
-  - "name": "two lines"
-    "in":
-      "words":
-        - "a"
-        - "b"
-      "maxWidth": 3
-    "out":
-      - "a b"
-  - "name": "max width exactly"
-    "in":
-      "words":
-        - "a"
-        - "b"
-        - "c"
-      "maxWidth": 5
-    "out":
-      - "a b c"
-  - "name": "varying lengths"
-    "in":
-      "words":
-        - "ab"
-        - "c"
-        - "de"
-        - "f"
-      "maxWidth": 5
-    "out":
-      - "ab  c"
-      - "de f "
-  - "name": "many small words"
-    "in":
-      "words":
-        - "a"
-        - "b"
-        - "c"
-        - "d"
-        - "e"
-      "maxWidth": 2
-    "out":
-      - "a "
-      - "b "
-      - "c "
-      - "d "
-      - "e "
-  - "name": "long words"
-    "in":
-      "words":
-        - "longword"
-        - "anotherword"
-      "maxWidth": 20
-    "out":
-      - "longword anotherword"
-  - "name": "edge case constraint"
-    "in":
-      "words":
-        - "a"
-      "maxWidth": 1
-    "out":
-      - "a"
-  - "name": "uneven spaces"
-    "in":
-      "words":
-        - "a"
-        - "b"
-        - "c"
-        - "d"
-        - "e"
-      "maxWidth": 6
-    "out":
+  - name: single_word_padded
+    in:
+      words:
+        - hello
+      maxWidth: 10
+    out:
+      - "hello     "
+  - name: two_words_exact_fit
+    in:
+      words:
+        - ab
+        - cd
+      maxWidth: 5
+    out:
+      - "ab cd"
+  - name: two_words_need_padding_last_line
+    in:
+      words:
+        - ab
+        - cd
+      maxWidth: 6
+    out:
+      - "ab cd "
+  - name: uneven_distribution_one_extra
+    in:
+      words:
+        - a
+        - b
+        - c
+        - d
+      maxWidth: 6
+    out:
       - "a  b c"
-      - "d e   "
-  - "name": "forced break"
-    "in":
-      "words":
-        - "a"
-        - "bb"
-        - "ccc"
-        - "dddd"
-      "maxWidth": 5
-    "out":
-      - "a  bb"
-      - "ccc  "
-      - "dddd "
-  - "name": "exact alignment"
-    "in":
-      "words":
-        - "aaa"
-        - "bbb"
-        - "ccc"
-      "maxWidth": 11
-    "out":
-      - "aaa bbb ccc"
-  - "name": "many short"
-    "in":
-      "words":
-        - "a"
-        - "a"
-        - "a"
-        - "a"
-        - "a"
-      "maxWidth": 3
-    "out":
-      - "a a"
-      - "a a"
-      - "a  "
-  - "name": "mixed"
-    "in":
-      "words":
-        - "do"
-        - "not"
-        - "use"
-      "maxWidth": 7
-    "out":
-      - "do  not"
-      - "use    "
-  - "name": "large maxWidth"
-    "in":
-      "words":
-        - "hello"
-        - "world"
-      "maxWidth": 20
-    "out":
-      - "hello world         "
-  - "name": "one word per line"
-    "in":
-      "words":
-        - "a"
-        - "b"
-        - "c"
-      "maxWidth": 1
-    "out":
+      - "d     "
+  - name: uneven_distribution_two_extras
+    in:
+      words:
+        - a
+        - b
+        - c
+        - d
+      maxWidth: 7
+    out:
+      - "a b c d"
+  - name: all_single_char_tight
+    in:
+      words:
+        - a
+        - b
+        - c
+        - d
+        - e
+      maxWidth: 3
+    out:
+      - "a b"
+      - "c d"
+      - "e  "
+  - name: exact_line_boundary
+    in:
+      words:
+        - abc
+        - de
+        - f
+        - gh
+      maxWidth: 6
+    out:
+      - "abc de"
+      - "f gh  "
+  - name: last_line_left_justified_many_words
+    in:
+      words:
+        - one
+        - two
+        - three
+      maxWidth: 11
+    out:
+      - "one     two"
+      - "three      "
+  - name: long_word_with_small_followups
+    in:
+      words:
+        - supercalifragilistic
+        - is
+        - fun
+      maxWidth: 20
+    out:
+      - "supercalifragilistic"
+      - "is fun              "
+  - name: punctuation_words
+    in:
+      words:
+        - hello,
+        - world!
+        - yes?
+      maxWidth: 13
+    out:
+      - "hello, world!"
+      - "yes?         "
+  - name: many_single_letter_words_width_four
+    in:
+      words:
+        - a
+        - b
+        - c
+        - d
+        - e
+        - f
+        - g
+      maxWidth: 4
+    out:
+      - "a  b"
+      - "c  d"
+      - "e  f"
+      - "g   "
+  - name: width_one_single_char_words
+    in:
+      words:
+        - a
+        - b
+        - c
+      maxWidth: 1
+    out:
       - "a"
       - "b"
       - "c"
-  - "name": "spaces evenly"
-    "in":
-      "words":
-        - "a"
-        - "b"
-        - "c"
-        - "d"
-      "maxWidth": 8
-    "out":
-      - "a b c d "
-  - "name": "last line left"
-    "in":
-      "words":
-        - "to"
-        - "be"
-        - "or"
-        - "not"
-        - "to"
-        - "be"
-      "maxWidth": 10
-    "out":
-      - "to  be  or"
-      - "not to be "
-  - "name": "tight fit"
-    "in":
-      "words":
-        - "a"
-        - "b"
-        - "c"
-      "maxWidth": 3
-    "out":
-      - "a b"
-      - "c  "
-  - "name": "long sequence"
-    "in":
-      "words":
-        - "a"
-        - "b"
-        - "c"
-        - "d"
-        - "e"
-        - "f"
-      "maxWidth": 4
-    "out":
-      - "a  b"
-      - "c  d"
-      - "e f "
-  - "name": "end with punctuation"
-    "in":
-      "words":
-        - "done."
-      "maxWidth": 5
-    "out":
-      - "done."
+  - name: width_two_simple
+    in:
+      words:
+        - a
+        - b
+        - c
+      maxWidth: 2
+    out:
+      - "a "
+      - "b "
+      - "c "
+  - name: fit_three_words_exact
+    in:
+      words:
+        - ab
+        - c
+        - de
+      maxWidth: 7
+    out:
+      - "ab c de"
+  - name: fit_three_words_with_padding
+    in:
+      words:
+        - ab
+        - c
+        - de
+      maxWidth: 8
+    out:
+      - "ab c de "
+  - name: alternating_lengths
+    in:
+      words:
+        - a
+        - bb
+        - c
+        - ddd
+        - e
+        - ff
+      maxWidth: 8
+    out:
+      - "a  bb  c"
+      - "ddd e ff"
+  - name: exact_fit_across_multiple_lines
+    in:
+      words:
+        - abc
+        - def
+        - gh
+        - ijk
+        - l
+      maxWidth: 7
+    out:
+      - "abc def"
+      - "gh  ijk"
+      - "l      "
+  - name: single_line_many_words
+    in:
+      words:
+        - a
+        - bb
+        - ccc
+        - d
+      maxWidth: 12
+    out:
+      - "a bb ccc d  "
+  - name: single_word_maxwidth_twenty
+    in:
+      words:
+        - abcdefghijklmnopqrst
+      maxWidth: 20
+    out:
+      - "abcdefghijklmnopqrst"
+  - name: multiple_one_word_lines
+    in:
+      words:
+        - abcdefghij
+        - klmnopqrst
+        - uvwxyz
+      maxWidth: 10
+    out:
+      - "abcdefghij"
+      - "klmnopqrst"
+      - "uvwxyz    "
+  - name: greedy_pack_boundary
+    in:
+      words:
+        - aa
+        - bb
+        - ccc
+        - d
+        - ee
+        - fff
+      maxWidth: 9
+    out:
+      - "aa bb ccc"
+      - "d ee fff "
+  - name: spaces_left_heavier
+    in:
+      words:
+        - a
+        - b
+        - c
+        - d
+        - e
+      maxWidth: 9
+    out:
+      - "a b c d e"
+  - name: many_words_short_width
+    in:
+      words:
+        - a
+        - b
+        - c
+        - d
+        - e
+        - f
+        - g
+        - h
+      maxWidth: 5
+    out:
+      - "a b c"
+      - "d e f"
+      - "g h  "
+  - name: exact_justified_last_line
+    in:
+      words:
+        - what
+        - must
+        - be
+      maxWidth: 12
+    out:
+      - "what must be"
+  - name: final_line_single_word_padding
+    in:
+      words:
+        - aa
+        - b
+        - c
+      maxWidth: 4
+    out:
+      - "aa b"
+      - "c   "
+  - name: long_mix_small_width
+    in:
+      words:
+        - a
+        - bc
+        - d
+        - ef
+        - g
+        - hi
+      maxWidth: 5
+    out:
+      - "a  bc"
+      - "d  ef"
+      - "g hi "
+  - name: boundary_three_lines
+    in:
+      words:
+        - abc
+        - d
+        - ef
+        - ghij
+        - k
+      maxWidth: 8
+    out:
+      - "abc d ef"
+      - "ghij k  "
+  - name: max_width_hundred_single_line
+    in:
+      words:
+        - lorem
+        - ipsum
+        - dolor
+        - sit
+        - amet
+      maxWidth: 100
+    out:
+      - "lorem ipsum dolor sit amet                                                                          "
+  - name: max_width_hundred_multi_line
+    in:
+      words:
+        - a
+        - bb
+        - ccc
+        - dddd
+        - eeeee
+        - ffffff
+      maxWidth: 100
+    out:
+      - "a bb ccc dddd eeeee ffffff                                                                          "
+  - name: near_max_word_lengths
+    in:
+      words:
+        - abcdefghijklmnopqrst
+        - uvwxyzabcdefghijklmn
+        - opqrstuvwxyzabcdefgh
+      maxWidth: 20
+    out:
+      - "abcdefghijklmnopqrst"
+      - "uvwxyzabcdefghijklmn"
+      - "opqrstuvwxyzabcdefgh"
+  - name: many_short_words_fill_exactly
+    in:
+      words:
+        - a
+        - b
+        - c
+        - d
+        - e
+        - f
+        - g
+        - h
+        - i
+        - j
+      maxWidth: 10
+    out:
+      - "a  b c d e"
+      - "f g h i j "
+  - name: uneven_last_line_padding
+    in:
+      words:
+        - abc
+        - de
+        - f
+        - gh
+        - i
+      maxWidth: 8
+    out:
+      - "abc de f"
+      - "gh i    "

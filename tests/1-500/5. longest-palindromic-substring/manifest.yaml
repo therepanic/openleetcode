@@ -6,7 +6,7 @@ entry:
       type: string
   call:
     cpp: Solution().longestPalindrome({s})
-    rust: Solution::longest_palindrome({s}.to_string())
+    rust: Solution::longest_palindrome({s})
     python3: Solution().longestPalindrome({s})
     python2: Solution().longestPalindrome({s})
     ruby: longest_palindrome({s})
@@ -17,153 +17,295 @@ entry:
     dart: Solution().longestPalindrome({s})
     swift: Solution().longestPalindrome({s})
     typescript: longestPalindrome({s})
+
 judge:
   type: exact
+
 limits:
-  time_ms: 2000
-  memory_mb: 256
+  time_ms: 200
+  memory_mb: 300
+
 oracle:
   python3:
-    call: Checker().check(s, {result})
-    checker:
-      "class Checker:\n    def check(self, s, result):\n        if isinstance(result,\
-      \ str):\n            stripped = result.strip()\n            if len(stripped)\
-      \ >= 2 and stripped[0] == '\"' and stripped[-1] == '\"':\n                result\
-      \ = stripped[1:-1]\n        if not result or result not in s:\n            return\
-      \ False\n        if result != result[::-1]:\n            return False\n    \
-      \    n = len(s)\n        def get_len(l, r):\n            while l >= 0 and r\
-      \ < n and s[l] == s[r]:\n                l -= 1\n                r += 1\n  \
-      \          return r - l - 1\n        max_l = 0\n        for i in range(n):\n\
-      \            max_l = max(max_l, get_len(i, i), get_len(i, i + 1))\n        return\
-      \ len(result) == max_l\n"
-seed: 42
+    call: Checker().longestPalindrome(s, {result})
+    checker: |
+      class Checker:
+          def longestPalindrome(self, s, result):
+              if not isinstance(result, str):
+                  return False
+              if len(result) == 0 or len(result) > len(s):
+                  return False
+              if result not in s:
+                  return False
+              if result != result[::-1]:
+                  return False
+
+              def best_length(text):
+                  best = 1
+                  n = len(text)
+                  for center in range(n):
+                      left = right = center
+                      while left >= 0 and right < n and text[left] == text[right]:
+                          best = max(best, right - left + 1)
+                          left -= 1
+                          right += 1
+                      left = center
+                      right = center + 1
+                      while left >= 0 and right < n and text[left] == text[right]:
+                          best = max(best, right - left + 1)
+                          left -= 1
+                          right += 1
+                  return best
+
+              return len(result) == best_length(s)
+
+seed: 20240620
+
 tests:
-  - name: basic babad
+  - name: example_babad
     in:
       s: babad
-    judge:
-      type: exact
-  - name: basic cbbd
+
+  - name: example_cbbd
     in:
       s: cbbd
-    judge:
-      type: exact
-  - name: single char
+
+  - name: single_char_a
     in:
       s: a
-    judge:
-      type: exact
-  - name: two chars identical
+
+  - name: single_char_z
+    in:
+      s: z
+
+  - name: two_equal_chars
     in:
       s: aa
-    judge:
-      type: exact
-  - name: two chars different
+
+  - name: two_different_chars
     in:
       s: ab
-    judge:
-      type: exact
-  - name: all identical
+
+  - name: all_same_short
     in:
       s: aaaaa
-    judge:
-      type: exact
-  - name: palindrome at start
+
+  - name: even_palindrome_middle
     in:
-      s: abaa
-    judge:
-      type: exact
-  - name: palindrome at end
-    in:
-      s: aabba
-    judge:
-      type: exact
-  - name: long palindrome inner
-    in:
-      s: xabcbay
-    judge:
-      type: exact
-  - name: even length
-    in:
-      s: noon
-    judge:
-      type: exact
-  - name: palindrome with digits
-    in:
-      s: "12321"
-    judge:
-      type: exact
-  - name: no long palindrome
-    in:
-      s: abcde
-    judge:
-      type: exact
-  - name: alternating
-    in:
-      s: abababab
-    judge:
-      type: exact
-  - name: large random odd
-    in:
-      s:
-        gen: str
-        len: 100
-        alphabet: ab
-  - name: large random even
-    in:
-      s:
-        gen: str
-        len: 100
-        alphabet: "01"
-  - name: max length 1000 all a
-    in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: a
-  - name: max length 1000 random
-    in:
-      s:
-        gen: str
-        len: 1000
-        alphabet: abc
-  - name: single digit heavy
-    in:
-      s: "999999"
-    judge:
-      type: exact
-  - name: middle palindrome only
-    in:
-      s: abcdefedcba
-    judge:
-      type: exact
-  - name: three repeating
-    in:
-      s: aaabbbaaa
-    judge:
-      type: exact
-  - name: nested symmetry
-    in:
-      s: abacaba
-    judge:
-      type: exact
-  - name: start end symmetry
+      s: abba
+
+  - name: odd_palindrome_middle
     in:
       s: racecar
-    judge:
-      type: exact
-  - name: overlap test 1
+
+  - name: no_long_palindrome
     in:
-      s: ababd
-    judge:
-      type: exact
-  - name: overlap test 2
+      s: abcde
+
+  - name: gen_small_01
+    seed: 101
     in:
-      s: dbaba
-    judge:
-      type: exact
-  - name: alphabet mixed
+      s:
+        gen: str
+        len: 1
+        alphabet: abcd
+
+  - name: gen_small_02
+    seed: 102
     in:
-      s: abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba
-    judge:
-      type: exact
+      s:
+        gen: str
+        len: 2
+        alphabet: abcd
+
+  - name: gen_small_03
+    seed: 103
+    in:
+      s:
+        gen: str
+        len: 3
+        alphabet: abcd
+
+  - name: gen_small_04
+    seed: 104
+    in:
+      s:
+        gen: str
+        len: 4
+        alphabet: abcd
+
+  - name: gen_small_05
+    seed: 105
+    in:
+      s:
+        gen: str
+        len: 5
+        alphabet: abcd
+
+  - name: gen_small_06
+    seed: 106
+    in:
+      s:
+        gen: str
+        len: 6
+        alphabet: abcd
+
+  - name: gen_small_07
+    seed: 107
+    in:
+      s:
+        gen: str
+        len: 7
+        alphabet: abcd
+
+  - name: gen_small_08
+    seed: 108
+    in:
+      s:
+        gen: str
+        len: 8
+        alphabet: abcd
+
+  - name: gen_small_09
+    seed: 109
+    in:
+      s:
+        gen: str
+        len: 9
+        alphabet: abcd
+
+  - name: gen_small_10
+    seed: 110
+    in:
+      s:
+        gen: str
+        len: 10
+        alphabet: abcd
+
+  - name: gen_medium_01
+    seed: 201
+    in:
+      s:
+        gen: str
+        len: 25
+        alphabet: abcde
+
+  - name: gen_medium_02
+    seed: 202
+    in:
+      s:
+        gen: str
+        len: 31
+        alphabet: abcde
+
+  - name: gen_medium_03
+    seed: 203
+    in:
+      s:
+        gen: str
+        len: 47
+        alphabet: abcde
+
+  - name: gen_medium_04
+    seed: 204
+    in:
+      s:
+        gen: str
+        len: 63
+        alphabet: abcde
+
+  - name: gen_medium_05
+    seed: 205
+    in:
+      s:
+        gen: str
+        len: 79
+        alphabet: abcde
+
+  - name: gen_medium_06
+    seed: 206
+    in:
+      s:
+        gen: str
+        len: 101
+        alphabet: abcde
+
+  - name: gen_medium_07
+    seed: 207
+    in:
+      s:
+        gen: str
+        len: 137
+        alphabet: abcde
+
+  - name: gen_medium_08
+    seed: 208
+    in:
+      s:
+        gen: str
+        len: 173
+        alphabet: abcde
+
+  - name: gen_structured_01
+    in:
+      s: abacdfgdcaba
+
+  - name: gen_structured_02
+    in:
+      s: forgeeksskeegfor
+
+  - name: gen_structured_03
+    in:
+      s: abccbaqwerty
+
+  - name: gen_structured_04
+    in:
+      s: qwertytrewq
+
+  - name: gen_structured_05
+    in:
+      s: abcddcbae
+
+  - name: gen_structured_06
+    in:
+      s: xyzzyxabc
+
+  - name: gen_structured_07
+    in:
+      s: noonmadam
+
+  - name: gen_structured_08
+    in:
+      s: aaaaabaaaaa
+
+  - name: gen_large_01
+    seed: 301
+    in:
+      s:
+        gen: str
+        len: 1000
+        alphabet: abcdef
+
+  - name: gen_large_02
+    seed: 302
+    in:
+      s:
+        gen: str
+        len: 1000
+        alphabet: "012345"
+
+  - name: gen_large_03
+    seed: 303
+    in:
+      s:
+        gen: str
+        len: 257
+        alphabet: abcdefgh
+
+  - name: gen_large_04
+    seed: 304
+    in:
+      s:
+        gen: str
+        len: 389
+        alphabet: abcdefgh

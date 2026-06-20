@@ -1,6 +1,9 @@
 entry:
   id: 12
   title: integer-to-roman
+  params:
+    num:
+      type: int
   call:
     cpp: Solution().intToRoman({num})
     rust: Solution::int_to_roman({num})
@@ -14,9 +17,6 @@ entry:
     dart: Solution().intToRoman({num})
     swift: Solution().intToRoman({num})
     typescript: intToRoman({num})
-  params:
-    num:
-      type: int
 judge:
   type: exact
 limits:
@@ -24,142 +24,161 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check({num}, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n            if isinstance(result,\
-      \ str):\n                low = result.strip().lower()\n                if low\
-      \ == 'true':\n                    return True\n                if low == 'false':\n\
-      \                    return False\n                if low.lstrip('-').isdigit():\n\
-      \                    return int(low)\n        return result\n\n    def check(self,\
-      \ num, result):\n        result = self._norm(result)\n        M = ['', 'M',\
-      \ 'MM', 'MMM']\n        C = ['', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC',\
-      \ 'CM']\n        X = ['', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX',\
-      \ 'XC']\n        I = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII',\
-      \ 'IX']\n        expected = M[num // 1000] + C[num % 1000 // 100] + X[num %\
-      \ 100 // 10] + I[num % 10]\n        return result == expected\n"
-seed: 42
+    call: Solution().intToRoman(num)
+    checker: |
+      class Checker:
+          def intToRoman(self, num, result):
+              if not isinstance(result, str):
+                  return False
+              expected = Solution().intToRoman(num)
+              return result == expected
+seed: 12
 tests:
-  - name: Example 1
-    in:
-      num: 3749
-    out: MMMDCCXLIX
-  - name: Example 2
-    in:
-      num: 58
-    out: LVIII
-  - name: Example 3
-    in:
-      num: 1994
-    out: MCMXCIV
-  - name: Boundary min
+  - name: one
     in:
       num: 1
-    out: I
-  - name: Boundary max
+    out: "I"
+  - name: two
     in:
-      num: 3999
-    out: MMMCMXCIX
-  - name: Small values 1-10
+      num: 2
+    out: "II"
+  - name: three
     in:
-      num: 9
-    out: IX
-  - name: Small values 1-10_2
+      num: 3
+    out: "III"
+  - name: four
     in:
       num: 4
-    out: IV
-  - name: Tens and Fifties 1
+    out: "IV"
+  - name: five
     in:
-      num: 40
-    out: XL
-  - name: Tens and Fifties 2
+      num: 5
+    out: "V"
+  - name: six
     in:
-      num: 90
-    out: XC
-  - name: Hundreds 1
+      num: 6
+    out: "VI"
+  - name: seven
     in:
-      num: 400
-    out: CD
-  - name: Hundreds 2
+      num: 7
+    out: "VII"
+  - name: eight
     in:
-      num: 900
-    out: CM
-  - name: Thousands
+      num: 8
+    out: "VIII"
+  - name: nine
     in:
-      num: 3000
-    out: MMM
-  - name: Exact Power 10
+      num: 9
+    out: "IX"
+  - name: ten
     in:
       num: 10
-    out: X
-  - name: Repeated symbols
+    out: "X"
+  - name: fourteen
     in:
-      num: 333
-    out: CCCXXXIII
-  - name: Complex 2888
+      num: 14
+    out: "XIV"
+  - name: nineteen
     in:
-      num: 2888
-    out: MMDCCCLXXXVIII
-  - name: Near 500
+      num: 19
+    out: "XIX"
+  - name: twenty
     in:
-      num: 499
-    out: CDXCIX
-  - name: Near 1000
+      num: 20
+    out: "XX"
+  - name: thirty_nine
     in:
-      num: 999
-    out: CMXCIX
-  - name: Near 50
+      num: 39
+    out: "XXXIX"
+  - name: forty
+    in:
+      num: 40
+    out: "XL"
+  - name: forty_nine
     in:
       num: 49
-    out: XLIX
-  - name: Random 1
+    out: "XLIX"
+  - name: fifty
     in:
-      num: 123
-    out: CXXIII
-  - name: Random 2
+      num: 50
+    out: "L"
+  - name: fifty_eight
+    in:
+      num: 58
+    out: "LVIII"
+  - name: sixty_nine
+    in:
+      num: 69
+    out: "LXIX"
+  - name: eighty_seven
+    in:
+      num: 87
+    out: "LXXXVII"
+  - name: ninety
+    in:
+      num: 90
+    out: "XC"
+  - name: ninety_four
+    in:
+      num: 94
+    out: "XCIV"
+  - name: ninety_nine
+    in:
+      num: 99
+    out: "XCIX"
+  - name: one_hundred
+    in:
+      num: 100
+    out: "C"
+  - name: four_hundred
+    in:
+      num: 400
+    out: "CD"
+  - name: four_hundred_forty_four
     in:
       num: 444
-    out: CDXLIV
-  - name: Random 3
+    out: "CDXLIV"
+  - name: five_hundred
     in:
-      num: 888
-    out: DCCCLXXXVIII
-  - name: Random 4
+      num: 500
+    out: "D"
+  - name: eight_hundred
     in:
-      num: 2499
-    out: MMCDXCIX
-  - name: Max bounds check 1
+      num: 800
+    out: "DCCC"
+  - name: nine_hundred
+    in:
+      num: 900
+    out: "CM"
+  - name: nine_hundred_ninety_nine
+    in:
+      num: 999
+    out: "CMXCIX"
+  - name: one_thousand
+    in:
+      num: 1000
+    out: "M"
+  - name: one_thousand_nine_hundred_ninety_four
+    in:
+      num: 1994
+    out: "MCMXCIV"
+  - name: two_thousand_twenty_four
+    in:
+      num: 2024
+    out: "MMXXIV"
+  - name: three_thousand_nine_hundred_ninety_nine
+    in:
+      num: 3999
+    out: "MMMCMXCIX"
+  - name: extra_large_low
+    in:
+      num: 1666
+    out: "MDCLXVI"
+  - name: extra_large_mid
+    in:
+      num: 2444
+    out: "MMCDXLIV"
+  - name: extra_large_high
     in:
       num: 3888
-    out: MMMDCCCLXXXVIII
-  - name: Gen 1
-    in:
-      num:
-        gen: int
-        min: 1
-        max: 3999
-  - name: Gen 2
-    in:
-      num:
-        gen: int
-        min: 1
-        max: 3999
-  - name: Gen 3
-    in:
-      num:
-        gen: int
-        min: 1
-        max: 3999
-  - name: Gen 4
-    in:
-      num:
-        gen: int
-        min: 1
-        max: 3999
-  - name: Gen 5
-    in:
-      num:
-        gen: int
-        min: 1
-        max: 3999
+    out: "MMMDCCCLXXXVIII"

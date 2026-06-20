@@ -1,6 +1,11 @@
 entry:
   id: 15
   title: 3sum
+  params:
+    nums:
+      type: array
+      items:
+        type: int
   call:
     cpp: Solution().threeSum({nums})
     rust: Solution::three_sum({nums})
@@ -14,33 +19,61 @@ entry:
     dart: Solution().threeSum({nums})
     swift: Solution().threeSum({nums})
     typescript: threeSum({nums})
-  params:
-    nums:
-      type: array
-      items:
-        type: int
 judge:
-  type: ignore_order
+  type: exact
 limits:
-  time_ms: 2000
+  time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check({nums}, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if isinstance(result, str):\n           \
-      \ try:\n                result = json.loads(result)\n            except Exception:\n                pass\n        return
-      result\n\n    def check(self, nums, result):\n        result = self._norm(result)\n        nums.sort()\n        expected
-      = []\n        n = len(nums)\n        for i in range(n - 2):\n            if i > 0 and nums[i] == nums[i - 1]:\n    \
-      \            continue\n            j, k = i + 1, n - 1\n            while j < k:\n                s = nums[i] + nums[j]
-      + nums[k]\n                if s == 0:\n                    expected.append([nums[i], nums[j], nums[k]])\n          \
-      \          j += 1\n                    k -= 1\n                    while j < k and nums[j] == nums[j - 1]:\n       \
-      \                 j += 1\n                elif s < 0:\n                    j += 1\n                else:\n         \
-      \           k -= 1\n        res_sorted = sorted([sorted(x) for x in result])\n        exp_sorted = sorted([sorted(x)
-      for x in expected])\n        return res_sorted == exp_sorted\n"
-seed: 42
+    call: Checker().threeSum(nums, {result})
+    checker: |
+      class Checker:
+          def threeSum(self, nums, result):
+              if not isinstance(result, list):
+                  return False
+
+              seen = set()
+              actual = set()
+              for triplet in result:
+                  if not isinstance(triplet, list) or len(triplet) != 3:
+                      return False
+                  if any(not isinstance(x, int) for x in triplet):
+                      return False
+                  if triplet != sorted(triplet):
+                      return False
+                  if triplet[0] + triplet[1] + triplet[2] != 0:
+                      return False
+                  tup = tuple(triplet)
+                  if tup in seen:
+                      return False
+                  seen.add(tup)
+                  actual.add(tup)
+
+              nums_sorted = sorted(nums)
+              expected = set()
+              n = len(nums_sorted)
+              for i in range(n - 2):
+                  if i > 0 and nums_sorted[i] == nums_sorted[i - 1]:
+                      continue
+                  j, k = i + 1, n - 1
+                  while j < k:
+                      total = nums_sorted[i] + nums_sorted[j] + nums_sorted[k]
+                      if total == 0:
+                          expected.add((nums_sorted[i], nums_sorted[j], nums_sorted[k]))
+                          j += 1
+                          k -= 1
+                          while j < k and nums_sorted[j] == nums_sorted[j - 1]:
+                              j += 1
+                      elif total < 0:
+                          j += 1
+                      else:
+                          k -= 1
+
+              return actual == expected
+seed: 15
 tests:
-  - name: Example 1
+  - name: example_1
     in:
       nums:
         - -1
@@ -49,322 +82,396 @@ tests:
         - 2
         - -1
         - -4
-    out:
-      - - -1
-        - -1
+    seed: 101
+  - name: example_2
+    in:
+      nums:
+        - 0
+        - 1
+        - 1
+    seed: 102
+  - name: example_3
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+    seed: 103
+  - name: smallest_no_solution
+    in:
+      nums:
+        - 1
         - 2
-      - - -1
+        - 3
+    seed: 104
+  - name: smallest_one_solution
+    in:
+      nums:
+        - -1
         - 0
         - 1
-  - name: Example 2
+    seed: 105
+  - name: duplicate_negative_and_positive
+    in:
+      nums:
+        - -2
+        - 0
+        - 0
+        - 2
+        - 2
+    seed: 106
+  - name: duplicate_heavy_mixed
+    in:
+      nums:
+        - -4
+        - -2
+        - -2
+        - -2
+        - 0
+        - 1
+        - 2
+        - 2
+        - 2
+        - 4
+    seed: 107
+  - name: all_zeroes_minimal
     in:
       nums:
         - 0
-        - 1
-        - 1
-    out: []
-  - name: Example 3
+        - 0
+        - 0
+        - 0
+    seed: 108
+  - name: all_positive_longer
     in:
       nums:
-        - 0
-        - 0
-        - 0
-    out:
-      - - 0
-        - 0
-        - 0
-  - name: All zeros
+        - 1
+        - 2
+        - 4
+        - 8
+        - 16
+        - 32
+        - 64
+    seed: 109
+  - name: all_negative_longer
     in:
       nums:
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-    out:
-      - - 0
-        - 0
-        - 0
-  - name: Empty triplets
+        - -64
+        - -32
+        - -16
+        - -8
+        - -4
+        - -2
+        - -1
+    seed: 110
+  - name: multiple_solutions_small
     in:
       nums:
         - -5
-        - -2
-        - 10
-    out: []
-  - name: Minimum length triplet
-    in:
-      nums:
+        - -1
         - -1
         - 0
         - 1
-    out:
-      - - -1
-        - 0
-        - 1
-  - name: Large values boundary
+        - 2
+        - 4
+        - 5
+    seed: 111
+  - name: boundary_values_basic
     in:
       nums:
         - -100000
         - 0
         - 100000
-    out:
-      - - -100000
-        - 0
-        - 100000
-  - name: Duplicates everywhere
+        - -99999
+        - 1
+        - 99998
+    seed: 112
+  - name: boundary_values_no_solution
+    in:
+      nums:
+        - -100000
+        - -99999
+        - -50000
+        - 1
+        - 2
+        - 3
+    seed: 113
+  - name: repeated_zero_and_pairs
     in:
       nums:
         - -1
         - -1
-        - -1
+        - 0
+        - 0
         - 1
         - 1
-        - 1
-        - 0
-        - 0
-        - 0
-    out:
-      - - -1
-        - 0
-        - 1
-      - - 0
-        - 0
-        - 0
-  - name: Negative sum result
-    in:
-      nums:
-        - -5
-        - -5
-        - 10
-        - -2
-        - -8
-        - 10
-        - -5
-        - 15
-    out:
-      - - -8
-        - -2
-        - 10
-      - - -5
-        - -5
-        - 10
-  - name: Mixed order
-    in:
-      nums:
-        - 1
-        - -1
         - 2
         - -2
-        - 3
+    seed: 114
+  - name: dense_solutions_small
+    in:
+      nums:
         - -3
-    out:
-      - - -3
+        - -2
+        - -1
+        - 0
         - 1
         - 2
-      - - -2
-        - -1
         - 3
-  - name: Max constraints small values
+    seed: 115
+  - name: generated_medium_1
+    in:
+      nums:
+        gen: array
+        len: 50
+        of:
+          gen: int
+          min: -20
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 201
+  - name: generated_medium_2
+    in:
+      nums:
+        gen: array
+        len: 64
+        of:
+          gen: int
+          min: -25
+          max: 25
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 202
+  - name: generated_medium_3
+    in:
+      nums:
+        gen: array
+        len: 80
+        of:
+          gen: int
+          min: -40
+          max: 40
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 203
+  - name: generated_medium_4
+    in:
+      nums:
+        gen: array
+        len: 96
+        of:
+          gen: int
+          min: -60
+          max: 60
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 204
+  - name: generated_medium_5
+    in:
+      nums:
+        gen: array
+        len: 120
+        of:
+          gen: int
+          min: -80
+          max: 80
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 205
+  - name: generated_large_1
     in:
       nums:
         gen: array
         len: 3000
         of:
           gen: int
-          min: -10
-          max: 10
-  - name: Large scale test
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 301
+  - name: generated_large_2
     in:
       nums:
         gen: array
-        len: 2000
+        len: 3000
         of:
           gen: int
           min: -100000
           max: 100000
-  - name: Sparse zero presence
-    in:
-      nums:
-        - -100
-        - -50
-        - 0
-        - 50
-        - 100
-    out:
-      - - -100
-        - 0
-        - 100
-      - - -50
-        - 0
-        - 50
-  - name: Multiple identical positive combinations
-    in:
-      nums:
-        - -4
-        - 2
-        - 2
-        - 2
-        - 2
-    out:
-      - - -4
-        - 2
-        - 2
-  - name: Only positive
-    in:
-      nums:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-    out: []
-  - name: Only negative
-    in:
-      nums:
-        - -1
-        - -2
-        - -3
-        - -4
-    out: []
-  - name: Single solution set
-    in:
-      nums:
-        - -10
-        - 2
-        - 3
-        - 4
-        - 5
-        - 8
-    out:
-      - - -10
-        - 2
-        - 8
-  - name: Many duplicate zeros
-    in:
-      nums:
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-    out:
-      - - 0
-        - 0
-        - 0
-  - name: Boundary mixed
-    in:
-      nums:
-        - -100000
-        - -100000
-        - 100000
-        - 100000
-    out: []
-  - name: Reflective inputs
-    in:
-      nums:
-        - -2
-        - -1
-        - 0
-        - 1
-        - 2
-    out:
-      - - -2
-        - 0
-        - 2
-      - - -1
-        - 0
-        - 1
-  - name: Zero, max, min
-    in:
-      nums:
-        - -100000
-        - 0
-        - 100000
-        - -100000
-        - 0
-        - 100000
-    out:
-      - - -100000
-        - 0
-        - 100000
-  - name: Dense near zero
-    in:
-      nums:
-        - -2
-        - -2
-        - -1
-        - -1
-        - 0
-        - 0
-        - 1
-        - 1
-        - 2
-        - 2
-    out:
-      - - -2
-        - 0
-        - 2
-      - - -2
-        - 1
-        - 1
-      - - -1
-        - -1
-        - 2
-      - - -1
-        - 0
-        - 1
-  - name: Alternating sign
-    in:
-      nums:
-        - 5
-        - -5
-        - 5
-        - -5
-        - 5
-        - -5
-    out: []
-  - name: Large test 2
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 302
+  - name: generated_large_3
     in:
       nums:
         gen: array
-        len: 2500
+        len: 2400
         of:
           gen: int
-          min: -50000
-          max: 50000
-  - name: Triplets with same values
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 303
+  - name: generated_large_4
+    in:
+      nums:
+        gen: array
+        len: 2800
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 304
+  - name: generated_large_5
+    in:
+      nums:
+        gen: array
+        len: 2600
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 305
+  - name: crafted_many_duplicates_1
     in:
       nums:
         - -2
         - -2
-        - 4
-        - 4
-    out:
-      - - -2
         - -2
+        - 0
+        - 0
+        - 0
+        - 2
+        - 2
+        - 2
+    seed: 401
+  - name: crafted_many_duplicates_2
+    in:
+      nums:
+        - -1
+        - -1
+        - -1
+        - 1
+        - 1
+        - 1
+        - 0
+        - 0
+        - 0
+    seed: 402
+  - name: crafted_many_duplicates_3
+    in:
+      nums:
+        - -3
+        - -3
+        - -3
+        - -1
+        - -1
+        - 0
+        - 1
+        - 2
         - 4
-  - name: Mostly negative
+        - 4
+    seed: 403
+  - name: crafted_many_duplicates_4
+    in:
+      nums:
+        - -5
+        - -5
+        - -4
+        - -4
+        - -1
+        - 0
+        - 1
+        - 4
+        - 5
+        - 5
+    seed: 404
+  - name: crafted_many_duplicates_5
     in:
       nums:
         - -10
-        - -9
-        - -8
-        - -7
+        - -10
+        - -10
+        - -5
+        - -5
+        - 0
+        - 5
+        - 5
         - 10
-        - 15
-    out:
-      - - -8
-        - -7
-        - 15
-  - name: Smallest set
+        - 10
+    seed: 405
+  - name: crafted_sparse_mix_1
     in:
       nums:
-        - 1
+        - -8
+        - -4
         - -1
-        - 0
-    out:
-      - - -1
-        - 0
+        - 2
+        - 5
+        - 7
+        - 9
+    seed: 406
+  - name: crafted_sparse_mix_2
+    in:
+      nums:
+        - -7
+        - -3
+        - -2
         - 1
+        - 4
+        - 6
+        - 8
+        - 12
+    seed: 407
+  - name: crafted_sparse_mix_3
+    in:
+      nums:
+        - -6
+        - -5
+        - -2
+        - 3
+        - 4
+        - 7
+        - 11
+    seed: 408
+  - name: crafted_sparse_mix_4
+    in:
+      nums:
+        - -9
+        - -7
+        - -3
+        - -1
+        - 2
+        - 6
+        - 8
+        - 13
+    seed: 409
+  - name: crafted_sparse_mix_5
+    in:
+      nums:
+        - -12
+        - -6
+        - -4
+        - -2
+        - 1
+        - 5
+        - 7
+        - 10
+    seed: 410

@@ -1,6 +1,11 @@
 entry:
   id: 10
   title: regular-expression-matching
+  params:
+    s:
+      type: string
+    p:
+      type: string
   call:
     cpp: Solution().isMatch({s}, {p})
     rust: Solution::is_match({s}.to_string(), {p}.to_string())
@@ -14,11 +19,6 @@ entry:
     dart: Solution().isMatch({s}, {p})
     swift: Solution().isMatch({s}, {p})
     typescript: isMatch({s}, {p})
-  params:
-    s:
-      type: string
-    p:
-      type: string
 judge:
   type: exact
 limits:
@@ -27,24 +27,28 @@ limits:
 oracle:
   python3:
     call: Checker().isMatch(s, p, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n            if isinstance(result,\
-      \ str):\n                low = result.strip().lower()\n                if low\
-      \ == 'true':\n                    return True\n                if low == 'false':\n\
-      \                    return False\n                if low.lstrip('-').isdigit():\n\
-      \                    return int(low)\n        return result\n\n    def isMatch(self,\
-      \ s, p, result):\n        result = self._norm(result)\n        m, n = len(s),\
-      \ len(p)\n        dp = [[False] * (n + 1) for _ in range(m + 1)]\n        dp[0][0]\
-      \ = True\n        for j in range(1, n + 1):\n            if p[j - 1] == '*':\n\
-      \                dp[0][j] = dp[0][j - 2]\n        for i in range(1, m + 1):\n\
-      \            for j in range(1, n + 1):\n                if p[j - 1] in {s[i\
-      \ - 1], '.'}:\n                    dp[i][j] = dp[i - 1][j - 1]\n           \
-      \     elif p[j - 1] == '*':\n                    dp[i][j] = dp[i][j - 2]\n \
-      \                   if p[j - 2] in {s[i - 1], '.'}:\n                      \
-      \  dp[i][j] = dp[i][j] or dp[i - 1][j]\n        return dp[m][n] == result\n"
-seed: 42
+    checker: |
+      class Checker:
+          def isMatch(self, s, p, result):
+              m, n = len(s), len(p)
+              dp = [[False] * (n + 1) for _ in range(m + 1)]
+              dp[0][0] = True
+
+              for j in range(1, n + 1):
+                  if p[j - 1] == "*":
+                      dp[0][j] = dp[0][j - 2]
+
+              for i in range(1, m + 1):
+                  for j in range(1, n + 1):
+                      if p[j - 1] in {s[i - 1], "."}:
+                          dp[i][j] = dp[i - 1][j - 1]
+                      elif p[j - 1] == "*":
+                          dp[i][j] = dp[i][j - 2]
+                          if p[j - 2] in {s[i - 1], "."}:
+                              dp[i][j] = dp[i][j] or dp[i - 1][j]
+
+              return dp[m][n] == result
+seed: 10
 tests:
   - name: example 1
     in:
@@ -61,113 +65,188 @@ tests:
       s: ab
       p: .*
     out: true
-  - name: empty pattern
+  - name: empty string empty pattern
+    in:
+      s: ""
+      p: ""
+    out: true
+  - name: empty string literal
+    in:
+      s: ""
+      p: a
+    out: false
+  - name: empty string star zero
+    in:
+      s: ""
+      p: a*
+    out: true
+  - name: empty string chain zeros
+    in:
+      s: ""
+      p: a*b*c*
+    out: true
+  - name: one char dot
     in:
       s: a
-      p: ""
-    out: false
-  - name: dot match
-    in:
-      s: ab
-      p: .b
+      p: .
     out: true
-  - name: star zero match
+  - name: one char literal mismatch
+    in:
+      s: a
+      p: b
+    out: false
+  - name: one char star zero
     in:
       s: a
       p: ab*
     out: true
-  - name: complex star
+  - name: one char star many
     in:
-      s: aaa
-      p: a*a
+      s: aaaa
+      p: a*
     out: true
-  - name: complex chain
+  - name: exact literal match
     in:
-      s: abccccc
-      p: ab.*c
+      s: abc
+      p: abc
     out: true
-  - name: dot star
+  - name: exact literal mismatch
     in:
-      s: xyz
-      p: .*
-    out: true
-  - name: multiple stars
-    in:
-      s: aab
-      p: c*a*b
-    out: true
-  - name: no match end
-    in:
-      s: mississippi
-      p: missis*ip*p
+      s: abc
+      p: abd
     out: false
-  - name: long match
+  - name: dot middle
     in:
-      s: aaaaaaaaaaaaaab
-      p: a*a*a*a*a*a*a*a*a*b
+      s: abc
+      p: a.c
     out: true
-  - name: single char dots
+  - name: dot mismatch
     in:
-      s: z
-      p: .
-    out: true
-  - name: dot and star
+      s: abc
+      p: a.d
+    out: false
+  - name: star after dot
     in:
       s: abcd
       p: .*d
     out: true
-  - name: pattern longer than string
+  - name: star after dot mismatch
+    in:
+      s: abcd
+      p: .*e
+    out: false
+  - name: repeated literal with star
+    in:
+      s: aaab
+      p: a*b
+    out: true
+  - name: repeated literal fails
+    in:
+      s: aaac
+      p: a*b
+    out: false
+  - name: multiple starred groups
+    in:
+      s: aab
+      p: c*a*b
+    out: true
+  - name: multiple starred groups fail
+    in:
+      s: mississippi
+      p: mis*is*p*.
+    out: false
+  - name: canonical tricky true
+    in:
+      s: mississippi
+      p: mis*is*ip*.
+    out: true
+  - name: star can be zero
+    in:
+      s: ab
+      p: ab*c*
+    out: true
+  - name: trailing literal required
+    in:
+      s: ab
+      p: ab.*c
+    out: false
+  - name: prefix not enough
+    in:
+      s: abcdef
+      p: abc
+    out: false
+  - name: pattern longer through stars
     in:
       s: a
       p: ab*c*
     out: true
-  - name: mismatched structure
+  - name: adjacent stars pass
     in:
-      s: ab
-      p: .*c
+      s: abbbcd
+      p: ab*cd
+    out: true
+  - name: adjacent stars fail
+    in:
+      s: abbbce
+      p: ab*cd
     out: false
-  - name: star repeating dot
+  - name: dot star consumes all
     in:
-      s: abc
-      p: .*.*c
+      s: xyz
+      p: .*
     out: true
-  - name: literal match
+  - name: dot star followed by literal
     in:
-      s: abc
-      p: abc
+      s: xyz
+      p: .*z
     out: true
-  - name: too many chars
+  - name: dot star followed by wrong literal
+    in:
+      s: xyz
+      p: .*a
+    out: false
+  - name: long repeated literal match
+    in:
+      s: aaaaaaaaaaaaaab
+      p: a*a*a*a*a*a*a*a*a*b
+    out: true
+  - name: long repeated literal mismatch
+    in:
+      s: aaaaaaaaaaaaaac
+      p: a*a*a*a*a*a*a*a*a*b
+    out: false
+  - name: zero length via stars
+    in:
+      s: ""
+      p: c*d*e*f*
+    out: true
+  - name: star with partial fallback
+    in:
+      s: aaaab
+      p: a*ab
+    out: true
+  - name: star with partial fallback fail
+    in:
+      s: aaaac
+      p: a*ab
+    out: false
+  - name: all dots exact length
+    in:
+      s: abcde
+      p: .....
+    out: true
+  - name: all dots too short
     in:
       s: abcd
-      p: abc
+      p: .....
     out: false
-  - name: prefix match
+  - name: complex nested choice
     in:
-      s: abc
-      p: ab
-    out: false
-  - name: empty star
-    in:
-      s: aaa
-      p: b*aaa
+      s: baaaab
+      p: b.*a*b
     out: true
-  - name: generated 1
+  - name: complex nested choice fail
     in:
-      s: abc
-      p: a*b*c*
-  - name: generated 2
-    in:
-      s: a
-      p: .*..*
-  - name: generated 3
-    in:
-      s: abcdef
-      p: a*b*c*d*e*f*
-  - name: generated 4
-    in:
-      s: mississippi
-      p: mi.*si.*pi
-  - name: generated 5
-    in:
-      s: aaaaa
-      p: a*a*a*a*a*
+      s: baaaac
+      p: b.*a*b
+    out: false

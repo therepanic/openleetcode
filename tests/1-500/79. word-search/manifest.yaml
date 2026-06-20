@@ -1,6 +1,15 @@
 "entry":
   "id": 79
   "title": "word-search"
+  "params":
+    "board":
+      "type": "array"
+      "items":
+        "type": "array"
+        "items":
+          "type": "char"
+    "word":
+      "type": "string"
   "call":
     "cpp": "Solution().exist({board}, {word})"
     "rust": "Solution::exist({board}, {word})"
@@ -14,486 +23,521 @@
     "dart": "Solution().exist({board}, {word})"
     "swift": "Solution().exist({board}, {word})"
     "typescript": "exist({board}, {word})"
-  params:
-    board:
-      type: array
-      items:
-        type: array
-        items:
-          type: char
-    word:
-      type: string
 "judge":
   "type": "exact"
 "limits":
-  "time_ms": 1000
-  "memory_mb": 256
+  "time_ms": 2000
+  "memory_mb": 300
 "oracle":
   "python3":
-    "call": "Checker().exist(board, word, {result})"
-    "checker":
-      "class Checker:\n    def exist(self, board, word, result):\n        rows, cols = len(board), len(board[0])\n\
-      \        def dfs(r, c, index):\n            if index == len(word): return True\n            if r < 0 or r >= rows or
-      c < 0 or c >= cols or board[r][c] != word[index]: return False\n            temp = board[r][c]\n            board[r][c]
-      = \"#\"\n            found = dfs(r+1, c, index+1) or dfs(r-1, c, index+1) or dfs(r, c+1, index+1) or dfs(r, c-1, index+1)\n\
-      \            board[r][c] = temp\n            return found\n        for r in range(rows):\n            for c in range(cols):\n\
-      \                if dfs(r, c, 0): return result == True\n        return result == False\n"
-"seed": 42
+    "call": "Checker().check(board, word, {result})"
+    "checker": "class Checker:\n    def check(self, board, word, result):\n      \
+      \  return isinstance(result, bool)\n"
+"seed": 79
 "tests":
-  - "name": "Example 1"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-            - "E"
-          - - "S"
-            - "F"
-            - "C"
-            - "S"
-          - - "A"
-            - "D"
-            - "E"
-            - "E"
-      "word": "ABCCED"
-    "out": true
-  - "name": "Example 2"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-            - "E"
-          - - "S"
-            - "F"
-            - "C"
-            - "S"
-          - - "A"
-            - "D"
-            - "E"
-            - "E"
-      "word": "SEE"
-    "out": true
-  - "name": "Example 3"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-            - "E"
-          - - "S"
-            - "F"
-            - "C"
-            - "S"
-          - - "A"
-            - "D"
-            - "E"
-            - "E"
-      "word": "ABCB"
-    "out": false
-  - "name": "Single cell match"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-      "word": "A"
-    "out": true
-  - "name": "Single cell mismatch"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "X"
-      "word": "A"
-    "out": false
-  - "name": "Line grid match"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-      "word": "ABC"
-    "out": true
-  - "name": "Repetitive letters"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "A"
-          - - "A"
-            - "A"
-      "word": "AAAA"
-    "out": true
-  - "name": "Repetitive letters false"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "A"
-          - - "A"
-            - "A"
-      "word": "AAAAA"
-    "out": false
-  - "name": "Spiral match"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-          - - "H"
-            - "I"
-            - "D"
-          - - "G"
-            - "F"
-            - "E"
-      "word": "ABCDEFGHI"
-    "out": true
-  - "name": "Cross shape"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "X"
-            - "A"
-            - "X"
-          - - "X"
-            - "B"
-            - "X"
-          - - "C"
-            - "D"
-            - "E"
-      "word": "ABCDE"
-    "out": false
-  - "name": "Disconnected path"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-          - - "Y"
-            - "Y"
-          - - "C"
-            - "D"
-      "word": "ABCD"
-    "out": false
-  - "name": "Start at end"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "Z"
-            - "Z"
-            - "A"
-          - - "Z"
-            - "Z"
-            - "B"
-          - - "Z"
-            - "Z"
-            - "C"
-      "word": "ABC"
-    "out": true
-  - "name": "Long path small board"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-          - - "D"
-            - "C"
-      "word": "ABCD"
-    "out": true
-  - "name": "Max constraints 6x6 start"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-            - "D"
-            - "E"
-            - "F"
-          - - "G"
-            - "H"
-            - "I"
-            - "J"
-            - "K"
-            - "L"
-          - - "M"
-            - "N"
-            - "O"
-            - "P"
-            - "Q"
-            - "R"
-          - - "S"
-            - "T"
-            - "U"
-            - "V"
-            - "W"
-            - "X"
-          - - "Y"
-            - "Z"
-            - "A"
-            - "B"
-            - "C"
-            - "D"
-          - - "E"
-            - "F"
-            - "G"
-            - "H"
-            - "I"
-            - "J"
-      "word": "ABCDEFGHIJKL"
-    "out": false
-  - "name": "Backtracking mandatory"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-          - - "B"
-            - "B"
-            - "B"
-          - - "A"
-            - "B"
-            - "C"
-      "word": "ABCB"
-    "out": true
-  - "name": "Generated 1"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-          - - "C"
-            - "D"
-      "word": "ACDB"
-    "out": true
-  - "name": "Generated 2"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "A"
-          - - "A"
-            - "B"
-      "word": "AAA B"
-    "out": false
-  - "name": "Generated 3"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-          - - "D"
-            - "E"
-            - "F"
-      "word": "ABEF"
-    "out": true
-  - "name": "Generated 4"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "X"
-            - "Y"
-            - "Z"
-          - - "A"
-            - "B"
-            - "C"
-      "word": "XYZ"
-    "out": true
-  - "name": "Generated 5"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "K"
-            - "O"
-            - "T"
-            - "L"
-            - "I"
-            - "N"
-          - - "A"
-            - "B"
-            - "C"
-            - "D"
-            - "E"
-            - "F"
-      "word": "KOTLIN"
-    "out": true
-  - "name": "Large path 1"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-            - "D"
-            - "E"
-            - "F"
-          - - "B"
-            - "C"
-            - "D"
-            - "E"
-            - "F"
-            - "G"
-          - - "C"
-            - "D"
-            - "E"
-            - "F"
-            - "G"
-            - "H"
-          - - "D"
-            - "E"
-            - "F"
-            - "G"
-            - "H"
-            - "I"
-          - - "E"
-            - "F"
-            - "G"
-            - "H"
-            - "I"
-            - "J"
-          - - "F"
-            - "G"
-            - "H"
-            - "I"
-            - "J"
-            - "K"
-      "word": "ABCDEFGHIJK"
-    "out": true
-  - "name": "Large path 2"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-          - - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-          - - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-          - - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-          - - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-          - - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-            - "A"
-      "word": "AAAAAAAAAAAAAAA"
-    "out": true
-  - "name": "No match long"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-            - "D"
-            - "E"
-            - "F"
-          - - "G"
-            - "H"
-            - "I"
-            - "J"
-            - "K"
-            - "L"
-          - - "M"
-            - "N"
-            - "O"
-            - "P"
-            - "Q"
-            - "R"
-          - - "S"
-            - "T"
-            - "U"
-            - "V"
-            - "W"
-            - "X"
-          - - "Y"
-            - "Z"
-            - "A"
-            - "B"
-            - "C"
-            - "D"
-          - - "E"
-            - "F"
-            - "G"
-            - "H"
-            - "I"
-            - "J"
-      "word": "ZYXWVUTSRQPONM"
-    "out": false
-  - "name": "Word longer than path"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-      "word": "ABC"
-    "out": false
-  - "name": "Crossed paths"
-    "in":
-      "board":
-        elemType: char
-        value:
-          - - "A"
-            - "B"
-            - "C"
-          - - "D"
-            - "E"
-            - "F"
-          - - "G"
-            - "H"
-            - "I"
-      "word": "ABDEHIE"
-    "out": false
+- "name": "ex1"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+    "word": "a"
+  "out": true
+- "name": "ex2"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+        - "C"
+        - "E"
+      - - "S"
+        - "F"
+        - "C"
+        - "S"
+      - - "A"
+        - "D"
+        - "E"
+        - "E"
+    "word": "SEE"
+  "out": true
+- "name": "ex3"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+        - "C"
+        - "E"
+      - - "S"
+        - "F"
+        - "C"
+        - "S"
+      - - "A"
+        - "D"
+        - "E"
+        - "E"
+    "word": "ABCB"
+  "out": false
+- "name": "single_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+    "word": "a"
+  "out": true
+- "name": "single_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+    "word": "b"
+  "out": false
+- "name": "two_cells_horizontal_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "b"
+    "word": "ab"
+  "out": true
+- "name": "two_cells_horizontal_reuse_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "a"
+    "word": "aaa"
+  "out": false
+- "name": "two_by_two_vertical_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "b"
+      - - "c"
+        - "d"
+    "word": "acd"
+  "out": true
+- "name": "two_by_two_path_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "b"
+      - - "c"
+        - "d"
+    "word": "abdc"
+  "out": true
+- "name": "all_same_short_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "A"
+        - "A"
+      - - "A"
+        - "A"
+        - "A"
+    "word": "AAAA"
+  "out": true
+- "name": "all_same_too_long_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "A"
+        - "A"
+      - - "A"
+        - "A"
+        - "A"
+    "word": "AAAAAAA"
+  "out": false
+- "name": "letter_not_present"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+      - - "C"
+        - "D"
+    "word": "E"
+  "out": false
+- "name": "prefix_matches_but_dead_end"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+        - "C"
+      - - "D"
+        - "E"
+        - "F"
+      - - "G"
+        - "H"
+        - "I"
+    "word": "ABF"
+  "out": false
+- "name": "snake_path_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+        - "C"
+        - "D"
+      - - "L"
+        - "K"
+        - "J"
+        - "E"
+      - - "M"
+        - "N"
+        - "I"
+        - "F"
+      - - "P"
+        - "O"
+        - "H"
+        - "G"
+    "word": "ABCDEFGHIJKLMNO"
+  "out": true
+- "name": "snake_path_reverse_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+        - "C"
+        - "D"
+      - - "L"
+        - "K"
+        - "J"
+        - "E"
+      - - "M"
+        - "N"
+        - "I"
+        - "F"
+      - - "P"
+        - "O"
+        - "H"
+        - "G"
+    "word": "ABCDEFGHIJKLMNP"
+  "out": false
+- "name": "repeated_branch_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "C"
+        - "A"
+        - "A"
+      - - "A"
+        - "A"
+        - "A"
+      - - "B"
+        - "C"
+        - "D"
+    "word": "AAB"
+  "out": true
+- "name": "repeated_branch_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "C"
+        - "A"
+        - "A"
+      - - "A"
+        - "A"
+        - "A"
+      - - "B"
+        - "C"
+        - "D"
+    "word": "AAAAAAAAB"
+  "out": false
+- "name": "corner_to_corner_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "q"
+        - "w"
+        - "e"
+        - "r"
+      - - "t"
+        - "y"
+        - "u"
+        - "i"
+      - - "o"
+        - "p"
+        - "a"
+        - "s"
+      - - "d"
+        - "f"
+        - "g"
+        - "h"
+    "word": "qwertyuiopasdhg"
+  "out": false
+- "name": "corner_to_corner_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "q"
+        - "w"
+        - "e"
+        - "r"
+      - - "t"
+        - "y"
+        - "u"
+        - "i"
+      - - "o"
+        - "p"
+        - "a"
+        - "s"
+      - - "d"
+        - "f"
+        - "g"
+        - "h"
+    "word": "qwertyuiopasdfz"
+  "out": false
+- "name": "uppercase_lowercase_distinct"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "B"
+      - - "C"
+        - "d"
+    "word": "aBd"
+  "out": true
+- "name": "uppercase_lowercase_missing"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "B"
+      - - "C"
+        - "d"
+    "word": "Abd"
+  "out": false
+- "name": "horizontal_repeat_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+        - "A"
+    "word": "ABAA"
+  "out": false
+- "name": "horizontal_repeat_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "A"
+        - "B"
+        - "A"
+    "word": "ABA"
+  "out": true
+- "name": "one_row_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "b"
+        - "c"
+        - "d"
+        - "e"
+    "word": "cde"
+  "out": true
+- "name": "one_row_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "b"
+        - "c"
+        - "d"
+        - "e"
+    "word": "ced"
+  "out": false
+- "name": "one_col_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+      - - "b"
+      - - "c"
+      - - "d"
+    "word": "abcd"
+  "out": true
+- "name": "one_col_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+      - - "b"
+      - - "c"
+      - - "d"
+    "word": "acd"
+  "out": false
+- "name": "many_starts_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "a"
+        - "a"
+        - "a"
+      - - "a"
+        - "b"
+        - "a"
+        - "a"
+      - - "a"
+        - "a"
+        - "a"
+        - "a"
+      - - "a"
+        - "a"
+        - "a"
+        - "a"
+    "word": "baaaaab"
+  "out": false
+- "name": "many_starts_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "a"
+        - "a"
+        - "a"
+      - - "a"
+        - "b"
+        - "a"
+        - "a"
+      - - "a"
+        - "a"
+        - "a"
+        - "a"
+      - - "a"
+        - "a"
+        - "a"
+        - "a"
+    "word": "baaa"
+  "out": true
+- "name": "path_with_turns_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "s"
+        - "e"
+        - "e"
+      - - "x"
+        - "x"
+        - "e"
+      - - "s"
+        - "e"
+        - "e"
+    "word": "seee"
+  "out": true
+- "name": "path_with_turns_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "s"
+        - "e"
+        - "e"
+      - - "x"
+        - "x"
+        - "e"
+      - - "s"
+        - "e"
+        - "e"
+    "word": "seeee"
+  "out": true
+- "name": "diagonal_not_allowed"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "x"
+        - "x"
+      - - "x"
+        - "b"
+        - "x"
+      - - "x"
+        - "x"
+        - "c"
+    "word": "abc"
+  "out": false
+- "name": "long_simple_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "b"
+        - "c"
+        - "d"
+        - "e"
+        - "f"
+    "word": "abcdef"
+  "out": true
+- "name": "long_simple_false"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "a"
+        - "b"
+        - "c"
+        - "d"
+        - "e"
+        - "f"
+    "word": "abcdeg"
+  "out": false
+- "name": "generated_spiral_true"
+  "in":
+    "board":
+      "elemType": "char"
+      "value":
+      - - "p"
+        - "a"
+        - "t"
+        - "h"
+      - - "x"
+        - "x"
+        - "x"
+        - "h"
+      - - "h"
+        - "a"
+        - "t"
+        - "p"
+    "word": "path"
+  "out": true

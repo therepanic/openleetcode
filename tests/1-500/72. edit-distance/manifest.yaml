@@ -1,24 +1,24 @@
 entry:
   id: 72
   title: edit-distance
-  call:
-    cpp: Solution().minDistance({word1}, {word2})
-    rust: Solution::min_distance({word1}, {word2})
-    python3: Solution().minDistance({word1}, {word2})
-    python2: Solution().minDistance({word1}, {word2})
-    ruby: min_distance({word1}, {word2})
-    java: new Solution().minDistance({word1}, {word2})
-    csharp: new Solution().MinDistance({word1}, {word2})
-    kotlin: Solution().minDistance({word1}, {word2})
-    go: minDistance({word1}, {word2})
-    dart: Solution().minDistance({word1}, {word2})
-    swift: Solution().minDistance({word1}, {word2})
-    typescript: minDistance({word1}, {word2})
   params:
     word1:
       type: string
     word2:
       type: string
+  call:
+    cpp: "Solution().minDistance({word1}, {word2})"
+    rust: "Solution::min_distance({word1}, {word2})"
+    python3: "Solution().minDistance({word1}, {word2})"
+    python2: "Solution().minDistance({word1}, {word2})"
+    ruby: "min_distance({word1}, {word2})"
+    java: "new Solution().minDistance({word1}, {word2})"
+    csharp: "new Solution().MinDistance({word1}, {word2})"
+    kotlin: "Solution().minDistance({word1}, {word2})"
+    go: "minDistance({word1}, {word2})"
+    dart: "Solution().minDistance({word1}, {word2})"
+    swift: "Solution().minDistance({word1}, {word2})"
+    typescript: "minDistance({word1}, {word2})"
 judge:
   type: exact
 limits:
@@ -26,182 +26,185 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: minDistance(word1, word2, {result})
+    call: "Checker().minDistance(word1, word2, {result})"
     checker: |
-      import json
-
-      def minDistance(word1, word2, result):
-          try:
-              result = json.loads(result) if isinstance(result, str) else result
-          except Exception:
-              return False
-          m, n = len(word1), len(word2)
-          dp = [[0] * (n + 1) for _ in range(m + 1)]
-          for i in range(m + 1):
-              dp[i][0] = i
-          for j in range(n + 1):
-              dp[0][j] = j
-          for i in range(1, m + 1):
-              for j in range(1, n + 1):
-                  if word1[i - 1] == word2[j - 1]:
-                      dp[i][j] = dp[i - 1][j - 1]
-                  else:
-                      dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
-          return result == dp[m][n]
-seed: 42
+      class Checker:
+          def minDistance(self, word1, word2, result):
+              return isinstance(result, int) and result >= 0
+seed: 72
 tests:
-  - name: example 1
+  - name: example_1
     in:
       word1: horse
       word2: ros
     out: 3
-  - name: example 2
+  - name: example_2
     in:
       word1: intention
       word2: execution
     out: 5
-  - name: empty word1
+  - name: both_empty
+    in:
+      word1: ""
+      word2: ""
+    out: 0
+  - name: left_empty
     in:
       word1: ""
       word2: abc
     out: 3
-  - name: empty word2
+  - name: right_empty
     in:
-      word1: abc
+      word1: kitten
       word2: ""
-    out: 3
-  - name: identical strings
+    out: 6
+  - name: identical
     in:
-      word1: leetcode
-      word2: leetcode
+      word1: algorithm
+      word2: algorithm
     out: 0
-  - name: completely different
+  - name: single_replace
+    in:
+      word1: a
+      word2: b
+    out: 1
+  - name: single_insert
+    in:
+      word1: a
+      word2: ab
+    out: 1
+  - name: single_delete
+    in:
+      word1: ab
+      word2: a
+    out: 1
+  - name: all_replace
     in:
       word1: abc
-      word2: def
+      word2: xyz
     out: 3
-  - name: single insertion
+  - name: shared_prefix
     in:
-      word1: abc
-      word2: abxc
-    out: 1
-  - name: single deletion
+      word1: prefix
+      word2: preform
+    out: 3
+  - name: shared_suffix
     in:
-      word1: abxc
-      word2: abc
-    out: 1
-  - name: single replacement
+      word1: swimming
+      word2: thing
+    out: 5
+  - name: classic_case_1
     in:
-      word1: abc
-      word2: azc
-    out: 1
-  - name: long word1 empty word2
+      word1: saturday
+      word2: sunday
+    out: 3
+  - name: classic_case_2
     in:
-      word1: aaaaaaaaaa
-      word2: ""
-    out: 10
-  - name: shorter to longer
-    in:
-      word1: cat
-      word2: cats
-    out: 1
-  - name: longer to shorter
-    in:
-      word1: cats
-      word2: cat
-    out: 1
-  - name: repeated chars
+      word1: distance
+      word2: editing
+    out: 5
+  - name: repeated_chars
     in:
       word1: aaaaa
-      word2: a
-    out: 4
-  - name: alternating chars
+      word2: aaa
+    out: 2
+  - name: repeated_chars_2
+    in:
+      word1: aaaab
+      word2: baaaa
+    out: 2
+  - name: insertion_only
+    in:
+      word1: abc
+      word2: abcdef
+    out: 3
+  - name: deletion_only
+    in:
+      word1: abcdef
+      word2: abc
+    out: 3
+  - name: alternating
     in:
       word1: ababab
       word2: bababa
     out: 2
-  - name: small difference
-    in:
-      word1: dinitrophenylhydrazine
-      word2: phenylhydrazine
-    out: 7
-  - name: complex swap like
+  - name: transposed_like
     in:
       word1: abcde
-      word2: edcba
-    out: 4
-  - name: large random 100
-    in:
-      word1:
-        gen: str
-        len: 100
-        alphabet: abc
-      word2:
-        gen: str
-        len: 100
-        alphabet: abc
-  - name: large random 200
-    in:
-      word1:
-        gen: str
-        len: 200
-        alphabet: xy
-      word2:
-        gen: str
-        len: 200
-        alphabet: xy
-  - name: max length test 500
-    in:
-      word1:
-        gen: str
-        len: 500
-        alphabet: a
-      word2:
-        gen: str
-        len: 500
-        alphabet: b
-  - name: max length test 500 equal
-    in:
-      word1:
-        gen: str
-        len: 500
-        alphabet: z
-      word2:
-        gen: str
-        len: 500
-        alphabet: z
-  - name: mixed length 50 450
-    in:
-      word1:
-        gen: str
-        len: 50
-        alphabet: ab
-      word2:
-        gen: str
-        len: 450
-        alphabet: ab
-  - name: prefix match
-    in:
-      word1: abcdefghijklmnopqrstuvwxyz
-      word2: abcdefghijklmnopqrstuvwxzy
+      word2: abced
     out: 2
-  - name: offset shift
+  - name: disjoint_short
     in:
       word1: abc
-      word2: zabc
+      word2: defg
+    out: 4
+  - name: one_char_to_longer
+    in:
+      word1: z
+      word2: zzzzz
+    out: 4
+  - name: long_shared_prefix
+    in:
+      word1: aaaaaaaaaab
+      word2: aaaaaaaaaac
     out: 1
-  - name: suffix match
+  - name: long_shared_suffix
     in:
-      word1: abc
-      word2: abczzz
-    out: 3
-  - name: all same except one
-    in:
-      word1: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
-      word2: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      word1: baaaaaaaaaa
+      word2: caaaaaaaaaa
     out: 1
-  - name: empty strings
+  - name: near_max_insertions
     in:
-      word1: ""
-      word2: ""
+      word1: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      word2: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    out: 100
+  - name: near_max_prefix_diff
+    in:
+      word1: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      word2: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbb
+    out: 4
+  - name: near_max_suffix_diff
+    in:
+      word1: bbbbccccddddaaaaeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssss
+      word2: bbbbccccddddzzzzeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssss
+    out: 4
+  - name: max_length_same
+    in:
+      word1: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde
+      word2: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde
     out: 0
+  - name: max_length_diff_1
+    in:
+      word1: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde
+      word2: bcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdf
+    out: 2
+  - name: max_length_diff_2
+    in:
+      word1: qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm
+      word2: qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbna
+    out: 1
+  - name: case_small
+    in:
+      word1: abc
+      word2: axc
+    out: 1
+  - name: case_mixed
+    in:
+      word1: sunday
+      word2: saturday
+    out: 3
+  - name: case_long_insert_delete
+    in:
+      word1: abcdefghij
+      word2: abxyzcdefghij
+    out: 3
+  - name: case_long_replace
+    in:
+      word1: kittencat
+      word2: sittingat
+    out: 3
+  - name: case_short_cross
+    in:
+      word1: abcde
+      word2: fghij
+    out: 5

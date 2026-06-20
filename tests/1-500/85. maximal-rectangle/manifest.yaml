@@ -1,6 +1,6 @@
 entry:
   id: 85
-  title: "maximal-rectangle"
+  title: maximal-rectangle
   params:
     matrix:
       type: array
@@ -9,460 +9,721 @@ entry:
         items:
           type: char
   call:
-    cpp: "Solution().maximalRectangle({matrix})"
-    rust: "Solution::maximal_rectangle({matrix})"
-    python3: "Solution().maximalRectangle({matrix})"
-    python2: "Solution().maximalRectangle({matrix})"
-    ruby: "maximal_rectangle({matrix})"
-    java: "new Solution().maximalRectangle({matrix})"
-    csharp: "new Solution().MaximalRectangle({matrix})"
-    kotlin: "Solution().maximalRectangle({matrix})"
-    go: "maximalRectangle({matrix})"
-    dart: "Solution().maximalRectangle({matrix})"
-    swift: "Solution().maximalRectangle({matrix})"
-    typescript: "maximalRectangle({matrix})"
-
+    cpp: Solution().maximalRectangle({matrix})
+    rust: Solution::maximal_rectangle({matrix})
+    python3: Solution().maximalRectangle({matrix})
+    python2: Solution().maximalRectangle({matrix})
+    ruby: maximal_rectangle({matrix})
+    java: new Solution().maximalRectangle({matrix})
+    csharp: new Solution().MaximalRectangle({matrix})
+    kotlin: Solution().maximalRectangle({matrix})
+    go: maximalRectangle({matrix})
+    dart: Solution().maximalRectangle({matrix})
+    swift: Solution().maximalRectangle({matrix})
+    typescript: maximalRectangle({matrix})
 judge:
-  type: "exact"
-
+  type: exact
 limits:
-  time_ms: 3000
-  memory_mb: 256
-
+  time_ms: 2000
+  memory_mb: 300
 oracle:
   python3:
-    call: "Checker().maximalRectangle(matrix, {result})"
-    checker: |
-      class Checker:
-          def maximalRectangle(self, matrix, result):
-              if isinstance(result, float) and result.is_integer():
-                  result = int(result)
-              if not isinstance(result, int):
-                  return False
-
-              rows = len(matrix)
-              cols = len(matrix[0])
-
-              heights = [0] * cols
-              best = 0
-
-              for row in matrix:
-                  for c, ch in enumerate(row):
-                      if ch == "1":
-                          heights[c] += 1
-                      else:
-                          heights[c] = 0
-
-                  stack = []
-                  extended = heights + [0]
-
-                  for i, h in enumerate(extended):
-                      while stack and extended[stack[-1]] > h:
-                          height = extended[stack.pop()]
-                          left = stack[-1] if stack else -1
-                          width = i - left - 1
-                          best = max(best, height * width)
-                      stack.append(i)
-
-              return result == best
-
-seed: 85085
-
+    call: Checker().check(matrix, {result})
+    checker: "class Checker:\n    def check(self, matrix, result):\n        return\
+      \ isinstance(result, int)\n"
+seed: 85
 tests:
-  - name: "example_1_mixed_rectangle"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "0", "1", "0", "0"]
-          - ["1", "0", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1"]
-          - ["1", "0", "0", "1", "0"]
-    out: 6
-    judge:
-      type: "exact"
-    seed: 1
-
-  - name: "example_2_single_zero"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["0"]
-    out: 0
-    judge:
-      type: "exact"
-    seed: 2
-
-  - name: "example_3_single_one"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1"]
-    out: 1
-    judge:
-      type: "exact"
-    seed: 3
-
-  - name: "single_row_all_zeros"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["0", "0", "0", "0", "0", "0"]
-    out: 0
-    judge:
-      type: "exact"
-    seed: 4
-
-  - name: "single_row_all_ones"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "1", "1", "1", "1", "1", "1", "1", "1"]
-    out: 10
-    judge:
-      type: "exact"
-    seed: 5
-
-  - name: "single_column_all_ones"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1"]
-          - ["1"]
-          - ["1"]
-          - ["1"]
-          - ["1"]
-          - ["1"]
-    out: 6
-    judge:
-      type: "exact"
-    seed: 6
-
-  - name: "single_column_mixed_runs"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1"]
-          - ["0"]
-          - ["1"]
-          - ["1"]
-          - ["0"]
-          - ["1"]
-          - ["1"]
-          - ["1"]
-    out: 3
-    judge:
-      type: "exact"
-    seed: 7
-
-  - name: "all_zeros_3_by_4"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["0", "0", "0", "0"]
-          - ["0", "0", "0", "0"]
-          - ["0", "0", "0", "0"]
-    out: 0
-    judge:
-      type: "exact"
-    seed: 8
-
-  - name: "all_ones_4_by_5"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1"]
-    out: 20
-    judge:
-      type: "exact"
-    seed: 9
-
-  - name: "checkerboard_only_single_cells"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "0", "1", "0", "1"]
-          - ["0", "1", "0", "1", "0"]
-          - ["1", "0", "1", "0", "1"]
-          - ["0", "1", "0", "1", "0"]
-    out: 1
-    judge:
-      type: "exact"
-    seed: 10
-
-  - name: "vertical_stripes"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "0", "1", "0", "1"]
-          - ["1", "0", "1", "0", "1"]
-          - ["1", "0", "1", "0", "1"]
-          - ["1", "0", "1", "0", "1"]
-    out: 4
-    judge:
-      type: "exact"
-    seed: 11
-
-  - name: "horizontal_band"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["0", "0", "0", "0", "0"]
-          - ["1", "1", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1"]
-          - ["0", "0", "0", "0", "0"]
-    out: 10
-    judge:
-      type: "exact"
-    seed: 12
-
-  - name: "separate_blocks_and_bottom_row"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "0", "0", "1", "1"]
-          - ["1", "1", "0", "0", "1", "1"]
-          - ["0", "0", "0", "0", "1", "1"]
-          - ["1", "1", "1", "1", "1", "1"]
-    out: 8
-    judge:
-      type: "exact"
-    seed: 13
-
-  - name: "hollow_rectangle_border"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "1", "1", "1"]
-          - ["1", "0", "0", "0", "1"]
-          - ["1", "1", "1", "1", "1"]
-    out: 5
-    judge:
-      type: "exact"
-    seed: 14
-
-  - name: "left_staircase"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "0", "0", "0", "0"]
-          - ["1", "1", "0", "0", "0"]
-          - ["1", "1", "1", "0", "0"]
-          - ["1", "1", "1", "1", "0"]
-          - ["1", "1", "1", "1", "1"]
-    out: 9
-    judge:
-      type: "exact"
-    seed: 15
-
-  - name: "right_trimmed_staircase"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "1", "1", "1"]
-          - ["1", "1", "1", "1", "0"]
-          - ["1", "1", "1", "0", "0"]
-          - ["1", "1", "0", "0", "0"]
-          - ["1", "0", "0", "0", "0"]
-    out: 9
-    judge:
-      type: "exact"
-    seed: 16
-
-  - name: "three_by_three_center_zero"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "1"]
-          - ["1", "0", "1"]
-          - ["1", "1", "1"]
-    out: 3
-    judge:
-      type: "exact"
-    seed: 17
-
-  - name: "wide_matrix_with_gap_column"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "1", "0", "1", "1", "1"]
-          - ["1", "1", "1", "0", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1", "1", "1"]
-    out: 9
-    judge:
-      type: "exact"
-    seed: 18
-
-  - name: "tall_narrow_with_break"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1"]
-          - ["1", "1"]
-          - ["0", "1"]
-          - ["1", "1"]
-          - ["1", "1"]
-          - ["1", "1"]
-    out: 6
-    judge:
-      type: "exact"
-    seed: 19
-
-  - name: "complex_six_by_seven"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "0", "1", "1", "1", "1", "0"]
-          - ["1", "1", "1", "1", "1", "1", "0"]
-          - ["1", "1", "1", "0", "1", "1", "1"]
-          - ["0", "1", "1", "1", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1", "0", "1"]
-          - ["1", "1", "0", "1", "1", "1", "1"]
-    out: 8
-    judge:
-      type: "exact"
-    seed: 20
-
-  - name: "last_three_columns_full_height"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["0", "0", "1", "1", "1"]
-          - ["0", "0", "1", "1", "1"]
-          - ["1", "0", "1", "1", "1"]
-          - ["1", "1", "1", "1", "1"]
-    out: 12
-    judge:
-      type: "exact"
-    seed: 21
-
-  - name: "one_zero_breaks_square"
-    in:
-      matrix:
-        elemType: "char"
-        value:
-          - ["1", "1", "1", "1"]
-          - ["1", "1", "1", "1"]
-          - ["1", "1", "0", "1"]
-          - ["1", "1", "1", "1"]
-    out: 8
-    judge:
-      type: "exact"
-    seed: 22
-
-  - name: "generated_random_rows_single_column"
-    in:
-      matrix:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 200
-        of:
-          gen: "array"
-          len: 1
-          of:
-            gen: "char"
-            variety: ["0", "1"]
-          elemType: "char"
-        elemType: "char"
-    judge:
-      type: "exact"
-    seed: 23
-
-  - name: "generated_single_row_random_cols"
-    in:
-      matrix:
-        gen: "array"
-        len: 1
-        of:
-          gen: "array"
-          len:
-            gen: "int"
-            min: 1
-            max: 200
-          of:
-            gen: "char"
-            variety: ["0", "1"]
-          elemType: "char"
-        elemType: "char"
-    judge:
-      type: "exact"
-    seed: 24
-
-  - name: "generated_random_rows_fixed_20_cols"
-    in:
-      matrix:
-        gen: "array"
-        len:
-          gen: "int"
-          min: 1
-          max: 200
-        of:
-          gen: "array"
-          len: 20
-          of:
-            gen: "char"
-            variety: ["0", "1"]
-          elemType: "char"
-        elemType: "char"
-    judge:
-      type: "exact"
-    seed: 25
-
-  - name: "generated_large_200_by_200"
-    in:
-      matrix:
-        gen: "array"
-        len: 200
-        of:
-          gen: "array"
-          len: 200
-          of:
-            gen: "char"
-            variety: ["0", "1"]
-          elemType: "char"
-        elemType: "char"
-    judge:
-      type: "exact"
-    seed: 26
-
-  - name: "generated_large_199_by_200"
-    in:
-      matrix:
-        gen: "array"
-        len: 199
-        of:
-          gen: "array"
-          len: 200
-          of:
-            gen: "char"
-            variety: ["0", "1"]
-          elemType: "char"
-        elemType: "char"
-    judge:
-      type: "exact"
-    seed: 27
+- name: ex1
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+        - '0'
+        - '0'
+      - - '1'
+        - '0'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '0'
+        - '0'
+        - '1'
+        - '0'
+  out: 6
+- name: ex2
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '0'
+  out: 0
+- name: ex3
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+  out: 1
+- name: single_row
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+        - '1'
+  out: 3
+- name: single_col
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+      - - '1'
+      - - '0'
+      - - '1'
+      - - '1'
+  out: 2
+- name: all_ones_2x2
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+      - - '1'
+        - '1'
+  out: 4
+- name: all_zeros_2x3
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '0'
+        - '0'
+        - '0'
+      - - '0'
+        - '0'
+        - '0'
+  out: 0
+- name: checkerboard_3x3
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+      - - '0'
+        - '1'
+        - '0'
+      - - '1'
+        - '0'
+        - '1'
+  out: 1
+- name: rectangle_in_middle
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '0'
+        - '0'
+        - '0'
+        - '0'
+        - '0'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '0'
+        - '0'
+        - '0'
+        - '0'
+        - '0'
+  out: 6
+- name: stacked_columns
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: row_breaks_area
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: column_breaks_area
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+      - - '0'
+        - '1'
+        - '1'
+  out: 6
+- name: alternating_rows
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '0'
+        - '0'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 8
+- name: alternating_cols
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '0'
+        - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '0'
+        - '1'
+        - '0'
+        - '1'
+  out: 3
+- name: tall_rectangle
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+  out: 12
+- name: wide_rectangle
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 10
+- name: barrier_in_middle
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '0'
+        - '0'
+        - '0'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 5
+- name: sparse_big
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+        - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+  out: 8
+- name: max_digits
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 16
+- name: one_zero_in_corner
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '0'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: one_zero_center
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+  out: 3
+- name: staircase
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: reversed_staircase
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '0'
+        - '0'
+        - '0'
+        - '1'
+      - - '0'
+        - '0'
+        - '1'
+        - '1'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: mixed_columns
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: mixed_rows
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '0'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: thin_strip
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 7
+- name: thin_strip_with_zero
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 4
+- name: broad_block
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '0'
+        - '0'
+  out: 12
+- name: randomish_1
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+        - '1'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 8
+- name: randomish_2
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '0'
+        - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '0'
+        - '1'
+        - '1'
+        - '1'
+  out: 6
+- name: generated_all_zero_row_breaks
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '0'
+        - '0'
+        - '0'
+        - '0'
+        - '0'
+        - '0'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 12
+- name: generated_tall_narrow
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+      - - '1'
+        - '1'
+      - - '1'
+        - '1'
+      - - '1'
+        - '1'
+      - - '0'
+        - '1'
+      - - '1'
+        - '1'
+  out: 6
+- name: generated_center_block
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '0'
+        - '0'
+        - '0'
+        - '0'
+        - '0'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+      - - '0'
+        - '0'
+        - '0'
+        - '0'
+        - '0'
+  out: 9
+- name: generated_sparse_edge
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '0'
+        - '1'
+        - '0'
+        - '1'
+        - '0'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '0'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '0'
+  out: 10
+- name: generated_full_square
+  in:
+    matrix:
+      elemType: char
+      value:
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+      - - '1'
+        - '1'
+        - '1'
+        - '1'
+        - '1'
+  out: 25

@@ -1,19 +1,6 @@
 entry:
   id: 57
   title: insert-interval
-  call:
-    cpp: Solution().insert({intervals}, {newInterval})
-    rust: Solution::insert({intervals}, {newInterval})
-    python3: Solution().insert({intervals}, {newInterval})
-    python2: Solution().insert({intervals}, {newInterval})
-    ruby: insert({intervals}, {newInterval})
-    java: new Solution().insert({intervals}, {newInterval})
-    csharp: new Solution().Insert({intervals}, {newInterval})
-    kotlin: Solution().insert({intervals}, {newInterval})
-    go: insert({intervals}, {newInterval})
-    dart: Solution().insert({intervals}, {newInterval})
-    swift: Solution().insert({intervals}, {newInterval})
-    typescript: insert({intervals}, {newInterval})
   params:
     intervals:
       type: array
@@ -25,6 +12,19 @@ entry:
       type: array
       items:
         type: int
+  call:
+    cpp: "Solution().insert({intervals}, {newInterval})"
+    rust: "Solution::insert({intervals}, {newInterval})"
+    python3: "Solution().insert({intervals}, {newInterval})"
+    python2: "Solution().insert({intervals}, {newInterval})"
+    ruby: "insert({intervals}, {newInterval})"
+    java: "new Solution().insert({intervals}, {newInterval})"
+    csharp: "new Solution().Insert({intervals}, {newInterval})"
+    kotlin: "Solution().insert({intervals}, {newInterval})"
+    go: "insert({intervals}, {newInterval})"
+    dart: "Solution().insert({intervals}, {newInterval})"
+    swift: "Solution().insert({intervals}, {newInterval})"
+    typescript: "insert({intervals}, {newInterval})"
 judge:
   type: exact
 limits:
@@ -32,377 +32,405 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: insert(intervals, newInterval, {result})
+    call: "Checker().insert(intervals, newInterval, {result})"
     checker: |
-      import json
-
-      def insert(intervals, newInterval, result):
-          try:
-              result = json.loads(result) if isinstance(result, str) else result
-          except Exception:
-              return False
-          res = []
-          i = 0
-          n = len(intervals)
-          new_start, new_end = newInterval
-          while i < n and intervals[i][1] < new_start:
-              res.append(intervals[i])
-              i += 1
-          while i < n and intervals[i][0] <= new_end:
-              new_start = min(new_start, intervals[i][0])
-              new_end = max(new_end, intervals[i][1])
-              i += 1
-          res.append([new_start, new_end])
-          while i < n:
-              res.append(intervals[i])
-              i += 1
-          return res == result
-seed: 42
+      class Checker:
+          def insert(self, intervals, newInterval, result):
+              if not isinstance(result, list):
+                  return False
+              for interval in result:
+                  if not isinstance(interval, list) or len(interval) != 2:
+                      return False
+                  if not all(isinstance(x, int) for x in interval):
+                      return False
+                  if interval[0] > interval[1]:
+                      return False
+              expected = []
+              i = 0
+              n = len(intervals)
+              new_start, new_end = newInterval
+              while i < n and intervals[i][1] < new_start:
+                  expected.append(intervals[i])
+                  i += 1
+              while i < n and intervals[i][0] <= new_end:
+                  new_start = min(new_start, intervals[i][0])
+                  new_end = max(new_end, intervals[i][1])
+                  i += 1
+              expected.append([new_start, new_end])
+              while i < n:
+                  expected.append(intervals[i])
+                  i += 1
+              return result == expected
+seed: 57
 tests:
-  - name: example 1
+  - name: Example 1
     in:
       intervals:
-        - - 1
-          - 3
-        - - 6
-          - 9
-      newInterval:
-        - 2
-        - 5
+        - [1, 3]
+        - [6, 9]
+      newInterval: [2, 5]
     out:
-      - - 1
-        - 5
-      - - 6
-        - 9
-  - name: example 2
+      - [1, 5]
+      - [6, 9]
+  - name: Example 2
     in:
       intervals:
-        - - 1
-          - 2
-        - - 3
-          - 5
-        - - 6
-          - 7
-        - - 8
-          - 10
-        - - 12
-          - 16
-      newInterval:
-        - 4
-        - 8
+        - [1, 2]
+        - [3, 5]
+        - [6, 7]
+        - [8, 10]
+        - [12, 16]
+      newInterval: [4, 8]
     out:
-      - - 1
-        - 2
-      - - 3
-        - 10
-      - - 12
-        - 16
-  - name: empty list
+      - [1, 2]
+      - [3, 10]
+      - [12, 16]
+  - name: Insert before all
+    in:
+      intervals:
+        - [5, 7]
+        - [10, 12]
+      newInterval: [1, 3]
+    out:
+      - [1, 3]
+      - [5, 7]
+      - [10, 12]
+  - name: Insert after all
+    in:
+      intervals:
+        - [1, 2]
+        - [4, 5]
+      newInterval: [7, 8]
+    out:
+      - [1, 2]
+      - [4, 5]
+      - [7, 8]
+  - name: Merge one middle
+    in:
+      intervals:
+        - [1, 2]
+        - [5, 7]
+        - [10, 12]
+      newInterval: [6, 6]
+    out:
+      - [1, 2]
+      - [5, 7]
+      - [10, 12]
+  - name: Merge touching left
+    in:
+      intervals:
+        - [1, 2]
+        - [5, 7]
+      newInterval: [2, 4]
+    out:
+      - [1, 4]
+      - [5, 7]
+  - name: Merge touching right
+    in:
+      intervals:
+        - [1, 2]
+        - [5, 7]
+      newInterval: [3, 5]
+    out:
+      - [1, 2]
+      - [3, 7]
+  - name: Fully inside one interval
+    in:
+      intervals:
+        - [1, 10]
+        - [15, 20]
+      newInterval: [3, 4]
+    out:
+      - [1, 10]
+      - [15, 20]
+  - name: Merge across several intervals
+    in:
+      intervals:
+        - [1, 2]
+        - [3, 5]
+        - [6, 7]
+        - [8, 10]
+        - [12, 16]
+      newInterval: [4, 8]
+    out:
+      - [1, 2]
+      - [3, 10]
+      - [12, 16]
+  - name: Merge all intervals
+    in:
+      intervals:
+        - [1, 2]
+        - [4, 6]
+        - [8, 10]
+      newInterval: [0, 20]
+    out:
+      - [0, 20]
+  - name: Empty intervals simple
     in:
       intervals: []
-      newInterval:
-        - 5
-        - 7
+      newInterval: [4, 8]
     out:
-      - - 5
-        - 7
-  - name: new interval start
+      - [4, 8]
+  - name: Empty intervals zero
     in:
-      intervals:
-        - - 2
-          - 5
-      newInterval:
-        - 0
-        - 1
+      intervals: []
+      newInterval: [0, 0]
     out:
-      - - 0
-        - 1
-      - - 2
-        - 5
-  - name: new interval end
+      - [0, 0]
+  - name: Single interval before
     in:
       intervals:
-        - - 0
-          - 1
-      newInterval:
-        - 2
-        - 5
+        - [10, 20]
+      newInterval: [1, 5]
     out:
-      - - 0
-        - 1
-      - - 2
-        - 5
-  - name: merge entire
+      - [1, 5]
+      - [10, 20]
+  - name: Single interval after
     in:
       intervals:
-        - - 1
-          - 2
-        - - 3
-          - 4
-      newInterval:
-        - 0
-        - 5
+        - [10, 20]
+      newInterval: [30, 40]
     out:
-      - - 0
-        - 5
-  - name: single point overlap start
+      - [10, 20]
+      - [30, 40]
+  - name: Single interval overlap left edge
     in:
       intervals:
-        - - 2
-          - 4
-      newInterval:
-        - 0
-        - 2
+        - [10, 20]
+      newInterval: [5, 10]
     out:
-      - - 0
-        - 4
-  - name: single point overlap end
+      - [5, 20]
+  - name: Single interval overlap right edge
     in:
       intervals:
-        - - 0
-          - 2
-      newInterval:
-        - 2
-        - 4
+        - [10, 20]
+      newInterval: [20, 25]
     out:
-      - - 0
-        - 4
-  - name: surrounded by merge
+      - [10, 25]
+  - name: Single interval inside
     in:
       intervals:
-        - - 1
-          - 2
-        - - 8
-          - 10
-      newInterval:
-        - 3
-        - 7
+        - [10, 20]
+      newInterval: [12, 18]
     out:
-      - - 1
-        - 2
-      - - 3
-        - 7
-      - - 8
-        - 10
-  - name: nested inside
+      - [10, 20]
+  - name: Exact same interval
     in:
       intervals:
-        - - 0
-          - 10
-      newInterval:
-        - 2
-        - 5
+        - [2, 4]
+        - [7, 9]
+      newInterval: [7, 9]
     out:
-      - - 0
-        - 10
-  - name: envelops list
+      - [2, 4]
+      - [7, 9]
+  - name: Adjacent chain merge
     in:
       intervals:
-        - - 2
-          - 3
-        - - 5
-          - 6
-      newInterval:
-        - 1
-        - 7
+        - [1, 2]
+        - [4, 5]
+        - [7, 8]
+      newInterval: [2, 7]
     out:
-      - - 1
-        - 7
-  - name: adjacent left
+      - [1, 8]
+  - name: New interval between gaps
     in:
       intervals:
-        - - 3
-          - 5
-      newInterval:
-        - 1
-        - 2
+        - [1, 2]
+        - [10, 11]
+        - [20, 21]
+      newInterval: [5, 6]
     out:
-      - - 1
-        - 2
-      - - 3
-        - 5
-  - name: adjacent right
+      - [1, 2]
+      - [5, 6]
+      - [10, 11]
+      - [20, 21]
+  - name: New interval merges with first two
     in:
       intervals:
-        - - 1
-          - 2
-      newInterval:
-        - 3
-        - 5
+        - [1, 3]
+        - [6, 9]
+        - [12, 16]
+      newInterval: [2, 7]
     out:
-      - - 1
-        - 2
-      - - 3
-        - 5
-  - name: identical interval
+      - [1, 9]
+      - [12, 16]
+  - name: New interval merges with last two
     in:
       intervals:
-        - - 1
-          - 5
-        - - 6
-          - 10
-      newInterval:
-        - 1
-        - 5
+        - [1, 3]
+        - [6, 9]
+        - [12, 16]
+      newInterval: [8, 20]
     out:
-      - - 1
-        - 5
-      - - 6
-        - 10
-  - name: all intervals merges into one
+      - [1, 3]
+      - [6, 20]
+  - name: New interval at far left boundary
     in:
       intervals:
-        - - 1
-          - 2
-        - - 3
-          - 4
-        - - 5
-          - 6
-      newInterval:
-        - 0
-        - 7
+        - [2, 3]
+        - [5, 7]
+      newInterval: [0, 1]
     out:
-      - - 0
-        - 7
-  - name: start/end at zero
+      - [0, 1]
+      - [2, 3]
+      - [5, 7]
+  - name: New interval at far right boundary
     in:
       intervals:
-        - - 0
-          - 0
-      newInterval:
-        - 0
-        - 0
+        - [2, 3]
+        - [5, 7]
+      newInterval: [8, 10]
     out:
-      - - 0
-        - 0
-  - name: max values
+      - [2, 3]
+      - [5, 7]
+      - [8, 10]
+  - name: New interval bridges a gap exactly
     in:
       intervals:
-        - - 100000
-          - 100000
-      newInterval:
-        - 99999
-        - 100000
+        - [1, 2]
+        - [5, 6]
+      newInterval: [2, 5]
     out:
-      - - 99999
-        - 100000
-  - name: test duplicates 1
+      - [1, 6]
+  - name: New interval covers multiple gaps
     in:
       intervals:
-        - - 1
-          - 1
-        - - 1
-          - 1
-      newInterval:
-        - 1
-        - 1
+        - [1, 2]
+        - [4, 5]
+        - [7, 8]
+        - [10, 11]
+      newInterval: [3, 9]
     out:
-      - - 1
-        - 1
-  - name: test duplicates 2
+      - [1, 2]
+      - [3, 9]
+      - [10, 11]
+  - name: New interval equals a gap range
     in:
       intervals:
-        - - 1
-          - 5
-        - - 1
-          - 5
-      newInterval:
-        - 1
-        - 5
+        - [1, 2]
+        - [5, 7]
+        - [10, 12]
+      newInterval: [3, 4]
     out:
-      - - 1
-        - 5
-  - name: large range expansion
+      - [1, 2]
+      - [3, 4]
+      - [5, 7]
+      - [10, 12]
+  - name: Left merge and right merge separated
     in:
       intervals:
-        - - 0
-          - 10
-        - - 20
-          - 30
-        - - 40
-          - 50
-      newInterval:
-        - 5
-        - 45
+        - [1, 2]
+        - [6, 7]
+        - [10, 11]
+      newInterval: [2, 10]
     out:
-      - - 0
-        - 50
-  - name: random structure 1
-    seed: 123
+      - [1, 11]
+  - name: New interval at minimum value
     in:
       intervals:
-        - - 1
-          - 2
-        - - 4
-          - 5
-        - - 7
-          - 8
-        - - 10
-          - 11
-        - - 13
-          - 14
-      newInterval:
-        - 3
-        - 12
-  - name: random structure 2
-    seed: 456
+        - [1, 5]
+        - [10, 15]
+      newInterval: [0, 0]
+    out:
+      - [0, 0]
+      - [1, 5]
+      - [10, 15]
+  - name: New interval at maximum value
     in:
       intervals:
-        - - 10
-          - 20
-        - - 30
-          - 40
-        - - 50
-          - 60
-      newInterval:
-        - 15
-        - 55
-  - name: random structure 3
-    seed: 789
+        - [0, 0]
+        - [10, 15]
+      newInterval: [100000, 100000]
+    out:
+      - [0, 0]
+      - [10, 15]
+      - [100000, 100000]
+  - name: Large span merge
     in:
       intervals:
-        - - 2
-          - 3
-        - - 4
-          - 5
-        - - 6
-          - 7
-      newInterval:
-        - 0
-        - 1
-  - name: large input simple case
+        - [0, 1000]
+        - [2000, 3000]
+        - [4000, 5000]
+      newInterval: [1500, 4500]
+    out:
+      - [0, 1000]
+      - [1500, 5000]
+  - name: Many small intervals untouched
     in:
       intervals:
-        - - 1
-          - 2
-        - - 3
-          - 4
-      newInterval:
-        - 5
-        - 6
-  - name: large input boundary case
+        - [0, 1]
+        - [3, 4]
+        - [6, 7]
+        - [9, 10]
+        - [12, 13]
+      newInterval: [14, 15]
+    out:
+      - [0, 1]
+      - [3, 4]
+      - [6, 7]
+      - [9, 10]
+      - [12, 13]
+      - [14, 15]
+  - name: Many small intervals prepend
     in:
       intervals:
-        - - 0
-          - 50000
-        - - 60000
-          - 100000
-      newInterval:
-        - 49999
-        - 60001
-  - name: large input stress
+        - [2, 3]
+        - [5, 6]
+        - [8, 9]
+        - [11, 12]
+      newInterval: [0, 1]
+    out:
+      - [0, 1]
+      - [2, 3]
+      - [5, 6]
+      - [8, 9]
+      - [11, 12]
+  - name: Many small intervals append
     in:
       intervals:
-        - - 1
-          - 2
-        - - 3
-          - 4
-        - - 5
-          - 6
-        - - 7
-          - 8
-        - - 9
-          - 10
-      newInterval:
-        - 0
-        - 100000
+        - [2, 3]
+        - [5, 6]
+        - [8, 9]
+        - [11, 12]
+      newInterval: [13, 14]
+    out:
+      - [2, 3]
+      - [5, 6]
+      - [8, 9]
+      - [11, 12]
+      - [13, 14]
+  - name: Overlap all but keep sorted
+    in:
+      intervals:
+        - [1, 2]
+        - [4, 5]
+        - [7, 8]
+        - [10, 11]
+      newInterval: [0, 12]
+    out:
+      - [0, 12]
+  - name: Gap then merge then gap
+    in:
+      intervals:
+        - [1, 2]
+        - [6, 7]
+        - [12, 13]
+      newInterval: [3, 10]
+    out:
+      - [1, 2]
+      - [3, 10]
+      - [12, 13]
+  - name: Deep right merge
+    in:
+      intervals:
+        - [1, 2]
+        - [4, 5]
+        - [7, 8]
+        - [10, 11]
+        - [13, 14]
+      newInterval: [9, 13]
+    out:
+      - [1, 2]
+      - [4, 5]
+      - [7, 8]
+      - [9, 14]

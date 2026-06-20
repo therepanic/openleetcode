@@ -1,19 +1,6 @@
 entry:
   id: 39
   title: combination-sum
-  call:
-    cpp: Solution().combinationSum({candidates}, {target})
-    rust: Solution::combination_sum({candidates}, {target})
-    python3: Solution().combinationSum({candidates}, {target})
-    python2: Solution().combinationSum({candidates}, {target})
-    ruby: combination_sum({candidates}, {target})
-    java: new Solution().combinationSum({candidates}, {target})
-    csharp: new Solution().CombinationSum({candidates}, {target})
-    kotlin: Solution().combinationSum({candidates}, {target})
-    go: combinationSum({candidates}, {target})
-    dart: Solution().combinationSum({candidates}, {target})
-    swift: Solution().combinationSum({candidates}, {target})
-    typescript: combinationSum({candidates}, {target})
   params:
     candidates:
       type: array
@@ -21,26 +8,70 @@ entry:
         type: int
     target:
       type: int
+  call:
+    cpp: "Solution().combinationSum({candidates}, {target})"
+    rust: "Solution::combination_sum({candidates}, {target})"
+    python3: "Solution().combinationSum({candidates}, {target})"
+    python2: "Solution().combinationSum({candidates}, {target})"
+    ruby: "combination_sum({candidates}, {target})"
+    java: "new Solution().combinationSum({candidates}, {target})"
+    csharp: "new Solution().CombinationSum({candidates}, {target})"
+    kotlin: "Solution().combinationSum({candidates}, {target})"
+    go: "combinationSum({candidates}, {target})"
+    dart: "Solution().combinationSum({candidates}, {target})"
+    swift: "Solution().combinationSum({candidates}, {target})"
+    typescript: "combinationSum({candidates}, {target})"
 judge:
-  type: ignore_order
+  type: exact
 limits:
   time_ms: 2000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check(candidates, target, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if isinstance(result, str):\n           \
-      \ try:\n                result = json.loads(result)\n            except Exception:\n                pass\n        return
-      result\n\n    def check(self, candidates, target, result):\n        result = self._norm(result)\n        if not isinstance(result,
-      list): return False\n        seen = set()\n        for comb in result:\n            if sum(comb) != target: return False\n\
-      \            for x in comb:\n                if x not in candidates: return False\n            seen.add(tuple(sorted(comb)))\n\
-      \        def get_all(target_val, start_idx):\n            if target_val == 0: return [[]]\n            if target_val
-      < 0 or start_idx == len(candidates): return []\n            res = []\n            for i in range(start_idx, len(candidates)):\n\
-      \                for sub in get_all(target_val - candidates[i], i):\n                    res.append([candidates[i]]
-      + sub)\n            return res\n        expected = [tuple(sorted(c)) for c in get_all(target, 0)]\n        return len(result)
-      == len(expected) and all(tuple(sorted(c)) in expected for c in result)\n"
-seed: 42
+    call: "Checker().combinationSum(candidates, target, {result})"
+    checker: |
+      class Checker:
+          def combinationSum(self, candidates, target, result):
+              if not isinstance(result, list):
+                  return False
+              cand_set = set(candidates)
+              if len(cand_set) != len(candidates):
+                  return False
+              normalized = []
+              seen = set()
+              for comb in result:
+                  if not isinstance(comb, list):
+                      return False
+                  if any(not isinstance(x, int) for x in comb):
+                      return False
+                  if any(x not in cand_set for x in comb):
+                      return False
+                  if sum(comb) != target:
+                      return False
+                  key = tuple(sorted(comb))
+                  if key in seen:
+                      return False
+                  seen.add(key)
+                  normalized.append(key)
+              expected = []
+              candidates = sorted(candidates)
+
+              def dfs(start, path, total):
+                  if total == target:
+                      expected.append(tuple(path))
+                      return
+                  for i in range(start, len(candidates)):
+                      v = candidates[i]
+                      nt = total + v
+                      if nt > target:
+                          break
+                      path.append(v)
+                      dfs(i, path, nt)
+                      path.pop()
+
+              dfs(0, [], 0)
+              return set(normalized) == set(expected)
+seed: 39
 tests:
   - name: Example 1
     in:
@@ -50,11 +81,6 @@ tests:
         - 6
         - 7
       target: 7
-    out:
-      - - 2
-        - 2
-        - 3
-      - - 7
   - name: Example 2
     in:
       candidates:
@@ -62,292 +88,328 @@ tests:
         - 3
         - 5
       target: 8
-    out:
-      - - 2
-        - 2
-        - 2
-        - 2
-      - - 2
-        - 3
-        - 3
-      - - 3
-        - 5
   - name: Example 3
     in:
       candidates:
         - 2
       target: 1
-    out: []
-  - name: Smallest candidates
+  - name: Single candidate equals target
     in:
       candidates:
-        - 2
-        - 5
-      target: 5
-    out:
-      - - 5
-    seed: 1
-  - name: Target unreachable
+        - 7
+      target: 7
+  - name: Single candidate below target
     in:
       candidates:
-        - 3
-        - 5
-      target: 2
-    out: []
-  - name: Even numbers only
+        - 9
+      target: 8
+  - name: Two candidates one solution
     in:
       candidates:
         - 2
         - 4
-        - 6
-      target: 6
-    out:
-      - - 2
-        - 2
-        - 2
-      - - 2
-        - 4
-      - - 6
-  - name: Single candidate equal to target
+      target: 8
+  - name: Two candidates no solution
     in:
       candidates:
+        - 5
         - 10
-      target: 10
-    out:
-      - - 10
-  - name: Two candidates
+      target: 3
+  - name: Small unsorted input
+    in:
+      candidates:
+        - 8
+        - 2
+        - 3
+      target: 8
+  - name: Target one impossible
     in:
       candidates:
         - 2
         - 3
-      target: 5
-    out:
-      - - 2
-        - 3
-  - name: Target is multiple of only one candidate
+        - 4
+      target: 1
+  - name: Target two direct pair
     in:
       candidates:
+        - 2
+        - 5
+        - 9
+      target: 4
+  - name: Target three with repeats
+    in:
+      candidates:
+        - 2
         - 3
+        - 4
+      target: 6
+  - name: Target four mixed
+    in:
+      candidates:
+        - 2
+        - 3
+        - 5
+        - 7
+      target: 10
+  - name: Target five with prime set
+    in:
+      candidates:
+        - 2
+        - 3
+        - 5
+        - 7
+      target: 11
+  - name: Target six classic
+    in:
+      candidates:
+        - 2
+        - 3
+        - 6
         - 7
       target: 9
-    out:
-      - - 3
-        - 3
-        - 3
-  - name: Many small combinations
+  - name: Target seven with larger mix
     in:
       candidates:
         - 2
-        - 3
         - 4
-      target: 6
-    out:
-      - - 2
-        - 2
-        - 2
-      - - 2
-        - 4
-      - - 3
-        - 3
-  - name: Large target
-    in:
-      candidates:
-        - 10
-        - 20
-        - 30
-      target: 40
-    out:
-      - - 10
-        - 10
-        - 10
-        - 10
-      - - 10
-        - 10
-        - 20
-      - - 10
-        - 30
-      - - 20
-        - 20
-  - name: Prime numbers
-    in:
-      candidates:
-        - 2
-        - 3
-        - 5
-        - 7
-      target: 10
-    out:
-      - - 2
-        - 2
-        - 2
-        - 2
-        - 2
-      - - 2
-        - 2
-        - 3
-        - 3
-      - - 2
-        - 3
-        - 5
-      - - 3
-        - 7
-      - - 5
-        - 5
-  - name: Check order independence
-    in:
-      candidates:
-        - 5
-        - 2
-      target: 7
-    out:
-      - - 2
-        - 5
-  - name: Deep recursion
-    in:
-      candidates:
-        - 2
+        - 6
+        - 8
       target: 8
-    out:
-      - - 2
-        - 2
-        - 2
-        - 2
-  - name: Max candidate value
-    in:
-      candidates:
-        - 40
-      target: 40
-    out:
-      - - 40
-  - name: Constraints boundary 1
-    in:
-      candidates:
-        - 2
-        - 40
-      target: 40
-    out:
-      - - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-        - 2
-      - - 40
-  - name: Generated 1
-    in:
-      candidates:
-        - 3
-        - 5
-        - 7
-      target: 15
-    judge:
-      type: ignore_order
-  - name: Generated 2
-    in:
-      candidates:
-        - 2
-        - 4
-        - 6
-      target: 12
-    judge:
-      type: ignore_order
-  - name: Generated 3
-    in:
-      candidates:
-        - 10
-        - 15
-        - 20
-      target: 30
-    judge:
-      type: ignore_order
-  - name: Generated 4
-    in:
-      candidates:
-        - 5
-        - 8
-        - 12
-      target: 20
-    judge:
-      type: ignore_order
-  - name: Generated 5
-    in:
-      candidates:
-        - 4
-        - 6
-        - 9
-      target: 18
-    judge:
-      type: ignore_order
-  - name: Distinct small ints
+  - name: Target eight dense small
     in:
       candidates:
         - 2
         - 3
         - 4
         - 5
-        - 6
+      target: 8
+  - name: Target nine dense small
+    in:
+      candidates:
+        - 2
+        - 3
+        - 4
+        - 5
+      target: 9
+  - name: Target ten dense small
+    in:
+      candidates:
+        - 2
+        - 3
+        - 4
+        - 5
       target: 10
-    judge:
-      type: ignore_order
-  - name: Few candidates large target
+  - name: With larger candidate gap
     in:
       candidates:
-        - 15
-        - 25
-      target: 40
-    out:
-      - - 15
-        - 25
-  - name: Max constraints density
+        - 3
+        - 8
+        - 11
+        - 18
+      target: 24
+  - name: No combination due to parity
+    in:
+      candidates:
+        - 4
+        - 6
+        - 10
+      target: 7
+  - name: Near upper target
     in:
       candidates:
         - 2
         - 3
-        - 4
-        - 5
         - 6
         - 7
-        - 8
-        - 9
-        - 10
+      target: 40
+  - name: Larger target with moderate count
+    in:
+      candidates:
+        - 2
+        - 3
+        - 5
+      target: 40
+  - name: High candidate values
+    in:
+      candidates:
+        - 11
+        - 13
+        - 17
+        - 19
+      target: 40
+  - name: Max candidate count sparse
+    in:
+      candidates:
         - 11
         - 12
         - 13
         - 14
         - 15
-      target: 20
-    judge:
-      type: ignore_order
-  - name: Specific sum
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+        - 32
+        - 33
+        - 34
+        - 35
+        - 36
+        - 37
+        - 38
+        - 39
+        - 40
+      target: 40
+  - name: Max candidate count low target
+    in:
+      candidates:
+        - 2
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+        - 32
+        - 33
+        - 34
+        - 35
+        - 36
+        - 37
+        - 38
+        - 39
+      target: 40
+  - name: Many small combinations
+    in:
+      candidates:
+        - 2
+        - 3
+        - 6
+        - 7
+      target: 30
+  - name: Many small combinations 2
+    in:
+      candidates:
+        - 2
+        - 3
+        - 5
+        - 7
+      target: 30
+  - name: Mixed even odd
+    in:
+      candidates:
+        - 2
+        - 4
+        - 5
+        - 9
+        - 10
+      target: 14
+  - name: Mixed even odd 2
     in:
       candidates:
         - 3
+        - 4
+        - 6
+        - 8
         - 9
       target: 18
-    out:
-      - - 3
+  - name: Mixed even odd 3
+    in:
+      candidates:
+        - 2
+        - 6
+        - 8
+        - 14
+        - 20
+      target: 40
+  - name: Mixed even odd 4
+    in:
+      candidates:
+        - 2
         - 3
-        - 3
-        - 3
-        - 3
-        - 3
-      - - 3
-        - 3
-        - 3
+        - 7
+        - 11
+        - 17
+      target: 17
+  - name: Mixed even odd 5
+    in:
+      candidates:
+        - 5
+        - 6
+        - 7
+        - 8
         - 9
-      - - 9
+      target: 15
+  - name: Mixed even odd 6
+    in:
+      candidates:
+        - 4
         - 9
+        - 12
+        - 15
+        - 20
+      target: 24
+  - name: Mixed even odd 7
+    in:
+      candidates:
+        - 2
+        - 3
+        - 8
+        - 12
+        - 16
+        - 24
+      target: 32
+  - name: Mixed even odd 8
+    in:
+      candidates:
+        - 2
+        - 5
+        - 10
+        - 20
+        - 25
+      target: 40
+  - name: Mixed even odd 9
+    in:
+      candidates:
+        - 3
+        - 7
+        - 14
+        - 21
+        - 28
+      target: 35
+  - name: Mixed even odd 10
+    in:
+      candidates:
+        - 2
+        - 4
+        - 6
+        - 8
+        - 10
+        - 12
+      target: 12

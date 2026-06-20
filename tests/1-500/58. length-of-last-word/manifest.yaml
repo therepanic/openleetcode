@@ -1,6 +1,9 @@
 entry:
   id: 58
   title: length-of-last-word
+  params:
+    s:
+      type: string
   call:
     cpp: Solution().lengthOfLastWord({s})
     rust: Solution::length_of_last_word({s})
@@ -14,9 +17,6 @@ entry:
     dart: Solution().lengthOfLastWord({s})
     swift: Solution().lengthOfLastWord({s})
     typescript: lengthOfLastWord({s})
-  params:
-    s:
-      type: string
 judge:
   type: exact
 limits:
@@ -24,19 +24,28 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: lengthOfLastWord(s, {result})
+    call: Checker().lengthOfLastWord(s, {result})
     checker: |
       import json
 
-      def lengthOfLastWord(s, result):
-          try:
-              result = json.loads(result) if isinstance(result, str) else result
-          except Exception:
-              return False
-          words = s.split()
-          expected = len(words[-1]) if words else 0
-          return expected == result
-seed: 42
+      class Checker:
+          def lengthOfLastWord(self, s, result):
+              try:
+                  result = json.loads(result) if isinstance(result, str) else result
+              except Exception:
+                  return False
+              if not isinstance(s, str):
+                  return False
+              if not isinstance(result, int):
+                  return False
+              if any(ch not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz " for ch in s):
+                  return False
+              if len(s) < 1 or len(s) > 10000:
+                  return False
+              words = s.split()
+              expected = len(words[-1]) if words else 0
+              return expected == result
+seed: 58
 tests:
   - name: Example 1
     in:
@@ -50,101 +59,157 @@ tests:
     in:
       s: luffy is still joyboy
     out: 6
-  - name: Single word
+  - name: Single letter
     in:
       s: a
     out: 1
-  - name: Single word with spaces
+  - name: Single word
     in:
-      s: "   hello   "
-    out: 5
+      s: algorithm
+    out: 9
   - name: Two words
     in:
       s: ab cd
     out: 2
-  - name: Only spaces
-    in:
-      s: "          "
-    out: 0
-  - name: Long trailing spaces
-    in:
-      s: "word      "
-    out: 4
   - name: Leading spaces
     in:
-      s: "  word"
-    out: 4
-  - name: Mixed spaces
-    in:
-      s: " a b c d e "
-    out: 1
-  - name: All same characters
-    in:
-      s: aaaaa
+      s: "   hello"
     out: 5
-  - name: Multiple words joined
+  - name: Trailing spaces
     in:
-      s: longestwordinthesentence
-    out: 24
-  - name: Max length constraint
+      s: "hello   "
+    out: 5
+  - name: Leading and trailing spaces
     in:
-      s: a
+      s: "   hello   "
+    out: 5
+  - name: Multiple internal spaces
+    in:
+      s: "a   bb    ccc"
+    out: 3
+  - name: Many words
+    in:
+      s: "one two three four five"
+    out: 4
+  - name: Mixed word lengths
+    in:
+      s: "a bb ccc dddd eeeee"
+    out: 5
+  - name: Short last word
+    in:
+      s: "word x"
     out: 1
-  - name: Large random string test 1
+  - name: Long first word
     in:
-      s:
-        gen: str
-        len: 5000
-        alphabet: a b
-  - name: Large random string test 2
+      s: "supercalifragilisticexpialidocious x"
+    out: 1
+  - name: Space before last word
+    in:
+      s: "abc def "
+    out: 3
+  - name: Two trailing spaces
+    in:
+      s: "abc def  "
+    out: 3
+  - name: Many trailing spaces
+    in:
+      s: "abc def      "
+    out: 3
+  - name: Single word with padding
+    in:
+      s: "     zzz     "
+    out: 3
+  - name: Alternating spaces
+    in:
+      s: "a b c d e f"
+    out: 1
+  - name: Final long word
+    in:
+      s: "a bb ccc dddd"
+    out: 4
+  - name: Entire alphabet
+    in:
+      s: abcdefghijklmnopqrstuvwxyz
+    out: 26
+  - name: Uppercase word
+    in:
+      s: PYTHON
+    out: 6
+  - name: Mixed case word
+    in:
+      s: OpenAI
+    out: 6
+  - name: Last word with same prefix
+    in:
+      s: "test testcase"
+    out: 8
+  - name: Ends with one-char word
+    in:
+      s: "test a"
+    out: 1
+  - name: Ends with two-char word
+    in:
+      s: "test ab"
+    out: 2
+  - name: Ends with three-char word
+    in:
+      s: "test abc"
+    out: 3
+  - name: All spaces around word
+    in:
+      s: "      q      "
+    out: 1
+  - name: Max length all one word
     in:
       s:
         gen: str
         len: 10000
-        alphabet: "z "
-  - name: Only alphabet
-    in:
-      s: abcdefghijklmnopqrstuvwxyz
-    out: 26
-  - name: Uppercase words
-    in:
-      s: HELLO WORLD
-    out: 5
-  - name: Mixed case
-    in:
-      s: Hello wOrLd
-    out: 5
-  - name: Words with space in middle
-    in:
-      s: a b
-    out: 1
-  - name: Trailing space edge
-    in:
-      s: "abc "
-    out: 3
-  - name: Leading space edge
-    in:
-      s: " abc"
-    out: 3
-  - name: Multiple trailing spaces
-    in:
-      s: "abc   "
-    out: 3
-  - name: Multiple internal spaces
-    in:
-      s: abc    def
-    out: 3
-  - name: Shortest valid input
-    in:
-      s: z
-    out: 1
-  - name: Generated alphanumeric spaces
+        alphabet: "a"
+  - name: Max length word plus spaces
     in:
       s:
         gen: str
-        len: 100
+        len: 10000
         alphabet: "ab "
-  - name: Trailing space buffer
+  - name: Generated mixed string 1
     in:
-      s: "a                  "
+      s:
+        gen: str
+        len: 256
+        alphabet: "abc "
+  - name: Generated mixed string 2
+    in:
+      s:
+        gen: str
+        len: 512
+        alphabet: "xyz "
+  - name: Generated mixed string 3
+    in:
+      s:
+        gen: str
+        len: 999
+        alphabet: "pqr "
+  - name: Generated mixed string 4
+    in:
+      s:
+        gen: str
+        len: 1234
+        alphabet: "lmno "
+  - name: Generated mixed string 5
+    in:
+      s:
+        gen: str
+        len: 2048
+        alphabet: "stuv "
+  - name: Word separated by large spaces
+    in:
+      s: "x                                                                                                   y"
     out: 1
+  - name: Large tail spaces after short word
+    in:
+      s: "abc                                                                                                   "
+    out: 3
+  - name: Large head spaces before short word
+    in:
+      s: "                                                                                                   abc"
+    out: 3

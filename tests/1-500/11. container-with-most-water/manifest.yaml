@@ -1,39 +1,50 @@
 entry:
   id: 11
   title: container-with-most-water
-  call:
-    cpp: Solution().maxArea({height})
-    rust: Solution::max_area({height})
-    python3: Solution().maxArea({height})
-    python2: Solution().maxArea({height})
-    ruby: max_area({height})
-    java: new Solution().maxArea({height})
-    csharp: new Solution().MaxArea({height})
-    kotlin: Solution().maxArea({height})
-    go: maxArea({height})
-    dart: Solution().maxArea({height})
-    swift: Solution().maxArea({height})
-    typescript: maxArea({height})
   params:
     height:
       type: array
       items:
         type: int
+  call:
+    cpp: "Solution().maxArea({height})"
+    rust: "Solution::max_area({height})"
+    python3: "Solution().maxArea({height})"
+    python2: "Solution().maxArea({height})"
+    ruby: "max_area({height})"
+    java: "new Solution().maxArea({height})"
+    csharp: "new Solution().MaxArea({height})"
+    kotlin: "Solution().maxArea({height})"
+    go: "maxArea({height})"
+    dart: "Solution().maxArea({height})"
+    swift: "Solution().maxArea({height})"
+    typescript: "maxArea({height})"
 judge:
   type: exact
 limits:
-  time_ms: 2000
+  time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().maxArea({height}, {result})
-    checker:
-      "class Checker:\n    def maxArea(self, height, expected):\n        l, r = 0, len(height) - 1\n        actual
-      = 0\n        while l < r:\n            actual = max(actual, min(height[l], height[r]) * (r - l))\n            if height[l]
-      < height[r]: l += 1\n            else: r -= 1\n        return actual == expected\n"
-seed: 42
+    call: "Checker().maxArea({height}, {result})"
+    checker: |
+      class Checker:
+          def maxArea(self, height, result):
+              left = 0
+              right = len(height) - 1
+              best = 0
+
+              while left < right:
+                  best = max(best, min(height[left], height[right]) * (right - left))
+                  if height[left] < height[right]:
+                      left += 1
+                  else:
+                      right -= 1
+
+              return best == result
+seed: 11
 tests:
-  - name: example 1
+  - name: example-1
     in:
       height:
         - 1
@@ -46,204 +57,331 @@ tests:
         - 3
         - 7
     out: 49
-  - name: example 2
+  - name: example-2
     in:
       height:
         - 1
         - 1
     out: 1
-  - name: minimal two elements
+  - name: two-zeroes
     in:
       height:
         - 0
         - 0
     out: 0
-  - name: all same
-    in:
-      height:
-        - 5
-        - 5
-        - 5
-        - 5
-    out: 15
-  - name: increasing
-    in:
-      height:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-    out: 6
-  - name: decreasing
-    in:
-      height:
-        - 5
-        - 4
-        - 3
-        - 2
-        - 1
-    out: 6
-  - name: peaks
-    in:
-      height:
-        - 1
-        - 10
-        - 1
-        - 1
-        - 10
-        - 1
-    out: 30
-  - name: long distance
-    in:
-      height:
-        - 100
-        - 1
-        - 1
-        - 1
-        - 100
-    out: 400
-  - name: zeros at ends
+  - name: zero-and-positive-left
     in:
       height:
         - 0
-        - 10
-        - 10
-        - 0
-    out: 10
-  - name: single wall
+        - 5
+    out: 0
+  - name: positive-and-zero-right
     in:
       height:
-        - 0
-        - 10000
-        - 0
+        - 5
         - 0
     out: 0
-  - name: random small 1
+  - name: alternating-small
+    in:
+      height:
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+    out: 2
+  - name: two-elements-ascending
+    in:
+      height:
+        - 1
+        - 2
+    out: 1
+  - name: two-elements-descending
     in:
       height:
         - 2
-        - 3
-        - 4
-        - 5
-        - 18
-        - 17
-        - 6
-    out: 17
-  - name: random small 2
+        - 1
+    out: 1
+  - name: three-elements-bump
     in:
       height:
         - 1
         - 2
         - 1
     out: 2
-  - name: alternating
+  - name: leetcode-hard-small
     in:
       height:
         - 1
-        - 10
+        - 3
+        - 2
+        - 5
+        - 25
+        - 24
+        - 5
+    out: 24
+  - name: symmetric-peaks
+    in:
+      height:
+        - 4
+        - 3
+        - 2
         - 1
+        - 4
+    out: 16
+  - name: short-mixed
+    in:
+      height:
+        - 1
+        - 2
+        - 4
+        - 3
+    out: 4
+  - name: medium-balanced
+    in:
+      height:
+        - 2
+        - 3
         - 10
+        - 5
+        - 7
+        - 8
+        - 9
+    out: 36
+  - name: valley-sides
+    in:
+      height:
+        - 6
+        - 4
+        - 3
+        - 1
+        - 4
+        - 6
+    out: 30
+  - name: all-ones-five
+    in:
+      height:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 4
+  - name: all-fives
+    in:
+      height:
+        - 5
+        - 5
+        - 5
+        - 5
+        - 5
+    out: 20
+  - name: increasing-small
+    in:
+      height:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    out: 9
+  - name: decreasing-small
+    in:
+      height:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out: 9
+  - name: max-values-endpoints
+    in:
+      height:
+        - 10000
+        - 0
+        - 10000
+    out: 20000
+  - name: max-values-pair
+    in:
+      height:
+        - 10000
+        - 10000
+    out: 10000
+  - name: max-values-sandwich
+    in:
+      height:
+        - 10000
+        - 1
+        - 10000
+    out: 20000
+  - name: max-values-four
+    in:
+      height:
+        - 1
+        - 10000
+        - 1
+        - 10000
+        - 1
+    out: 20000
+  - name: zeros-and-tail
+    in:
+      height:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 10000
+    out: 0
+  - name: tail-heavy
+    in:
+      height:
+        - 10000
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 0
+  - name: two-peaks-with-zeros
+    in:
+      height:
+        - 0
+        - 10000
+        - 0
+        - 0
+        - 0
+        - 10000
+    out: 40000
+  - name: plateau-then-drop
+    in:
+      height:
+        - 3
+        - 1
+        - 2
+        - 4
+        - 5
+    out: 12
+  - name: descending-peak
+    in:
+      height:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
         - 1
     out: 20
-  - name: large values
-    in:
-      height:
-        - 10000
-        - 10000
-        - 10000
-    out: 20000
-  - name: v-shape
-    in:
-      height:
-        - 10
-        - 1
-        - 1
-        - 1
-        - 10
-    out: 40
-  - name: inverted v-shape
+  - name: mountain
     in:
       height:
         - 1
-        - 5
-        - 10
-        - 5
-        - 1
-    out: 10
-  - name: large step
-    in:
-      height:
-        - 1
-        - 10000
-        - 10000
-        - 1
-    out: 10000
-  - name: flat middle
-    in:
-      height:
-        - 1
-        - 5
-        - 5
-        - 5
-        - 1
-    out: 10
-  - name: mostly zero
-    in:
-      height:
-        - 10
-        - 0
-        - 0
-        - 0
-        - 10
-    out: 40
-  - name: generated random 1
-    in:
-      height:
-        - 1
-        - 8
-        - 6
         - 2
-        - 5
-        - 4
-        - 8
         - 3
+        - 4
+        - 3
+        - 2
+        - 1
+    out: 8
+  - name: mixed-large-peaks
+    in:
+      height:
+        - 8
+        - 1
+        - 2
+        - 12
         - 7
-    out: 49
-  - name: generated random 2
-    in:
-      height:
-        - 1
-        - 1
-    out: 1
-  - name: generated random 3
-    in:
-      height:
-        - 1
-        - 2
+        - 6
         - 3
         - 4
-        - 5
-    out: 6
-  - name: large array 1
+        - 9
+    out: 64
+  - name: alternating-high-low
+    in:
+      height:
+        - 10
+        - 14
+        - 10
+        - 4
+        - 10
+        - 2
+        - 6
+        - 1
+        - 8
+    out: 64
+  - name: wide-sides
+    in:
+      height:
+        - 100
+        - 1
+        - 1
+        - 1
+        - 1
+        - 100
+    out: 500
+  - name: monotone-descending-large
+    in:
+      height:
+        - 100
+        - 99
+        - 98
+        - 97
+        - 96
+        - 95
+        - 94
+        - 93
+    out: 651
+  - name: monotone-ascending-large
+    in:
+      height:
+        - 93
+        - 94
+        - 95
+        - 96
+        - 97
+        - 98
+        - 99
+        - 100
+    out: 651
+  - name: all-zero-medium
+    in:
+      height:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 0
+  - name: simple-wide-gap
     in:
       height:
         - 1
         - 10000
         - 1
-    out: 2
-  - name: large array 2
-    in:
-      height:
         - 10000
         - 1
         - 10000
-    out: 20000
-  - name: max length min height
+    out: 40000
+  - name: generated-100000-ones
     in:
       height:
-        - 1
-        - 1
-        - 1
-        - 1
-    out: 3
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 1
+          max: 1
+    seed: 1001
+  - name: generated-100000-zeros-and-ones
+    in:
+      height:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 0
+          max: 10000
+    seed: 2002
