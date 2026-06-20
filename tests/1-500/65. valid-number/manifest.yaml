@@ -1,6 +1,9 @@
 entry:
   id: 65
   title: valid-number
+  params:
+    s:
+      type: string
   call:
     cpp: Solution().isNumber({s})
     rust: Solution::is_number({s})
@@ -14,9 +17,6 @@ entry:
     dart: Solution().isNumber({s})
     swift: Solution().isNumber({s})
     typescript: isNumber({s})
-  params:
-    s:
-      type: string
 judge:
   type: exact
 limits:
@@ -24,137 +24,182 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: isNumber(s, {result})
-    checker:
-      "def isNumber(s, result): def check(str_val): try: if any(c in str_val\
-      \ for c in ['e', 'E']): parts = str_val.replace('E', 'e').split('e') if len(parts)\
-      \ != 2: return False return _is_dec(parts[0]) and _is_int(parts[1]) return _is_dec(str_val)\
-      \ except Exception: return False return result == check(s)\ndef _is_int(s):\
-      \ if not s: return False if s[0] in ['+', '-']: s = s[1:] return s.isdigit()\n\
-      def _is_dec(s): if not s: return False if s[0] in ['+', '-']: s = s[1:] if '.'\
-      \ not in s: return s.isdigit() parts = s.split('.') if len(parts) != 2: return\
-      \ False l, r = parts[0], parts[1] if not l and not r: return False if l and\
-      \ not l.isdigit(): return False if r and not r.isdigit(): return False return\
-      \ True "
-seed: 42
+    call: "Checker().isNumber(s, {result})"
+    checker: |
+      class Checker:
+          def isNumber(self, s, result):
+              if not isinstance(result, bool):
+                  return False
+
+              num_seen = False
+              dot_seen = False
+              e_seen = False
+              num_after_e = True
+
+              for i, c in enumerate(s):
+                  if c.isdigit():
+                      num_seen = True
+                      num_after_e = True
+                  elif c == ".":
+                      if dot_seen or e_seen:
+                          return False
+                      dot_seen = True
+                  elif c in ("e", "E"):
+                      if e_seen or not num_seen:
+                          return False
+                      e_seen = True
+                      num_after_e = False
+                  elif c in ("+", "-"):
+                      if i > 0 and s[i - 1] not in ("e", "E"):
+                          return False
+                  else:
+                      return False
+
+              expected = num_seen and num_after_e
+              return result == expected
+seed: 65
 tests:
-  - name: ex1
+  - name: int
     in:
       s: "0"
     out: true
-  - name: ex2
+  - name: positive_int
     in:
-      s: e
-    out: false
-  - name: ex3
+      s: "7"
+    out: true
+  - name: signed_int
     in:
-      s: .
-    out: false
-  - name: plus_sign
+      s: "-42"
+    out: true
+  - name: signed_int_plus
+    in:
+      s: "+17"
+    out: true
+  - name: zero_with_leading_zeroes
+    in:
+      s: "005"
+    out: true
+  - name: decimal_no_leading_digits
+    in:
+      s: ".1"
+    out: true
+  - name: decimal_no_trailing_digits
+    in:
+      s: "3."
+    out: true
+  - name: signed_decimal
     in:
       s: "+3.14"
     out: true
-  - name: minus_decimal
+  - name: negative_fraction
     in:
-      s: "-0.1"
+      s: "-.7"
     out: true
-  - name: dot_trailing
+  - name: decimal_with_leading_and_trailing
     in:
-      s: "4."
+      s: "0.0"
     out: true
-  - name: dot_leading
+  - name: exponent_integer
     in:
-      s: -.9
+      s: "2e10"
     out: true
-  - name: exponent_simple
+  - name: exponent_negative_power
     in:
-      s: 2e10
+      s: "3e-7"
     out: true
-  - name: exponent_upper
+  - name: exponent_positive_power
     in:
-      s: -90E3
+      s: "6E+1"
     out: true
-  - name: exponent_plus
+  - name: decimal_exponent
     in:
-      s: 3e+7
+      s: "53.5e93"
     out: true
-  - name: complex_case
+  - name: negative_decimal_exponent
     in:
-      s: -123.456e789
+      s: "-1.23e+4"
     out: true
-  - name: invalid_alpha
+  - name: simple_invalid_alpha
     in:
-      s: abc
+      s: "abc"
     out: false
-  - name: invalid_mix
+  - name: mixed_alpha_numeric
     in:
-      s: 1a
+      s: "1a"
     out: false
-  - name: invalid_e
+  - name: leading_space
     in:
-      s: 1e
+      s: " 1"
     out: false
-  - name: invalid_start
+  - name: trailing_space
     in:
-      s: e3
+      s: "1 "
     out: false
-  - name: invalid_dot_exp
+  - name: embedded_space
     in:
-      s: 99e2.5
+      s: "1 1"
     out: false
-  - name: invalid_double_sign
+  - name: lone_dot
     in:
-      s: --6
+      s: "."
     out: false
-  - name: invalid_sign_mix
+  - name: lone_sign
     in:
-      s: -+3
+      s: "+"
     out: false
-  - name: invalid_pos
+  - name: sign_followed_by_dot_only
     in:
-      s: 95a54e53
+      s: "-."
     out: false
   - name: double_dot
     in:
-      s: 1.2.3
+      s: "1..2"
     out: false
-  - name: double_e
+  - name: double_sign_prefix
     in:
-      s: 1e2e3
+      s: "--6"
     out: false
-  - name: plus_e
+  - name: sign_after_digit
     in:
-      s: 1e+5
-    out: true
-  - name: min_len
-    in:
-      s: "1"
-    out: true
-  - name: zero_start
-    in:
-      s: 0089
-    out: true
-  - name: just_dot_sign
-    in:
-      s: +.
+      s: "95-4"
     out: false
-  - name: sign_after_e
+  - name: exponent_without_trailing_digits
     in:
-      s: 1e-5
-    out: true
-  - name: sign_invalid_pos
-    in:
-      s: 1+2
+      s: "1e"
     out: false
-  - name: e_then_dot
+  - name: exponent_with_sign_only
     in:
-      s: 1e.5
+      s: "1e+"
     out: false
-  - name: dot_then_e
+  - name: exponent_before_number
     in:
-      s: 1.e5
-    out: true
-  - name: large_int
+      s: "e3"
+    out: false
+  - name: two_exponents
     in:
-      s: "1234567890"
+      s: "2e10e5"
+    out: false
+  - name: dot_after_exponent
+    in:
+      s: "1e3.5"
+    out: false
+  - name: sign_after_exponent_digits
+    in:
+      s: "1e1-"
+    out: false
+  - name: capital_e_with_decimal
+    in:
+      s: "4.E2"
     out: true
+  - name: capital_e_invalid_trailing_dot
+    in:
+      s: "4.E2."
+    out: false
+  - name: exponent_with_leading_decimal_point
+    in:
+      s: ".8e2"
+    out: true
+  - name: exponent_missing_base_digits
+    in:
+      s: ".e1"
+    out: false

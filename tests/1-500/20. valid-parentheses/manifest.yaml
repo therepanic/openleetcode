@@ -5,18 +5,18 @@ entry:
     s:
       type: string
   call:
-    cpp: Solution().isValid({s})
-    rust: Solution::is_valid({s}.to_string())
-    python3: Solution().isValid({s})
-    python2: Solution().isValid({s})
-    ruby: is_valid({s})
-    java: new Solution().isValid({s})
-    csharp: new Solution().IsValid({s})
-    kotlin: Solution().isValid({s})
-    go: isValid({s})
-    dart: Solution().isValid({s})
-    swift: Solution().isValid({s})
-    typescript: isValid({s})
+    cpp: "Solution().isValid({s})"
+    rust: "Solution::is_valid({s})"
+    python3: "Solution().isValid({s})"
+    python2: "Solution().isValid({s})"
+    ruby: "is_valid({s})"
+    java: "new Solution().isValid({s})"
+    csharp: "new Solution().IsValid({s})"
+    kotlin: "Solution().isValid({s})"
+    go: "isValid({s})"
+    dart: "Solution().isValid({s})"
+    swift: "Solution().isValid({s})"
+    typescript: "isValid({s})"
 judge:
   type: exact
 limits:
@@ -24,133 +24,172 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().isValid(s, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n            if isinstance(result,\
-      \ str):\n                low = result.strip().lower()\n                if low\
-      \ == 'true':\n                    return True\n                if low == 'false':\n\
-      \                    return False\n                if low.lstrip('-').isdigit():\n\
-      \                    return int(low)\n        return result\n\n    def isValid(self,\
-      \ s, result):\n        result = self._norm(result)\n        stack = []\n   \
-      \     mapping = {')': '(', '}': '{', ']': '['}\n        for char in s:\n   \
-      \         if char in mapping:\n                top_element = stack.pop() if\
-      \ stack else '#'\n                if mapping[char] != top_element:\n       \
-      \             return result == False\n            else:\n                stack.append(char)\n\
-      \        return result == (not stack)\n"
-seed: 42
+    call: "Checker().isValid(s, {result})"
+    checker: |
+      class Checker:
+          def isValid(self, s, result):
+              if not isinstance(result, bool):
+                  return False
+              stack = []
+              pairs = {')': '(', ']': '[', '}': '{'}
+              for ch in s:
+                  if ch in '([{':
+                      stack.append(ch)
+                  elif not stack or stack.pop() != pairs.get(ch):
+                      return False
+              expected = not stack
+              return result == expected
+seed: 20
 tests:
-  - name: example 1
+  - name: Example 1
     in:
-      s: ()
+      s: "()"
     out: true
-  - name: example 2
+  - name: Example 2
     in:
-      s: ()[]{}
+      s: "()[]{}"
     out: true
-  - name: example 3
+  - name: Example 3
     in:
-      s: (]
+      s: "(]"
     out: false
-  - name: example 4
+  - name: Example 4
     in:
-      s: ([])
+      s: "([])"
     out: true
-  - name: example 5
+  - name: Example 5
     in:
-      s: ([)]
+      s: "([)]"
     out: false
-  - name: single pair small
+  - name: Single open parenthesis
     in:
-      s: "{}"
-    out: true
-  - name: single mismatch
-    in:
-      s: (]
+      s: "("
     out: false
-  - name: nested deep
+  - name: Single close parenthesis
     in:
-      s: (((((((())))))))
-    out: true
-  - name: complex valid
-    in:
-      s: "{[()()]}"
-    out: true
-  - name: starts with closer
-    in:
-      s: "}{"
+      s: ")"
     out: false
-  - name: ends with opener
+  - name: Two pairs
     in:
-      s: ()(
-    out: false
-  - name: only openers
-    in:
-      s: (((((
-    out: false
-  - name: only closers
-    in:
-      s: )))))
-    out: false
-  - name: alternating
-    in:
-      s: ()()()()()
+      s: "()()"
     out: true
-  - name: interleaved types
+  - name: Three bracket types
     in:
-      s: ([{{}}])
+      s: "[]{}()"
     out: true
-  - name: mismatched types
+  - name: Wrong close order
     in:
-      s: ([)]
+      s: "({)}"
     out: false
-  - name: long valid sequence
+  - name: Nested valid
     in:
-      s: ()[]{}()[]{}()[]{}
+      s: "({[]})"
     out: true
-  - name: long nested valid
+  - name: Nested invalid
     in:
-      s: (((((((((((())))))))))))
-    out: true
-  - name: mixed valid
-    in:
-      s: ()[]{}()()()()[]{}{}{}
-    out: true
-  - name: mismatch at start
-    in:
-      s: "}{()"
+      s: "(([]){})]"
     out: false
-  - name: generated basic
+  - name: Deep valid
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 2
-          max: 20
-        alphabet: ()[]{}
-  - name: generated nested
+      s: "({[()()]})"
+    out: true
+  - name: Deep invalid
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 10
-          max: 50
-        alphabet: ()[]{}
-  - name: generated complex
+      s: "({[()()]}]"
+    out: false
+  - name: Interleaved valid
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 50
-          max: 100
-        alphabet: ()[]{}
-  - name: large valid sequence
+      s: "[({})]"
+    out: true
+  - name: Interleaved invalid
     in:
-      s: ()[]{}
-  - name: large maximum size
+      s: "[({)]}"
+    out: false
+  - name: Starts with close
     in:
-      s: ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+      s: "](){}"
+    out: false
+  - name: Ends with open
+    in:
+      s: "()[]{"
+    out: false
+  - name: Mixed small valid
+    in:
+      s: "{[]}"
+    out: true
+  - name: Mixed small invalid
+    in:
+      s: "{[}]"
+    out: false
+  - name: Alternating valid
+    in:
+      s: "({})[]"
+    out: true
+  - name: Alternating invalid
+    in:
+      s: "({}][)"
+    out: false
+  - name: Close too early
+    in:
+      s: "((())"
+    out: false
+  - name: Extra close at end
+    in:
+      s: "(()))"
+    out: false
+  - name: Multiple groups valid
+    in:
+      s: "(()[]){}"
+    out: true
+  - name: Multiple groups invalid
+    in:
+      s: "(()[)]{}"
+    out: false
+  - name: Braces first
+    in:
+      s: "{}[]()"
+    out: true
+  - name: Mixed grouping valid
+    in:
+      s: "{[()]}[]"
+    out: true
+  - name: Long valid repeated pattern
+    in:
+      s: "()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}"
+    out: true
+  - name: Long invalid repeated pattern
+    in:
+      s: "()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}()[]{}]"
+    out: false
+  - name: Long valid nested blocks
+    in:
+      s: "{{{{[[[[((((()))))]]]]}}}}"
+    out: true
+  - name: Long invalid nested blocks
+    in:
+      s: "{{{{[[[[((((()))))]]]]}}}]"
+    out: false
+  - name: Early mismatch after prefix
+    in:
+      s: "([{}])("
+    out: false
+  - name: Prefix then bad close
+    in:
+      s: "([{}])]"
+    out: false
+  - name: Valid complex mixture
+    in:
+      s: "{[()()]}({[]})"
+    out: true
+  - name: Invalid complex mixture
+    in:
+      s: "{[()()]}({[}])"
+    out: false
+  - name: Longer balanced repetition
+    in:
+      s: "()"
+    out: true
+  - name: Longer imbalanced repetition
+    in:
+      s: "(()"
+    out: false

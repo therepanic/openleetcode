@@ -53,7 +53,7 @@ class ListNode
 end
 
 def to_list_node(arr)
-  return nil if arr.empty?
+  return nil if arr.nil? || arr.empty?
   head = ListNode.new(arr[0])
   cur = head
   arr[1..].each do |v|

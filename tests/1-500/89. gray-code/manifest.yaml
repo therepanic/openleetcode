@@ -1,165 +1,183 @@
-"entry":
-  "id": 89
-  "title": "gray-code"
-  "call":
-    "cpp": "Solution().grayCode({n})"
-    "rust": "Solution::gray_code({n})"
-    "python3": "Solution().grayCode({n})"
-    "python2": "Solution().grayCode({n})"
-    "ruby": "gray_code({n})"
-    "java": "new Solution().grayCode({n})"
-    "csharp": "new Solution().GrayCode({n})"
-    "kotlin": "Solution().grayCode({n})"
-    "go": "grayCode({n})"
-    "dart": "Solution().grayCode({n})"
-    "swift": "Solution().grayCode({n})"
-    "typescript": "grayCode({n})"
-  "params":
-    "n":
-      "type": "int"
-"judge":
-  "type": "exact"
-"limits":
-  "time_ms": 1000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().check(n, {result})"
-    "checker": |
-      import json
-
+entry:
+  id: 89
+  title: gray-code
+  params:
+    n:
+      type: int
+  call:
+    cpp: "Solution().grayCode({n})"
+    rust: "Solution::gray_code({n})"
+    python3: "Solution().grayCode({n})"
+    python2: "Solution().grayCode({n})"
+    ruby: "gray_code({n})"
+    java: "new Solution().grayCode({n})"
+    csharp: "new Solution().GrayCode({n})"
+    kotlin: "Solution().grayCode({n})"
+    go: "grayCode({n})"
+    dart: "Solution().grayCode({n})"
+    swift: "Solution().grayCode({n})"
+    typescript: "grayCode({n})"
+judge:
+  type: ignore_order
+limits:
+  time_ms: 500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().grayCode(n, {result})"
+    checker: |
       class Checker:
-          def check(self, n, result):
-              try:
-                  result = json.loads(result) if isinstance(result, str) else result
-              except Exception:
+          def grayCode(self, n, result):
+              if not isinstance(n, int) or n < 1 or n > 16:
                   return False
-
-              for i, x in enumerate(result):
-                  if isinstance(x, float) and x.is_integer():
-                      result[i] = int(x)
-
-              if len(result) != (1 << n):
+              if not isinstance(result, list):
                   return False
-              if sorted(result) != list(range(1 << n)):
+              size = 1 << n
+              if len(result) != size:
                   return False
-
-              for i in range(len(result)):
-                  curr = result[i]
-                  nxt = result[(i + 1) % len(result)]
-                  diff = curr ^ nxt
-                  if diff == 0 or (diff & (diff - 1)) != 0:
+              if any((not isinstance(v, int)) or v < 0 or v >= size for v in result):
+                  return False
+              if result[0] != 0:
+                  return False
+              if len(set(result)) != size:
+                  return False
+              def one_bit(a, b):
+                  x = a ^ b
+                  return x != 0 and (x & (x - 1)) == 0
+              for i in range(size - 1):
+                  if not one_bit(result[i], result[i + 1]):
                       return False
-              return True
-"seed": 42
-"tests":
-  - "name": "n=1"
-    "in":
-      "n": 1
-    "out":
-      - 0
-      - 1
-  - "name": "n=2"
-    "in":
-      "n": 2
-    "out":
-      - 0
-      - 1
-      - 3
-      - 2
-  - "name": "n=3"
-    "in":
-      "n": 3
-    "oracle": true
-  - "name": "n=4"
-    "in":
-      "n": 4
-    "oracle": true
-  - "name": "n=5"
-    "in":
-      "n": 5
-    "oracle": true
-  - "name": "n=6"
-    "in":
-      "n": 6
-    "oracle": true
-  - "name": "n=7"
-    "in":
-      "n": 7
-    "oracle": true
-  - "name": "n=8"
-    "in":
-      "n": 8
-    "oracle": true
-  - "name": "n=9"
-    "in":
-      "n": 9
-    "oracle": true
-  - "name": "n=10"
-    "in":
-      "n": 10
-    "oracle": true
-  - "name": "n=11"
-    "in":
-      "n": 11
-    "oracle": true
-  - "name": "n=12"
-    "in":
-      "n": 12
-    "oracle": true
-  - "name": "n=13"
-    "in":
-      "n": 13
-    "oracle": true
-  - "name": "n=14"
-    "in":
-      "n": 14
-    "oracle": true
-  - "name": "n=15"
-    "in":
-      "n": 15
-    "oracle": true
-  - "name": "n=16"
-    "in":
-      "n": 16
-    "oracle": true
-  - "name": "random n 1"
-    "in":
-      "n": 5
-    "oracle": true
-  - "name": "random n 2"
-    "in":
-      "n": 10
-    "oracle": true
-  - "name": "random n 3"
-    "in":
-      "n": 3
-    "oracle": true
-  - "name": "random n 4"
-    "in":
-      "n": 12
-    "oracle": true
-  - "name": "random n 5"
-    "in":
-      "n": 8
-    "oracle": true
-  - "name": "random n 6"
-    "in":
-      "n": 6
-    "oracle": true
-  - "name": "random n 7"
-    "in":
-      "n": 14
-    "oracle": true
-  - "name": "random n 8"
-    "in":
-      "n": 4
-    "oracle": true
-  - "name": "random n 9"
-    "in":
-      "n": 11
-    "oracle": true
-  - "name": "random n 10"
-    "in":
-      "n": 7
-    "oracle": true
+              return one_bit(result[0], result[-1])
+seed: 89
+tests:
+  - name: n1
+    in:
+      n: 1
+  - name: n2
+    in:
+      n: 2
+  - name: n3
+    in:
+      n: 3
+  - name: n4
+    in:
+      n: 4
+  - name: n5
+    in:
+      n: 5
+  - name: n6
+    in:
+      n: 6
+  - name: n7
+    in:
+      n: 7
+  - name: n8
+    in:
+      n: 8
+  - name: n9
+    in:
+      n: 9
+  - name: n10
+    in:
+      n: 10
+  - name: n11
+    in:
+      n: 11
+  - name: n12
+    in:
+      n: 12
+  - name: n13
+    in:
+      n: 13
+  - name: n14
+    in:
+      n: 14
+  - name: n15
+    in:
+      n: 15
+  - name: n16
+    in:
+      n: 16
+  - name: gen_1
+    seed: 1
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 16
+  - name: gen_2
+    seed: 2
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 16
+  - name: gen_3
+    seed: 3
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 16
+  - name: gen_4
+    seed: 4
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 16
+  - name: gen_5
+    seed: 5
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 16
+  - name: repeat_n1
+    in:
+      n: 1
+  - name: repeat_n2
+    in:
+      n: 2
+  - name: repeat_n3
+    in:
+      n: 3
+  - name: repeat_n4
+    in:
+      n: 4
+  - name: repeat_n5
+    in:
+      n: 5
+  - name: repeat_n6
+    in:
+      n: 6
+  - name: repeat_n7
+    in:
+      n: 7
+  - name: repeat_n8
+    in:
+      n: 8
+  - name: repeat_n9
+    in:
+      n: 9
+  - name: repeat_n10
+    in:
+      n: 10
+  - name: repeat_n11
+    in:
+      n: 11
+  - name: repeat_n12
+    in:
+      n: 12
+  - name: repeat_n13
+    in:
+      n: 13
+  - name: repeat_n14
+    in:
+      n: 14
+  - name: repeat_n15
+    in:
+      n: 15
+  - name: repeat_n16
+    in:
+      n: 16

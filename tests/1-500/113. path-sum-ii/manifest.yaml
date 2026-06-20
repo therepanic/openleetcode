@@ -1,0 +1,566 @@
+entry:
+  id: 113
+  title: path-sum-ii
+  params:
+    root:
+      type: tree_node
+    targetSum:
+      type: int
+  call:
+    cpp: "Solution().pathSum({root}, {targetSum})"
+    rust: "Solution::path_sum({root}, {targetSum})"
+    python3: "Solution().pathSum({root}, {targetSum})"
+    python2: "Solution().pathSum({root}, {targetSum})"
+    ruby: "path_sum({root}, {targetSum})"
+    java: "new Solution().pathSum({root}, {targetSum})"
+    csharp: "new Solution().PathSum({root}, {targetSum})"
+    kotlin: "Solution().pathSum({root}, {targetSum})"
+    go: "pathSum({root}, {targetSum})"
+    dart: "Solution().pathSum({root}, {targetSum})"
+    swift: "Solution().pathSum({root}, {targetSum})"
+    typescript: "pathSum({root}, {targetSum})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().pathSum(root, targetSum, {result})"
+    checker: |
+      class Checker:
+          def pathSum(self, root, targetSum, result):
+              if not isinstance(result, list):
+                  return False
+              for path in result:
+                  if not isinstance(path, list) or not all(isinstance(v, int) for v in path):
+                      return False
+              if root is None or root == []:
+                  return result == []
+              if not isinstance(root, list):
+                  return False
+
+              expected = []
+
+              def dfs(i, acc, path):
+                  if i >= len(root) or root[i] is None:
+                      return
+                  val = root[i]
+                  path.append(val)
+                  acc += val
+                  left = 2 * i + 1
+                  right = 2 * i + 2
+                  has_left = left < len(root) and root[left] is not None
+                  has_right = right < len(root) and root[right] is not None
+                  if not has_left and not has_right:
+                      if acc == targetSum:
+                          expected.append(path[:])
+                  else:
+                      dfs(left, acc, path)
+                      dfs(right, acc, path)
+                  path.pop()
+
+              dfs(0, 0, [])
+              return sorted(result) == sorted(expected)
+seed: 113
+tests:
+  - name: example_classic_two_paths
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - 5
+        - 1
+      targetSum: 22
+    out:
+      - [5, 4, 11, 2]
+      - [5, 8, 4, 5]
+
+  - name: example_single_path_via_right
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - 5
+        - 1
+      targetSum: 26
+    out:
+      - [5, 8, 13]
+
+  - name: example_single_path_via_far_right
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - 5
+        - 1
+      targetSum: 18
+    out:
+      - [5, 8, 4, 1]
+
+  - name: single_node_match
+    in:
+      root:
+        - 7
+      targetSum: 7
+    out:
+      - [7]
+
+  - name: single_node_mismatch
+    in:
+      root:
+        - 7
+      targetSum: 8
+    out: []
+
+  - name: left_chain_match
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+      targetSum: 6
+    out:
+      - [1, 2, 3]
+
+  - name: left_chain_mismatch
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+      targetSum: 5
+    out: []
+
+  - name: right_chain_match
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+      targetSum: 6
+    out:
+      - [1, 2, 3]
+
+  - name: right_chain_mismatch
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+      targetSum: 4
+    out: []
+
+  - name: negative_values_match
+    in:
+      root:
+        - -2
+        - null
+        - -3
+      targetSum: -5
+    out:
+      - [-2, -3]
+
+  - name: negative_values_mismatch
+    in:
+      root:
+        - -2
+        - null
+        - -3
+      targetSum: -2
+    out: []
+
+  - name: zero_tree_two_paths
+    in:
+      root:
+        - 0
+        - 1
+        - 1
+      targetSum: 1
+    out:
+      - [0, 1]
+      - [0, 1]
+
+  - name: zero_tree_no_path
+    in:
+      root:
+        - 0
+        - 1
+        - 1
+      targetSum: 2
+    out: []
+
+  - name: full_zero_tree_four_paths
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      targetSum: 0
+    out:
+      - [0, 0, 0]
+      - [0, 0, 0]
+      - [0, 0, 0]
+      - [0, 0, 0]
+
+  - name: full_zero_tree_no_match
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      targetSum: 1
+    out: []
+
+  - name: duplicated_values_four_paths
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      targetSum: 6
+    out:
+      - [2, 2, 2]
+      - [2, 2, 2]
+      - [2, 2, 2]
+      - [2, 2, 2]
+
+  - name: duplicated_values_no_match
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      targetSum: 5
+    out: []
+
+  - name: balanced_all_leafs_distinct_7
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      targetSum: 7
+    out:
+      - [1, 2, 4]
+
+  - name: balanced_all_leafs_distinct_8
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      targetSum: 8
+    out:
+      - [1, 2, 5]
+
+  - name: balanced_all_leafs_distinct_10
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      targetSum: 10
+    out:
+      - [1, 3, 6]
+
+  - name: balanced_all_leafs_distinct_11
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      targetSum: 11
+    out:
+      - [1, 3, 7]
+
+  - name: long_left_branch_and_right_leaf
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 27
+    out:
+      - [5, 4, 11, 7]
+
+  - name: long_left_branch_and_right_leaf_no_match
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 19
+    out: []
+
+  - name: mixed_negative_zero_paths
+    in:
+      root:
+        - 1
+        - -2
+        - -3
+        - 1
+        - 3
+        - -2
+        - null
+        - -1
+      targetSum: -1
+    out:
+      - [1, -2, 1, -1]
+
+  - name: mixed_negative_zero_paths_alt
+    in:
+      root:
+        - 1
+        - -2
+        - -3
+        - 1
+        - 3
+        - -2
+        - null
+        - -1
+      targetSum: -4
+    out:
+      - [1, -3, -2]
+
+  - name: mixed_negative_zero_paths_no_match
+    in:
+      root:
+        - 1
+        - -2
+        - -3
+        - 1
+        - 3
+        - -2
+        - null
+        - -1
+      targetSum: 4
+    out: []
+
+  - name: skewed_with_null_gaps_match
+    in:
+      root:
+        - 10
+        - 5
+        - -3
+        - 3
+        - 2
+        - null
+        - 11
+        - 3
+        - -2
+        - null
+        - 1
+      targetSum: 18
+    out:
+      - [10, 5, 2, 1]
+      - [10, -3, 11]
+
+  - name: skewed_with_null_gaps_two_matches
+    in:
+      root:
+        - 10
+        - 5
+        - -3
+        - 3
+        - 2
+        - null
+        - 11
+        - 3
+        - -2
+        - null
+        - 1
+      targetSum: 21
+    out:
+      - [10, 5, 3, 3]
+
+  - name: skewed_with_null_gaps_no_match
+    in:
+      root:
+        - 10
+        - 5
+        - -3
+        - 3
+        - 2
+        - null
+        - 11
+        - 3
+        - -2
+        - null
+        - 1
+      targetSum: 100
+    out: []
+
+  - name: deeper_left_then_right
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+        - 7
+        - null
+        - null
+        - 8
+      targetSum: 14
+    out:
+      - [1, 2, 4, 7]
+
+  - name: deeper_left_then_right_alt
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+        - 7
+        - null
+        - null
+        - 8
+      targetSum: 16
+    out:
+      - [1, 2, 5, 8]
+
+  - name: deeper_left_then_right_no_match
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+        - 7
+        - null
+        - null
+        - 8
+      targetSum: 12
+    out: []
+
+  - name: many_leaves_same_sum
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - null
+        - null
+        - 1
+      targetSum: 3
+    out:
+      - [1, 1, 1]
+      - [1, 1, 1]
+
+  - name: many_leaves_same_sum_no_match
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - null
+        - null
+        - 1
+      targetSum: 5
+    out: []

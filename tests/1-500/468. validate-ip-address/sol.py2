@@ -1,0 +1,11 @@
+class Solution(object):
+    def validIPAddress(self, queryIP):
+        if queryIP.count('.') == 3:
+            parts = queryIP.split('.')
+            if all(p.isdigit() and 0 <= int(p) <= 255 and str(int(p)) == p for p in parts):
+                return "IPv4"
+        elif queryIP.count(':') == 7:
+            parts = queryIP.split(':')
+            if all(1 <= len(p) <= 4 and all(c in "0123456789abcdefABCDEF" for c in p) for p in parts):
+                return "IPv6"
+        return "Neither"

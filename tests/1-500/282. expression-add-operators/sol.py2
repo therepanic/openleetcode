@@ -1,0 +1,29 @@
+class Solution(object):
+    def addOperators(self, num, target):
+        """
+        :type num: str
+        :type target: int
+        :rtype: List[str]
+        """
+        n = len(num)
+        res = []
+        
+        def solve(idx, path, curr, prev):
+            if idx == n:
+                if curr == target:
+                    res.append(path)
+                return
+            for i in range(idx, n):
+                if i > idx and num[idx] == '0':
+                    break
+                s = num[idx:i+1]
+                val = int(s)
+                if idx == 0:
+                    solve(i+1, s, val, val)
+                else:
+                    solve(i+1, path+"+"+s, curr+val, val)
+                    solve(i+1, path+"-"+s, curr-val, -val)
+                    solve(i+1, path+"*"+s, (curr-prev)+(prev*val), prev*val)
+        
+        solve(0, "", 0, 0)
+        return res

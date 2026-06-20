@@ -1,44 +1,47 @@
 entry:
   id: 53
   title: maximum-subarray
-  call:
-    cpp: Solution().maxSubArray({nums})
-    rust: Solution::max_sub_array({nums})
-    python3: Solution().maxSubArray({nums})
-    python2: Solution().maxSubArray({nums})
-    ruby: max_sub_array({nums})
-    java: new Solution().maxSubArray({nums})
-    csharp: new Solution().MaxSubArray({nums})
-    kotlin: Solution().maxSubArray({nums})
-    go: maxSubArray({nums})
-    dart: Solution().maxSubArray({nums})
-    swift: Solution().maxSubArray({nums})
-    typescript: maxSubArray({nums})
   params:
     nums:
       type: array
       items:
         type: int
+  call:
+    cpp: "Solution().maxSubArray({nums})"
+    rust: "Solution::max_sub_array({nums})"
+    python3: "Solution().maxSubArray({nums})"
+    python2: "Solution().maxSubArray({nums})"
+    ruby: "max_sub_array({nums})"
+    java: "new Solution().maxSubArray({nums})"
+    csharp: "new Solution().MaxSubArray({nums})"
+    kotlin: "Solution().maxSubArray({nums})"
+    go: "maxSubArray({nums})"
+    dart: "Solution().maxSubArray({nums})"
+    swift: "Solution().maxSubArray({nums})"
+    typescript: "maxSubArray({nums})"
 judge:
   type: exact
 limits:
-  time_ms: 2000
+  time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().maxSubArray({nums}, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if isinstance(result, str):\n           \
-      \ try:\n                result = json.loads(result)\n            except Exception:\n                pass\n         \
-      \   if isinstance(result, str):\n                low = result.strip().lower()\n                if low == 'true':\n \
-      \                   return True\n                if low == 'false':\n                    return False\n            \
-      \    if low.lstrip('-').isdigit():\n                    return int(low)\n        return result\n\n    def maxSubArray(self,
-      nums, result):\n        result = self._norm(result)\n        res = float('-inf')\n        total = 0\n        for n in
-      nums:\n            total += n\n            res = max(res, total)\n            if total < 0:\n                total =
-      0\n        return res == result\n"
-seed: 42
+    call: "Checker().maxSubArray(nums, {result})"
+    checker: |
+      class Checker:
+          def maxSubArray(self, nums, result):
+              best = nums[0]
+              cur = 0
+              for n in nums:
+                  if cur < 0:
+                      cur = 0
+                  cur += n
+                  if cur > best:
+                      best = cur
+              return result == best
+seed: 53
 tests:
-  - name: Example 1
+  - name: example-1
     in:
       nums:
         - -2
@@ -51,12 +54,12 @@ tests:
         - -5
         - 4
     out: 6
-  - name: Example 2
+  - name: example-2
     in:
       nums:
         - 1
     out: 1
-  - name: Example 3
+  - name: example-3
     in:
       nums:
         - 5
@@ -65,153 +68,296 @@ tests:
         - 7
         - 8
     out: 23
-  - name: All negative
+  - name: single-negative
     in:
       nums:
-        - -5
-        - -2
-        - -10
+        - -7
+    out: -7
+  - name: all-negative
+    in:
+      nums:
+        - -8
         - -3
+        - -6
+        - -2
+        - -5
+        - -4
     out: -2
-  - name: Single negative
-    in:
-      nums:
-        - -1
-    out: -1
-  - name: Two elements positive
-    in:
-      nums:
-        - 1
-        - 2
-    out: 3
-  - name: Large single element
-    in:
-      nums:
-        - 10000
-    out: 10000
-  - name: Large negative
-    in:
-      nums:
-        - -10000
-    out: -10000
-  - name: Alternating
-    in:
-      nums:
-        - -1
-        - 1
-        - -1
-        - 1
-    out: 1
-  - name: Only zeros
+  - name: zeros-and-negatives
     in:
       nums:
         - 0
+        - -1
         - 0
+        - -2
         - 0
     out: 0
-  - name: Mixed sequence
+  - name: alternating-small
     in:
       nums:
-        - -2
-        - -1
-    out: -1
-  - name: Start positive end negative
-    in:
-      nums:
-        - 5
-        - -1
-        - -2
-    out: 5
-  - name: Start negative end positive
-    in:
-      nums:
-        - -2
-        - -1
-        - 5
-    out: 5
-  - name: Mid segment max
-    in:
-      nums:
-        - -1
-        - 10
-        - -5
-        - 10
-        - -1
-    out: 15
-  - name: Full sum
-    in:
-      nums:
-        - 1
         - 2
-        - 3
-        - 4
-        - 5
-    out: 15
-  - name: Large sequence
+        - -1
+        - 2
+        - -1
+        - 2
+        - -1
+    out: 4
+  - name: mixed-peaks
     in:
       nums:
+        - 10
+        - -3
         - 1
+        - -1
         - 2
-        - 3
+        - -1
+        - 2
         - -10
-        - 10
-        - 11
-    out: 21
-  - name: Generated random 1
+        - 20
+        - -5
+        - 1
+    out: 20
+  - name: gen-1
     in:
       nums:
         gen: array
-        len:
-          gen: int
-          min: 10
-          max: 20
+        len: 1
         of:
           gen: int
-          min: -100
-          max: 100
-  - name: Generated random 2
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 5
-          max: 15
-        of:
-          gen: int
-          min: -1000
-          max: 1000
-  - name: Generated random 3
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 20
-          max: 50
-        of:
-          gen: int
-          min: -50
-          max: 50
-  - name: Max Length 100k
-    in:
-      nums:
-        gen: array
-        len: 100000
-        of:
-          gen: int
-          min: -1
-          max: 1
-  - name: Max Value 10k
-    in:
-      nums:
-        gen: array
-        len: 10000
-        of:
-          gen: int
-          min: 9000
+          min: -10000
           max: 10000
-  - name: Min Value -10k
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-2
+    in:
+      nums:
+        gen: array
+        len: 2
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-3
+    in:
+      nums:
+        gen: array
+        len: 3
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-4
+    in:
+      nums:
+        gen: array
+        len: 4
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-5
+    in:
+      nums:
+        gen: array
+        len: 5
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-6
+    in:
+      nums:
+        gen: array
+        len: 8
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-7
+    in:
+      nums:
+        gen: array
+        len: 13
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-8
+    in:
+      nums:
+        gen: array
+        len: 21
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-9
+    in:
+      nums:
+        gen: array
+        len: 34
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-10
+    in:
+      nums:
+        gen: array
+        len: 55
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-11
+    in:
+      nums:
+        gen: array
+        len: 89
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-12
+    in:
+      nums:
+        gen: array
+        len: 144
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-13
+    in:
+      nums:
+        gen: array
+        len: 233
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-14
+    in:
+      nums:
+        gen: array
+        len: 377
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-15
+    in:
+      nums:
+        gen: array
+        len: 610
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-16
+    in:
+      nums:
+        gen: array
+        len: 987
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-17
+    in:
+      nums:
+        gen: array
+        len: 1597
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-18
+    in:
+      nums:
+        gen: array
+        len: 2584
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-19
+    in:
+      nums:
+        gen: array
+        len: 4181
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-20
+    in:
+      nums:
+        gen: array
+        len: 6765
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-21
     in:
       nums:
         gen: array
@@ -219,40 +365,115 @@ tests:
         of:
           gen: int
           min: -10000
-          max: -9000
-  - name: Large max subarray
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-22
+    in:
+      nums:
+        gen: array
+        len: 15000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-23
+    in:
+      nums:
+        gen: array
+        len: 20000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-24
+    in:
+      nums:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-25
     in:
       nums:
         gen: array
         len: 50000
         of:
           gen: int
-          min: 1
-          max: 10
-  - name: Large all negative
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-26
     in:
       nums:
         gen: array
-        len: 50000
+        len: 100000
         of:
           gen: int
-          min: -10
-          max: -1
-  - name: Small variance
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-27
     in:
       nums:
         gen: array
-        len: 1000
+        len: 100000
         of:
           gen: int
-          min: -5
-          max: 5
-  - name: Trailing max
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-28
     in:
       nums:
         gen: array
-        len: 100
+        len: 75000
         of:
           gen: int
-          min: -10
-          max: 10
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-29
+    in:
+      nums:
+        gen: array
+        len: 64000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int
+  - name: gen-30
+    in:
+      nums:
+        gen: array
+        len: 32000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+          distinct: false
+          sorted: false
+          elemType: int

@@ -1,0 +1,250 @@
+entry:
+  id: 187
+  title: repeated-dna-sequences
+  params:
+    s:
+      type: string
+  call:
+    cpp: Solution().findRepeatedDnaSequences({s})
+    rust: Solution::find_repeated_dna_sequences({s})
+    python3: Solution().findRepeatedDnaSequences({s})
+    python2: Solution().findRepeatedDnaSequences({s})
+    ruby: find_repeated_dna_sequences({s})
+    java: new Solution().findRepeatedDnaSequences({s})
+    csharp: new Solution().FindRepeatedDnaSequences({s})
+    kotlin: Solution().findRepeatedDnaSequences({s})
+    go: findRepeatedDnaSequences({s})
+    dart: Solution().findRepeatedDnaSequences({s})
+    swift: Solution().findRepeatedDnaSequences({s})
+    typescript: findRepeatedDnaSequences({s})
+judge:
+  type: ignore_order
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().findRepeatedDnaSequences(s, {result})
+    checker: |
+      class Checker:
+          def findRepeatedDnaSequences(self, s, result):
+              def repeated_sequences(text):
+                  seen = {}
+                  repeated = []
+                  for i in range(len(text) - 9):
+                      seq = text[i:i + 10]
+                      if seq not in seen:
+                          seen[seq] = 1
+                      elif seen[seq] == 1:
+                          repeated.append(seq)
+                          seen[seq] = 2
+                  return repeated
+
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, str) for x in result):
+                  return False
+              if any(len(x) != 10 for x in result):
+                  return False
+              if any(set(x) - set("ACGT") for x in result):
+                  return False
+
+              expected = repeated_sequences(s)
+              return sorted(result) == sorted(expected) and len(result) == len(set(result))
+seed: 187
+tests:
+  - name: example-1
+    in:
+      s: AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT
+  - name: example-2
+    in:
+      s: AAAAAAAAAAAAA
+  - name: no-repeat-short
+    in:
+      s: ACGTACGTA
+  - name: exactly-ten
+    in:
+      s: ACGTACGTAC
+  - name: two-overlapping-repeats
+    in:
+      s: AAAAAAAAACAAAAAAAACAAAAAAAAC
+  - name: one-repeat-at-start
+    in:
+      s: TTTTTTTTTTTTT
+  - name: one-repeat-at-end
+    in:
+      s: CCCCCCCCCCCCCC
+  - name: alternating-ac
+    in:
+      s: ACACACACACACACACACAC
+  - name: alternating-ag
+    in:
+      s: AGAGAGAGAGAGAGAGAGAG
+  - name: alternating-at
+    in:
+      s: ATATATATATATATATATAT
+  - name: alternating-cg
+    in:
+      s: CGCGCGCGCGCGCGCGCGCG
+  - name: mixed-small-1
+    in:
+      s: ACGTACGTAAAAACGTACGT
+  - name: mixed-small-2
+    in:
+      s: GATTACAGATTACAGATTACA
+  - name: mixed-small-3
+    in:
+      s: TGCATGCATGCAAAAATGCATGCATGCA
+  - name: mixed-small-4
+    in:
+      s: AAAACCCCGGGGTTTTAAAACCCCGGGG
+  - name: repeated-window-shift
+    in:
+      s: AACCGGTTAACCGGTTAAACCGGTTAACCGGTT
+  - name: no-repeat-longer-than-ten
+    in:
+      s: ACGTACGTACG
+  - name: all-a-11
+    in:
+      s: AAAAAAAAAAA
+  - name: all-c-15
+    in:
+      s: CCCCCCCCCCCCCCC
+  - name: all-g-20
+    in:
+      s: GGGGGGGGGGGGGGGGGGGG
+  - name: all-t-30
+    in:
+      s: TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+  - name: two-distinct-repeats
+    in:
+      s: AAAAACCCCCAAAAACCCCCAAAAACCCCC
+  - name: three-distinct-repeats
+    in:
+      s: AAAAACCCCCAAAAAGGGGGAAAAACCCCCAAAAAGGGGG
+  - name: periodic-4
+    in:
+      s: ACGTACGTACGTACGTACGTACGTACGTACGT
+  - name: periodic-5
+    in:
+      s: AACGTAACGTAACGTAACGTAACGTA
+  - name: periodic-6
+    in:
+      s: ACGTTAACGTTAACGTTAACGTTAA
+  - name: periodic-7
+    in:
+      s: AAAAAACAAAAAACAAAAAACAAAAAAC
+  - name: periodic-8
+    in:
+      s: CGTACGTACGTACGTACGTACGTACGTA
+  - name: periodic-9
+    in:
+      s: TGCATGCATGCATGCATGCATGCATGCA
+  - name: periodic-10
+    in:
+      s: ACGTACGTAAACGTACGTAAACGTACGTAA
+  - name: periodic-11
+    in:
+      s: GGGTTTAAAACCCGGGTTTAAAACCCGGGTTTAAAA
+  - name: generated-medium-1
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 50
+          max: 80
+        alphabet: ACGT
+  - name: generated-medium-2
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 90
+          max: 120
+        alphabet: ACGT
+  - name: generated-medium-3
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 150
+          max: 220
+        alphabet: ACGT
+  - name: generated-medium-4
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 300
+          max: 400
+        alphabet: ACGT
+  - name: generated-medium-5
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 500
+          max: 800
+        alphabet: ACGT
+  - name: generated-large-1
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 99990
+          max: 100000
+        alphabet: ACGT
+  - name: generated-large-2
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 95000
+          max: 100000
+        alphabet: ACGT
+  - name: generated-large-3
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 70000
+          max: 90000
+        alphabet: ACGT
+  - name: generated-large-4
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 60000
+          max: 80000
+        alphabet: ACGT
+  - name: generated-large-5
+    in:
+      s:
+        gen: str
+        len:
+          gen: int
+          min: 80000
+          max: 100000
+        alphabet: ACGT
+  - name: edge-no-repeat-10
+    in:
+      s: ACGTACGTAA
+  - name: edge-one-repeat-11
+    in:
+      s: ACGTACGTAAA
+  - name: edge-many-overlaps
+    in:
+      s: AAAAAGAAAAAGAAAAAGAAAAAG
+  - name: edge-multiple-results
+    in:
+      s: AAAAAAAAACCCCCCCCCCAAAAAAAAACCCCCCCCCC

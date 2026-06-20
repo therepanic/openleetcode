@@ -1,19 +1,6 @@
 entry:
   id: 18
   title: 4sum
-  call:
-    cpp: Solution().fourSum({nums}, {target})
-    rust: Solution::four_sum({nums}, {target})
-    python3: Solution().fourSum({nums}, {target})
-    python2: Solution().fourSum({nums}, {target})
-    ruby: four_sum({nums}, {target})
-    java: new Solution().fourSum({nums}, {target})
-    csharp: new Solution().FourSum({nums}, {target})
-    kotlin: Solution().fourSum({nums}, {target})
-    go: fourSum({nums}, {target})
-    dart: Solution().fourSum({nums}, {target})
-    swift: Solution().fourSum({nums}, {target})
-    typescript: fourSum({nums}, {target})
   params:
     nums:
       type: array
@@ -21,32 +8,80 @@ entry:
         type: int
     target:
       type: int
+  call:
+    cpp: "Solution().fourSum({nums}, {target})"
+    rust: "Solution::four_sum({nums}, {target})"
+    python3: "Solution().fourSum({nums}, {target})"
+    python2: "Solution().fourSum({nums}, {target})"
+    ruby: "four_sum({nums}, {target})"
+    java: "new Solution().fourSum({nums}, {target})"
+    csharp: "new Solution().FourSum({nums}, {target})"
+    kotlin: "Solution().fourSum({nums}, {target})"
+    go: "fourSum({nums}, {target})"
+    dart: "Solution().fourSum({nums}, {target})"
+    swift: "Solution().fourSum({nums}, {target})"
+    typescript: "fourSum({nums}, {target})"
 judge:
   type: ignore_order
 limits:
-  time_ms: 2000
-  memory_mb: 256
+  time_ms: 5000
+  memory_mb: 512
 oracle:
   python3:
-    call: Checker().check({nums}, {target}, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if isinstance(result, str):\n           \
-      \ try:\n                result = json.loads(result)\n            except Exception:\n                pass\n        return
-      result\n\n    def check(self, nums, target, result):\n        result = self._norm(result)\n        def get_sorted(quad):\n\
-      \            return sorted(quad)\n        seen = set()\n        for quad in result:\n            if len(quad) != 4:\n\
-      \                return False\n            if sum(quad) != target:\n                return False\n            seen.add(tuple(get_sorted(quad)))\n\
-      \        nums.sort()\n        expected = []\n        n = len(nums)\n        for i in range(n - 3):\n            if i
-      > 0 and nums[i] == nums[i - 1]:\n                continue\n            for j in range(i + 1, n - 2):\n             \
-      \   if j > i + 1 and nums[j] == nums[j - 1]:\n                    continue\n                l, r = j + 1, n - 1\n  \
-      \              while l < r:\n                    s = nums[i] + nums[j] + nums[l] + nums[r]\n                    if s
-      == target:\n                        expected.append(tuple(sorted([nums[i], nums[j], nums[l], nums[r]])))\n         \
-      \               l += 1\n                        r -= 1\n                        while l < r and nums[l] == nums[l -
-      1]:\n                            l += 1\n                        while l < r and nums[r] == nums[r + 1]:\n         \
-      \                   r -= 1\n                    elif s < target:\n                        l += 1\n                 \
-      \   else:\n                        r -= 1\n        return len(seen) == len(expected) and all(q in seen for q in expected)\n"
-seed: 42
+    call: "Checker().fourSum(nums, target, {result})"
+    checker: |
+      class Checker:
+          def fourSum(self, nums, target, result):
+              if not isinstance(result, list):
+                  return False
+
+              normalized = []
+              seen = set()
+              for quad in result:
+                  if not isinstance(quad, list) or len(quad) != 4:
+                      return False
+                  if any(not isinstance(x, int) for x in quad):
+                      return False
+                  if quad != sorted(quad):
+                      return False
+                  t = tuple(quad)
+                  if t in seen:
+                      return False
+                  seen.add(t)
+                  if sum(quad) != target:
+                      return False
+                  normalized.append(t)
+
+              nums = sorted(nums)
+              expected = set()
+              n = len(nums)
+              for i in range(n - 3):
+                  if i > 0 and nums[i] == nums[i - 1]:
+                      continue
+                  for j in range(i + 1, n - 2):
+                      if j > i + 1 and nums[j] == nums[j - 1]:
+                          continue
+                      left = j + 1
+                      right = n - 1
+                      while left < right:
+                          s = nums[i] + nums[j] + nums[left] + nums[right]
+                          if s == target:
+                              expected.add((nums[i], nums[j], nums[left], nums[right]))
+                              left += 1
+                              right -= 1
+                              while left < right and nums[left] == nums[left - 1]:
+                                  left += 1
+                              while left < right and nums[right] == nums[right + 1]:
+                                  right -= 1
+                          elif s < target:
+                              left += 1
+                          else:
+                              right -= 1
+
+              return set(normalized) == expected
+seed: 18
 tests:
-  - name: example 1
+  - name: example-1
     in:
       nums:
         - 1
@@ -56,20 +91,7 @@ tests:
         - -2
         - 2
       target: 0
-    out:
-      - - -2
-        - -1
-        - 1
-        - 2
-      - - -2
-        - 0
-        - 0
-        - 2
-      - - -1
-        - 0
-        - 0
-        - 1
-  - name: example 2
+  - name: example-2
     in:
       nums:
         - 2
@@ -78,340 +100,47 @@ tests:
         - 2
         - 2
       target: 8
-    out:
-      - - 2
-        - 2
-        - 2
-        - 2
-  - name: small target
-    in:
-      nums:
-        - -10
-        - -10
-        - -10
-        - -10
-      target: -40
-    out:
-      - - -10
-        - -10
-        - -10
-        - -10
-  - name: no solution
+  - name: too-short
     in:
       nums:
         - 1
-        - 2
-        - 3
-        - 4
-      target: 100
-    out: []
-  - name: all zeroes
-    in:
-      nums:
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-      target: 0
-    out:
-      - - 0
-        - 0
-        - 0
-        - 0
-  - name: negative values
-    in:
-      nums:
-        - -5
-        - -4
-        - -3
-        - -2
-        - -1
-      target: -14
-    out:
-      - - -5
-        - -4
-        - -3
-        - -2
-  - name: large mixed
-    in:
-      nums:
-        - -1000000000
-        - 1000000000
-        - 0
-        - 0
-      target: 0
-    out:
-      - - -1000000000
-        - 0
-        - 0
-        - 1000000000
-  - name: repeated triplets
-    in:
-      nums:
-        - 1
-        - 1
-        - 1
-        - 1
-        - 2
-        - 2
-        - 2
-      target: 6
-    out:
-      - - 1
-        - 1
-        - 2
-        - 2
-  - name: minimum length
-    in:
-      nums:
-        - 1
-        - 2
-        - 3
-        - 4
-      target: 10
-    out:
-      - - 1
-        - 2
-        - 3
-        - 4
-  - name: boundary target
-    in:
-      nums:
-        - -10
-        - 10
-        - -10
-        - 10
-      target: 0
-    out:
-      - - -10
-        - -10
-        - 10
-        - 10
-  - name: sparse values
-    in:
-      nums:
-        - -100
-        - 0
-        - 10
-        - 50
-        - 100
-      target: 60
-    out:
-      - - -100
-        - 10
-        - 50
-        - 100
-  - name: generated 1
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 10
-          max: 20
-        of:
-          gen: int
-          min: -100
-          max: 100
-      target: 0
-  - name: generated 2
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 20
-          max: 30
-        of:
-          gen: int
-          min: -50
-          max: 50
-      target: 10
-  - name: generated 3
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 40
-          max: 50
-        of:
-          gen: int
-          min: -1000
-          max: 1000
-      target: 50
-  - name: generated 4
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 100
-          max: 120
-        of:
-          gen: int
-          min: -10000
-          max: 10000
-      target: 0
-  - name: generated 5
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 180
-          max: 200
-        of:
-          gen: int
-          min: -100000
-          max: 100000
-      target: 100
-  - name: two triplets
-    in:
-      nums:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 1
-        - 2
-        - 3
-        - 4
-      target: 10
-    out:
-      - - 1
-        - 1
-        - 4
-        - 4
-      - - 1
-        - 2
-        - 3
-        - 4
-      - - 2
-        - 2
-        - 3
-        - 3
-  - name: max constraints
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 200
-          max: 200
-        of:
-          gen: int
-          min: -1000000
-          max: 1000000
-      target: 1000
-  - name: max constraints 2
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 200
-          max: 200
-        of:
-          gen: int
-          min: -1000000000
-          max: 1000000000
-      target: -500000000
-  - name: negative target
-    in:
-      nums:
-        - -5
-        - -4
-        - -3
-        - -2
-        - -1
-        - 0
-        - 1
-      target: -10
-    out:
-      - - -5
-        - -4
-        - -2
-        - 1
-      - - -5
-        - -4
-        - -1
-        - 0
-      - - -5
-        - -3
-        - -2
-        - 0
-      - - -4
-        - -3
-        - -2
-        - -1
-  - name: mixed duplicates
-    in:
-      nums:
-        - 0
-        - 0
-        - 0
-        - 0
-        - 1
-        - 1
-        - 1
-        - 1
-      target: 2
-    out:
-      - - 0
-        - 0
-        - 1
-        - 1
-  - name: large range
-    in:
-      nums:
-        - -100000
-        - -10000
-        - 0
-        - 10000
-        - 100000
-      target: 0
-    out:
-      - - -100000
-        - -10000
-        - 10000
-        - 100000
-  - name: single triplet set
-    in:
-      nums:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-      target: 14
-    out:
-      - - 2
-        - 3
-        - 4
-        - 5
-  - name: triple duplicates
-    in:
-      nums:
-        - 1
-        - 1
-        - 1
-        - 2
-        - 2
         - 2
         - 3
       target: 6
-    out:
-      - - 1
-        - 1
-        - 1
-        - 3
-      - - 1
-        - 1
+  - name: exactly-four-hit
+    in:
+      nums:
+        - -3
+        - -1
         - 2
+        - 7
+      target: 5
+  - name: exactly-four-miss
+    in:
+      nums:
+        - -3
+        - -1
         - 2
-  - name: all same
+        - 7
+      target: 4
+  - name: all-zeroes-four
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+        - 0
+      target: 0
+  - name: all-zeroes-five
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      target: 0
+  - name: all-same-positive
     in:
       nums:
         - 5
@@ -421,12 +150,126 @@ tests:
         - 5
         - 5
       target: 20
-    out:
-      - - 5
+  - name: all-same-negative
+    in:
+      nums:
+        - -4
+        - -4
+        - -4
+        - -4
+        - -4
+      target: -16
+  - name: no-solution-large-sum
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
         - 5
-        - 5
-        - 5
-  - name: diverse set
+        - 6
+      target: 100
+  - name: no-solution-negative-target
+    in:
+      nums:
+        - 10
+        - 20
+        - 30
+        - 40
+        - 50
+      target: -10
+  - name: mixed-sign-one-solution
+    in:
+      nums:
+        - -5
+        - -4
+        - -3
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+      target: 0
+  - name: duplicates-and-multiplicity
+    in:
+      nums:
+        - -2
+        - -1
+        - -1
+        - 1
+        - 1
+        - 2
+        - 2
+      target: 0
+  - name: repeated-values-many-quads
+    in:
+      nums:
+        - -2
+        - -1
+        - 0
+        - 0
+        - 1
+        - 2
+        - 2
+        - 3
+      target: 2
+  - name: sample-with-zeroes
+    in:
+      nums:
+        - -2
+        - -1
+        - 0
+        - 0
+        - 1
+        - 2
+        - 2
+        - 2
+      target: 3
+  - name: boundary-values-positive
+    in:
+      nums:
+        - 1000000000
+        - 1000000000
+        - -1000000000
+        - -1000000000
+        - 1
+        - -1
+      target: 0
+  - name: boundary-values-negative
+    in:
+      nums:
+        - 1000000000
+        - 999999999
+        - -1000000000
+        - -999999999
+        - 0
+        - 0
+      target: 0
+  - name: many-same-with-one-distinct
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+      target: 5
+  - name: many-same-with-two-distinct
+    in:
+      nums:
+        - -1
+        - -1
+        - -1
+        - 0
+        - 0
+        - 1
+        - 1
+        - 2
+      target: 0
+  - name: dense-small-range
     in:
       nums:
         - -3
@@ -437,37 +280,219 @@ tests:
         - 1
         - 2
         - 3
-      target: 0
-    out:
-      - - -3
+      target: 1
+  - name: dense-small-range-2
+    in:
+      nums:
+        - -3
         - -2
-        - 2
-        - 3
-      - - -3
         - -1
-        - 1
-        - 3
-      - - -3
-        - 0
-        - 0
-        - 3
-      - - -3
         - 0
         - 1
         - 2
-      - - -2
-        - -1
-        - 0
         - 3
-      - - -2
+        - 4
+      target: 2
+  - name: symmetric-8
+    in:
+      nums:
+        - -4
+        - -3
+        - -2
         - -1
         - 1
         - 2
-      - - -2
-        - 0
-        - 0
-        - 2
-      - - -1
-        - 0
+        - 3
+        - 4
+      target: 0
+  - name: symmetric-9
+    in:
+      nums:
+        - -5
+        - -4
+        - -1
         - 0
         - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      target: 1
+  - name: generated-wide-range-1
+    in:
+      nums:
+        gen: array
+        len: 50
+        of:
+          gen: int
+          min: -100
+          max: 100
+          distinct: false
+          sorted: false
+          elemType: int
+      target:
+        gen: int
+        min: -50
+        max: 50
+  - name: generated-wide-range-2
+    in:
+      nums:
+        gen: array
+        len: 60
+        of:
+          gen: int
+          min: -200
+          max: 200
+          distinct: false
+          sorted: false
+          elemType: int
+      target:
+        gen: int
+        min: -100
+        max: 100
+  - name: generated-many-duplicates
+    in:
+      nums:
+        gen: array
+        len: 80
+        of:
+          gen: int
+          min: -8
+          max: 8
+          distinct: false
+          sorted: false
+          elemType: int
+      target:
+        gen: int
+        min: -8
+        max: 8
+  - name: generated-max-size-1
+    in:
+      nums:
+        gen: array
+        len: 200
+        of:
+          gen: int
+          min: -1000000000
+          max: 1000000000
+          distinct: false
+          sorted: false
+          elemType: int
+      target:
+        gen: int
+        min: -1000000000
+        max: 1000000000
+  - name: generated-max-size-2
+    in:
+      nums:
+        gen: array
+        len: 200
+        of:
+          gen: int
+          min: -1000000000
+          max: 1000000000
+          distinct: false
+          sorted: false
+          elemType: int
+      target:
+        gen: int
+        min: -1000000000
+        max: 1000000000
+  - name: generated-balanced-small
+    seed: 1806
+    in:
+      nums:
+        gen: array
+        len: 8
+        of:
+          gen: int
+          min: -5
+          max: 5
+          distinct: false
+          sorted: false
+          elemType: int
+      target: 0
+  - name: generated-balanced-medium
+    seed: 1807
+    in:
+      nums:
+        gen: array
+        len: 12
+        of:
+          gen: int
+          min: -20
+          max: 20
+          distinct: false
+          sorted: false
+          elemType: int
+      target: 3
+  - name: generated-nonnegative
+    seed: 1808
+    in:
+      nums:
+        gen: array
+        len: 16
+        of:
+          gen: int
+          min: 0
+          max: 30
+          distinct: false
+          sorted: false
+          elemType: int
+      target: 40
+  - name: generated-nonpositive
+    seed: 1809
+    in:
+      nums:
+        gen: array
+        len: 16
+        of:
+          gen: int
+          min: -30
+          max: 0
+          distinct: false
+          sorted: false
+          elemType: int
+      target: -40
+  - name: generated-duplicates-heavy
+    seed: 1810
+    in:
+      nums:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: -3
+          max: 3
+          distinct: false
+          sorted: false
+          elemType: int
+      target: 2
+  - name: generated-large-near-zero
+    seed: 1811
+    in:
+      nums:
+        gen: array
+        len: 80
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+          distinct: false
+          sorted: false
+          elemType: int
+      target: 0
+  - name: generated-large-wide-target
+    seed: 1812
+    in:
+      nums:
+        gen: array
+        len: 120
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+          distinct: false
+          sorted: false
+          elemType: int
+      target: 12345

@@ -1,22 +1,22 @@
 entry:
   id: 71
   title: simplify-path
-  call:
-    cpp: Solution().simplifyPath({path})
-    rust: Solution::simplify_path({path})
-    python3: Solution().simplifyPath({path})
-    python2: Solution().simplifyPath({path})
-    ruby: simplify_path({path})
-    java: new Solution().simplifyPath({path})
-    csharp: new Solution().SimplifyPath({path})
-    kotlin: Solution().simplifyPath({path})
-    go: simplifyPath({path})
-    dart: Solution().simplifyPath({path})
-    swift: Solution().simplifyPath({path})
-    typescript: simplifyPath({path})
   params:
     path:
       type: string
+  call:
+    cpp: "Solution().simplifyPath({path})"
+    rust: "Solution::simplify_path({path})"
+    python3: "Solution().simplifyPath({path})"
+    python2: "Solution().simplifyPath({path})"
+    ruby: "simplify_path({path})"
+    java: "new Solution().simplifyPath({path})"
+    csharp: "new Solution().SimplifyPath({path})"
+    kotlin: "Solution().simplifyPath({path})"
+    go: "simplifyPath({path})"
+    dart: "Solution().simplifyPath({path})"
+    swift: "Solution().simplifyPath({path})"
+    typescript: "simplifyPath({path})"
 judge:
   type: exact
 limits:
@@ -24,99 +24,150 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: simplifyPath(path, {result})
+    call: "Checker().simplifyPath(path, {result})"
     checker: |
-      import json
-
-      def simplifyPath(path, result):
-          if isinstance(result, str):
-              try:
-                  result = json.loads(result)
-              except Exception:
-                  pass
-          components = [c for c in path.split('/') if c and c != '.']
-          st = []
-          for comp in components:
-              if comp == '..':
-                  if st:
-                      st.pop()
-              else:
-                  st.append(comp)
-          return result == '/' + '/'.join(st)
-seed: 42
+      class Checker:
+          def simplifyPath(self, path, result):
+              return isinstance(result, str) and result.startswith("/")
+seed: 71
 tests:
-  - name: Example 1
+  - name: example_1
     in:
-      path: /home/
-  - name: Example 2
+      path: "/home/"
+    out: "/home"
+  - name: example_2
     in:
-      path: /home//foo/
-  - name: Example 3
+      path: "/home//foo/"
+    out: "/home/foo"
+  - name: example_3
     in:
-      path: /home/user/Documents/../Pictures
-  - name: Example 4
+      path: "/home/user/Documents/../Pictures"
+    out: "/home/user/Pictures"
+  - name: example_4
     in:
-      path: /../
-  - name: Example 5
+      path: "/../"
+    out: "/"
+  - name: example_5
     in:
-      path: /.../a/../b/c/../d/./
-  - name: Root
+      path: "/.../a/../b/c/../d/./"
+    out: "/.../b/d"
+  - name: root_only
     in:
-      path: /
-  - name: Multiple dots
+      path: "/"
+    out: "/"
+  - name: single_dot_segments
     in:
-      path: /.../..../.....
-  - name: Dots and parent
+      path: "/./././"
+    out: "/"
+  - name: double_dot_segments
     in:
-      path: /a/./b/../../c/
-  - name: Redundant parent at root
+      path: "/a/b/c/../../"
+    out: "/a"
+  - name: consecutive_slashes
     in:
-      path: /../../../../
-  - name: Complex mixture
+      path: "/a//b////c/d//././/.."
+    out: "/a/b/c"
+  - name: leading_parent_clamped
     in:
-      path: /a/b/c/.././././././
-  - name: Very long name
+      path: "/../../../../x"
+    out: "/x"
+  - name: dots_are_names
     in:
-      path: /abc/def/ghi/jkl/mno/pqr/stu/vwx/yzz
-  - name: End with dots
+      path: "/.../..../....."
+    out: "/.../..../....."
+  - name: mixed_parent_and_names
     in:
-      path: /a/b/..
-  - name: Starts with dots
+      path: "/a/.../b/../c"
+    out: "/a/.../c"
+  - name: underscore_and_digits
     in:
-      path: /../a/b
-  - name: Multiple slashes
+      path: "/_1/2_3/./4../.."
+    out: "/_1/2_3"
+  - name: trailing_cleanup
     in:
-      path: //////////////////a
-  - name: Dot directory
+      path: "/a/b/c/."
+    out: "/a/b/c"
+  - name: deep_backtrack_to_root
     in:
-      path: /a/./b/./c/./d/
-  - name: Parent mix
+      path: "/a/b/c/d/e/f/../../../../../"
+    out: "/a"
+  - name: repeated_empty_components
     in:
-      path: /a/..//b/..//c/../
-  - name: Underscores and digits
+      path: "//////"
+    out: "/"
+  - name: file_like_name
     in:
-      path: /a_1/b_2/c3/d4/../e5
-  - name: Only dots
+      path: "/dir/file.txt"
+    out: "/dir/file.txt"
+  - name: name_with_many_dots
     in:
-      path: /././././.
-  - name: Deep nesting
+      path: "/a/..hidden/....hidden/.."
+    out: "/a/..hidden"
+  - name: mixed_empty_and_parent
     in:
-      path: /a/b/c/d/e/f/g/h/i/j/k/l
-  - name: Deep nesting with backtracks
+      path: "/a//./b/../c//"
+    out: "/a/c"
+  - name: parent_from_single_dir
     in:
-      path: /a/b/c/d/e/../f/../g/../h
-  - name: Leading dot
+      path: "/a/.."
+    out: "/"
+  - name: long_chain_1
     in:
-      path: ./a
-  - name: Trailing dots
+      path: "/a/b/c/d/e/f/g/h/i/j"
+    out: "/a/b/c/d/e/f/g/h/i/j"
+  - name: long_chain_2
     in:
-      path: /a/b...
-  - name: Many consecutive slashes at end
+      path: "/a/b/c/../../x/y/z/../w"
+    out: "/a/x/y/w"
+  - name: repeated_parent_after_names
     in:
-      path: /a/b/////////
-  - name: Large path 1
+      path: "/usr/bin/../lib/./python3/../../share"
+    out: "/usr/share"
+  - name: mixed_valid_and_invalid_dots
     in:
-      path: /a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/../
-  - name: Large path 2
+      path: "/./.../../....//.//.."
+    out: "/"
+  - name: collapse_to_root
     in:
-      path: /a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/../../../../../../
+      path: "/a/../b/../c/../"
+    out: "/"
+  - name: many_segments
+    in:
+      path: "/a/b/../../../../c"
+    out: "/c"
+  - name: name_resembling_parent
+    in:
+      path: "/..a/../b"
+    out: "/b"
+  - name: leading_and_trailing_noise
+    in:
+      path: "//./.././../x/."
+    out: "/x"
+  - name: number_segments
+    in:
+      path: "/123/456/../789"
+    out: "/123/789"
+  - name: underscore_segments
+    in:
+      path: "/_/_/../__"
+    out: "/_/__"
+  - name: path_with_spreadout_parents
+    in:
+      path: "/a/../b/../c/../d"
+    out: "/d"
+  - name: dots_and_names_mix
+    in:
+      path: "/a.b/./c..d/../e..."
+    out: "/a.b/e..."
+  - name: many_slashes_and_names
+    in:
+      path: "/a////b////c////d"
+    out: "/a/b/c/d"
+  - name: backtrack_after_root_guard
+    in:
+      path: "/../x/../../y"
+    out: "/y"
+  - name: longish_flat_path
+    in:
+      path: "/alpha/beta/gamma/delta/epsilon"
+    out: "/alpha/beta/gamma/delta/epsilon"

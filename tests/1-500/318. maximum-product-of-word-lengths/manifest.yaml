@@ -1,0 +1,341 @@
+entry:
+  id: 318
+  title: maximum-product-of-word-lengths
+  params:
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: Solution().maxProduct({words})
+    rust: Solution::max_product({words})
+    python3: Solution().maxProduct({words})
+    python2: Solution().maxProduct({words})
+    ruby: max_product({words})
+    java: new Solution().maxProduct({words})
+    csharp: new Solution().MaxProduct({words})
+    kotlin: Solution().maxProduct({words})
+    go: maxProduct({words})
+    dart: Solution().maxProduct({words})
+    swift: Solution().maxProduct({words})
+    typescript: maxProduct({words})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(words, {result})
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def check(self, words: Any, result: Any) -> bool:
+              if not isinstance(words, list) or not isinstance(result, int):
+                  return False
+              if len(words) < 2:
+                  return False
+              bitmasks = []
+              for w in words:
+                  if not isinstance(w, str):
+                      return False
+                  if not (1 <= len(w) <= 1000):
+                      return False
+                  mask = 0
+                  seen = set()
+                  for ch in w:
+                      if not isinstance(ch, str) or len(ch) != 1 or not ('a' <= ch <= 'z'):
+                          return False
+                      if ch not in seen:
+                          seen.add(ch)
+                          mask |= 1 << (ord(ch) - ord('a'))
+                  bitmasks.append(mask)
+              expected = 0
+              for i in range(len(words)):
+                  for j in range(i + 1, len(words)):
+                      if bitmasks[i] & bitmasks[j] == 0:
+                          expected = max(expected, len(words[i]) * len(words[j]))
+              return result == expected
+seed: 318
+tests:
+  - name: example_1
+    in:
+      words:
+        - abcw
+        - baz
+        - foo
+        - bar
+        - xtfn
+        - abcdef
+    out: 16
+  - name: example_2
+    in:
+      words:
+        - a
+        - ab
+        - abc
+        - d
+        - cd
+        - bcd
+        - abcd
+    out: 4
+  - name: example_3
+    in:
+      words:
+        - a
+        - aa
+        - aaa
+        - aaaa
+    out: 0
+  - name: two_single_letters
+    in:
+      words:
+        - a
+        - b
+    out: 1
+  - name: two_same_letters
+    in:
+      words:
+        - aa
+        - bb
+    out: 4
+  - name: all_disjoint_small
+    in:
+      words:
+        - ab
+        - cd
+        - ef
+        - gh
+    out: 4
+  - name: all_overlap
+    in:
+      words:
+        - abc
+        - cde
+        - def
+    out: 9
+  - name: duplicate_long_same_letters
+    in:
+      words:
+        - aaaaa
+        - bbbbb
+        - ccccc
+        - ddddd
+    out: 25
+  - name: repeated_word_and_disjoint_pair
+    in:
+      words:
+        - abc
+        - abc
+        - abc
+        - def
+    out: 9
+  - name: full_alphabet_and_single_letter
+    in:
+      words:
+        - abcdefghijklmnopqrstuvwxyz
+        - a
+    out: 0
+  - name: five_disjoint_fives
+    in:
+      words:
+        - abcde
+        - fghij
+        - klmno
+        - pqrst
+        - uvwxyz
+    out: 30
+  - name: overlapping_prefix_variants
+    in:
+      words:
+        - abca
+        - bcdb
+        - cdec
+        - defd
+        - efge
+    out: 16
+  - name: seven_disjoint_words
+    in:
+      words:
+        - abcd
+        - efgh
+        - ijkl
+        - mnop
+        - qrst
+        - uvwx
+        - yz
+    out: 16
+  - name: mixed_repeated_blocks
+    in:
+      words:
+        - aaab
+        - bccd
+        - eeff
+        - ghii
+    out: 16
+  - name: moderate_disjoint_mixture
+    in:
+      words:
+        - longword
+        - another
+        - zzz
+        - yyy
+        - xxx
+    out: 24
+  - name: five_small_disjointish
+    in:
+      words:
+        - abc
+        - defg
+        - hij
+        - klmn
+        - opqrs
+    out: 20
+  - name: alternating_letters
+    in:
+      words:
+        - ace
+        - bdf
+        - ghj
+        - ikm
+        - lnp
+    out: 9
+  - name: shared_prefix_many
+    in:
+      words:
+        - abcd
+        - aefg
+        - ahij
+        - aklm
+    out: 0
+  - name: common_but_not_all
+    in:
+      words:
+        - qwerty
+        - asdf
+        - zxcv
+        - poiuy
+    out: 24
+  - name: mixed_lengths_small
+    in:
+      words:
+        - abcxyz
+        - lmnop
+        - rstuv
+        - ghijk
+    out: 30
+  - name: large_single_letter_runs
+    in:
+      words:
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        - bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        - cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    out: 436320
+  - name: large_mixed_runs
+    in:
+      words:
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        - cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+        - dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    out: 518694
+  - name: all_disjoint_four_hundred
+    in:
+      words:
+        - ababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab
+        - cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+        - efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef
+        - ghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghgh
+    out: 72216
+  - name: full_alphabet_overlap
+    in:
+      words:
+        - abcdefghijklmnopqrstuvwxyz
+        - bcdefghijklmnopqrstuvwxyza
+        - zzzz
+        - yyyy
+    out: 16
+  - name: triple_repeated_blocks
+    in:
+      words:
+        - abcabcabcabcabcabcabcabcabcabc
+        - defdefdefdefdefdefdefdefdefdef
+        - ghaghaghaghaghaghaghaghaghagha
+        - ijkijkijkijkijkijkijkijkijkijk
+    out: 900
+  - name: two_max_length_single_letters
+    in:
+      words:
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        - bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    out: 451552
+  - name: large_overlap_then_disjoint
+    in:
+      words:
+        - abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+        - defdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdef
+        - ghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijkghijk
+    out: 99225
+  - name: large_three_disjoint_max
+    in:
+      words:
+        - lmno
+        - pqrs
+        - tuvw
+        - xyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxy
+    out: 864
+  - name: pair_with_overlap_and_disjoint
+    in:
+      words:
+        - ab
+        - cd
+        - ae
+        - fg
+    out: 4
+  - name: three_one_letter_words
+    in:
+      words:
+        - a
+        - c
+        - e
+    out: 1
+  - name: no_disjoint_pair_among_many
+    in:
+      words:
+        - ab
+        - bc
+        - cd
+        - de
+    out: 4
+  - name: best_pair_not_first
+    in:
+      words:
+        - aaa
+        - bbb
+        - cdef
+        - gh
+    out: 12
+  - name: same_mask_different_lengths
+    in:
+      words:
+        - abc
+        - ab
+        - def
+        - ghij
+    out: 12
+  - name: long_single_and_short_disjoint
+    in:
+      words:
+        - zzzzzzzzzz
+        - a
+        - bc
+        - def
+    out: 30
+  - name: multiple_pairs_same_best
+    in:
+      words:
+        - abcd
+        - efgh
+        - ij
+        - kl
+    out: 16

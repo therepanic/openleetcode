@@ -1,0 +1,510 @@
+entry:
+  id: 150
+  title: "evaluate-reverse-polish-notation"
+  params:
+    tokens:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().evalRPN({tokens})"
+    rust: "Solution::eval_rpn({tokens})"
+    python3: "Solution().evalRPN({tokens})"
+    python2: "Solution().evalRPN({tokens})"
+    ruby: "eval_rpn({tokens})"
+    java: "new Solution().evalRPN({tokens})"
+    csharp: "new Solution().EvalRPN({tokens})"
+    kotlin: "Solution().evalRPN({tokens})"
+    go: "evalRPN({tokens})"
+    dart: "Solution().evalRPN({tokens})"
+    swift: "Solution().evalRPN({tokens})"
+    typescript: "evalRPN({tokens})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().evalRPN(tokens, {result})"
+    checker: |
+      class Checker:
+          def evalRPN(self, tokens, result):
+              if not isinstance(result, int):
+                  return False
+              stack = []
+              for token in tokens:
+                  if token in {"+", "-", "*", "/"}:
+                      if len(stack) < 2:
+                          return False
+                      a = stack.pop()
+                      b = stack.pop()
+                      if token == "+":
+                          stack.append(b + a)
+                      elif token == "-":
+                          stack.append(b - a)
+                      elif token == "*":
+                          stack.append(b * a)
+                      else:
+                          stack.append(int(b / a))
+                  else:
+                      try:
+                          stack.append(int(token))
+                      except Exception:
+                          return False
+              return len(stack) == 1 and stack[0] == result
+
+seed: 150
+
+tests:
+  - name: "example-1"
+    in:
+      tokens:
+        - "2"
+        - "1"
+        - "+"
+        - "3"
+        - "*"
+    out: 9
+  - name: "example-2"
+    in:
+      tokens:
+        - "4"
+        - "13"
+        - "5"
+        - "/"
+        - "+"
+    out: 6
+  - name: "example-3"
+    in:
+      tokens:
+        - "10"
+        - "6"
+        - "9"
+        - "3"
+        - "+"
+        - "-11"
+        - "*"
+        - "/"
+        - "*"
+        - "17"
+        - "+"
+        - "5"
+        - "+"
+    out: 22
+  - name: "single-positive"
+    in:
+      tokens:
+        - "7"
+    out: 7
+  - name: "single-negative"
+    in:
+      tokens:
+        - "-7"
+    out: -7
+  - name: "add-negative"
+    in:
+      tokens:
+        - "3"
+        - "-4"
+        - "+"
+    out: -1
+  - name: "sub-negative"
+    in:
+      tokens:
+        - "3"
+        - "-4"
+        - "-"
+    out: 7
+  - name: "mul-negative"
+    in:
+      tokens:
+        - "3"
+        - "-4"
+        - "*"
+    out: -12
+  - name: "div-negative-positive"
+    in:
+      tokens:
+        - "-7"
+        - "3"
+        - "/"
+    out: -2
+  - name: "div-positive-negative"
+    in:
+      tokens:
+        - "7"
+        - "-3"
+        - "/"
+    out: -2
+  - name: "trunc-positive"
+    in:
+      tokens:
+        - "8"
+        - "3"
+        - "/"
+    out: 2
+  - name: "trunc-negative"
+    in:
+      tokens:
+        - "-8"
+        - "3"
+        - "/"
+    out: -2
+  - name: "trunc-mixed"
+    in:
+      tokens:
+        - "8"
+        - "-3"
+        - "/"
+    out: -2
+  - name: "zero-add"
+    in:
+      tokens:
+        - "0"
+        - "3"
+        - "+"
+    out: 3
+  - name: "zero-sub"
+    in:
+      tokens:
+        - "0"
+        - "3"
+        - "-"
+    out: -3
+  - name: "simple-mixed"
+    in:
+      tokens:
+        - "3"
+        - "1"
+        - "+"
+        - "2"
+        - "*"
+    out: 8
+  - name: "canonical-1"
+    in:
+      tokens:
+        - "5"
+        - "1"
+        - "2"
+        - "+"
+        - "4"
+        - "*"
+        - "+"
+        - "3"
+        - "-"
+    out: 14
+  - name: "canonical-2"
+    in:
+      tokens:
+        - "2"
+        - "3"
+        - "11"
+        - "+"
+        - "5"
+        - "-"
+        - "*"
+    out: 18
+  - name: "canonical-3"
+    in:
+      tokens:
+        - "5"
+        - "9"
+        - "1"
+        - "-"
+        - "/"
+    out: 0
+  - name: "div-zero-result"
+    in:
+      tokens:
+        - "2"
+        - "-3"
+        - "/"
+    out: 0
+  - name: "div-zero-result-2"
+    in:
+      tokens:
+        - "-2"
+        - "3"
+        - "/"
+    out: 0
+  - name: "div-zero-result-3"
+    in:
+      tokens:
+        - "-2"
+        - "-3"
+        - "/"
+    out: 0
+  - name: "mixed-mul-div-1"
+    in:
+      tokens:
+        - "12"
+        - "3"
+        - "/"
+        - "2"
+        - "*"
+    out: 8
+  - name: "mixed-mul-div-2"
+    in:
+      tokens:
+        - "6"
+        - "2"
+        - "/"
+        - "3"
+        - "/"
+    out: 1
+  - name: "nested-add-mul-1"
+    in:
+      tokens:
+        - "1"
+        - "2"
+        - "+"
+        - "3"
+        - "4"
+        - "+"
+        - "*"
+    out: 21
+  - name: "nested-add-mul-2"
+    in:
+      tokens:
+        - "2"
+        - "3"
+        - "+"
+        - "4"
+        - "5"
+        - "+"
+        - "*"
+    out: 45
+  - name: "mixed-div-add"
+    in:
+      tokens:
+        - "9"
+        - "3"
+        - "/"
+        - "2"
+        - "*"
+        - "5"
+        - "+"
+    out: 11
+  - name: "large-product"
+    in:
+      tokens:
+        - "100"
+        - "-200"
+        - "*"
+    out: -20000
+  - name: "large-positive-product"
+    in:
+      tokens:
+        - "200"
+        - "200"
+        - "*"
+    out: 40000
+  - name: "large-negative-product"
+    in:
+      tokens:
+        - "-200"
+        - "200"
+        - "*"
+    out: -40000
+  - name: "large-div-negative"
+    in:
+      tokens:
+        - "200"
+        - "-200"
+        - "/"
+    out: -1
+  - name: "large-div-positive"
+    in:
+      tokens:
+        - "-200"
+        - "-200"
+        - "/"
+    out: 1
+  - name: "sub-chain"
+    in:
+      tokens:
+        - "1"
+        - "2"
+        - "-"
+        - "3"
+        - "4"
+        - "-"
+        - "*"
+    out: 1
+  - name: "sub-plus-chain"
+    in:
+      tokens:
+        - "1"
+        - "2"
+        - "-"
+        - "3"
+        - "4"
+        - "+"
+        - "*"
+    out: -7
+  - name: "mixed-long-1"
+    in:
+      tokens:
+        - "8"
+        - "2"
+        - "/"
+        - "3"
+        - "-"
+        - "4"
+        - "*"
+    out: 4
+  - name: "mixed-long-2"
+    in:
+      tokens:
+        - "18"
+        - "6"
+        - "/"
+        - "2"
+        - "/"
+        - "3"
+        - "+"
+    out: 4
+  - name: "long-chain-1"
+    in:
+      tokens:
+        - "1"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+    out: 37
+  - name: "long-chain-2"
+    in:
+      tokens:
+        - "200"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+        - "1"
+        - "+"
+    out: 229

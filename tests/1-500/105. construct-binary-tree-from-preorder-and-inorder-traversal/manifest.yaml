@@ -1,0 +1,511 @@
+entry:
+  id: 105
+  title: construct-binary-tree-from-preorder-and-inorder-traversal
+  params:
+    preorder:
+      type: array
+      items:
+        type: int
+    inorder:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "treeNodeToArray(Solution().buildTree({preorder}, {inorder}))"
+    rust: "TreeNode::tree_node_to_array(Solution::build_tree({preorder}, {inorder}))"
+    python3: "tree_node_to_array(Solution().buildTree({preorder}, {inorder}))"
+    python2: "tree_node_to_array(Solution().buildTree({preorder}, {inorder}))"
+    ruby: "tree_node_to_array(build_tree({preorder}, {inorder}))"
+    java: "TreeNode.treeNodeToArray(new Solution().buildTree({preorder}, {inorder}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().BuildTree({preorder}, {inorder}))"
+    kotlin: "treeNodeToArray(Solution().buildTree({preorder}, {inorder}))"
+    go: "treeNodeToArray(buildTree({preorder}, {inorder}))"
+    dart: "tree_node_to_array(Solution().buildTree({preorder}, {inorder}))"
+    swift: "tree_node_to_array(Solution().buildTree({preorder}, {inorder}))"
+    typescript: "treeNodeToArray(buildTree({preorder}, {inorder}))"
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().buildTree(preorder, inorder, {result})"
+    checker: |
+      from typing import List, Optional, Any
+
+      class Checker:
+          def buildTree(self, preorder: List[int], inorder: List[int], result: Any) -> bool:
+              if len(preorder) != len(inorder):
+                  return False
+
+              def serialize(node):
+                  out = []
+                  queue = [node]
+                  while queue:
+                      cur = queue.pop(0)
+                      if cur is None:
+                          out.append(None)
+                          continue
+                      out.append(cur.val)
+                      queue.append(cur.left)
+                      queue.append(cur.right)
+                  while out and out[-1] is None:
+                      out.pop()
+                  return out
+
+              def preorder_walk(node):
+                  if node is None:
+                      return []
+                  return [node.val] + preorder_walk(node.left) + preorder_walk(node.right)
+
+              def inorder_walk(node):
+                  if node is None:
+                      return []
+                  return inorder_walk(node.left) + [node.val] + inorder_walk(node.right)
+
+              return serialize(result) == result_to_array(result) and preorder_walk(result) == preorder and inorder_walk(result) == inorder
+
+      def result_to_array(node):
+          if node is None:
+              return []
+          out = []
+          queue = [node]
+          while queue:
+              cur = queue.pop(0)
+              if cur is None:
+                  out.append(None)
+                  continue
+              out.append(cur.val)
+              queue.append(cur.left)
+              queue.append(cur.right)
+          while out and out[-1] is None:
+              out.pop()
+          return out
+seed: 105
+tests:
+  - name: ex1
+    in:
+      preorder: [3, 9, 20, 15, 7]
+      inorder: [9, 3, 15, 20, 7]
+    out:
+      - 3
+      - 9
+      - 20
+      - null
+      - null
+      - 15
+      - 7
+  - name: ex2
+    in:
+      preorder: [-1]
+      inorder: [-1]
+    out:
+      - -1
+  - name: two_nodes_left
+    in:
+      preorder: [2, 1]
+      inorder: [1, 2]
+    out:
+      - 2
+      - 1
+  - name: two_nodes_right
+    in:
+      preorder: [1, 2]
+      inorder: [1, 2]
+    out:
+      - 1
+      - null
+      - 2
+  - name: balanced_7
+    in:
+      preorder: [4, 2, 1, 3, 6, 5, 7]
+      inorder: [1, 2, 3, 4, 5, 6, 7]
+    out:
+      - 4
+      - 2
+      - 6
+      - 1
+      - 3
+      - 5
+      - 7
+  - name: left_skew_3
+    in:
+      preorder: [3, 2, 1]
+      inorder: [1, 2, 3]
+    out:
+      - 3
+      - 2
+      - null
+      - 1
+  - name: right_skew_4
+    in:
+      preorder: [1, 2, 3, 4]
+      inorder: [1, 2, 3, 4]
+    out:
+      - 1
+      - null
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+  - name: zigzag_1
+    in:
+      preorder: [1, 2, 4, 3, 5]
+      inorder: [2, 4, 1, 5, 3]
+    out:
+      - 1
+      - 2
+      - 3
+      - null
+      - 4
+      - 5
+  - name: unbalanced_1
+    in:
+      preorder: [8, 4, 2, 1, 6, 7, 12, 10, 11, 14, 13]
+      inorder: [1, 2, 4, 6, 7, 8, 10, 11, 12, 13, 14]
+    out:
+      - 8
+      - 4
+      - 12
+      - 2
+      - 6
+      - 10
+      - 14
+      - 1
+      - null
+      - null
+      - 7
+      - null
+      - 11
+      - 13
+  - name: left_chain_5
+    in:
+      preorder: [5, 4, 3, 2, 1]
+      inorder: [1, 2, 3, 4, 5]
+    out:
+      - 5
+      - 4
+      - null
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: right_chain_5
+    in:
+      preorder: [1, 2, 3, 4, 5]
+      inorder: [1, 2, 3, 4, 5]
+    out:
+      - 1
+      - null
+      - 2
+      - null
+      - 3
+      - null
+      - 4
+      - null
+      - 5
+  - name: mixed_1
+    in:
+      preorder: [10, 6, 4, 8, 15, 12, 11, 20]
+      inorder: [4, 6, 8, 10, 11, 12, 15, 20]
+    out:
+      - 10
+      - 6
+      - 15
+      - 4
+      - 8
+      - 12
+      - 20
+      - null
+      - null
+      - null
+      - null
+      - 11
+  - name: mixed_negative
+    in:
+      preorder: [0, -3, -4, -2, 9, 5, 12]
+      inorder: [-4, -3, -2, 0, 5, 9, 12]
+    out:
+      - 0
+      - -3
+      - 9
+      - -4
+      - -2
+      - 5
+      - 12
+  - name: single_right_child
+    in:
+      preorder: [2, 3]
+      inorder: [2, 3]
+    out:
+      - 2
+      - null
+      - 3
+  - name: single_left_child
+    in:
+      preorder: [2, 1]
+      inorder: [1, 2]
+    out:
+      - 2
+      - 1
+  - name: lopsided_1
+    in:
+      preorder: [7, 3, 5, 4, 9, 8]
+      inorder: [3, 4, 5, 7, 8, 9]
+    out:
+      - 7
+      - 3
+      - 9
+      - null
+      - 5
+      - 8
+      - null
+      - 4
+  - name: full_15
+    in:
+      preorder: [8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15]
+      inorder: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    out:
+      - 8
+      - 4
+      - 12
+      - 2
+      - 6
+      - 10
+      - 14
+      - 1
+      - 3
+      - 5
+      - 7
+      - 9
+      - 11
+      - 13
+      - 15
+  - name: negatives_1
+    in:
+      preorder: [0, -10, -20, -5, 10, 5, 20]
+      inorder: [-20, -10, -5, 0, 5, 10, 20]
+    out:
+      - 0
+      - -10
+      - 10
+      - -20
+      - -5
+      - 5
+      - 20
+  - name: perfect_3
+    in:
+      preorder: [2, 1, 3]
+      inorder: [1, 2, 3]
+    out:
+      - 2
+      - 1
+      - 3
+  - name: root_only
+    in:
+      preorder: [42]
+      inorder: [42]
+    out:
+      - 42
+  - name: right_heavy_2
+    in:
+      preorder: [5, 9, 8]
+      inorder: [5, 8, 9]
+    out:
+      - 5
+      - null
+      - 9
+      - 8
+  - name: left_heavy_2
+    in:
+      preorder: [5, 3]
+      inorder: [3, 5]
+    out:
+      - 5
+      - 3
+  - name: random_1
+    in:
+      preorder: [30, 20, 10, 25, 40, 35, 50]
+      inorder: [10, 20, 25, 30, 35, 40, 50]
+    out:
+      - 30
+      - 20
+      - 40
+      - 10
+      - 25
+      - 35
+      - 50
+  - name: random_2
+    in:
+      preorder: [1, 0, -1, 2, 3, 4, 5]
+      inorder: [-1, 0, 2, 1, 3, 4, 5]
+    out:
+      - 1
+      - 0
+      - 3
+      - -1
+      - 2
+      - null
+      - 4
+      - null
+      - null
+      - null
+      - null
+      - null
+      - 5
+  - name: random_3
+    in:
+      preorder: [6, 2, 1, 4, 3, 5, 8, 7, 9]
+      inorder: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out:
+      - 6
+      - 2
+      - 8
+      - 1
+      - 4
+      - 7
+      - 9
+      - null
+      - null
+      - 3
+      - 5
+  - name: random_4
+    in:
+      preorder: [50, 25, 12, 37, 30, 40, 75, 62, 87, 80, 90]
+      inorder: [12, 25, 30, 37, 40, 50, 62, 75, 80, 87, 90]
+    out:
+      - 50
+      - 25
+      - 75
+      - 12
+      - 37
+      - 62
+      - 87
+      - null
+      - null
+      - 30
+      - 40
+      - null
+      - null
+      - 80
+      - 90
+  - name: chain_mixed
+    in:
+      preorder: [1, 0, -2, 3, 4, 5]
+      inorder: [-2, 0, 3, 1, 4, 5]
+    out:
+      - 1
+      - 0
+      - 4
+      - -2
+      - 3
+      - null
+      - 5
+  - name: complete_6
+    in:
+      preorder: [6, 3, 1, 4, 9, 8, 10]
+      inorder: [1, 3, 4, 6, 8, 9, 10]
+    out:
+      - 6
+      - 3
+      - 9
+      - 1
+      - 4
+      - 8
+      - 10
+  - name: left_child_right_sub
+    in:
+      preorder: [1, 2, 3]
+      inorder: [2, 3, 1]
+    out:
+      - 1
+      - 2
+      - null
+      - null
+      - 3
+  - name: right_child_left_sub
+    in:
+      preorder: [1, 2, 3]
+      inorder: [1, 3, 2]
+    out:
+      - 1
+      - null
+      - 2
+      - 3
+  - name: deep_left_right
+    in:
+      preorder: [9, 5, 2, 4, 7, 6, 12]
+      inorder: [2, 4, 5, 6, 7, 9, 12]
+    out:
+      - 9
+      - 5
+      - 12
+      - 2
+      - 7
+      - null
+      - null
+      - null
+      - 4
+      - 6
+  - name: deep_right_left
+    in:
+      preorder: [9, 5, 12, 11, 14, 13]
+      inorder: [5, 9, 11, 12, 13, 14]
+    out:
+      - 9
+      - 5
+      - 12
+      - null
+      - null
+      - 11
+      - 14
+      - null
+      - null
+      - 13
+  - name: alternating_1
+    in:
+      preorder: [1, 2, 3, 4]
+      inorder: [2, 3, 4, 1]
+    out:
+      - 1
+      - 2
+      - null
+      - null
+      - 3
+      - null
+      - 4
+  - name: alternating_2
+    in:
+      preorder: [1, 2, 3, 4]
+      inorder: [1, 3, 4, 2]
+    out:
+      - 1
+      - null
+      - 2
+      - 3
+      - null
+      - null
+      - 4
+  - name: maxish
+    in:
+      preorder: [1000, 500, 250, 750, 1500, 1250, 1750]
+      inorder: [250, 500, 750, 1000, 1250, 1500, 1750]
+    out:
+      - 1000
+      - 500
+      - 1500
+      - 250
+      - 750
+      - 1250
+      - 1750
+  - name: extremes
+    in:
+      preorder: [-100000, -50000, 100000]
+      inorder: [-50000, -100000, 100000]
+    out:
+      - -100000
+      - -50000
+      - 100000

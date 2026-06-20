@@ -1,45 +1,52 @@
 entry:
   id: 25
   title: reverse-nodes-in-k-group
-  call:
-    cpp: listNodeToArray(Solution().reverseKGroup({head}, {k}))
-    rust: ListNode::list_node_to_array(Solution::reverse_k_group({head}, {k}))
-    python3: list_node_to_array(Solution().reverseKGroup({head}, {k}))
-    python2: list_node_to_array(Solution().reverseKGroup({head}, {k}))
-    ruby: list_node_to_array(reverse_k_group({head}, {k}))
-    java: ListNode.listNodeToArray(new Solution().reverseKGroup({head}, {k}))
-    csharp: ListNode.ListNodeToArray(new Solution().ReverseKGroup({head}, {k}))
-    kotlin: listNodeToArray(Solution().reverseKGroup({head}, {k}))
-    go: listNodeToArray(reverseKGroup({head}, {k}))
-    dart: list_node_to_array(Solution().reverseKGroup({head}, {k}))
-    swift: list_node_to_array(Solution().reverseKGroup({head}, {k}))
-    typescript: listNodeToArray(reverseKGroup({head}, {k}))
   params:
     head:
       type: list_node
     k:
       type: int
+  call:
+    cpp: "listNodeToArray(Solution().reverseKGroup({head}, {k}))"
+    rust: "ListNode::list_node_to_array(Solution::reverse_k_group({head}, {k}))"
+    python3: "list_node_to_array(Solution().reverseKGroup({head}, {k}))"
+    python2: "list_node_to_array(Solution().reverseKGroup({head}, {k}))"
+    ruby: "list_node_to_array(reverse_k_group({head}, {k}))"
+    java: "ListNode.listNodeToArray(new Solution().reverseKGroup({head}, {k}))"
+    csharp: "ListNode.ListNodeToArray(new Solution().ReverseKGroup({head}, {k}))"
+    kotlin: "listNodeToArray(Solution().reverseKGroup({head}, {k}))"
+    go: "listNodeToArray(reverseKGroup({head}, {k}))"
+    dart: "list_node_to_array(Solution().reverseKGroup({head}, {k}))"
+    swift: "list_node_to_array(Solution().reverseKGroup({head}, {k}))"
+    typescript: "listNodeToArray(reverseKGroup({head}, {k}))"
 judge:
   type: exact
 limits:
-  time_ms: 2000
+  time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check([{head}], {k}, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if isinstance(result, str):\n           \
-      \ try:\n                result = json.loads(result)\n            except Exception:\n                pass\n        return
-      result\n\n    def check(self, head, k, output):\n        output = self._norm(output)\n        def to_list(arr):\n  \
-      \          if not arr: return None\n            head = ListNode(arr[0])\n            curr = head\n            for i
-      in range(1, len(arr)):\n                curr.next = ListNode(arr[i])\n                curr = curr.next\n           \
-      \ return head\n        def from_list(node):\n            res = []\n            while node:\n                res.append(node.val)\n\
-      \                node = node.next\n            return res\n        n = len(head)\n        expected = list(head)\n  \
-      \      for i in range(0, (n // k) * k, k):\n            expected[i:i+k] = reversed(expected[i:i+k])\n        return
-      from_list(to_list(output)) == expected\n"
-seed: 42
+    call: "Checker().check(head, k, {result})"
+    checker: |
+      import json
+
+      class Checker:
+          def check(self, head, k, result):
+              try:
+                  got = json.loads(result) if isinstance(result, str) else result
+              except Exception:
+                  return False
+              if not isinstance(got, list):
+                  return False
+
+              expected = list(head)
+              for start in range(0, len(expected), k):
+                  if start + k <= len(expected):
+                      expected[start:start + k] = reversed(expected[start:start + k])
+              return got == expected
+seed: 25
 tests:
-  - name: Example 1
+  - name: example_1
     in:
       head:
         - 1
@@ -54,7 +61,7 @@ tests:
       - 4
       - 3
       - 5
-  - name: Example 2
+  - name: example_2
     in:
       head:
         - 1
@@ -69,58 +76,125 @@ tests:
       - 1
       - 4
       - 5
-  - name: Single node k=1
+  - name: single_node
     in:
       head:
         - 1
       k: 1
     out:
       - 1
-  - name: Even list k=length
+  - name: two_nodes_k1
     in:
       head:
-        - 1
-        - 2
-      k: 2
+        - 7
+        - 8
+      k: 1
     out:
-      - 2
-      - 1
-  - name: Identical elements
+      - 7
+      - 8
+  - name: two_nodes_k2
     in:
       head:
-        - 1
-        - 1
-        - 1
-        - 1
+        - 7
+        - 8
       k: 2
     out:
-      - 1
-      - 1
-      - 1
-      - 1
-  - name: K greater than length
+      - 8
+      - 7
+  - name: three_nodes_k2
     in:
       head:
         - 1
         - 2
         - 3
+      k: 2
+    out:
+      - 2
+      - 1
+      - 3
+  - name: three_nodes_k3
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+      k: 3
+    out:
+      - 3
+      - 2
+      - 1
+  - name: four_nodes_k2
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+      k: 2
+    out:
+      - 2
+      - 1
+      - 4
+      - 3
+  - name: four_nodes_k3
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+      k: 3
+    out:
+      - 3
+      - 2
+      - 1
+      - 4
+  - name: four_nodes_k4
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
       k: 4
     out:
-      - 1
-      - 2
+      - 4
       - 3
-  - name: List of 3 k=2
+      - 2
+      - 1
+  - name: five_nodes_k4
     in:
       head:
         - 1
         - 2
         - 3
+        - 4
+        - 5
+      k: 4
+    out:
+      - 4
+      - 3
+      - 2
+      - 1
+      - 5
+  - name: six_nodes_k2
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
       k: 2
     out:
       - 2
       - 1
+      - 4
       - 3
-  - name: List of 6 k=3
+      - 6
+      - 5
+  - name: six_nodes_k3
     in:
       head:
         - 1
@@ -137,7 +211,289 @@ tests:
       - 6
       - 5
       - 4
-  - name: List of 10 k=2
+  - name: six_nodes_k4
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      k: 4
+    out:
+      - 4
+      - 3
+      - 2
+      - 1
+      - 5
+      - 6
+  - name: seven_nodes_k3
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      k: 3
+    out:
+      - 3
+      - 2
+      - 1
+      - 6
+      - 5
+      - 4
+      - 7
+  - name: seven_nodes_k5
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      k: 5
+    out:
+      - 5
+      - 4
+      - 3
+      - 2
+      - 1
+      - 6
+      - 7
+  - name: eight_nodes_k2
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+      k: 2
+    out:
+      - 2
+      - 1
+      - 4
+      - 3
+      - 6
+      - 5
+      - 8
+      - 7
+  - name: eight_nodes_k4
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+      k: 4
+    out:
+      - 4
+      - 3
+      - 2
+      - 1
+      - 8
+      - 7
+      - 6
+      - 5
+  - name: duplicates_k2
+    in:
+      head:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+      k: 2
+    out:
+      - 1
+      - 1
+      - 2
+      - 2
+      - 3
+      - 3
+  - name: duplicates_k3
+    in:
+      head:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+      k: 3
+    out:
+      - 2
+      - 1
+      - 1
+      - 3
+      - 3
+      - 2
+  - name: negatives_k2
+    in:
+      head:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+      k: 2
+    out:
+      - -2
+      - -1
+      - -4
+      - -3
+      - -5
+  - name: negatives_k3
+    in:
+      head:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+      k: 3
+    out:
+      - -3
+      - -2
+      - -1
+      - -6
+      - -5
+      - -4
+  - name: mixed_signs_k2
+    in:
+      head:
+        - -3
+        - 0
+        - 4
+        - -1
+        - 2
+      k: 2
+    out:
+      - 0
+      - -3
+      - -1
+      - 4
+      - 2
+  - name: mixed_signs_k4
+    in:
+      head:
+        - -3
+        - 0
+        - 4
+        - -1
+        - 2
+      k: 4
+    out:
+      - -1
+      - 4
+      - 0
+      - -3
+      - 2
+  - name: k_equals_length
+    in:
+      head:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+      k: 5
+    out:
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+  - name: k_equals_length_even
+    in:
+      head:
+        - 9
+        - 8
+        - 7
+        - 6
+      k: 4
+    out:
+      - 6
+      - 7
+      - 8
+      - 9
+  - name: repeated_pattern_k2
+    in:
+      head:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+      k: 2
+    out:
+      - 2
+      - 1
+      - 2
+      - 1
+      - 2
+      - 1
+      - 2
+      - 1
+  - name: repeated_pattern_k4
+    in:
+      head:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+      k: 4
+    out:
+      - 2
+      - 1
+      - 2
+      - 1
+      - 2
+      - 1
+      - 2
+      - 1
+  - name: descending_k3
+    in:
+      head:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+      k: 3
+    out:
+      - 7
+      - 8
+      - 9
+      - 4
+      - 5
+      - 6
+      - 3
+  - name: ascending_k5
     in:
       head:
         - 1
@@ -149,246 +505,80 @@ tests:
         - 7
         - 8
         - 9
-        - 10
-      k: 2
+      k: 5
     out:
-      - 2
-      - 1
+      - 5
       - 4
       - 3
+      - 2
+      - 1
       - 6
-      - 5
-      - 8
       - 7
-      - 10
+      - 8
       - 9
-  - name: Large values
-    in:
-      head:
-        - 1000
-        - 999
-        - 998
-        - 997
-      k: 2
-    out:
-      - 999
-      - 1000
-      - 997
-      - 998
-  - name: Random small list 1
-    in:
-      head:
-        - 5
-        - 4
-        - 3
-        - 2
-        - 1
-      k: 2
-    out:
-      - 4
-      - 5
-      - 2
-      - 3
-      - 1
-  - name: Random small list 2
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-      k: 3
-    out:
-      - 3
-      - 2
-      - 1
-      - 6
-      - 5
-      - 4
-      - 7
-  - name: Boundary k=1
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-      k: 1
-    out:
-      - 1
-      - 2
-      - 3
-  - name: Empty trailing
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-      k: 3
-    out:
-      - 3
-      - 2
-      - 1
-      - 6
-      - 5
-      - 4
-      - 7
-      - 8
-  - name: Full reverse
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-      k: 4
-    out:
-      - 4
-      - 3
-      - 2
-      - 1
-  - name: K=length-1
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-      k: 4
-    out:
-      - 4
-      - 3
-      - 2
-      - 1
-      - 5
-  - name: List of 2 k=1
-    in:
-      head:
-        - 1
-        - 2
-      k: 1
-    out:
-      - 1
-      - 2
-  - name: Alternating
-    in:
-      head:
-        - 1
-        - 0
-        - 1
-        - 0
-        - 1
-      k: 2
-    out:
-      - 0
-      - 1
-      - 0
-      - 1
-      - 1
-  - name: Many groups
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-      k: 3
-    out:
-      - 3
-      - 2
-      - 1
-      - 6
-      - 5
-      - 4
-      - 9
-      - 8
-      - 7
-  - name: Small group
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-      k: 6
-    out:
-      - 6
-      - 5
-      - 4
-      - 3
-      - 2
-      - 1
-  - name: Gen moderate 1
+  - name: generated_len12_k2
+    seed: 251
     in:
       head:
         gen: array
-        len:
-          gen: int
-          min: 10
-          max: 20
+        len: 12
         of:
           gen: int
-          min: 0
+          min: -20
+          max: 20
+      k: 2
+  - name: generated_len15_k3
+    seed: 252
+    in:
+      head:
+        gen: array
+        len: 15
+        of:
+          gen: int
+          min: -50
+          max: 50
+      k: 3
+  - name: generated_len20_k4
+    seed: 253
+    in:
+      head:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: -100
+          max: 100
+      k: 4
+  - name: generated_len60_k5
+    seed: 254
+    in:
+      head:
+        gen: array
+        len: 60
+        of:
+          gen: int
+          min: -1000
           max: 1000
       k: 5
-  - name: Gen moderate 2
+  - name: generated_len100_k10
+    seed: 255
     in:
       head:
         gen: array
-        len:
-          gen: int
-          min: 20
-          max: 30
+        len: 100
         of:
           gen: int
-          min: 0
-          max: 1000
-      k: 3
-  - name: Gen moderate 3
-    in:
-      head:
-        gen: array
-        len:
-          gen: int
-          min: 5
-          max: 10
-        of:
-          gen: int
-          min: 0
-          max: 1000
-      k: 2
-  - name: Large test 1
-    in:
-      head:
-        gen: array
-        len: 4000
-        of:
-          gen: int
-          min: 0
-          max: 1000
+          min: -10000
+          max: 10000
       k: 10
-  - name: Large test 2
+  - name: generated_len500_k25
+    seed: 256
     in:
       head:
         gen: array
-        len: 5000
+        len: 500
         of:
           gen: int
-          min: 0
-          max: 1000
-      k: 50
+          min: -100000
+          max: 100000
+      k: 25

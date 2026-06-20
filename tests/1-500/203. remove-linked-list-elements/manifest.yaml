@@ -1,0 +1,521 @@
+entry:
+  id: 203
+  title: "remove-linked-list-elements"
+  params:
+    head:
+      type: list_node
+    val:
+      type: int
+  call:
+    cpp: "listNodeToArray(Solution().removeElements({head}, {val}))"
+    rust: "ListNode::list_node_to_array(Solution::remove_elements({head}, {val}))"
+    python3: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    python2: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    ruby: "list_node_to_array(remove_elements({head}, {val}))"
+    java: "ListNode.listNodeToArray(new Solution().removeElements({head}, {val}))"
+    csharp: "ListNode.ListNodeToArray(new Solution().RemoveElements({head}, {val}))"
+    kotlin: "listNodeToArray(Solution().removeElements({head}, {val}))"
+    go: "listNodeToArray(removeElements({head}, {val}))"
+    dart: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    swift: "list_node_to_array(Solution().removeElements({head}, {val}))"
+    typescript: "listNodeToArray(removeElements({head}, {val}))"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().removeElements(head, val, {result})"
+    checker: |
+      class Checker:
+          def removeElements(self, head, val, result):
+              def to_array(node):
+                  if isinstance(node, list):
+                      return node
+                  values = []
+                  seen = 0
+                  while node is not None:
+                      if isinstance(node, dict):
+                          node_val = node.get("val")
+                          node = node.get("next")
+                      else:
+                          node_val = getattr(node, "val", None)
+                          node = getattr(node, "next", None)
+                      values.append(node_val)
+                      seen += 1
+                      if seen > 20000:
+                          return None
+                  return values
+
+              if head is None:
+                  expected = []
+              else:
+                  expected = [x for x in list(head) if x != val]
+
+              actual = to_array(result)
+              return actual == expected
+seed: 203
+tests:
+  - name: "example1"
+    in:
+      head:
+        - 1
+        - 2
+        - 6
+        - 3
+        - 4
+        - 5
+        - 6
+      val: 6
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: "example2_empty"
+    in:
+      head: null
+      val: 1
+    out: null
+  - name: "example3_all_removed"
+    in:
+      head:
+        - 7
+        - 7
+        - 7
+        - 7
+      val: 7
+    out: null
+  - name: "single_keep"
+    in:
+      head:
+        - 1
+      val: 2
+    out:
+      - 1
+  - name: "single_remove"
+    in:
+      head:
+        - 2
+      val: 2
+    out: null
+  - name: "remove_head_only"
+    in:
+      head:
+        - 6
+        - 1
+        - 2
+      val: 6
+    out:
+      - 1
+      - 2
+  - name: "remove_tail_only"
+    in:
+      head:
+        - 1
+        - 2
+        - 6
+      val: 6
+    out:
+      - 1
+      - 2
+  - name: "remove_middle_only"
+    in:
+      head:
+        - 1
+        - 6
+        - 2
+      val: 6
+    out:
+      - 1
+      - 2
+  - name: "alternating_removals"
+    in:
+      head:
+        - 6
+        - 1
+        - 6
+        - 2
+        - 6
+        - 3
+      val: 6
+    out:
+      - 1
+      - 2
+      - 3
+  - name: "no_match_small"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+      val: 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: "all_match_small"
+    in:
+      head:
+        - 4
+        - 4
+        - 4
+      val: 4
+    out: null
+  - name: "leading_block_removed"
+    in:
+      head:
+        - 9
+        - 9
+        - 1
+        - 2
+        - 3
+      val: 9
+    out:
+      - 1
+      - 2
+      - 3
+  - name: "trailing_block_removed"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 8
+        - 8
+      val: 8
+    out:
+      - 1
+      - 2
+      - 3
+  - name: "interior_block_removed"
+    in:
+      head:
+        - 1
+        - 2
+        - 5
+        - 5
+        - 3
+        - 4
+      val: 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: "mixed_duplicates"
+    in:
+      head:
+        - 2
+        - 2
+        - 1
+        - 2
+        - 3
+        - 2
+        - 4
+      val: 2
+    out:
+      - 1
+      - 3
+      - 4
+  - name: "zeros_and_positive"
+    in:
+      head:
+        - 0
+        - 1
+        - 0
+        - 2
+        - 0
+      val: 0
+    out:
+      - 1
+      - 2
+  - name: "remove_val_one"
+    in:
+      head:
+        - 1
+        - 2
+        - 1
+        - 3
+        - 1
+      val: 1
+    out:
+      - 2
+      - 3
+  - name: "remove_val_fifty"
+    in:
+      head:
+        - 50
+        - 1
+        - 50
+        - 2
+        - 50
+      val: 50
+    out:
+      - 1
+      - 2
+  - name: "preserve_order_after_filter"
+    in:
+      head:
+        - 3
+        - 1
+        - 4
+        - 1
+        - 5
+        - 9
+      val: 1
+    out:
+      - 3
+      - 4
+      - 5
+      - 9
+  - name: "remove_every_third"
+    in:
+      head:
+        - 2
+        - 3
+        - 2
+        - 3
+        - 2
+        - 3
+      val: 3
+    out:
+      - 2
+      - 2
+      - 2
+  - name: "adjacent_removals"
+    in:
+      head:
+        - 4
+        - 4
+        - 1
+        - 4
+        - 4
+        - 2
+      val: 4
+    out:
+      - 1
+      - 2
+  - name: "no_match_with_duplicates"
+    in:
+      head:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+      val: 4
+    out:
+      - 1
+      - 1
+      - 2
+      - 2
+      - 3
+      - 3
+  - name: "small_tail_keep"
+    in:
+      head:
+        - 5
+        - 6
+        - 7
+      val: 4
+    out:
+      - 5
+      - 6
+      - 7
+  - name: "boundary_val_zero"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+      val: 0
+    out:
+      - 1
+      - 2
+      - 3
+  - name: "all_removed_then_keep_none"
+    in:
+      head:
+        - 8
+        - 8
+        - 8
+        - 8
+        - 8
+      val: 8
+    out: null
+  - name: "long_alternating_1"
+    in:
+      head:
+        - 6
+        - 1
+        - 6
+        - 2
+        - 6
+        - 3
+        - 6
+        - 4
+        - 6
+        - 5
+      val: 6
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: "long_cluster_middle"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 9
+        - 9
+        - 9
+        - 4
+        - 5
+      val: 9
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: "large_generated_keep_tail"
+    seed: 203001
+    in:
+      head:
+        gen: array
+        len:
+          gen: int
+          min: 10000
+          max: 10000
+        of:
+          gen: int
+          min: 1
+          max: 50
+        distinct: false
+        sorted: false
+        elemType: int
+      val: 51
+  - name: "large_generated_remove_many"
+    seed: 203002
+    in:
+      head:
+        gen: array
+        len:
+          gen: int
+          min: 10000
+          max: 10000
+        of:
+          gen: int
+          min: 1
+          max: 50
+        distinct: false
+        sorted: false
+        elemType: int
+      val: 25
+  - name: "remove_only_first"
+    in:
+      head:
+        - 7
+        - 1
+        - 2
+        - 3
+      val: 7
+    out:
+      - 1
+      - 2
+      - 3
+  - name: "remove_only_last"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 7
+      val: 7
+    out:
+      - 1
+      - 2
+      - 3
+  - name: "keep_all_large_val"
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      val: 50
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  - name: "remove_everything_short"
+    in:
+      head:
+        - 10
+        - 10
+      val: 10
+    out: null
+  - name: "mixed_with_ends_removed"
+    in:
+      head:
+        - 5
+        - 1
+        - 2
+        - 3
+        - 5
+      val: 5
+    out:
+      - 1
+      - 2
+      - 3
+  - name: "middle_and_tail_removed"
+    in:
+      head:
+        - 1
+        - 2
+        - 4
+        - 4
+        - 4
+      val: 4
+    out:
+      - 1
+      - 2
+  - name: "remove_alternating_with_non_matches"
+    in:
+      head:
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+      val: 2
+    out:
+      - 1
+      - 1
+      - 1
+  - name: "remove_mid_singleton"
+    in:
+      head:
+        - 1
+        - 9
+        - 2
+      val: 9
+    out:
+      - 1
+      - 2

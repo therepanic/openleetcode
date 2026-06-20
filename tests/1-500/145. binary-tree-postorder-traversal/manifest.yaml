@@ -1,0 +1,722 @@
+entry:
+  id: 145
+  title: binary-tree-postorder-traversal
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().postorderTraversal({root})
+    rust: Solution::postorder_traversal({root})
+    python3: Solution().postorderTraversal({root})
+    python2: Solution().postorderTraversal({root})
+    ruby: postorder_traversal({root})
+    java: new Solution().postorderTraversal({root})
+    csharp: new Solution().PostorderTraversal({root})
+    kotlin: Solution().postorderTraversal({root})
+    go: postorderTraversal({root})
+    dart: Solution().postorderTraversal({root})
+    swift: Solution().postorderTraversal({root})
+    typescript: postorderTraversal({root})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().postorderTraversal(root, {result})
+    checker:
+      "class Checker:\n    def _to_tree(self, root):\n        if root is None or hasattr(root, \"val\"):\n            return root\n        if not isinstance(root, list) or not root or root[0] is None:\n            return None\n        class Node:\n            def __init__(self, val=0, left=None, right=None):\n                self.val = val\n                self.left = left\n                self.right = right\n        tree_root = Node(root[0])\n        queue = [tree_root]\n        i = 1\n        while queue and i < len(root):\n            node = queue.pop(0)\n            if i < len(root) and root[i] is not None:\n                node.left = Node(root[i])\n                queue.append(node.left)\n            i += 1\n            if i < len(root) and root[i] is not None:\n                node.right = Node(root[i])\n                queue.append(node.right)\n            i += 1\n        return tree_root\n\n    def postorderTraversal(self, root, result):\n        if not isinstance(result,\
+      \ list):\n            return False\n        root = self._to_tree(root)\n        expected = []\n        def dfs(node):\n            if node is None:\n                return\n            dfs(node.left)\n            dfs(node.right)\n            expected.append(node.val)\n        dfs(root)\n        return expected == result\n"
+seed: 145
+tests:
+  - name: example_1
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+    out:
+      - 3
+      - 2
+      - 1
+  - name: example_2
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 8
+        - null
+        - null
+        - 6
+        - 7
+        - 9
+    out:
+      - 4
+      - 6
+      - 7
+      - 5
+      - 2
+      - 9
+      - 8
+      - 3
+      - 1
+  - name: example_3
+    in:
+      root: []
+    out: []
+  - name: example_4
+    in:
+      root:
+        - 1
+    out:
+      - 1
+  - name: left_child_only
+    in:
+      root:
+        - 1
+        - 2
+    out:
+      - 2
+      - 1
+  - name: right_child_only
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out:
+      - 2
+      - 1
+  - name: simple_three_nodes
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+    out:
+      - 2
+      - 3
+      - 1
+  - name: left_skewed_four
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - 4
+      - 3
+      - 2
+      - 1
+  - name: right_skewed_four
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - 4
+      - 3
+      - 2
+      - 1
+  - name: perfect_height_two
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out:
+      - 4
+      - 5
+      - 2
+      - 6
+      - 7
+      - 3
+      - 1
+  - name: negative_values
+    in:
+      root:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+        - -7
+    out:
+      - -4
+      - -5
+      - -2
+      - -6
+      - -7
+      - -3
+      - -1
+  - name: duplicate_values
+    in:
+      root:
+        - 5
+        - 5
+        - 5
+        - 5
+        - 5
+        - 5
+        - 5
+    out:
+      - 5
+      - 5
+      - 5
+      - 5
+      - 5
+      - 5
+      - 5
+  - name: sparse_tree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - 8
+      - 9
+      - 4
+      - 10
+      - 11
+      - 5
+      - 2
+      - 12
+      - 13
+      - 6
+      - 14
+      - 15
+      - 7
+      - 3
+      - 1
+  - name: zigzag_shape
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+        - null
+        - 6
+        - 7
+    out:
+      - 6
+      - 4
+      - 2
+      - 7
+      - 5
+      - 3
+      - 1
+  - name: single_child_grandchild_left
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+    out:
+      - 3
+      - 2
+      - 1
+  - name: single_child_grandchild_right
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+    out:
+      - 3
+      - 2
+      - 1
+  - name: balanced_with_gaps
+    in:
+      root:
+        - 6
+        - 3
+        - 9
+        - 1
+        - 4
+        - 8
+        - 10
+        - null
+        - 2
+        - null
+        - 5
+        - 7
+        - null
+        - null
+        - 11
+    out:
+      - 2
+      - 1
+      - 5
+      - 4
+      - 3
+      - 7
+      - 8
+      - 11
+      - 10
+      - 9
+      - 6
+  - name: values_at_boundaries
+    in:
+      root:
+        - 100
+        - -100
+        - 100
+        - -100
+        - 100
+        - -100
+        - 100
+    out:
+      - -100
+      - 100
+      - -100
+      - -100
+      - 100
+      - 100
+      - 100
+  - name: alternating_duplicates
+    in:
+      root:
+        - 2
+        - 1
+        - 1
+        - 2
+        - 2
+        - 1
+        - 1
+    out:
+      - 2
+      - 2
+      - 1
+      - 1
+      - 1
+      - 1
+      - 2
+  - name: asymmetric_tree
+    in:
+      root:
+        - 4
+        - 2
+        - 6
+        - 1
+        - 3
+        - 5
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 7
+    out:
+      - 1
+      - 3
+      - 2
+      - 7
+      - 5
+      - 6
+      - 4
+  - name: mixed_sparse_tree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - 8
+      - 9
+      - 4
+      - 10
+      - 11
+      - 5
+      - 2
+      - 12
+      - 13
+      - 6
+      - 14
+      - 15
+      - 7
+      - 3
+      - 1
+  - name: perfect_height_three
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - 8
+      - 9
+      - 4
+      - 10
+      - 11
+      - 5
+      - 2
+      - 12
+      - 13
+      - 6
+      - 14
+      - 15
+      - 7
+      - 3
+      - 1
+  - name: root_and_one_grandchild
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+    out:
+      - 3
+      - 2
+      - 1
+  - name: root_and_opposite_grandchild
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+    out:
+      - 3
+      - 2
+      - 1
+  - name: larger_balanced_sample
+    in:
+      root:
+        - 50
+        - 25
+        - 75
+        - 10
+        - 30
+        - 60
+        - 90
+        - 5
+        - 15
+        - 27
+        - 35
+        - 55
+        - 65
+        - 85
+        - 95
+    out:
+      - 5
+      - 15
+      - 10
+      - 27
+      - 35
+      - 30
+      - 25
+      - 55
+      - 65
+      - 60
+      - 85
+      - 95
+      - 90
+      - 75
+      - 50
+  - name: sparse_4_level_tree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - 8
+      - 9
+      - 4
+      - 10
+      - 11
+      - 5
+      - 2
+      - 12
+      - 13
+      - 6
+      - 14
+      - 15
+      - 7
+      - 3
+      - 1
+  - name: another_mixed_sparse_tree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - 8
+      - 9
+      - 4
+      - 10
+      - 11
+      - 5
+      - 2
+      - 12
+      - 13
+      - 6
+      - 14
+      - 15
+      - 7
+      - 3
+      - 1
+  - name: multi_branch_mid_size_tree
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - null
+        - 30
+        - 60
+        - 90
+        - 110
+        - 140
+        - 160
+        - 190
+    out:
+      - 30
+      - 25
+      - 60
+      - 90
+      - 75
+      - 50
+      - 110
+      - 140
+      - 125
+      - 160
+      - 190
+      - 175
+      - 150
+      - 100
+  - name: root_only_negative
+    in:
+      root:
+        - -7
+    out:
+      - -7
+  - name: root_only_zero
+    in:
+      root:
+        - 0
+    out:
+      - 0
+  - name: two_level_left_heavy
+    in:
+      root:
+        - 8
+        - 4
+        - null
+        - 2
+        - null
+        - 1
+    out:
+      - 1
+      - 2
+      - 4
+      - 8
+  - name: two_level_right_heavy
+    in:
+      root:
+        - 8
+        - null
+        - 4
+        - null
+        - 2
+        - null
+        - 1
+    out:
+      - 1
+      - 2
+      - 4
+      - 8
+  - name: interior_gap_chain
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+        - null
+        - 6
+    out:
+      - 6
+      - 4
+      - 2
+      - 5
+      - 3
+      - 1
+  - name: mixed_sign_tree
+    in:
+      root:
+        - -10
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+    out:
+      - 9
+      - 15
+      - 7
+      - 20
+      - -10
+  - name: compact_three_level_sparse
+    in:
+      root:
+        - 11
+        - 5
+        - 17
+        - 2
+        - 7
+        - 13
+        - 19
+        - null
+        - 3
+        - 6
+        - null
+        - 12
+        - 14
+        - 18
+        - 20
+    out:
+      - 3
+      - 2
+      - 6
+      - 7
+      - 5
+      - 12
+      - 14
+      - 13
+      - 18
+      - 20
+      - 19
+      - 17
+      - 11
+  - name: generated_full_tree_31
+    seed: 145001
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 31
+          max: 31
+        of:
+          gen: int
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_full_tree_63
+    seed: 145002
+    in:
+      root:
+        gen: array
+        len:
+          gen: int
+          min: 63
+          max: 63
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,117 +1,158 @@
 entry:
   id: 46
   title: permutations
-  call:
-    cpp: Solution().permute({nums})
-    rust: Solution::permute({nums})
-    python3: Solution().permute({nums})
-    python2: Solution().permute({nums})
-    ruby: permute({nums})
-    java: new Solution().permute({nums})
-    csharp: new Solution().Permute({nums})
-    kotlin: Solution().permute({nums})
-    go: permute({nums})
-    dart: Solution().permute({nums})
-    swift: Solution().permute({nums})
-    typescript: permute({nums})
   params:
     nums:
       type: array
       items:
         type: int
+  call:
+    cpp: "Solution().permute({nums})"
+    rust: "Solution::permute({nums})"
+    python3: "Solution().permute({nums})"
+    python2: "Solution().permute({nums})"
+    ruby: "permute({nums})"
+    java: "new Solution().permute({nums})"
+    csharp: "new Solution().Permute({nums})"
+    kotlin: "Solution().permute({nums})"
+    go: "permute({nums})"
+    dart: "Solution().permute({nums})"
+    swift: "Solution().permute({nums})"
+    typescript: "permute({nums})"
 judge:
-  type: ignore_order
+  type: exact
 limits:
   time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check(nums, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if isinstance(result, str):\n           \
-      \ try:\n                result = json.loads(result)\n            except Exception:\n                pass\n        return
-      result\n\n    def check(self, nums, result):\n        result = self._norm(result)\n        import itertools\n      \
-      \  expected = [list(p) for p in itertools.permutations(nums)]\n        if len(result) != len(expected): return False\n\
-      \        return sorted([sorted(x) for x in result]) == sorted([sorted(x) for x in expected])\n"
-seed: 42
+    call: "Checker().permute(nums, {result})"
+    checker: |
+      class Checker:
+          def permute(self, nums, result):
+              if not isinstance(result, list):
+                  return False
+
+              n = len(nums)
+              expected_count = 1
+              for i in range(2, n + 1):
+                  expected_count *= i
+
+              seen = set()
+              for perm in result:
+                  if not isinstance(perm, list) or len(perm) != n:
+                      return False
+                  if any(not isinstance(x, int) for x in perm):
+                      return False
+                  if sorted(perm) != sorted(nums):
+                      return False
+                  tup = tuple(perm)
+                  if tup in seen:
+                      return False
+                  seen.add(tup)
+
+              if len(seen) != expected_count:
+                  return False
+
+              return seen == {tuple(p) for p in __import__("itertools").permutations(nums)}
+seed: 46
 tests:
-  - name: example 1
+  - name: example_1
     in:
       nums:
         - 1
         - 2
         - 3
-    out:
-      - - 1
-        - 2
-        - 3
-      - - 1
-        - 3
-        - 2
-      - - 2
-        - 1
-        - 3
-      - - 2
-        - 3
-        - 1
-      - - 3
-        - 1
-        - 2
-      - - 3
-        - 2
-        - 1
-  - name: example 2
+    seed: 101
+  - name: example_2
     in:
       nums:
         - 0
         - 1
-    out:
-      - - 0
-        - 1
-      - - 1
-        - 0
-  - name: example 3
+    seed: 102
+  - name: example_3
     in:
       nums:
         - 1
-    out:
-      - - 1
-  - name: negative values
+    seed: 103
+  - name: two_elements_negative
     in:
       nums:
         - -1
-        - -2
-  - name: boundary min
+        - 2
+    seed: 104
+  - name: two_elements_swapped_order
     in:
       nums:
-        - -10
-  - name: boundary max values
+        - 5
+        - -3
+    seed: 105
+  - name: three_elements_mixed_sign
     in:
       nums:
-        - 10
-        - -10
-  - name: three elements negative
-    in:
-      nums:
-        - -5
+        - -1
         - 0
-        - 5
-  - name: four elements
+        - 2
+    seed: 106
+  - name: three_elements_descending
+    in:
+      nums:
+        - 3
+        - 2
+        - 1
+    seed: 107
+  - name: four_elements_small
     in:
       nums:
         - 1
         - 2
         - 3
         - 4
-  - name: five elements
+    seed: 108
+  - name: four_elements_with_zero
+    in:
+      nums:
+        - 0
+        - 2
+        - -2
+        - 5
+    seed: 109
+  - name: four_elements_negative_heavy
+    in:
+      nums:
+        - -4
+        - -3
+        - 1
+        - 2
+    seed: 110
+  - name: five_elements_nearly_sorted
     in:
       nums:
         - 1
         - 2
         - 3
-        - 4
         - 5
-  - name: six elements
+        - 4
+    seed: 111
+  - name: five_elements_with_extremes
+    in:
+      nums:
+        - -10
+        - -1
+        - 0
+        - 1
+        - 10
+    seed: 112
+  - name: five_elements_reverse_order
+    in:
+      nums:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    seed: 113
+  - name: six_elements_example_scale
     in:
       nums:
         - 1
@@ -120,170 +161,274 @@ tests:
         - 4
         - 5
         - 6
-  - name: generated_1
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 1
-          max: 6
-        of:
-          gen: int
-          min: -10
-          max: 10
-        distinct: true
-  - name: generated_2
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 4
-          max: 6
-        of:
-          gen: int
-          min: -10
-          max: 10
-        distinct: true
-  - name: generated_3
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 3
-          max: 5
-        of:
-          gen: int
-          min: -8
-          max: 8
-        distinct: true
-  - name: generated_4
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 6
-          max: 6
-        of:
-          gen: int
-          min: -10
-          max: 10
-        distinct: true
-  - name: generated_5
-    in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 2
-          max: 4
-        of:
-          gen: int
-          min: -5
-          max: 5
-        distinct: true
-  - name: large mixed
-    in:
-      nums:
-        - -10
-        - 0
-        - 2
-        - 4
-        - 7
-        - 10
-  - name: all negative
-    in:
-      nums:
-        - -10
-        - -9
-        - -8
-        - -7
-  - name: sparse values
-    in:
-      nums:
-        - -10
-        - 10
-  - name: alternating
-    in:
-      nums:
-        - 1
-        - -1
-        - 2
-        - -2
-        - 3
-  - name: single digit range
-    in:
-      nums:
-        - 0
-        - 2
-        - 4
-        - 6
-  - name: offset range
-    in:
-      nums:
-        - -1
-        - 0
-        - 1
-        - 2
-        - 3
-  - name: high index
-    in:
-      nums:
-        - 7
-        - 8
-        - 9
-        - 10
-  - name: low index
-    in:
-      nums:
-        - -10
-        - -9
-        - -8
-  - name: mixed small
-    in:
-      nums:
-        - -2
-        - 2
-        - -1
-        - 1
-        - 0
-  - name: six elements descending
-    in:
-      nums:
-        - 6
-        - 5
-        - 4
-        - 3
-        - 2
-        - 1
-  - name: six elements shuffled
+    seed: 114
+  - name: six_elements_mixed_signs
     in:
       nums:
         - -3
-        - 8
         - -1
         - 0
-        - 10
-        - -5
-  - name: pair
-    in:
-      nums:
-        - -7
-        - 9
-  - name: triplet
-    in:
-      nums:
+        - 2
         - 4
-        - -4
-        - 0
-  - name: mid sizes
+        - 6
+    seed: 115
+  - name: six_elements_sparse
     in:
       nums:
+        - -10
+        - -5
+        - 1
+        - 3
+        - 7
+        - 10
+    seed: 116
+  - name: six_elements_random_order
+    in:
+      nums:
+        - 8
+        - -2
+        - 4
+        - -6
+        - 1
         - 0
+    seed: 117
+  - name: six_elements_negative_to_positive
+    in:
+      nums:
+        - -6
+        - -4
+        - -2
+        - 1
+        - 3
+        - 5
+    seed: 118
+  - name: generated_len_3_a
+    in:
+      nums:
+        gen: array
+        len: 3
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 201
+  - name: generated_len_4_a
+    in:
+      nums:
+        gen: array
+        len: 4
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 202
+  - name: generated_len_5_a
+    in:
+      nums:
+        gen: array
+        len: 5
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 203
+  - name: generated_len_6_a
+    in:
+      nums:
+        gen: array
+        len: 6
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 204
+  - name: generated_len_6_b
+    in:
+      nums:
+        gen: array
+        len: 6
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 205
+  - name: edge_min_values
+    in:
+      nums:
+        - -10
+        - -9
+        - -8
+        - -7
+        - -6
+        - -5
+    seed: 301
+  - name: edge_max_values
+    in:
+      nums:
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+    seed: 302
+  - name: alternating_signs
+    in:
+      nums:
         - -1
         - 1
         - -2
         - 2
+        - -3
+        - 3
+    seed: 303
+  - name: almost_sorted_with_tail_swap
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 6
+        - 5
+    seed: 304
+  - name: center_zero_mix
+    in:
+      nums:
+        - 4
+        - 0
+        - -4
+        - 2
+        - -2
+        - 6
+    seed: 305
+  - name: wide_range_small
+    in:
+      nums:
+        - -10
+        - -3
+        - 2
+        - 4
+        - 7
+        - 9
+    seed: 306
+  - name: wide_range_medium
+    in:
+      nums:
+        - -8
+        - -4
+        - -1
+        - 3
+        - 5
+        - 10
+    seed: 307
+  - name: six_descending
+    in:
+      nums:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    seed: 308
+  - name: six_mixed_far_apart
+    in:
+      nums:
+        - -10
+        - -2
+        - 1
+        - 4
+        - 8
+        - 9
+    seed: 309
+  - name: six_sparse_centered
+    in:
+      nums:
+        - -9
+        - -1
+        - 0
+        - 1
+        - 8
+        - 10
+    seed: 310
+  - name: generated_len_3_b
+    in:
+      nums:
+        gen: array
+        len: 3
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 401
+  - name: generated_len_4_b
+    in:
+      nums:
+        gen: array
+        len: 4
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 402
+  - name: generated_len_5_b
+    in:
+      nums:
+        gen: array
+        len: 5
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 403
+  - name: generated_len_6_c
+    in:
+      nums:
+        gen: array
+        len: 6
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 404
+  - name: generated_len_6_d
+    in:
+      nums:
+        gen: array
+        len: 6
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: int
+    seed: 405

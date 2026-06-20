@@ -1,0 +1,326 @@
+entry:
+  id: 452
+  title: minimum-number-of-arrows-to-burst-balloons
+  params:
+    points:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().findMinArrowShots({points})"
+    rust: "Solution::find_min_arrow_shots({points})"
+    python3: "Solution().findMinArrowShots({points})"
+    python2: "Solution().findMinArrowShots({points})"
+    ruby: "find_min_arrow_shots({points})"
+    java: "new Solution().findMinArrowShots({points})"
+    csharp: "new Solution().FindMinArrowShots({points})"
+    kotlin: "Solution().findMinArrowShots({points})"
+    go: "findMinArrowShots({points})"
+    dart: "Solution().findMinArrowShots({points})"
+    swift: "Solution().findMinArrowShots({points})"
+    typescript: "findMinArrowShots({points})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(points, {result})"
+    checker: |
+      class Checker:
+          def check(self, points, result):
+              if not isinstance(result, int):
+                  return False
+              if result < 1:
+                  return False
+              intervals = [list(p) for p in points]
+              if not intervals:
+                  return False
+              intervals.sort(key=lambda x: x[1])
+              arrows = 1
+              end = intervals[0][1]
+              for start, finish in intervals:
+                  if start > end:
+                      arrows += 1
+                      end = finish
+              return arrows == result
+seed: 42
+tests:
+  - name: example 1
+    in:
+      points:
+        - [10, 16]
+        - [2, 8]
+        - [1, 6]
+        - [7, 12]
+    out: 2
+  - name: example 2
+    in:
+      points:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [7, 8]
+    out: 4
+  - name: example 3
+    in:
+      points:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+    out: 2
+  - name: single balloon
+    in:
+      points:
+        - [5, 9]
+    out: 1
+  - name: two overlapping
+    in:
+      points:
+        - [1, 10]
+        - [2, 9]
+    out: 1
+  - name: two disjoint
+    in:
+      points:
+        - [1, 2]
+        - [4, 5]
+    out: 2
+  - name: touching at one point
+    in:
+      points:
+        - [1, 2]
+        - [2, 3]
+    out: 1
+  - name: chain overlap
+    in:
+      points:
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+    out: 1
+  - name: nested intervals
+    in:
+      points:
+        - [1, 10]
+        - [2, 9]
+        - [3, 8]
+        - [4, 7]
+    out: 1
+  - name: separated groups
+    in:
+      points:
+        - [1, 2]
+        - [2, 4]
+        - [6, 7]
+        - [7, 9]
+    out: 2
+  - name: negative intervals
+    in:
+      points:
+        - [-10, -5]
+        - [-8, -3]
+        - [-4, -1]
+    out: 2
+  - name: mixed negative and positive
+    in:
+      points:
+        - [-5, -1]
+        - [0, 2]
+        - [1, 4]
+    out: 2
+  - name: same end
+    in:
+      points:
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+    out: 1
+  - name: same start
+    in:
+      points:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+    out: 1
+  - name: duplicate intervals
+    in:
+      points:
+        - [2, 6]
+        - [2, 6]
+        - [2, 6]
+    out: 1
+  - name: interval inside gap
+    in:
+      points:
+        - [1, 3]
+        - [4, 6]
+        - [7, 9]
+    out: 3
+  - name: one long many short
+    in:
+      points:
+        - [1, 100]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+    out: 3
+  - name: left endpoint sharing
+    in:
+      points:
+        - [1, 4]
+        - [4, 6]
+        - [6, 8]
+    out: 2
+  - name: endpoint chain with bridge
+    in:
+      points:
+        - [1, 2]
+        - [2, 4]
+        - [4, 6]
+        - [6, 8]
+    out: 2
+  - name: wide spread
+    in:
+      points:
+        - [-100, -50]
+        - [-40, -30]
+        - [-20, -10]
+        - [0, 10]
+    out: 4
+  - name: all overlap at one point
+    in:
+      points:
+        - [0, 10]
+        - [1, 9]
+        - [2, 8]
+        - [3, 7]
+        - [4, 6]
+    out: 1
+  - name: alternating overlap
+    in:
+      points:
+        - [1, 3]
+        - [2, 4]
+        - [5, 7]
+        - [6, 8]
+    out: 2
+  - name: gap after overlap
+    in:
+      points:
+        - [1, 5]
+        - [2, 6]
+        - [7, 8]
+    out: 2
+  - name: tight chain
+    in:
+      points:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 6]
+        - [6, 7]
+    out: 3
+  - name: many disjoint
+    in:
+      points:
+        - [1, 2]
+        - [10, 11]
+        - [20, 21]
+        - [30, 31]
+        - [40, 41]
+    out: 5
+  - name: long with one overlap group
+    in:
+      points:
+        - [1, 50]
+        - [10, 20]
+        - [15, 25]
+        - [60, 70]
+    out: 2
+  - name: increasing ends
+    in:
+      points:
+        - [1, 10]
+        - [2, 11]
+        - [3, 12]
+        - [13, 14]
+    out: 2
+  - name: decreasing ends
+    in:
+      points:
+        - [1, 100]
+        - [2, 90]
+        - [3, 80]
+        - [4, 70]
+    out: 1
+  - name: overlap then split
+    in:
+      points:
+        - [1, 6]
+        - [2, 8]
+        - [7, 12]
+        - [10, 16]
+    out: 2
+  - name: small varied
+    in:
+      points:
+        - [5, 6]
+        - [1, 4]
+        - [2, 8]
+        - [9, 10]
+    out: 3
+  - name: two clusters
+    in:
+      points:
+        - [1, 2]
+        - [2, 5]
+        - [6, 9]
+        - [7, 10]
+        - [11, 12]
+    out: 3
+  - name: many identical ends mixed
+    in:
+      points:
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [6, 7]
+        - [7, 8]
+    out: 2
+  - name: bridge at boundary
+    in:
+      points:
+        - [-3, 0]
+        - [0, 3]
+        - [3, 6]
+    out: 2
+  - name: three groups
+    in:
+      points:
+        - [1, 2]
+        - [2, 3]
+        - [5, 6]
+        - [6, 7]
+        - [9, 10]
+        - [10, 11]
+    out: 3
+  - name: sparse large coordinates
+    in:
+      points:
+        - [-2147483648, -2147483647]
+        - [0, 1]
+        - [2147483646, 2147483647]
+    out: 3
+  - name: nested plus disjoint
+    in:
+      points:
+        - [1, 100]
+        - [20, 30]
+        - [40, 50]
+        - [60, 70]
+    out: 3

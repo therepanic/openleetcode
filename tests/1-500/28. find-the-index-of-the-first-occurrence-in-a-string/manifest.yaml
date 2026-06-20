@@ -7,204 +7,384 @@ entry:
     needle:
       type: string
   call:
-    cpp: Solution().strStr({haystack}, {needle})
-    rust: Solution::str_str({haystack}, {needle})
-    python3: Solution().strStr({haystack}, {needle})
-    python2: Solution().strStr({haystack}, {needle})
-    ruby: str_str({haystack}, {needle})
-    java: new Solution().strStr({haystack}, {needle})
-    csharp: new Solution().StrStr({haystack}, {needle})
-    kotlin: Solution().strStr({haystack}, {needle})
-    go: strStr({haystack}, {needle})
-    dart: Solution().strStr({haystack}, {needle})
-    swift: Solution().strStr({haystack}, {needle})
-    typescript: strStr({haystack}, {needle})
+    cpp: "Solution().strStr({haystack}, {needle})"
+    rust: "Solution::str_str({haystack}, {needle})"
+    python3: "Solution().strStr({haystack}, {needle})"
+    python2: "Solution().strStr({haystack}, {needle})"
+    ruby: "str_str({haystack}, {needle})"
+    java: "new Solution().strStr({haystack}, {needle})"
+    csharp: "new Solution().StrStr({haystack}, {needle})"
+    kotlin: "Solution().strStr({haystack}, {needle})"
+    go: "strStr({haystack}, {needle})"
+    dart: "Solution().strStr({haystack}, {needle})"
+    swift: "Solution().strStr({haystack}, {needle})"
+    typescript: "strStr({haystack}, {needle})"
 judge:
   type: exact
 limits:
   time_ms: 1000
-  memory_mb: 256
+  memory_mb: 128
 oracle:
   python3:
-    call: Checker().strStr(haystack, needle, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n            if isinstance(result,\
-      \ str):\n                low = result.strip().lower()\n                if low\
-      \ == 'true':\n                    return True\n                if low == 'false':\n\
-      \                    return False\n                if low.lstrip('-').isdigit():\n\
-      \                    return int(low)\n        return result\n\n    def strStr(self,\
-      \ h, n, res):\n        res = self._norm(res)\n        return h.find(n) == res\n"
-seed: 42
+    call: "Checker().strStr(haystack, needle, {result})"
+    checker: |
+      class Checker:
+          def strStr(self, haystack, needle, result):
+              if not isinstance(haystack, str):
+                  return False
+              if not isinstance(needle, str):
+                  return False
+              if not isinstance(result, int):
+                  return False
+              if any(not ('a' <= ch <= 'z') for ch in haystack):
+                  return False
+              if any(not ('a' <= ch <= 'z') for ch in needle):
+                  return False
+              if not (1 <= len(haystack) <= 10000):
+                  return False
+              if not (1 <= len(needle) <= 10000):
+                  return False
+              expected = haystack.find(needle)
+              return result == expected
+seed: 28
 tests:
-  - name: example 1
+  - name: example-1
     in:
       haystack: sadbutsad
       needle: sad
     out: 0
-  - name: example 2
+  - name: example-2
     in:
       haystack: leetcode
       needle: leeto
     out: -1
-  - name: single char match
-    in:
-      haystack: a
-      needle: a
-    out: 0
-  - name: single char mismatch
-    in:
-      haystack: a
-      needle: b
-    out: -1
-  - name: needle same as haystack
-    in:
-      haystack: abc
-      needle: abc
-    out: 0
-  - name: needle longer than haystack
-    in:
-      haystack: abc
-      needle: abcd
-    out: -1
-  - name: find at end
-    in:
-      haystack: mississippi
-      needle: pi
-    out: 9
-  - name: find in middle
-    in:
-      haystack: hello
-      needle: ll
-    out: 2
-  - name: overlapping
+  - name: needle-equals-haystack
     in:
       haystack: aaaaa
-      needle: aa
+      needle: aaaaa
     out: 0
-  - name: repeated characters
+  - name: single-char-first-position
     in:
-      haystack: abacaba
-      needle: aba
-    out: 0
-  - name: no occurrence
-    in:
-      haystack: abcdef
-      needle: g
-    out: -1
-  - name: needle at index 1
-    in:
-      haystack: banana
-      needle: ana
-    out: 1
-  - name: large haystack, found at end
-    in:
-      haystack: a
+      haystack: abcde
       needle: a
-    seed: 101
-  - name: large haystack, not found
-    in:
-      haystack: abcdefghijklmnopqrstuvwxyz
-      needle: abc
     out: 0
-  - name: needle at start
+  - name: single-char-middle-position
     in:
-      haystack: xyz
-      needle: x
-    out: 0
-  - name: very long haystack small needle
-    in:
-      haystack: a
-      needle: a
-    seed: 202
-  - name: random string generated 1
-    in:
-      haystack:
-        gen: str
-        len:
-          gen: int
-          min: 10
-          max: 20
-        alphabet: abc
-      needle: bba
-  - name: random string generated 2
-    in:
-      haystack:
-        gen: str
-        len:
-          gen: int
-          min: 10
-          max: 20
-        alphabet: xy
-      needle: xy
-  - name: random string generated 3
-    in:
-      haystack:
-        gen: str
-        len:
-          gen: int
-          min: 5
-          max: 50
-        alphabet: pq
-      needle: qqq
-  - name: max length test
-    in:
-      haystack:
-        gen: str
-        len:
-          gen: int
-          min: 9999
-          max: 10000
-        alphabet: ab
-      needle: ab
-  - name: max length test 2
-    in:
-      haystack:
-        gen: str
-        len:
-          gen: int
-          min: 9999
-          max: 10000
-        alphabet: c
-      needle: ccc
-  - name: needle same length as haystack
-    in:
-      haystack: teststring
-      needle: teststring
-    out: 0
-  - name: needle length 1
-    in:
-      haystack: abcdef
+      haystack: abcde
       needle: c
     out: 2
-  - name: last position
+  - name: single-char-last-position
     in:
       haystack: abcde
       needle: e
     out: 4
-  - name: needle not found near end
+  - name: not-present-simple
     in:
-      haystack: abcd
-      needle: e
+      haystack: abcde
+      needle: f
     out: -1
-  - name: mixed repetition
+  - name: repeated-prefix
     in:
-      haystack: aaaaaaaaab
+      haystack: aaaab
       needle: aaab
-    out: 6
-  - name: only one needle
+    out: 1
+  - name: repeated-overlap
     in:
-      haystack: z
-      needle: z
-    out: 0
-  - name: large generated match
+      haystack: mississippi
+      needle: issip
+    out: 4
+  - name: embedded-at-end
+    in:
+      haystack: zzzzzabc
+      needle: abc
+    out: 5
+  - name: generated-01
     in:
       haystack:
         gen: str
-        len:
-          gen: int
-          min: 100
-          max: 100
+        len: 1
         alphabet: a
-      needle: aaa
+      needle:
+        gen: str
+        len: 1
+        alphabet: a
+  - name: generated-02
+    in:
+      haystack:
+        gen: str
+        len: 2
+        alphabet: ab
+      needle:
+        gen: str
+        len: 1
+        alphabet: ab
+  - name: generated-03
+    in:
+      haystack:
+        gen: str
+        len: 3
+        alphabet: abc
+      needle:
+        gen: str
+        len: 2
+        alphabet: abc
+  - name: generated-04
+    in:
+      haystack:
+        gen: str
+        len: 10
+        alphabet: ab
+      needle:
+        gen: str
+        len: 3
+        alphabet: ab
+  - name: generated-05
+    in:
+      haystack:
+        gen: str
+        len: 25
+        alphabet: abc
+      needle:
+        gen: str
+        len: 5
+        alphabet: abc
+  - name: generated-06
+    in:
+      haystack:
+        gen: str
+        len: 50
+        alphabet: abcd
+      needle:
+        gen: str
+        len: 7
+        alphabet: abcd
+  - name: generated-07
+    in:
+      haystack:
+        gen: str
+        len: 100
+        alphabet: ab
+      needle:
+        gen: str
+        len: 10
+        alphabet: ab
+  - name: generated-08
+    in:
+      haystack:
+        gen: str
+        len: 250
+        alphabet: abc
+      needle:
+        gen: str
+        len: 20
+        alphabet: abc
+  - name: generated-09
+    in:
+      haystack:
+        gen: str
+        len: 500
+        alphabet: abc
+      needle:
+        gen: str
+        len: 30
+        alphabet: abc
+  - name: generated-10
+    in:
+      haystack:
+        gen: str
+        len: 1000
+        alphabet: abcd
+      needle:
+        gen: str
+        len: 50
+        alphabet: abcd
+  - name: generated-11
+    in:
+      haystack:
+        gen: str
+        len: 1500
+        alphabet: ab
+      needle:
+        gen: str
+        len: 75
+        alphabet: ab
+  - name: generated-12
+    in:
+      haystack:
+        gen: str
+        len: 2000
+        alphabet: abc
+      needle:
+        gen: str
+        len: 100
+        alphabet: abc
+  - name: generated-13
+    in:
+      haystack:
+        gen: str
+        len: 2500
+        alphabet: abcd
+      needle:
+        gen: str
+        len: 125
+        alphabet: abcd
+  - name: generated-14
+    in:
+      haystack:
+        gen: str
+        len: 3000
+        alphabet: ab
+      needle:
+        gen: str
+        len: 150
+        alphabet: ab
+  - name: generated-15
+    in:
+      haystack:
+        gen: str
+        len: 3500
+        alphabet: abc
+      needle:
+        gen: str
+        len: 175
+        alphabet: abc
+  - name: generated-16
+    in:
+      haystack:
+        gen: str
+        len: 4000
+        alphabet: abc
+      needle:
+        gen: str
+        len: 200
+        alphabet: abc
+  - name: generated-17
+    in:
+      haystack:
+        gen: str
+        len: 4500
+        alphabet: abcd
+      needle:
+        gen: str
+        len: 225
+        alphabet: abcd
+  - name: generated-18
+    in:
+      haystack:
+        gen: str
+        len: 5000
+        alphabet: ab
+      needle:
+        gen: str
+        len: 250
+        alphabet: ab
+  - name: generated-19
+    in:
+      haystack:
+        gen: str
+        len: 5500
+        alphabet: abc
+      needle:
+        gen: str
+        len: 275
+        alphabet: abc
+  - name: generated-20
+    in:
+      haystack:
+        gen: str
+        len: 6000
+        alphabet: abcd
+      needle:
+        gen: str
+        len: 300
+        alphabet: abcd
+  - name: generated-21
+    in:
+      haystack:
+        gen: str
+        len: 6500
+        alphabet: ab
+      needle:
+        gen: str
+        len: 325
+        alphabet: ab
+  - name: generated-22
+    in:
+      haystack:
+        gen: str
+        len: 7000
+        alphabet: abc
+      needle:
+        gen: str
+        len: 350
+        alphabet: abc
+  - name: generated-23
+    in:
+      haystack:
+        gen: str
+        len: 7500
+        alphabet: abcd
+      needle:
+        gen: str
+        len: 375
+        alphabet: abcd
+  - name: generated-24
+    in:
+      haystack:
+        gen: str
+        len: 8000
+        alphabet: ab
+      needle:
+        gen: str
+        len: 400
+        alphabet: ab
+  - name: generated-25
+    in:
+      haystack:
+        gen: str
+        len: 8500
+        alphabet: abc
+      needle:
+        gen: str
+        len: 425
+        alphabet: abc
+  - name: generated-26
+    in:
+      haystack:
+        gen: str
+        len: 9000
+        alphabet: abcd
+      needle:
+        gen: str
+        len: 450
+        alphabet: abcd
+  - name: generated-27
+    in:
+      haystack:
+        gen: str
+        len: 9500
+        alphabet: ab
+      needle:
+        gen: str
+        len: 475
+        alphabet: ab
+  - name: generated-28
+    in:
+      haystack:
+        gen: str
+        len: 10000
+        alphabet: abc
+      needle:
+        gen: str
+        len: 5000
+        alphabet: abc
+  - name: generated-29
+    in:
+      haystack:
+        gen: str
+        len: 10000
+        alphabet: a
+      needle:
+        gen: str
+        len: 10000
+        alphabet: a

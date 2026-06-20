@@ -1,0 +1,196 @@
+entry:
+  id: 331
+  title: verify-preorder-serialization-of-a-binary-tree
+  params:
+    preorder:
+      type: string
+  call:
+    cpp: "Solution().isValidSerialization({preorder})"
+    rust: "Solution::is_valid_serialization({preorder})"
+    python3: "Solution().isValidSerialization({preorder})"
+    python2: "Solution().isValidSerialization({preorder})"
+    ruby: "is_valid_serialization({preorder})"
+    java: "new Solution().isValidSerialization({preorder})"
+    csharp: "new Solution().IsValidSerialization({preorder})"
+    kotlin: "Solution().isValidSerialization({preorder})"
+    go: "isValidSerialization({preorder})"
+    dart: "Solution().isValidSerialization({preorder})"
+    swift: "Solution().isValidSerialization({preorder})"
+    typescript: "isValidSerialization({preorder})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().isValidSerialization(preorder, {result})"
+    checker: |
+      class Checker:
+          def isValidSerialization(self, preorder, result):
+              slots = 1
+              for node in preorder.split(','):
+                  slots -= 1
+                  if slots < 0:
+                      return result is False
+                  if node != '#':
+                      slots += 2
+              return result == (slots == 0)
+seed: 331
+tests:
+  - name: example-1
+    in:
+      preorder: "9,3,4,#,#,1,#,#,2,#,6,#,#"
+    out: true
+  - name: example-2
+    in:
+      preorder: "1,#"
+    out: false
+  - name: example-3
+    in:
+      preorder: "9,#,#,1"
+    out: false
+  - name: single-null
+    in:
+      preorder: "#"
+    out: true
+  - name: single-node-missing-null
+    in:
+      preorder: "1"
+    out: false
+  - name: two-nodes-complete
+    in:
+      preorder: "1,#,#"
+    out: true
+  - name: root-with-left-only
+    in:
+      preorder: "1,2,#,#,#"
+    out: true
+  - name: root-with-right-only-invalid-shape
+    in:
+      preorder: "1,#,2,#,#"
+    out: true
+  - name: extra-node-after-complete-tree
+    in:
+      preorder: "1,#,#,#"
+    out: false
+  - name: missing-final-null
+    in:
+      preorder: "1,2,#,#"
+    out: false
+  - name: null-then-extra-node
+    in:
+      preorder: "#,1"
+    out: false
+  - name: two-nulls-only
+    in:
+      preorder: "#,#"
+    out: false
+  - name: balanced-three-levels
+    in:
+      preorder: "8,4,2,#,#,6,#,#,10,9,#,#,12,#,#"
+    out: true
+  - name: left-heavy-deep-valid
+    in:
+      preorder: "1,2,3,4,#,#,#,#,#"
+    out: true
+  - name: left-heavy-deep-invalid
+    in:
+      preorder: "1,2,3,4,#,#,#,#"
+    out: false
+  - name: right-heavy-deep-valid
+    in:
+      preorder: "1,#,2,#,3,#,#"
+    out: true
+  - name: right-heavy-deep-invalid
+    in:
+      preorder: "1,#,2,#,3,#"
+    out: false
+  - name: valid-with-zero-value
+    in:
+      preorder: "0,#,#"
+    out: true
+  - name: valid-with-max-value
+    in:
+      preorder: "100,#,#"
+    out: true
+  - name: invalid-with-big-final-node
+    in:
+      preorder: "100,#,#,99"
+    out: false
+  - name: valid-mixed-shape
+    in:
+      preorder: "5,2,#,3,#,#,7,6,#,#,8,#,#"
+    out: true
+  - name: invalid-too-few-slots-midway
+    in:
+      preorder: "5,2,#"
+    out: false
+  - name: invalid-ending-with-internal-node
+    in:
+      preorder: "5,2,#,#,7"
+    out: false
+  - name: valid-root-with-two-leaves
+    in:
+      preorder: "5,2,#,#,7,#,#"
+    out: true
+  - name: invalid-premature-null-termination
+    in:
+      preorder: "5,#,#,#,#"
+    out: false
+  - name: valid-sparse-tree
+    in:
+      preorder: "1,2,#,4,#,#,3,#,#"
+    out: true
+  - name: invalid-sparse-tree-missing-last-null
+    in:
+      preorder: "1,2,#,4,#,#,3,#"
+    out: false
+  - name: valid-max-depth-chain
+    in:
+      preorder: "1,2,3,4,5,6,#,#,#,#,#,#,#"
+    out: true
+  - name: invalid-max-depth-chain-one-short
+    in:
+      preorder: "1,2,3,4,5,6,#,#,#,#,#,#"
+    out: false
+  - name: valid-alternating-structure
+    in:
+      preorder: "1,2,#,#,3,4,#,#,5,#,#"
+    out: true
+  - name: invalid-alternating-structure-extra
+    in:
+      preorder: "1,2,#,#,3,4,#,#,5,#,#,#"
+    out: false
+  - name: valid-small-right-branch
+    in:
+      preorder: "1,#,2,#,#"
+    out: true
+  - name: invalid-small-right-branch-extra
+    in:
+      preorder: "1,#,2,#,#,#"
+    out: false
+  - name: valid-full-tree-height-4
+    in:
+      preorder: "1,2,4,#,#,5,#,#,3,6,#,#,7,#,#"
+    out: true
+  - name: invalid-full-tree-height-4-extra
+    in:
+      preorder: "1,2,4,#,#,5,#,#,3,6,#,#,7,#,#,#"
+    out: false
+  - name: valid-single-child-at-root-left
+    in:
+      preorder: "2,1,#,#,#"
+    out: true
+  - name: valid-single-child-at-root-right
+    in:
+      preorder: "2,#,1,#,#"
+    out: true
+  - name: invalid-after-valid-complete-serialization
+    in:
+      preorder: "2,1,#,#,#,0"
+    out: false
+  - name: valid-maximal-simple
+    in:
+      preorder: "9,#,#"
+    out: true

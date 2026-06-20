@@ -1,155 +1,411 @@
-"entry":
-  "id": 14
-  "title": "longest-common-prefix"
-  "call":
-    "cpp": "Solution().longestCommonPrefix({strs})"
-    "rust": "Solution::longest_common_prefix({strs})"
-    "python3": "Solution().longestCommonPrefix({strs})"
-    "python2": "Solution().longestCommonPrefix({strs})"
-    "ruby": "longest_common_prefix({strs})"
-    "java": "new Solution().longestCommonPrefix({strs})"
-    "csharp": "new Solution().LongestCommonPrefix({strs})"
-    "kotlin": "Solution().longestCommonPrefix({strs})"
-    "go": "longestCommonPrefix({strs})"
-    "dart": "Solution().longestCommonPrefix({strs})"
-    "swift": "Solution().longestCommonPrefix({strs})"
-    "typescript": "longestCommonPrefix({strs})"
+entry:
+  id: 14
+  title: longest-common-prefix
   params:
     strs:
       type: array
       items:
         type: string
-"judge":
-  "type": "exact"
-"limits":
-  "time_ms": 1000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().longestCommonPrefix(strs, {result})"
-    "checker":
-      "import json\n\nclass Checker:\n    def longestCommonPrefix(self, strs, result):\n        try:\n          \
-      \  result = json.loads(result) if isinstance(result, str) else result\n        except Exception:\n            return
-      False\n        if not strs:\n            return result == \"\"\n        prefix = min(strs, key=len)\n        for s in
-      strs:\n            while not s.startswith(prefix):\n                prefix = prefix[:-1]\n        return result == prefix\n"
-"seed": 42
-"tests":
-  - "name": "example 1"
-    "in":
-      "strs":
-        - "flower"
-        - "flow"
-        - "flight"
-    "out": "fl"
-  - "name": "example 2"
-    "in":
-      "strs":
-        - "dog"
-        - "racecar"
-        - "car"
-    "out": ""
-  - "name": "single string"
-    "in":
-      "strs":
-        - "anything"
-    "out": "anything"
-  - "name": "identical strings"
-    "in":
-      "strs":
-        - "test"
-        - "test"
-        - "test"
-    "out": "test"
-  - "name": "empty string in array"
-    "in":
-      "strs":
-        - "a"
+  call:
+    cpp: Solution().longestCommonPrefix({strs})
+    rust: Solution::longest_common_prefix({strs})
+    python3: Solution().longestCommonPrefix({strs})
+    python2: Solution().longestCommonPrefix({strs})
+    ruby: longest_common_prefix({strs})
+    java: new Solution().longestCommonPrefix({strs})
+    csharp: new Solution().LongestCommonPrefix({strs})
+    kotlin: Solution().longestCommonPrefix({strs})
+    go: longestCommonPrefix({strs})
+    dart: Solution().longestCommonPrefix({strs})
+    swift: Solution().longestCommonPrefix({strs})
+    typescript: longestCommonPrefix({strs})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().longestCommonPrefix(strs, {result})"
+    checker: |
+      class Checker:
+          def longestCommonPrefix(self, strs, result):
+              if not isinstance(result, str):
+                  return False
+              if not strs:
+                  return result == ""
+              prefix = strs[0]
+              for s in strs[1:]:
+                  i = 0
+                  limit = min(len(prefix), len(s))
+                  while i < limit and prefix[i] == s[i]:
+                      i += 1
+                  prefix = prefix[:i]
+                  if not prefix:
+                      break
+              return result == prefix
+seed: 14
+tests:
+  - name: example-1
+    in:
+      strs:
+        - flower
+        - flow
+        - flight
+    out: fl
+  - name: example-2
+    in:
+      strs:
+        - dog
+        - racecar
+        - car
+    out: ""
+  - name: single-word
+    in:
+      strs:
+        - alone
+    out: alone
+  - name: single-empty
+    in:
+      strs:
         - ""
-    "out": ""
-  - "name": "all empty strings"
-    "in":
-      "strs":
+    out: ""
+  - name: two-identical
+    in:
+      strs:
+        - prefix
+        - prefix
+    out: prefix
+  - name: two-different-first-char
+    in:
+      strs:
+        - abc
+        - xyz
+    out: ""
+  - name: prefix-length-one
+    in:
+      strs:
+        - aaaaa
+        - abbbb
+        - acccc
+    out: a
+  - name: common-medium
+    in:
+      strs:
+        - interstellar
+        - internet
+        - internal
+    out: inter
+  - name: includes-empty
+    in:
+      strs:
+        - prefix
+        - ""
+        - prelude
+    out: ""
+  - name: all-empty
+    in:
+      strs:
         - ""
         - ""
         - ""
-    "out": ""
-  - "name": "large overlap"
-    "in":
-      "strs":
-        - "abcdefg"
-        - "abcdefg"
-        - "abcdefg"
-    "out": "abcdefg"
-  - "name": "no overlap"
-    "in":
-      "strs":
-        - "abc"
-        - "def"
-        - "ghi"
-    "out": ""
-  - "name": "single character prefix"
-    "in":
-      "strs":
-        - "a"
-        - "ab"
-        - "abc"
-    "out": "a"
-  - "name": "mismatched lengths"
-    "in":
-      "strs":
-        - "interspecies"
-        - "interstellar"
-        - "interstate"
-    "out": "inters"
-  - "name": "only one string"
-    "in":
-      "strs":
-        - "z"
-    "out": "z"
-  - "name": "two strings"
-    "in":
-      "strs":
-        - "apple"
-        - "apply"
-    "out": "appl"
-  - "name": "prefix at end"
-    "in":
-      "strs":
-        - "aa"
-        - "a"
-    "out": "a"
-  - "name": "random small strings"
-    "in":
-      "strs":
-        - "pre"
-        - "prefix"
-        - "preheat"
-    "out": "pre"
-  - "name": "long random strings"
-    "in":
-      "strs":
-        - "longprefixstring"
-        - "longprefixstorage"
-        - "longprefixstuff"
-    "out": "longprefixst"
-  - "name": "strings only last char same"
-    "in":
-      "strs":
-        - "x"
-        - "y"
-        - "z"
-    "out": ""
-  - "name": "strings share partial middle"
-    "in":
-      "strs":
-        - "abac"
-        - "abad"
-        - "abae"
-    "out": "aba"
-  - "name": "case sensitivity check"
-    "in":
-      "strs":
-        - "Flower"
-        - "Flow"
-        - "Flight"
-    "out": "Fl"
+    out: ""
+  - name: full-prefix-three
+    in:
+      strs:
+        - abcdef
+        - abcde
+        - abc
+    out: abc
+  - name: mismatch-late
+    in:
+      strs:
+        - same
+        - sample
+        - samba
+    out: sam
+  - name: case-zero-prefix-many
+    in:
+      strs:
+        - torch
+        - porch
+        - porchlight
+    out: ""
+  - name: short-vs-long
+    in:
+      strs:
+        - a
+        - aa
+        - aaa
+        - aaaa
+    out: a
+  - name: repeated-prefixes
+    in:
+      strs:
+        - banana
+        - band
+        - banner
+    out: ban
+  - name: only-first-two-match
+    in:
+      strs:
+        - star
+        - stairs
+        - stone
+    out: st
+  - name: long-common-10
+    in:
+      strs:
+        - aaaaaaaaaab
+        - aaaaaaaaaac
+        - aaaaaaaaaad
+    out: aaaaaaaaaa
+  - name: alternating-break
+    in:
+      strs:
+        - prefixed
+        - preform
+        - prevent
+    out: pre
+  - name: unicode-not-used
+    in:
+      strs:
+        - lowercase
+        - low
+        - lower
+    out: low
+  - name: max-length-single
+    in:
+      strs:
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  - name: max-length-two-full
+    in:
+      strs:
+        - bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        - bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    out: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  - name: max-length-trimmed-by-one
+    in:
+      strs:
+        - cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccx
+        - cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccy
+    out: ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  - name: many-shared-letters
+    in:
+      strs:
+        - alphabet
+        - alphanumeric
+        - almanac
+    out: al
+  - name: mixed-short-long
+    in:
+      strs:
+        - qwerty
+        - qwe
+        - qwertz
+        - qweqqq
+    out: qwe
+  - name: prefix-one-with-empty-nearby
+    in:
+      strs:
+        - z
+        - ""
+        - zebra
+    out: ""
+  - name: same-length-all-match
+    in:
+      strs:
+        - planet
+        - planet
+        - planet
+        - planet
+    out: planet
+  - name: last-string-shortest
+    in:
+      strs:
+        - framework
+        - framer
+        - frame
+    out: frame
+  - name: first-string-shortest
+    in:
+      strs:
+        - car
+        - cargo
+        - carpet
+    out: car
+  - name: almost-full-match
+    in:
+      strs:
+        - handling
+        - handicap
+        - hand
+    out: hand
+  - name: no-common-among-many
+    in:
+      strs:
+        - alpha
+        - beta
+        - gamma
+        - delta
+        - epsilon
+    out: ""
+  - name: leading-common-suffix-not-prefix
+    in:
+      strs:
+        - preamble
+        - present
+        - pressure
+    out: pre
+  - name: shared-two-chars
+    in:
+      strs:
+        - dogma
+        - dorm
+        - dot
+    out: do
+  - name: max-count-short-prefix
+    in:
+      strs:
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+        - a
+    out: a
+  - name: max-count-empty
+    in:
+      strs:
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+        - ""
+    out: ""
+  - name: common-after-first-char
+    in:
+      strs:
+        - xylophone
+        - xylem
+        - xylitol
+    out: xyl

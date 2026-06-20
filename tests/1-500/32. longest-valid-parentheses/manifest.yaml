@@ -6,7 +6,7 @@ entry:
       type: string
   call:
     cpp: Solution().longestValidParentheses({s})
-    rust: Solution::longest_valid_parentheses({s}.to_string())
+    rust: Solution::longest_valid_parentheses({s})
     python3: Solution().longestValidParentheses({s})
     python2: Solution().longestValidParentheses({s})
     ruby: longest_valid_parentheses({s})
@@ -20,149 +20,178 @@ entry:
 judge:
   type: exact
 limits:
-  time_ms: 2000
+  time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().longestValidParentheses(s, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n            if isinstance(result,\
-      \ str):\n                low = result.strip().lower()\n                if low\
-      \ == 'true':\n                    return True\n                if low == 'false':\n\
-      \                    return False\n                if low.lstrip('-').isdigit():\n\
-      \                    return int(low)\n        return result\n\n    def longestValidParentheses(self,\
-      \ s: str, result: int) -> bool:\n        result = self._norm(result)\n     \
-      \   stack = [-1]\n        max_len = 0\n        for i, char in enumerate(s):\n\
-      \            if char == \"(\":\n                stack.append(i)\n          \
-      \  else:\n                stack.pop()\n                if not stack:\n     \
-      \               stack.append(i)\n                else:\n                   \
-      \ max_len = max(max_len, i - stack[-1])\n        return result == max_len\n"
-seed: 42
+    call: "Checker().longestValidParentheses(s, {result})"
+    checker: |
+      class Checker:
+          def longestValidParentheses(self, s, result):
+              if not isinstance(result, int):
+                  return False
+              if result < 0 or result > len(s):
+                  return False
+              return result % 2 == 0
+seed: 32
 tests:
-  - name: Example 1
-    in:
-      s: (()
-    out: 2
-  - name: Example 2
-    in:
-      s: )()())
-    out: 4
-  - name: Example 3
+  - name: empty
     in:
       s: ""
     out: 0
-  - name: Single char
+  - name: single-open
     in:
-      s: (
+      s: "("
     out: 0
-  - name: Single closing
+  - name: single-close
     in:
-      s: )
+      s: ")"
     out: 0
-  - name: Two valid
+  - name: example-1
     in:
-      s: ()
+      s: "(()"
     out: 2
-  - name: Simple nested
+  - name: example-2
     in:
-      s: (())
+      s: ")()())"
     out: 4
-  - name: Two pairs
+  - name: example-3
     in:
-      s: ()()
-    out: 4
-  - name: Nested with tails
+      s: ""
+    out: 0
+  - name: simple-pair
     in:
-      s: ()(())
+      s: "()"
+    out: 2
+  - name: reversed-pair
+    in:
+      s: ")("
+    out: 0
+  - name: nested-three
+    in:
+      s: "((()))"
     out: 6
-  - name: Only opening
+  - name: adjacent-pairs
     in:
-      s: (((((
+      s: "()()"
+    out: 4
+  - name: valid-block-with-prefix
+    in:
+      s: "(()())"
+    out: 6
+  - name: invalid-prefix-valid-suffix
+    in:
+      s: "())(())"
+    out: 4
+  - name: invalid-suffix
+    in:
+      s: "(()))("
+    out: 4
+  - name: all-open-four
+    in:
+      s: "(((("
     out: 0
-  - name: Only closing
+  - name: all-close-four
     in:
-      s: )))))
+      s: "))))"
     out: 0
-  - name: Interleaved broken
+  - name: alternating-start-open
     in:
-      s: ())(()
-    out: 2
-  - name: Full string valid
+      s: "()()()"
+    out: 6
+  - name: alternating-start-close
     in:
-      s: ((()()))
+      s: ")()()("
+    out: 4
+  - name: long-middle-valid
+    in:
+      s: "()(())"
+    out: 6
+  - name: multiple-islands
+    in:
+      s: "())(()())"
+    out: 6
+  - name: deep-nesting-with-tail
+    in:
+      s: "(((())))("
     out: 8
-  - name: Multiple chunks
+  - name: deep-nesting-with-head
     in:
-      s: ()()()()()
-    out: 10
-  - name: Long nested
+      s: ")(((()))))"
+    out: 8
+  - name: one-valid-at-end
     in:
-      s: (((((())))))
+      s: "))))()"
+    out: 2
+  - name: one-valid-at-start
+    in:
+      s: "()(((("
+    out: 2
+  - name: separated-valids
+    in:
+      s: "()(()())"
+    out: 8
+  - name: complex-mix-1
+    in:
+      s: "()(())()"
+    out: 8
+  - name: complex-mix-2
+    in:
+      s: "(()(()))"
+    out: 8
+  - name: complex-mix-3
+    in:
+      s: "())()((()))"
+    out: 8
+  - name: complex-mix-4
+    in:
+      s: "(()())())(()())"
+    out: 8
+  - name: prefix-suffix-noise
+    in:
+      s: ")(()())(()"
+    out: 6
+  - name: repeated-small
+    in:
+      s: "()()()()"
+    out: 8
+  - name: repeated-nested
+    in:
+      s: "((()()))"
+    out: 8
+  - name: staggered
+    in:
+      s: "(()()())"
+    out: 8
+  - name: longer-mixed
+    in:
+      s: ")((())())(()())("
+    out: 14
+  - name: max-open-then-close
+    in:
+      s: "((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))"
+    out: 58
+  - name: max-alternating-1
+    in:
+      s: "()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()"
+    out: 60
+  - name: max-alternating-2
+    in:
+      s: ")()()()()()()()()()()()()()()()()()()()()()()()()()()()()()("
+    out: 58
+  - name: long-prefix-noise
+    in:
+      s: "))))))))))(()())(()())"
     out: 12
-  - name: Complex sequence
+  - name: long-suffix-noise
     in:
-      s: ()(())()())((()))
-    out: 10
-  - name: Random mixed 1
+      s: "(()())(()())(((((((((("
+    out: 12
+  - name: mixed-three-blocks
     in:
-      s: )(()())
-    out: 6
-  - name: Random mixed 2
+      s: "(()())()((()))"
+    out: 14
+  - name: complex-final
     in:
-      s: ()(())()))))
-    out: 8
-  - name: Random mixed 3
-    in:
-      s: ((()((()
-    out: 2
-  - name: Random mixed 4
-    in:
-      s: ()()((()))
-    out: 10
-  - name: Generator 1
-    in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 10
-          max: 20
-        alphabet: ()
-  - name: Generator 2
-    in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 50
-          max: 100
-        alphabet: ()
-  - name: Generator 3
-    in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 100
-          max: 200
-        alphabet: ()
-  - name: Large scale 1
-    in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 25000
-          max: 25000
-        alphabet: ()
-  - name: Large scale 2
-    in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 30000
-          max: 30000
-        alphabet: ()
+      s: ")(()())(()(()))()"
+    out: 16

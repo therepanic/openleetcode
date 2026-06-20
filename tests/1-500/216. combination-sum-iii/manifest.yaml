@@ -1,0 +1,278 @@
+entry:
+  id: 216
+  title: "combination-sum-iii"
+  params:
+    k:
+      type: int
+    n:
+      type: int
+  call:
+    cpp: "Solution().combinationSum3({k}, {n})"
+    rust: "Solution::combination_sum3({k}, {n})"
+    python3: "Solution().combinationSum3({k}, {n})"
+    python2: "Solution().combinationSum3({k}, {n})"
+    ruby: "combination_sum3({k}, {n})"
+    java: "new Solution().combinationSum3({k}, {n})"
+    csharp: "new Solution().CombinationSum3({k}, {n})"
+    kotlin: "Solution().combinationSum3({k}, {n})"
+    go: "combinationSum3({k}, {n})"
+    dart: "Solution().combinationSum3({k}, {n})"
+    swift: "Solution().combinationSum3({k}, {n})"
+    typescript: "combinationSum3({k}, {n})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().combinationSum3(k, n, {result})"
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def combinationSum3(self, k: int, n: int, result: Any) -> bool:
+              if not isinstance(result, list):
+                  return False
+
+              seen = set()
+              total_valid = 0
+              for combo in result:
+                  if not isinstance(combo, list) or len(combo) != k:
+                      return False
+                  if any(not isinstance(x, int) for x in combo):
+                      return False
+                  if any(x < 1 or x > 9 for x in combo):
+                      return False
+                  if any(combo[i] >= combo[i + 1] for i in range(len(combo) - 1)):
+                      return False
+                  if sum(combo) != n:
+                      return False
+                  key = tuple(combo)
+                  if key in seen:
+                      return False
+                  seen.add(key)
+                  total_valid += 1
+
+              nums = list(range(1, 10))
+              expected = []
+
+              def backtrack(start: int, path: List[int], remaining_k: int, remaining_n: int) -> None:
+                  if remaining_k == 0:
+                      if remaining_n == 0:
+                          expected.append(tuple(path))
+                      return
+                  for i in range(start, 10):
+                      if i > remaining_n:
+                          break
+                      path.append(i)
+                      backtrack(i + 1, path, remaining_k - 1, remaining_n - i)
+                      path.pop()
+
+              backtrack(1, [], k, n)
+              return set(expected) == seen
+
+seed: 216216
+
+tests:
+  - name: "ex1"
+    in:
+      k: 3
+      n: 7
+
+  - name: "ex2"
+    in:
+      k: 3
+      n: 9
+
+  - name: "ex3"
+    in:
+      k: 4
+      n: 1
+
+  - name: "t04"
+    in:
+      k: 2
+      n: 3
+
+  - name: "t05"
+    in:
+      k: 2
+      n: 4
+
+  - name: "t06"
+    in:
+      k: 2
+      n: 5
+
+  - name: "t07"
+    in:
+      k: 2
+      n: 17
+
+  - name: "t08"
+    in:
+      k: 2
+      n: 18
+
+  - name: "t09"
+    in:
+      k: 3
+      n: 6
+
+  - name: "t10"
+    in:
+      k: 3
+      n: 8
+
+  - name: "t11"
+    in:
+      k: 3
+      n: 15
+
+  - name: "t12"
+    in:
+      k: 3
+      n: 24
+
+  - name: "t13"
+    in:
+      k: 4
+      n: 10
+
+  - name: "t14"
+    in:
+      k: 4
+      n: 11
+
+  - name: "t15"
+    in:
+      k: 4
+      n: 18
+
+  - name: "t16"
+    in:
+      k: 4
+      n: 30
+
+  - name: "t17"
+    in:
+      k: 5
+      n: 15
+
+  - name: "t18"
+    in:
+      k: 5
+      n: 16
+
+  - name: "t19"
+    in:
+      k: 5
+      n: 23
+
+  - name: "t20"
+    in:
+      k: 5
+      n: 35
+
+  - name: "t21"
+    in:
+      k: 6
+      n: 21
+
+  - name: "t22"
+    in:
+      k: 6
+      n: 22
+
+  - name: "t23"
+    in:
+      k: 6
+      n: 30
+
+  - name: "t24"
+    in:
+      k: 6
+      n: 39
+
+  - name: "t25"
+    in:
+      k: 7
+      n: 28
+
+  - name: "t26"
+    in:
+      k: 7
+      n: 29
+
+  - name: "t27"
+    in:
+      k: 7
+      n: 35
+
+  - name: "t28"
+    in:
+      k: 7
+      n: 45
+
+  - name: "t29"
+    in:
+      k: 8
+      n: 36
+
+  - name: "t30"
+    in:
+      k: 8
+      n: 37
+
+  - name: "t31"
+    in:
+      k: 8
+      n: 44
+
+  - name: "t32"
+    in:
+      k: 8
+      n: 50
+
+  - name: "t33"
+    in:
+      k: 9
+      n: 45
+
+  - name: "t34"
+    in:
+      k: 9
+      n: 44
+
+  - name: "t35"
+    in:
+      k: 9
+      n: 46
+
+  - name: "gen_small_valid_domain_1"
+    seed: 21601
+    in:
+      k:
+        gen: "int"
+        min: 1
+        max: 9
+      n:
+        gen: "int"
+        min: 1
+        max: 45
+
+  - name: "gen_small_valid_domain_2"
+    seed: 21602
+    in:
+      k:
+        gen: "int"
+        min: 1
+        max: 9
+      n:
+        gen: "int"
+        min: 1
+        max: 45

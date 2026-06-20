@@ -1,0 +1,222 @@
+entry:
+  id: 468
+  title: validate-ip-address
+  params:
+    queryIP:
+      type: string
+  call:
+    cpp: Solution().validIPAddress({queryIP})
+    rust: Solution::valid_ip_address({queryIP})
+    python3: Solution().validIPAddress({queryIP})
+    python2: Solution().validIPAddress({queryIP})
+    ruby: valid_ip_address({queryIP})
+    java: new Solution().validIPAddress({queryIP})
+    csharp: new Solution().ValidIPAddress({queryIP})
+    kotlin: Solution().validIPAddress({queryIP})
+    go: validIPAddress({queryIP})
+    dart: Solution().validIPAddress({queryIP})
+    swift: Solution().validIPAddress({queryIP})
+    typescript: validIPAddress({queryIP})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().validIPAddress(queryIP, {result})
+    checker: |
+      from typing import Any
+
+      class Checker:
+          def validIPAddress(self, queryIP: Any, result: Any) -> bool:
+              if not isinstance(queryIP, str) or not isinstance(result, str):
+                  return False
+              if result not in {"IPv4", "IPv6", "Neither"}:
+                  return False
+
+              def is_ipv4(ip: str) -> bool:
+                  if ip.count(".") != 3:
+                      return False
+                  parts = ip.split(".")
+                  if len(parts) != 4:
+                      return False
+                  for p in parts:
+                      if not p.isdigit():
+                          return False
+                      if p != "0" and p.startswith("0"):
+                          return False
+                      if not 0 <= int(p) <= 255:
+                          return False
+                  return True
+
+              def is_ipv6(ip: str) -> bool:
+                  if ip.count(":") != 7:
+                      return False
+                  parts = ip.split(":")
+                  if len(parts) != 8:
+                      return False
+                  hexdigits = "0123456789abcdefABCDEF"
+                  for p in parts:
+                      if not (1 <= len(p) <= 4):
+                          return False
+                      if any(c not in hexdigits for c in p):
+                          return False
+                  return True
+
+              expected = "IPv4" if is_ipv4(queryIP) else "IPv6" if is_ipv6(queryIP) else "Neither"
+              return result == expected
+seed: 468
+tests:
+  - name: ipv4_example_1
+    in:
+      queryIP: "172.16.254.1"
+    out: IPv4
+  - name: ipv6_example_1
+    in:
+      queryIP: "2001:0db8:85a3:0:0:8A2E:0370:7334"
+    out: IPv6
+  - name: neither_example_1
+    in:
+      queryIP: "256.256.256.256"
+    out: Neither
+  - name: ipv4_minimal_valid
+    in:
+      queryIP: "0.0.0.0"
+    out: IPv4
+  - name: ipv4_maximal_valid
+    in:
+      queryIP: "255.255.255.255"
+    out: IPv4
+  - name: ipv4_with_leading_zero_invalid
+    in:
+      queryIP: "01.1.1.1"
+    out: Neither
+  - name: ipv4_with_trailing_zero_valid
+    in:
+      queryIP: "1.1.1.0"
+    out: IPv4
+  - name: ipv4_segment_too_large
+    in:
+      queryIP: "999.10.10.10"
+    out: Neither
+  - name: ipv4_segment_negative_like
+    in:
+      queryIP: "1.-1.1.1"
+    out: Neither
+  - name: ipv4_segment_empty
+    in:
+      queryIP: "1..1.1"
+    out: Neither
+  - name: ipv4_too_few_segments
+    in:
+      queryIP: "1.1.1"
+    out: Neither
+  - name: ipv4_too_many_segments
+    in:
+      queryIP: "1.1.1.1.1"
+    out: Neither
+  - name: ipv4_with_space_invalid
+    in:
+      queryIP: "1.1.1.1 "
+    out: Neither
+  - name: ipv4_with_letter_invalid
+    in:
+      queryIP: "1.1.1.a"
+    out: Neither
+  - name: ipv4_with_sign_invalid
+    in:
+      queryIP: "+1.1.1.1"
+    out: Neither
+  - name: ipv4_with_internal_spaces_invalid
+    in:
+      queryIP: "1.1. 1.1"
+    out: Neither
+  - name: ipv6_example_uppercase
+    in:
+      queryIP: "2001:0db8:85a3:0:0:8A2E:0370:7334"
+    out: IPv6
+  - name: ipv6_lowercase_valid
+    in:
+      queryIP: "2001:db8:85a3:0:0:8a2e:370:7334"
+    out: IPv6
+  - name: ipv6_all_zero_valid
+    in:
+      queryIP: "0:0:0:0:0:0:0:0"
+    out: IPv6
+  - name: ipv6_all_f_valid
+    in:
+      queryIP: "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    out: IPv6
+  - name: ipv6_single_digit_segments_valid
+    in:
+      queryIP: "1:2:3:4:5:6:7:8"
+    out: IPv6
+  - name: ipv6_leading_zeroes_valid
+    in:
+      queryIP: "0001:0002:0003:0004:0005:0006:0007:0008"
+    out: IPv6
+  - name: ipv6_segment_too_long
+    in:
+      queryIP: "12345:0:0:0:0:0:0:0"
+    out: Neither
+  - name: ipv6_segment_with_invalid_letter
+    in:
+      queryIP: "2001:0db8:85a3:0:0:8A2E:0370:733g"
+    out: Neither
+  - name: ipv6_segment_with_symbol
+    in:
+      queryIP: "2001:0db8:85a3:0:0:8A2E:0370:73/4"
+    out: Neither
+  - name: ipv6_too_few_segments
+    in:
+      queryIP: "2001:0db8:85a3:0:0:8A2E:0370"
+    out: Neither
+  - name: ipv6_too_many_segments
+    in:
+      queryIP: "2001:0db8:85a3:0:0:8A2E:0370:7334:1234"
+    out: Neither
+  - name: ipv6_with_double_colon_invalid
+    in:
+      queryIP: "2001:db8::1"
+    out: Neither
+  - name: ipv6_with_trailing_colon_invalid
+    in:
+      queryIP: "2001:db8:85a3:0:0:8A2E:0370:7334:"
+    out: Neither
+  - name: ipv6_with_leading_colon_invalid
+    in:
+      queryIP: ":2001:db8:85a3:0:0:8A2E:0370:7334"
+    out: Neither
+  - name: ipv6_with_ipv4_style_tail_invalid
+    in:
+      queryIP: "2001:db8:85a3:0:0:8A2E:0370:1.1.1.1"
+    out: Neither
+  - name: mixed_separators_invalid
+    in:
+      queryIP: "1.1.1:1"
+    out: Neither
+  - name: dotted_hex_invalid
+    in:
+      queryIP: "ab.cd.ef.12"
+    out: Neither
+  - name: empty_octets_invalid
+    in:
+      queryIP: ".1.1.1"
+    out: Neither
+  - name: just_colons_invalid
+    in:
+      queryIP: "::::::::"
+    out: Neither
+  - name: alphanumeric_ipv4_like_invalid
+    in:
+      queryIP: "192.168.1.one"
+    out: Neither
+  - name: uppercase_hex_valid
+    in:
+      queryIP: "ABCD:EF01:2345:6789:ABCD:EF01:2345:6789"
+    out: IPv6
+  - name: ipv4_single_zero_segments
+    in:
+      queryIP: "0.0.0.00"
+    out: Neither

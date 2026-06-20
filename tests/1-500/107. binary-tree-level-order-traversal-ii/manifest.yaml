@@ -1,0 +1,594 @@
+entry:
+  id: 107
+  title: "binary-tree-level-order-traversal-ii"
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().levelOrderBottom({root})"
+    rust: "Solution::level_order_bottom({root})"
+    python3: "Solution().levelOrderBottom({root})"
+    python2: "Solution().levelOrderBottom({root})"
+    ruby: "level_order_bottom({root})"
+    java: "new Solution().levelOrderBottom({root})"
+    csharp: "new Solution().LevelOrderBottom({root})"
+    kotlin: "Solution().levelOrderBottom({root})"
+    go: "levelOrderBottom({root})"
+    dart: "Solution().levelOrderBottom({root})"
+    swift: "Solution().levelOrderBottom({root})"
+    typescript: "levelOrderBottom({root})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().levelOrderBottom(root, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def levelOrderBottom(self, root, result) -> bool:
+              if root is None:
+                  return result == []
+
+              expected = deque()
+              queue = deque([root])
+              while queue:
+                  level = []
+                  for _ in range(len(queue)):
+                      node = queue.popleft()
+                      level.append(node.val)
+                      if node.left is not None:
+                          queue.append(node.left)
+                      if node.right is not None:
+                          queue.append(node.right)
+                  expected.appendleft(level)
+              return result == list(expected)
+seed: 107
+tests:
+  - name: "example_tree"
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+    out:
+      - [15, 7]
+      - [9, 20]
+      - [3]
+  - name: "single_node"
+    in:
+      root:
+        - 1
+    out:
+      - [1]
+  - name: "empty_tree"
+    in:
+      root: []
+    out: []
+  - name: "two_children"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+    out:
+      - [2, 3]
+      - [1]
+  - name: "left_skewed_4"
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "right_skewed_4"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+    out:
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "perfect_tree_height_2"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out:
+      - [4, 5, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "missing_left_in_right_subtree"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+    out:
+      - [4, 5]
+      - [2, 3]
+      - [1]
+  - name: "missing_right_in_left_subtree"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+    out:
+      - [4, 5]
+      - [2, 3]
+      - [1]
+  - name: "sparse_mixed_tree"
+    in:
+      root:
+        - 10
+        - 6
+        - 15
+        - 3
+        - 8
+        - null
+        - 20
+        - null
+        - 4
+        - 7
+        - 9
+        - null
+        - null
+        - 18
+        - 25
+    out:
+      - [18, 25]
+      - [4, 7, 9]
+      - [3, 8, 20]
+      - [6, 15]
+      - [10]
+  - name: "negative_values"
+    in:
+      root:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+        - -7
+    out:
+      - [-4, -5, -6, -7]
+      - [-2, -3]
+      - [-1]
+  - name: "duplicate_values"
+    in:
+      root:
+        - 5
+        - 5
+        - 5
+        - 5
+        - null
+        - 5
+        - 5
+    out:
+      - [5, 5, 5]
+      - [5, 5]
+      - [5]
+  - name: "deep_left_branch_with_leaf"
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "deep_right_branch_with_leaf"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "wide_third_level"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - [8, 9, 10, 11, 12, 13, 14, 15]
+      - [4, 5, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "alternating_missing_children"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - null
+        - null
+        - null
+        - 7
+    out:
+      - [7]
+      - [5, 6]
+      - [2, 3]
+      - [1]
+  - name: "complete_five_levels"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+    out:
+      - [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+      - [8, 9, 10, 11, 12, 13, 14, 15]
+      - [4, 5, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "sparse_second_level"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - 7
+        - 8
+        - 9
+        - null
+        - null
+        - 12
+        - 13
+        - 14
+        - 15
+    out:
+      - [14, 15]
+      - [8, 9, 12, 13]
+      - [4, 6, 7]
+      - [2, 3]
+      - [1]
+  - name: "left_turning_path"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "right_turning_path"
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+    out:
+      - [5]
+      - [4]
+      - [3]
+      - [2]
+      - [1]
+  - name: "mixed_gaps_small"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+    out:
+      - [4, 5]
+      - [2, 3]
+      - [1]
+  - name: "example_with_repeated_leaf_values"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 4
+        - 4
+        - 4
+    out:
+      - [4, 4, 4, 4]
+      - [2, 3]
+      - [1]
+  - name: "all_left_children_5"
+    in:
+      root:
+        - 9
+        - 8
+        - null
+        - 7
+        - null
+        - 6
+        - null
+        - 5
+    out:
+      - [5]
+      - [6]
+      - [7]
+      - [8]
+      - [9]
+  - name: "all_right_children_5"
+    in:
+      root:
+        - 9
+        - null
+        - 8
+        - null
+        - 7
+        - null
+        - 6
+        - null
+        - 5
+    out:
+      - [5]
+      - [6]
+      - [7]
+      - [8]
+      - [9]
+  - name: "balanced_with_holes"
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 7
+        - 8
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 14
+        - 15
+    out:
+      - [8]
+      - [4, 7]
+      - [2, 3]
+      - [1]
+  - name: "small_sparse_two_levels"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+    out:
+      - [2]
+      - [1]
+  - name: "small_sparse_left"
+    in:
+      root:
+        - 1
+        - 2
+    out:
+      - [2]
+      - [1]
+  - name: "small_sparse_right"
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+    out:
+      - [3]
+      - [2]
+      - [1]
+  - name: "deeper_branching_left_heavy"
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 3
+        - null
+        - 7
+        - 9
+        - 2
+    out:
+      - [2]
+      - [3, 7, 9]
+      - [4, 8]
+      - [5]
+  - name: "deeper_branching_right_heavy"
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - null
+        - 3
+        - 7
+        - 9
+        - null
+        - null
+        - 6
+    out:
+      - [6]
+      - [3, 7, 9]
+      - [4, 8]
+      - [5]
+  - name: "bushy_bottom_level"
+    in:
+      root:
+        - 11
+        - 7
+        - 15
+        - 3
+        - 9
+        - 13
+        - 18
+        - 1
+        - 4
+        - 8
+        - 10
+        - 12
+        - 14
+        - 16
+        - 20
+    out:
+      - [1, 4, 8, 10, 12, 14, 16, 20]
+      - [3, 9, 13, 18]
+      - [7, 15]
+      - [11]
+  - name: "large_sparse_chain_mix"
+    in:
+      root:
+        - 0
+        - -1
+        - 1
+        - -2
+        - null
+        - null
+        - 2
+        - -3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 3
+        - 4
+    out:
+      - [-3]
+      - [-2, 2]
+      - [-1, 1]
+      - [0]
+  - name: "one_more_example_shape"
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+        - 1
+        - null
+        - null
+        - 2
+    out:
+      - [1, 2]
+      - [15, 7]
+      - [9, 20]
+      - [3]

@@ -1,0 +1,220 @@
+entry:
+  id: 165
+  title: compare-version-numbers
+  params:
+    version1:
+      type: string
+    version2:
+      type: string
+  call:
+    cpp: Solution().compareVersion({version1}, {version2})
+    rust: Solution::compare_version({version1}, {version2})
+    python3: Solution().compareVersion({version1}, {version2})
+    python2: Solution().compareVersion({version1}, {version2})
+    ruby: compare_version({version1}, {version2})
+    java: new Solution().compareVersion({version1}, {version2})
+    csharp: new Solution().CompareVersion({version1}, {version2})
+    kotlin: Solution().compareVersion({version1}, {version2})
+    go: compareVersion({version1}, {version2})
+    dart: Solution().compareVersion({version1}, {version2})
+    swift: Solution().compareVersion({version1}, {version2})
+    typescript: compareVersion({version1}, {version2})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().compareVersion(version1, version2, {result})"
+    checker: |
+      class Checker:
+          def compareVersion(self, version1, version2, result):
+              return result in (-1, 0, 1) and isinstance(result, int)
+seed: 165
+tests:
+  - name: example_1
+    in:
+      version1: "1.2"
+      version2: "1.10"
+    out: -1
+  - name: example_2
+    in:
+      version1: "1.01"
+      version2: "1.001"
+    out: 0
+  - name: example_3
+    in:
+      version1: "1.0"
+      version2: "1.0.0.0"
+    out: 0
+  - name: equal_single_revision
+    in:
+      version1: "7"
+      version2: "7"
+    out: 0
+  - name: single_revision_less
+    in:
+      version1: "1"
+      version2: "2"
+    out: -1
+  - name: single_revision_greater
+    in:
+      version1: "10"
+      version2: "2"
+    out: 1
+  - name: trailing_zeros_equal
+    in:
+      version1: "1.0.0"
+      version2: "1"
+    out: 0
+  - name: trailing_zeros_left_shorter
+    in:
+      version1: "1.0"
+      version2: "1.0.0.0.0"
+    out: 0
+  - name: trailing_zeros_right_shorter
+    in:
+      version1: "1.0.0.0"
+      version2: "1.0"
+    out: 0
+  - name: leading_zero_equal
+    in:
+      version1: "01"
+      version2: "1"
+    out: 0
+  - name: leading_zero_equal_many_digits
+    in:
+      version1: "00012"
+      version2: "12"
+    out: 0
+  - name: leading_zero_less
+    in:
+      version1: "001"
+      version2: "002"
+    out: -1
+  - name: leading_zero_greater
+    in:
+      version1: "010"
+      version2: "2"
+    out: 1
+  - name: revision_length_vs_value
+    in:
+      version1: "1.0.1"
+      version2: "1.0.10"
+    out: -1
+  - name: second_revision_greater
+    in:
+      version1: "1.2.3"
+      version2: "1.2.4"
+    out: -1
+  - name: second_revision_smaller
+    in:
+      version1: "1.3.0"
+      version2: "1.2.9"
+    out: 1
+  - name: compare_after_equal_prefix
+    in:
+      version1: "1.0.0.1"
+      version2: "1.0.0.0"
+    out: 1
+  - name: compare_after_equal_prefix_reverse
+    in:
+      version1: "1.0.0.0"
+      version2: "1.0.0.1"
+    out: -1
+  - name: many_revisions_equal
+    in:
+      version1: "3.4.5.6.7"
+      version2: "3.4.5.6.7"
+    out: 0
+  - name: many_revisions_less
+    in:
+      version1: "3.4.5.6.7"
+      version2: "3.4.5.6.8"
+    out: -1
+  - name: many_revisions_greater
+    in:
+      version1: "3.4.5.7.1"
+      version2: "3.4.5.6.9"
+    out: 1
+  - name: different_revision_counts_equal
+    in:
+      version1: "2.3"
+      version2: "2.3.0.0.0"
+    out: 0
+  - name: different_revision_counts_less
+    in:
+      version1: "2.3"
+      version2: "2.3.0.1"
+    out: -1
+  - name: different_revision_counts_greater
+    in:
+      version1: "2.3.0.2"
+      version2: "2.3"
+    out: 1
+  - name: zero_vs_nonzero
+    in:
+      version1: "0"
+      version2: "0.0.1"
+    out: -1
+  - name: nonzero_vs_zero_padding
+    in:
+      version1: "0.0.1"
+      version2: "0"
+    out: 1
+  - name: complex_equal_with_leading_zeros
+    in:
+      version1: "001.0002.00003"
+      version2: "1.2.3"
+    out: 0
+  - name: complex_greater_with_leading_zeros
+    in:
+      version1: "001.0003.00003"
+      version2: "1.2.4"
+    out: 1
+  - name: long_equal_all_ones
+    in:
+      version1: "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+      version2: "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    out: 0
+  - name: long_equal_trailing_zeros
+    in:
+      version1: "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"
+      version2: "1"
+    out: 0
+  - name: long_prefix_less
+    in:
+      version1: "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1"
+      version2: "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2"
+    out: -1
+  - name: long_many_leading_zeros_equal
+    in:
+      version1: "00000000000000000000000000000000000000000000000001.00000000000000000000000000000000000000000000000002"
+      version2: "1.2"
+    out: 0
+  - name: long_many_leading_zeros_less
+    in:
+      version1: "00000000000000000000000000000000000000000000000001.00000000000000000000000000000000000000000000000002"
+      version2: "1.3"
+    out: -1
+  - name: long_many_leading_zeros_greater
+    in:
+      version1: "00000000000000000000000000000000000000000000000001.00000000000000000000000000000000000000000000000003"
+      version2: "1.2"
+    out: 1
+  - name: alternating_zero_and_nonzero
+    in:
+      version1: "1.0.1.0.1.0.1.0"
+      version2: "1.0.1.0.1.0.1.1"
+    out: -1
+  - name: many_revisions_missing_tail_equal
+    in:
+      version1: "4.5.6.7.8.9.10"
+      version2: "4.5.6.7.8.9.10.0.0.0"
+    out: 0
+  - name: many_revisions_missing_tail_less
+    in:
+      version1: "4.5.6.7.8.9.10"
+      version2: "4.5.6.7.8.9.10.0.1"
+    out: -1

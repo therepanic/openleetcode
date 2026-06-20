@@ -1,0 +1,22 @@
+class Solution(object):
+    def lengthOfLIS(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        prev_idx = -1
+        dp = [[-1] * 2500 for _ in range(2500)]
+        return self.helper(0, prev_idx, nums, dp)
+
+    def helper(self, i, prev_idx, nums, dp):
+        if i >= len(nums):
+            return 0
+        if dp[i][prev_idx] != -1:
+            return dp[i][prev_idx]
+        steal = 0
+        skip = 0
+        if prev_idx == -1 or nums[prev_idx] < nums[i]:
+            steal = 1 + self.helper(i + 1, i, nums, dp)
+        skip = self.helper(i + 1, prev_idx, nums, dp)
+        dp[i][prev_idx] = max(steal, skip)
+        return max(steal, skip)

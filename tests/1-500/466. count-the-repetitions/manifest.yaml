@@ -1,0 +1,319 @@
+entry:
+  id: 466
+  title: "count-the-repetitions"
+  params:
+    s1:
+      type: string
+    n1:
+      type: int
+    s2:
+      type: string
+    n2:
+      type: int
+  call:
+    cpp: "Solution().countTheRepetitions({s1}, {n1}, {s2}, {n2})"
+    rust: "Solution::get_max_repetitions({s1}, {n1}, {s2}, {n2})"
+    python3: "Solution.countTheRepetitions({s1}, {n1}, {s2}, {n2})"
+    python2: "Solution.countTheRepetitions({s1}, {n1}, {s2}, {n2})"
+    ruby: "get_max_repetitions({s1}, {n1}, {s2}, {n2})"
+    java: "new Solution().getMaxRepetitions({s1}, {n1}, {s2}, {n2})"
+    csharp: "new Solution().GetMaxRepetitions({s1}, {n1}, {s2}, {n2})"
+    kotlin: "Solution().getMaxRepetitions({s1}, {n1}, {s2}, {n2})"
+    go: "getMaxRepetitions({s1}, {n1}, {s2}, {n2})"
+    dart: "Solution().getMaxRepetitions({s1}, {n1}, {s2}, {n2})"
+    swift: "Solution().getMaxRepetitions({s1}, {n1}, {s2}, {n2})"
+    typescript: "getMaxRepetitions({s1}, {n1}, {s2}, {n2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().countTheRepetitions(s1, n1, s2, n2, {result})"
+    checker: |
+      class Checker:
+          def countTheRepetitions(self, s1, n1, s2, n2, result):
+              def solve(S, n1, T, n2):
+                  m, n = len(S), len(T)
+                  if m * n1 < n * n2:
+                      return 0
+                  j = 0
+                  cnt = 0
+                  k = 0
+                  seen = {}
+                  while k < n1:
+                      for ch in S:
+                          if ch == T[j]:
+                              j += 1
+                              if j == n:
+                                  cnt += 1
+                                  j = 0
+                      k += 1
+                      if j in seen:
+                          prev_cnt, prev_k = seen[j]
+                          period_k = k - prev_k
+                          period_cnt = cnt - prev_cnt
+                          if period_cnt == 0:
+                              break
+                          remaining = n1 - k
+                          cycles = remaining // period_k
+                          cnt += cycles * period_cnt
+                          k += cycles * period_k
+                      else:
+                          seen[j] = (cnt, k)
+                  return cnt // n2
+
+              return isinstance(result, int) and result == solve(s1, n1, s2, n2)
+
+seed: 466
+
+tests:
+  - name: "ex1"
+    in:
+      s1: "acb"
+      n1: 4
+      s2: "ab"
+      n2: 2
+    out: 2
+  - name: "ex2"
+    in:
+      s1: "acb"
+      n1: 1
+      s2: "acb"
+      n2: 1
+    out: 1
+  - name: "single_char_exact"
+    in:
+      s1: "a"
+      n1: 1
+      s2: "a"
+      n2: 1
+    out: 1
+  - name: "single_char_multiple"
+    in:
+      s1: "a"
+      n1: 1000000
+      s2: "a"
+      n2: 1
+    out: 1000000
+  - name: "single_char_pair"
+    in:
+      s1: "a"
+      n1: 1000000
+      s2: "aa"
+      n2: 1
+    out: 500000
+  - name: "impossible_char"
+    in:
+      s1: "abc"
+      n1: 1
+      s2: "d"
+      n2: 1
+    out: 0
+  - name: "length_prune"
+    in:
+      s1: "abc"
+      n1: 2
+      s2: "abcd"
+      n2: 1
+    out: 0
+  - name: "simple_repeat"
+    in:
+      s1: "abc"
+      n1: 10
+      s2: "abc"
+      n2: 1
+    out: 10
+  - name: "ab_pair"
+    in:
+      s1: "ab"
+      n1: 1000000
+      s2: "ba"
+      n2: 1
+    out: 999999
+  - name: "cycle_basic"
+    in:
+      s1: "baba"
+      n1: 3
+      s2: "ba"
+      n2: 1
+    out: 6
+  - name: "cycle_offset"
+    in:
+      s1: "baba"
+      n1: 3
+      s2: "ab"
+      n2: 1
+    out: 5
+  - name: "s2_shorter_subseq"
+    in:
+      s1: "leetcode"
+      n1: 2
+      s2: "let"
+      n2: 1
+    out: 2
+  - name: "word_tail"
+    in:
+      s1: "leetcode"
+      n1: 5
+      s2: "code"
+      n2: 1
+    out: 5
+  - name: "double_block"
+    in:
+      s1: "ababab"
+      n1: 7
+      s2: "abab"
+      n2: 2
+    out: 5
+  - name: "skip_letters"
+    in:
+      s1: "abcabc"
+      n1: 8
+      s2: "ac"
+      n2: 1
+    out: 16
+  - name: "skip_letters_shift"
+    in:
+      s1: "abcabc"
+      n1: 8
+      s2: "ca"
+      n2: 1
+    out: 15
+  - name: "many_a_then_b"
+    in:
+      s1: "aaaaab"
+      n1: 20
+      s2: "ab"
+      n2: 1
+    out: 20
+  - name: "many_a_then_b_reverse"
+    in:
+      s1: "aaaaab"
+      n1: 20
+      s2: "ba"
+      n2: 1
+    out: 19
+  - name: "high_n1_high_n2"
+    in:
+      s1: "abcd"
+      n1: 1000000
+      s2: "abcd"
+      n2: 1
+    out: 1000000
+  - name: "high_n1_high_n2_ratio"
+    in:
+      s1: "xyz"
+      n1: 100
+      s2: "yz"
+      n2: 1
+    out: 100
+  - name: "high_n1_single_match"
+    in:
+      s1: "xyz"
+      n1: 100
+      s2: "x"
+      n2: 1
+    out: 100
+  - name: "pattern_ahead"
+    in:
+      s1: "abcde"
+      n1: 999999
+      s2: "ace"
+      n2: 1
+    out: 999999
+  - name: "single_cycle_drop"
+    in:
+      s1: "cab"
+      n1: 100
+      s2: "abc"
+      n2: 1
+    out: 99
+  - name: "single_cycle_half"
+    in:
+      s1: "cab"
+      n1: 100
+      s2: "cba"
+      n2: 1
+    out: 50
+  - name: "triple_ratio"
+    in:
+      s1: "aaabbb"
+      n1: 1000
+      s2: "ab"
+      n2: 3
+    out: 333
+  - name: "pairing_many"
+    in:
+      s1: "aabbcc"
+      n1: 500
+      s2: "abc"
+      n2: 1
+    out: 500
+  - name: "pairing_many_ratio"
+    in:
+      s1: "bac"
+      n1: 777
+      s2: "bc"
+      n2: 2
+    out: 388
+  - name: "pairing_shift"
+    in:
+      s1: "bac"
+      n1: 777
+      s2: "ca"
+      n2: 1
+    out: 776
+  - name: "mixed_letters"
+    in:
+      s1: "abcdefg"
+      n1: 12345
+      s2: "bdg"
+      n2: 1
+    out: 12345
+  - name: "double_block_large"
+    in:
+      s1: "xyzxyz"
+      n1: 88888
+      s2: "xzz"
+      n2: 1
+    out: 88888
+  - name: "large_repeat_1"
+    in:
+      s1: "qwerty"
+      n1: 250000
+      s2: "qy"
+      n2: 1
+    out: 250000
+  - name: "large_repeat_2"
+    in:
+      s1: "lmnop"
+      n1: 400000
+      s2: "mp"
+      n2: 1
+    out: 400000
+  - name: "small_impossible_large_n1"
+    in:
+      s1: "abc"
+      n1: 1000000
+      s2: "abcd"
+      n2: 2
+    out: 0
+  - name: "single_char_block"
+    in:
+      s1: "zzzzx"
+      n1: 1000000
+      s2: "zx"
+      n2: 1
+    out: 1000000
+  - name: "exact_ratio"
+    in:
+      s1: "abc"
+      n1: 3
+      s2: "abc"
+      n2: 2
+    out: 1

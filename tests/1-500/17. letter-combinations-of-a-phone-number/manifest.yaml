@@ -1,183 +1,530 @@
 entry:
   id: 17
-  title: letter-combinations-of-a-phone-number
-  call:
-    cpp: Solution().letterCombinations({digits})
-    rust: Solution::letter_combinations({digits}.to_string())
-    python3: Solution().letterCombinations({digits})
-    python2: Solution().letterCombinations({digits})
-    ruby: letter_combinations({digits})
-    java: new Solution().letterCombinations({digits})
-    csharp: new Solution().LetterCombinations({digits})
-    kotlin: Solution().letterCombinations({digits})
-    go: letterCombinations({digits})
-    dart: Solution().letterCombinations({digits})
-    swift: Solution().letterCombinations({digits})
-    typescript: letterCombinations({digits})
+  title: "letter-combinations-of-a-phone-number"
   params:
     digits:
       type: string
+  call:
+    cpp: "Solution().letterCombinations({digits})"
+    rust: "Solution::letter_combinations({digits})"
+    python3: "Solution().letterCombinations({digits})"
+    python2: "Solution().letterCombinations({digits})"
+    ruby: "letter_combinations({digits})"
+    java: "new Solution().letterCombinations({digits})"
+    csharp: "new Solution().LetterCombinations({digits})"
+    kotlin: "Solution().letterCombinations({digits})"
+    go: "letterCombinations({digits})"
+    dart: "Solution().letterCombinations({digits})"
+    swift: "Solution().letterCombinations({digits})"
+    typescript: "letterCombinations({digits})"
+
 judge:
-  type: ignore_order
+  type: "ignore_order"
+
 limits:
-  time_ms: 1000
-  memory_mb: 256
+  time_ms: 200
+  memory_mb: 300
+
 oracle:
   python3:
-    call: Checker().check(digits, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n        return result\n\
-      \n    def check(self, digits, result):\n        result = self._norm(result)\n\
-      \        if not digits:\n            return result == []\n        mapping =\
-      \ {'2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs',\
-      \ '8': 'tuv', '9': 'wxyz'}\n        import itertools\n        expected = [''.join(p)\
-      \ for p in itertools.product(*(mapping[d] for d in digits))]\n        return\
-      \ sorted(result) == sorted(expected)\n"
-seed: 42
+    call: "Checker().letterCombinations(digits, {result})"
+    checker: |
+      from itertools import product
+
+      class Checker:
+          def letterCombinations(self, digits, result):
+              if not isinstance(result, list):
+                  return False
+              mapping = {
+                  "2": "abc",
+                  "3": "def",
+                  "4": "ghi",
+                  "5": "jkl",
+                  "6": "mno",
+                  "7": "pqrs",
+                  "8": "tuv",
+                  "9": "wxyz",
+              }
+              if not isinstance(digits, str) or not digits:
+                  return False
+              try:
+                  groups = [mapping[d] for d in digits]
+              except KeyError:
+                  return False
+              expected = {"".join(chars) for chars in product(*groups)}
+              if len(result) != len(expected):
+                  return False
+              if any(not isinstance(item, str) for item in result):
+                  return False
+              if len(set(result)) != len(result):
+                  return False
+              if set(result) != expected:
+                  return False
+              return all(len(item) == len(digits) for item in result)
+
+seed: 17
+
 tests:
-  - name: Example 1
+  - name: "example_1"
     in:
       digits: "23"
     out:
-      - ad
-      - ae
-      - af
-      - bd
-      - be
-      - bf
-      - cd
-      - ce
-      - cf
-    judge:
-      type: ignore_order
-  - name: Example 2
+      - "ad"
+      - "ae"
+      - "af"
+      - "bd"
+      - "be"
+      - "bf"
+      - "cd"
+      - "ce"
+      - "cf"
+  - name: "example_2"
     in:
       digits: "2"
     out:
-      - a
-      - b
-      - c
-    judge:
-      type: ignore_order
-  - name: Single digit 7
+      - "a"
+      - "b"
+      - "c"
+  - name: "single_7"
     in:
       digits: "7"
     out:
-      - p
-      - q
-      - r
-      - s
-    judge:
-      type: ignore_order
-  - name: Two digits 99
-    in:
-      digits: "99"
-    judge:
-      type: ignore_order
-  - name: Max length digits 2345
-    in:
-      digits: "2345"
-    judge:
-      type: ignore_order
-  - name: Max characters mapping 7
-    in:
-      digits: "7"
-    judge:
-      type: ignore_order
-  - name: Max characters mapping 9
+      - "p"
+      - "q"
+      - "r"
+      - "s"
+  - name: "single_9"
     in:
       digits: "9"
-    judge:
-      type: ignore_order
-  - name: Mixed 2929
+    out:
+      - "w"
+      - "x"
+      - "y"
+      - "z"
+  - name: "two_digits_with_four_letters"
     in:
-      digits: "2929"
-    judge:
-      type: ignore_order
-  - name: Smallest 22
+      digits: "79"
+    out:
+      - "pw"
+      - "px"
+      - "py"
+      - "pz"
+      - "qw"
+      - "qx"
+      - "qy"
+      - "qz"
+      - "rw"
+      - "rx"
+      - "ry"
+      - "rz"
+      - "sw"
+      - "sx"
+      - "sy"
+      - "sz"
+  - name: "two_digits_mixed"
     in:
-      digits: "22"
-    judge:
-      type: ignore_order
-  - name: Random permutation 87
+      digits: "68"
+    out:
+      - "mt"
+      - "mu"
+      - "mv"
+      - "nt"
+      - "nu"
+      - "nv"
+      - "ot"
+      - "ou"
+      - "ov"
+  - name: "three_digits_small"
     in:
-      digits: "87"
-    judge:
-      type: ignore_order
-  - name: Random permutation 35
+      digits: "234"
+    out:
+      - "adg"
+      - "adh"
+      - "adi"
+      - "aeg"
+      - "aeh"
+      - "aei"
+      - "afg"
+      - "afh"
+      - "afi"
+      - "bdg"
+      - "bdh"
+      - "bdi"
+      - "beg"
+      - "beh"
+      - "bei"
+      - "bfg"
+      - "bfh"
+      - "bfi"
+      - "cdg"
+      - "cdh"
+      - "cdi"
+      - "ceg"
+      - "ceh"
+      - "cei"
+      - "cfg"
+      - "cfh"
+      - "cfi"
+  - name: "three_digits_all_four"
     in:
-      digits: "35"
-    judge:
-      type: ignore_order
-  - name: Random 46
-    in:
-      digits: "46"
-    judge:
-      type: ignore_order
-  - name: Random 58
-    in:
-      digits: "58"
-    judge:
-      type: ignore_order
-  - name: Random 67
-    in:
-      digits: "67"
-    judge:
-      type: ignore_order
-  - name: Random 98
-    in:
-      digits: "98"
-    judge:
-      type: ignore_order
-  - name: Length 4 sequence 2222
+      digits: "799"
+    out:
+      - "pww"
+      - "pwx"
+      - "pwy"
+      - "pwz"
+      - "pxw"
+      - "pxx"
+      - "pxy"
+      - "pxz"
+      - "pyw"
+      - "pyx"
+      - "pyy"
+      - "pyz"
+      - "pzw"
+      - "pzx"
+      - "pzy"
+      - "pzz"
+      - "qww"
+      - "qwx"
+      - "qwy"
+      - "qwz"
+      - "qxw"
+      - "qxx"
+      - "qxy"
+      - "qxz"
+      - "qyw"
+      - "qyx"
+      - "qyy"
+      - "qyz"
+      - "qzw"
+      - "qzx"
+      - "qzy"
+      - "qzz"
+      - "rww"
+      - "rwx"
+      - "rwy"
+      - "rwz"
+      - "rxw"
+      - "rxx"
+      - "rxy"
+      - "rxz"
+      - "ryw"
+      - "ryx"
+      - "ryy"
+      - "ryz"
+      - "rzw"
+      - "rzx"
+      - "rzy"
+      - "rzz"
+      - "sww"
+      - "swx"
+      - "swy"
+      - "swz"
+      - "sxw"
+      - "sxx"
+      - "sxy"
+      - "sxz"
+      - "syw"
+      - "syx"
+      - "syy"
+      - "syz"
+      - "szw"
+      - "szx"
+      - "szy"
+      - "szz"
+  - name: "four_digits_min_mixed"
     in:
       digits: "2222"
-    judge:
-      type: ignore_order
-  - name: Length 4 sequence 3333
+    out:
+      - "aaaa"
+      - "aaab"
+      - "aaac"
+      - "aaba"
+      - "aabb"
+      - "aabc"
+      - "aaca"
+      - "aacb"
+      - "aacc"
+      - "abaa"
+      - "abab"
+      - "abac"
+      - "abba"
+      - "abbb"
+      - "abbc"
+      - "abca"
+      - "abcb"
+      - "abcc"
+      - "acaa"
+      - "acab"
+      - "acac"
+      - "acba"
+      - "acbb"
+      - "acbc"
+      - "acca"
+      - "accb"
+      - "accc"
+      - "baaa"
+      - "baab"
+      - "baac"
+      - "baba"
+      - "babb"
+      - "babc"
+      - "baca"
+      - "bacb"
+      - "bacc"
+      - "bbaa"
+      - "bbab"
+      - "bbac"
+      - "bbba"
+      - "bbbb"
+      - "bbbc"
+      - "bbca"
+      - "bbcb"
+      - "bbcc"
+      - "bcaa"
+      - "bcab"
+      - "bcac"
+      - "bcba"
+      - "bcbb"
+      - "bcbc"
+      - "bcca"
+      - "bccb"
+      - "bccc"
+      - "caaa"
+      - "caab"
+      - "caac"
+      - "caba"
+      - "cabb"
+      - "cabc"
+      - "caca"
+      - "cacb"
+      - "cacc"
+      - "cbaa"
+      - "cbab"
+      - "cbac"
+      - "cbba"
+      - "cbbb"
+      - "cbbc"
+      - "cbca"
+      - "cbcb"
+      - "cbcc"
+      - "ccaa"
+      - "ccab"
+      - "ccac"
+      - "ccba"
+      - "ccbb"
+      - "ccbc"
+      - "ccca"
+      - "cccb"
+      - "cccc"
+  - name: "gen_01"
+    seed: 101
     in:
-      digits: "3333"
-    judge:
-      type: ignore_order
-  - name: Length 4 sequence 4444
+      digits:
+        gen: "str"
+        len: 1
+        alphabet: "23456789"
+  - name: "gen_02"
+    seed: 102
     in:
-      digits: "4444"
-    judge:
-      type: ignore_order
-  - name: Length 4 sequence 5555
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "23456789"
+  - name: "gen_03"
+    seed: 103
     in:
-      digits: "5555"
-    judge:
-      type: ignore_order
-  - name: Length 4 sequence 6666
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "23456789"
+  - name: "gen_04"
+    seed: 104
     in:
-      digits: "6666"
-    judge:
-      type: ignore_order
-  - name: Length 4 sequence 7777
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "23456789"
+  - name: "gen_05"
+    seed: 105
     in:
-      digits: "7777"
-    judge:
-      type: ignore_order
-  - name: Length 4 sequence 8888
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "79"
+  - name: "gen_06"
+    seed: 106
     in:
-      digits: "8888"
-    judge:
-      type: ignore_order
-  - name: Length 1 sequence 9
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "789"
+  - name: "gen_07"
+    seed: 107
     in:
-      digits: "9"
-    judge:
-      type: ignore_order
-  - name: Large varied 8976
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "29"
+  - name: "gen_08"
+    seed: 108
     in:
-      digits: "8976"
-    judge:
-      type: ignore_order
-  - name: Large varied 2378
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "278"
+  - name: "gen_09"
+    seed: 109
     in:
-      digits: "2378"
-    judge:
-      type: ignore_order
+      digits:
+        gen: "str"
+        len: 1
+        alphabet: "9"
+  - name: "gen_10"
+    seed: 110
+    in:
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "368"
+  - name: "gen_11"
+    seed: 111
+    in:
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "456"
+  - name: "gen_12"
+    seed: 112
+    in:
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "23"
+  - name: "gen_13"
+    seed: 113
+    in:
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "579"
+  - name: "gen_14"
+    seed: 114
+    in:
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "89"
+  - name: "gen_15"
+    seed: 115
+    in:
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "67"
+  - name: "gen_16"
+    seed: 116
+    in:
+      digits:
+        gen: "str"
+        len: 1
+        alphabet: "28"
+  - name: "gen_17"
+    seed: 117
+    in:
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "49"
+  - name: "gen_18"
+    seed: 118
+    in:
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "258"
+  - name: "gen_19"
+    seed: 119
+    in:
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "37"
+  - name: "gen_20"
+    seed: 120
+    in:
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "2468"
+  - name: "gen_21"
+    seed: 121
+    in:
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "2"
+  - name: "gen_22"
+    seed: 122
+    in:
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "7"
+  - name: "gen_23"
+    seed: 123
+    in:
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "9"
+  - name: "gen_24"
+    seed: 124
+    in:
+      digits:
+        gen: "str"
+        len: 1
+        alphabet: "3"
+  - name: "gen_25"
+    seed: 125
+    in:
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "69"
+  - name: "gen_26"
+    seed: 126
+    in:
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "237"
+  - name: "gen_27"
+    seed: 127
+    in:
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "29"
+  - name: "gen_28"
+    seed: 128
+    in:
+      digits:
+        gen: "str"
+        len: 2
+        alphabet: "89"
+  - name: "gen_29"
+    seed: 129
+    in:
+      digits:
+        gen: "str"
+        len: 3
+        alphabet: "47"
+  - name: "gen_30"
+    seed: 130
+    in:
+      digits:
+        gen: "str"
+        len: 4
+        alphabet: "567"

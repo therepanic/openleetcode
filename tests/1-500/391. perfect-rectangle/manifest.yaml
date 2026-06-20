@@ -1,0 +1,432 @@
+entry:
+  id: 391
+  title: "perfect-rectangle"
+  params:
+    rectangles:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().isRectangleCover({rectangles})"
+    rust: "Solution::isRectangleCover({rectangles})"
+    python3: "Solution().isRectangleCover({rectangles})"
+    python2: "Solution().isRectangleCover({rectangles})"
+    ruby: "isRectangleCover({rectangles})"
+    java: "new Solution().isRectangleCover({rectangles})"
+    csharp: "new Solution().IsRectangleCover({rectangles})"
+    kotlin: "Solution().isRectangleCover({rectangles})"
+    go: "isRectangleCover({rectangles})"
+    dart: "Solution().isRectangleCover({rectangles})"
+    swift: "Solution().isRectangleCover({rectangles})"
+    typescript: "isRectangleCover({rectangles})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(rectangles, {result})"
+    checker: |
+      class Checker:
+          def check(self, rectangles, result):
+              if not rectangles:
+                  return result is False
+              area = 0
+              corners = set()
+              min_x = min(r[0] for r in rectangles)
+              min_y = min(r[1] for r in rectangles)
+              max_x = max(r[2] for r in rectangles)
+              max_y = max(r[3] for r in rectangles)
+              for x1, y1, x2, y2 in rectangles:
+                  if x1 >= x2 or y1 >= y2:
+                      return result is False
+                  area += (x2 - x1) * (y2 - y1)
+                  for pt in ((x1, y1), (x1, y2), (x2, y1), (x2, y2)):
+                      if pt in corners:
+                          corners.remove(pt)
+                      else:
+                          corners.add(pt)
+              expected = {
+                  (min_x, min_y),
+                  (min_x, max_y),
+                  (max_x, min_y),
+                  (max_x, max_y),
+              }
+              ok = area == (max_x - min_x) * (max_y - min_y) and corners == expected
+              return result == ok
+
+seed: 391
+
+tests:
+  - name: sample-1
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 1, 3, 3]
+          - [3, 1, 4, 2]
+          - [3, 2, 4, 4]
+          - [1, 3, 2, 4]
+          - [2, 3, 3, 4]
+    out: true
+  - name: sample-2
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 1, 2, 3]
+          - [1, 3, 2, 4]
+          - [3, 1, 4, 2]
+          - [3, 2, 4, 4]
+    out: false
+  - name: sample-3
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 1, 3, 3]
+          - [3, 1, 4, 2]
+          - [1, 3, 2, 4]
+          - [2, 2, 4, 4]
+    out: false
+  - name: single-rectangle
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 3]
+    out: true
+  - name: two-horizontal-tiles
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 2]
+          - [1, 0, 3, 2]
+    out: true
+  - name: two-vertical-tiles
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 1]
+          - [0, 1, 2, 4]
+    out: true
+  - name: four-quadrants
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 1]
+          - [1, 0, 2, 1]
+          - [0, 1, 1, 2]
+          - [1, 1, 2, 2]
+    out: true
+  - name: gap-center-2x2
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 1]
+          - [1, 0, 2, 1]
+          - [0, 1, 1, 2]
+    out: false
+  - name: overlap-center-2x2
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 2]
+          - [1, 1, 3, 3]
+    out: false
+  - name: touching-at-corner-only
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 1]
+          - [1, 1, 2, 2]
+    out: false
+  - name: same-area-but-hole
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 3, 1]
+          - [0, 1, 1, 2]
+          - [2, 1, 3, 2]
+    out: false
+  - name: same-corners-extra-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 1]
+          - [0, 1, 1, 2]
+          - [1, 1, 2, 2]
+          - [0, 0, 1, 1]
+    out: false
+  - name: thin-vertical-strip
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [5, -2, 6, 3]
+    out: true
+  - name: thin-horizontal-strip
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [-3, 7, 4, 8]
+    out: true
+  - name: negative-coordinates-tiling
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [-2, -2, 0, 0]
+          - [0, -2, 2, 0]
+          - [-2, 0, 0, 2]
+          - [0, 0, 2, 2]
+    out: true
+  - name: negative-coordinates-gap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [-2, -2, 0, 0]
+          - [0, -2, 2, 0]
+          - [-2, 0, 0, 2]
+    out: false
+  - name: negative-coordinates-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [-2, -2, 1, 1]
+          - [0, 0, 2, 2]
+    out: false
+  - name: three-by-three-perfect
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 1]
+          - [1, 0, 2, 1]
+          - [2, 0, 3, 1]
+          - [0, 1, 1, 2]
+          - [1, 1, 2, 2]
+          - [2, 1, 3, 2]
+          - [0, 2, 1, 3]
+          - [1, 2, 2, 3]
+          - [2, 2, 3, 3]
+    out: true
+  - name: three-by-three-gap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 1]
+          - [1, 0, 2, 1]
+          - [2, 0, 3, 1]
+          - [0, 1, 1, 2]
+          - [2, 1, 3, 2]
+          - [0, 2, 1, 3]
+          - [1, 2, 2, 3]
+          - [2, 2, 3, 3]
+    out: false
+  - name: three-by-three-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 1]
+          - [1, 0, 2, 1]
+          - [2, 0, 3, 1]
+          - [0, 1, 2, 2]
+          - [1, 1, 3, 2]
+          - [0, 2, 1, 3]
+          - [1, 2, 2, 3]
+          - [2, 2, 3, 3]
+    out: false
+  - name: large-perfect-2x5
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 1]
+          - [0, 1, 2, 2]
+          - [0, 2, 2, 3]
+          - [0, 3, 2, 4]
+          - [0, 4, 2, 5]
+    out: true
+  - name: large-perfect-5x2
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 2]
+          - [1, 0, 2, 2]
+          - [2, 0, 3, 2]
+          - [3, 0, 4, 2]
+          - [4, 0, 5, 2]
+    out: true
+  - name: large-gap-5x2
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 2]
+          - [1, 0, 2, 2]
+          - [3, 0, 4, 2]
+          - [4, 0, 5, 2]
+    out: false
+  - name: large-overlap-5x2
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 2]
+          - [1, 0, 3, 2]
+          - [3, 0, 5, 2]
+    out: false
+  - name: nested-looking-invalid
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 4, 4]
+          - [1, 1, 3, 3]
+    out: false
+  - name: l-shaped-hole
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 1]
+          - [0, 1, 1, 2]
+          - [1, 1, 2, 2]
+          - [2, 0, 3, 2]
+    out: true
+  - name: l-shaped-extra-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 1]
+          - [0, 1, 1, 2]
+          - [1, 1, 2, 2]
+          - [1, 0, 3, 2]
+    out: false
+  - name: border-corner-duplicate
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 2]
+          - [2, 0, 4, 1]
+          - [2, 1, 4, 2]
+    out: true
+  - name: border-corner-gap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 2]
+          - [2, 0, 4, 1]
+    out: false
+  - name: border-corner-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 2, 2]
+          - [1, 0, 3, 1]
+          - [1, 1, 3, 2]
+    out: false
+  - name: asymmetric-perfect
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 3]
+          - [1, 0, 3, 1]
+          - [1, 1, 2, 3]
+          - [2, 1, 3, 3]
+    out: true
+  - name: asymmetric-gap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 3]
+          - [1, 0, 3, 1]
+          - [1, 1, 2, 3]
+    out: false
+  - name: asymmetric-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 3]
+          - [1, 0, 3, 2]
+          - [1, 1, 3, 3]
+    out: false
+  - name: max-boundary-perfect
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [-100000, -100000, 0, 100000]
+          - [0, -100000, 100000, 100000]
+    out: true
+  - name: max-boundary-gap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [-100000, -100000, 0, 100000]
+          - [1, -100000, 100000, 100000]
+    out: false
+  - name: max-boundary-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [-100000, -100000, 50000, 100000]
+          - [0, -100000, 100000, 100000]
+    out: false
+  - name: four-strips-perfect
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 4, 1]
+          - [0, 1, 4, 2]
+          - [0, 2, 4, 3]
+          - [0, 3, 4, 4]
+    out: true
+  - name: four-strips-gap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 4, 1]
+          - [0, 1, 4, 2]
+          - [0, 3, 4, 4]
+    out: false
+  - name: four-strips-overlap
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [0, 0, 4, 2]
+          - [0, 1, 4, 3]
+    out: false

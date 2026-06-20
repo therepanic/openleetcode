@@ -1,0 +1,670 @@
+entry:
+  id: 112
+  title: path-sum
+  params:
+    root:
+      type: tree_node
+    targetSum:
+      type: int
+  call:
+    cpp: "Solution().hasPathSum({root}, {targetSum})"
+    rust: "Solution::has_path_sum({root}, {targetSum})"
+    python3: "Solution().hasPathSum({root}, {targetSum})"
+    python2: "Solution().hasPathSum({root}, {targetSum})"
+    ruby: "has_path_sum({root}, {targetSum})"
+    java: "new Solution().hasPathSum({root}, {targetSum})"
+    csharp: "new Solution().HasPathSum({root}, {targetSum})"
+    kotlin: "Solution().hasPathSum({root}, {targetSum})"
+    go: "hasPathSum({root}, {targetSum})"
+    dart: "Solution().hasPathSum({root}, {targetSum})"
+    swift: "Solution().hasPathSum({root}, {targetSum})"
+    typescript: "hasPathSum({root}, {targetSum})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().hasPathSum(root, targetSum, {result})"
+    checker: |
+      class Checker:
+          def hasPathSum(self, root, targetSum, result):
+              if not isinstance(result, bool):
+                  return False
+              if root is None or root == []:
+                  return result is False
+              if not isinstance(root, list):
+                  return False
+
+              def dfs(i, acc):
+                  if i >= len(root) or root[i] is None:
+                      return False
+                  acc += root[i]
+                  left = 2 * i + 1
+                  right = 2 * i + 2
+                  has_left = left < len(root) and root[left] is not None
+                  has_right = right < len(root) and root[right] is not None
+                  if not has_left and not has_right:
+                      return acc == targetSum
+                  return dfs(left, acc) or dfs(right, acc)
+
+              return result == dfs(0, 0)
+seed: 112
+tests:
+  - name: example_1
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 22
+    out: true
+  - name: example_2
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+      targetSum: 5
+    out: false
+  - name: example_3_empty_tree
+    in:
+      root: []
+      targetSum: 0
+    out: false
+  - name: single_node_exact_match
+    in:
+      root:
+        - 7
+      targetSum: 7
+    out: true
+  - name: single_node_mismatch
+    in:
+      root:
+        - 7
+      targetSum: 8
+    out: false
+  - name: single_negative_node_exact_match
+    in:
+      root:
+        - -3
+      targetSum: -3
+    out: true
+  - name: root_with_left_child_only_match
+    in:
+      root:
+        - 1
+        - 2
+      targetSum: 3
+    out: true
+  - name: root_with_left_child_only_mismatch
+    in:
+      root:
+        - 1
+        - 2
+      targetSum: 4
+    out: false
+  - name: root_with_right_child_only_match
+    in:
+      root:
+        - 1
+        - null
+        - 2
+      targetSum: 3
+    out: true
+  - name: root_with_right_child_only_mismatch
+    in:
+      root:
+        - 1
+        - null
+        - 2
+      targetSum: 1
+    out: false
+  - name: leaf_not_on_root_to_leaf_path
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+      targetSum: 7
+    out: true
+  - name: path_exists_on_left_branch
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 18
+    out: true
+  - name: path_exists_on_right_branch
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 20
+    out: false
+  - name: internal_node_sum_is_not_enough
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+      targetSum: 1
+    out: false
+  - name: negative_values_simple_true
+    in:
+      root:
+        - -2
+        - null
+        - -3
+      targetSum: -5
+    out: true
+  - name: negative_values_simple_false
+    in:
+      root:
+        - -2
+        - null
+        - -3
+      targetSum: -2
+    out: false
+  - name: zeros_with_true_path
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      targetSum: 0
+    out: true
+  - name: zeros_with_false_target
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      targetSum: 1
+    out: false
+  - name: duplicated_values_true
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      targetSum: 6
+    out: true
+  - name: duplicated_values_false
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      targetSum: 5
+    out: false
+  - name: deep_left_skew_true
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+      targetSum: 10
+    out: false
+  - name: deep_left_skew_false
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+      targetSum: 9
+    out: false
+  - name: deep_right_skew_true
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - null
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 4
+      targetSum: 10
+    out: false
+  - name: deep_right_skew_false
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - null
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 4
+      targetSum: 11
+    out: false
+  - name: shallow_leaf_competes_with_deeper_branch_true
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+      targetSum: 7
+    out: true
+  - name: shallow_leaf_competes_with_deeper_branch_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 6
+      targetSum: 8
+    out: true
+  - name: path_requires_leaf_not_internal_node
+    in:
+      root:
+        - 5
+        - 4
+        - 8
+        - 11
+        - null
+        - 13
+        - 4
+        - 7
+        - 2
+        - null
+        - null
+        - null
+        - 1
+      targetSum: 27
+    out: true
+  - name: target_zero_with_nonzero_tree_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+      targetSum: 0
+    out: false
+  - name: larger_balanced_true
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      targetSum: 15
+    out: true
+  - name: larger_balanced_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      targetSum: 16
+    out: true
+  - name: left_heavy_with_right_leaf_true
+    in:
+      root:
+        - 10
+        - 5
+        - 20
+        - 3
+        - null
+        - 15
+        - 25
+        - 2
+        - 1
+        - null
+        - null
+        - 14
+        - 1
+        - null
+        - 4
+      targetSum: 21
+    out: false
+  - name: left_heavy_with_right_leaf_false
+    in:
+      root:
+        - 10
+        - 5
+        - 20
+        - 3
+        - null
+        - 15
+        - 25
+        - 2
+        - 1
+        - null
+        - null
+        - 14
+        - 1
+        - null
+        - 4
+      targetSum: 22
+    out: false
+  - name: all_negative_path_true
+    in:
+      root:
+        - -10
+        - -20
+        - -30
+        - -5
+        - -15
+        - -25
+        - -35
+      targetSum: -35
+    out: true
+  - name: all_negative_path_false
+    in:
+      root:
+        - -10
+        - -20
+        - -30
+        - -5
+        - -15
+        - -25
+        - -35
+      targetSum: -34
+    out: false
+  - name: zero_root_with_zero_leaf_false_due_to_not_leaf_path
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 0
+        - 0
+      targetSum: 1
+    out: true
+  - name: zero_root_with_zero_leaf_false
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 0
+        - 0
+      targetSum: 2
+    out: false
+  - name: path_in_right_subtree_only
+    in:
+      root:
+        - 8
+        - 4
+        - 10
+        - 2
+        - 6
+        - null
+        - 14
+        - null
+        - null
+        - 5
+        - 7
+        - null
+        - null
+        - 13
+        - 15
+      targetSum: 37
+    out: false
+  - name: path_in_right_subtree_only_false
+    in:
+      root:
+        - 8
+        - 4
+        - 10
+        - 2
+        - 6
+        - null
+        - 14
+        - null
+        - null
+        - 5
+        - 7
+        - null
+        - null
+        - 13
+        - 15
+      targetSum: 38
+    out: true
+  - name: complete_tree_large_true
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 6
+        - 5
+        - 5
+        - 6
+        - 6
+        - 5
+        - 7
+        - 8
+        - 8
+        - 7
+        - 7
+        - 8
+        - 8
+        - 7
+        - 9
+        - 10
+        - 10
+        - 9
+        - 9
+        - 10
+        - 10
+        - 9
+      targetSum: 16
+    out: false
+  - name: complete_tree_large_false
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 4
+        - 4
+        - 3
+        - 5
+        - 6
+        - 6
+        - 5
+        - 5
+        - 6
+        - 6
+        - 5
+        - 7
+        - 8
+        - 8
+        - 7
+        - 7
+        - 8
+        - 8
+        - 7
+        - 9
+        - 10
+        - 10
+        - 9
+        - 9
+        - 10
+        - 10
+        - 9
+      targetSum: 17
+    out: false
+  - name: sparse_tree_with_null_gaps_true
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+        - null
+        - null
+        - null
+        - null
+      targetSum: 30
+    out: true
+  - name: sparse_tree_with_null_gaps_false
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+        - null
+        - null
+        - null
+        - null
+      targetSum: 31
+    out: false
+  - name: target_matches_internal_prefix_only_false
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+      targetSum: 7
+    out: true
+  - name: target_matches_deep_left_leaf_true
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 5
+      targetSum: 15
+    out: false

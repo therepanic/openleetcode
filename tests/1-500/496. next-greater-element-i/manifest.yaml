@@ -1,0 +1,255 @@
+entry:
+  id: 496
+  title: next-greater-element-i
+  params:
+    nums1:
+      type: array
+      items:
+        type: int
+    nums2:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().nextGreaterElement({nums1}, {nums2})
+    rust: Solution::next_greater_element({nums1}, {nums2})
+    python3: Solution().nextGreaterElement({nums1}, {nums2})
+    python2: Solution().nextGreaterElement({nums1}, {nums2})
+    ruby: next_greater_element({nums1}, {nums2})
+    java: new Solution().nextGreaterElement({nums1}, {nums2})
+    csharp: new Solution().NextGreaterElement({nums1}, {nums2})
+    kotlin: Solution().nextGreaterElement({nums1}, {nums2})
+    go: nextGreaterElement({nums1}, {nums2})
+    dart: Solution().nextGreaterElement({nums1}, {nums2})
+    swift: Solution().nextGreaterElement({nums1}, {nums2})
+    typescript: nextGreaterElement({nums1}, {nums2})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: Checker().nextGreaterElement(nums1, nums2, {result})
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def nextGreaterElement(self, nums1: List[int], nums2: List[int], result: Any) -> bool:
+              if not isinstance(result, list):
+                  return False
+              if len(result) != len(nums1):
+                  return False
+              positions = {}
+              for i, num in enumerate(nums2):
+                  if num in positions:
+                      return False
+                  positions[num] = i
+              if len(set(nums1)) != len(nums1):
+                  return False
+              if not set(nums1).issubset(set(nums2)):
+                  return False
+              for i, num in enumerate(nums1):
+                  idx = positions.get(num)
+                  if idx is None:
+                      return False
+                  expected = -1
+                  for j in range(idx + 1, len(nums2)):
+                      if nums2[j] > num:
+                          expected = nums2[j]
+                          break
+                  if result[i] != expected:
+                      return False
+              return True
+seed: 496
+tests:
+  - name: ex1
+    in:
+      nums1: [4, 1, 2]
+      nums2: [1, 3, 4, 2]
+    out: [-1, 3, -1]
+  - name: ex2
+    in:
+      nums1: [2, 4]
+      nums2: [1, 2, 3, 4]
+    out: [3, -1]
+  - name: single_last
+    in:
+      nums1: [1]
+      nums2: [2, 3, 1]
+    out: [-1]
+  - name: single_first
+    in:
+      nums1: [2]
+      nums2: [2, 1]
+    out: [-1]
+  - name: increasing_pair
+    in:
+      nums1: [1, 2]
+      nums2: [1, 2]
+    out: [2, -1]
+  - name: decreasing_pair
+    in:
+      nums1: [2, 1]
+      nums2: [2, 1]
+    out: [-1, -1]
+  - name: all_have_next
+    in:
+      nums1: [1, 3, 5]
+      nums2: [1, 3, 5, 7]
+    out: [3, 5, 7]
+  - name: no_next_anywhere
+    in:
+      nums1: [7, 5, 3]
+      nums2: [1, 3, 5, 7]
+    out: [-1, 7, 5]
+  - name: mixed_middle
+    in:
+      nums1: [3, 1, 4]
+      nums2: [2, 1, 3, 4]
+    out: [4, 3, -1]
+  - name: sample_spread
+    in:
+      nums1: [2, 5, 1]
+      nums2: [6, 5, 4, 3, 2, 1, 7]
+    out: [7, 7, 7]
+  - name: descending_with_tail
+    in:
+      nums1: [8, 4, 2]
+      nums2: [9, 8, 7, 6, 5, 4, 3, 2]
+    out: [-1, -1, -1]
+  - name: ascending_with_subset
+    in:
+      nums1: [2, 4, 6, 8]
+      nums2: [1, 2, 3, 4, 5, 6, 7, 8]
+    out: [3, 5, 7, -1]
+  - name: first_element_greater
+    in:
+      nums1: [1, 4]
+      nums2: [1, 5, 4, 6]
+    out: [5, 6]
+  - name: immediate_next
+    in:
+      nums1: [3, 2]
+      nums2: [1, 3, 2, 4]
+    out: [4, 4]
+  - name: far_next
+    in:
+      nums1: [4, 2, 1]
+      nums2: [4, 1, 2, 3, 5]
+    out: [5, 3, 2]
+  - name: alternating_peaks
+    in:
+      nums1: [1, 3, 5]
+      nums2: [1, 4, 2, 5, 3, 6]
+    out: [4, 6, 6]
+  - name: nums1_prefix
+    in:
+      nums1: [10, 9, 8]
+      nums2: [10, 9, 8, 7, 6, 5, 11]
+    out: [11, 11, 11]
+  - name: nums1_suffix
+    in:
+      nums1: [7, 6, 5]
+      nums2: [1, 2, 3, 4, 5, 6, 7]
+    out: [-1, 7, 6]
+  - name: random_small_1
+    in:
+      nums1: [9, 1, 7]
+      nums2: [4, 9, 2, 1, 6, 7, 8]
+    out: [-1, 6, 8]
+  - name: random_small_2
+    in:
+      nums1: [6, 0, 4]
+      nums2: [0, 6, 1, 4, 2, 3, 5]
+    out: [-1, 6, 5]
+  - name: random_small_3
+    in:
+      nums1: [11, 3, 8]
+      nums2: [3, 11, 2, 8, 7, 9]
+    out: [-1, 11, 9]
+  - name: random_small_4
+    in:
+      nums1: [12, 5, 2]
+      nums2: [5, 1, 12, 2, 8, 3]
+    out: [-1, 12, 8]
+  - name: random_small_5
+    in:
+      nums1: [14, 10, 13]
+      nums2: [10, 14, 9, 13, 15, 11]
+    out: [15, 14, 15]
+  - name: edge_low_values
+    in:
+      nums1: [0, 1]
+      nums2: [0, 1, 2]
+    out: [1, 2]
+  - name: edge_high_values
+    in:
+      nums1: [9999, 10000]
+      nums2: [9998, 9999, 10000]
+    out: [10000, -1]
+  - name: middle_plateau
+    in:
+      nums1: [5, 2, 8]
+      nums2: [9, 5, 1, 2, 7, 8, 6]
+    out: [7, 7, -1]
+  - name: left_greater_right_none
+    in:
+      nums1: [2, 4, 6]
+      nums2: [6, 4, 2, 8]
+    out: [8, 8, 8]
+  - name: rightmost_selected
+    in:
+      nums1: [3, 6]
+      nums2: [1, 3, 2, 4, 6, 5]
+    out: [4, -1]
+  - name: sparse_subset
+    in:
+      nums1: [7, 1, 9]
+      nums2: [7, 2, 1, 8, 3, 9, 4]
+    out: [8, 8, -1]
+  - name: near_end_immediate
+    in:
+      nums1: [4, 1, 3]
+      nums2: [2, 4, 1, 3]
+    out: [-1, 3, -1]
+  - name: zigzag
+    in:
+      nums1: [2, 5, 8]
+      nums2: [2, 9, 5, 1, 8, 7, 10]
+    out: [9, 8, 10]
+  - name: valley
+    in:
+      nums1: [1, 4, 2]
+      nums2: [4, 2, 1, 3, 5]
+    out: [3, 5, 3]
+  - name: peak_then_drop
+    in:
+      nums1: [9, 7, 3]
+      nums2: [1, 9, 8, 7, 6, 3, 2]
+    out: [-1, -1, -1]
+  - name: long_increasing_prefix
+    in:
+      nums1: [3, 6, 9]
+      nums2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: [4, 7, 10]
+  - name: long_decreasing_prefix
+    in:
+      nums1: [10, 8, 6]
+      nums2: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: [-1, -1, -1]
+  - name: mixed_signless_large_gap
+    in:
+      nums1: [15, 20, 25]
+      nums2: [5, 15, 10, 20, 1, 25, 30]
+    out: [20, 25, 30]
+  - name: multiple_candidates
+    in:
+      nums1: [2, 3, 4]
+      nums2: [2, 1, 3, 0, 4, 5]
+    out: [3, 4, 5]
+  - name: final_element_max
+    in:
+      nums1: [1, 2, 3]
+      nums2: [3, 1, 2]
+    out: [2, -1, -1]

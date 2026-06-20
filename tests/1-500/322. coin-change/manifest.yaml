@@ -1,0 +1,365 @@
+entry:
+  id: 322
+  title: "coin-change"
+  params:
+    coins:
+      type: array
+      items:
+        type: int
+    amount:
+      type: int
+  call:
+    cpp: "Solution().coinChange({coins}, {amount})"
+    rust: "Solution::coin_change({coins}, {amount})"
+    python3: "Solution().coinChange({coins}, {amount})"
+    python2: "Solution().coinChange({coins}, {amount})"
+    ruby: "coin_change({coins}, {amount})"
+    java: "new Solution().coinChange({coins}, {amount})"
+    csharp: "new Solution().CoinChange({coins}, {amount})"
+    kotlin: "Solution().coinChange({coins}, {amount})"
+    go: "coinChange({coins}, {amount})"
+    dart: "Solution().coinChange({coins}, {amount})"
+    swift: "Solution().coinChange({coins}, {amount})"
+    typescript: "coinChange({coins}, {amount})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(coins, amount, {result})"
+    checker: |
+      class Checker:
+          def check(self, coins, amount, result):
+              if not isinstance(result, int):
+                  return False
+
+              dp = [amount + 1] * (amount + 1)
+              dp[0] = 0
+
+              for i in range(1, amount + 1):
+                  for coin in coins:
+                      if i - coin >= 0:
+                          dp[i] = min(dp[i], 1 + dp[i - coin])
+
+              expected = dp[amount] if dp[amount] != amount + 1 else -1
+              return result == expected
+
+seed: 322322
+
+tests:
+  - name: "example_1"
+    in:
+      coins:
+        - 1
+        - 2
+        - 5
+      amount: 11
+    out: 3
+
+  - name: "example_2"
+    in:
+      coins:
+        - 2
+      amount: 3
+    out: -1
+
+  - name: "example_3"
+    in:
+      coins:
+        - 1
+      amount: 0
+    out: 0
+
+  - name: "single_coin_exact"
+    in:
+      coins:
+        - 1
+      amount: 1
+    out: 1
+
+  - name: "single_coin_impossible"
+    in:
+      coins:
+        - 2
+      amount: 1
+    out: -1
+
+  - name: "exact_fit_with_large_coin"
+    in:
+      coins:
+        - 2
+        - 5
+        - 10
+        - 1
+      amount: 27
+    out: 4
+
+  - name: "classic_impossible_odd"
+    in:
+      coins:
+        - 4
+        - 5
+      amount: 7
+    out: -1
+
+  - name: "small_impossible_even"
+    in:
+      coins:
+        - 2
+        - 4
+      amount: 7
+    out: -1
+
+  - name: "small_even_exact"
+    in:
+      coins:
+        - 2
+        - 4
+      amount: 8
+    out: 2
+
+  - name: "no_solution_under_target"
+    in:
+      coins:
+        - 3
+        - 7
+      amount: 5
+    out: -1
+
+  - name: "two_coins_exact"
+    in:
+      coins:
+        - 7
+        - 10
+      amount: 14
+    out: 2
+
+  - name: "two_coins_impossible"
+    in:
+      coins:
+        - 7
+        - 10
+      amount: 15
+    out: -1
+
+  - name: "mixed_basic"
+    in:
+      coins:
+        - 9
+        - 6
+        - 5
+        - 1
+      amount: 11
+    out: 2
+
+  - name: "zero_amount_with_many_coins"
+    in:
+      coins:
+        - 9
+        - 6
+        - 5
+        - 1
+      amount: 0
+    out: 0
+
+  - name: "greedy_not_enough"
+    in:
+      coins:
+        - 5
+        - 7
+        - 8
+      amount: 14
+    out: 2
+
+  - name: "greedy_not_possible"
+    in:
+      coins:
+        - 5
+        - 7
+        - 8
+      amount: 1
+    out: -1
+
+  - name: "dp_three_coins"
+    in:
+      coins:
+        - 1
+        - 3
+        - 4
+      amount: 6
+    out: 2
+
+  - name: "dp_three_coins_seven"
+    in:
+      coins:
+        - 1
+        - 3
+        - 4
+      amount: 7
+    out: 2
+
+  - name: "dp_three_coins_eight"
+    in:
+      coins:
+        - 1
+        - 3
+        - 4
+      amount: 8
+    out: 2
+
+  - name: "dp_three_coins_ten"
+    in:
+      coins:
+        - 1
+        - 3
+        - 4
+      amount: 10
+    out: 3
+
+  - name: "three_coin_mix"
+    in:
+      coins:
+        - 2
+        - 3
+        - 5
+      amount: 11
+    out: 3
+
+  - name: "three_coin_zero"
+    in:
+      coins:
+        - 2
+        - 3
+        - 5
+      amount: 0
+    out: 0
+
+  - name: "three_coin_small_impossible"
+    in:
+      coins:
+        - 2
+        - 3
+        - 5
+      amount: 1
+    out: -1
+
+  - name: "ten_and_twenty_five_thirty"
+    in:
+      coins:
+        - 10
+        - 25
+      amount: 30
+    out: 3
+
+  - name: "ten_and_twenty_five_thirtyfive"
+    in:
+      coins:
+        - 10
+        - 25
+      amount: 35
+    out: 2
+
+  - name: "ten_and_twenty_five_forty"
+    in:
+      coins:
+        - 10
+        - 25
+      amount: 40
+    out: 4
+
+  - name: "ten_and_twenty_five_one"
+    in:
+      coins:
+        - 10
+        - 25
+      amount: 1
+    out: -1
+
+  - name: "large_amount_exact_100"
+    in:
+      coins:
+        - 2
+        - 5
+        - 10
+        - 20
+        - 50
+        - 100
+      amount: 10000
+    out: 100
+
+  - name: "large_amount_primeish_9999"
+    in:
+      coins:
+        - 7
+        - 11
+        - 13
+      amount: 9999
+    out: 771
+
+  - name: "large_amount_primeish_10000"
+    in:
+      coins:
+        - 7
+        - 11
+        - 13
+      amount: 10000
+    out: 770
+
+  - name: "max_int_coin_with_one"
+    in:
+      coins:
+        - 1
+        - 2147483647
+      amount: 2
+    out: 2
+
+  - name: "max_int_only_zero"
+    in:
+      coins:
+        - 2147483647
+      amount: 0
+    out: 0
+
+  - name: "max_int_only_impossible"
+    in:
+      coins:
+        - 2147483647
+      amount: 1
+    out: -1
+
+  - name: "near_amount_9999"
+    in:
+      coins:
+        - 9999
+        - 10000
+      amount: 9999
+    out: 1
+
+  - name: "near_amount_10000"
+    in:
+      coins:
+        - 9999
+        - 10000
+      amount: 10000
+    out: 1
+
+  - name: "near_amount_19999"
+    in:
+      coins:
+        - 9999
+        - 10000
+      amount: 19999
+    out: 2
+
+  - name: "large_amount_one_coin"
+    in:
+      coins:
+        - 1
+        - 2147483647
+      amount: 10000
+    out: 10000

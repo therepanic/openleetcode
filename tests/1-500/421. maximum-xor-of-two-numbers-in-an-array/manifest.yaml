@@ -1,0 +1,286 @@
+entry:
+  id: 421
+  title: maximum-xor-of-two-numbers-in-an-array
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().findMaximumXOR({nums})
+    rust: Solution::find_maximum_xor({nums})
+    python3: Solution().findMaximumXOR({nums})
+    python2: Solution().findMaximumXOR({nums})
+    ruby: find_maximum_xor({nums})
+    java: new Solution().findMaximumXOR({nums})
+    csharp: new Solution().FindMaximumXOR({nums})
+    kotlin: Solution().findMaximumXOR({nums})
+    go: findMaximumXOR({nums})
+    dart: Solution().findMaximumXOR({nums})
+    swift: Solution().findMaximumXOR({nums})
+    typescript: findMaximumXOR({nums})
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: Checker().findMaximumXOR(nums, {result})
+    checker: |
+      class Checker:
+          def findMaximumXOR(self, nums, result):
+              if not isinstance(nums, list) or not isinstance(result, int):
+                  return False
+              if len(nums) < 1 or len(nums) > 200000:
+                  return False
+              for x in nums:
+                  if not isinstance(x, int) or x < 0 or x > 2147483647:
+                      return False
+              mx_bit = max(nums).bit_length()
+              trie = [[-1, -1]]
+
+              def insert(num):
+                  node = 0
+                  for i in range(mx_bit - 1, -1, -1):
+                      bit = (num >> i) & 1
+                      nxt = trie[node][bit]
+                      if nxt == -1:
+                          nxt = len(trie)
+                          trie[node][bit] = nxt
+                          trie.append([-1, -1])
+                      node = nxt
+
+              def best_xor(num):
+                  node = 0
+                  ans = 0
+                  for i in range(mx_bit - 1, -1, -1):
+                      bit = (num >> i) & 1
+                      opp = 1 - bit
+                      if trie[node][opp] != -1:
+                          ans |= 1 << i
+                          node = trie[node][opp]
+                      else:
+                          node = trie[node][bit]
+                  return ans
+
+              for num in nums:
+                  insert(num)
+
+              expected = 0
+              for num in nums:
+                  expected = max(expected, best_xor(num))
+              return result == expected
+
+seed: 421
+
+tests:
+  - name: example_1
+    in:
+      nums: [3, 10, 5, 25, 2, 8]
+    out: 28
+  - name: example_2
+    in:
+      nums: [14, 70, 53, 83, 49, 91, 36, 80, 92, 51, 66, 70]
+    out: 127
+  - name: single_zero
+    in:
+      nums: [0]
+    out: 0
+  - name: single_one
+    in:
+      nums: [1]
+    out: 0
+  - name: two_equal_zero
+    in:
+      nums: [0, 0]
+    out: 0
+  - name: two_equal_one
+    in:
+      nums: [1, 1]
+    out: 0
+  - name: two_small
+    in:
+      nums: [2, 4]
+    out: 6
+  - name: three_mixed
+    in:
+      nums: [8, 10, 2]
+    out: 10
+  - name: sequential_small
+    in:
+      nums: [2, 3, 4, 5, 6, 7]
+    out: 7
+  - name: mixed_eight
+    in:
+      nums: [8, 1, 2, 12, 7, 6]
+    out: 15
+  - name: powers_of_two
+    in:
+      nums: [1, 2, 4, 8, 16, 32]
+    out: 48
+  - name: mixed_six
+    in:
+      nums: [31, 14, 27, 8, 19, 3]
+    out: 29
+  - name: pair_high
+    in:
+      nums: [5, 25]
+    out: 28
+  - name: all_same
+    in:
+      nums: [7, 7, 7, 7]
+    out: 0
+  - name: monotone_prefix
+    in:
+      nums: [0, 1, 2, 3, 4]
+    out: 7
+  - name: descending_powers
+    in:
+      nums: [1024, 512, 256, 128, 64]
+    out: 1536
+  - name: triple_small
+    in:
+      nums: [9, 6, 3]
+    out: 15
+  - name: example_like_five
+    in:
+      nums: [15, 5, 10, 25, 2, 8]
+    out: 28
+  - name: large_pair
+    in:
+      nums: [1000000000, 1073741823]
+    out: 73741823
+  - name: max_and_zero
+    in:
+      nums: [2147483647, 0]
+    out: 2147483647
+  - name: max_and_one
+    in:
+      nums: [2147483647, 1]
+    out: 2147483646
+  - name: three_large_mixed
+    in:
+      nums: [123456789, 987654321, 555555555]
+    out: 1032168868
+  - name: descending_chain
+    in:
+      nums: [42, 21, 10, 5, 2, 1]
+    out: 63
+  - name: consecutive_odd
+    in:
+      nums: [17, 31, 47, 63, 79]
+    out: 112
+  - name: four_mixed
+    in:
+      nums: [6, 28, 31, 7]
+    out: 27
+  - name: powers_four
+    in:
+      nums: [11, 22, 44, 88]
+    out: 116
+  - name: geometric_like
+    in:
+      nums: [13, 26, 52, 104, 208]
+    out: 228
+  - name: duplicates_pairs
+    in:
+      nums: [9, 9, 8, 8, 7, 7]
+    out: 15
+  - name: near_10bit
+    in:
+      nums: [1, 1023, 511, 255]
+    out: 1022
+  - name: hundred_steps
+    in:
+      nums: [100, 200, 300, 400, 500, 600]
+    out: 968
+  - name: four_huge_mix
+    in:
+      nums: [123, 456, 789, 101112]
+    out: 101168
+  - name: gen_small_1
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 8
+        of:
+          gen: int
+          min: 0
+          max: 255
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 4211
+  - name: gen_small_2
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 2
+          max: 12
+        of:
+          gen: int
+          min: 0
+          max: 1023
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 4212
+  - name: gen_medium_1
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 500
+          max: 2000
+        of:
+          gen: int
+          min: 0
+          max: 2147483647
+        distinct: false
+        sorted: false
+        elemType: int
+    seed: 4213
+  - name: gen_large_1
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 199000
+          max: 200000
+        of:
+          gen: int
+          min: 0
+          max: 0
+        distinct: false
+        sorted: false
+        elemType: int
+    out: 0
+    seed: 4214
+  - name: gen_large_2
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 199000
+          max: 200000
+        of:
+          gen: int
+          min: 2147483647
+          max: 2147483647
+        distinct: false
+        sorted: false
+        elemType: int
+    out: 0
+    seed: 4215

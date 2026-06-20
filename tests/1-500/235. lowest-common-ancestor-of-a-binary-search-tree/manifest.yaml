@@ -1,0 +1,325 @@
+entry:
+  id: 235
+  title: "lowest-common-ancestor-of-a-binary-search-tree"
+  params:
+    root:
+      type: tree_node
+    p:
+      type: int
+    q:
+      type: int
+  call:
+    cpp: "treeNodeToArray(Solution().lowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+    rust: "TreeNode::tree_node_to_array(Solution::lowest_common_ancestor({root}, Some(Rc::new(RefCell::new(TreeNode::new({p})))), Some(Rc::new(RefCell::new(TreeNode::new({q}))))))"
+    python3: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    python2: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    ruby: "tree_node_to_array(lowest_common_ancestor({root}, TreeNode.new({p}), TreeNode.new({q})))"
+    java: "TreeNode.treeNodeToArray(new Solution().lowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().LowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+    kotlin: "treeNodeToArray(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    go: "treeNodeToArray(lowestCommonAncestor({root}, &TreeNode{Val: {p}}, &TreeNode{Val: {q}}))"
+    dart: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    swift: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    typescript: "treeNodeToArray(lowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().lowestCommonAncestor(root, p, q, {result})"
+    checker: |
+      from typing import Any
+
+      class Checker:
+          def lowestCommonAncestor(self, root, p, q, result: Any) -> bool:
+              if result is None or root is None or p is None or q is None:
+                  return False
+              if isinstance(root, list):
+                  root = self._build_tree(root)
+              lo = min(p, q)
+              hi = max(p, q)
+              node = root
+              while node is not None:
+                  if hi < node.val:
+                      node = node.left
+                  elif lo > node.val:
+                      node = node.right
+                  else:
+                      expected = self._serialize(node)
+                      if isinstance(result, list):
+                          return result == expected
+                      if isinstance(result, dict):
+                          return self._serialize(self._from_dict(result)) == expected
+                      return hasattr(result, "val") and result.val == node.val
+              return False
+
+          def _build_tree(self, data):
+              if not data:
+                  return None
+              nodes = []
+              for v in data:
+                  nodes.append(None if v is None else TreeNode(v))
+              kids = nodes[::-1]
+              root = kids.pop()
+              for node in nodes:
+                  if node is not None:
+                      if kids:
+                          node.left = kids.pop()
+                      if kids:
+                          node.right = kids.pop()
+              return root
+
+          def _serialize(self, node):
+              if node is None:
+                  return []
+              out = []
+              queue = [node]
+              while queue:
+                  cur = queue.pop(0)
+                  if cur is None:
+                      out.append(None)
+                      continue
+                  out.append(cur.val)
+                  queue.append(cur.left)
+                  queue.append(cur.right)
+              while out and out[-1] is None:
+                  out.pop()
+              return out
+
+          def _from_dict(self, data):
+              if data is None:
+                  return None
+              node = TreeNode(data["val"])
+              node.left = self._from_dict(data.get("left"))
+              node.right = self._from_dict(data.get("right"))
+              return node
+
+seed: 235
+
+tests:
+  - name: "ex1_root_lca"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 2
+      q: 8
+
+  - name: "ex2_ancestor"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 2
+      q: 4
+
+  - name: "ex3_small_tree"
+    in:
+      root: [2, 1]
+      p: 2
+      q: 1
+
+  - name: "single_left_child"
+    in:
+      root: [3, 1]
+      p: 3
+      q: 1
+
+  - name: "single_right_child"
+    in:
+      root: [3, null, 5]
+      p: 3
+      q: 5
+
+  - name: "root_between_children"
+    in:
+      root: [5, 3, 8]
+      p: 3
+      q: 8
+
+  - name: "left_subtree_lca"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 2
+      q: 7
+
+  - name: "right_subtree_lca"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 12
+      q: 20
+
+  - name: "one_node_is_lca_left"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 5
+      q: 7
+
+  - name: "one_node_is_lca_right"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 15
+      q: 12
+
+  - name: "negative_values_cross_root"
+    in:
+      root: [0, -10, 10, -20, -5, 5, 20]
+      p: -20
+      q: 5
+
+  - name: "negative_values_left"
+    in:
+      root: [0, -10, 10, -20, -5, 5, 20]
+      p: -20
+      q: -5
+
+  - name: "negative_values_right"
+    in:
+      root: [0, -10, 10, -20, -5, 5, 20]
+      p: 5
+      q: 20
+
+  - name: "deep_left_chain"
+    in:
+      root: [7, 4, null, 2, null, 1]
+      p: 1
+      q: 4
+
+  - name: "deep_right_chain"
+    in:
+      root: [1, null, 3, null, 5, null, 7]
+      p: 3
+      q: 7
+
+  - name: "adjacent_nodes"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14]
+      p: 2
+      q: 6
+
+  - name: "sibling_subtrees_left"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14]
+      p: 2
+      q: 14
+
+  - name: "sibling_subtrees_right"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14]
+      p: 6
+      q: 10
+
+  - name: "lca_is_root_with_negatives"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 0
+      q: 9
+
+  - name: "lca_is_leaf"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 3
+      q: 5
+
+  - name: "balanced_medium_1"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 15
+      q: 35
+
+  - name: "balanced_medium_2"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 5
+      q: 95
+
+  - name: "balanced_medium_3"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 27
+      q: 35
+
+  - name: "balanced_medium_4"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 55
+      q: 65
+
+  - name: "balanced_medium_5"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 10
+      q: 35
+
+  - name: "balanced_medium_6"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 60
+      q: 95
+
+  - name: "balanced_medium_7"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 25
+      q: 30
+
+  - name: "balanced_medium_8"
+    in:
+      root: [50, 25, 75, 10, 30, 60, 90, 5, 15, 27, 35, 55, 65, 80, 95]
+      p: 75
+      q: 80
+
+  - name: "lower_bound_values"
+    in:
+      root: [0, -1000000000, 1000000000, -999999999, null, 999999999]
+      p: -999999999
+      q: 999999999
+
+  - name: "root_equals_p"
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+      p: 4
+      q: 7
+
+  - name: "root_equals_q"
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+      p: 1
+      q: 4
+
+  - name: "deep_balanced_left"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+      p: 2
+      q: 14
+
+  - name: "deep_balanced_right"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+      p: 18
+      q: 30
+
+  - name: "crossing_levels"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+      p: 6
+      q: 22
+
+  - name: "leftmost_and_root"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+      p: 2
+      q: 16
+
+  - name: "rightmost_and_root"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+      p: 16
+      q: 30
+
+  - name: "middle_gap"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+      p: 10
+      q: 26

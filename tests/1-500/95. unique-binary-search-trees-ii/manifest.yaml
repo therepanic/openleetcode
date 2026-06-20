@@ -1,65 +1,89 @@
-"entry":
-  "id": 95
-  "title": "unique-binary-search-trees-ii"
-  "call":
-    "cpp": "treeNodesArrayToVector(Solution().generateTrees({n}))"
-    "rust": "Solution::generate_trees({n}).into_iter().map(TreeNode::tree_node_to_array).collect::<Vec<_>>()"
-    "python3": "[tree_node_to_array(t) for t in Solution().generateTrees({n})]"
-    "python2": "[tree_node_to_array(t) for t in Solution().generateTrees({n})]"
-    "ruby": "generate_trees({n}).map { |e| tree_node_to_array(e) }"
-    "java": "TreeNode.treeNodesArrayToArrayList(new Solution().generateTrees({n}))"
-    "csharp": "TreeNode.TreeNodeListToArrayList(new Solution().GenerateTrees({n}))"
-    "kotlin": "generateTrees({n}).map { treeNodeToArray(it) }"
-    "go": "treesToArrays(generateTrees({n}))"
-    "dart": "generateTrees({n}).map((e) => tree_node_to_array(e)).toList()"
-    "swift": "generateTrees({n}).map { tree_node_to_array($0) }"
-    "typescript": "generateTrees({n}).map((e) => treeNodeToArray(e))"
-  "params":
-    "n":
-      "type": "int"
-"judge":
-  "type": "exact"
-"limits":
-  "time_ms": 2000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().check(n, {result})"
-    "checker":
-      "import json\nclass Checker:\n    def tree_to_list(self, root):\n \
-      \       if not root: return []\n        res, q = [], [root]\n        while q:\n\
-      \            node = q.pop(0)\n            if node:\n                res.append(node.val)\n\
-      \                q.append(node.left)\n                q.append(node.right)\n\
-      \            else:\n                res.append(None)\n        while res and\
-      \ res[-1] is None: res.pop()\n        return res\n    def check(self, n, result):\n\
-      \        # Logic: number of BSTs with n nodes is Catalan number C_n\n      \
-      \  try:\n            result = json.loads(result) if isinstance(result, str)\
-      \ else result\n        except Exception:\n            return False\n       \
-      \ if isinstance(result, list) and len(result) == 1 and isinstance(result[0],\
-      \ list):\n            result = result[0]\n        catalan = [1]\n        for\
-      \ i in range(1, n + 1):\n            total = 0\n            for j in range(i):\n\
-      \                total += catalan[j] * catalan[i - 1 - j]\n            catalan.append(total)\n\
-      \        return len(result) == catalan[n]\n"
-"seed": 42
-"tests":
-  - "name": "n=1"
-    "in":
-      "n": 1
-    "out":
-      - - 1
-  - "name": "n=2"
-    "in":
-      "n": 2
-    "out":
-      - - 1
-        - null
-        - 2
-      - - 2
-        - 1
-  - "name": "n=3"
-    "in":
-      "n": 3
-    "out":
+entry:
+  id: 95
+  title: unique-binary-search-trees-ii
+  params:
+    n:
+      type: int
+  call:
+    cpp: "treeNodesArrayToVector(Solution().generateTrees({n}))"
+    rust: "Solution::generate_trees({n}).into_iter().map(TreeNode::tree_node_to_array).collect::<Vec<_>>()"
+    python3: "[tree_node_to_array(t) for t in Solution().generateTrees({n})]"
+    python2: "[tree_node_to_array(t) for t in Solution().generateTrees({n})]"
+    ruby: "generate_trees({n}).map { |e| tree_node_to_array(e) }"
+    java: "TreeNode.treeNodesArrayToArrayList(new Solution().generateTrees({n}))"
+    csharp: "TreeNode.TreeNodeListToArrayList(new Solution().GenerateTrees({n}))"
+    kotlin: "generateTrees({n}).map { treeNodeToArray(it) }"
+    go: "treesToArrays(generateTrees({n}))"
+    dart: "generateTrees({n}).map((e) => tree_node_to_array(e)).toList()"
+    swift: "generateTrees({n}).map { tree_node_to_array($0) }"
+    typescript: "generateTrees({n}).map((e) => treeNodeToArray(e))"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(n, {result})"
+    checker: |
+      class Checker:
+          def _cat(self, n):
+              dp = [0] * (n + 1)
+              dp[0] = 1
+              for i in range(1, n + 1):
+                  total = 0
+                  for left in range(i):
+                      total += dp[left] * dp[i - 1 - left]
+                  dp[i] = total
+              return dp[n]
+
+          def _build(self, arr):
+              if not arr:
+                  return None
+              nodes = [None if v is None else {"v": v, "l": None, "r": None} for v in arr]
+              kids = nodes[1:]
+              for node in nodes:
+                  if node is not None:
+                      if kids:
+                          node["l"] = kids.pop(0)
+                      if kids:
+                          node["r"] = kids.pop(0)
+              return nodes[0]
+
+          def _inorder(self, node, vals):
+              if node is None:
+                  return
+              self._inorder(node["l"], vals)
+              vals.append(node["v"])
+              self._inorder(node["r"], vals)
+
+          def _sig(self, arr):
+              return tuple(arr)
+
+          def check(self, n, result):
+              if not isinstance(result, list) or len(result) != self._cat(n):
+                  return False
+
+              seen = set()
+              for tree in result:
+                  if not isinstance(tree, list) or not tree:
+                      return False
+                  sig = self._sig(tree)
+                  if sig in seen:
+                      return False
+                  seen.add(sig)
+                  root = self._build(tree)
+                  vals = []
+                  self._inorder(root, vals)
+                  if vals != list(range(1, n + 1)):
+                      return False
+              return True
+seed: 42
+tests:
+  - name: example_1
+    in:
+      n: 3
+    out:
       - - 1
         - null
         - 2
@@ -81,78 +105,142 @@
         - 2
         - null
         - 1
-  - "name": "n=4"
-    "in":
-      "n": 4
-  - "name": "n=5"
-    "in":
-      "n": 5
-  - "name": "n=6"
-    "in":
-      "n": 6
-  - "name": "n=7"
-    "in":
-      "n": 7
-  - "name": "n=8"
-    "in":
-      "n": 8
-  - "name": "gen_1"
-    "in":
-      "n": 1
-  - "name": "gen_2"
-    "in":
-      "n": 2
-  - "name": "gen_3"
-    "in":
-      "n": 3
-  - "name": "gen_4"
-    "in":
-      "n": 4
-  - "name": "gen_5"
-    "in":
-      "n": 5
-  - "name": "gen_6"
-    "in":
-      "n": 6
-  - "name": "gen_7"
-    "in":
-      "n": 7
-  - "name": "gen_8"
-    "in":
-      "n": 8
-  - "name": "extra_1"
-    "in":
-      "n": 3
-  - "name": "extra_2"
-    "in":
-      "n": 4
-  - "name": "extra_3"
-    "in":
-      "n": 5
-  - "name": "extra_4"
-    "in":
-      "n": 2
-  - "name": "extra_5"
-    "in":
-      "n": 8
-  - "name": "extra_6"
-    "in":
-      "n": 6
-  - "name": "extra_7"
-    "in":
-      "n": 7
-  - "name": "extra_8"
-    "in":
-      "n": 4
-  - "name": "extra_9"
-    "in":
-      "n": 5
-  - "name": "extra_10"
-    "in":
-      "n": 3
-  - "name": "extra_11"
-    "in":
-      "n": 8
-  - "name": "extra_12"
-    "in":
-      "n": 8
+  - name: example_2
+    in:
+      n: 1
+    out:
+      - - 1
+  - name: n_2_static
+    in:
+      n: 2
+    out:
+      - - 1
+        - null
+        - 2
+      - - 2
+        - 1
+  - name: gen_1
+    seed: 1
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: gen_2
+    seed: 2
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: gen_3
+    seed: 3
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: gen_4
+    seed: 4
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: gen_5
+    seed: 5
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 8
+  - name: n_4
+    in:
+      n: 4
+  - name: n_5
+    in:
+      n: 5
+  - name: n_6
+    in:
+      n: 6
+  - name: n_7
+    in:
+      n: 7
+  - name: n_8
+    in:
+      n: 8
+  - name: repeat_1
+    in:
+      n: 3
+  - name: repeat_2
+    in:
+      n: 4
+  - name: repeat_3
+    in:
+      n: 5
+  - name: repeat_4
+    in:
+      n: 6
+  - name: repeat_5
+    in:
+      n: 7
+  - name: repeat_6
+    in:
+      n: 8
+  - name: repeat_7
+    in:
+      n: 2
+  - name: repeat_8
+    in:
+      n: 1
+  - name: repeat_9
+    in:
+      n: 3
+  - name: repeat_10
+    in:
+      n: 4
+  - name: repeat_11
+    in:
+      n: 5
+  - name: repeat_12
+    in:
+      n: 6
+  - name: repeat_13
+    in:
+      n: 7
+  - name: repeat_14
+    in:
+      n: 8
+  - name: repeat_15
+    in:
+      n: 2
+  - name: repeat_16
+    in:
+      n: 1
+  - name: repeat_17
+    in:
+      n: 3
+  - name: repeat_18
+    in:
+      n: 4
+  - name: repeat_19
+    in:
+      n: 5
+  - name: repeat_20
+    in:
+      n: 6
+  - name: repeat_21
+    in:
+      n: 7
+  - name: repeat_22
+    in:
+      n: 8
+  - name: repeat_23
+    in:
+      n: 4
+  - name: repeat_24
+    in:
+      n: 5
+  - name: repeat_25
+    in:
+      n: 6

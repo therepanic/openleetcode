@@ -623,7 +623,7 @@ jsonAccessorSwift :: Int -> Text -> Text
 jsonAccessorSwift idx name = "testVal(\"" <> T.pack (show idx) <> "\", \"" <> name <> "\")"
 
 jsonAccessorRust :: Int -> Text -> Text
-jsonAccessorRust idx name = "_TEST_.get(\"" <> T.pack (show idx) <> "\").unwrap().get(\"" <> name <> "\").unwrap().val.clone()"
+jsonAccessorRust idx name = "test_val(&_TEST_, \"" <> T.pack (show idx) <> "\", \"" <> name <> "\")"
 
 jsonAccessorKotlin :: Int -> Text -> Text
 jsonAccessorKotlin idx name = "testVal(\"" <> T.pack (show idx) <> "\", \"" <> name <> "\")"

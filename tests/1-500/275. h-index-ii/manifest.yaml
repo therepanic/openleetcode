@@ -1,0 +1,426 @@
+entry:
+  id: 275
+  title: h-index-ii
+  params:
+    citations:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().hIndex({citations})"
+    rust: "Solution::h_index({citations})"
+    python3: "Solution().hIndex({citations})"
+    python2: "Solution().hIndex({citations})"
+    ruby: "h_index({citations})"
+    java: "new Solution().hIndex({citations})"
+    csharp: "new Solution().HIndex({citations})"
+    kotlin: "Solution().hIndex({citations})"
+    go: "hIndex({citations})"
+    dart: "Solution().hIndex({citations})"
+    swift: "Solution().hIndex({citations})"
+    typescript: "hIndex({citations})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().hIndex(citations, {result})"
+    checker: |
+      class Checker:
+          def hIndex(self, citations, result):
+              if not isinstance(result, int):
+                  return False
+              n = len(citations)
+              if result < 0 or result > n:
+                  return False
+              if any(citations[i] > citations[i + 1] for i in range(n - 1)):
+                  return False
+              cnt = sum(1 for c in citations if c >= result)
+              if cnt < result:
+                  return False
+              if result < n and sum(1 for c in citations if c >= result + 1) >= result + 1:
+                  return False
+              return True
+seed: 275
+tests:
+  - name: example-1
+    in:
+      citations:
+        - 0
+        - 1
+        - 3
+        - 5
+        - 6
+    out: 3
+  - name: example-2
+    in:
+      citations:
+        - 1
+        - 2
+        - 100
+    out: 2
+  - name: single-zero
+    in:
+      citations:
+        - 0
+    out: 0
+  - name: single-one
+    in:
+      citations:
+        - 1
+    out: 1
+  - name: all-zero-two
+    in:
+      citations:
+        - 0
+        - 0
+    out: 0
+  - name: all-one-two
+    in:
+      citations:
+        - 1
+        - 1
+    out: 1
+  - name: two-high
+    in:
+      citations:
+        - 10
+        - 10
+    out: 2
+  - name: boundary-step
+    in:
+      citations:
+        - 0
+        - 1
+    out: 1
+  - name: ascending-low
+    in:
+      citations:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+    out: 2
+  - name: ascending-mid
+    in:
+      citations:
+        - 0
+        - 1
+        - 3
+        - 4
+        - 4
+    out: 3
+  - name: sorted-plateau
+    in:
+      citations:
+        - 0
+        - 0
+        - 1
+        - 4
+        - 4
+        - 4
+    out: 3
+  - name: increasing-small
+    in:
+      citations:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    out: 3
+  - name: no-higher-than-n
+    in:
+      citations:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 0
+  - name: exact-middle
+    in:
+      citations:
+        - 0
+        - 0
+        - 0
+        - 3
+        - 3
+        - 3
+    out: 3
+  - name: h-equals-n-minus-one
+    in:
+      citations:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 100
+    out: 3
+  - name: h-equals-n
+    in:
+      citations:
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+    out: 5
+  - name: all-high-five
+    in:
+      citations:
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+    out: 5
+  - name: mixed-threshold
+    in:
+      citations:
+        - 0
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+    out: 2
+  - name: mixed-threshold-2
+    in:
+      citations:
+        - 0
+        - 1
+        - 1
+        - 1
+        - 1
+        - 5
+    out: 1
+  - name: sharp-jump
+    in:
+      citations:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 10
+        - 10
+        - 10
+        - 10
+    out: 4
+  - name: many-twos
+    in:
+      citations:
+        - 0
+        - 0
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+    out: 2
+  - name: example-variant
+    in:
+      citations:
+        - 0
+        - 1
+        - 4
+        - 4
+        - 5
+        - 6
+    out: 4
+  - name: high-tail
+    in:
+      citations:
+        - 0
+        - 1
+        - 2
+        - 10
+        - 10
+        - 10
+        - 10
+    out: 4
+  - name: long-prefix-zeroes
+    in:
+      citations:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 1
+  - name: long-plateau
+    in:
+      citations:
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+    out: 3
+  - name: generated-all-zero
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 100000
+          max: 100000
+        of:
+          gen: int
+          min: 0
+          max: 0
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-all-1000
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 100000
+          max: 100000
+        of:
+          gen: int
+          min: 1000
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-ascending-100k
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 100000
+          max: 100000
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-small-random-1
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 50
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-small-random-2
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 50
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-small-random-3
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 50
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-small-random-4
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 50
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-small-random-5
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 50
+        of:
+          gen: int
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-large-mid
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 100000
+          max: 100000
+        of:
+          gen: int
+          min: 500
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+  - name: generated-large-low
+    in:
+      citations:
+        gen: array
+        len:
+          gen: int
+          min: 100000
+          max: 100000
+        of:
+          gen: int
+          min: 0
+          max: 5
+        distinct: false
+        sorted: true
+        elemType: int

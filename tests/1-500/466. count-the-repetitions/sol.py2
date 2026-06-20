@@ -1,0 +1,39 @@
+class Solution(object):
+    @staticmethod
+    def countTheRepetitions(s1, n1, s2, n2):
+        m, n = len(s1), len(s2)
+
+        if m * n1 < n * n2:
+            return 0
+
+        j = 0
+        cnt = 0
+        k = 0
+        seen = {}
+
+        while k < n1:
+            for ch in s1:
+                if ch == s2[j]:
+                    j += 1
+                    if j == n:
+                        cnt += 1
+                        j = 0
+
+            k += 1
+
+            if j in seen:
+                prev_cnt, prev_k = seen[j]
+                period_k = k - prev_k
+                period_cnt = cnt - prev_cnt
+
+                if period_cnt == 0:
+                    break
+
+                remaining = n1 - k
+                cycles = remaining // period_k
+                cnt += cycles * period_cnt
+                k += cycles * period_k
+            else:
+                seen[j] = (cnt, k)
+
+        return cnt // n2

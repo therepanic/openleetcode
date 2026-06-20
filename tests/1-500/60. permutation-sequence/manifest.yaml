@@ -1,24 +1,24 @@
 entry:
   id: 60
   title: permutation-sequence
-  call:
-    cpp: Solution().getPermutation({n}, {k})
-    rust: Solution::get_permutation({n}, {k})
-    python3: Solution().getPermutation({n}, {k})
-    python2: Solution().getPermutation({n}, {k})
-    ruby: get_permutation({n}, {k})
-    java: new Solution().getPermutation({n}, {k})
-    csharp: new Solution().GetPermutation({n}, {k})
-    kotlin: Solution().getPermutation({n}, {k})
-    go: getPermutation({n}, {k})
-    dart: Solution().getPermutation({n}, {k})
-    swift: Solution().getPermutation({n}, {k})
-    typescript: getPermutation({n}, {k})
   params:
     n:
       type: int
     k:
       type: int
+  call:
+    cpp: "Solution().getPermutation({n}, {k})"
+    rust: "Solution::get_permutation({n}, {k})"
+    python3: "Solution().getPermutation({n}, {k})"
+    python2: "Solution().getPermutation({n}, {k})"
+    ruby: "get_permutation({n}, {k})"
+    java: "new Solution().getPermutation({n}, {k})"
+    csharp: "new Solution().GetPermutation({n}, {k})"
+    kotlin: "Solution().getPermutation({n}, {k})"
+    go: "getPermutation({n}, {k})"
+    dart: "Solution().getPermutation({n}, {k})"
+    swift: "Solution().getPermutation({n}, {k})"
+    typescript: "getPermutation({n}, {k})"
 judge:
   type: exact
 limits:
@@ -26,138 +26,203 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: getPermutation(n, k, {result})
+    call: "Checker().getPermutation(n, k, {result})"
     checker: |
-      import json
-
-      def getPermutation(n, k, result):
-          try:
-              result = json.loads(result) if isinstance(result, str) else result
-          except Exception:
-              return False
-          nums = [i for i in range(1, n + 1)]
-          k -= 1
-          factorial = [1] * n
-          for i in range(1, n):
-              factorial[i] = factorial[i - 1] * i
-          res = []
-          for i in range(n - 1, -1, -1):
-              idx = k // factorial[i]
-              k %= factorial[i]
-              res.append(str(nums.pop(idx)))
-          return ''.join(res) == str(result)
-seed: 42
+      class Checker:
+          def getPermutation(self, n, k, result):
+              if not isinstance(result, str):
+                  return False
+              if len(result) != n:
+                  return False
+              expected = [str(i) for i in range(1, n + 1)]
+              if sorted(result) != expected:
+                  return False
+              nums = expected[:]
+              factorial = [1] * (n + 1)
+              for i in range(1, n + 1):
+                  factorial[i] = factorial[i - 1] * i
+              k -= 1
+              res = []
+              for remaining in range(n, 0, -1):
+                  block = factorial[remaining - 1]
+                  idx = k // block
+                  k %= block
+                  res.append(nums.pop(idx))
+              return "".join(res) == result
+seed: 60
 tests:
   - name: Example 1
     in:
       n: 3
       k: 3
+    out: '"213"'
   - name: Example 2
     in:
       n: 4
       k: 9
+    out: '"2314"'
   - name: Example 3
     in:
       n: 3
       k: 1
-  - name: n=1, k=1
+    out: '"123"'
+  - name: n1_k1
     in:
       n: 1
       k: 1
-  - name: n=2, k=1
+    out: '"1"'
+  - name: n2_first
     in:
       n: 2
       k: 1
-  - name: n=2, k=2
+    out: '"12"'
+  - name: n2_second
     in:
       n: 2
       k: 2
-  - name: n=3, k=2
+    out: '"21"'
+  - name: n3_second
     in:
       n: 3
       k: 2
-  - name: n=3, k=4
+    out: '"132"'
+  - name: n3_fourth
     in:
       n: 3
       k: 4
-  - name: n=3, k=6
+    out: '"231"'
+  - name: n3_fifth
+    in:
+      n: 3
+      k: 5
+    out: '"312"'
+  - name: n3_last
     in:
       n: 3
       k: 6
-  - name: n=4, k=1
+    out: '"321"'
+  - name: n4_first
     in:
       n: 4
       k: 1
-  - name: n=4, k=24
+    out: '"1234"'
+  - name: n4_second
+    in:
+      n: 4
+      k: 2
+    out: '"1243"'
+  - name: n4_third
+    in:
+      n: 4
+      k: 3
+    out: '"1324"'
+  - name: n4_eighth
+    in:
+      n: 4
+      k: 8
+    out: '"2143"'
+  - name: n4_ninth_repeat_example
+    in:
+      n: 4
+      k: 9
+    out: '"2314"'
+  - name: n4_last
     in:
       n: 4
       k: 24
-  - name: n=5, k=1
+    out: '"4321"'
+  - name: n5_first
     in:
       n: 5
       k: 1
-  - name: n=5, k=120
+    out: '"12345"'
+  - name: n5_second
+    in:
+      n: 5
+      k: 2
+    out: '"12354"'
+  - name: n5_fifth
+    in:
+      n: 5
+      k: 5
+    out: '"12534"'
+  - name: n5_mid
+    in:
+      n: 5
+      k: 42
+    out: '"24531"'
+  - name: n5_last
     in:
       n: 5
       k: 120
-  - name: n=6, k=1
+    out: '"54321"'
+  - name: n6_first
     in:
       n: 6
       k: 1
-  - name: n=6, k=720
+    out: '"123456"'
+  - name: n6_second
+    in:
+      n: 6
+      k: 2
+    out: '"123465"'
+  - name: n6_last
     in:
       n: 6
       k: 720
-  - name: n=7, k=1
+    out: '"654321"'
+  - name: n7_first
     in:
       n: 7
       k: 1
-  - name: n=7, k=5040
+    out: '"1234567"'
+  - name: n7_second
     in:
       n: 7
-      k: 5040
-  - name: n=8, k=1
+      k: 2
+    out: '"1234576"'
+  - name: n7_near_last
+    in:
+      n: 7
+      k: 5039
+    out: '"7654312"'
+  - name: n8_first
     in:
       n: 8
       k: 1
-  - name: n=8, k=40320
+    out: '"12345678"'
+  - name: n8_second
+    in:
+      n: 8
+      k: 2
+    out: '"12345687"'
+  - name: n8_last
     in:
       n: 8
       k: 40320
-  - name: n=9, k=1
+    out: '"87654321"'
+  - name: n9_first
     in:
       n: 9
       k: 1
-  - name: n=9, k=362880
+    out: '"123456789"'
+  - name: n9_second
     in:
       n: 9
-      k: 362880
-  - name: n=9, k=181440
+      k: 2
+    out: '"123456798"'
+  - name: n9_mid
     in:
       n: 9
       k: 181440
-  - name: Random Test 1
-    in:
-      n: 5
-      k: 50
-    oracle: null
-  - name: Random Test 2
-    in:
-      n: 6
-      k: 300
-    oracle: null
-  - name: Random Test 3
-    in:
-      n: 8
-      k: 20000
-    oracle: null
-  - name: Random Test 4
+    out: '"549876321"'
+  - name: n9_near_last
     in:
       n: 9
-      k: 100000
-    oracle: null
-  - name: Random Test 5
+      k: 362879
+    out: '"987654312"'
+  - name: n9_last
     in:
       n: 9
-      k: 300000
-    oracle: null
+      k: 362880
+    out: '"987654321"'

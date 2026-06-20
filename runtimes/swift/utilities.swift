@@ -40,68 +40,94 @@ func anyToBool(_ value: Any) -> Bool {
 }
 
 func anyToIntArray(_ value: Any) -> [Int] {
-    return (value as! [Any]).map(anyToInt)
+    if value is NSNull { return [] }
+    guard let arr = value as? [Any] else { return [] }
+    return arr.map(anyToInt)
 }
 
 func anyToStringArray(_ value: Any) -> [String] {
-    return (value as! [Any]).map(anyToString)
+    if value is NSNull { return [] }
+    guard let arr = value as? [Any] else { return [] }
+    return arr.map(anyToString)
 }
 
 func anyToDoubleArray(_ value: Any) -> [Double] {
-    return (value as! [Any]).map(anyToDouble)
+    if value is NSNull { return [] }
+    guard let arr = value as? [Any] else { return [] }
+    return arr.map(anyToDouble)
 }
 
 func anyToFloatArray(_ value: Any) -> [Float] {
-    return (value as! [Any]).map(anyToFloat)
+    if value is NSNull { return [] }
+    guard let arr = value as? [Any] else { return [] }
+    return arr.map(anyToFloat)
 }
 
 func anyToCharArray(_ value: Any) -> [Character] {
-    return (value as! [Any]).map { Character(anyToString($0)) }
+    if value is NSNull { return [] }
+    guard let arr = value as? [Any] else { return [] }
+    return arr.map { Character(anyToString($0)) }
 }
 
 func anyToBoolArray(_ value: Any) -> [Bool] {
-    return (value as! [Any]).map(anyToBool)
+    if value is NSNull { return [] }
+    guard let arr = value as? [Any] else { return [] }
+    return arr.map(anyToBool)
 }
 
 func anyToOptionalIntArray(_ value: Any) -> [Int?] {
-    return (value as! [Any]).map { item in
+    if value is NSNull { return [] }
+    guard let arr = value as? [Any] else { return [] }
+    return arr.map { item in
         if item is NSNull { return nil }
         return anyToInt(item)
     }
 }
 
 func anyToIntMatrix(_ value: Any) -> [[Int]] {
-    return (value as! [Any]).map { row in
+    if value is NSNull { return [] }
+    guard let rows = value as? [Any] else { return [] }
+    return rows.map { row in
         anyToIntArray(row)
     }
 }
 
 func anyToDoubleMatrix(_ value: Any) -> [[Double]] {
-    return (value as! [Any]).map { row in
+    if value is NSNull { return [] }
+    guard let rows = value as? [Any] else { return [] }
+    return rows.map { row in
         anyToDoubleArray(row)
     }
 }
 
 func anyToFloatMatrix(_ value: Any) -> [[Float]] {
-    return (value as! [Any]).map { row in
+    if value is NSNull { return [] }
+    guard let rows = value as? [Any] else { return [] }
+    return rows.map { row in
         anyToFloatArray(row)
     }
 }
 
 func anyToStringMatrix(_ value: Any) -> [[String]] {
-    return (value as! [Any]).map { row in
+    if value is NSNull { return [] }
+    guard let rows = value as? [Any] else { return [] }
+    return rows.map { row in
         anyToStringArray(row)
     }
 }
 
 func anyToBoolMatrix(_ value: Any) -> [[Bool]] {
-    return (value as! [Any]).map { row in
+    if value is NSNull { return [] }
+    guard let rows = value as? [Any] else { return [] }
+    return rows.map { row in
         anyToBoolArray(row)
     }
 }
 
 func anyToCharMatrix(_ value: Any) -> [[Character]] {
-    return (value as! [Any]).map { row in
+    if value is NSNull { return [] }
+    guard let rows = value as? [Any] else { return [] }
+    return rows.map { row in
         anyToCharArray(row)
     }
 }

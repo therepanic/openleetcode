@@ -27,22 +27,25 @@ judge:
   type: exact
 limits:
   time_ms: 1000
-  memory_mb: 256
+  memory_mb: 64
 oracle:
   python3:
     call: Checker().findMedianSortedArrays(nums1, nums2, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n        return result\n\
-      \n    def findMedianSortedArrays(self, nums1, nums2, result):\n        result\
-      \ = self._norm(result)\n        merged = sorted(nums1 + nums2)\n        n =\
-      \ len(merged)\n        if n % 2 == 1:\n            expected = float(merged[n\
-      \ // 2])\n        else:\n            expected = (merged[n // 2 - 1] + merged[n\
-      \ // 2]) / 2.0\n        return abs(result - expected) < 1e-6\n"
-seed: 42
+    checker: |
+      class Checker:
+          def findMedianSortedArrays(self, nums1, nums2, result):
+              merged = sorted(nums1 + nums2)
+              n = len(merged)
+              if n == 0:
+                  return False
+              if n % 2 == 1:
+                  expected = float(merged[n // 2])
+              else:
+                  expected = (merged[n // 2 - 1] + merged[n // 2]) / 2.0
+              return abs(result - expected) <= 1e-9
+seed: 4
 tests:
-  - name: example 1
+  - name: example-1
     in:
       nums1:
         - 1
@@ -50,7 +53,7 @@ tests:
       nums2:
         - 2
     out: 2.0
-  - name: example 2
+  - name: example-2
     in:
       nums1:
         - 1
@@ -59,56 +62,67 @@ tests:
         - 3
         - 4
     out: 2.5
-  - name: empty nums1
-    in:
-      nums1: []
-      nums2:
-        - 1
-    out: 1.0
-  - name: empty nums2
+  - name: single-left
     in:
       nums1:
+        - 1
+      nums2:
+        gen: array
+        len: 2
+        of:
+          gen: int
+          min: 2
+          max: 4
+        sorted: true
+        elemType: int
+  - name: single-right
+    in:
+      nums1:
+        gen: array
+        len: 2
+        of:
+          gen: int
+          min: -3
+          max: -1
+        sorted: true
+        elemType: int
+      nums2:
+        - 0
+  - name: empty-first
+    in:
+      nums1:
+        gen: array
+        len: 0
+        of:
+          gen: int
+          min: 0
+          max: 0
+        sorted: true
+        elemType: int
+      nums2:
+        - 7
+  - name: empty-second
+    in:
+      nums1:
+        - -5
+      nums2:
+        gen: array
+        len: 0
+        of:
+          gen: int
+          min: 0
+          max: 0
+        sorted: true
+        elemType: int
+  - name: odd-total-small
+    in:
+      nums1:
+        - 1
         - 2
-      nums2: []
+      nums2:
+        - 3
     out: 2.0
-  - name: single element each
-    in:
-      nums1:
-        - 1
-      nums2:
-        - 2
-    out: 1.5
-  - name: identical elements
-    in:
-      nums1:
-        - 1
-        - 1
-      nums2:
-        - 1
-        - 1
-    out: 1.0
-  - name: nums1 shorter
-    in:
-      nums1:
-        - 1
-        - 2
-      nums2:
-        - 3
-        - 4
-        - 5
-        - 6
-    out: 3.5
-  - name: nums2 shorter
-    in:
-      nums1:
-        - 1
-        - 5
-        - 8
-      nums2:
-        - 2
-        - 3
-    out: 3.0
-  - name: nums1 all smaller than nums2
+  - name: even-total-small
     in:
       nums1:
         - 1
@@ -117,18 +131,29 @@ tests:
         - 3
         - 4
     out: 2.5
-  - name: interleaved
+  - name: duplicate-heavy-1
+    in:
+      nums1:
+        - 2
+        - 2
+        - 2
+      nums2:
+        - 2
+        - 2
+    out: 2.0
+  - name: duplicate-heavy-2
     in:
       nums1:
         - 1
-        - 3
-        - 5
+        - 1
+        - 1
       nums2:
-        - 2
-        - 4
-        - 6
-    out: 3.5
-  - name: negative values
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 1.0
+  - name: negatives-even
     in:
       nums1:
         - -5
@@ -137,190 +162,521 @@ tests:
         - -4
         - -2
     out: -3.5
-  - name: mixed negative and positive
+  - name: negatives-odd
     in:
       nums1:
         - -10
-        - 5
+        - -5
+        - -1
       nums2:
-        - -2
-        - 10
-    out: 1.5
-  - name: large values
+        - -6
+        - -4
+    out: -5.0
+  - name: one-large-gap
     in:
       nums1:
-        - 100000
-        - 200000
+        - 1
       nums2:
-        - 300000
-        - 400000
-    out: 250000.0
-  - name: boundary values
+        - 100
+        - 101
+        - 102
+    out: 100.5
+  - name: boundary-min
     in:
       nums1:
         - -1000000
       nums2:
         - 1000000
     out: 0.0
-  - name: even length total
+  - name: boundary-max
+    in:
+      nums1:
+        - 999999
+        - 1000000
+      nums2:
+        - 1000000
+    out: 1000000.0
+  - name: mixed-small-1
     in:
       nums1:
         - 1
+        - 4
+        - 7
+      nums2:
         - 2
         - 3
-      nums2:
-        - 4
         - 5
         - 6
-    out: 3.5
-  - name: odd length total
+    out: 4.0
+  - name: mixed-small-2
     in:
       nums1:
+        - 0
+        - 10
+      nums2:
         - 1
         - 2
-      nums2:
         - 3
         - 4
         - 5
     out: 3.0
-  - name: gen short arrays
+  - name: generated-1
     in:
       nums1:
         gen: array
-        len:
-          gen: int
-          min: 1
-          max: 10
-        of:
-          gen: int
-          min: 0
-          max: 100
-        sorted: true
-      nums2:
-        gen: array
-        len:
-          gen: int
-          min: 1
-          max: 10
-        of:
-          gen: int
-          min: 0
-          max: 100
-        sorted: true
-  - name: gen medium arrays
-    in:
-      nums1:
-        gen: array
-        len:
-          gen: int
-          min: 50
-          max: 100
-        of:
-          gen: int
-          min: -500
-          max: 500
-        sorted: true
-      nums2:
-        gen: array
-        len:
-          gen: int
-          min: 50
-          max: 100
-        of:
-          gen: int
-          min: -500
-          max: 500
-        sorted: true
-  - name: gen large arrays
-    in:
-      nums1:
-        gen: array
-        len:
-          gen: int
-          min: 900
-          max: 1000
+        len: 1
         of:
           gen: int
           min: -1000000
-          max: 1000000
+          max: -999990
         sorted: true
+        elemType: int
       nums2:
         gen: array
-        len:
-          gen: int
-          min: 900
-          max: 1000
+        len: 2
         of:
           gen: int
-          min: -1000000
-          max: 1000000
+          min: -999989
+          max: -999980
         sorted: true
-  - name: gen max constraint
+        elemType: int
+  - name: generated-2
     in:
       nums1:
         gen: array
-        len: 1000
+        len: 2
+        of:
+          gen: int
+          min: -100
+          max: -50
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 3
+        of:
+          gen: int
+          min: -49
+          max: 0
+        sorted: true
+        elemType: int
+  - name: generated-3
+    in:
+      nums1:
+        gen: array
+        len: 3
+        of:
+          gen: int
+          min: 1
+          max: 10
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 4
+        of:
+          gen: int
+          min: 11
+          max: 20
+        sorted: true
+        elemType: int
+  - name: generated-4
+    in:
+      nums1:
+        gen: array
+        len: 4
+        of:
+          gen: int
+          min: -20
+          max: -1
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 5
         of:
           gen: int
           min: 0
-          max: 100
+          max: 20
         sorted: true
-      nums2:
+        elemType: int
+  - name: generated-5
+    in:
+      nums1:
         gen: array
-        len: 1000
+        len: 5
         of:
           gen: int
           min: 100
           max: 200
         sorted: true
-  - name: gen single element arrays
+        elemType: int
+      nums2:
+        gen: array
+        len: 6
+        of:
+          gen: int
+          min: 201
+          max: 300
+        sorted: true
+        elemType: int
+  - name: generated-6
     in:
       nums1:
-        - 100
+        gen: array
+        len: 8
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        sorted: true
+        elemType: int
       nums2:
-        - 200
-    out: 150.0
-  - name: long nums1 empty nums2
+        gen: array
+        len: 7
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        sorted: true
+        elemType: int
+  - name: generated-7
     in:
       nums1:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-      nums2: []
-    out: 3.5
-  - name: empty nums1 long nums2
-    in:
-      nums1: []
+        gen: array
+        len: 9
+        of:
+          gen: int
+          min: -5000
+          max: -1000
+        sorted: true
+        elemType: int
       nums2:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-    out: 4.0
-  - name: duplicate values
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: -999
+          max: 5000
+        sorted: true
+        elemType: int
+  - name: generated-8
     in:
       nums1:
-        - 1
-        - 1
-        - 1
+        gen: array
+        len: 12
+        of:
+          gen: int
+          min: -50
+          max: 50
+        sorted: true
+        elemType: int
       nums2:
-        - 1
-        - 1
-    out: 1.0
-  - name: alternating
+        gen: array
+        len: 11
+        of:
+          gen: int
+          min: -50
+          max: 50
+        sorted: true
+        elemType: int
+  - name: generated-9
     in:
       nums1:
-        - 1
-        - 3
-        - 5
+        gen: array
+        len: 13
+        of:
+          gen: int
+          min: 0
+          max: 1000000
+        sorted: true
+        elemType: int
       nums2:
-        - 2
-        - 4
-        - 6
-    out: 3.5
+        gen: array
+        len: 14
+        of:
+          gen: int
+          min: 0
+          max: 1000000
+        sorted: true
+        elemType: int
+  - name: generated-10
+    in:
+      nums1:
+        gen: array
+        len: 15
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 16
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+        sorted: true
+        elemType: int
+  - name: generated-11
+    in:
+      nums1:
+        gen: array
+        len: 17
+        of:
+          gen: int
+          min: -250
+          max: -1
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 18
+        of:
+          gen: int
+          min: 1
+          max: 250
+        sorted: true
+        elemType: int
+  - name: generated-12
+    in:
+      nums1:
+        gen: array
+        len: 19
+        of:
+          gen: int
+          min: -5
+          max: 5
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: -5
+          max: 5
+        sorted: true
+        elemType: int
+  - name: generated-13
+    in:
+      nums1:
+        gen: array
+        len: 21
+        of:
+          gen: int
+          min: 50
+          max: 60
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 22
+        of:
+          gen: int
+          min: 61
+          max: 70
+        sorted: true
+        elemType: int
+  - name: generated-14
+    in:
+      nums1:
+        gen: array
+        len: 23
+        of:
+          gen: int
+          min: -70
+          max: -60
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 24
+        of:
+          gen: int
+          min: 60
+          max: 70
+        sorted: true
+        elemType: int
+  - name: generated-15
+    in:
+      nums1:
+        gen: array
+        len: 25
+        of:
+          gen: int
+          min: -1000
+          max: -500
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 26
+        of:
+          gen: int
+          min: 500
+          max: 1000
+        sorted: true
+        elemType: int
+  - name: generated-16
+    in:
+      nums1:
+        gen: array
+        len: 27
+        of:
+          gen: int
+          min: -100
+          max: 100
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 28
+        of:
+          gen: int
+          min: -100
+          max: 100
+        sorted: true
+        elemType: int
+  - name: generated-17
+    in:
+      nums1:
+        gen: array
+        len: 29
+        of:
+          gen: int
+          min: -1000000
+          max: -999000
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 30
+        of:
+          gen: int
+          min: 999000
+          max: 1000000
+        sorted: true
+        elemType: int
+  - name: generated-18
+    in:
+      nums1:
+        gen: array
+        len: 31
+        of:
+          gen: int
+          min: -200
+          max: -100
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 32
+        of:
+          gen: int
+          min: -99
+          max: 100
+        sorted: true
+        elemType: int
+  - name: generated-19
+    in:
+      nums1:
+        gen: array
+        len: 33
+        of:
+          gen: int
+          min: 100
+          max: 200
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 34
+        of:
+          gen: int
+          min: 200
+          max: 300
+        sorted: true
+        elemType: int
+  - name: generated-20
+    in:
+      nums1:
+        gen: array
+        len: 35
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 36
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+        sorted: true
+        elemType: int
+  - name: generated-21
+    in:
+      nums1:
+        gen: array
+        len: 37
+        of:
+          gen: int
+          min: -1
+          max: 1
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 38
+        of:
+          gen: int
+          min: -1
+          max: 1
+        sorted: true
+        elemType: int
+  - name: generated-22
+    in:
+      nums1:
+        gen: array
+        len: 39
+        of:
+          gen: int
+          min: 1000
+          max: 2000
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 40
+        of:
+          gen: int
+          min: 2000
+          max: 3000
+        sorted: true
+        elemType: int
+  - name: generated-23
+    in:
+      nums1:
+        gen: array
+        len: 41
+        of:
+          gen: int
+          min: -3000
+          max: -2000
+        sorted: true
+        elemType: int
+      nums2:
+        gen: array
+        len: 42
+        of:
+          gen: int
+          min: 2000
+          max: 3000
+        sorted: true
+        elemType: int

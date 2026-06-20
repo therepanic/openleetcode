@@ -1,0 +1,267 @@
+entry:
+  id: 282
+  title: expression-add-operators
+  params:
+    num:
+      type: string
+    target:
+      type: int
+  call:
+    cpp: "Solution().addOperators({num}, {target})"
+    rust: "Solution::add_operators({num}, {target})"
+    python3: "Solution().addOperators({num}, {target})"
+    python2: "Solution().addOperators({num}, {target})"
+    ruby: "add_operators({num}, {target})"
+    java: "new Solution().addOperators({num}, {target})"
+    csharp: "new Solution().AddOperators({num}, {target})"
+    kotlin: "Solution().addOperators({num}, {target})"
+    go: "addOperators({num}, {target})"
+    dart: "Solution().addOperators({num}, {target})"
+    swift: "Solution().addOperators({num}, {target})"
+    typescript: "addOperators({num}, {target})"
+
+judge:
+  type: ignore_order
+
+limits:
+  time_ms: 2000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().addOperators(num, target, {result})"
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def addOperators(self, num: str, target: int, result: Any) -> bool:
+              if not isinstance(result, list) or any(not isinstance(x, str) for x in result):
+                  return False
+
+              expected = set()
+              n = len(num)
+
+              def dfs(idx: int, path: str, curr: int, prev: int) -> None:
+                  if idx == n:
+                      if curr == target:
+                          expected.add(path)
+                      return
+                  for i in range(idx, n):
+                      if i > idx and num[idx] == "0":
+                          break
+                      part = num[idx : i + 1]
+                      val = int(part)
+                      if idx == 0:
+                          dfs(i + 1, part, val, val)
+                      else:
+                          dfs(i + 1, path + "+" + part, curr + val, val)
+                          dfs(i + 1, path + "-" + part, curr - val, -val)
+                          dfs(i + 1, path + "*" + part, (curr - prev) + prev * val, prev * val)
+
+              dfs(0, "", 0, 0)
+              return set(result) == expected
+
+seed: 282
+
+tests:
+  - name: ex1_123_6
+    in:
+      num: "123"
+      target: 6
+    out:
+      - "1*2*3"
+      - "1+2+3"
+
+  - name: ex2_232_8
+    in:
+      num: "232"
+      target: 8
+    out:
+      - "2*3+2"
+      - "2+3*2"
+
+  - name: ex3_none
+    in:
+      num: "3456237490"
+      target: 9191
+    out: []
+
+  - name: single_digit_hit
+    in:
+      num: "5"
+      target: 5
+
+  - name: single_digit_miss
+    in:
+      num: "5"
+      target: 6
+
+  - name: two_digits_concat
+    in:
+      num: "12"
+      target: 12
+
+  - name: two_digits_add
+    in:
+      num: "12"
+      target: 3
+
+  - name: two_digits_sub
+    in:
+      num: "12"
+      target: -1
+
+  - name: zero_chain_0
+    in:
+      num: "00"
+      target: 0
+
+  - name: zero_chain_1
+    in:
+      num: "00"
+      target: 1
+
+  - name: leading_zero_block
+    in:
+      num: "105"
+      target: 5
+
+  - name: leading_zero_block_neg
+    in:
+      num: "105"
+      target: -5
+
+  - name: all_fives_25
+    in:
+      num: "55"
+      target: 25
+
+  - name: all_fives_10
+    in:
+      num: "55"
+      target: 10
+
+  - name: all_fives_0
+    in:
+      num: "55"
+      target: 0
+
+  - name: small_branching_1234_10
+    in:
+      num: "1234"
+      target: 10
+
+  - name: small_branching_1234_24
+    in:
+      num: "1234"
+      target: 24
+
+  - name: small_branching_1234_9
+    in:
+      num: "1234"
+      target: 9
+
+  - name: repeated_digits_222_6
+    in:
+      num: "222"
+      target: 6
+
+  - name: repeated_digits_222_8
+    in:
+      num: "222"
+      target: 8
+
+  - name: repeated_digits_222_2
+    in:
+      num: "222"
+      target: 2
+
+  - name: zero_middle_1005_5
+    in:
+      num: "1005"
+      target: 5
+
+  - name: zero_middle_1005_0
+    in:
+      num: "1005"
+      target: 0
+
+  - name: zero_middle_1005_6
+    in:
+      num: "1005"
+      target: 6
+
+  - name: zeros_000_0
+    in:
+      num: "000"
+      target: 0
+
+  - name: zeros_000_1
+    in:
+      num: "000"
+      target: 1
+
+  - name: ascending_12345_15
+    in:
+      num: "12345"
+      target: 15
+
+  - name: ascending_12345_120
+    in:
+      num: "12345"
+      target: 120
+
+  - name: ascending_12345_6
+    in:
+      num: "12345"
+      target: 6
+
+  - name: all_nines_81
+    in:
+      num: "999"
+      target: 81
+
+  - name: all_nines_27
+    in:
+      num: "999"
+      target: 27
+
+  - name: all_nines_0
+    in:
+      num: "999"
+      target: 0
+
+  - name: alternating_909_9
+    in:
+      num: "909"
+      target: 9
+
+  - name: alternating_909_0
+    in:
+      num: "909"
+      target: 0
+
+  - name: alternating_909_81
+    in:
+      num: "909"
+      target: 81
+
+  - name: max_len_1234567890_45
+    in:
+      num: "1234567890"
+      target: 45
+
+  - name: max_len_1234567890_0
+    in:
+      num: "1234567890"
+      target: 0
+
+  - name: max_len_1234567890_100
+    in:
+      num: "1234567890"
+      target: 100
+
+  - name: max_len_2147483647
+    in:
+      num: "2147483647"
+      target: 2147483647

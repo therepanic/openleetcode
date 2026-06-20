@@ -1,0 +1,35 @@
+class Solution(object):
+    def findMaximumXOR(self, nums):
+        mxBit = max(nums).bit_length()
+        trie=[[-1,-1]]
+        def insert(num):
+            node=0
+            for i in range(mxBit-1,-1,-1):
+                bit=(num>>i)&1
+                if trie[node][bit]==-1:
+                    trie[node][bit]=len(trie)
+                    trie.append([-1,-1])
+                node=trie[node][bit]
+
+        def getMax(num):
+            node=0
+            ans=0
+
+            for i in range(mxBit-1,-1,-1):
+                bit=(num>>i)&1
+                opp=1-bit
+                if trie[node][opp]!=-1:
+                    ans|=(1<<i)
+                    node=trie[node][opp]
+                else:
+                    node=trie[node][bit]
+            return ans
+
+        for num in nums:
+            insert(num)
+        
+        res=0
+        for num in nums:
+            res=max(res,getMax(num))
+        
+        return res

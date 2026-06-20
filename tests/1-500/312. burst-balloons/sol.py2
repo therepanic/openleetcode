@@ -1,0 +1,22 @@
+class Solution(object):
+    def maxCoins(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        balloons = [1] + nums + [1]
+        n = len(balloons)
+        dp = [[0] * n for _ in range(n)]
+        
+        for length in range(2, n):
+            for left in range(0, n - length):
+                right = left + length
+                best = 0
+                for k in range(left + 1, right):
+                    gain = balloons[left] * balloons[k] * balloons[right]
+                    total = gain + dp[left][k] + dp[k][right]
+                    if total > best:
+                        best = total
+                dp[left][right] = best
+        
+        return dp[0][n-1]

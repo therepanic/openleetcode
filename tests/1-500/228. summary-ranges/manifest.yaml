@@ -1,0 +1,341 @@
+entry:
+  id: 228
+  title: summary-ranges
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().summaryRanges({nums})"
+    rust: "Solution::summary_ranges({nums})"
+    python3: "Solution().summaryRanges({nums})"
+    python2: "Solution().summaryRanges({nums})"
+    ruby: "summary_ranges({nums})"
+    java: "new Solution().summaryRanges({nums})"
+    csharp: "new Solution().SummaryRanges({nums})"
+    kotlin: "Solution().summaryRanges({nums})"
+    go: "summaryRanges({nums})"
+    dart: "Solution().summaryRanges({nums})"
+    swift: "Solution().summaryRanges({nums})"
+    typescript: "summaryRanges({nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().summaryRanges(nums, {result})"
+    checker: |
+      class Checker:
+          def summaryRanges(self, nums, result):
+              expected = []
+              i = 0
+              while i < len(nums):
+                  start = nums[i]
+                  j = i
+                  while j + 1 < len(nums) and nums[j + 1] == nums[j] + 1:
+                      j += 1
+                  if nums[j] == start:
+                      expected.append(str(start))
+                  else:
+                      expected.append(f"{start}->{nums[j]}")
+                  i = j + 1
+              return result == expected
+seed: 228
+tests:
+  - name: empty
+    in:
+      nums: []
+    out: []
+  - name: single_zero
+    in:
+      nums: [0]
+    out:
+      - "0"
+  - name: single_positive
+    in:
+      nums: [7]
+    out:
+      - "7"
+  - name: single_negative
+    in:
+      nums: [-5]
+    out:
+      - "-5"
+  - name: example_1
+    in:
+      nums: [0, 1, 2, 4, 5, 7]
+    out:
+      - "0->2"
+      - "4->5"
+      - "7"
+  - name: example_2
+    in:
+      nums: [0, 2, 3, 4, 6, 8, 9]
+    out:
+      - "0"
+      - "2->4"
+      - "6"
+      - "8->9"
+  - name: all_consecutive_two
+    in:
+      nums: [1, 2]
+    out:
+      - "1->2"
+  - name: all_consecutive_three
+    in:
+      nums: [1, 2, 3]
+    out:
+      - "1->3"
+  - name: all_separate_two
+    in:
+      nums: [1, 3]
+    out:
+      - "1"
+      - "3"
+  - name: all_separate_three
+    in:
+      nums: [1, 3, 5]
+    out:
+      - "1"
+      - "3"
+      - "5"
+  - name: mix_simple
+    in:
+      nums: [1, 2, 4, 5, 6, 8]
+    out:
+      - "1->2"
+      - "4->6"
+      - "8"
+  - name: mix_with_singletons
+    in:
+      nums: [-3, -2, 0, 1, 3]
+    out:
+      - "-3->-2"
+      - "0->1"
+      - "3"
+  - name: negative_range
+    in:
+      nums: [-10, -9, -8, -6, -4, -3, -1]
+    out:
+      - "-10->-8"
+      - "-6"
+      - "-4->-3"
+      - "-1"
+  - name: around_zero
+    in:
+      nums: [-2, -1, 0, 2, 3, 5]
+    out:
+      - "-2->0"
+      - "2->3"
+      - "5"
+  - name: gap_everywhere
+    in:
+      nums: [10, 12, 14, 16, 18]
+    out:
+      - "10"
+      - "12"
+      - "14"
+      - "16"
+      - "18"
+  - name: one_long_range
+    in:
+      nums: [4, 5, 6, 7, 8, 9]
+    out:
+      - "4->9"
+  - name: two_ranges_long
+    in:
+      nums: [1, 2, 3, 10, 11, 12]
+    out:
+      - "1->3"
+      - "10->12"
+  - name: alternating
+    in:
+      nums: [1, 2, 4, 5, 7, 8, 10]
+    out:
+      - "1->2"
+      - "4->5"
+      - "7->8"
+      - "10"
+  - name: start_end_singles
+    in:
+      nums: [1, 2, 3, 5, 7, 8, 9]
+    out:
+      - "1->3"
+      - "5"
+      - "7->9"
+  - name: three_blocks
+    in:
+      nums: [1, 2, 4, 5, 7, 8, 10, 11]
+    out:
+      - "1->2"
+      - "4->5"
+      - "7->8"
+      - "10->11"
+  - name: leading_single
+    in:
+      nums: [0, 2, 3, 4, 10]
+    out:
+      - "0"
+      - "2->4"
+      - "10"
+  - name: trailing_single
+    in:
+      nums: [1, 2, 4, 5, 6, 9]
+    out:
+      - "1->2"
+      - "4->6"
+      - "9"
+  - name: many_singles
+    in:
+      nums: [-8, -6, -4, -2, 0, 2, 4]
+    out:
+      - "-8"
+      - "-6"
+      - "-4"
+      - "-2"
+      - "0"
+      - "2"
+      - "4"
+  - name: max_int_single
+    in:
+      nums: [2147483647]
+    out:
+      - "2147483647"
+  - name: min_int_single
+    in:
+      nums: [-2147483648]
+    out:
+      - "-2147483648"
+  - name: min_max_pair
+    in:
+      nums: [-2147483648, 2147483647]
+    out:
+      - "-2147483648"
+      - "2147483647"
+  - name: min_int_range
+    in:
+      nums: [-2147483648, -2147483647, -2147483646]
+    out:
+      - "-2147483648->-2147483646"
+  - name: max_int_range
+    in:
+      nums: [2147483645, 2147483646, 2147483647]
+    out:
+      - "2147483645->2147483647"
+  - name: min_boundary_mix
+    in:
+      nums: [-2147483648, -2147483646, -2147483645, -2147483643]
+    out:
+      - "-2147483648"
+      - "-2147483646->-2147483645"
+      - "-2147483643"
+  - name: max_boundary_mix
+    in:
+      nums: [2147483640, 2147483641, 2147483643, 2147483644, 2147483647]
+    out:
+      - "2147483640->2147483641"
+      - "2147483643->2147483644"
+      - "2147483647"
+  - name: long_ascending_blocks
+    in:
+      nums: [-10, -9, -8, -2, -1, 0, 1, 5, 6, 7, 12]
+    out:
+      - "-10->-8"
+      - "-2->1"
+      - "5->7"
+      - "12"
+  - name: many_small_ranges
+    in:
+      nums: [1, 2, 4, 7, 8, 9, 15, 16, 20]
+    out:
+      - "1->2"
+      - "4"
+      - "7->9"
+      - "15->16"
+      - "20"
+  - name: three_with_bridge
+    in:
+      nums: [3, 4, 5, 7, 9, 10, 11, 13]
+    out:
+      - "3->5"
+      - "7"
+      - "9->11"
+      - "13"
+  - name: dense_then_sparse
+    in:
+      nums: [1, 2, 3, 4, 6, 8, 9, 11, 12, 13]
+    out:
+      - "1->4"
+      - "6"
+      - "8->9"
+      - "11->13"
+  - name: symmetric_gaps
+    in:
+      nums: [-7, -6, -4, -3, -1, 0, 2, 3, 5, 6]
+    out:
+      - "-7->-6"
+      - "-4->-3"
+      - "-1->0"
+      - "2->3"
+      - "5->6"
+  - name: end_to_end_near_limit
+    in:
+      nums:
+        [-2147483648, -2147483647, 0, 1, 2, 2147483645, 2147483646, 2147483647]
+    out:
+      - "-2147483648->-2147483647"
+      - "0->2"
+      - "2147483645->2147483647"
+  - name: spaced_pairs
+    in:
+      nums: [-9, -8, -5, -4, -1, 0, 3, 4, 7, 8]
+    out:
+      - "-9->-8"
+      - "-5->-4"
+      - "-1->0"
+      - "3->4"
+      - "7->8"
+  - name: zigzag_runs
+    in:
+      nums: [-12, -11, -10, -7, -6, -2, -1, 1, 2, 3, 9]
+    out:
+      - "-12->-10"
+      - "-7->-6"
+      - "-2->-1"
+      - "1->3"
+      - "9"
+
+  - name: gen_sorted_unique_small
+    seed: 22801
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 0
+          max: 20
+        of:
+          gen: "int"
+          min: -30
+          max: 30
+        distinct: true
+        sorted: true
+
+  - name: gen_sorted_unique_medium
+    seed: 22802
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 20
+          max: 80
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: true
+        sorted: true

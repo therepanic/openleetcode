@@ -1,0 +1,327 @@
+entry:
+  id: 236
+  title: "lowest-common-ancestor-of-a-binary-tree"
+  params:
+    root:
+      type: tree_node
+    p:
+      type: int
+    q:
+      type: int
+  call:
+    cpp: "treeNodeToArray(Solution().lowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+    rust: "TreeNode::tree_node_to_array(Solution::lowest_common_ancestor({root}, Some(Rc::new(RefCell::new(TreeNode::new({p})))), Some(Rc::new(RefCell::new(TreeNode::new({q}))))))"
+    python3: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    python2: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    ruby: "tree_node_to_array(lowest_common_ancestor({root}, TreeNode.new({p}), TreeNode.new({q})))"
+    java: "TreeNode.treeNodeToArray(new Solution().lowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().LowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+    kotlin: "treeNodeToArray(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    go: "treeNodeToArray(lowestCommonAncestor({root}, &TreeNode{Val: {p}}, &TreeNode{Val: {q}}))"
+    dart: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    swift: "tree_node_to_array(Solution().lowestCommonAncestor({root}, TreeNode({p}), TreeNode({q})))"
+    typescript: "treeNodeToArray(lowestCommonAncestor({root}, new TreeNode({p}), new TreeNode({q})))"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 300
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().lowestCommonAncestor(root, p, q, {result})"
+    checker: |
+      from typing import Any
+
+      class Checker:
+          def lowestCommonAncestor(self, root, p: int, q: int, result: Any) -> bool:
+              if not isinstance(root, list):
+                  return False
+
+              class Node:
+                  def __init__(self, val):
+                      self.val = val
+                      self.left = None
+                      self.right = None
+
+              def to_tree(arr):
+                  if not arr or arr[0] is None:
+                      return None
+                  nodes = [None if v is None else Node(v) for v in arr]
+                  kid = 1
+                  for i, node in enumerate(nodes):
+                      if node is None:
+                          continue
+                      if kid < len(nodes):
+                          node.left = nodes[kid]
+                          kid += 1
+                      if kid < len(nodes):
+                          node.right = nodes[kid]
+                          kid += 1
+                  return nodes[0]
+
+              def dfs(node):
+                  if node is None:
+                      return None
+                  if node.val == p or node.val == q:
+                      return node.val
+                  left = dfs(node.left)
+                  right = dfs(node.right)
+                  if left is not None and right is not None:
+                      return node.val
+                  return left if left is not None else right
+
+              expected = dfs(to_tree(root))
+              if isinstance(result, dict):
+                  return result.get("val") == expected
+              return hasattr(result, "val") and result.val == expected
+
+seed: 236236
+
+tests:
+  - name: "ex1"
+    in:
+      root: [3, 5, 1, 6, 2, 0, 8, null, null, 7, 4]
+      p: 5
+      q: 1
+    out: [3, 5, 1, 6, 2, 0, 8, null, null, 7, 4]
+
+  - name: "ex2"
+    in:
+      root: [3, 5, 1, 6, 2, 0, 8, null, null, 7, 4]
+      p: 5
+      q: 4
+    out: [5, 6, 2, null, null, 7, 4]
+
+  - name: "ex3"
+    in:
+      root: [1, 2]
+      p: 1
+      q: 2
+    out: [1, 2]
+
+  - name: "root_cross_subtrees"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 0
+      q: 9
+    out: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+
+  - name: "left_ancestor"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 2
+      q: 4
+    out: [2, 0, 4, null, null, 3, 5]
+
+  - name: "right_ancestor"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 8
+      q: 9
+    out: [8, 7, 9]
+
+  - name: "both_under_four"
+    in:
+      root: [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+      p: 3
+      q: 5
+    out: [4, 3, 5]
+
+  - name: "balanced_left"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 2
+      q: 7
+    out: [5, 2, 7]
+
+  - name: "balanced_right"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 12
+      q: 20
+    out: [15, 12, 20]
+
+  - name: "same_branch_rooted_left"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 5
+      q: 7
+    out: [5, 2, 7]
+
+  - name: "same_branch_rooted_right"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+      p: 15
+      q: 12
+    out: [15, 12, 20]
+
+  - name: "left_skew"
+    in:
+      root: [9, 8, null, 7, null, 6, null, 5]
+      p: 5
+      q: 8
+    out: [8, 7, null, 6, null, 5]
+
+  - name: "right_skew"
+    in:
+      root: [1, null, 2, null, 3, null, 4, null, 5]
+      p: 3
+      q: 5
+    out: [3, null, 4, null, 5]
+
+  - name: "negative_values"
+    in:
+      root: [0, -10, 10, -20, -5, 5, 20]
+      p: -20
+      q: 20
+    out: [0, -10, 10, -20, -5, 5, 20]
+
+  - name: "negative_subtree"
+    in:
+      root: [0, -10, 10, -20, -5, 5, 20]
+      p: -20
+      q: -5
+    out: [-10, -20, -5]
+
+  - name: "mixed_chain"
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7, null, null, null, null, null, null, null, 8]
+      p: 5
+      q: 8
+    out: [6, 5, 7, null, null, null, 8]
+
+  - name: "full_tree_static"
+    in:
+      root: [50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 55, 65, 75, 90]
+      p: 25
+      q: 45
+    out: [30, 20, 40, 10, 25, 35, 45]
+
+  - name: "small_balanced_cross"
+    in:
+      root: [2, 1, 3]
+      p: 1
+      q: 3
+    out: [2, 1, 3]
+
+  - name: "small_balanced_ancestor"
+    in:
+      root: [2, 1, 3]
+      p: 2
+      q: 1
+    out: [2, 1, 3]
+
+  - name: "right_chain_small"
+    in:
+      root: [5, null, 6, null, 7, null, 8]
+      p: 6
+      q: 8
+    out: [6, null, 7, null, 8]
+
+  - name: "inner_complete_left"
+    in:
+      root: [8, 4, 10, 2, 6, 9, 12, 1, 3, 5, 7, null, null, 11, 13]
+      p: 1
+      q: 7
+    out: [4, 2, 6, 1, 3, 5, 7]
+
+  - name: "inner_complete_right"
+    in:
+      root: [8, 4, 10, 2, 6, 9, 12, 1, 3, 5, 7, null, null, 11, 13]
+      p: 11
+      q: 13
+    out: [12, 11, 13]
+
+  - name: "complete_root_cross"
+    in:
+      root: [8, 4, 10, 2, 6, 9, 12, 1, 3, 5, 7, null, null, 11, 13]
+      p: 3
+      q: 11
+    out: [8, 4, 10, 2, 6, 9, 12, 1, 3, 5, 7, null, null, 11, 13]
+
+  - name: "asymmetric_left_subtree"
+    in:
+      root: [7, 3, 9, 1, 5, null, 11, null, 2, 4, 6, 10, 12]
+      p: 2
+      q: 6
+    out: [3, 1, 5, null, 2, 4, 6]
+
+  - name: "asymmetric_root_cross"
+    in:
+      root: [7, 3, 9, 1, 5, null, 11, null, 2, 4, 6, 10, 12]
+      p: 4
+      q: 12
+    out: [7, 3, 9, 1, 5, null, 11, null, 2, 4, 6, 10, 12]
+
+  - name: "sparse_root_cross"
+    in:
+      root: [15, 6, 18, 3, 7, 17, 20, null, 4, null, 13, 16, null, 19, 21]
+      p: 4
+      q: 16
+    out: [15, 6, 18, 3, 7, 17, 20, null, 4, null, 13, 16, null, 19, 21]
+
+  - name: "sparse_left_internal"
+    in:
+      root: [15, 6, 18, 3, 7, 17, 20, null, 4, null, 13, 16, null, 19, 21]
+      p: 4
+      q: 13
+    out: [6, 3, 7, null, 4, null, 13]
+
+  - name: "deep_left_ancestor"
+    in:
+      root: [12, 5, 18, 2, 9, 15, 19, 1, 3, 7, 11, null, 17]
+      p: 5
+      q: 11
+    out: [5, 2, 9, 1, 3, 7, 11]
+
+  - name: "deep_right_internal"
+    in:
+      root: [12, 5, 18, 2, 9, 15, 19, 1, 3, 7, 11, null, 17]
+      p: 15
+      q: 17
+    out: [15, null, 17]
+
+  - name: "root_with_negative_branch"
+    in:
+      root: [1, -2, 3, -4, 0, 2, 5, null, -3]
+      p: -3
+      q: 5
+    out: [1, -2, 3, -4, 0, 2, 5, null, -3]
+
+  - name: "negative_ancestor_chain"
+    in:
+      root: [1, -2, 3, -4, 0, 2, 5, null, -3]
+      p: -4
+      q: -3
+    out: [-4, null, -3]
+
+  - name: "single_side_complete"
+    in:
+      root: [9, 4, null, 2, 6, 1, 3, 5, 7]
+      p: 1
+      q: 7
+    out: [4, 2, 6, 1, 3, 5, 7]
+
+  - name: "single_side_rooted_left"
+    in:
+      root: [9, 4, null, 2, 6, 1, 3, 5, 7]
+      p: 2
+      q: 5
+    out: [4, 2, 6, 1, 3, 5, 7]
+
+  - name: "right_sparse_cross"
+    in:
+      root: [30, 10, 40, null, 20, 35, 50, 15, 25, null, 37, 45, 60]
+      p: 25
+      q: 37
+    out: [30, 10, 40, null, 20, 35, 50, 15, 25, null, 37, 45, 60]
+
+  - name: "right_sparse_internal"
+    in:
+      root: [30, 10, 40, null, 20, 35, 50, 15, 25, null, 37, 45, 60]
+      p: 45
+      q: 60
+    out: [50, 45, 60]

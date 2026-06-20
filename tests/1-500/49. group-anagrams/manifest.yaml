@@ -1,222 +1,425 @@
-"entry":
-  "id": 49
-  "title": "group-anagrams"
-  "call":
-    "cpp": "Solution().groupAnagrams({strs})"
-    "rust": "Solution::group_anagrams({strs})"
-    "python3": "Solution().groupAnagrams({strs})"
-    "python2": "Solution().groupAnagrams({strs})"
-    "ruby": "group_anagrams({strs})"
-    "java": "new Solution().groupAnagrams({strs})"
-    "csharp": "new Solution().GroupAnagrams({strs})"
-    "kotlin": "Solution().groupAnagrams({strs})"
-    "go": "groupAnagrams({strs})"
-    "dart": "Solution().groupAnagrams({strs})"
-    "swift": "Solution().groupAnagrams({strs})"
-    "typescript": "groupAnagrams({strs})"
+entry:
+  id: 49
+  title: "group-anagrams"
   params:
     strs:
       type: array
       items:
         type: string
-"judge":
-  "type": "ignore_order"
-"limits":
-  "time_ms": 2000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().groupAnagrams(strs, {result})"
-    "checker":
-      "from collections import defaultdict\nclass Checker:\n    def groupAnagrams(self, strs, result):\n        def
-      sort_str(s):\n            return \"\".join(sorted(s))\n        d = defaultdict(list)\n        for s in strs:\n     \
-      \       d[sort_str(s)].append(s)\n        expected = sorted([sorted(v) for v in d.values()])\n        actual = sorted([sorted(v)
-      for v in result])\n        return expected == actual\n"
-"seed": 42
-"tests":
-  - "name": "Example 1"
-    "in":
-      "strs":
-        - "eat"
-        - "tea"
-        - "tan"
-        - "ate"
-        - "nat"
-        - "bat"
-    "out":
-      - - "bat"
-      - - "nat"
-        - "tan"
-      - - "ate"
-        - "eat"
-        - "tea"
-  - "name": "Example 2"
-    "in":
-      "strs":
+  call:
+    cpp: "Solution().groupAnagrams({strs})"
+    rust: "Solution::group_anagrams({strs})"
+    python3: "Solution().groupAnagrams({strs})"
+    python2: "Solution().groupAnagrams({strs})"
+    ruby: "group_anagrams({strs})"
+    java: "new Solution().groupAnagrams({strs})"
+    csharp: "new Solution().GroupAnagrams({strs})"
+    kotlin: "Solution().groupAnagrams({strs})"
+    go: "groupAnagrams({strs})"
+    dart: "Solution().groupAnagrams({strs})"
+    swift: "Solution().groupAnagrams({strs})"
+    typescript: "groupAnagrams({strs})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().groupAnagrams(strs, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def groupAnagrams(self, strs, result):
+              if not isinstance(result, list):
+                  return False
+
+              input_counts = Counter(strs)
+              output_counts = Counter()
+              groups = Counter()
+
+              for group in result:
+                  if not isinstance(group, list) or len(group) == 0:
+                      return False
+
+                  for word in group:
+                      if not isinstance(word, str):
+                          return False
+                      output_counts[word] += 1
+
+                  signature = "".join(sorted(group[0]))
+                  for word in group[1:]:
+                      if "".join(sorted(word)) != signature:
+                          return False
+
+                  groups[tuple(sorted(group))] += 1
+
+              if output_counts != input_counts:
+                  return False
+
+              expected_groups = Counter()
+              buckets = {}
+              for word in strs:
+                  signature = "".join(sorted(word))
+                  buckets.setdefault(signature, []).append(word)
+
+              for bucket in buckets.values():
+                  expected_groups[tuple(sorted(bucket))] += 1
+
+              return groups == expected_groups
+
+seed: 49
+
+tests:
+  - name: "example_1"
+    in:
+      strs:
+        - eat
+        - tea
+        - tan
+        - ate
+        - nat
+        - bat
+
+  - name: "example_2"
+    in:
+      strs:
         - ""
-    "out":
-      - - ""
-  - "name": "Example 3"
-    "in":
-      "strs":
-        - "a"
-    "out":
-      - - "a"
-  - "name": "Two elements same"
-    "in":
-      "strs":
-        - "abc"
-        - "abc"
-    "out":
-      - - "abc"
-        - "abc"
-  - "name": "Two elements anagrams"
-    "in":
-      "strs":
-        - "ab"
-        - "ba"
-    "out":
-      - - "ab"
-        - "ba"
-  - "name": "Different lengths"
-    "in":
-      "strs":
-        - "a"
-        - "ab"
-        - "abc"
-    "out":
-      - - "a"
-      - - "ab"
-      - - "abc"
-  - "name": "All same"
-    "in":
-      "strs":
-        - "x"
-        - "x"
-        - "x"
-        - "x"
-    "out":
-      - - "x"
-        - "x"
-        - "x"
-        - "x"
-  - "name": "Large anagram groups"
-    "in":
-      "strs":
-        - "a"
-        - "b"
-        - "a"
-        - "b"
-        - "a"
-        - "b"
-    "out":
-      - - "a"
-        - "a"
-        - "a"
-      - - "b"
-        - "b"
-        - "b"
-  - "name": "Empty strings"
-    "in":
-      "strs":
+
+  - name: "example_3"
+    in:
+      strs:
+        - a
+
+  - name: "single_empty_string"
+    in:
+      strs:
         - ""
         - ""
-    "out":
-      - - ""
         - ""
-  - "name": "Varied alphabet"
-    "in":
-      "strs":
-        - "aa"
-        - "bb"
-        - "ab"
-        - "ba"
-        - "a"
-    "out":
-      - - "aa"
-      - - "bb"
-      - - "ab"
-        - "ba"
-      - - "a"
-  - "name": "Many single chars"
-    "in":
-      "strs":
-        - "d"
-        - "c"
-        - "b"
-        - "a"
-    "out":
-      - - "d"
-      - - "c"
-      - - "b"
-      - - "a"
-  - "name": "Mixed length and anagrams"
-    "in":
-      "strs":
-        - "abc"
-        - "cba"
-        - "cab"
-        - "b"
-        - "a"
-    "out":
-      - - "abc"
-        - "cba"
-        - "cab"
-      - - "b"
-      - - "a"
-  - "name": "Complex single letter cases"
-    "in":
-      "strs":
-        - "z"
-        - "z"
-        - "z"
-        - "a"
-        - "a"
-    "out":
-      - - "z"
-        - "z"
-        - "z"
-      - - "a"
-        - "a"
-  - "name": "Palindrome variation"
-    "in":
-      "strs":
-        - "aba"
-        - "baa"
-        - "aab"
-    "out":
-      - - "aba"
-        - "baa"
-        - "aab"
-  - "name": "Double letters"
-    "in":
-      "strs":
-        - "aabb"
-        - "bbaa"
-        - "abab"
-        - "abba"
-    "out":
-      - - "aabb"
-        - "bbaa"
-        - "abab"
-        - "abba"
-  - "name": "No common chars"
-    "in":
-      "strs":
-        - "abc"
-        - "def"
-        - "ghi"
-    "out":
-      - - "abc"
-      - - "def"
-      - - "ghi"
-  - "name": "Long sequence same"
-    "in":
-      "strs":
-        - "abcde"
-        - "abcde"
-        - "abcde"
-    "out":
-      - - "abcde"
-        - "abcde"
-        - "abcde"
+
+  - name: "all_unique_single_chars"
+    in:
+      strs:
+        - a
+        - b
+        - c
+        - d
+        - e
+        - f
+        - g
+        - h
+        - i
+        - j
+
+  - name: "simple_pairs"
+    in:
+      strs:
+        - ab
+        - ba
+        - cd
+        - dc
+        - ef
+        - fe
+
+  - name: "duplicates_and_groups"
+    in:
+      strs:
+        - abc
+        - bca
+        - cab
+        - abc
+        - xyz
+        - yzx
+        - zxy
+        - xyz
+
+  - name: "mixed_lengths"
+    in:
+      strs:
+        - a
+        - aa
+        - aaa
+        - b
+        - bb
+        - bbb
+        - ab
+        - ba
+        - aab
+        - aba
+
+  - name: "includes_repeated_word"
+    in:
+      strs:
+        - listen
+        - silent
+        - enlist
+        - listen
+        - tinsel
+        - inlets
+
+  - name: "two_groups_with_noise"
+    in:
+      strs:
+        - dormitory
+        - dirtyroom
+        - schoolmaster
+        - theclassroom
+        - cat
+        - act
+        - tac
+
+  - name: "palindrome_like"
+    in:
+      strs:
+        - noon
+        - onon
+        - abba
+        - baab
+        - aabb
+        - bbaa
+
+  - name: "long_common_signature"
+    in:
+      strs:
+        - aab
+        - aba
+        - baa
+        - abb
+        - bab
+        - bba
+
+  - name: "many_small_buckets"
+    in:
+      strs:
+        - abcd
+        - bcda
+        - cdab
+        - efgh
+        - ghef
+        - hgfe
+        - ijkl
+        - ljik
+        - klij
+        - mnop
+        - ponm
+        - opmn
+
+  - name: "with_empty_and_nonempty"
+    in:
+      strs:
+        - ""
+        - a
+        - ""
+        - b
+        - c
+        - ""
+
+  - name: "single_long_word_bucket"
+    in:
+      strs:
+        - abcde
+        - edcba
+        - baced
+
+  - name: "triples_and_singles"
+    in:
+      strs:
+        - rat
+        - tar
+        - art
+        - star
+        - tsar
+        - arts
+        - car
+        - arc
+        - scar
+
+  - name: "repeated_triples"
+    in:
+      strs:
+        - abc
+        - bac
+        - cab
+        - abc
+        - bac
+        - cab
+
+  - name: "mosaic_groups"
+    in:
+      strs:
+        - ab
+        - ba
+        - abc
+        - bca
+        - cab
+        - abcd
+        - bcad
+        - cdab
+        - dabc
+
+  - name: "case_dense_lower_bound"
+    in:
+      strs:
+        - aabc
+        - abac
+        - caba
+        - bcda
+        - bdca
+        - cabd
+
+  - name: "five_way_group"
+    in:
+      strs:
+        - abcde
+        - bcdea
+        - cdeab
+        - deabc
+        - eabcd
+
+  - name: "longer_words_mixed"
+    in:
+      strs:
+        - stop
+        - pots
+        - tops
+        - spot
+        - post
+        - opts
+
+  - name: "same_signature_many_duplicates"
+    in:
+      strs:
+        - aab
+        - aba
+        - baa
+        - aab
+        - aba
+        - baa
+        - aab
+        - aba
+
+  - name: "extra_1"
+    in:
+      strs:
+        - abc
+        - cba
+        - bac
+        - xyz
+        - yzx
+        - zxy
+
+  - name: "extra_2"
+    in:
+      strs:
+        - aa
+        - aa
+        - aa
+        - bb
+        - bb
+        - cc
+
+  - name: "extra_3"
+    in:
+      strs:
+        - abcd
+        - abdc
+        - adcb
+        - bcad
+        - dcba
+
+  - name: "extra_4"
+    in:
+      strs:
+        - a
+        - ab
+        - abc
+        - abcd
+        - abcde
+
+  - name: "extra_5"
+    in:
+      strs:
+        - z
+        - zz
+        - zzz
+        - zzzz
+
+  - name: "extra_6"
+    in:
+      strs:
+        - one
+        - eno
+        - neo
+        - two
+        - wto
+        - owt
+
+  - name: "extra_7"
+    in:
+      strs:
+        - face
+        - cafe
+        - acer
+        - race
+        - care
+        - acre
+
+  - name: "extra_8"
+    in:
+      strs:
+        - bca
+        - cab
+        - abc
+        - bac
+        - acb
+
+  - name: "extra_9"
+    in:
+      strs:
+        - ab
+        - ba
+        - aba
+        - baa
+        - aab
+
+  - name: "extra_10"
+    in:
+      strs:
+        - qwerty
+        - ytrewq
+        - asdfgh
+        - hgfdsa
+        - qaz
+        - zaq
+
+  - name: "extra_11"
+    in:
+      strs:
+        - moon
+        - noom
+        - omon
+        - sun
+        - nus
+        - uns
+
+  - name: "extra_12"
+    in:
+      strs:
+        - note
+        - tone
+        - stone
+        - tones
+
+  - name: "extra_13"
+    in:
+      strs:
+        - loop
+        - pool
+        - polo
+        - lopo
+        - opol

@@ -1,0 +1,348 @@
+entry:
+  id: 472
+  title: "concatenated-words"
+  params:
+    words:
+      type: string
+  call:
+    cpp: "([&](){ std::vector<std::string> v; std::unordered_set<std::string> seen; std::string cur; for (char ch : {words}) { if (ch == '|') { if (!cur.empty() && !seen.count(cur)) { seen.insert(cur); v.push_back(cur); } cur.clear(); } else { cur.push_back(ch); } } if (!cur.empty() && !seen.count(cur)) { v.push_back(cur); } return Solution().findAllConcatenatedWordsInADict(v); })()"
+    rust: '({ let mut words_vec: Vec<String> = Vec::new(); let mut seen = std::collections::HashSet::new(); for part in {words}.split("|") { if !part.is_empty() && seen.insert(part.to_string()) { words_vec.push(part.to_string()); } } Solution::find_all_concatenated_words_in_a_dict(words_vec) })'
+    python3: 'Solution().findAllConcatenatedWordsInADict(list(dict.fromkeys([w for w in {words}.split("|") if w])))'
+    python2: 'Solution().findAllConcatenatedWordsInADict((lambda arr: [x for i, x in enumerate(arr) if x and x not in arr[:i]])({words}.split("|")))'
+    ruby: 'find_all_concatenated_words_in_a_dict({words}.split("|").reject(&:empty?).uniq)'
+    java: 'new Solution().findAllConcatenatedWordsInADict(((java.util.function.Function<String, String[]>)(s -> { java.util.ArrayList<String> list = new java.util.ArrayList<>(); java.util.HashSet<String> seen = new java.util.HashSet<>(); for (String w : s.split("\\|")) { if (!w.isEmpty() && seen.add(w)) list.add(w); } return list.toArray(new String[0]); })).apply({words}))'
+    csharp: "new Solution().FindAllConcatenatedWordsInADict(((Func<string, string[]>)(s => { var seen = new HashSet<string>(); var list = new List<string>(); foreach (var w in s.Split('|')) { if (w.Length > 0 && seen.Add(w)) list.Add(w); } return list.ToArray(); }))({words}))"
+    kotlin: 'Solution().findAllConcatenatedWordsInADict(buildList { val seen = hashSetOf<String>(); for (w in {words}.split("|")) if (w.isNotEmpty() && seen.add(w)) add(w) }.toTypedArray())'
+    go: '(func() []string { seen := map[string]bool{}; words := make([]string, 0); for _, w := range strings.Split({words}, "|") { if w != "" && !seen[w] { seen[w] = true; words = append(words, w) } }; return findAllConcatenatedWordsInADict(words) })()'
+    dart: 'Solution().findAllConcatenatedWordsInADict(() { final seen = <String>{}; final words = <String>[]; for (final w in {words}.split("|")) { if (w.isNotEmpty && seen.add(w)) words.add(w); } return words; }())'
+    swift: 'Solution().findAllConcatenatedWordsInADict(({ () -> [String] in var seen = Set<String>(); var parsed = [String](); for w in {words}.split(separator: "|").map(String.init) { if !w.isEmpty && !seen.contains(w) { seen.insert(w); parsed.append(w) } }; return parsed })())'
+    typescript: 'findAllConcatenatedWordsInADict((() => { const seen = new Set<string>(); const words: string[] = []; for (const w of {words}.split("|")) { if (w.length > 0 && !seen.has(w)) { seen.add(w); words.push(w); } } return words; })())'
+judge:
+  type: "ignore_order"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().findAllConcatenatedWordsInADict(words, {result})"
+    checker: |
+      class Checker:
+          def _parse_words(self, words):
+              res = []
+              seen = set()
+              for w in words.split("|"):
+                  if w and w not in seen:
+                      seen.add(w)
+                      res.append(w)
+              return res
+
+          def _is_concat(self, word, word_set):
+              if not word_set:
+                  return False
+              dp = [False] * (len(word) + 1)
+              dp[0] = True
+              for i in range(1, len(word) + 1):
+                  for j in range(i):
+                      if dp[j] and word[j:i] in word_set:
+                          dp[i] = True
+                          break
+              if not dp[-1]:
+                  return False
+              for i in range(1, len(word)):
+                  if dp[i] and word[i:] in word_set:
+                      return True
+              return False
+
+          def findAllConcatenatedWordsInADict(self, words, result):
+              words = self._parse_words(words)
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, str) for x in result):
+                  return False
+              if len(result) != len(set(result)):
+                  return False
+              word_set = set(words)
+              expected = sorted(w for w in words if self._is_concat(w, word_set - {w}))
+              return sorted(result) == expected
+seed: 472
+tests:
+  - name: "example_1"
+    in:
+      words: "cat|cats|catsdogcats|dog|dogcatsdog|hippopotamuses|rat|ratcatdogcat"
+    out: ["catsdogcats", "dogcatsdog", "ratcatdogcat"]
+  - name: "example_2"
+    in:
+      words: "cat|dog|catdog"
+    out: ["catdog"]
+  - name: "single_word"
+    in:
+      words: "a"
+    out: []
+  - name: "two_words_no_concat"
+    in:
+      words: "ab|cd"
+    out: []
+  - name: "simple_chain"
+    in:
+      words: "a|b|c|ab|abc|bc|abcd"
+    out: ["ab", "abc", "bc"]
+  - name: "repeated_pattern"
+    in:
+      words: "cat|cats|dog|catsdog|dogcat|catdogcats"
+    out: ["catsdog", "dogcat", "catdogcats"]
+  - name: "multiple_lengths"
+    in:
+      words: "a|aa|aaa|aaaa|aaaaa|aaaaaa|aaaaaaa"
+    out: ["aa", "aaa", "aaaa", "aaaaa", "aaaaaa", "aaaaaaa"]
+  - name: "prefix_only"
+    in:
+      words: "rat|ratcat|ratcatdog|ratcatdogcat|cat|dog"
+    out: ["ratcat", "ratcatdog", "ratcatdogcat"]
+  - name: "overlapping_segments"
+    in:
+      words: "ab|abc|cd|abcd|abcabcd|cdab|abcdab"
+    out: ["abcd", "abcabcd", "cdab", "abcdab"]
+  - name: "long_word_small_parts"
+    in:
+      words: "a|aa|aaa|aaaa|aaaaaa|aaaaaaaa|aaaaaaaaaaaa"
+    out: ["aa", "aaa", "aaaa", "aaaaaa", "aaaaaaaa", "aaaaaaaaaaaa"]
+  - name: "gen_small_1"
+    seed: 1001
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 20
+          max: 35
+        alphabet: "abc|"
+  - name: "gen_small_2"
+    seed: 1002
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 25
+          max: 40
+        alphabet: "abcd|"
+  - name: "gen_small_3"
+    seed: 1003
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 30
+          max: 45
+        alphabet: "abcde|"
+  - name: "gen_small_4"
+    seed: 1004
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 35
+          max: 50
+        alphabet: "abcdef|"
+  - name: "gen_small_5"
+    seed: 1005
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 40
+          max: 55
+        alphabet: "abcdefg|"
+  - name: "oracle_random_1"
+    seed: 2001
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 60
+          max: 90
+        alphabet: "abcd|"
+  - name: "oracle_random_2"
+    seed: 2002
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 70
+          max: 100
+        alphabet: "abcde|"
+  - name: "oracle_random_3"
+    seed: 2003
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 80
+          max: 110
+        alphabet: "abcdef|"
+  - name: "oracle_random_4"
+    seed: 2004
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 90
+          max: 120
+        alphabet: "abcdefg|"
+  - name: "oracle_random_5"
+    seed: 2005
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 100
+          max: 130
+        alphabet: "abcdefgh|"
+  - name: "oracle_random_6"
+    seed: 2006
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 110
+          max: 140
+        alphabet: "abcdefghi|"
+  - name: "oracle_random_7"
+    seed: 2007
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 120
+          max: 150
+        alphabet: "abcdefghij|"
+  - name: "oracle_random_8"
+    seed: 2008
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 130
+          max: 160
+        alphabet: "abcdefghijk|"
+  - name: "oracle_random_9"
+    seed: 2009
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 140
+          max: 170
+        alphabet: "abcdefghijkl|"
+  - name: "oracle_random_10"
+    seed: 2010
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 150
+          max: 180
+        alphabet: "abcdefghijklm|"
+  - name: "oracle_random_11"
+    seed: 2011
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 160
+          max: 190
+        alphabet: "abcdefghijklmn|"
+  - name: "oracle_random_12"
+    seed: 2012
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 170
+          max: 200
+        alphabet: "abcdefghijklmno|"
+  - name: "oracle_random_13"
+    seed: 2013
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 180
+          max: 210
+        alphabet: "abcdefghijklmnop|"
+  - name: "oracle_random_14"
+    seed: 2014
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 190
+          max: 220
+        alphabet: "abcdefghijklmnopq|"
+  - name: "oracle_large_1"
+    seed: 3001
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 800
+          max: 1000
+        alphabet: "abcde|"
+  - name: "oracle_large_2"
+    seed: 3002
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 900
+          max: 1100
+        alphabet: "abcdef|"
+  - name: "oracle_large_3"
+    seed: 3003
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1000
+          max: 1200
+        alphabet: "abcdefg|"
+  - name: "oracle_large_4"
+    seed: 3004
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1100
+          max: 1300
+        alphabet: "abcdefgh|"
+  - name: "oracle_large_5"
+    seed: 3005
+    in:
+      words:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1200
+          max: 1400
+        alphabet: "abcdefghi|"

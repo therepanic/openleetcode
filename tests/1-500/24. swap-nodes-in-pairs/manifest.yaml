@@ -1,259 +1,184 @@
-"entry":
-  "id": 24
-  "title": "swap-nodes-in-pairs"
-  "call":
-    "cpp": "listNodeToArray(Solution().swapPairs({head}))"
-    "rust": "ListNode::list_node_to_array(Solution::swap_pairs({head}))"
-    "python3": "list_node_to_array(Solution().swapPairs({head}))"
-    "python2": "list_node_to_array(Solution().swapPairs({head}))"
-    "ruby": "list_node_to_array(swap_pairs({head}))"
-    "java": "ListNode.listNodeToArray(new Solution().swapPairs({head}))"
-    "csharp": "ListNode.ListNodeToArray(new Solution().SwapPairs({head}))"
-    "kotlin": "listNodeToArray(Solution().swapPairs({head}))"
-    "go": "listNodeToArray(swapPairs({head}))"
-    "dart": "list_node_to_array(Solution().swapPairs({head}))"
-    "swift": "list_node_to_array(Solution().swapPairs({head}))"
-    "typescript": "listNodeToArray(swapPairs({head}))"
+entry:
+  id: 24
+  title: swap-nodes-in-pairs
   params:
     head:
       type: list_node
-"judge":
-  "type": "exact"
-"limits":
-  "time_ms": 1000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().check([{head}], {result})"
-    "checker":
-      "import json\nclass Checker:\n  def check(self, head, res):\n    def to_list(arr):\n      head = cur = None\n\
-      \      for x in arr:\n        if not head: head = cur = [x, None]\n        else:\n          cur[1] = [x, None]\n   \
-      \       cur = cur[1]\n      return head\n    def from_list(node):\n      res = []\n      while node:\n        res.append(node[0])\n\
-      \        node = node[1]\n      return res\n    \n    def ref(h):\n      if not h or not h[1]: return h\n      s = h[1]\n\
-      \      h[1] = ref(s[1])\n      s[1] = h\n      return s\n      \n    try:\n      res = json.loads(res) if isinstance(res,
-      str) else res\n    except Exception:\n      return False\n    if isinstance(res, list) and len(res) == 1 and isinstance(res[0],
-      list):\n      res = res[0]\n    return from_list(ref(to_list(head))) == res\n"
-"seed": 42
-"tests":
-  - "name": "Empty"
-    "in":
-      "head": []
-    "out": []
-  - "name": "Single"
-    "in":
-      "head":
-        - 1
-    "out":
-      - 1
-  - "name": "Two"
-    "in":
-      "head":
-        - 1
-        - 2
-    "out":
-      - 2
-      - 1
-  - "name": "Three"
-    "in":
-      "head":
-        - 1
-        - 2
-        - 3
-    "out":
-      - 2
-      - 1
-      - 3
-  - "name": "Four"
-    "in":
-      "head":
+  call:
+    cpp: listNodeToArray(Solution().swapPairs({head}))
+    rust: ListNode::list_node_to_array(Solution::swap_pairs({head}))
+    python3: list_node_to_array(Solution().swapPairs({head}))
+    python2: list_node_to_array(Solution().swapPairs({head}))
+    ruby: list_node_to_array(swap_pairs({head}))
+    java: ListNode.listNodeToArray(new Solution().swapPairs({head}))
+    csharp: ListNode.ListNodeToArray(new Solution().SwapPairs({head}))
+    kotlin: listNodeToArray(Solution().swapPairs({head}))
+    go: listNodeToArray(swapPairs({head}))
+    dart: list_node_to_array(Solution().swapPairs({head}))
+    swift: list_node_to_array(Solution().swapPairs({head}))
+    typescript: listNodeToArray(swapPairs({head}))
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(head, {result})
+    checker: |
+      import json
+
+      class Checker:
+          def check(self, head, result):
+              try:
+                  got = json.loads(result) if isinstance(result, str) else result
+              except Exception:
+                  return False
+              if not isinstance(got, list):
+                  return False
+              expected = []
+              for i in range(0, len(head), 2):
+                  if i + 1 < len(head):
+                      expected.append(head[i + 1])
+                      expected.append(head[i])
+                  else:
+                      expected.append(head[i])
+              return got == expected
+seed: 24
+tests:
+  - name: example 1
+    in:
+      head:
         - 1
         - 2
         - 3
         - 4
-    "out":
+    out:
       - 2
       - 1
       - 4
       - 3
-  - "name": "Five"
-    "in":
-      "head":
+  - name: example 2
+    in:
+      head: []
+    out: []
+  - name: example 3
+    in:
+      head:
+        - 1
+    out:
+      - 1
+  - name: example 4
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+    out:
+      - 2
+      - 1
+      - 3
+  - name: two nodes
+    in:
+      head:
+        - 7
+        - 8
+    out:
+      - 8
+      - 7
+  - name: odd length five
+    in:
+      head:
         - 1
         - 2
         - 3
         - 4
         - 5
-    "out":
+    out:
       - 2
       - 1
       - 4
       - 3
       - 5
-  - "name": "Six"
-    "in":
-      "head":
+  - name: even length six
+    in:
+      head:
         - 1
         - 2
         - 3
         - 4
         - 5
         - 6
-    "out":
+    out:
       - 2
       - 1
       - 4
       - 3
       - 6
       - 5
-  - "name": "Example constraint max"
-    "in":
-      "head":
+  - name: duplicates
+    in:
+      head:
+        - 1
+        - 1
+        - 1
+        - 1
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: all zeroes
+    in:
+      head:
+        - 0
+        - 0
+        - 0
+    out:
+      - 0
+      - 0
+      - 0
+  - name: max values pair
+    in:
+      head:
         - 100
-        - 0
         - 100
-        - 0
-        - 100
-    "out":
-      - 0
-      - 100
-      - 0
+    out:
       - 100
       - 100
-  - "name": "Gen 1"
-    "in":
-      "head":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 1
-          "max": 20
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 100
-  - "name": "Gen 2"
-    "in":
-      "head":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 20
-          "max": 50
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 100
-  - "name": "Gen 3"
-    "in":
-      "head":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 50
-          "max": 100
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 100
-  - "name": "Gen 4"
-    "in":
-      "head":
-        "gen": "array"
-        "len": 100
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 100
-  - "name": "Gen 5"
-    "in":
-      "head":
-        "gen": "array"
-        "len": 99
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 100
-  - "name": "Static 1"
-    "in":
-      "head":
-        - 1
-        - 1
-        - 1
-        - 1
-    "out":
-      - 1
-      - 1
-      - 1
-      - 1
-  - "name": "Static 2"
-    "in":
-      "head":
-        - 1
-        - 2
-        - 1
-        - 2
-    "out":
-      - 2
-      - 1
-      - 2
-      - 1
-  - "name": "Static 3"
-    "in":
-      "head":
-        - 10
-        - 20
-        - 30
-    "out":
-      - 20
-      - 10
-      - 30
-  - "name": "Static 4"
-    "in":
-      "head":
-        - 0
-        - 1
-        - 0
-        - 1
-        - 0
-    "out":
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-  - "name": "Static 5"
-    "in":
-      "head":
+  - name: mixed small
+    in:
+      head:
         - 5
-        - 4
-        - 3
-        - 2
         - 1
-        - 0
-    "out":
-      - 4
+        - 9
+        - 2
+        - 6
+        - 3
+    out:
+      - 1
       - 5
       - 2
+      - 9
       - 3
+      - 6
+  - name: alternating boundaries
+    in:
+      head:
+        - 0
+        - 100
+        - 0
+        - 100
+        - 0
+    out:
+      - 100
       - 0
-      - 1
-  - "name": "Static 6"
-    "in":
-      "head":
-        - 10
-        - 20
-    "out":
-      - 20
-      - 10
-  - "name": "Static 7"
-    "in":
-      "head":
-        - 10
-    "out":
-      - 10
-  - "name": "Static 8"
-    "in":
-      "head":
+      - 100
+      - 0
+      - 0
+  - name: increasing seven
+    in:
+      head:
         - 1
         - 2
         - 3
@@ -261,7 +186,7 @@
         - 5
         - 6
         - 7
-    "out":
+    out:
       - 2
       - 1
       - 4
@@ -269,9 +194,111 @@
       - 6
       - 5
       - 7
-  - "name": "Static 9"
-    "in":
-      "head":
+  - name: decreasing eight
+    in:
+      head:
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 7
+      - 8
+      - 5
+      - 6
+      - 3
+      - 4
+      - 1
+      - 2
+  - name: repeated pairs
+    in:
+      head:
+        - 2
+        - 2
+        - 3
+        - 3
+        - 4
+        - 4
+    out:
+      - 2
+      - 2
+      - 3
+      - 3
+      - 4
+      - 4
+  - name: zero one pattern
+    in:
+      head:
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out:
+      - 1
+      - 0
+      - 1
+      - 0
+      - 1
+      - 0
+      - 1
+      - 0
+  - name: odd length with tail max
+    in:
+      head:
+        - 4
+        - 9
+        - 2
+        - 8
+        - 1
+    out:
+      - 9
+      - 4
+      - 8
+      - 2
+      - 1
+  - name: even length with tail max
+    in:
+      head:
+        - 4
+        - 9
+        - 2
+        - 8
+        - 1
+        - 7
+    out:
+      - 9
+      - 4
+      - 8
+      - 2
+      - 7
+      - 1
+  - name: boundary mix
+    in:
+      head:
+        - 100
+        - 0
+        - 99
+        - 1
+        - 98
+        - 2
+    out:
+      - 0
+      - 100
+      - 1
+      - 99
+      - 2
+      - 98
+  - name: long odd
+    in:
+      head:
         - 1
         - 2
         - 3
@@ -280,7 +307,8 @@
         - 6
         - 7
         - 8
-    "out":
+        - 9
+    out:
       - 2
       - 1
       - 4
@@ -289,57 +317,400 @@
       - 5
       - 8
       - 7
-  - "name": "Static 10"
-    "in":
-      "head":
-        - 99
-        - 99
+      - 9
+  - name: long even
+    in:
+      head:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+    out:
+      - 2
+      - 1
+      - 4
+      - 3
+      - 6
+      - 5
+      - 8
+      - 7
+      - 10
+      - 9
+  - name: two same max
+    in:
+      head:
+        - 100
+        - 100
+    out:
+      - 100
+      - 100
+  - name: two same min
+    in:
+      head:
         - 0
         - 0
-    "out":
-      - 99
-      - 99
+    out:
       - 0
       - 0
-  - "name": "Static 11"
-    "in":
-      "head":
+  - name: center odd
+    in:
+      head:
+        - 10
+        - 20
+        - 30
+        - 40
+        - 50
+    out:
+      - 20
+      - 10
+      - 40
+      - 30
+      - 50
+  - name: center even
+    in:
+      head:
+        - 10
+        - 20
+        - 30
+        - 40
+        - 50
+        - 60
+    out:
+      - 20
+      - 10
+      - 40
+      - 30
+      - 60
+      - 50
+  - name: alternating ends
+    in:
+      head:
+        - 1
+        - 100
+        - 2
+        - 99
+        - 3
+        - 98
+        - 4
+        - 97
+    out:
+      - 100
+      - 1
+      - 99
+      - 2
+      - 98
+      - 3
+      - 97
+      - 4
+  - name: single max
+    in:
+      head:
+        - 100
+    out:
+      - 100
+  - name: single min
+    in:
+      head:
+        - 0
+    out:
+      - 0
+  - name: three with duplicates
+    in:
+      head:
+        - 2
+        - 2
+        - 3
+    out:
+      - 2
+      - 2
+      - 3
+  - name: four with duplicates
+    in:
+      head:
+        - 2
+        - 2
+        - 3
+        - 3
+    out:
+      - 2
+      - 2
+      - 3
+      - 3
+  - name: five descending
+    in:
+      head:
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 4
+      - 5
+      - 2
+      - 3
+      - 1
+  - name: six descending
+    in:
+      head:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 5
+      - 6
+      - 3
+      - 4
+      - 1
+      - 2
+  - name: seven mixed
+    in:
+      head:
+        - 9
+        - 1
+        - 8
+        - 2
+        - 7
+        - 3
+        - 6
+    out:
+      - 1
+      - 9
+      - 2
+      - 8
+      - 3
+      - 7
+      - 6
+  - name: eight mixed
+    in:
+      head:
+        - 9
+        - 1
+        - 8
+        - 2
+        - 7
+        - 3
+        - 6
+        - 4
+    out:
+      - 1
+      - 9
+      - 2
+      - 8
+      - 3
+      - 7
+      - 4
+      - 6
+  - name: full range 100 nodes
+    in:
+      head:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
         - 7
         - 8
         - 9
         - 10
         - 11
-    "out":
-      - 8
-      - 7
-      - 10
-      - 9
-      - 11
-  - "name": "Static 12"
-    "in":
-      "head":
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-    "out":
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-  - "name": "Static 13"
-    "in":
-      "head":
-        - 2
-        - 1
-        - 4
-        - 3
-    "out":
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+        - 32
+        - 33
+        - 34
+        - 35
+        - 36
+        - 37
+        - 38
+        - 39
+        - 40
+        - 41
+        - 42
+        - 43
+        - 44
+        - 45
+        - 46
+        - 47
+        - 48
+        - 49
+        - 50
+        - 51
+        - 52
+        - 53
+        - 54
+        - 55
+        - 56
+        - 57
+        - 58
+        - 59
+        - 60
+        - 61
+        - 62
+        - 63
+        - 64
+        - 65
+        - 66
+        - 67
+        - 68
+        - 69
+        - 70
+        - 71
+        - 72
+        - 73
+        - 74
+        - 75
+        - 76
+        - 77
+        - 78
+        - 79
+        - 80
+        - 81
+        - 82
+        - 83
+        - 84
+        - 85
+        - 86
+        - 87
+        - 88
+        - 89
+        - 90
+        - 91
+        - 92
+        - 93
+        - 94
+        - 95
+        - 96
+        - 97
+        - 98
+        - 99
+    out:
       - 1
-      - 2
+      - 0
       - 3
+      - 2
+      - 5
       - 4
+      - 7
+      - 6
+      - 9
+      - 8
+      - 11
+      - 10
+      - 13
+      - 12
+      - 15
+      - 14
+      - 17
+      - 16
+      - 19
+      - 18
+      - 21
+      - 20
+      - 23
+      - 22
+      - 25
+      - 24
+      - 27
+      - 26
+      - 29
+      - 28
+      - 31
+      - 30
+      - 33
+      - 32
+      - 35
+      - 34
+      - 37
+      - 36
+      - 39
+      - 38
+      - 41
+      - 40
+      - 43
+      - 42
+      - 45
+      - 44
+      - 47
+      - 46
+      - 49
+      - 48
+      - 51
+      - 50
+      - 53
+      - 52
+      - 55
+      - 54
+      - 57
+      - 56
+      - 59
+      - 58
+      - 61
+      - 60
+      - 63
+      - 62
+      - 65
+      - 64
+      - 67
+      - 66
+      - 69
+      - 68
+      - 71
+      - 70
+      - 73
+      - 72
+      - 75
+      - 74
+      - 77
+      - 76
+      - 79
+      - 78
+      - 81
+      - 80
+      - 83
+      - 82
+      - 85
+      - 84
+      - 87
+      - 86
+      - 89
+      - 88
+      - 91
+      - 90
+      - 93
+      - 92
+      - 95
+      - 94
+      - 97
+      - 96
+      - 99
+      - 98

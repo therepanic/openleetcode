@@ -1,0 +1,47 @@
+class Solution:
+    def longestSubstring(self, s: str, k: int) -> int:
+
+        longest_len = 0
+        n = len(s)
+
+        for target_unique_chars in range(1, 27):
+            char_freq = [0] * 26
+
+            unique_chars = 0
+            chars_meeting_k_freq = 0
+
+            left = 0
+            right = 0
+
+            while right < n:
+                curr_idx = ord(s[right]) - ord("a")
+
+                if char_freq[curr_idx] == 0:
+                    unique_chars += 1
+
+                if char_freq[curr_idx] == k - 1:
+                    chars_meeting_k_freq += 1
+
+                char_freq[curr_idx] += 1
+
+                while unique_chars > target_unique_chars:
+                    left_idx = ord(s[left]) - ord("a")
+
+                    if char_freq[left_idx] == 1:
+                        unique_chars -= 1
+
+                    if char_freq[left_idx] == k:
+                        chars_meeting_k_freq -= 1
+
+                    char_freq[left_idx] -= 1
+                    left += 1
+
+                if (
+                    unique_chars == target_unique_chars
+                    and chars_meeting_k_freq == unique_chars
+                ):
+                    longest_len = max(longest_len, right - left + 1)
+
+                right += 1
+
+        return longest_len

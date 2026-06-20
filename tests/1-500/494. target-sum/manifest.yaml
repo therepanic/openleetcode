@@ -1,0 +1,501 @@
+entry:
+  id: 494
+  title: target-sum
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
+  call:
+    cpp: Solution().findTargetSumWays({nums}, {target})
+    rust: Solution::find_target_sum_ways({nums}, {target})
+    python3: Solution().findTargetSumWays({nums}, {target})
+    python2: Solution().findTargetSumWays({nums}, {target})
+    ruby: find_target_sum_ways({nums}, {target})
+    java: new Solution().findTargetSumWays({nums}, {target})
+    csharp: new Solution().FindTargetSumWays({nums}, {target})
+    kotlin: Solution().findTargetSumWays({nums}, {target})
+    go: findTargetSumWays({nums}, {target})
+    dart: Solution().findTargetSumWays({nums}, {target})
+    swift: Solution().findTargetSumWays({nums}, {target})
+    typescript: findTargetSumWays({nums}, {target})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: Checker().findTargetSumWays(nums, target, {result})
+    checker: |
+      class Checker:
+          def findTargetSumWays(self, nums, target, result):
+              if not isinstance(result, int):
+                  return False
+              total = sum(nums)
+              if abs(target) > total or (target + total) % 2 != 0:
+                  return result == 0
+              subset = (target + total) // 2
+              dp = [0] * (subset + 1)
+              dp[0] = 1
+              for num in nums:
+                  for j in range(subset, num - 1, -1):
+                      dp[j] += dp[j - num]
+              return result == dp[subset]
+seed: 494
+tests:
+  - name: ex1
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+      target: 3
+    out: 5
+  - name: ex2
+    in:
+      nums:
+        - 1
+      target: 1
+    out: 1
+  - name: zero_target_single_zero
+    in:
+      nums:
+        - 0
+      target: 0
+    out: 2
+  - name: zero_target_two_zeros
+    in:
+      nums:
+        - 0
+        - 0
+      target: 0
+    out: 4
+  - name: zero_target_three_zeros
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+      target: 0
+    out: 8
+  - name: zero_and_one_positive
+    in:
+      nums:
+        - 1
+        - 0
+      target: 1
+    out: 2
+  - name: zero_and_one_negative
+    in:
+      nums:
+        - 1
+        - 0
+      target: -1
+    out: 2
+  - name: small_balanced
+    in:
+      nums:
+        - 1
+        - 2
+        - 1
+      target: 0
+    out: 2
+  - name: simple_even_sum
+    in:
+      nums:
+        - 2
+        - 3
+        - 5
+      target: 0
+    out: 2
+  - name: simple_max_target
+    in:
+      nums:
+        - 2
+        - 3
+        - 5
+      target: 10
+    out: 1
+  - name: simple_min_target
+    in:
+      nums:
+        - 2
+        - 3
+        - 5
+      target: -10
+    out: 1
+  - name: impossible_parity
+    in:
+      nums:
+        - 2
+        - 3
+        - 5
+      target: 1
+    out: 0
+  - name: large_target_outside_sum
+    in:
+      nums:
+        - 1
+        - 2
+        - 7
+        - 9
+        - 980
+      target: 1000
+    out: 0
+  - name: single_large_positive
+    in:
+      nums:
+        - 1000
+      target: 1000
+    out: 1
+  - name: single_large_negative
+    in:
+      nums:
+        - 1000
+      target: -1000
+    out: 1
+  - name: single_large_zero
+    in:
+      nums:
+        - 1000
+      target: 0
+    out: 0
+  - name: two_large_zero
+    in:
+      nums:
+        - 1000
+        - 1000
+      target: 0
+    out: 2
+  - name: two_large_positive
+    in:
+      nums:
+        - 1000
+        - 1000
+      target: 2000
+    out: 1
+  - name: two_large_negative
+    in:
+      nums:
+        - 1000
+        - 1000
+      target: -2000
+    out: 1
+  - name: increasing_ten_zero
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+      target: 0
+    out: 0
+  - name: increasing_ten_mid
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+      target: 5
+    out: 39
+  - name: increasing_ten_max
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+      target: 55
+    out: 1
+  - name: repeated_pairs_zero
+    in:
+      nums:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+        - 4
+        - 4
+      target: 0
+    out: 26
+  - name: repeated_pairs_two
+    in:
+      nums:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+        - 4
+        - 4
+      target: 2
+    out: 24
+  - name: leading_zeroes_positive
+    in:
+      nums:
+        - 0
+        - 1
+        - 2
+        - 3
+      target: 2
+    out: 2
+  - name: leading_zeroes_negative
+    in:
+      nums:
+        - 0
+        - 1
+        - 2
+        - 3
+      target: -2
+    out: 2
+  - name: zeros_and_ones_mid
+    in:
+      nums:
+        - 0
+        - 0
+        - 1
+        - 1
+        - 1
+      target: 1
+    out: 12
+  - name: zeros_and_ones_high
+    in:
+      nums:
+        - 0
+        - 0
+        - 1
+        - 1
+        - 1
+      target: 3
+    out: 4
+  - name: foursome_zero
+    in:
+      nums:
+        - 5
+        - 5
+        - 5
+        - 5
+      target: 0
+    out: 6
+  - name: foursome_max
+    in:
+      nums:
+        - 5
+        - 5
+        - 5
+        - 5
+      target: 20
+    out: 1
+  - name: foursome_mid
+    in:
+      nums:
+        - 5
+        - 5
+        - 5
+        - 5
+      target: 10
+    out: 4
+  - name: hundreds_zero
+    in:
+      nums:
+        - 100
+        - 200
+        - 300
+        - 400
+      target: 0
+    out: 2
+  - name: hundreds_max
+    in:
+      nums:
+        - 100
+        - 200
+        - 300
+        - 400
+      target: 1000
+    out: 1
+  - name: hundreds_min
+    in:
+      nums:
+        - 100
+        - 200
+        - 300
+        - 400
+      target: -1000
+    out: 1
+  - name: twenty_ones_zero
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+      target: 0
+    out: 184756
+  - name: twenty_ones_max
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+      target: 20
+    out: 1
+  - name: twenty_ones_two
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+      target: 2
+    out: 167960
+  - name: twenty_zeros
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      target: 0
+    out: 1048576
+  - name: nineteen_zeros_one_positive
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 1
+      target: 1
+    out: 524288
+  - name: nineteen_zeros_one_zero
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 1
+      target: 0
+    out: 0

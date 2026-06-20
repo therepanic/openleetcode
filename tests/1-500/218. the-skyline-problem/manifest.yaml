@@ -1,0 +1,422 @@
+entry:
+  id: 218
+  title: "the-skyline-problem"
+  params:
+    buildings:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().getSkyline({buildings})"
+    rust: "Solution::get_skyline({buildings})"
+    python3: "Solution().getSkyline({buildings})"
+    python2: "Solution().getSkyline({buildings})"
+    ruby: "get_skyline({buildings})"
+    java: "new Solution().getSkyline({buildings})"
+    csharp: "new Solution().GetSkyline({buildings})"
+    kotlin: "Solution().getSkyline({buildings})"
+    go: "getSkyline({buildings})"
+    dart: "Solution().getSkyline({buildings})"
+    swift: "Solution().getSkyline({buildings})"
+    typescript: "getSkyline({buildings})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().getSkyline(buildings, {result})"
+    checker: |
+      from typing import Any, List, Tuple
+
+      class Checker:
+          def getSkyline(self, buildings: List[List[int]], result: Any) -> bool:
+              if not isinstance(result, list):
+                  return False
+              for point in result:
+                  if not isinstance(point, list) or len(point) != 2:
+                      return False
+                  if any(not isinstance(v, int) for v in point):
+                      return False
+
+              expected = self._skyline(buildings)
+              return result == expected
+
+          def _skyline(self, buildings: List[List[int]]) -> List[List[int]]:
+              events: List[Tuple[int, int]] = []
+              for building in buildings:
+                  if not isinstance(building, list) or len(building) != 3:
+                      return []
+                  L, R, H = building
+                  if not all(isinstance(v, int) for v in building):
+                      return []
+                  if not (0 <= L < R and H >= 1):
+                      return []
+                  events.append((L, -H))
+                  events.append((R, H))
+
+              events.sort()
+              import heapq
+
+              live = [0]
+              removed = {}
+              result = []
+              prev = 0
+
+              for x, h in events:
+                  if h < 0:
+                      heapq.heappush(live, h)
+                  else:
+                      removed[-h] = removed.get(-h, 0) + 1
+                  while live[0] in removed:
+                      top = live[0]
+                      heapq.heappop(live)
+                      removed[top] -= 1
+                      if removed[top] == 0:
+                          del removed[top]
+                  curr = -live[0]
+                  if curr != prev:
+                      result.append([x, curr])
+                      prev = curr
+              return result
+
+seed: 218218
+
+tests:
+  - name: "ex1"
+    in:
+      buildings:
+        - [2, 9, 10]
+        - [3, 7, 15]
+        - [5, 12, 12]
+        - [15, 20, 10]
+        - [19, 24, 8]
+    out:
+      - [2, 10]
+      - [3, 15]
+      - [7, 12]
+      - [12, 0]
+      - [15, 10]
+      - [20, 8]
+      - [24, 0]
+
+  - name: "ex2"
+    in:
+      buildings:
+        - [0, 2, 3]
+        - [2, 5, 3]
+    out:
+      - [0, 3]
+      - [5, 0]
+
+  - name: "single_building"
+    in:
+      buildings:
+        - [1, 5, 4]
+
+  - name: "two_disjoint"
+    in:
+      buildings:
+        - [1, 3, 2]
+        - [5, 7, 4]
+
+  - name: "touching_equal"
+    in:
+      buildings:
+        - [0, 2, 3]
+        - [2, 4, 3]
+        - [4, 6, 3]
+
+  - name: "touching_different"
+    in:
+      buildings:
+        - [0, 2, 3]
+        - [2, 4, 5]
+        - [4, 6, 1]
+
+  - name: "nested"
+    in:
+      buildings:
+        - [1, 10, 5]
+        - [2, 9, 6]
+        - [3, 8, 7]
+        - [4, 7, 8]
+
+  - name: "same_left"
+    in:
+      buildings:
+        - [2, 6, 4]
+        - [2, 5, 7]
+        - [2, 4, 6]
+
+  - name: "same_right"
+    in:
+      buildings:
+        - [1, 8, 3]
+        - [2, 8, 6]
+        - [4, 8, 5]
+
+  - name: "stair_up"
+    in:
+      buildings:
+        - [0, 3, 2]
+        - [1, 4, 3]
+        - [2, 5, 4]
+        - [3, 6, 5]
+
+  - name: "stair_down"
+    in:
+      buildings:
+        - [0, 6, 6]
+        - [1, 5, 5]
+        - [2, 4, 4]
+        - [3, 7, 3]
+
+  - name: "alternating"
+    in:
+      buildings:
+        - [0, 2, 3]
+        - [1, 3, 5]
+        - [2, 4, 4]
+        - [3, 5, 6]
+        - [4, 6, 2]
+
+  - name: "duplicate_heights"
+    in:
+      buildings:
+        - [0, 4, 5]
+        - [1, 3, 5]
+        - [2, 6, 5]
+        - [5, 7, 5]
+
+  - name: "plateau_with_gap"
+    in:
+      buildings:
+        - [0, 2, 4]
+        - [2, 4, 4]
+        - [5, 7, 4]
+        - [7, 9, 4]
+
+  - name: "height_changes_same_x"
+    in:
+      buildings:
+        - [0, 5, 3]
+        - [0, 5, 7]
+        - [5, 10, 2]
+        - [5, 10, 6]
+
+  - name: "small_overlap"
+    in:
+      buildings:
+        - [1, 4, 2]
+        - [2, 6, 3]
+        - [5, 8, 2]
+
+  - name: "edge_zero_start"
+    in:
+      buildings:
+        - [0, 1, 1]
+        - [1, 2, 2]
+        - [2, 3, 3]
+        - [3, 4, 4]
+
+  - name: "long_flat_top"
+    in:
+      buildings:
+        - [0, 10, 8]
+        - [2, 8, 8]
+        - [4, 6, 8]
+
+  - name: "interleaved_towers"
+    in:
+      buildings:
+        - [0, 3, 4]
+        - [1, 6, 2]
+        - [2, 5, 6]
+        - [4, 7, 5]
+        - [6, 9, 3]
+
+  - name: "many_small"
+    in:
+      buildings:
+        - [0, 1, 2]
+        - [1, 2, 3]
+        - [2, 3, 4]
+        - [3, 4, 5]
+        - [4, 5, 6]
+        - [5, 6, 7]
+
+  - name: "same_height_overlap"
+    in:
+      buildings:
+        - [1, 4, 5]
+        - [2, 6, 5]
+        - [3, 5, 5]
+
+  - name: "deep_nesting"
+    in:
+      buildings:
+        - [1, 20, 2]
+        - [2, 19, 3]
+        - [3, 18, 4]
+        - [4, 17, 5]
+        - [5, 16, 6]
+        - [6, 15, 7]
+
+  - name: "wide_two_peaks"
+    in:
+      buildings:
+        - [0, 10, 5]
+        - [3, 7, 9]
+        - [10, 20, 4]
+        - [12, 18, 8]
+
+  - name: "leftmost_gap"
+    in:
+      buildings:
+        - [5, 8, 3]
+        - [6, 9, 4]
+        - [10, 12, 2]
+
+  - name: "rightmost_drop"
+    in:
+      buildings:
+        - [0, 4, 3]
+        - [1, 5, 4]
+        - [2, 6, 2]
+
+  - name: "single_tall_middle"
+    in:
+      buildings:
+        - [0, 8, 2]
+        - [3, 5, 10]
+        - [5, 8, 2]
+
+  - name: "dense_overlap"
+    in:
+      buildings:
+        - [0, 4, 3]
+        - [1, 5, 4]
+        - [2, 6, 5]
+        - [3, 7, 6]
+        - [4, 8, 7]
+
+  - name: "tall_then_short"
+    in:
+      buildings:
+        - [0, 3, 9]
+        - [3, 6, 4]
+        - [6, 9, 1]
+
+  - name: "short_then_tall"
+    in:
+      buildings:
+        - [0, 3, 1]
+        - [3, 6, 4]
+        - [6, 9, 9]
+
+  - name: "many_duplicates"
+    in:
+      buildings:
+        - [0, 5, 5]
+        - [0, 5, 5]
+        - [5, 10, 5]
+        - [5, 10, 5]
+
+  - name: "peak_and_valley"
+    in:
+      buildings:
+        - [0, 2, 3]
+        - [2, 4, 1]
+        - [4, 6, 4]
+        - [6, 8, 2]
+
+  - name: "large_range_1"
+    in:
+      buildings:
+        - [0, 1000000000, 1]
+        - [100, 200, 5]
+        - [300, 400, 4]
+        - [500, 600, 3]
+
+  - name: "large_range_2"
+    in:
+      buildings:
+        - [0, 2147483646, 2]
+        - [1, 2147483645, 3]
+        - [2, 2147483644, 4]
+
+  - name: "stress_chain_1"
+    in:
+      buildings:
+        - [0, 3, 2]
+        - [1, 4, 4]
+        - [2, 5, 6]
+        - [3, 6, 8]
+        - [4, 7, 10]
+        - [5, 8, 12]
+        - [6, 9, 14]
+
+  - name: "stress_chain_2"
+    in:
+      buildings:
+        - [10, 13, 14]
+        - [11, 14, 12]
+        - [12, 15, 10]
+        - [13, 16, 8]
+        - [14, 17, 6]
+        - [15, 18, 4]
+        - [16, 19, 2]
+
+  - name: "wide_sparse"
+    in:
+      buildings:
+        - [0, 2, 7]
+        - [10, 12, 9]
+        - [20, 22, 5]
+        - [30, 33, 11]
+        - [40, 44, 6]
+
+  - name: "one_short_one_tall"
+    in:
+      buildings:
+        - [1, 9, 2]
+        - [4, 6, 9]
+
+  - name: "three_levels"
+    in:
+      buildings:
+        - [0, 10, 1]
+        - [2, 8, 3]
+        - [4, 6, 5]
+
+  - name: "same_start_same_end"
+    in:
+      buildings:
+        - [2, 9, 2]
+        - [2, 9, 7]
+        - [2, 9, 5]
+
+  - name: "mixed_extremes"
+    in:
+      buildings:
+        - [0, 1, 2147483647]
+        - [1, 2, 1]
+        - [2, 3, 2147483646]
+        - [3, 4, 2]
+
+  - name: "final_big"
+    in:
+      buildings:
+        - [0, 5, 4]
+        - [1, 6, 8]
+        - [2, 7, 6]
+        - [3, 8, 10]
+        - [4, 9, 7]
+        - [5, 10, 9]

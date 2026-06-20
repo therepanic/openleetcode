@@ -1,0 +1,1103 @@
+entry:
+  id: 445
+  title: add-two-numbers-ii
+  params:
+    l1:
+      type: list_node
+    l2:
+      type: list_node
+  call:
+    cpp: listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))
+    rust: ListNode::list_node_to_array(Solution::add_two_numbers({l1}, {l2}))
+    python3: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
+    python2: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
+    ruby: list_node_to_array(add_two_numbers({l1}, {l2}))
+    java: ListNode.listNodeToArray(new Solution().addTwoNumbers({l1}, {l2}))
+    csharp: ListNode.ListNodeToArray(new Solution().AddTwoNumbers({l1}, {l2}))
+    kotlin: listNodeToArray(Solution().addTwoNumbers({l1}, {l2}))
+    go: listNodeToArray(addTwoNumbers({l1}, {l2}))
+    dart: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
+    swift: list_node_to_array(Solution().addTwoNumbers({l1}, {l2}))
+    typescript: listNodeToArray(addTwoNumbers({l1}, {l2}))
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(l1, l2, {result})
+    checker: |
+      import json
+
+      class Checker:
+          def _norm(self, value):
+              if isinstance(value, str):
+                  try:
+                      value = json.loads(value)
+                  except Exception:
+                      pass
+              return value
+
+          def _to_int(self, digits):
+              n = 0
+              for d in digits:
+                  n = n * 10 + d
+              return n
+
+          def _to_digits(self, n):
+              if n == 0:
+                  return [0]
+              out = []
+              while n > 0:
+                  out.append(n % 10)
+                  n //= 10
+              return out[::-1]
+
+          def check(self, l1, l2, result):
+              result = self._norm(result)
+              if not isinstance(result, list):
+                  return False
+              if any((not isinstance(x, int)) or x < 0 or x > 9 for x in result):
+                  return False
+              if len(result) > 1 and result[0] == 0:
+                  return False
+              return result == self._to_digits(self._to_int(l1) + self._to_int(l2))
+seed: 445
+tests:
+  - name: example-1
+    in:
+      l1:
+        - 7
+        - 2
+        - 4
+        - 3
+      l2:
+        - 5
+        - 6
+        - 4
+    out:
+      - 7
+      - 8
+      - 0
+      - 7
+  - name: example-2
+    in:
+      l1:
+        - 2
+        - 4
+        - 3
+      l2:
+        - 5
+        - 6
+        - 4
+    out:
+      - 8
+      - 0
+      - 7
+  - name: example-3
+    in:
+      l1:
+        - 0
+      l2:
+        - 0
+    out:
+      - 0
+  - name: single-digit-carry
+    in:
+      l1:
+        - 5
+      l2:
+        - 5
+    out:
+      - 1
+      - 0
+  - name: single-digit-no-carry
+    in:
+      l1:
+        - 4
+      l2:
+        - 5
+    out:
+      - 9
+  - name: one-vs-many-no-carry
+    in:
+      l1:
+        - 1
+      l2:
+        - 2
+        - 3
+        - 4
+    out:
+      - 2
+      - 3
+      - 5
+  - name: one-vs-many-carry
+    in:
+      l1:
+        - 9
+      l2:
+        - 9
+        - 9
+        - 9
+    out:
+      - 1
+      - 0
+      - 0
+      - 8
+  - name: unequal-length-middle-carry
+    in:
+      l1:
+        - 1
+        - 2
+      l2:
+        - 0
+        - 8
+        - 5
+    out:
+      - 9
+      - 7
+  - name: equal-length-middle-carry
+    in:
+      l1:
+        - 4
+        - 5
+      l2:
+        - 6
+        - 4
+    out:
+      - 1
+      - 0
+      - 9
+  - name: all-nines-three-and-three
+    in:
+      l1:
+        - 9
+        - 9
+        - 9
+      l2:
+        - 9
+        - 9
+        - 9
+    out:
+      - 1
+      - 9
+      - 9
+      - 8
+  - name: all-nines-seven-and-four
+    in:
+      l1:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+      l2:
+        - 9
+        - 9
+        - 9
+        - 9
+    out:
+      - 1
+      - 0
+      - 0
+      - 0
+      - 9
+      - 9
+      - 9
+      - 8
+  - name: leading-carry-to-new-digit
+    in:
+      l1:
+        - 9
+        - 9
+      l2:
+        - 1
+    out:
+      - 1
+      - 0
+      - 0
+  - name: carry-chain-end
+    in:
+      l1:
+        - 9
+        - 9
+        - 9
+        - 9
+      l2:
+        - 1
+    out:
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+  - name: no-carry-different-lengths
+    in:
+      l1:
+        - 3
+        - 4
+        - 5
+      l2:
+        - 6
+        - 5
+    out:
+      - 4
+      - 1
+      - 0
+  - name: zero-plus-long
+    in:
+      l1:
+        - 0
+      l2:
+        - 0
+        - 0
+        - 1
+        - 2
+    out:
+      - 1
+      - 2
+  - name: long-no-carry-even
+    in:
+      l1:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      l2:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+    out:
+      - 7
+      - 7
+      - 7
+      - 7
+      - 7
+      - 7
+  - name: long-carry-even
+    in:
+      l1:
+        - 9
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      l2:
+        - 0
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+    out:
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+  - name: alternating-digits
+    in:
+      l1:
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+      l2:
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: carry-in-middle-with-tail
+    in:
+      l1:
+        - 7
+        - 3
+        - 8
+        - 5
+        - 9
+        - 1
+        - 4
+      l2:
+        - 5
+        - 6
+        - 2
+    out:
+      - 7
+      - 3
+      - 8
+      - 6
+      - 4
+      - 7
+      - 6
+  - name: carry-across-all-digits
+    in:
+      l1:
+        - 5
+        - 5
+        - 5
+      l2:
+        - 5
+        - 5
+        - 5
+    out:
+      - 1
+      - 1
+      - 1
+      - 0
+  - name: trailing-zero-result
+    in:
+      l1:
+        - 1
+        - 0
+        - 0
+      l2:
+        - 0
+        - 0
+        - 0
+    out:
+      - 1
+      - 0
+      - 0
+  - name: mixed-zeroes-and-carry
+    in:
+      l1:
+        - 1
+        - 0
+        - 0
+        - 9
+      l2:
+        - 9
+        - 9
+        - 0
+        - 1
+    out:
+      - 1
+      - 0
+      - 9
+      - 1
+      - 0
+  - name: short-edge-1
+    in:
+      l1:
+        - 8
+      l2:
+        - 2
+    out:
+      - 1
+      - 0
+  - name: short-edge-2
+    in:
+      l1:
+        - 9
+      l2:
+        - 1
+    out:
+      - 1
+      - 0
+  - name: carry-followed-by-no-carry
+    in:
+      l1:
+        - 2
+        - 9
+        - 9
+        - 1
+      l2:
+        - 7
+        - 0
+        - 0
+        - 9
+    out:
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+  - name: different-length-zero-head
+    in:
+      l1:
+        - 1
+        - 0
+      l2:
+        - 9
+        - 9
+        - 9
+    out:
+      - 1
+      - 0
+      - 0
+      - 9
+  - name: long-example-like
+    in:
+      l1:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      l2:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+  - name: max-length-all-nines
+    in:
+      l1:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+      l2:
+        - 1
+    out:
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+  - name: max-length-carry-chain
+    in:
+      l1:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      l2:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+    out:
+      - 1
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+      - 9
+  - name: max-length-alternating
+    in:
+      l1:
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+      l2:
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: carry-in-last-digit
+    in:
+      l1:
+        - 1
+        - 2
+        - 3
+      l2:
+        - 8
+        - 7
+        - 8
+    out:
+      - 1
+      - 0
+      - 0
+      - 1
+  - name: carry-in-first-digit
+    in:
+      l1:
+        - 9
+        - 9
+        - 1
+      l2:
+        - 0
+        - 0
+        - 9
+    out:
+      - 1
+      - 0
+      - 0
+      - 0
+  - name: boundary-100-sum
+    in:
+      l1:
+        - 9
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      l2:
+        - 1
+    out:
+      - 9
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 1
+  - name: simple-three-digit
+    in:
+      l1:
+        - 3
+        - 4
+        - 5
+      l2:
+        - 6
+        - 5
+        - 4
+    out:
+      - 9
+      - 9
+      - 9
+  - name: max-length-zeros-and-one
+    in:
+      l1:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      l2:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out:
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0

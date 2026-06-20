@@ -1,0 +1,371 @@
+entry:
+  id: 435
+  title: non-overlapping-intervals
+  params:
+    intervals:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().eraseOverlapIntervals({intervals})"
+    rust: "Solution::erase_overlap_intervals({intervals})"
+    python3: "Solution().eraseOverlapIntervals({intervals})"
+    python2: "Solution().eraseOverlapIntervals({intervals})"
+    ruby: "erase_overlap_intervals({intervals})"
+    java: "new Solution().eraseOverlapIntervals({intervals})"
+    csharp: "new Solution().EraseOverlapIntervals({intervals})"
+    kotlin: "Solution().eraseOverlapIntervals({intervals})"
+    go: "eraseOverlapIntervals({intervals})"
+    dart: "Solution().eraseOverlapIntervals({intervals})"
+    swift: "Solution().eraseOverlapIntervals({intervals})"
+    typescript: "eraseOverlapIntervals({intervals})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(intervals, {result})"
+    checker: |
+      class Checker:
+          def check(self, intervals, result):
+              if not isinstance(result, int):
+                  return False
+              if result < 0:
+                  return False
+              if not isinstance(intervals, list) or len(intervals) == 0:
+                  return False
+              for interval in intervals:
+                  if not isinstance(interval, list) or len(interval) != 2:
+                      return False
+                  if not all(isinstance(x, int) for x in interval):
+                      return False
+                  if interval[0] >= interval[1]:
+                      return False
+              return True
+seed: 435
+tests:
+  - name: single
+    in:
+      intervals:
+        - [1, 2]
+    out: 0
+  - name: example2
+    in:
+      intervals:
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+    out: 2
+  - name: example1
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [1, 3]
+    out: 1
+  - name: example3
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 3]
+    out: 0
+  - name: nested_overlap
+    in:
+      intervals:
+        - [1, 100]
+        - [11, 22]
+        - [1, 11]
+        - [2, 12]
+    out: 2
+  - name: touching_negative
+    in:
+      intervals:
+        - [-1, 0]
+        - [0, 1]
+        - [1, 2]
+    out: 0
+  - name: chain_with_big_cover
+    in:
+      intervals:
+        - [0, 5]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 1
+  - name: greedy_choice
+    in:
+      intervals:
+        - [1, 5]
+        - [2, 3]
+        - [3, 4]
+        - [4, 6]
+    out: 1
+  - name: many_small_after_large
+    in:
+      intervals:
+        - [1, 10]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [6, 7]
+    out: 1
+  - name: already_sorted_touching
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+    out: 0
+  - name: staircase_overlap
+    in:
+      intervals:
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+        - [4, 7]
+    out: 2
+  - name: same_endpoints
+    in:
+      intervals:
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+    out: 2
+  - name: same_start
+    in:
+      intervals:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+    out: 3
+  - name: mixed_touch_and_overlap
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+        - [3, 5]
+    out: 1
+  - name: negatives_mixed
+    in:
+      intervals:
+        - [-5, -1]
+        - [-3, 0]
+        - [-2, 2]
+        - [1, 3]
+    out: 2
+  - name: min_bounds_chain
+    in:
+      intervals:
+        - [-50000, -49999]
+        - [-49999, -49998]
+        - [-49998, -49997]
+    out: 0
+  - name: min_bounds_mix
+    in:
+      intervals:
+        - [-50000, 0]
+        - [-1, 1]
+        - [1, 2]
+        - [2, 3]
+    out: 1
+  - name: shuffled_nonoverlap
+    in:
+      intervals:
+        - [5, 7]
+        - [1, 3]
+        - [2, 4]
+        - [6, 8]
+        - [8, 10]
+    out: 2
+  - name: large_covering_small_chain
+    in:
+      intervals:
+        - [1, 2]
+        - [3, 4]
+        - [0, 10]
+        - [10, 11]
+        - [11, 12]
+    out: 1
+  - name: first_shortest_wins
+    in:
+      intervals:
+        - [1, 100]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+    out: 1
+  - name: repeated_starts
+    in:
+      intervals:
+        - [1, 3]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+    out: 1
+  - name: dense_touching_chain
+    in:
+      intervals:
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+    out: 2
+  - name: two_clusters
+    in:
+      intervals:
+        - [10, 20]
+        - [20, 30]
+        - [30, 40]
+        - [15, 25]
+        - [25, 35]
+    out: 2
+  - name: negative_chain
+    in:
+      intervals:
+        - [-10, -5]
+        - [-6, -1]
+        - [-4, 0]
+        - [0, 4]
+        - [4, 8]
+    out: 1
+  - name: duplicate_touching_mix
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 3]
+        - [2, 3]
+        - [2, 3]
+        - [3, 4]
+    out: 2
+  - name: one_covering_many
+    in:
+      intervals:
+        - [1, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [1, 8]
+    out: 1
+  - name: medium_large_values
+    in:
+      intervals:
+        - [100, 200]
+        - [150, 250]
+        - [200, 300]
+        - [250, 350]
+        - [300, 400]
+    out: 2
+  - name: zero_to_four
+    in:
+      intervals:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [0, 4]
+    out: 1
+  - name: long_touching_chain
+    in:
+      intervals:
+        - [1, 100]
+        - [50, 60]
+        - [60, 70]
+        - [70, 80]
+        - [80, 90]
+        - [90, 100]
+    out: 1
+  - name: duplicate_blocks
+    in:
+      intervals:
+        - [1, 2]
+        - [1, 2]
+        - [2, 3]
+        - [2, 3]
+        - [3, 4]
+        - [3, 4]
+    out: 3
+  - name: two_long_chains
+    in:
+      intervals:
+        - [1, 3]
+        - [3, 5]
+        - [5, 7]
+        - [2, 6]
+        - [6, 8]
+        - [8, 10]
+    out: 2
+  - name: descending_starts
+    in:
+      intervals:
+        - [-50000, -1]
+        - [-40000, -2]
+        - [-30000, -3]
+        - [-20000, -4]
+        - [-10000, -5]
+    out: 4
+  - name: chain_with_two_overlaps
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+        - [7, 9]
+    out: 3
+  - name: nested_long
+    in:
+      intervals:
+        - [1, 100]
+        - [2, 99]
+        - [3, 98]
+        - [4, 97]
+        - [5, 96]
+        - [6, 95]
+    out: 5
+  - name: broad_mix
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+    out: 3
+  - name: wide_touching
+    in:
+      intervals:
+        - [1, 5]
+        - [5, 9]
+        - [2, 6]
+        - [6, 10]
+        - [10, 14]
+        - [14, 18]
+    out: 2
+  - name: max_endpoint_touch
+    in:
+      intervals:
+        - [0, 100000]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+    out: 1

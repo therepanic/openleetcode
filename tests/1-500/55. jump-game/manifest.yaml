@@ -1,270 +1,382 @@
-"entry":
-  "id": 55
-  "title": "jump-game"
-  "call":
-    "cpp": "Solution().canJump({nums})"
-    "rust": "Solution::can_jump({nums})"
-    "python3": "Solution().canJump({nums})"
-    "python2": "Solution().canJump({nums})"
-    "ruby": "can_jump({nums})"
-    "java": "new Solution().canJump({nums})"
-    "csharp": "new Solution().CanJump({nums})"
-    "kotlin": "Solution().canJump({nums})"
-    "go": "canJump({nums})"
-    "dart": "Solution().canJump({nums})"
-    "swift": "Solution().canJump({nums})"
-    "typescript": "canJump({nums})"
+entry:
+  id: 55
+  title: jump-game
   params:
     nums:
       type: array
       items:
         type: int
-"judge":
-  "type": "exact"
-"limits":
-  "time_ms": 1000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().canJump({nums}, {result})"
-    "checker":
-      "import json\nclass Checker:\n    def canJump(self, nums, result):\n        try:\n            result = json.loads(result)
-      if isinstance(result, str) else result\n        except Exception:\n            return False\n        goal = 0\n    \
-      \    for i, n in enumerate(nums):\n            if goal < i:\n                expected = False\n                return
-      result == expected\n            goal = max(goal, n + i)\n            if goal >= len(nums) - 1:\n                expected
-      = True\n                return result == expected\n        expected = False\n        return result == expected\n"
-"seed": 42
-"tests":
-  - "name": "example 1"
-    "in":
-      "nums":
+  call:
+    cpp: "Solution().canJump({nums})"
+    rust: "Solution::can_jump({nums})"
+    python3: "Solution().canJump({nums})"
+    python2: "Solution().canJump({nums})"
+    ruby: "can_jump({nums})"
+    java: "new Solution().canJump({nums})"
+    csharp: "new Solution().CanJump({nums})"
+    kotlin: "Solution().canJump({nums})"
+    go: "canJump({nums})"
+    dart: "Solution().canJump({nums})"
+    swift: "Solution().canJump({nums})"
+    typescript: "canJump({nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 64
+oracle:
+  python3:
+    call: "Checker().canJump(nums, {result})"
+    checker: |
+      class Checker:
+          def canJump(self, nums, result):
+              goal = 0
+              for i, n in enumerate(nums):
+                  if i > goal:
+                      return result is False
+                  if i + n > goal:
+                      goal = i + n
+                  if goal >= len(nums) - 1:
+                      return result is True
+              return result is False
+seed: 55
+tests:
+  - name: example-1
+    in:
+      nums:
         - 2
         - 3
         - 1
         - 1
         - 4
-    "out": true
-  - "name": "example 2"
-    "in":
-      "nums":
+    out: true
+  - name: example-2
+    in:
+      nums:
         - 3
         - 2
         - 1
         - 0
         - 4
-    "out": false
-  - "name": "single node"
-    "in":
-      "nums":
+    out: false
+  - name: single-zero
+    in:
+      nums:
         - 0
-    "out": true
-  - "name": "immediate jump"
-    "in":
-      "nums":
+    out: true
+  - name: single-positive
+    in:
+      nums:
+        - 7
+    out: true
+  - name: two-reachable
+    in:
+      nums:
         - 1
         - 0
-    "out": true
-  - "name": "no progress"
-    "in":
-      "nums":
+    out: true
+  - name: two-unreachable
+    in:
+      nums:
         - 0
-        - 2
-    "out": false
-  - "name": "all zeros"
-    "in":
-      "nums":
-        - 0
-        - 0
-        - 0
-    "out": false
-  - "name": "large jump"
-    "in":
-      "nums":
-        - 100
-        - 0
-        - 0
-        - 0
-    "out": true
-  - "name": "simple chain"
-    "in":
-      "nums":
         - 1
-        - 1
-        - 1
-        - 1
-        - 1
-    "out": true
-  - "name": "decreasing jump"
-    "in":
-      "nums":
-        - 3
-        - 2
+    out: false
+  - name: simple-false-blocked
+    in:
+      nums:
         - 1
         - 0
-    "out": true
-  - "name": "trapped at end"
-    "in":
-      "nums":
+        - 1
+    out: false
+  - name: simple-true-direct
+    in:
+      nums:
         - 2
         - 0
         - 0
+    out: true
+  - name: all-zeros-longer
+    in:
+      nums:
         - 0
-    "out": false
-  - "name": "middle trap"
-    "in":
-      "nums":
+        - 0
+        - 0
+        - 0
+    out: false
+  - name: early-leap-over-zeros
+    in:
+      nums:
+        - 4
+        - 0
+        - 0
+        - 0
+        - 0
+    out: true
+  - name: classic-true
+    in:
+      nums:
         - 2
-        - 1
-        - 0
         - 5
         - 0
-    "out": false
-  - "name": "long path"
-    "in":
-      "nums":
+        - 0
+        - 0
+        - 0
+    out: true
+  - name: classic-false-zero-trap
+    in:
+      nums:
+        - 2
+        - 0
+        - 0
+        - 0
         - 1
+    out: false
+  - name: increasing-steps
+    in:
+      nums:
         - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-    "out": true
-  - "name": "overshoot"
-    "in":
-      "nums":
+        - 2
+        - 3
+        - 4
+        - 5
+    out: true
+  - name: descending-but-reachable
+    in:
+      nums:
         - 5
         - 4
         - 3
         - 2
         - 1
         - 0
+    out: true
+  - name: descending-unreachable
+    in:
+      nums:
+        - 4
+        - 3
+        - 2
+        - 1
         - 0
-    "out": false
-  - "name": "boundary zero"
-    "in":
-      "nums":
+        - 0
+    out: false
+  - name: zero-in-middle-reachable
+    in:
+      nums:
+        - 2
+        - 3
+        - 1
+        - 0
+        - 4
+        - 2
+    out: true
+  - name: zero-in-middle-false
+    in:
+      nums:
+        - 2
+        - 1
+        - 0
+        - 1
+        - 4
+    out: false
+  - name: many-ones
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: true
+  - name: one-step-short
+    in:
+      nums:
+        - 2
+        - 0
+        - 0
+        - 0
+        - 0
+    out: false
+  - name: max-jump-first-small
+    in:
+      nums:
+        - 10
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: true
+  - name: plateau-false
+    in:
+      nums:
+        - 3
+        - 2
+        - 1
+        - 0
+        - 0
+        - 0
+    out: false
+  - name: bridge-to-end
+    in:
+      nums:
+        - 2
+        - 4
+        - 1
+        - 0
+        - 0
+        - 0
+    out: true
+  - name: delayed-fail
+    in:
+      nums:
+        - 1
+        - 4
+        - 0
+        - 0
+        - 0
+        - 0
+    out: true
+  - name: bounce-true
+    in:
+      nums:
+        - 1
+        - 3
+        - 5
+        - 0
+        - 0
+        - 0
+        - 1
+    out: true
+  - name: bounce-false
+    in:
+      nums:
+        - 1
+        - 3
+        - 0
+        - 0
+        - 0
+        - 0
+        - 1
+    out: false
+  - name: long-run-ones-true
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: true
+  - name: long-run-zero-false
+    in:
+      nums:
+        - 2
+        - 1
+        - 1
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: false
+  - name: near-end-overshoot
+    in:
+      nums:
+        - 2
+        - 0
         - 2
         - 0
         - 1
-    "out": true
-  - "name": "multiple paths"
-    "in":
-      "nums":
+    out: true
+  - name: near-end-stuck
+    in:
+      nums:
         - 2
-        - 2
         - 0
-        - 2
         - 1
-    "out": true
-  - "name": "random small"
-    "in":
-      "nums":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 5
-          "max": 10
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 3
-  - "name": "random medium"
-    "in":
-      "nums":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 20
-          "max": 50
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 10
-  - "name": "random sparse"
-    "in":
-      "nums":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 20
-          "max": 30
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 1
-  - "name": "random high capacity"
-    "in":
-      "nums":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 10
-          "max": 20
-        "of":
-          "gen": "int"
-          "min": 5
-          "max": 20
-  - "name": "dense jumps"
-    "in":
-      "nums":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 50
-          "max": 100
-        "of":
-          "gen": "int"
-          "min": 1
-          "max": 2
-  - "name": "large input 1"
-    "in":
-      "nums":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 9000
-          "max": 10000
-        "of":
-          "gen": "int"
-          "min": 0
-          "max": 5
-  - "name": "large input 2"
-    "in":
-      "nums":
-        "gen": "array"
-        "len":
-          "gen": "int"
-          "min": 9000
-          "max": 10000
-        "of":
-          "gen": "int"
-          "min": 1
-          "max": 1
-  - "name": "max capacity start"
-    "in":
-      "nums":
-        - 100000
         - 0
         - 0
-    "out": true
-  - "name": "staircase"
-    "in":
-      "nums":
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-    "out": true
-  - "name": "blocked by zero"
-    "in":
-      "nums":
+    out: false
+  - name: generated-large-true-1
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-large-false-1
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-large-true-2
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-large-false-2
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-large-mixed
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: exact-stuck-at-last-zero
+    in:
+      nums:
+        - 4
         - 1
         - 1
         - 0
-        - 1
-        - 1
-    "out": false
+        - 0
+    out: true

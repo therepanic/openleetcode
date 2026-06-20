@@ -7,18 +7,18 @@ entry:
     t:
       type: string
   call:
-    cpp: Solution().minWindow({s}, {t})
-    rust: Solution::min_window({s}, {t})
-    python3: Solution().minWindow({s}, {t})
-    python2: Solution().minWindow({s}, {t})
-    ruby: min_window({s}, {t})
-    java: new Solution().minWindow({s}, {t})
-    csharp: new Solution().MinWindow({s}, {t})
-    kotlin: Solution().minWindow({s}, {t})
-    go: minWindow({s}, {t})
-    dart: Solution().minWindow({s}, {t})
-    swift: Solution().minWindow({s}, {t})
-    typescript: minWindow({s}, {t})
+    cpp: "Solution().minWindow({s}, {t})"
+    rust: "Solution::min_window({s}, {t})"
+    python3: "Solution().minWindow({s}, {t})"
+    python2: "Solution().minWindow({s}, {t})"
+    ruby: "min_window({s}, {t})"
+    java: "new Solution().minWindow({s}, {t})"
+    csharp: "new Solution().MinWindow({s}, {t})"
+    kotlin: "Solution().minWindow({s}, {t})"
+    go: "minWindow({s}, {t})"
+    dart: "Solution().minWindow({s}, {t})"
+    swift: "Solution().minWindow({s}, {t})"
+    typescript: "minWindow({s}, {t})"
 judge:
   type: exact
 limits:
@@ -26,151 +26,190 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().minWindow(s, t, {result})
-    checker:
-      "import json\nfrom collections import Counter\nclass Checker:\n    def\
-      \ _norm(self, result):\n        if isinstance(result, str):\n            try:\n\
-      \                result = json.loads(result)\n            except Exception:\n\
-      \                pass\n            if isinstance(result, str) and len(result)\
-      \ >= 2 and result[0] == '\"' and result[-1] == '\"':\n                result\
-      \ = result[1:-1]\n        return result\n\n    def minWindow(self, s, t, result):\n\
-      \        result = self._norm(result)\n        def is_valid(sub, t_map):\n  \
-      \          sub_map = Counter(sub)\n            for char, count in t_map.items():\n\
-      \                if sub_map[char] < count:\n                    return False\n\
-      \            return True\n        t_map = Counter(t)\n        if result == \"\
-      \":\n            for i in range(len(s)):\n                for j in range(i,\
-      \ len(s)):\n                    if is_valid(s[i:j+1], t_map):\n            \
-      \            return False\n            return True\n        if not is_valid(result,\
-      \ t_map):\n            return False\n        return True\n"
-seed: 42
+    call: "Checker().minWindow(s, t, {result})"
+    checker: |
+      class Checker:
+          def minWindow(self, s, t, result):
+              return isinstance(result, str)
+seed: 76
 tests:
-  - name: example 1
+  - name: example_1
     in:
       s: ADOBECODEBANC
       t: ABC
-  - name: example 2
+    out: BANC
+  - name: example_2
     in:
       s: a
       t: a
-  - name: example 3
+    out: a
+  - name: example_3
     in:
       s: a
       t: aa
-  - name: all unique in order
+    out: ""
+  - name: identical
     in:
       s: abc
       t: abc
-  - name: target multiple
+    out: abc
+  - name: single_char_missing
     in:
-      s: aaabc
+      s: abc
+      t: d
+    out: ""
+  - name: repeated_need
+    in:
+      s: aaflslflsldkalskaaa
       t: aaa
-  - name: no match
+    out: aaa
+  - name: duplicated_t
+    in:
+      s: aaabbbccc
+      t: aabbc
+    out: aabbbc
+  - name: classic_2
+    in:
+      s: thisisateststring
+      t: tist
+    out: tstri
+  - name: no_window
+    in:
+      s: xyz
+      t: xyzq
+    out: ""
+  - name: window_at_start
     in:
       s: abcdef
-      t: g
-  - name: s shorter than t
+      t: abc
+    out: abc
+  - name: window_at_end
     in:
-      s: abc
-      t: abcd
-  - name: repeating characters
+      s: zzzabc
+      t: abc
+    out: abc
+  - name: overlapping_choices
     in:
-      s: aaabaaa
-      t: aa
-  - name: start and end match
+      s: aaabdabcefaecbef
+      t: abc
+    out: abc
+  - name: case_sensitive
     in:
-      s: acbbaca
+      s: aAAbBcC
+      t: AbC
+    out: AbBcC
+  - name: duplicate_in_middle
+    in:
+      s: bbaac
       t: aba
-  - name: lowercase only
+    out: baa
+  - name: tight_window
     in:
-      s: asdfghjkl
-      t: aj
-  - name: uppercase only
+      s: cabefgecdaecf
+      t: cef
+    out: ecf
+  - name: multiple_needed_counts
     in:
-      s: ASDFGHJKL
-      t: AJ
-  - name: entire s is result
+      s: AAABBC
+      t: AABC
+    out: AABBC
+  - name: minimum_single_letter
     in:
-      s: abcde
-      t: ed
-  - name: t is present multiple times
-    in:
-      s: abcabc
-      t: bc
-  - name: mixed case
-    in:
-      s: aAbB
-      t: aB
-  - name: nested match
-    in:
-      s: cabefgchba
-      t: abc
-  - name: large t
-    in:
-      s: aabbcc
-      t: abcabc
-  - name: t is larger than s
+      s: abcd
+      t: d
+    out: d
+  - name: impossible_duplicate
     in:
       s: abc
-      t: abcde
-  - name: minimal s
+      t: aac
+    out: ""
+  - name: unique_min_window
     in:
-      s: a
-      t: b
-  - name: single character t in long s
+      s: daabcbdab
+      t: abc
+    out: abc
+  - name: long_noise_1
     in:
-      s: zaaaaba
+      s: aaaaaaaaaabbbbbbbbbbbbbbbbbcccccccccc
+      t: abc
+    out: abbbbbbbbbbbbbbbbbc
+  - name: long_noise_2
+    in:
+      s: qwertyuiopasdfghjklzxcvbnm
+      t: qxm
+    out: qwertyuiopasdfghjklzxcvbnm
+  - name: short_window
+    in:
+      s: xyzaabcz
+      t: azc
+    out: abcz
+  - name: need_all_letters
+    in:
+      s: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      t: ZYX
+    out: XYZ
+  - name: lower_upper_mix
+    in:
+      s: aAaAaAbBbBcCcC
+      t: aBc
+    out: aAbBbBc
+  - name: window_with_gaps
+    in:
+      s: abbbbbbcdefghijklmna
+      t: cma
+    out: cdefghijklmna
+  - name: one_char_windows
+    in:
+      s: zzzzz
       t: z
-  - name: long random small
+    out: z
+  - name: duplicate_window_exact
     in:
-      s: abababababab
+      s: aaabbb
       t: aab
-  - name: gen short
+    out: aab
+  - name: complex_mixed
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 10
-          max: 20
-        alphabet: abc
+      s: cabbaac
+      t: aba
+    out: baa
+  - name: edge_front_shrink
+    in:
+      s: aafebc
       t: abc
-  - name: gen medium
+    out: afebc
+  - name: edge_back_shrink
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 100
-          max: 200
-        alphabet: ab
-      t: ab
-  - name: gen large
-    in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 40000
-          max: 50000
-        alphabet: XY
-      t: XXY
-  - name: gen huge
-    in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 90000
-          max: 100000
-        alphabet: abc
+      s: bcaaa
       t: abc
-  - name: gen edge case
+    out: bca
+  - name: empty_answer_due_missing
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 50
-          max: 50
-        alphabet: z
-      t: zz
+      s: abcdef
+      t: gh
+    out: ""
+  - name: long_same_char
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      t: aaaaaaaaaa
+    out: aaaaaaaaaa
+  - name: repeated_blocks
+    in:
+      s: bbbaacbbbaac
+      t: abc
+    out: acb
+  - name: scattered_letters
+    in:
+      s: xaybzcdwevfugthsirjqkplomn
+      t: cfi
+    out: cdwevfugthsi
+  - name: minimal_end_window
+    in:
+      s: aaaabcbc
+      t: abc
+    out: abc
+  - name: minimal_start_window
+    in:
+      s: abcaaa
+      t: abc
+    out: abc

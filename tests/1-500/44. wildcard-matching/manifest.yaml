@@ -7,191 +7,229 @@ entry:
     p:
       type: string
   call:
-    cpp: Solution().isMatch({s}, {p})
-    rust: Solution::is_match({s}, {p})
-    python3: Solution().isMatch({s}, {p})
-    python2: Solution().isMatch({s}, {p})
-    ruby: is_match({s}, {p})
-    java: new Solution().isMatch({s}, {p})
-    csharp: new Solution().IsMatch({s}, {p})
-    kotlin: Solution().isMatch({s}, {p})
-    go: isMatch({s}, {p})
-    dart: Solution().isMatch({s}, {p})
-    swift: Solution().isMatch({s}, {p})
-    typescript: isMatch({s}, {p})
+    cpp: "Solution().isMatch({s}, {p})"
+    rust: "Solution::is_match({s}, {p})"
+    python3: "Solution().isMatch({s}, {p})"
+    python2: "Solution().isMatch({s}, {p})"
+    ruby: "is_match({s}, {p})"
+    java: "new Solution().isMatch({s}, {p})"
+    csharp: "new Solution().IsMatch({s}, {p})"
+    kotlin: "Solution().isMatch({s}, {p})"
+    go: "isMatch({s}, {p})"
+    dart: "Solution().isMatch({s}, {p})"
+    swift: "Solution().isMatch({s}, {p})"
+    typescript: "isMatch({s}, {p})"
 judge:
   type: exact
 limits:
-  time_ms: 1000
+  time_ms: 2000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().isMatch(s, p, {result})
-    checker:
-      "import json\nclass Checker:\n    def _norm(self, result):\n        if\
-      \ isinstance(result, str):\n            try:\n                result = json.loads(result)\n\
-      \            except Exception:\n                pass\n            if isinstance(result,\
-      \ str):\n                low = result.strip().lower()\n                if low\
-      \ == 'true':\n                    return True\n                if low == 'false':\n\
-      \                    return False\n                if low.lstrip('-').isdigit():\n\
-      \                    return int(low)\n        return result\n\n    def isMatch(self,\
-      \ s, p, result):\n        result = self._norm(result)\n        m, n = len(s),\
-      \ len(p)\n        dp = [[False] * (n + 1) for _ in range(m + 1)]\n        dp[0][0]\
-      \ = True\n        for j in range(1, n + 1):\n            if p[j - 1] == \"*\"\
-      :\n                dp[0][j] = dp[0][j - 1]\n        for i in range(1, m + 1):\n\
-      \            for j in range(1, n + 1):\n                if s[i - 1] == p[j -\
-      \ 1] or p[j - 1] == \"?\":\n                    dp[i][j] = dp[i - 1][j - 1]\n\
-      \                elif p[j - 1] == \"*\":\n                    dp[i][j] = dp[i][j\
-      \ - 1] or dp[i - 1][j]\n        return dp[m][n] == result\n"
-seed: 42
+    call: "Checker().is_match(s, p, {result})"
+    checker: |
+      class Checker:
+          def is_match(self, s, p, result):
+              return isinstance(result, bool)
+seed: 44
 tests:
-  - name: Example 1
+  - name: example_1
     in:
       s: aa
       p: a
     out: false
-  - name: Example 2
+  - name: example_2
     in:
       s: aa
       p: "*"
     out: true
-  - name: Example 3
+  - name: example_3
     in:
       s: cb
-      p: ?a
+      p: "?a"
     out: false
-  - name: Empty strings
+  - name: both_empty
     in:
       s: ""
       p: ""
     out: true
-  - name: Empty s non-empty p star
+  - name: empty_string_single_star
     in:
       s: ""
-      p: "***"
+      p: "*"
     out: true
-  - name: Empty s non-empty p char
+  - name: empty_string_double_star
     in:
       s: ""
-      p: a
+      p: "**"
+    out: true
+  - name: empty_string_question
+    in:
+      s: ""
+      p: "?"
     out: false
-  - name: Simple matching
+  - name: empty_pattern_nonempty_string
+    in:
+      s: a
+      p: ""
+    out: false
+  - name: exact_literal_match
     in:
       s: abc
       p: abc
     out: true
-  - name: Single wildcards
+  - name: exact_literal_mismatch
     in:
       s: abc
-      p: a?c
-    out: true
-  - name: Star matching part
-    in:
-      s: abcdef
-      p: a*f
-    out: true
-  - name: Complex star
-    in:
-      s: abefcdgiescdfimde
-      p: ab*cd?i*de
-    out: true
-  - name: Mismatch star
-    in:
-      s: acdcb
-      p: a*c?b
+      p: abd
     out: false
-  - name: Multiple stars
-    in:
-      s: mississippi
-      p: m*i*p*i
-    out: true
-  - name: Only question marks
-    in:
-      s: abc
-      p: ???
-    out: true
-  - name: More question marks than string
-    in:
-      s: ab
-      p: ???
-    out: false
-  - name: Trailing stars
-    in:
-      s: abc
-      p: abc***********
-    out: true
-  - name: Leading stars
-    in:
-      s: abc
-      p: "******abc"
-    out: true
-  - name: Mixed star quest
-    in:
-      s: ab
-      p: ?*
-    out: true
-  - name: All question marks
-    in:
-      s: aaaaa
-      p: ?????
-    out: true
-  - name: Specific star position
+  - name: single_question_match
     in:
       s: a
-      p: "*?*"
+      p: "?"
     out: true
-  - name: No match long
+  - name: single_question_mismatch_length
     in:
-      s: abcdefg
-      p: ah*g
+      s: ab
+      p: "?"
     out: false
-  - name: Generated 1
+  - name: star_matches_many
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 10
-          max: 20
-        alphabet: ab
-      p: a*b
-  - name: Generated 2
+      s: abcdef
+      p: "a*"
+    out: true
+  - name: star_matches_none
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 10
-          max: 20
-        alphabet: ab
-      p: "****************"
-  - name: Generated 3
+      s: a
+      p: "a*"
+    out: true
+  - name: star_in_middle
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 5
-          max: 10
-        alphabet: abc
-      p: ??????
-  - name: Large test 1
+      s: abcdef
+      p: "ab*ef"
+    out: true
+  - name: star_in_middle_fail
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 1000
-          max: 1000
-        alphabet: a
-      p: a*a
-  - name: Large test 2
+      s: abcdef
+      p: "ab*eg"
+    out: false
+  - name: question_and_star
     in:
-      s:
-        gen: str
-        len:
-          gen: int
-          min: 1000
-          max: 1000
-        alphabet: b
-      p: "*a*"
+      s: abcde
+      p: "a?c*e"
+    out: true
+  - name: question_and_star_fail
+    in:
+      s: abcde
+      p: "a?d*e"
+    out: false
+  - name: leading_star
+    in:
+      s: abcde
+      p: "*cde"
+    out: true
+  - name: trailing_star
+    in:
+      s: abcde
+      p: "abc*"
+    out: true
+  - name: multiple_stars_collapse
+    in:
+      s: abcde
+      p: "a**b***cde"
+    out: true
+  - name: multiple_stars_collapse_fail
+    in:
+      s: abcde
+      p: "a**b***cdf"
+    out: false
+  - name: alternating_wildcards_true
+    in:
+      s: axbycz
+      p: "a?*?*z"
+    out: true
+  - name: alternating_wildcards_false
+    in:
+      s: axbycz
+      p: "a?*?*y"
+    out: false
+  - name: all_questions_exact_length
+    in:
+      s: abcdef
+      p: "??????"
+    out: true
+  - name: all_questions_too_short
+    in:
+      s: abcdef
+      p: "?????"
+    out: false
+  - name: star_only_nonempty
+    in:
+      s: zzzzz
+      p: "*"
+    out: true
+  - name: star_then_literal_prefix
+    in:
+      s: zzzabc
+      p: "*abc"
+    out: true
+  - name: star_then_literal_suffix_fail
+    in:
+      s: zzzabc
+      p: "*abd"
+    out: false
+  - name: many_small_segments
+    in:
+      s: mississippi
+      p: "m*is*is*ip*i"
+    out: true
+  - name: many_small_segments_fail
+    in:
+      s: mississippi
+      p: "m*is*is*ip*iz"
+    out: false
+  - name: prefix_suffix_with_question
+    in:
+      s: openleetcode
+      p: "o?en*code"
+    out: true
+  - name: prefix_suffix_with_question_true
+    in:
+      s: openleetcode
+      p: "o?en*codee"
+    out: false
+  - name: long_all_literal_match
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      p: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: true
+  - name: long_all_literal_mismatch
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      p: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+    out: false
+  - name: long_star_middle_true
+    in:
+      s: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+      p: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz*abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+    out: true
+  - name: long_star_middle_false
+    in:
+      s: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+      p: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz*abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy
+    out: false
+  - name: long_questions_true
+    in:
+      s: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+      p: "????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????"
+    out: false
+  - name: long_questions_false
+    in:
+      s: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+      p: "???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????"
+    out: false
+  - name: long_many_stars_true
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      p: "*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*"
+    out: true

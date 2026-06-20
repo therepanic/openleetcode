@@ -1,0 +1,398 @@
+entry:
+  id: 152
+  title: maximum-product-subarray
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxProduct({nums})"
+    rust: "Solution::max_product({nums})"
+    python3: "Solution().maxProduct({nums})"
+    python2: "Solution().maxProduct({nums})"
+    ruby: "max_product({nums})"
+    java: "new Solution().maxProduct({nums})"
+    csharp: "new Solution().MaxProduct({nums})"
+    kotlin: "Solution().maxProduct({nums})"
+    go: "maxProduct({nums})"
+    dart: "Solution().maxProduct({nums})"
+    swift: "Solution().maxProduct({nums})"
+    typescript: "maxProduct({nums})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxProduct(nums, {result})"
+    checker: |
+      class Checker:
+          def maxProduct(self, nums, result):
+              if not isinstance(nums, list) or not nums:
+                  return False
+              if any((not isinstance(x, int)) for x in nums):
+                  return False
+              if any(x < -10 or x > 10 for x in nums):
+                  return False
+
+              best = nums[0]
+              cur_max = 1
+              cur_min = 1
+              for n in nums:
+                  temp = cur_max * n
+                  cur_max = max(temp, cur_min * n, n)
+                  cur_min = min(temp, cur_min * n, n)
+                  best = max(best, cur_max)
+              return result == best
+
+seed: 152
+
+tests:
+  - name: example_1
+    in:
+      nums:
+        - 2
+        - 3
+        - -2
+        - 4
+    out: 6
+  - name: example_2
+    in:
+      nums:
+        - -2
+        - 0
+        - -1
+    out: 0
+  - name: single_positive
+    in:
+      nums:
+        - 1
+    out: 1
+  - name: single_negative
+    in:
+      nums:
+        - -1
+    out: -1
+  - name: single_zero
+    in:
+      nums:
+        - 0
+    out: 0
+  - name: single_max_positive
+    in:
+      nums:
+        - 10
+    out: 10
+  - name: single_max_negative
+    in:
+      nums:
+        - -10
+    out: -10
+  - name: pair_with_zero_left
+    in:
+      nums:
+        - 0
+        - 2
+    out: 2
+  - name: pair_with_zero_right
+    in:
+      nums:
+        - 2
+        - 0
+    out: 2
+  - name: all_zero_triplet
+    in:
+      nums:
+        - 0
+        - 0
+        - 0
+    out: 0
+  - name: all_positive_run
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+    out: 24
+  - name: all_negative_even
+    in:
+      nums:
+        - -1
+        - -2
+        - -3
+        - -4
+    out: 24
+  - name: all_negative_odd
+    in:
+      nums:
+        - -1
+        - -2
+        - -3
+    out: 6
+  - name: zero_splits_positive_run
+    in:
+      nums:
+        - 1
+        - 0
+        - 1
+        - 2
+        - 3
+    out: 6
+  - name: classic_negative_flip
+    in:
+      nums:
+        - -2
+        - 3
+        - -4
+    out: 24
+  - name: three_negatives
+    in:
+      nums:
+        - -2
+        - -3
+        - 7
+    out: 42
+  - name: zero_and_negatives
+    in:
+      nums:
+        - -2
+        - -3
+        - 0
+        - -2
+        - -40
+    out: 80
+  - name: canonical_mixed
+    in:
+      nums:
+        - 2
+        - 3
+        - -2
+        - 4
+    out: 6
+  - name: mixed_with_zero
+    in:
+      nums:
+        - 6
+        - -3
+        - -10
+        - 0
+        - 2
+    out: 180
+  - name: mixed_small
+    in:
+      nums:
+        - 2
+        - -5
+        - -2
+        - -4
+        - 3
+    out: 24
+  - name: mixed_with_middle_zero
+    in:
+      nums:
+        - 0
+        - -2
+        - -3
+        - 0
+        - -2
+        - -40
+    out: 80
+  - name: alternating_signs
+    in:
+      nums:
+        - -10
+        - 10
+        - -10
+    out: 1000
+  - name: zeros_and_small_positive
+    in:
+      nums:
+        - 2
+        - 3
+        - 0
+        - 2
+        - 4
+    out: 8
+  - name: leading_negative_then_positive
+    in:
+      nums:
+        - -1
+        - 2
+        - 3
+        - 0
+        - 4
+        - -1
+        - 2
+        - 1
+    out: 6
+  - name: interleaved_zero_negative
+    in:
+      nums:
+        - -1
+        - 0
+        - -2
+        - 4
+        - -1
+        - 2
+        - 1
+        - -5
+        - 4
+    out: 160
+  - name: positive_then_negative_tail
+    in:
+      nums:
+        - 1
+        - -2
+        - -3
+        - 4
+    out: 24
+  - name: all_negative_triple
+    in:
+      nums:
+        - -2
+        - -3
+        - -4
+    out: 12
+  - name: zero_then_negative_block
+    in:
+      nums:
+        - 0
+        - 1
+        - -2
+        - -3
+        - -4
+        - 0
+        - 5
+        - -1
+        - -2
+    out: 12
+  - name: long_positive_run
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 1
+  - name: long_negative_odd
+    in:
+      nums:
+        - -1
+        - -1
+        - -1
+        - -1
+        - -1
+    out: 1
+  - name: separated_two_segments
+    in:
+      nums:
+        - 2
+        - 0
+        - -2
+        - 0
+        - 2
+        - 0
+        - -2
+        - 0
+        - 2
+    out: 2
+  - name: mixed_with_large_positive_block
+    in:
+      nums:
+        - 2
+        - -1
+        - 2
+        - 3
+        - 4
+        - -5
+    out: 240
+  - name: negative_pair_after_zero
+    in:
+      nums:
+        - -2
+        - 0
+        - 0
+        - -3
+    out: 0
+  - name: generated_singleton_range
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 1
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_short_full_range
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 2
+          max: 4
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len9_full_range
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 5
+          max: 9
+        of:
+          gen: int
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_small_magnitude
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 20
+        of:
+          gen: int
+          min: -2
+          max: 2
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_balanced_trinary
+    in:
+      nums:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 9
+        of:
+          gen: int
+          min: -3
+          max: 3
+        distinct: false
+        sorted: false
+        elemType: int

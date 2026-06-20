@@ -1,24 +1,24 @@
 entry:
   id: 61
   title: rotate-list
-  call:
-    cpp: listNodeToArray(Solution().rotateRight({head}, {k}))
-    rust: ListNode::list_node_to_array(Solution::rotate_right({head}, {k} as i32))
-    python3: list_node_to_array(Solution().rotateRight({head}, {k}))
-    python2: list_node_to_array(Solution().rotateRight({head}, {k}))
-    ruby: list_node_to_array(rotate_right({head}, {k}))
-    java: ListNode.listNodeToArray(new Solution().rotateRight({head}, {k}))
-    csharp: ListNode.ListNodeToArray(new Solution().RotateRight({head}, {k}))
-    kotlin: listNodeToArray(Solution().rotateRight({head}, {k}))
-    go: listNodeToArray(rotateRight({head}, {k}))
-    dart: list_node_to_array(Solution().rotateRight({head}, {k}))
-    swift: list_node_to_array(Solution().rotateRight({head}, {k}))
-    typescript: listNodeToArray(rotateRight({head}, {k}))
   params:
     head:
       type: list_node
     k:
       type: int
+  call:
+    cpp: "listNodeToArray(Solution().rotateRight({head}, {k}))"
+    rust: "ListNode::list_node_to_array(Solution::rotate_right({head}, {k}))"
+    python3: "list_node_to_array(Solution().rotateRight({head}, {k}))"
+    python2: "list_node_to_array(Solution().rotateRight({head}, {k}))"
+    ruby: "list_node_to_array(rotate_right({head}, {k}))"
+    java: "ListNode.listNodeToArray(new Solution().rotateRight({head}, {k}))"
+    csharp: "ListNode.ListNodeToArray(new Solution().RotateRight({head}, {k}))"
+    kotlin: "listNodeToArray(Solution().rotateRight({head}, {k}))"
+    go: "listNodeToArray(rotateRight({head}, {k}))"
+    dart: "list_node_to_array(Solution().rotateRight({head}, {k}))"
+    swift: "list_node_to_array(Solution().rotateRight({head}, {k}))"
+    typescript: "listNodeToArray(rotateRight({head}, {k}))"
 judge:
   type: exact
 limits:
@@ -26,296 +26,257 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: check(head, k, {result})
+    call: "Checker().rotateRight(head, k, {result})"
     checker: |
-      import json
-
-      def check(head, k, result):
-          try:
-              result = json.loads(result) if isinstance(result, str) else result
-          except Exception:
-              return False
-          if not head:
-              return result == []
-          n = len(head)
-          k %= n
-          if k == 0:
-              return result == head
-          expected = head[n-k:] + head[:n-k]
-          return result == expected
-seed: 42
+      class Checker:
+          def rotateRight(self, head, k, result):
+              vals = list(head)
+              if not isinstance(result, list):
+                  return False
+              n = len(vals)
+              if n == 0:
+                  return result == []
+              shift = k % n
+              if shift == 0:
+                  expected = vals
+              else:
+                  expected = vals[-shift:] + vals[:-shift]
+              return result == expected
+seed: 61
 tests:
-  - name: Example 1
+  - name: example_1
     in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
+      head: [1, 2, 3, 4, 5]
       k: 2
-    out:
-      - 4
-      - 5
-      - 1
-      - 2
-      - 3
-  - name: Example 2
+    out: [4, 5, 1, 2, 3]
+  - name: example_2
     in:
-      head:
-        - 0
-        - 1
-        - 2
+      head: [0, 1, 2]
       k: 4
-    out:
-      - 2
-      - 0
-      - 1
-  - name: Empty list
+    out: [2, 0, 1]
+  - name: empty_k0
     in:
       head: []
-      k: 1
-    out: []
-  - name: Single node k=0
-    in:
-      head:
-        - 1
       k: 0
-    out:
-      - 1
-  - name: Single node k=10
-    in:
-      head:
-        - 1
-      k: 10
-    out:
-      - 1
-  - name: Two nodes rotate 1
-    in:
-      head:
-        - 1
-        - 2
-      k: 1
-    out:
-      - 2
-      - 1
-  - name: Two nodes rotate 2
-    in:
-      head:
-        - 1
-        - 2
-      k: 2
-    out:
-      - 1
-      - 2
-  - name: K is multiple of length
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-      k: 6
-    out:
-      - 1
-      - 2
-      - 3
-  - name: Rotate more than length
-    in:
-      head:
-        - 1
-        - 2
-        - 3
-        - 4
-      k: 5
-    out:
-      - 4
-      - 1
-      - 2
-      - 3
-  - name: Null list large k
+    out: []
+  - name: empty_large_k
     in:
       head: []
       k: 2000000000
     out: []
-  - name: All same values
+  - name: single_zero
     in:
-      head:
-        - 1
-        - 1
-        - 1
-      k: 1
-    out:
-      - 1
-      - 1
-      - 1
-  - name: Large K
+      head: [0]
+      k: 7
+    out: [0]
+  - name: two_nodes_k0
     in:
-      head:
-        - 1
-        - 2
-      k: 2000000000
-    out:
-      - 1
-      - 2
-  - name: Large K odd
-    in:
-      head:
-        - 1
-        - 2
-      k: 2000000001
-    out:
-      - 2
-      - 1
-  - name: Small list rotate exact len
-    in:
-      head:
-        - 10
-        - 20
-      k: 2
-    out:
-      - 10
-      - 20
-  - name: Small list rotate 1
-    in:
-      head:
-        - 10
-        - 20
-      k: 1
-    out:
-      - 20
-      - 10
-  - name: List 500 nodes rotate 0
-    in:
-      head:
-        gen: array
-        len:
-          gen: int
-          min: 500
-          max: 500
-        of:
-          gen: int
-          min: -100
-          max: 100
+      head: [1, 2]
       k: 0
-  - name: List 500 nodes rotate 500
+    out: [1, 2]
+  - name: two_nodes_k1
     in:
-      head:
-        gen: array
-        len:
-          gen: int
-          min: 500
-          max: 500
-        of:
-          gen: int
-          min: -100
-          max: 100
-      k: 500
-  - name: List 250 nodes rotate 125
-    in:
-      head:
-        gen: array
-        len:
-          gen: int
-          min: 250
-          max: 250
-        of:
-          gen: int
-          min: -100
-          max: 100
-      k: 125
-  - name: List 100 nodes rotate 2500000000
-    in:
-      head:
-        gen: array
-        len:
-          gen: int
-          min: 100
-          max: 100
-        of:
-          gen: int
-          min: -100
-          max: 100
-      k: 2000000000
-  - name: List 500 nodes rotate 250
-    in:
-      head:
-        gen: array
-        len:
-          gen: int
-          min: 500
-          max: 500
-        of:
-          gen: int
-          min: -100
-          max: 100
-      k: 250
-  - name: Three nodes k 1
-    in:
-      head:
-        - 1
-        - 2
-        - 3
+      head: [1, 2]
       k: 1
-    out:
-      - 3
-      - 1
-      - 2
-  - name: Three nodes k 2
+    out: [2, 1]
+  - name: two_nodes_k2
     in:
-      head:
-        - 1
-        - 2
-        - 3
+      head: [1, 2]
       k: 2
-    out:
-      - 2
-      - 3
-      - 1
-  - name: Three nodes k 3
+    out: [1, 2]
+  - name: three_nodes_k1
     in:
-      head:
-        - 1
-        - 2
-        - 3
+      head: [1, 2, 3]
+      k: 1
+    out: [3, 1, 2]
+  - name: three_nodes_k2
+    in:
+      head: [1, 2, 3]
+      k: 2
+    out: [2, 3, 1]
+  - name: three_nodes_k3
+    in:
+      head: [1, 2, 3]
       k: 3
-    out:
-      - 1
-      - 2
-      - 3
-  - name: Negative values
+    out: [1, 2, 3]
+  - name: three_nodes_large_k
     in:
-      head:
-        - -1
-        - -2
-        - -3
+      head: [1, 2, 3]
+      k: 100
+    out: [3, 1, 2]
+  - name: four_nodes_k1
+    in:
+      head: [1, 2, 3, 4]
       k: 1
-    out:
-      - -3
-      - -1
-      - -2
-  - name: Max constraints list
+    out: [4, 1, 2, 3]
+  - name: four_nodes_k2
+    in:
+      head: [1, 2, 3, 4]
+      k: 2
+    out: [3, 4, 1, 2]
+  - name: four_nodes_k3
+    in:
+      head: [1, 2, 3, 4]
+      k: 3
+    out: [2, 3, 4, 1]
+  - name: five_nodes_k5
+    in:
+      head: [1, 2, 3, 4, 5]
+      k: 5
+    out: [1, 2, 3, 4, 5]
+  - name: five_nodes_k6
+    in:
+      head: [1, 2, 3, 4, 5]
+      k: 6
+    out: [5, 1, 2, 3, 4]
+  - name: negatives_and_zero
+    in:
+      head: [-3, -2, -1, 0, 1]
+      k: 3
+    out: [-1, 0, 1, -3, -2]
+  - name: duplicates
+    in:
+      head: [7, 7, 7, 7]
+      k: 2
+    out: [7, 7, 7, 7]
+  - name: alternating
+    in:
+      head: [9, 8, 9, 8, 9, 8, 9]
+      k: 3
+    out: [9, 8, 9, 9, 8, 9, 8]
+  - name: length_8_k4
+    in:
+      head: [8, 6, 7, 5, 3, 0, 9, 1]
+      k: 4
+    out: [3, 0, 9, 1, 8, 6, 7, 5]
+  - name: length_10_k9
+    in:
+      head: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+      k: 9
+    out: [20, 30, 40, 50, 60, 70, 80, 90, 100, 10]
+  - name: length_10_k10
+    in:
+      head: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+      k: 10
+    out: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  - name: length_15_k7
+    in:
+      head: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      k: 7
+    out: [9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8]
+  - name: descending_k13
+    in:
+      head:
+        [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 13
+    out: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 19, 18, 17, 16, 15, 14]
+  - name: generated_len12_k2
+    seed: 611
     in:
       head:
         gen: array
-        len:
+        len: 12
+        of:
           gen: int
-          min: 500
-          max: 500
+          min: -20
+          max: 20
+      k: 2
+  - name: generated_len15_k3
+    seed: 612
+    in:
+      head:
+        gen: array
+        len: 15
+        of:
+          gen: int
+          min: -50
+          max: 50
+      k: 3
+  - name: generated_len20_k4
+    seed: 613
+    in:
+      head:
+        gen: array
+        len: 20
         of:
           gen: int
           min: -100
           max: 100
-      k: 1000
-  - name: Max constraints list 2
+      k: 4
+  - name: generated_len25_k5
+    seed: 614
     in:
       head:
         gen: array
-        len:
-          gen: int
-          min: 500
-          max: 500
+        len: 25
         of:
           gen: int
           min: -100
           max: 100
-      k: 2000000000
+      k: 5
+  - name: generated_len40_k7
+    seed: 615
+    in:
+      head:
+        gen: array
+        len: 40
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+      k: 7
+  - name: generated_len80_k11
+    seed: 616
+    in:
+      head:
+        gen: array
+        len: 80
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+      k: 11
+  - name: generated_len120_k17
+    seed: 617
+    in:
+      head:
+        gen: array
+        len: 120
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+      k: 17
+  - name: generated_len200_k49
+    seed: 618
+    in:
+      head:
+        gen: array
+        len: 200
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+      k: 49
+  - name: generated_len500_k1
+    seed: 619
+    in:
+      head:
+        gen: array
+        len: 500
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+      k: 1
+  - name: generated_len500_large_k
+    seed: 620
+    in:
+      head:
+        gen: array
+        len: 500
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+      k: 123456789

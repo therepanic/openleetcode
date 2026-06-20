@@ -1,0 +1,38 @@
+class Solution(object):
+    def getSkyline(self, buildings):
+        """
+        :type buildings: List[List[int]]
+        :rtype: List[List[int]]
+        """
+        import heapq
+        events = []
+        for L, R, H in buildings:
+            events.append((L, -H))
+            events.append((R, H))
+        events.sort()
+        
+        result = []
+        live_buildings = [0]
+        past_buildings = {}
+        prev_max = 0
+        
+        for x, h in events:
+            if h < 0:
+                heapq.heappush(live_buildings, h)
+            else:
+                val_to_remove = -h
+                past_buildings[val_to_remove] = past_buildings.get(val_to_remove, 0) + 1
+            
+            while live_buildings[0] in past_buildings:
+                top = live_buildings[0]
+                heapq.heappop(live_buildings)
+                past_buildings[top] -= 1
+                if past_buildings[top] == 0:
+                    del past_buildings[top]
+            
+            curr_max = -live_buildings[0]
+            if curr_max != prev_max:
+                result.append([x, curr_max])
+                prev_max = curr_max
+        
+        return result

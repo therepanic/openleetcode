@@ -1,19 +1,6 @@
 entry:
   id: 30
   title: substring-with-concatenation-of-all-words
-  call:
-    cpp: Solution().findSubstring({s}, {words})
-    rust: Solution::find_substring({s}, {words})
-    python3: Solution().findSubstring({s}, {words})
-    python2: Solution().findSubstring({s}, {words})
-    ruby: find_substring({s}, {words})
-    java: new Solution().findSubstring({s}, {words})
-    csharp: new Solution().FindSubstring({s}, {words})
-    kotlin: Solution().findSubstring({s}, {words})
-    go: findSubstring({s}, {words})
-    dart: Solution().findSubstring({s}, {words})
-    swift: Solution().findSubstring({s}, {words})
-    typescript: findSubstring({s}, {words})
   params:
     s:
       type: string
@@ -21,32 +8,96 @@ entry:
       type: array
       items:
         type: string
+  call:
+    cpp: "Solution().findSubstring({s}, {words})"
+    rust: "Solution::find_substring({s}, {words})"
+    python3: "Solution().findSubstring({s}, {words})"
+    python2: "Solution().findSubstring({s}, {words})"
+    ruby: "find_substring({s}, {words})"
+    java: "new Solution().findSubstring({s}, {words})"
+    csharp: "new Solution().FindSubstring({s}, {words})"
+    kotlin: "Solution().findSubstring({s}, {words})"
+    go: "findSubstring({s}, {words})"
+    dart: "Solution().findSubstring({s}, {words})"
+    swift: "Solution().findSubstring({s}, {words})"
+    typescript: "findSubstring({s}, {words})"
+
 judge:
   type: ignore_order
+
 limits:
   time_ms: 2000
   memory_mb: 256
+
 oracle:
   python3:
-    call: Checker().check(s, words, {result})
-    checker:
-      "from collections import Counter\nclass Checker:\n    def check(self, s, words, result):\n        if not s or
-      not words: return result == []\n        c = len(words)\n        wl = len(words[0])\n        target = Counter(words)\n\
-      \        actual = []\n        for i in range(len(s) - c * wl + 1):\n            sub = s[i:i + c * wl]\n            chunks
-      = [sub[j:j + wl] for j in range(0, len(sub), wl)]\n            if Counter(chunks) == target:\n                actual.append(i)\n\
-      \        return sorted(result) == sorted(actual)\n"
-seed: 42
+    call: "Checker().check(s, words, {result})"
+    checker: |
+      from collections import Counter, defaultdict
+
+      class Checker:
+          def check(self, s, words, result):
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, int) for x in result):
+                  return False
+              if len(result) != len(set(result)):
+                  return False
+
+              if not s or not words:
+                  return result == []
+
+              word_len = len(words[0])
+              if word_len == 0:
+                  return False
+              if any(len(w) != word_len for w in words):
+                  return False
+
+              word_count = len(words)
+              target = Counter(words)
+              expected = []
+
+              for offset in range(word_len):
+                  left = offset
+                  right = offset
+                  window = defaultdict(int)
+                  used = 0
+
+                  while right + word_len <= len(s):
+                      word = s[right:right + word_len]
+                      right += word_len
+
+                      if word in target:
+                          window[word] += 1
+                          used += 1
+                          while window[word] > target[word]:
+                              left_word = s[left:left + word_len]
+                              window[left_word] -= 1
+                              left += word_len
+                              used -= 1
+                          if used == word_count:
+                              expected.append(left)
+                              left_word = s[left:left + word_len]
+                              window[left_word] -= 1
+                              left += word_len
+                              used -= 1
+                      else:
+                          window.clear()
+                          used = 0
+                          left = right
+
+              return sorted(result) == sorted(expected)
+
+seed: 30
+
 tests:
-  - name: example 1
+  - name: example_1
     in:
       s: barfoothefoobarman
       words:
         - foo
         - bar
-    out:
-      - 0
-      - 9
-  - name: example 2
+  - name: example_2
     in:
       s: wordgoodgoodgoodbestword
       words:
@@ -54,214 +105,255 @@ tests:
         - good
         - best
         - word
-    out: []
-  - name: example 3
+  - name: example_3
     in:
       s: barfoofoobarthefoobarman
       words:
         - bar
         - foo
         - the
-    out:
-      - 6
-      - 9
-      - 12
-  - name: single word full match
+  - name: single_exact_match
     in:
-      s: abc
+      s: barfoo
       words:
-        - abc
-    out:
-      - 0
-  - name: single word multiple matches
+        - bar
+        - foo
+  - name: single_reverse_match
     in:
-      s: abcabc
+      s: foobar
       words:
-        - abc
-    out:
-      - 0
-      - 3
-  - name: no match
+        - bar
+        - foo
+  - name: no_match_wrong_order_chars
     in:
-      s: aaaaa
-      words:
-        - aa
-        - aa
-    out:
-      - 0
-      - 1
-  - name: empty and short strings
-    in:
-      s: abcd
+      s: acdbef
       words:
         - ab
         - cd
-    out:
-      - 0
-  - name: interleaved
+        - ef
+  - name: one_word_exact
     in:
-      s: abbcbb
+      s: abcde
       words:
-        - ab
-        - bc
-    out:
-      - 0
-  - name: overlap test
+        - bcd
+  - name: one_word_missing
     in:
-      s: ababab
+      s: abcde
       words:
-        - ab
-        - ab
-    out:
-      - 0
-      - 2
-  - name: large number of words
+        - fgh
+  - name: duplicate_words_basic
     in:
-      s: abcabcabc
+      s: wordgoodgoodgoodbestword
       words:
-        - abc
-        - abc
-    out:
-      - 0
-      - 3
-  - name: prefix match
+        - good
+        - good
+        - best
+        - word
+  - name: duplicate_words_with_overlap
     in:
-      s: abcd
+      s: aaaabaaaab
       words:
-        - a
-        - b
-        - c
-    out:
-      - 0
-  - name: suffix match
-    in:
-      s: deabc
-      words:
-        - a
-        - b
-        - c
-    out:
-      - 2
-  - name: varying word repetition
-    in:
-      s: foofoo
-      words:
-        - foo
-    out:
-      - 0
-      - 3
-  - name: generated test 1
-    in:
-      s: abababab
-      words:
-        - ab
-        - ab
-    out:
-      - 0
-      - 2
-      - 4
-  - name: single character repetition
+        - aa
+        - aa
+        - ba
+  - name: repeated_small_words
     in:
       s: aaaaaa
       words:
-        - a
-        - a
-        - a
-    out:
-      - 0
-      - 1
-      - 2
-      - 3
-  - name: spaced words
+        - aa
+        - aa
+        - aa
+  - name: repeated_small_words_offset
     in:
-      s: abcde
+      s: xaaaaaaay
       words:
-        - ab
-        - fg
-    out: []
-  - name: complex permutation search
+        - aa
+        - aa
+        - aa
+  - name: overlapping_matches
     in:
-      s: abcde
+      s: foofoobarfoo
       words:
-        - ab
-        - de
-    out: []
-  - name: full string match
+        - foo
+        - foo
+        - bar
+  - name: multiple_offsets
     in:
-      s: abcdef
+      s: aaabbbcccaaabbbccc
+      words:
+        - aaa
+        - bbb
+        - ccc
+  - name: multiple_offsets_shifted
+    in:
+      s: xaaabbbcccaaabbbcccy
+      words:
+        - aaa
+        - bbb
+        - ccc
+  - name: all_same_word
+    in:
+      s: abcabcabcabc
+      words:
+        - abc
+        - abc
+        - abc
+        - abc
+  - name: all_same_word_with_noise
+    in:
+      s: zabcabcabcabcz
+      words:
+        - abc
+        - abc
+        - abc
+  - name: long_word_len_30
+    in:
+      s: abcdefghijklmnopqrstuvwxyzabcd
+      words:
+        - abcdefghijklmnopqrstuvwxyzabcd
+  - name: long_word_len_30_missing
+    in:
+      s: abcdefghijklmnopqrstuvwxyzabce
+      words:
+        - abcdefghijklmnopqrstuvwxyzabcd
+  - name: prefix_suffix_noise
+    in:
+      s: zzbarfoobaz
+      words:
+        - bar
+        - foo
+  - name: internal_noise_breaks_window
+    in:
+      s: barfooxthebarfoo
+      words:
+        - bar
+        - foo
+        - the
+  - name: windows_at_end
+    in:
+      s: zzbarfoothe
+      words:
+        - bar
+        - foo
+        - the
+  - name: windows_at_beginning
+    in:
+      s: barfoothezz
+      words:
+        - bar
+        - foo
+        - the
+  - name: many_repeated_hits
+    in:
+      s: catdogcatdogcatdog
+      words:
+        - cat
+        - dog
+        - cat
+  - name: many_repeated_hits_2
+    in:
+      s: dogcatcatdogcat
+      words:
+        - cat
+        - dog
+        - cat
+  - name: no_match_due_length
+    in:
+      s: short
+      words:
+        - longer
+  - name: no_match_due_characters
+    in:
+      s: abcabcabc
+      words:
+        - abd
+        - cba
+  - name: unsatisfied_duplicate_requirement
+    in:
+      s: aaaabbbb
+      words:
+        - aa
+        - ab
+        - bb
+  - name: repeated_pattern_exact
+    in:
+      s: abcdefabcdefabcdef
       words:
         - abc
         - def
-    out:
-      - 0
-  - name: repeating words but different structure
+        - abc
+  - name: repeated_pattern_offset
     in:
-      s: abacba
+      s: xabcdefabcdefabcdefy
       words:
-        - ab
-        - ac
-    out:
-      - 0
-  - name: long string missing parts
+        - abc
+        - def
+        - abc
+  - name: adjacent_matches
     in:
-      s: abcdefgh
-      words:
-        - ab
-        - ef
-    out: []
-  - name: large random generated
-    in:
-      s: abababababab
-      words:
-        - ab
-        - ab
-        - ab
-    out:
-      - 0
-      - 2
-      - 4
-      - 6
-  - name: boundary string
-    in:
-      s: ab
-      words:
-        - a
-        - b
-    out:
-      - 0
-  - name: single char words
-    in:
-      s: abcde
-      words:
-        - a
-        - c
-        - e
-    out: []
-  - name: long consecutive matches
-    in:
-      s: ababababab
-      words:
-        - ab
-        - ab
-    out:
-      - 0
-      - 2
-      - 4
-      - 6
-  - name: large test 1
-    in:
-      s: barfoothefoobarman
+      s: foobarbazfoobarbaz
       words:
         - foo
         - bar
-    out:
-      - 0
-      - 9
-  - name: large test 2
+        - baz
+  - name: adjacent_matches_shifted
     in:
-      s: abcabc
+      s: zfoobarbazfoobarbaz
       words:
-        - abc
-    out:
-      - 0
-      - 3
+        - foo
+        - bar
+        - baz
+  - name: single_char_words
+    in:
+      s: aaabbbcccabc
+      words:
+        - a
+        - b
+        - c
+  - name: single_char_words_duplicates
+    in:
+      s: aaabbbcccaaa
+      words:
+        - a
+        - a
+        - b
+  - name: near_max_no_match
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      words:
+        - bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        - cccccccccccccccccccccccccccccc
+  - name: near_max_repeated_blocks
+    in:
+      s: abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij
+      words:
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+  - name: near_max_overlapping_repeats
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      words:
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  - name: mixed_length_boundary_valid
+    in:
+      s: qwertyqwertyuiopqwerty
+      words:
+        - qwerty
+        - qwerty
+  - name: mixed_length_boundary_missing
+    in:
+      s: qwertyuiopasdfgh
+      words:
+        - qwerty
+        - uiopas
+        - dfghjk

@@ -1,236 +1,171 @@
 entry:
   id: 47
   title: permutations-ii
-  call:
-    cpp: Solution().permuteUnique({nums})
-    rust: Solution::permute_unique({nums})
-    python3: Solution().permuteUnique({nums})
-    python2: Solution().permuteUnique({nums})
-    ruby: permute_unique({nums})
-    java: new Solution().permuteUnique({nums})
-    csharp: new Solution().PermuteUnique({nums})
-    kotlin: Solution().permuteUnique({nums})
-    go: permuteUnique({nums})
-    dart: Solution().permuteUnique({nums})
-    swift: Solution().permuteUnique({nums})
-    typescript: permuteUnique({nums})
   params:
     nums:
       type: array
       items:
         type: int
+  call:
+    cpp: "Solution().permuteUnique({nums})"
+    rust: "Solution::permute_unique({nums})"
+    python3: "Solution().permuteUnique({nums})"
+    python2: "Solution().permuteUnique({nums})"
+    ruby: "permute_unique({nums})"
+    java: "new Solution().permuteUnique({nums})"
+    csharp: "new Solution().PermuteUnique({nums})"
+    kotlin: "Solution().permuteUnique({nums})"
+    go: "permuteUnique({nums})"
+    dart: "Solution().permuteUnique({nums})"
+    swift: "Solution().permuteUnique({nums})"
+    typescript: "permuteUnique({nums})"
 judge:
-  type: ignore_order
+  type: exact
 limits:
-  time_ms: 2000
+  time_ms: 1000
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check(nums, {result})
-    checker:
-      "import json\nimport itertools\nclass Checker:\n    def _norm(self, out):\n        if isinstance(out, str):\n\
-      \            try:\n                out = json.loads(out)\n            except Exception:\n                pass\n    \
-      \    return out\n\n    def check(self, nums, out):\n        out = self._norm(out)\n        target = list(set(itertools.permutations(nums)))\n\
-      \        if len(out) != len(target): return False\n        out_sorted = sorted([list(p) for p in out])\n        target_sorted
-      = sorted([list(p) for p in target])\n        return out_sorted == target_sorted\n"
-seed: 42
+    call: "Checker().permuteUnique(nums, {result})"
+    checker: |
+      from collections import Counter
+      from math import factorial
+
+      class Checker:
+          def permuteUnique(self, nums, result):
+              if not isinstance(result, list):
+                  return False
+
+              n = len(nums)
+              counts = Counter(nums)
+              expected = factorial(n)
+              for c in counts.values():
+                  expected //= factorial(c)
+
+              seen = set()
+              for perm in result:
+                  if not isinstance(perm, list):
+                      return False
+                  if len(perm) != n:
+                      return False
+                  if Counter(perm) != counts:
+                      return False
+                  seen.add(tuple(perm))
+
+              return len(seen) == expected and len(result) == expected
+seed: 47
 tests:
-  - name: Example 1
+  - name: example-1
     in:
-      nums:
-        - 1
-        - 1
-        - 2
-  - name: Example 2
+      nums: [1, 1, 2]
+  - name: example-2
     in:
-      nums:
-        - 1
-        - 2
-        - 3
-  - name: Single element
+      nums: [1, 2, 3]
+  - name: single-positive
     in:
-      nums:
-        - 1
-  - name: Two same elements
+      nums: [7]
+  - name: single-zero
     in:
-      nums:
-        - 1
-        - 1
-  - name: All same elements
+      nums: [0]
+  - name: single-negative
     in:
-      nums:
-        - 5
-        - 5
-        - 5
-  - name: Negative values
+      nums: [-10]
+  - name: two-equal
     in:
-      nums:
-        - -1
-        - -1
-        - 0
-  - name: Mixed range
+      nums: [5, 5]
+  - name: two-distinct
     in:
-      nums:
-        - -10
-        - 10
-        - -10
-  - name: Strictly increasing
+      nums: [-1, 1]
+  - name: three-all-equal
     in:
-      nums:
-        - 1
-        - 2
-        - 3
-        - 4
-  - name: Strictly decreasing
+      nums: [2, 2, 2]
+  - name: one-pair-one-single
     in:
-      nums:
-        - 4
-        - 3
-        - 2
-        - 1
-  - name: Duplicate sandwich
+      nums: [0, 0, 1]
+  - name: pair-with-negative
     in:
-      nums:
-        - 1
-        - 2
-        - 1
-        - 2
-  - name: Two duplicates at start
+      nums: [-1, -1, 2]
+  - name: pair-symmetric
     in:
-      nums:
-        - 7
-        - 7
-        - 1
-        - 2
-  - name: Two duplicates at end
+      nums: [-2, 0, -2]
+  - name: three-distinct-small
     in:
-      nums:
-        - 1
-        - 2
-        - 7
-        - 7
-  - name: Max constraints size 8
+      nums: [-1, 0, 1]
+  - name: four-with-duplicate-pair
     in:
-      nums:
-        - 1
-        - 1
-        - 1
-        - 1
-        - 2
-        - 2
-        - 2
-        - 2
-  - name: Distinct values size 8
+      nums: [1, 1, 2, 3]
+  - name: four-two-pairs
     in:
-      nums:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-  - name: Mostly duplicates
+      nums: [1, 1, 2, 2]
+  - name: four-three-equal-one-different
     in:
-      nums:
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-        - 0
-        - 1
-  - name: Balanced pairs
+      nums: [3, 3, 3, 4]
+  - name: four-negative-mix
     in:
-      nums:
-        - 1
-        - 2
-        - 1
-        - 2
-        - 3
-        - 3
-        - 4
-        - 4
-  - name: Negative single
+      nums: [-1, 0, 0, 1]
+  - name: five-two-pairs-and-single
     in:
-      nums:
-        - -5
-  - name: Negative duplicates
+      nums: [1, 1, 2, 2, 3]
+  - name: five-many-duplicates
     in:
-      nums:
-        - -2
-        - -2
-        - -3
-  - name: Large range values
+      nums: [0, 0, 0, 1, 1]
+  - name: five-negative-mix
     in:
-      nums:
-        - -10
-        - 10
-        - -10
-        - 10
-        - 0
-        - 0
-        - 0
-        - 0
-  - name: Generated test 1
+      nums: [-2, -2, -1, 0, 1]
+  - name: five-distinct
     in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 4
-          max: 8
-        of:
-          gen: int
-          min: -2
-          max: 2
-  - name: Generated test 2
+      nums: [1, 2, 3, 4, 5]
+  - name: six-three-pairs
     in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 6
-          max: 8
-        of:
-          gen: int
-          min: -5
-          max: 5
-  - name: Generated test 3
+      nums: [1, 1, 2, 2, 3, 3]
+  - name: six-four-equal-two-single
     in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 5
-          max: 8
-        of:
-          gen: int
-          min: 0
-          max: 1
-  - name: Generated test 4
+      nums: [4, 4, 4, 4, 5, 6]
+  - name: six-mixed
     in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 7
-          max: 8
-        of:
-          gen: int
-          min: 8
-          max: 10
-  - name: Generated test 5
+      nums: [-3, -3, -1, 0, 2, 2]
+  - name: six-distinct
     in:
-      nums:
-        gen: array
-        len:
-          gen: int
-          min: 6
-          max: 8
-        of:
-          gen: int
-          min: -10
-          max: -8
+      nums: [-3, -2, -1, 0, 1, 2]
+  - name: seven-with-triplet
+    in:
+      nums: [1, 1, 1, 2, 3, 4, 5]
+  - name: seven-two-pairs
+    in:
+      nums: [-1, -1, 0, 0, 2, 3, 4]
+  - name: seven-mixed
+    in:
+      nums: [10, 10, 9, 8, 8, 7, 6]
+  - name: seven-distinct
+    in:
+      nums: [-4, -3, -2, -1, 0, 1, 2]
+  - name: eight-all-equal
+    in:
+      nums: [5, 5, 5, 5, 5, 5, 5, 5]
+  - name: eight-four-pairs
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 4]
+  - name: eight-three-pairs-and-two-single
+    in:
+      nums: [-2, -2, -1, -1, 0, 0, 1, 2]
+  - name: eight-half-duplicate
+    in:
+      nums: [1, 1, 1, 1, 2, 2, 3, 4]
+  - name: eight-distinct-low
+    in:
+      nums: [-8, -7, -6, -5, -4, -3, -2, -1]
+  - name: eight-distinct-high
+    in:
+      nums: [3, 4, 5, 6, 7, 8, 9, 10]
+  - name: eight-heavy-dup
+    in:
+      nums: [0, 0, 0, 0, 1, 1, 2, 2]
+  - name: alternating-duplicates
+    in:
+      nums: [2, 1, 2, 1, 3, 3]
+  - name: mixed-sign-repeat
+    in:
+      nums: [-10, -10, 0, 0, 10, 10]
+  - name: near-boundary-values
+    in:
+      nums: [-10, -9, -9, 0, 9, 10]

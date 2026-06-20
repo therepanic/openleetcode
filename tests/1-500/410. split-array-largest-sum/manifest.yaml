@@ -1,0 +1,226 @@
+entry:
+  id: 410
+  title: split-array-largest-sum
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().splitArray({nums}, {k})"
+    rust: "Solution::split_array({nums}, {k})"
+    python3: "Solution().splitArray({nums}, {k})"
+    python2: "Solution().splitArray({nums}, {k})"
+    ruby: "split_array({nums}, {k})"
+    java: "new Solution().splitArray({nums}, {k})"
+    csharp: "new Solution().SplitArray({nums}, {k})"
+    kotlin: "Solution().splitArray({nums}, {k})"
+    go: "splitArray({nums}, {k})"
+    dart: "Solution().splitArray({nums}, {k})"
+    swift: "Solution().splitArray({nums}, {k})"
+    typescript: "splitArray({nums}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().splitArray(nums, k, {result})"
+    checker: |
+      class Checker:
+          def splitArray(self, nums, k, result):
+              if not isinstance(result, int):
+                  return False
+              low = max(nums)
+              high = sum(nums)
+              ans = high
+              while low <= high:
+                  mid = low + (high - low) // 2
+                  groups = 1
+                  curr = 0
+                  for num in nums:
+                      if curr + num > mid:
+                          groups += 1
+                          curr = num
+                      else:
+                          curr += num
+                  if groups <= k:
+                      ans = mid
+                      high = mid - 1
+                  else:
+                      low = mid + 1
+              return result == ans
+seed: 410
+tests:
+  - name: example-1
+    in:
+      nums: [7, 2, 5, 10, 8]
+      k: 2
+    out: 18
+  - name: example-2
+    in:
+      nums: [1, 2, 3, 4, 5]
+      k: 2
+    out: 9
+  - name: example-3
+    in:
+      nums: [1, 4, 4]
+      k: 3
+    out: 4
+  - name: single-element
+    in:
+      nums: [10]
+      k: 1
+    out: 10
+  - name: all-in-one
+    in:
+      nums: [5, 5, 5, 5]
+      k: 1
+    out: 20
+  - name: each-alone
+    in:
+      nums: [5, 5, 5, 5]
+      k: 4
+    out: 5
+  - name: small-1
+    in:
+      nums: [2, 3]
+      k: 1
+    out: 5
+  - name: small-2
+    in:
+      nums: [2, 3]
+      k: 2
+    out: 3
+  - name: increasing-1
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      k: 3
+  - name: increasing-2
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8]
+      k: 4
+  - name: all-zeroes
+    in:
+      nums: [0, 0, 0, 0, 0]
+      k: 2
+    out: 0
+  - name: zero-heavy
+    in:
+      nums: [0, 0, 10, 0, 0]
+      k: 3
+    out: 10
+  - name: balanced-halves
+    in:
+      nums: [4, 4, 4, 4, 4, 4]
+      k: 2
+  - name: balanced-thirds
+    in:
+      nums: [4, 4, 4, 4, 4, 4]
+      k: 3
+  - name: large-head
+    in:
+      nums: [100, 1, 1, 1, 1, 1]
+      k: 3
+    out: 100
+  - name: large-tail
+    in:
+      nums: [1, 1, 1, 1, 1, 100]
+      k: 3
+    out: 100
+  - name: middle-spike
+    in:
+      nums: [1, 1, 50, 1, 1]
+      k: 2
+  - name: k-near-n
+    in:
+      nums: [9, 8, 7, 6, 5]
+      k: 4
+  - name: many-small
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      k: 5
+  - name: alternating
+    in:
+      nums: [9, 1, 9, 1, 9, 1, 9, 1]
+      k: 4
+  - name: alternating-2
+    in:
+      nums: [1, 9, 1, 9, 1, 9, 1, 9]
+      k: 4
+  - name: monotone-large
+    in:
+      nums: [1000000, 1000000, 1000000, 1000000]
+      k: 2
+    out: 2000000
+  - name: monotone-large-3
+    in:
+      nums: [1000000, 1000000, 1000000, 1000000]
+      k: 3
+    out: 2000000
+  - name: exact-triples
+    in:
+      nums: [3, 3, 3, 3, 3, 3, 3, 3, 3]
+      k: 3
+    out: 9
+  - name: exact-triples-2
+    in:
+      nums: [2, 2, 2, 2, 2, 2, 2, 2]
+      k: 4
+    out: 4
+  - name: uneven-buckets
+    in:
+      nums: [7, 2, 5, 10, 8, 1, 1]
+      k: 3
+  - name: descending
+    in:
+      nums: [10, 9, 8, 7, 6, 5]
+      k: 2
+  - name: sparse-big
+    in:
+      nums: [1, 1, 1, 100, 1, 1, 1, 100, 1]
+      k: 3
+  - name: long-flat
+    in:
+      nums: [6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+      k: 5
+  - name: k-equals-length-minus-1
+    in:
+      nums: [8, 1, 7, 2, 6]
+      k: 4
+  - name: long-mix-1
+    in:
+      nums: [5, 1, 2, 7, 3, 4, 8, 6, 9]
+      k: 3
+  - name: long-mix-2
+    in:
+      nums: [9, 2, 5, 1, 7, 3, 8, 4, 6]
+      k: 5
+  - name: zero-and-big
+    in:
+      nums: [0, 1000000, 0, 1000000, 0, 1000000]
+      k: 3
+    out: 1000000
+  - name: prefix-heavy
+    in:
+      nums: [20, 1, 1, 1, 1, 1, 1, 1]
+      k: 2
+  - name: suffix-heavy
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 20]
+      k: 2
+  - name: twenty-ones
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      k: 6
+  - name: hundred-window
+    in:
+      nums: [100, 99, 98, 97, 96, 95, 94, 93, 92, 91]
+      k: 5
+  - name: thousand-like
+    in:
+      nums: [1000, 2000, 3000, 4000, 5000, 6000]
+      k: 2

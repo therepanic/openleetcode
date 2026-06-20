@@ -1,0 +1,40 @@
+from collections import deque
+
+class Solution(object):
+    def findLadders(self, beginWord, endWord, wordList):
+        depth = {beginWord: 1}
+        result = []
+        word_set = set(wordList)
+        queue = deque([beginWord])
+        word_set.discard(beginWord)
+        while queue:
+            word = queue.popleft()
+            steps = depth[word]
+            if word == endWord:
+                break
+            for i in xrange(len(word)):
+                original = word[i]
+                for code in xrange(ord('a'), ord('z') + 1):
+                    candidate = word[:i] + chr(code) + word[i + 1:]
+                    if candidate in word_set:
+                        queue.append(candidate)
+                        word_set.remove(candidate)
+                        depth[candidate] = steps + 1
+        if endWord not in depth:
+            return []
+        path = [endWord]
+        def dfs(word):
+            if word == beginWord:
+                result.append(path[::-1])
+                return
+            steps = depth[word]
+            for i in xrange(len(word)):
+                original = word[i]
+                for code in xrange(ord('a'), ord('z') + 1):
+                    candidate = word[:i] + chr(code) + word[i + 1:]
+                    if candidate in depth and depth[candidate] + 1 == steps:
+                        path.append(candidate)
+                        dfs(candidate)
+                        path.pop()
+        dfs(endWord)
+        return result

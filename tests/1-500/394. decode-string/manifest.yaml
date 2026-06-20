@@ -1,0 +1,310 @@
+entry:
+  id: 394
+  title: decode-string
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().decodeString({s})"
+    rust: "Solution::decodeString({s})"
+    python3: "Solution().decodeString({s})"
+    python2: "Solution().decodeString({s})"
+    ruby: "decodeString({s})"
+    java: "new Solution().decodeString({s})"
+    csharp: "new Solution().DecodeString({s})"
+    kotlin: "Solution().decodeString({s})"
+    go: "decodeString({s})"
+    dart: "Solution().decodeString({s})"
+    swift: "Solution().decodeString({s})"
+    typescript: "decodeString({s})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().decodeString(s, {result})"
+    checker: |
+      class Checker:
+          def decodeString(self, s, result):
+              i = 0
+
+              def decode():
+                  nonlocal i
+                  res = []
+                  num = 0
+                  while i < len(s):
+                      c = s[i]
+                      if c.isdigit():
+                          num = num * 10 + int(c)
+                          i += 1
+                      elif c == '[':
+                          i += 1
+                          inner = decode()
+                          res.append(inner * num)
+                          num = 0
+                      elif c == ']':
+                          i += 1
+                          return ''.join(res)
+                      else:
+                          res.append(c)
+                          i += 1
+                  return ''.join(res)
+
+              expected = decode()
+              return expected == result
+seed: 394
+tests:
+  - name: example_1
+    in:
+      s: 3[a]2[bc]
+    out: aaabcbc
+    judge:
+      type: exact
+    seed: 3941
+  - name: example_2
+    in:
+      s: 3[a2[c]]
+    out: accaccacc
+    judge:
+      type: exact
+    seed: 3942
+  - name: example_3
+    in:
+      s: 2[abc]3[cd]ef
+    out: abcabccdcdcdef
+    judge:
+      type: exact
+    seed: 3943
+  - name: plain_letters
+    in:
+      s: abcdef
+    out: abcdef
+    judge:
+      type: exact
+    seed: 3944
+  - name: single_repeat
+    in:
+      s: 1[a]
+    out: a
+    judge:
+      type: exact
+    seed: 3945
+  - name: multi_digit_repeat
+    in:
+      s: 10[a]
+    out: aaaaaaaaaa
+    judge:
+      type: exact
+    seed: 3946
+  - name: nested_simple
+    in:
+      s: 2[ab3[c]]
+    out: abcccabccc
+    judge:
+      type: exact
+    seed: 3947
+  - name: nested_with_suffix
+    in:
+      s: 2[abc]3[cd]efg
+    out: abcabccdcdcdefg
+    judge:
+      type: exact
+    seed: 3948
+  - name: deep_nesting
+    in:
+      s: 3[a2[b4[F]c]]
+    out: abFFFFcbFFFFcabFFFFcbFFFFcabFFFFcbFFFFc
+    judge:
+      type: exact
+    seed: 3949
+  - name: multiple_groups
+    in:
+      s: 2[a2[b]]3[c]
+    out: abbabbccc
+    judge:
+      type: exact
+    seed: 3950
+  - name: adjacent_literals
+    in:
+      s: x2[y]z
+    out: xyyz
+    judge:
+      type: exact
+    seed: 3951
+  - name: long_number_small_body
+    in:
+      s: 100[a]
+    out: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    judge:
+      type: exact
+    seed: 3952
+  - name: nested_multi_digit
+    in:
+      s: 12[a2[b]]
+    out: abbabbabbabbabbabbabbabbabbabbabbabb
+    judge:
+      type: exact
+    seed: 3953
+  - name: repeated_block_with_tail
+    in:
+      s: 3[xy]z
+    out: xyxyxyz
+    judge:
+      type: exact
+    seed: 3954
+  - name: braces_in_middle
+    in:
+      s: a2[b3[c]d]e
+    out: abcccdbcccde
+    judge:
+      type: exact
+    seed: 3955
+  - name: max_length_literal_prefix
+    in:
+      s: abcdefghijklmnopqrstuvwxyz
+    out: abcdefghijklmnopqrstuvwxyz
+    judge:
+      type: exact
+    seed: 3956
+  - name: max_length_with_small_repeat
+    in:
+      s: 2[abcdefghij]
+    out: abcdefghijabcdefghij
+    judge:
+      type: exact
+    seed: 3957
+  - name: nested_mixed_suffix
+    in:
+      s: 2[a3[b]c]d
+    out: abbbcabbbcd
+    judge:
+      type: exact
+    seed: 3958
+  - name: larger_repeat_two_digit
+    in:
+      s: 30[x]
+    out: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    judge:
+      type: exact
+    seed: 3959
+  - name: repeated_nested_tail
+    in:
+      s: 2[3[a]b]
+    out: aaabaaab
+    judge:
+      type: exact
+    seed: 3960
+  - name: single_char_tail
+    in:
+      s: 9[a]b
+    out: aaaaaaaaab
+    judge:
+      type: exact
+    seed: 3961
+  - name: mixed_plain_and_nested
+    in:
+      s: p2[q]r3[s]
+    out: pqqrsss
+    judge:
+      type: exact
+    seed: 3962
+  - name: nested_digit_chain
+    in:
+      s: 2[a2[b2[c]]]
+    out: abccbccabccbcc
+    judge:
+      type: exact
+    seed: 3963
+  - name: medium_repeat_with_letters
+    in:
+      s: 15[ab]
+    out: ababababababababababababababab
+    judge:
+      type: exact
+    seed: 3964
+  - name: prefix_suffix_repeat
+    in:
+      s: z3[x2[y]]w
+    out: zxyyxyyxyyw
+    judge:
+      type: exact
+    seed: 3965
+  - name: nested_empty_suffix_style
+    in:
+      s: 2[a]2[b]2[c]
+    out: aabbcc
+    judge:
+      type: exact
+    seed: 3966
+  - name: repeated_block_three_levels
+    in:
+      s: 2[a2[b2[c3[d]]]]
+    out: abcdddcdddbcdddcdddabcdddcdddbcdddcddd
+    judge:
+      type: exact
+    seed: 3967
+  - name: interleaved_literals
+    in:
+      s: a2[b]c2[d]e
+    out: abbcdde
+    judge:
+      type: exact
+    seed: 3968
+  - name: repeat_of_word
+    in:
+      s: 5[leetcode]
+    out: leetcodeleetcodeleetcodeleetcodeleetcode
+    judge:
+      type: exact
+    seed: 3969
+  - name: max_repeat_large_body
+    in:
+      s: 2[abcdefghijklmn]
+    out: abcdefghijklmnabcdefghijklmn
+    judge:
+      type: exact
+    seed: 3970
+  - name: repeated_nested_letters
+    in:
+      s: 4[a2[b3[c]]]
+    out: abcccbcccabcccbcccabcccbcccabcccbccc
+    judge:
+      type: exact
+    seed: 3971
+  - name: trailing_literal
+    in:
+      s: 3[a]xyz
+    out: aaaxyz
+    judge:
+      type: exact
+    seed: 3972
+  - name: leading_literal
+    in:
+      s: xyz3[a]
+    out: xyzaaa
+    judge:
+      type: exact
+    seed: 3973
+  - name: nested_with_two_digit_inner
+    in:
+      s: 2[a10[b]]
+    out: abbbbbbbbbbabbbbbbbbbb
+    judge:
+      type: exact
+    seed: 3974
+  - name: large_repeat_literal_pair
+    in:
+      s: 20[xy]
+    out: xyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxy
+    judge:
+      type: exact
+    seed: 3975
+  - name: mixed_depths
+    in:
+      s: 2[a3[b2[c]]d]
+    out: abccbccbccdabccbccbccd
+    judge:
+      type: exact
+    seed: 3976

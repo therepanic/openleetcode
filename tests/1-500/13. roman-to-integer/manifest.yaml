@@ -1,9 +1,12 @@
 entry:
   id: 13
   title: roman-to-integer
+  params:
+    s:
+      type: string
   call:
     cpp: Solution().romanToInt({s})
-    rust: Solution::roman_to_int(String::from({s}))
+    rust: Solution::roman_to_int({s})
     python3: Solution().romanToInt({s})
     python2: Solution().romanToInt({s})
     ruby: roman_to_int({s})
@@ -14,9 +17,6 @@ entry:
     dart: Solution().romanToInt({s})
     swift: Solution().romanToInt({s})
     typescript: romanToInt({s})
-  params:
-    s:
-      type: string
 judge:
   type: exact
 limits:
@@ -24,124 +24,180 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().check(s, {result})
-    checker:
-      "class Checker:\n    def check(self, s, result):\n        roman = {'I':\
-      \ 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n        res =\
-      \ 0\n        for i in range(len(s)):\n            if i + 1 < len(s) and roman[s[i]]\
-      \ < roman[s[i+1]]:\n                res -= roman[s[i]]\n            else:\n\
-      \                res += roman[s[i]]\n        return res == result\n"
-seed: 42
+    call: Checker().romanToInt(s, {result})
+    checker: |
+      class Checker:
+          def romanToInt(self, s, result):
+              roman = {
+                  "I": 1,
+                  "V": 5,
+                  "X": 10,
+                  "L": 50,
+                  "C": 100,
+                  "D": 500,
+                  "M": 1000,
+              }
+              if not isinstance(result, int):
+                  return False
+              if not (1 <= len(s) <= 15):
+                  return False
+              if any(ch not in roman for ch in s):
+                  return False
+              total = 0
+              for a, b in zip(s, s[1:]):
+                  if roman[a] < roman[b]:
+                      total -= roman[a]
+                  else:
+                      total += roman[a]
+              total += roman[s[-1]]
+              return 1 <= total <= 3999 and total == result
+seed: 13
 tests:
-  - name: minimal
-    in:
-      s: I
-    out: 1
-  - name: example1
+  - name: example_1
     in:
       s: III
     out: 3
-  - name: example2
+  - name: example_2
     in:
       s: LVIII
     out: 58
-  - name: example3
+  - name: example_3
     in:
       s: MCMXCIV
     out: 1994
-  - name: four
+  - name: single_i
     in:
-      s: IV
-    out: 4
-  - name: nine
+      s: I
+    out: 1
+  - name: single_v
     in:
-      s: IX
-    out: 9
-  - name: forty
+      s: V
+    out: 5
+  - name: single_x
     in:
-      s: XL
-    out: 40
-  - name: ninty
+      s: X
+    out: 10
+  - name: single_l
     in:
-      s: XC
-    out: 90
-  - name: fourhundred
+      s: L
+    out: 50
+  - name: single_c
     in:
-      s: CD
-    out: 400
-  - name: ninehundred
-    in:
-      s: CM
-    out: 900
-  - name: max_value
-    in:
-      s: MMMCMXCIX
-    out: 3999
-  - name: all_same_large
-    in:
-      s: MMM
-    out: 3000
-  - name: mixed_subtraction
-    in:
-      s: MCMXCI
-    out: 1991
-  - name: long_sequence
-    in:
-      s: DCCC
-    out: 800
-  - name: short_subtraction
-    in:
-      s: XLIV
-    out: 44
-  - name: complex_mix
-    in:
-      s: DCXXI
-    out: 621
-  - name: very_long_additive
-    in:
-      s: VIII
-    out: 8
-  - name: hundreds
-    in:
-      s: CCC
-    out: 300
-  - name: units
-    in:
-      s: VII
-    out: 7
-  - name: tens
-    in:
-      s: XXX
-    out: 30
-  - name: combined_mid
-    in:
-      s: CLXXVIII
-    out: 178
-  - name: large_mid
-    in:
-      s: MMDCCCLXXXVIII
-    out: 2888
-  - name: specific_boundary
+      s: C
+    out: 100
+  - name: single_d
     in:
       s: D
     out: 500
-  - name: specific_boundary_2
+  - name: single_m
+    in:
+      s: M
+    out: 1000
+  - name: additive_2
+    in:
+      s: II
+    out: 2
+  - name: additive_3
+    in:
+      s: VIII
+    out: 8
+  - name: additive_4
+    in:
+      s: XXX
+    out: 30
+  - name: subtractive_4
+    in:
+      s: IV
+    out: 4
+  - name: subtractive_9
+    in:
+      s: IX
+    out: 9
+  - name: subtractive_40
+    in:
+      s: XL
+    out: 40
+  - name: subtractive_90
+    in:
+      s: XC
+    out: 90
+  - name: subtractive_400
+    in:
+      s: CD
+    out: 400
+  - name: subtractive_900
+    in:
+      s: CM
+    out: 900
+  - name: mixed_1
+    in:
+      s: XLII
+    out: 42
+  - name: mixed_2
     in:
       s: XCIX
     out: 99
-  - name: specific_boundary_3
+  - name: mixed_3
     in:
       s: CDXLIV
     out: 444
-  - name: specific_boundary_4
+  - name: mixed_4
     in:
-      s: CMXCIX
-    out: 999
-  - name: max_digit_repeat
+      s: DCCVII
+    out: 707
+  - name: mixed_5
+    in:
+      s: MCMLXXXIV
+    out: 1984
+  - name: mixed_6
+    in:
+      s: MMXXIV
+    out: 2024
+  - name: mixed_7
     in:
       s: MMMDCCCLXXXVIII
     out: 3888
-  - name: almost_max
+  - name: upper_bound
     in:
-      s: MMMCMXC
-    out: 3990
+      s: MMMCMXCIX
+    out: 3999
+  - name: near_upper_1
+    in:
+      s: MMMCM
+    out: 3900
+  - name: near_upper_2
+    in:
+      s: MMMC
+    out: 3100
+  - name: near_upper_3
+    in:
+      s: MMMD
+    out: 3500
+  - name: near_upper_4
+    in:
+      s: MMMI
+    out: 3001
+  - name: boundary_repeat_1
+    in:
+      s: CCXL
+    out: 240
+  - name: boundary_repeat_2
+    in:
+      s: CD
+    out: 400
+  - name: boundary_repeat_3
+    in:
+      s: DCCC
+    out: 800
+  - name: boundary_repeat_4
+    in:
+      s: MM
+    out: 2000
+  - name: boundary_repeat_5
+    in:
+      s: LX
+    out: 60
+  - name: boundary_repeat_6
+    in:
+      s: XIV
+    out: 14

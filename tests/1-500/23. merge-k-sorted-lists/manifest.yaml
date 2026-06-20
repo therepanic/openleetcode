@@ -1,19 +1,6 @@
-"entry":
-  "id": 23
-  "title": "merge-k-sorted-lists"
-  "call":
-    "cpp": "([&](auto lists){ return listNodeToArray(Solution().mergeKLists(lists)); })(toLinkedLists({lists}))"
-    "rust": "ListNode::list_node_to_array(Solution::merge_k_lists(ListNode::to_list_nodes({lists})))"
-    "python3": "list_node_to_array(Solution().mergeKLists([to_list_node(l) for l in {lists}]))"
-    "python2": "list_node_to_array(Solution().mergeKLists([to_list_node(l) for l in {lists}]))"
-    "ruby": "list_node_to_array(merge_k_lists({lists}.map { |l| to_list_node(l) }))"
-    "java": "ListNode.listNodeToArray(new Solution().mergeKLists(ListNode.toListNodes({lists})))"
-    "csharp": "ListNode.ListNodeToArray(new Solution().MergeKLists(ListNode.ToListNodes({lists})))"
-    "kotlin": "listNodeToArray(Solution().mergeKLists(toLinkedLists({lists})))"
-    "go": "listNodeToArray(mergeKLists(toListNodes({lists})))"
-    "dart": "list_node_to_array(Solution().mergeKLists(to_list_nodes({lists})))"
-    "swift": "list_node_to_array(Solution().mergeKLists(to_list_nodes({lists})))"
-    "typescript": "listNodeToArray(mergeKLists(toListNodes({lists})))"
+entry:
+  id: 23
+  title: merge-k-sorted-lists
   params:
     lists:
       type: array
@@ -21,27 +8,43 @@
         type: array
         items:
           type: int
-"judge":
-  "type": "exact"
-"limits":
-  "time_ms": 2000
-  "memory_mb": 256
-"oracle":
-  "python3":
-    "call": "Checker().check([{lists}], {result})"
-    "checker":
-      "import json\nclass Checker:\n    def check(self, lists, result):\n\
-      \        try:\n            result = json.loads(result) if isinstance(result,\
-      \ str) else result\n        except Exception:\n            return False\n  \
-      \      expected = []\n        for l in lists:\n            expected.extend(l)\n\
-      \        expected.sort()\n        if isinstance(result, list) and len(result)\
-      \ == 1 and isinstance(result[0], list):\n            result = result[0]\n  \
-      \      return result == expected\n"
-"seed": 42
-"tests":
-  - "name": "Example 1"
-    "in":
-      "lists":
+  call:
+    cpp:
+      ([&](auto lists){ return listNodeToArray(Solution().mergeKLists(lists));
+      })(toLinkedLists({lists}))
+    rust: ListNode::list_node_to_array(Solution::merge_k_lists(ListNode::to_list_nodes({lists})))
+    python3: list_node_to_array(Solution().mergeKLists([to_list_node(l) for l in {lists}]))
+    python2: list_node_to_array(Solution().mergeKLists([to_list_node(l) for l in {lists}]))
+    ruby: list_node_to_array(merge_k_lists({lists}.map { |l| to_list_node(l) }))
+    java: ListNode.listNodeToArray(new Solution().mergeKLists(ListNode.toListNodes({lists})))
+    csharp: ListNode.ListNodeToArray(new Solution().MergeKLists(ListNode.ToListNodes({lists})))
+    kotlin: listNodeToArray(Solution().mergeKLists(toLinkedLists({lists})))
+    go: listNodeToArray(mergeKLists(toListNodes({lists})))
+    dart: list_node_to_array(Solution().mergeKLists(to_list_nodes({lists})))
+    swift: list_node_to_array(Solution().mergeKLists(to_list_nodes({lists})))
+    typescript: listNodeToArray(mergeKLists(toListNodes({lists})))
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(lists, {result})
+    checker:
+      "import json\n\nclass Checker:\n    def check(self, lists, result):\n\
+      \        expected = []\n        for values in lists:\n            if not isinstance(values,\
+      \ list):\n                return False\n            expected.extend(values)\n\
+      \        expected.sort()\n        try:\n            got = json.loads(result)\
+      \ if isinstance(result, str) else result\n        except Exception:\n      \
+      \      return False\n        if isinstance(got, list) and len(got) == 1 and\
+      \ isinstance(got[0], list):\n            got = got[0]\n        return got ==\
+      \ expected\n"
+seed: 23
+tests:
+  - name: example 1
+    in:
+      lists:
         - - 1
           - 4
           - 5
@@ -50,7 +53,7 @@
           - 4
         - - 2
           - 6
-    "out":
+    out:
       - 1
       - 1
       - 2
@@ -59,147 +62,694 @@
       - 4
       - 5
       - 6
-  - "name": "Example 2"
-    "in":
-      "lists": []
-    "out": []
-  - "name": "Example 3"
-    "in":
-      "lists":
+  - name: example 2
+    in:
+      lists: []
+    out: []
+  - name: example 3
+    in:
+      lists:
         - []
-    "out": []
-  - "name": "Single List"
-    "in":
-      "lists":
+    out: []
+  - name: single list
+    in:
+      lists:
         - - 1
           - 2
           - 3
-    "out":
+          - 4
+    out:
       - 1
       - 2
       - 3
-  - "name": "Multiple Empty"
-    "in":
-      "lists":
+      - 4
+  - name: all empty
+    in:
+      lists:
         - []
         - []
-    "out": []
-  - "name": "Negative Values"
-    "in":
-      "lists":
-        - - -5
-          - -2
-          - 0
+        - []
+    out: []
+  - name: one nonempty among empties
+    in:
+      lists:
+        - []
+        - - 7
+        - []
+        - []
+    out:
+      - 7
+  - name: two singletons
+    in:
+      lists:
+        - - 1
+        - - 2
+    out:
+      - 1
+      - 2
+  - name: duplicates across lists
+    in:
+      lists:
+        - - 1
+          - 1
+          - 1
+        - - 1
+          - 1
+        - - 1
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: negative values
+    in:
+      lists:
         - - -10
+          - -5
+          - 0
+        - - -8
           - -3
-    "out":
+          - 2
+        - - -9
+          - -4
+          - 1
+    out:
       - -10
+      - -9
+      - -8
       - -5
+      - -4
       - -3
-      - -2
       - 0
-  - "name": "Large Values"
-    "in":
-      "lists":
-        - - 9000
+      - 1
+      - 2
+  - name: mixed extremes
+    in:
+      lists:
+        - - -10000
+          - -5000
+          - 0
+        - - -9999
+          - 5000
           - 10000
-        - - 8000
-          - 9500
-    "out":
-      - 8000
-      - 9000
-      - 9500
+    out:
+      - -10000
+      - -9999
+      - -5000
+      - 0
+      - 5000
       - 10000
-  - "name": "Single Element Lists"
-    "in":
-      "lists":
+  - name: already sorted blocks
+    in:
+      lists:
         - - 1
+          - 4
+          - 7
+        - - 2
+          - 5
+          - 8
         - - 3
-        - - 2
-    "out":
-      - 1
-      - 2
-      - 3
-  - "name": "Interleaved Lists"
-    "in":
-      "lists":
-        - - 1
-          - 10
-          - 20
-        - - 2
-          - 11
-          - 21
-    "out":
-      - 1
-      - 2
-      - 10
-      - 11
-      - 20
-      - 21
-  - "name": "Max K, Min length"
-    "in":
-      "lists":
-        - - 1
-        - - 2
-        - - 3
-        - - 4
-        - - 5
-    "out":
+          - 6
+          - 9
+    out:
       - 1
       - 2
       - 3
       - 4
       - 5
-  - "name": "Duplicates across lists"
-    "in":
-      "lists":
+      - 6
+      - 7
+      - 8
+      - 9
+  - name: interleaved pairs
+    in:
+      lists:
         - - 1
+          - 10
+        - - 2
+          - 11
+        - - 3
+          - 12
+        - - 4
+          - 13
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 10
+      - 11
+      - 12
+      - 13
+  - name: many duplicates
+    in:
+      lists:
+        - - 2
+          - 2
           - 2
           - 2
         - - 2
           - 2
+          - 2
+        - - 2
+          - 2
+    out:
+      - 2
+      - 2
+      - 2
+      - 2
+      - 2
+      - 2
+      - 2
+      - 2
+      - 2
+  - name: ascending with gaps
+    in:
+      lists:
+        - - 0
+          - 100
+        - - 1
+          - 101
+        - - 2
+          - 102
+    out:
+      - 0
+      - 1
+      - 2
+      - 100
+      - 101
+      - 102
+  - name: singleton tails
+    in:
+      lists:
+        - - 5
+        - - 1
+          - 2
           - 3
-    "out":
+          - 4
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: singleton heads
+    in:
+      lists:
+        - - 1
+          - 2
+          - 3
+          - 4
+        - - 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: equal lengths
+    in:
+      lists:
+        - - 1
+          - 4
+          - 7
+          - 10
+        - - 2
+          - 5
+          - 8
+          - 11
+        - - 3
+          - 6
+          - 9
+          - 12
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+  - name: odd even merge
+    in:
+      lists:
+        - - 1
+          - 3
+          - 5
+          - 7
+          - 9
+        - - 0
+          - 2
+          - 4
+          - 6
+          - 8
+    out:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+  - name: repeated small lists
+    in:
+      lists:
+        - - 1
+          - 1
+        - - 1
+          - 1
+        - - 1
+          - 1
+        - - 1
+          - 1
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: sparse values
+    in:
+      lists:
+        - - -10000
+        - - 0
+        - - 10000
+    out:
+      - -10000
+      - 0
+      - 10000
+  - name: mixed empty lists
+    in:
+      lists:
+        - []
+        - - 3
+          - 4
+          - 5
+        - []
+        - - 1
+          - 2
+        - []
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: descending sources by position
+    in:
+      lists:
+        - - -6
+          - -3
+          - 0
+        - - -5
+          - -2
+          - 1
+        - - -4
+          - -1
+          - 2
+    out:
+      - -6
+      - -5
+      - -4
+      - -3
+      - -2
+      - -1
+      - 0
+      - 1
+      - 2
+  - name: boundary negatives
+    in:
+      lists:
+        - - -10000
+          - -10000
+        - - -10000
+    out:
+      - -10000
+      - -10000
+      - -10000
+  - name: boundary positives
+    in:
+      lists:
+        - - 10000
+        - - 10000
+          - 10000
+    out:
+      - 10000
+      - 10000
+      - 10000
+  - name: alternating duplicates
+    in:
+      lists:
+        - - 1
+          - 2
+          - 2
+          - 4
+        - - 2
+          - 2
+          - 3
+    out:
       - 1
       - 2
       - 2
       - 2
       - 2
       - 3
-  - "name": "Large size test 1"
-    "in":
-      "lists":
+      - 4
+  - name: three lists short
+    in:
+      lists:
         - - 1
-          - 3
-          - 5
-          - 7
-          - 9
-          - 11
-          - 13
-          - 15
-          - 17
-          - 19
-        - - 2
-          - 4
-          - 6
-          - 8
-          - 10
-          - 12
-          - 14
-          - 16
-          - 18
-          - 20
         - - 0
+        - - 2
+    out:
+      - 0
+      - 1
+      - 2
+  - name: five lists varied
+    in:
+      lists:
+        - - 1
+          - 5
+          - 9
+        - - 2
+        - - 3
+          - 4
+        - - 6
+          - 7
+          - 8
+        - - 10
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+  - name: six lists with empties
+    in:
+      lists:
+        - []
+        - - 1
+        - []
+        - - 2
+        - []
+        - - 3
+    out:
+      - 1
+      - 2
+      - 3
+  - name: seven singleton lists
+    in:
+      lists:
+        - - 7
+        - - 6
+        - - 5
+        - - 4
+        - - 3
+        - - 2
+        - - 1
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+  - name: generated large balanced 1
+    in:
+      lists:
+        - - -10
+          - -3
+          - 0
+          - 7
+        - - -9
+          - -2
+          - 3
+          - 8
+        - - -8
+          - -1
+          - 4
+          - 9
+        - - -7
+          - 2
+          - 5
+          - 10
+        - []
+        - - 1
+          - 6
+          - 11
+        - - -6
+          - -5
+          - 12
+        - - 13
+    out:
+      - -10
+      - -9
+      - -8
+      - -7
+      - -6
+      - -5
+      - -3
+      - -2
+      - -1
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+  - name: generated large balanced 2
+    in:
+      lists:
+        - - -20
+          - -10
+          - -5
+          - -1
+          - 0
+        - - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        - - 6
+          - 7
+          - 8
+          - 9
+          - 10
+        - - -15
+          - -14
+          - -13
+        - []
+        - - 11
+          - 12
+          - 13
+          - 14
+          - 15
+    out:
+      - -20
+      - -15
+      - -14
+      - -13
+      - -10
+      - -5
+      - -1
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+  - name: generated mixed 3
+    in:
+      lists:
+        - - -100
+        - - -50
+          - -40
+        - - -30
+          - -20
+          - -10
+        - []
+        - - 0
+          - 0
+          - 1
+          - 1
+        - - 2
+          - 3
+          - 4
+        - - 5
+    out:
+      - -100
+      - -50
+      - -40
+      - -30
+      - -20
+      - -10
+      - 0
+      - 0
+      - 1
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: generated mixed 4
+    in:
+      lists:
+        - - -9
+        - - -8
+        - - -7
+        - - -6
+        - - -5
+        - - -4
+        - - -3
+        - - -2
+        - - -1
+        - - 0
+        - - 1
+        - - 2
+    out:
+      - -9
+      - -8
+      - -7
+      - -6
+      - -5
+      - -4
+      - -3
+      - -2
+      - -1
+      - 0
+      - 1
+      - 2
+  - name: generated mixed 5
+    in:
+      lists:
+        - - -1000
+          - -500
+          - -100
+        - - -99
+          - -98
+          - -97
+          - -96
+        - - -95
+          - -94
+        - - -93
+        - - -92
+          - -91
+          - -90
+        - - -89
+          - -88
+          - -87
+          - -86
+          - -85
+        - - -84
+          - -83
+          - -82
+        - []
+    out:
+      - -1000
+      - -500
+      - -100
+      - -99
+      - -98
+      - -97
+      - -96
+      - -95
+      - -94
+      - -93
+      - -92
+      - -91
+      - -90
+      - -89
+      - -88
+      - -87
+      - -86
+      - -85
+      - -84
+      - -83
+      - -82
+  - name: generated balanced 6
+    in:
+      lists:
+        - - -100
+          - -50
+          - -25
+          - 0
+          - 25
+          - 50
+        - - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+        - - 8
+          - 9
+          - 10
+          - 11
+          - 12
+        - - 13
+          - 14
+          - 15
+          - 16
+        - - 17
+          - 18
+          - 19
+          - 20
+        - - 21
           - 22
-          - 24
-          - 26
+          - 23
+        - - 24
+          - 25
+        - - 26
+        - - 27
           - 28
+          - 29
           - 30
+        - - 31
           - 32
+          - 33
           - 34
-          - 36
-          - 100
-    "out":
+    out:
+      - -100
+      - -50
+      - -25
       - 0
       - 1
       - 2
@@ -221,251 +771,19 @@
       - 18
       - 19
       - 20
+      - 21
       - 22
+      - 23
       - 24
-      - 26
-      - 28
-      - 30
-      - 32
-      - 34
-      - 36
-      - 100
-  - "name": "Large size test 2"
-    "in":
-      "lists":
-        - - 10
-          - 20
-          - 30
-          - 40
-        - - 5
-          - 15
-          - 25
-          - 35
-        - - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          - 7
-          - 8
-          - 9
-          - 1000
-        - - 0
-          - 100
-          - 200
-          - 300
-    "out":
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 5
-      - 6
-      - 7
-      - 8
-      - 9
-      - 10
-      - 15
-      - 20
       - 25
+      - 25
+      - 26
+      - 27
+      - 28
+      - 29
       - 30
-      - 35
-      - 40
-      - 100
-      - 200
-      - 300
-      - 1000
-  - "name": "Boundary K=1"
-    "in":
-      "lists":
-        - - 1
-          - 2
-          - 3
-          - 4
-          - 5
-    "out":
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-  - "name": "All zeros"
-    "in":
-      "lists":
-        - - 0
-          - 0
-        - - 0
-          - 0
-          - 0
-    "out":
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-  - "name": "Mixed Lengths"
-    "in":
-      "lists":
-        - - 1
-        - - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          - 7
-        - []
-        - - 10
-    "out":
-      - 1
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 10
-  - "name": "Decreasing lists"
-    "in":
-      "lists":
-        - - 1
-          - 2
-        - - 3
-          - 4
-    "out":
-      - 1
-      - 2
-      - 3
-      - 4
-  - "name": "Descending values"
-    "in":
-      "lists":
-        - - -10
-          - -5
-        - - -8
-          - -2
-    "out":
-      - -10
-      - -8
-      - -5
-      - -2
-  - "name": "Max constraint check"
-    "in":
-      "lists":
-        - - 1
-          - 10000
-        - - 2
-          - 9999
-        - - 3
-          - 9998
-    "out":
-      - 1
-      - 2
-      - 3
-      - 9998
-      - 9999
-      - 10000
-  - "name": "Zig zag values"
-    "in":
-      "lists":
-        - - 1
-          - 5
-          - 9
-        - - 2
-          - 6
-          - 10
-        - - 3
-          - 7
-          - 11
-        - - 4
-          - 8
-          - 12
-    "out":
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 9
-      - 10
-      - 11
-      - 12
-  - "name": "Sparse lists"
-    "in":
-      "lists":
-        - - 1
-          - 100
-        - - 2
-          - 200
-    "out":
-      - 1
-      - 2
-      - 100
-      - 200
-  - "name": "Many small lists"
-    "in":
-      "lists":
-        - - 1
-        - - 2
-        - - 3
-        - - 4
-        - - 5
-        - - 6
-        - - 7
-    "out":
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-  - "name": "Negative to Positive"
-    "in":
-      "lists":
-        - - -5
-          - -1
-          - 4
-        - - -3
-          - 0
-          - 5
-    "out":
-      - -5
-      - -3
-      - -1
-      - 0
-      - 4
-      - 5
-  - "name": "Empty and full"
-    "in":
-      "lists":
-        - []
-        - - 1
-          - 2
-          - 3
-        - []
-    "out":
-      - 1
-      - 2
-      - 3
-  - "name": "Single List Multiple Elements"
-    "in":
-      "lists":
-        - - 10
-          - 20
-          - 30
-          - 40
-          - 50
-    "out":
-      - 10
-      - 20
-      - 30
-      - 40
+      - 31
+      - 32
+      - 33
+      - 34
       - 50

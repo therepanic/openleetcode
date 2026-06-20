@@ -1,0 +1,346 @@
+entry:
+  id: 407
+  title: trapping-rain-water-ii
+  params:
+    heightMap:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().trapRainWater({heightMap})"
+    rust: "Solution::trap_rain_water({heightMap})"
+    python3: "Solution().trapRainWater({heightMap})"
+    python2: "Solution().trapRainWater({heightMap})"
+    ruby: "trap_rain_water({heightMap})"
+    java: "new Solution().trapRainWater({heightMap})"
+    csharp: "new Solution().TrapRainWater({heightMap})"
+    kotlin: "Solution().trapRainWater({heightMap})"
+    go: "trapRainWater({heightMap})"
+    dart: "Solution().trapRainWater({heightMap})"
+    swift: "Solution().trapRainWater({heightMap})"
+    typescript: "trapRainWater({heightMap})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().trapRainWater(heightMap, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def trapRainWater(self, heightMap, result):
+              if not isinstance(result, int):
+                  return False
+              if not heightMap or not heightMap[0]:
+                  return result == 0
+              m = len(heightMap)
+              n = len(heightMap[0])
+              if any(len(row) != n for row in heightMap):
+                  return False
+              if m < 3 or n < 3:
+                  return result == 0
+              visited = [[False] * n for _ in range(m)]
+              heap = []
+              for i in range(m):
+                  heapq.heappush(heap, (heightMap[i][0], i, 0))
+                  heapq.heappush(heap, (heightMap[i][n - 1], i, n - 1))
+                  visited[i][0] = True
+                  visited[i][n - 1] = True
+              for j in range(n):
+                  if not visited[0][j]:
+                      heapq.heappush(heap, (heightMap[0][j], 0, j))
+                      visited[0][j] = True
+                  if not visited[m - 1][j]:
+                      heapq.heappush(heap, (heightMap[m - 1][j], m - 1, j))
+                      visited[m - 1][j] = True
+              total = 0
+              dirs = ((1, 0), (-1, 0), (0, 1), (0, -1))
+              while heap:
+                  height, x, y = heapq.heappop(heap)
+                  for dx, dy in dirs:
+                      nx, ny = x + dx, y + dy
+                      if 0 <= nx < m and 0 <= ny < n and not visited[nx][ny]:
+                          visited[nx][ny] = True
+                          nh = heightMap[nx][ny]
+                          if nh < height:
+                              total += height - nh
+                          heapq.heappush(heap, (max(height, nh), nx, ny))
+              return result == total
+seed: 407
+tests:
+  - name: example-1
+    in:
+      heightMap:
+        - [1, 4, 3, 1, 3, 2]
+        - [3, 2, 1, 3, 2, 4]
+        - [2, 3, 3, 2, 3, 1]
+    out: 4
+  - name: example-2
+    in:
+      heightMap:
+        - [3, 3, 3, 3, 3]
+        - [3, 2, 2, 2, 3]
+        - [3, 2, 1, 2, 3]
+        - [3, 2, 2, 2, 3]
+        - [3, 3, 3, 3, 3]
+    out: 10
+  - name: single-cell
+    in:
+      heightMap:
+        - [7]
+    out: 0
+  - name: one-row
+    in:
+      heightMap:
+        - [5, 1, 3, 2, 4]
+    out: 0
+  - name: one-column
+    in:
+      heightMap:
+        - [5]
+        - [1]
+        - [3]
+        - [2]
+        - [4]
+    out: 0
+  - name: tiny-square
+    in:
+      heightMap:
+        - [1, 2]
+        - [3, 4]
+    out: 0
+  - name: center-bowl
+    in:
+      heightMap:
+        - [5, 5, 5]
+        - [5, 1, 5]
+        - [5, 5, 5]
+    out: 4
+  - name: flat-plateau
+    in:
+      heightMap:
+        - [2, 2, 2, 2]
+        - [2, 2, 2, 2]
+        - [2, 2, 2, 2]
+        - [2, 2, 2, 2]
+    out: 0
+  - name: double-pit
+    in:
+      heightMap:
+        - [5, 5, 5, 5]
+        - [5, 1, 2, 5]
+        - [5, 2, 1, 5]
+        - [5, 5, 5, 5]
+  - name: low-center
+    in:
+      heightMap:
+        - [3, 3, 3]
+        - [3, 0, 3]
+        - [3, 3, 3]
+  - name: wide-basin
+    in:
+      heightMap:
+        - [8, 8, 8, 8, 8, 8]
+        - [8, 1, 7, 7, 1, 8]
+        - [8, 1, 7, 0, 1, 8]
+        - [8, 8, 8, 8, 8, 8]
+  - name: ridge
+    in:
+      heightMap:
+        - [6, 6, 6, 6]
+        - [6, 5, 4, 6]
+        - [6, 4, 5, 6]
+        - [6, 6, 6, 6]
+  - name: plateau-hole
+    in:
+      heightMap:
+        - [2, 2, 2, 2]
+        - [2, 1, 1, 2]
+        - [2, 1, 1, 2]
+        - [2, 2, 2, 2]
+  - name: stepped-valley
+    in:
+      heightMap:
+        - [10, 10, 10, 10, 10]
+        - [10, 9, 8, 7, 10]
+        - [10, 1, 2, 3, 10]
+        - [10, 10, 10, 10, 10]
+  - name: deep-basin
+    in:
+      heightMap:
+        - [7, 7, 7, 7, 7]
+        - [7, 0, 0, 0, 7]
+        - [7, 0, 5, 0, 7]
+        - [7, 0, 0, 0, 7]
+        - [7, 7, 7, 7, 7]
+  - name: asymmetric-1
+    in:
+      heightMap:
+        - [6, 6, 6, 6, 6]
+        - [6, 2, 3, 2, 6]
+        - [6, 3, 1, 3, 6]
+        - [6, 6, 6, 6, 6]
+  - name: asymmetric-2
+    in:
+      heightMap:
+        - [5, 5, 5, 5, 5]
+        - [5, 4, 1, 4, 5]
+        - [5, 1, 0, 1, 5]
+        - [5, 4, 1, 4, 5]
+        - [5, 5, 5, 5, 5]
+  - name: inner-zero-ring
+    in:
+      heightMap:
+        - [8, 8, 8, 8]
+        - [8, 0, 0, 8]
+        - [8, 0, 0, 8]
+        - [8, 8, 8, 8]
+  - name: checkerboard-low
+    in:
+      heightMap:
+        - [9, 9, 9, 9, 9]
+        - [9, 1, 9, 1, 9]
+        - [9, 9, 1, 9, 9]
+        - [9, 1, 9, 1, 9]
+        - [9, 9, 9, 9, 9]
+  - name: increasing-grid
+    in:
+      heightMap:
+        - [1, 2, 3, 4]
+        - [2, 3, 4, 5]
+        - [3, 4, 5, 6]
+        - [4, 5, 6, 7]
+    out: 0
+  - name: decreasing-grid
+    in:
+      heightMap:
+        - [7, 6, 5, 4]
+        - [6, 5, 4, 3]
+        - [5, 4, 3, 2]
+        - [4, 3, 2, 1]
+    out: 0
+  - name: border-drain
+    in:
+      heightMap:
+        - [5, 5, 5, 1]
+        - [5, 1, 1, 1]
+        - [5, 1, 5, 1]
+        - [5, 2, 5, 8]
+    out: 0
+  - name: rectangular-1
+    in:
+      heightMap:
+        - [4, 4, 4, 4, 4]
+        - [4, 1, 2, 1, 4]
+        - [4, 2, 0, 2, 4]
+        - [4, 4, 4, 4, 4]
+  - name: rectangular-2
+    in:
+      heightMap:
+        - [9, 9, 9, 9, 9, 9, 9]
+        - [9, 2, 2, 2, 2, 2, 9]
+        - [9, 2, 1, 1, 1, 2, 9]
+        - [9, 2, 2, 2, 2, 2, 9]
+        - [9, 9, 9, 9, 9, 9, 9]
+  - name: no-water-zigzag
+    in:
+      heightMap:
+        - [1, 3, 1, 3, 1]
+        - [3, 1, 3, 1, 3]
+        - [1, 3, 1, 3, 1]
+    out: 4
+  - name: sparse-lake
+    in:
+      heightMap:
+        - [12, 12, 12, 12, 12]
+        - [12, 11, 12, 11, 12]
+        - [12, 12, 1, 12, 12]
+        - [12, 11, 12, 11, 12]
+        - [12, 12, 12, 12, 12]
+  - name: wide-zero-corridor
+    in:
+      heightMap:
+        - [6, 6, 6, 6, 6, 6]
+        - [6, 0, 0, 0, 0, 6]
+        - [6, 6, 6, 6, 6, 6]
+  - name: big-flat-border
+    in:
+      heightMap:
+        - [20, 20, 20, 20, 20]
+        - [20, 5, 5, 5, 20]
+        - [20, 5, 5, 5, 20]
+        - [20, 5, 5, 5, 20]
+        - [20, 20, 20, 20, 20]
+  - name: max-small-values
+    in:
+      heightMap:
+        - [20000, 20000, 20000]
+        - [20000, 0, 20000]
+        - [20000, 20000, 20000]
+  - name: moat-5x6
+    in:
+      heightMap:
+        - [9, 9, 9, 9, 9, 9]
+        - [9, 0, 0, 0, 0, 9]
+        - [9, 0, 9, 9, 0, 9]
+        - [9, 0, 0, 0, 0, 9]
+        - [9, 9, 9, 9, 9, 9]
+  - name: symmetric-well
+    in:
+      heightMap:
+        - [7, 7, 7, 7, 7]
+        - [7, 6, 5, 6, 7]
+        - [7, 5, 1, 5, 7]
+        - [7, 6, 5, 6, 7]
+        - [7, 7, 7, 7, 7]
+  - name: sparse-rect-1
+    in:
+      heightMap:
+        - [10, 10, 10, 10]
+        - [10, 2, 8, 10]
+        - [10, 8, 2, 10]
+        - [10, 10, 10, 10]
+  - name: sparse-rect-2
+    in:
+      heightMap:
+        - [15, 15, 15, 15, 15]
+        - [15, 3, 14, 3, 15]
+        - [15, 14, 0, 14, 15]
+        - [15, 3, 14, 3, 15]
+        - [15, 15, 15, 15, 15]
+  - name: donut-wall
+    in:
+      heightMap:
+        - [11, 11, 11, 11, 11, 11]
+        - [11, 1, 1, 1, 1, 11]
+        - [11, 1, 11, 11, 1, 11]
+        - [11, 1, 11, 11, 1, 11]
+        - [11, 1, 1, 1, 1, 11]
+        - [11, 11, 11, 11, 11, 11]
+  - name: center-plateau-zero-edge
+    in:
+      heightMap:
+        - [4, 4, 4, 4, 4]
+        - [4, 2, 2, 2, 4]
+        - [4, 2, 0, 2, 4]
+        - [4, 2, 2, 2, 4]
+        - [4, 4, 4, 4, 4]
+  - name: minimal-trap-rectangle
+    in:
+      heightMap:
+        - [3, 3, 3, 3]
+        - [3, 2, 2, 3]
+        - [3, 3, 3, 3]
+  - name: mixed-walls
+    in:
+      heightMap:
+        - [5, 6, 5, 6, 5]
+        - [6, 1, 2, 1, 6]
+        - [5, 2, 0, 2, 5]
+        - [6, 1, 2, 1, 6]
+        - [5, 6, 5, 6, 5]
