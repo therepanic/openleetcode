@@ -1,0 +1,69 @@
+name: update problems counter
+
+on:
+  workflow_run:
+    workflows:
+      - ci
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-problems-counter
+
+jobs:
+  update:
+    name: update problems counter
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main'
+      )
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Count problems
+        id: count
+        shell: bash
+        run: |
+          set -euo pipefail
+          count="$(find tests -name manifest.yaml | wc -l | tr -d ' ')"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Update counter JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .badges/problems.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "problems",
+            "message": "${{ steps.count.outputs.count }}",
+            "color": "FFA116"
+          }
+          EOF
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet .badges/problems.json; then
+            echo "Problems counter is already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .badges/problems.json
+          git commit -m "update problems counter"
+          git push
