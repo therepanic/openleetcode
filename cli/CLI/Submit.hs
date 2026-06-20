@@ -431,4 +431,4 @@ failSubmitStep (Just checklist) failure = do
   pure (Left failure)
 
 batchTimeoutMs :: Int
-batchTimeoutMs = 50000
+batchTimeoutMs = 20000
