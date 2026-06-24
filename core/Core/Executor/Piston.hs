@@ -110,10 +110,10 @@ instance E.CodeExecutor PistonExecutor where
               if T.null (pistonResponseStderr run)
                 then case pistonResponseStatus run of
                   OK -> E.ExecSuc {E.stdout = pistonResponseStdout run}
-                  TLE -> E.ExecFail {E.status = E.TLE, E.stderr = handleExceptionStderrEdgeCase run}
-                  RE -> E.ExecFail {E.status = E.RE, E.stderr = handleExceptionStderrEdgeCase run}
-                  Unknown m -> E.ExecFail {E.status = E.Unknown m, E.stderr = handleExceptionStderrEdgeCase run}
-                else E.ExecFail {E.status = E.RE, E.stderr = handleExceptionStderrEdgeCase run}
+                  TLE -> E.ExecFail {E.status = E.TLE, E.stderr = handleExceptionStderrEdgeCase run, E.stdout = pistonResponseStdout run}
+                  RE -> E.ExecFail {E.status = E.RE, E.stderr = handleExceptionStderrEdgeCase run, E.stdout = pistonResponseStdout run}
+                  Unknown m -> E.ExecFail {E.status = E.Unknown m, E.stderr = handleExceptionStderrEdgeCase run, E.stdout = pistonResponseStdout run}
+                else E.ExecFail {E.status = E.RE, E.stderr = handleExceptionStderrEdgeCase run, E.stdout = pistonResponseStdout run}
             Nothing -> error "Piston response does not contain run field"
       Nothing -> fail ("There is no " ++ show (E.language request) ++ " language")
 

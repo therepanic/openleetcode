@@ -64,10 +64,11 @@ runSuiteWithProgress ::
   IO [(Int, TestResult)]
 runSuiteWithProgress exec gen batch suite onProgress = do
   let preparedCases = zipWith (prepareCase gen batch (Types.tsSeed suite) suite) [1 ..] (Types.tsCases suite)
-  mainOutputsOrExc <- try (runMainBatch exec batch suite preparedCases) :: IO (Either SomeException (M.Map Int MainCaseOutput))
+  mainOutputsOrExc <- try (runMainBatch exec batch suite preparedCases) :: IO (Either SomeException (Either (Int, TestResult) (M.Map Int MainCaseOutput)))
   case mainOutputsOrExc of
     Left exc -> pure [(1, Internal (T.pack (displayException exc)))]
-    Right mainOutputs -> do
+    Right (Left failed) -> pure [failed]
+    Right (Right mainOutputs) -> do
       oracleOutputsOrExc <- try (runOracleBatch exec gen batch suite preparedCases mainOutputs) :: IO (Either SomeException (M.Map Int Bool))
       let oracleOutputs = fromRight M.empty oracleOutputsOrExc
       let oracleFailure = either (Just . T.pack . displayException) (const Nothing) oracleOutputsOrExc
@@ -156,7 +157,7 @@ runMainBatch ::
   SolutionBatch ->
   Types.TestSuite ->
   [PreparedCase] ->
-  IO (M.Map Int MainCaseOutput)
+  IO (Either (Int, TestResult) (M.Map Int MainCaseOutput))
 runMainBatch exec batch suite cases = do
   response <-
     C.execute
@@ -169,9 +170,19 @@ runMainBatch exec batch suite cases = do
             C.runMemoryLimit = Just (Types.tlMemoryMb (Types.tsLimits suite))
           }
       )
+  let inferFailedCaseIndex stdoutText =
+        let sections = parseSections marker (map pcIdx cases) stdoutText
+         in min (length cases) (M.size sections + 1)
+      inferMainBatchFailure idx status err stdout =
+        let out = T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines stdout))
+         in case status of
+              C.TLE -> (idx, TLE out)
+              C.RE -> (idx, RE (T.strip err) out)
+              C.Unknown _ -> (idx, Internal (renderExecError status err))
   case response of
-    C.ExecFail err s -> fail (T.unpack (renderExecError s err))
-    C.ExecSuc stdoutText -> parseMainBatchOutput cases stdoutText
+    C.ExecFail err stdout s ->
+      pure (Left (inferMainBatchFailure (inferFailedCaseIndex stdout) s err stdout))
+    C.ExecSuc stdoutText -> Right <$> parseMainBatchOutput cases stdoutText
 
 runOracleBatch ::
   (C.CodeExecutor e, Generator g) =>
@@ -200,7 +211,7 @@ runOracleBatch exec _ batch suite cases mainOutputs =
               }
           )
       case response of
-        C.ExecFail err s -> fail (T.unpack ("Oracle execution error: " <> renderExecError s err))
+        C.ExecFail err _ s -> fail (T.unpack ("Oracle execution error: " <> renderExecError s err))
         C.ExecSuc stdoutText -> parseOracleBatchOutput oracleCases stdoutText
   where
     oracleCases = filter (\pc -> case pcExpected pc of Just _ -> False; Nothing -> True) cases
@@ -215,14 +226,14 @@ evaluateCase ::
 evaluateCase timeLimit oracleFailure oracleOutputs mainOutputs pc =
   let out = fromJust (M.lookup (pcIdx pc) mainOutputs)
    in if mcoTimeMs out > timeLimit
-        then pure (pcIdx pc, TLE (mcoStdout out))
+        then pure (pcIdx pc, TLE (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out)))))
         else case pcExpected pc of
           Just expected ->
             let res = judge (pcJudge pc) expected (mcoResult out)
              in pure $
                   case res of
                     J.Pass -> (pcIdx pc, Pass (mcoTimeMs out))
-                    J.Fail _ -> (pcIdx pc, WA (Just expected) (mcoResult out) (mcoStdout out))
+                    J.Fail _ -> (pcIdx pc, WA (Just expected) (mcoResult out) (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out)))))
           Nothing ->
             case oracleFailure of
               Just msg -> pure (pcIdx pc, Internal msg)
@@ -231,7 +242,7 @@ evaluateCase timeLimit oracleFailure oracleOutputs mainOutputs pc =
                     then
                       pure (pcIdx pc, Pass (mcoTimeMs out))
                     else
-                      pure (pcIdx pc, WA Nothing (mcoResult out) (mcoStdout out))
+                      pure (pcIdx pc, WA Nothing (mcoResult out) (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out)))))
                 )
 
 buildMainProgram :: SolutionBatch -> [PreparedCase] -> Text
@@ -465,7 +476,7 @@ parseBatchOutputs ::
   (Int -> Text -> IO a) ->
   IO (M.Map Int a)
 parseBatchOutputs markerBuilder cases stdoutText parseSection = do
-  sections <- parseSections markerBuilder (map pcIdx cases) stdoutText
+  let sections = parseSections markerBuilder (map pcIdx cases) stdoutText
   M.fromList
     <$> mapM
       ( \pc -> do
@@ -474,13 +485,13 @@ parseBatchOutputs markerBuilder cases stdoutText parseSection = do
       )
       cases
 
-parseSections :: (Int -> Text) -> [Int] -> Text -> IO (M.Map Int Text)
+parseSections :: (Int -> Text) -> [Int] -> Text -> M.Map Int Text
 parseSections markerBuilder indices stdoutText = go (T.lines stdoutText) Nothing [] M.empty
   where
     markerMap = M.fromList [(markerBuilder idx, idx) | idx <- indices]
     flushSection Nothing _ acc = acc
     flushSection (Just idx) revLines acc = M.insert idx (T.unlines (reverse revLines)) acc
-    go [] current revLines acc = pure (flushSection current revLines acc)
+    go [] current revLines acc = flushSection current revLines acc
     go (line : rest) current revLines acc =
       case M.lookup line markerMap of
         Just idx ->
