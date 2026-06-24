@@ -336,14 +336,14 @@ renderVerdict ui idx verdict = case verdict of
     if T.null out
       then pure ()
       else do
-        emitVerdictDetail ui "wa" "  Logs:"
+        emitVerdictDetail ui "wa" "  Stdout:"
         emitVerdictDetail ui "wa" (T.unpack out)
   TLE out -> do
     renderVerdictHeader ui "tle" ("Time limit exceeded on test #" ++ show idx)
     if T.null out
       then pure ()
       else do
-        emitVerdictDetail ui "tle" "  Logs before time limit:"
+        emitVerdictDetail ui "tle" "  Stdout:"
         emitVerdictDetail ui "tle" (T.unpack out)
   RE err out -> do
     renderVerdictHeader ui "re" ("Runtime error on test #" ++ show idx)
@@ -351,7 +351,7 @@ renderVerdict ui idx verdict = case verdict of
     if T.null out
       then pure ()
       else do
-        emitVerdictDetail ui "re" "  Logs:"
+        emitVerdictDetail ui "re" "  Stdout:"
         emitVerdictDetail ui "re" (T.unpack out)
   Internal msg -> do
     renderErrorHeader ui "submit" ("Judge internal error on test #" ++ show idx)
