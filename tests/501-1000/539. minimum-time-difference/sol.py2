@@ -1,0 +1,12 @@
+class Solution(object):
+    def findMinDifference(self, timePoints):
+        def convert(time):
+            h, m = map(int, time.split(':'))
+            return h * 60 + m
+
+        times = sorted([convert(t) for t in timePoints])
+        min_diff = float('inf')
+        for i in range(1, len(times)):
+            min_diff = min(min_diff, times[i] - times[i - 1])
+        min_diff = min(min_diff, 1440 + times[0] - times[-1])
+        return min_diff

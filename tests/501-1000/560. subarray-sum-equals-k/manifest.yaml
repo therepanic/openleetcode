@@ -1,0 +1,343 @@
+entry:
+  id: 560
+  title: "subarray-sum-equals-k"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().subarraySum({nums}, {k})"
+    rust: "Solution::subarray_sum({nums}, {k})"
+    python3: "Solution().subarraySum({nums}, {k})"
+    python2: "Solution().subarraySum({nums}, {k})"
+    ruby: "subarray_sum({nums}, {k})"
+    java: "new Solution().subarraySum({nums}, {k})"
+    csharp: "new Solution().SubarraySum({nums}, {k})"
+    kotlin: "Solution().subarraySum({nums}, {k})"
+    go: "subarraySum({nums}, {k})"
+    dart: "Solution().subarraySum({nums}, {k})"
+    swift: "Solution().subarraySum({nums}, {k})"
+    typescript: "subarraySum({nums}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 400
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().subarraySum(nums, k, {result})"
+    checker: |
+      from typing import Any, List
+
+      class Checker:
+          def subarraySum(self, nums: List[int], k: int, result: Any) -> bool:
+              if isinstance(result, bool) or not isinstance(result, int):
+                  return False
+              seen = {0: 1}
+              total = 0
+              expected = 0
+              for num in nums:
+                  total += num
+                  expected += seen.get(total - k, 0)
+                  seen[total] = seen.get(total, 0) + 1
+              return result == expected
+
+seed: 560
+
+tests:
+  - name: "example1"
+    in:
+      nums: [1, 1, 1]
+      k: 2
+    out: 2
+
+  - name: "example2"
+    in:
+      nums: [1, 2, 3]
+      k: 3
+    out: 2
+
+  - name: "single_match"
+    in:
+      nums: [5]
+      k: 5
+    out: 1
+
+  - name: "single_miss"
+    in:
+      nums: [5]
+      k: 0
+    out: 0
+
+  - name: "two_cancel"
+    in:
+      nums: [1, -1]
+      k: 0
+    out: 1
+
+  - name: "two_same_values"
+    in:
+      nums: [2, 2]
+      k: 4
+    out: 1
+
+  - name: "zeros_short"
+    in:
+      nums: [0, 0, 0]
+      k: 0
+    out: 6
+
+  - name: "zeros_nonzero_target"
+    in:
+      nums: [0, 0, 0]
+      k: 1
+    out: 0
+
+  - name: "mixed_with_zero"
+    in:
+      nums: [1, -1, 0]
+      k: 0
+    out: 3
+
+  - name: "standard_prefix_sum_case"
+    in:
+      nums: [3, 4, 7, 2, -3, 1, 4, 2]
+      k: 7
+    out: 4
+
+  - name: "negative_positive_mix_zero_target"
+    in:
+      nums: [-1, -1, 1]
+      k: 0
+    out: 1
+
+  - name: "all_negatives"
+    in:
+      nums: [-1, -1, -1]
+      k: -2
+    out: 2
+
+  - name: "alternating_short"
+    in:
+      nums: [1, -1, 1, -1, 1]
+      k: 1
+    out: 6
+
+  - name: "target_far_outside_range"
+    in:
+      nums: [1000, -1000, 1000]
+      k: 10000000
+    out: 0
+
+  - name: "prefix_repeat"
+    in:
+      nums: [1, 2, 1, 2, 1]
+      k: 3
+    out: 4
+
+  - name: "mixed_duplicates_zero_target"
+    in:
+      nums: [2, -2, 2, -2]
+      k: 0
+    out: 4
+
+  - name: "positive_no_zero_sum"
+    in:
+      nums: [1, 2, 3]
+      k: 0
+    out: 0
+
+  - name: "full_array_and_leaf_match"
+    in:
+      nums: [4, -1, -3, 5]
+      k: 5
+    out: 2
+
+  - name: "many_overlaps_with_zeros"
+    in:
+      nums: [1, 0, 1, 0, 1]
+      k: 2
+    out: 4
+
+  - name: "classic_negative_positive"
+    in:
+      nums: [10, 2, -2, -20, 10]
+      k: -10
+    out: 3
+
+  - name: "repeated_ones"
+    in:
+      nums: [1, 1, 1, 1]
+      k: 2
+    out: 3
+
+  - name: "repeated_negatives"
+    in:
+      nums: [-1, -1, -1, -1]
+      k: -1
+    out: 4
+
+  - name: "large_magnitude_exact"
+    in:
+      nums: [1000, 1000, 1000, 1000, 1000]
+      k: 2000
+    out: 4
+
+  - name: "large_magnitude_mixed_zero_target"
+    in:
+      nums: [1000, -1000, 1000, -1000, 1000]
+      k: 0
+    out: 6
+
+  - name: "two_elements_extreme_unreachable"
+    in:
+      nums: [-1000, 1000]
+      k: 9999999
+    out: 0
+
+  - name: "long_zero_block_around_one"
+    in:
+      nums: [0, 0, 1, 0, 0]
+      k: 0
+    out: 6
+
+  - name: "nested_overlaps"
+    in:
+      nums: [2, 1, -1, 2, 3, -2, 2]
+      k: 3
+    out: 5
+
+  - name: "edge_sum_end"
+    in:
+      nums: [-2, -1, 2, 1]
+      k: 1
+    out: 2
+
+  - name: "edge_sum_start"
+    in:
+      nums: [5, -5, 5]
+      k: 5
+    out: 3
+
+  - name: "dense_prefix_collisions"
+    in:
+      nums: [1, -1, 1, -1, 1, -1]
+      k: 0
+    out: 9
+
+  - name: "all_zero_len_10"
+    in:
+      nums: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      k: 0
+    out: 55
+
+  - name: "generated_small_full_range"
+    seed: 5601
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -10000000
+        max: 10000000
+
+  - name: "generated_small_dense_hits"
+    seed: 5602
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 5
+          max: 60
+        of:
+          gen: "int"
+          min: -3
+          max: 3
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -30
+        max: 30
+
+  - name: "generated_medium_mixed"
+    seed: 5603
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 500
+          max: 1000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -10000000
+        max: 10000000
+
+  - name: "generated_large_near_max_balanced"
+    seed: 5604
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 19000
+          max: 20000
+        of:
+          gen: "int"
+          min: -2
+          max: 2
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -1000
+        max: 1000
+
+  - name: "generated_large_near_max_full_range"
+    seed: 5605
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 19500
+          max: 20000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -10000000
+        max: 10000000

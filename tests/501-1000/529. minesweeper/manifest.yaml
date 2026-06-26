@@ -1,0 +1,2850 @@
+entry:
+  id: 529
+  title: "minesweeper"
+  params:
+    board:
+      type: array
+      items:
+        type: array
+        items:
+          type: char
+    click:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().updateBoard({board}, {click})"
+    rust: "Solution::update_board({board}, {click})"
+    python3: "Solution().updateBoard({board}, {click})"
+    python2: "Solution().updateBoard({board}, {click})"
+    ruby: "update_board({board}, {click})"
+    java: "new Solution().updateBoard({board}, {click})"
+    csharp: "new Solution().UpdateBoard({board}, {click})"
+    kotlin: "Solution().updateBoard({board}, {click})"
+    go: "updateBoard({board}, {click})"
+    dart: "Solution().updateBoard({board}, {click})"
+    swift: "Solution().updateBoard({board}, {click})"
+    typescript: "updateBoard({board}, {click})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().updateBoard(board, click, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def updateBoard(self, board, click, result):
+              if not isinstance(board, list) or not board:
+                  return False
+              rows = len(board)
+              cols = len(board[0])
+              if not isinstance(result, list) or len(result) != rows:
+                  return False
+              for row in board:
+                  if not isinstance(row, list) or len(row) != cols:
+                      return False
+              for row in result:
+                  if not isinstance(row, list) or len(row) != cols:
+                      return False
+
+              valid = {"M", "E", "B", "X", "1", "2", "3", "4", "5", "6", "7", "8"}
+              if any(cell not in valid for row in board for cell in row):
+                  return False
+              if any(cell not in valid for row in result for cell in row):
+                  return False
+
+              r, c = click
+              expected = [row[:] for row in board]
+              directions = [
+                  (-1, -1), (-1, 0), (-1, 1),
+                  (0, -1),           (0, 1),
+                  (1, -1),  (1, 0),  (1, 1),
+              ]
+
+              def mine_count(i, j):
+                  total = 0
+                  for di, dj in directions:
+                      ni = i + di
+                      nj = j + dj
+                      if 0 <= ni < rows and 0 <= nj < cols and expected[ni][nj] == "M":
+                          total += 1
+                  return total
+
+              if expected[r][c] == "M":
+                  expected[r][c] = "X"
+              else:
+                  q = deque([(r, c)])
+                  while q:
+                      i, j = q.popleft()
+                      if not (0 <= i < rows and 0 <= j < cols):
+                          continue
+                      if expected[i][j] != "E":
+                          continue
+                      cnt = mine_count(i, j)
+                      if cnt:
+                          expected[i][j] = str(cnt)
+                          continue
+                      expected[i][j] = "B"
+                      for di, dj in directions:
+                          q.append((i + di, j + dj))
+
+              return result == expected
+seed: 529
+tests:
+  - name: "example-1"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "E"]
+          - ["E", "E", "M", "E", "E"]
+          - ["E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E"]
+      click: [3, 0]
+    out:
+      - ["B", "1", "E", "1", "B"]
+      - ["B", "1", "M", "1", "B"]
+      - ["B", "1", "1", "1", "B"]
+      - ["B", "B", "B", "B", "B"]
+  - name: "example-2"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["B", "1", "E", "1", "B"]
+          - ["B", "1", "M", "1", "B"]
+          - ["B", "1", "1", "1", "B"]
+          - ["B", "B", "B", "B", "B"]
+      click: [1, 2]
+    out:
+      - ["B", "1", "E", "1", "B"]
+      - ["B", "1", "X", "1", "B"]
+      - ["B", "1", "1", "1", "B"]
+      - ["B", "B", "B", "B", "B"]
+  - name: "single-empty"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E"]
+      click: [0, 0]
+    out:
+      - ["B"]
+  - name: "single-mine"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M"]
+      click: [0, 0]
+    out:
+      - ["X"]
+  - name: "one-row-center-mine-neighbor"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "M", "E", "E"]
+      click: [0, 1]
+    out:
+      - ["E", "1", "M", "E", "E"]
+  - name: "one-row-blank-spread"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "E"]
+      click: [0, 2]
+    out:
+      - ["B", "B", "B", "B", "B"]
+  - name: "one-col-center-mine-neighbor"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E"]
+          - ["M"]
+          - ["E"]
+          - ["E"]
+      click: [2, 0]
+    out:
+      - ["E"]
+      - ["M"]
+      - ["1"]
+      - ["E"]
+  - name: "one-col-blank-spread"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E"]
+          - ["E"]
+          - ["E"]
+          - ["E"]
+      click: [1, 0]
+    out:
+      - ["B"]
+      - ["B"]
+      - ["B"]
+      - ["B"]
+  - name: "corner-adjacent-digit"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M", "E"]
+          - ["E", "E"]
+      click: [1, 1]
+    out:
+      - ["M", "E"]
+      - ["E", "1"]
+  - name: "center-surrounded"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M", "M", "M"]
+          - ["M", "E", "M"]
+          - ["M", "M", "M"]
+      click: [1, 1]
+    out:
+      - ["M", "M", "M"]
+      - ["M", "8", "M"]
+      - ["M", "M", "M"]
+  - name: "cross-mines"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "M", "E"]
+          - ["M", "E", "M"]
+          - ["E", "M", "E"]
+      click: [1, 1]
+    out:
+      - ["E", "M", "E"]
+      - ["M", "4", "M"]
+      - ["E", "M", "E"]
+  - name: "checker-small"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "M", "E", "M"]
+          - ["M", "E", "M", "E"]
+          - ["E", "M", "E", "M"]
+          - ["M", "E", "M", "E"]
+      click: [1, 1]
+    out:
+      - ["E", "M", "E", "M"]
+      - ["M", "4", "M", "E"]
+      - ["E", "M", "E", "M"]
+      - ["M", "E", "M", "E"]
+  - name: "empty-3x3-corner"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E"]
+          - ["E", "E", "E"]
+          - ["E", "E", "E"]
+      click: [0, 0]
+    out:
+      - ["B", "B", "B"]
+      - ["B", "B", "B"]
+      - ["B", "B", "B"]
+  - name: "empty-3x3-center"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E"]
+          - ["E", "E", "E"]
+          - ["E", "E", "E"]
+      click: [1, 1]
+    out:
+      - ["B", "B", "B"]
+      - ["B", "B", "B"]
+      - ["B", "B", "B"]
+  - name: "partial-board-safe"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["B", "1", "E"]
+          - ["1", "2", "M"]
+          - ["E", "E", "E"]
+      click: [2, 0]
+    out:
+      - ["B", "1", "E"]
+      - ["1", "2", "M"]
+      - ["B", "1", "E"]
+  - name: "partial-board-mine"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["B", "1", "E"]
+          - ["1", "2", "M"]
+          - ["E", "E", "E"]
+      click: [1, 2]
+    out:
+      - ["B", "1", "E"]
+      - ["1", "2", "X"]
+      - ["E", "E", "E"]
+  - name: "rand-01-4x2-p30"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M", "E"]
+          - ["E", "M"]
+          - ["E", "E"]
+          - ["M", "M"]
+      click: [3, 0]
+    out:
+      - ["M", "E"]
+      - ["E", "M"]
+      - ["E", "E"]
+      - ["X", "M"]
+  - name: "rand-02-3x5-p15"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "M", "E"]
+          - ["E", "E", "E", "E", "E"]
+      click: [1, 1]
+    out:
+      - ["B", "B", "1", "E", "E"]
+      - ["B", "B", "1", "M", "E"]
+      - ["B", "B", "1", "E", "E"]
+  - name: "rand-03-3x2-p20"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E"]
+          - ["M", "E"]
+          - ["E", "E"]
+      click: [2, 1]
+    out:
+      - ["E", "E"]
+      - ["M", "E"]
+      - ["E", "1"]
+  - name: "rand-04-5x4-p25"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M", "M", "E", "M"]
+          - ["E", "M", "E", "E"]
+          - ["E", "E", "E", "E"]
+          - ["E", "M", "E", "E"]
+          - ["E", "E", "E", "M"]
+      click: [3, 2]
+    out:
+      - ["M", "M", "E", "M"]
+      - ["E", "M", "E", "E"]
+      - ["E", "E", "E", "E"]
+      - ["E", "M", "2", "E"]
+      - ["E", "E", "E", "M"]
+  - name: "rand-05-2x2-p25"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M", "E"]
+          - ["E", "E"]
+      click: [0, 0]
+    out:
+      - ["X", "E"]
+      - ["E", "E"]
+  - name: "rand-06-2x7-p30"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "M", "E", "E", "M", "E", "M"]
+      click: [0, 6]
+    out:
+      - ["E", "E", "E", "E", "E", "E", "1"]
+      - ["E", "M", "E", "E", "M", "E", "M"]
+  - name: "rand-07-3x2-p25"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E"]
+          - ["E", "E"]
+          - ["E", "E"]
+      click: [1, 1]
+    out:
+      - ["B", "B"]
+      - ["B", "B"]
+      - ["B", "B"]
+  - name: "rand-08-5x8-p30"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "M", "E", "E", "E", "E"]
+          - ["M", "E", "M", "M", "M", "E", "M", "E"]
+          - ["E", "E", "M", "E", "M", "E", "E", "E"]
+          - ["E", "E", "E", "E", "M", "E", "M", "M"]
+          - ["E", "M", "M", "M", "M", "E", "E", "M"]
+      click: [1, 1]
+    out:
+      - ["E", "E", "E", "M", "E", "E", "E", "E"]
+      - ["M", "3", "M", "M", "M", "E", "M", "E"]
+      - ["E", "E", "M", "E", "M", "E", "E", "E"]
+      - ["E", "E", "E", "E", "M", "E", "M", "M"]
+      - ["E", "M", "M", "M", "M", "E", "E", "M"]
+  - name: "rand-09-4x3-p25"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E"]
+          - ["E", "M", "E"]
+          - ["E", "E", "E"]
+          - ["E", "E", "M"]
+      click: [0, 2]
+    out:
+      - ["E", "E", "1"]
+      - ["E", "M", "E"]
+      - ["E", "E", "E"]
+      - ["E", "E", "M"]
+  - name: "rand-10-6x6-p20"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "M", "E"]
+          - ["E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "M", "E"]
+          - ["E", "M", "E", "E", "E", "E"]
+          - ["M", "M", "E", "E", "M", "E"]
+          - ["E", "E", "E", "E", "E", "E"]
+      click: [1, 3]
+    out:
+      - ["E", "E", "E", "E", "M", "E"]
+      - ["E", "E", "E", "2", "E", "E"]
+      - ["E", "E", "E", "E", "M", "E"]
+      - ["E", "M", "E", "E", "E", "E"]
+      - ["M", "M", "E", "E", "M", "E"]
+      - ["E", "E", "E", "E", "E", "E"]
+  - name: "rand-11-8x10-p10"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "M", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "M"]
+          - ["E", "M", "E", "E", "E", "M", "M", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "M", "E", "E", "E"]
+          - ["E", "E", "M", "E", "E", "E", "E", "E", "E", "E"]
+          - ["M", "E", "E", "E", "E", "E", "M", "E", "M", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "M", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+      click: [0, 4]
+    out:
+      - ["E", "E", "E", "E", "X", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "M"]
+      - ["E", "M", "E", "E", "E", "M", "M", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E", "M", "E", "E", "E"]
+      - ["E", "E", "M", "E", "E", "E", "E", "E", "E", "E"]
+      - ["M", "E", "E", "E", "E", "E", "M", "E", "M", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "M", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+  - name: "rand-12-8x6-p25"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M", "E", "E", "M", "M", "M"]
+          - ["E", "E", "E", "M", "E", "E"]
+          - ["E", "M", "E", "E", "E", "E"]
+          - ["E", "E", "E", "M", "E", "E"]
+          - ["E", "E", "E", "M", "E", "E"]
+          - ["E", "M", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "M", "E", "E", "M"]
+      click: [3, 1]
+    out:
+      - ["M", "E", "E", "M", "M", "M"]
+      - ["E", "E", "E", "M", "E", "E"]
+      - ["E", "M", "E", "E", "E", "E"]
+      - ["E", "1", "E", "M", "E", "E"]
+      - ["E", "E", "E", "M", "E", "E"]
+      - ["E", "M", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E"]
+      - ["E", "E", "M", "E", "E", "M"]
+  - name: "rand-13-8x12-p10"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["M", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "M"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "M", "E"]
+          - ["E", "M", "E", "E", "M", "E", "E", "E", "E", "M", "E", "E"]
+      click: [6, 1]
+    out:
+      - ["M", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "M"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+      - ["E", "1", "E", "E", "E", "E", "E", "E", "E", "E", "M", "E"]
+      - ["E", "M", "E", "E", "M", "E", "E", "E", "E", "M", "E", "E"]
+  - name: "rand-14-8x7-p25"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "M", "E", "E"]
+          - ["M", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "M", "E", "E", "M"]
+          - ["E", "E", "E", "E", "E", "M", "E"]
+          - ["M", "E", "E", "E", "E", "M", "E"]
+          - ["E", "E", "E", "E", "E", "E", "M"]
+          - ["E", "E", "E", "M", "E", "E", "M"]
+          - ["M", "E", "E", "E", "E", "E", "E"]
+      click: [5, 1]
+    out:
+      - ["E", "E", "E", "E", "M", "E", "E"]
+      - ["M", "E", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "M", "E", "E", "M"]
+      - ["E", "E", "E", "E", "E", "M", "E"]
+      - ["M", "E", "E", "E", "E", "M", "E"]
+      - ["E", "1", "E", "E", "E", "E", "M"]
+      - ["E", "E", "E", "M", "E", "E", "M"]
+      - ["M", "E", "E", "E", "E", "E", "E"]
+  - name: "rand-15-7x8-p20"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "M", "E", "M", "M", "M", "E"]
+          - ["E", "E", "E", "M", "E", "M", "M", "E"]
+          - ["E", "E", "M", "E", "E", "E", "E", "M"]
+          - ["E", "E", "M", "M", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "M", "E", "E"]
+          - ["E", "E", "M", "M", "E", "E", "M", "E"]
+          - ["E", "E", "E", "M", "M", "E", "E", "E"]
+      click: [6, 7]
+    out:
+      - ["E", "E", "M", "E", "M", "M", "M", "E"]
+      - ["E", "E", "E", "M", "E", "M", "M", "E"]
+      - ["E", "E", "M", "E", "E", "E", "E", "M"]
+      - ["E", "E", "M", "M", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "M", "E", "E"]
+      - ["E", "E", "M", "M", "E", "E", "M", "E"]
+      - ["E", "E", "E", "M", "M", "E", "E", "1"]
+  - name: "rand-16-6x10-p20"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "M", "E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "M", "E", "E", "E", "E", "E", "M", "E"]
+          - ["M", "E", "E", "M", "E", "E", "E", "E", "E", "E"]
+          - ["E", "M", "E", "E", "E", "E", "M", "E", "E", "E"]
+          - ["E", "M", "E", "E", "M", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "M", "E", "M", "E", "E"]
+      click: [0, 4]
+    out:
+      - ["E", "E", "M", "2", "B", "B", "B", "1", "E", "E"]
+      - ["E", "E", "M", "3", "1", "B", "B", "1", "M", "E"]
+      - ["M", "E", "E", "M", "1", "1", "1", "2", "E", "E"]
+      - ["E", "M", "E", "E", "E", "E", "M", "E", "E", "E"]
+      - ["E", "M", "E", "E", "M", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "M", "E", "M", "E", "E"]
+  - name: "rand-17-8x7-p10"
+    in:
+      board:
+        elemType: char
+        value:
+          - ["E", "E", "E", "E", "E", "M", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "M", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "E", "E"]
+          - ["E", "E", "E", "E", "E", "M", "E"]
+          - ["E", "E", "M", "E", "E", "E", "E"]
+          - ["M", "E", "E", "E", "E", "E", "M"]
+          - ["E", "E", "E", "M", "E", "E", "E"]
+      click: [2, 1]
+    out:
+      - ["E", "E", "E", "E", "E", "M", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E"]
+      - ["E", "X", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "E", "E"]
+      - ["E", "E", "E", "E", "E", "M", "E"]
+      - ["E", "E", "M", "E", "E", "E", "E"]
+      - ["M", "E", "E", "E", "E", "E", "M"]
+      - ["E", "E", "E", "M", "E", "E", "E"]
+  - name: "rand-18-15x30-p20"
+    in:
+      board:
+        elemType: char
+        value:
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+            ]
+          - [
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+            ]
+          - [
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "M",
+              "M",
+              "E",
+              "M",
+            ]
+          - [
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+      click: [13, 26]
+    out:
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+        ]
+      - [
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+        ]
+      - [
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "M",
+          "M",
+          "E",
+          "M",
+        ]
+      - [
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "4",
+          "E",
+          "M",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+  - name: "rand-19-20x30-p30"
+    in:
+      board:
+        elemType: char
+        value:
+          - [
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+            ]
+          - [
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "M",
+              "E",
+              "M",
+            ]
+          - [
+              "M",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+            ]
+          - [
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "M",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+            ]
+          - [
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+            ]
+          - [
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+            ]
+          - [
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+            ]
+          - [
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+            ]
+          - [
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "M",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "M",
+            ]
+          - [
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+            ]
+          - [
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+              "M",
+              "M",
+              "E",
+              "M",
+              "E",
+              "M",
+              "E",
+              "E",
+              "E",
+            ]
+      click: [17, 15]
+    out:
+      - [
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+        ]
+      - [
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "M",
+          "E",
+          "M",
+        ]
+      - [
+          "M",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+        ]
+      - [
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "M",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+        ]
+      - [
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+        ]
+      - [
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+        ]
+      - [
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+        ]
+      - [
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+        ]
+      - [
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "M",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "X",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "M",
+        ]
+      - [
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+        ]
+      - [
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+          "M",
+          "M",
+          "E",
+          "M",
+          "E",
+          "M",
+          "E",
+          "E",
+          "E",
+        ]

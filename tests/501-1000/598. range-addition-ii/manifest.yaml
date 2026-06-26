@@ -1,0 +1,504 @@
+entry:
+  id: 598
+  title: range-addition-ii
+  params:
+    m:
+      type: int
+    n:
+      type: int
+    ops:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: Solution().maxCount({m}, {n}, {ops})
+    rust: Solution::max_count({m}, {n}, {ops})
+    python3: Solution().maxCount({m}, {n}, {ops})
+    python2: Solution().maxCount({m}, {n}, {ops})
+    ruby: max_count({m}, {n}, {ops})
+    java: new Solution().maxCount({m}, {n}, {ops})
+    csharp: new Solution().MaxCount({m}, {n}, {ops})
+    kotlin: Solution().maxCount({m}, {n}, {ops})
+    go: maxCount({m}, {n}, {ops})
+    dart: Solution().maxCount({m}, {n}, {ops})
+    swift: Solution().maxCount({m}, {n}, {ops})
+    typescript: maxCount({m}, {n}, {ops})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().maxCount(m, n, ops, {result})
+    checker:
+      "from typing import Any, List\nclass Checker:\n    def maxCount(self,\
+      \ m: int, n: int, ops: List[List[int]], result: Any) -> bool:\n        if not\
+      \ isinstance(result, int):\n            return False\n        if not ops:\n\
+      \            return result == m * n\n        min_m = min(op[0] for op in ops)\n\
+      \        min_n = min(op[1] for op in ops)\n        return result == min_m *\
+      \ min_n\n"
+seed: 598
+tests:
+  - name: example-1
+    in:
+      m: 3
+      n: 3
+      ops:
+        - - 2
+          - 2
+        - - 3
+          - 3
+    out: 4
+  - name: example-2-repeated
+    in:
+      m: 3
+      n: 3
+      ops:
+        - &id001
+          - 2
+          - 2
+        - &id002
+          - 3
+          - 3
+        - *id001
+        - *id002
+        - *id001
+        - *id002
+        - *id001
+        - *id002
+        - *id001
+        - *id002
+        - *id001
+        - *id002
+    out: 4
+  - name: no-ops
+    in:
+      m: 3
+      n: 3
+      ops: []
+    out: 9
+  - name: single-cell-no-ops
+    in:
+      m: 1
+      n: 1
+      ops: []
+    out: 1
+  - name: single-cell-one-op
+    in:
+      m: 1
+      n: 1
+      ops:
+        - - 1
+          - 1
+    out: 1
+  - name: single-row-tighten
+    in:
+      m: 1
+      n: 8
+      ops:
+        - - 1
+          - 7
+        - - 1
+          - 5
+        - - 1
+          - 3
+    out: 3
+  - name: single-col-tighten
+    in:
+      m: 9
+      n: 1
+      ops:
+        - - 7
+          - 1
+        - - 4
+          - 1
+        - - 2
+          - 1
+    out: 2
+  - name: full-range-op
+    in:
+      m: 5
+      n: 6
+      ops:
+        - - 5
+          - 6
+    out: 30
+  - name: min-by-second-op
+    in:
+      m: 5
+      n: 6
+      ops:
+        - - 5
+          - 6
+        - - 2
+          - 3
+    out: 6
+  - name: min-by-later-op
+    in:
+      m: 10
+      n: 10
+      ops:
+        - - 9
+          - 9
+        - - 8
+          - 8
+        - - 7
+          - 3
+        - - 6
+          - 6
+    out: 18
+  - name: duplicates-same-min
+    in:
+      m: 4
+      n: 4
+      ops:
+        - - 3
+          - 3
+        - - 3
+          - 3
+        - - 3
+          - 3
+    out: 9
+  - name: rectangle-case
+    in:
+      m: 7
+      n: 9
+      ops:
+        - - 5
+          - 8
+        - - 6
+          - 4
+        - - 7
+          - 9
+    out: 20
+  - name: wide-case
+    in:
+      m: 40000
+      n: 40000
+      ops:
+        - - 39999
+          - 40000
+        - - 40000
+          - 39998
+    out: 1599880002
+  - name: many-ops-steady-min
+    in:
+      m: 15
+      n: 20
+      ops:
+        - - 10
+          - 11
+        - - 12
+          - 13
+        - - 10
+          - 11
+        - - 14
+          - 15
+        - - 13
+          - 12
+    out: 110
+  - name: stair-down
+    in:
+      m: 12
+      n: 12
+      ops:
+        - - 12
+          - 12
+        - - 11
+          - 10
+        - - 10
+          - 9
+        - - 9
+          - 8
+        - - 8
+          - 7
+    out: 56
+  - name: min-first-op
+    in:
+      m: 12
+      n: 15
+      ops:
+        - - 2
+          - 14
+        - - 10
+          - 3
+        - - 8
+          - 4
+    out: 6
+  - name: min-last-op
+    in:
+      m: 12
+      n: 15
+      ops:
+        - - 10
+          - 14
+        - - 8
+          - 13
+        - - 2
+          - 2
+    out: 4
+  - name: large-grid-no-tightening
+    in:
+      m: 40000
+      n: 39999
+      ops:
+        - - 40000
+          - 39999
+        - - 40000
+          - 39999
+    out: 1599960000
+  - name: column-minimum-only
+    in:
+      m: 9
+      n: 20
+      ops:
+        - - 9
+          - 19
+        - - 9
+          - 17
+        - - 9
+          - 11
+        - - 9
+          - 2
+    out: 18
+  - name: row-minimum-only
+    in:
+      m: 20
+      n: 9
+      ops:
+        - - 19
+          - 9
+        - - 17
+          - 9
+        - - 11
+          - 9
+        - - 2
+          - 9
+    out: 18
+  - name: mixed-small
+    in:
+      m: 6
+      n: 7
+      ops:
+        - - 6
+          - 7
+        - - 5
+          - 6
+        - - 4
+          - 5
+        - - 3
+          - 4
+    out: 12
+  - name: mixed-large-values
+    in:
+      m: 30000
+      n: 20000
+      ops:
+        - - 25000
+          - 18000
+        - - 17000
+          - 19000
+        - - 16000
+          - 15000
+    out: 240000000
+  - name: min-op-repeated-late
+    in:
+      m: 100
+      n: 200
+      ops:
+        - - 90
+          - 180
+        - - 80
+          - 170
+        - - 70
+          - 160
+        - - 50
+          - 50
+        - - 50
+          - 50
+    out: 2500
+  - name: two-op-cross
+    in:
+      m: 8
+      n: 9
+      ops:
+        - - 3
+          - 9
+        - - 8
+          - 2
+    out: 6
+  - name: three-op-cross
+    in:
+      m: 8
+      n: 9
+      ops:
+        - - 5
+          - 5
+        - - 4
+          - 7
+        - - 7
+          - 4
+    out: 16
+  - name: alternating-ops
+    in:
+      m: 50
+      n: 60
+      ops:
+        - - 40
+          - 50
+        - - 45
+          - 30
+        - - 35
+          - 55
+        - - 33
+          - 44
+        - - 32
+          - 43
+    out: 960
+  - name: m-equals-n-large
+    in:
+      m: 12345
+      n: 12345
+      ops:
+        - - 12344
+          - 12345
+        - - 12345
+          - 12344
+        - - 12000
+          - 12000
+    out: 144000000
+  - name: narrow-window
+    in:
+      m: 1000
+      n: 2
+      ops:
+        - - 999
+          - 2
+        - - 500
+          - 1
+        - - 600
+          - 2
+    out: 500
+  - name: short-window
+    in:
+      m: 2
+      n: 1000
+      ops:
+        - - 2
+          - 999
+        - - 1
+          - 500
+        - - 2
+          - 600
+    out: 500
+  - name: identity-many-times
+    in:
+      m: 9
+      n: 9
+      ops:
+        - &id003
+          - 9
+          - 9
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+        - *id003
+    out: 81
+  - name: rapid-shrink
+    in:
+      m: 50
+      n: 50
+      ops:
+        - - 49
+          - 49
+        - - 25
+          - 40
+        - - 30
+          - 20
+        - - 10
+          - 10
+        - - 15
+          - 15
+    out: 100
+  - name: edge-minimum-one
+    in:
+      m: 100
+      n: 100
+      ops:
+        - - 1
+          - 100
+        - - 100
+          - 1
+        - - 1
+          - 1
+    out: 1
+  - name: prime-dimensions
+    in:
+      m: 97
+      n: 89
+      ops:
+        - - 97
+          - 89
+        - - 53
+          - 83
+        - - 47
+          - 79
+        - - 43
+          - 73
+    out: 3139
+  - name: sparse-many
+    in:
+      m: 300
+      n: 400
+      ops:
+        - - 250
+          - 300
+        - - 240
+          - 310
+        - - 230
+          - 290
+        - - 220
+          - 280
+        - - 210
+          - 270
+        - - 205
+          - 260
+    out: 53300
+  - name: final-small-corner
+    in:
+      m: 9
+      n: 9
+      ops:
+        - - 8
+          - 8
+        - - 7
+          - 7
+        - - 6
+          - 6
+        - - 5
+          - 5
+        - - 4
+          - 4
+        - - 3
+          - 3
+        - - 2
+          - 2
+    out: 4

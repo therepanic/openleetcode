@@ -1,0 +1,29 @@
+class Solution(object):
+    def checkRecord(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        mod = 1000000007
+        dp = [[0, 0, 0], [0, 0, 0]]
+        dp[0][0] = 1
+
+        for _ in range(n):
+            ndp = [[0, 0, 0], [0, 0, 0]]
+            for absences in range(2):
+                for lates in range(3):
+                    cur = dp[absences][lates]
+                    if cur == 0:
+                        continue
+                    ndp[absences][0] = (ndp[absences][0] + cur) % mod
+                    if absences == 0:
+                        ndp[1][0] = (ndp[1][0] + cur) % mod
+                    if lates < 2:
+                        ndp[absences][lates + 1] = (ndp[absences][lates + 1] + cur) % mod
+            dp = ndp
+
+        total = 0
+        for row in dp:
+            for value in row:
+                total = (total + value) % mod
+        return total

@@ -1,0 +1,211 @@
+entry:
+  id: 592
+  title: fraction-addition-and-subtraction
+  params:
+    expression:
+      type: string
+  call:
+    cpp: "Solution().fractionAddition({expression})"
+    rust: "Solution::fraction_addition({expression})"
+    python3: "Solution().fractionAddition({expression})"
+    python2: "Solution().fractionAddition({expression})"
+    ruby: "fraction_addition({expression})"
+    java: "new Solution().fractionAddition({expression})"
+    csharp: "new Solution().FractionAddition({expression})"
+    kotlin: "Solution().fractionAddition({expression})"
+    go: "fractionAddition({expression})"
+    dart: "Solution().fractionAddition({expression})"
+    swift: "Solution().fractionAddition({expression})"
+    typescript: "fractionAddition({expression})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().fractionAddition(expression, {result})"
+    checker: |
+      class Checker:
+          def fractionAddition(self, expression, result):
+              def gcd(a, b):
+                  while b:
+                      a, b = b, a % b
+                  return a
+
+              parts = []
+              i = 0
+              while i < len(expression):
+                  sign = 1
+                  if expression[i] in "+-":
+                      sign = -1 if expression[i] == "-" else 1
+                      i += 1
+                  j = i
+                  while expression[j] != "/":
+                      j += 1
+                  num = int(expression[i:j]) * sign
+                  i = j + 1
+                  j = i
+                  while j < len(expression) and expression[j] not in "+-":
+                      j += 1
+                  den = int(expression[i:j])
+                  parts.append((num, den))
+                  i = j
+
+              common = 1
+              for _, den in parts:
+                  common = common * den // gcd(common, den)
+
+              total = 0
+              for num, den in parts:
+                  total += num * (common // den)
+
+              g = gcd(abs(total), common)
+              expected = str(total // g) + "/" + str(common // g)
+              return result == expected
+seed: 592
+tests:
+  - name: example-1
+    in:
+      expression: "-1/2+1/2"
+    out: "0/1"
+  - name: example-2
+    in:
+      expression: "-1/2+1/2+1/3"
+    out: "1/3"
+  - name: example-3
+    in:
+      expression: "1/3-1/2"
+    out: "-1/6"
+  - name: whole-number-sum
+    in:
+      expression: "5/3+1/3"
+    out: "2/1"
+  - name: half-plus-half
+    in:
+      expression: "1/2+1/2"
+    out: "1/1"
+  - name: classic-unity
+    in:
+      expression: "1/2+1/3+1/6"
+    out: "1/1"
+  - name: repeated-tenths
+    in:
+      expression: "1/10+1/10+1/10+1/10+1/10"
+    out: "1/2"
+  - name: negative-half
+    in:
+      expression: "1/2-1/2-1/2"
+    out: "-1/2"
+  - name: mixed-fifths-and-tenths
+    in:
+      expression: "7/10-3/10+2/5"
+    out: "4/5"
+  - name: seven-sevenths
+    in:
+      expression: "1/7+1/7+1/7+1/7+1/7+1/7+1/7"
+    out: "1/1"
+  - name: tiny-positive
+    in:
+      expression: "1/9-1/10"
+    out: "1/90"
+  - name: tiny-negative
+    in:
+      expression: "-1/9-1/10"
+    out: "-19/90"
+  - name: eighths-and-quarter
+    in:
+      expression: "3/8+5/8-1/4"
+    out: "3/4"
+  - name: exact-zero-mixed
+    in:
+      expression: "9/10-1/2-2/5"
+    out: "0/1"
+  - name: another-zero
+    in:
+      expression: "2/3-1/6-1/2"
+    out: "0/1"
+  - name: ninths-sixths
+    in:
+      expression: "4/9+2/3-5/6"
+    out: "5/18"
+  - name: long-alternating-small
+    in:
+      expression: "1/2+1/3-1/4+1/5-1/6+1/7"
+    out: "319/420"
+  - name: reduce-after-cancel
+    in:
+      expression: "10/9-1/9-1/3"
+    out: "2/3"
+  - name: negative-reduce-after-cancel
+    in:
+      expression: "-10/9+1/9+1/3"
+    out: "-2/3"
+  - name: alternating-integers
+    in:
+      expression: "1/1-1/1+1/1-1/1+1/1"
+    out: "1/1"
+  - name: ten-halves
+    in:
+      expression: "1/2+1/2+1/2+1/2+1/2+1/2+1/2+1/2+1/2+1/2"
+    out: "5/1"
+  - name: max-terms-alternating
+    in:
+      expression: "1/10-1/9+1/8-1/7+1/6-1/5+1/4-1/3+1/2-1/1"
+    out: "-1627/2520"
+  - name: improper-positive
+    in:
+      expression: "2/5+2/5+2/5"
+    out: "6/5"
+  - name: cancel-inside
+    in:
+      expression: "3/7-2/7+1/7-1/7"
+    out: "1/7"
+  - name: power-of-two-denominators
+    in:
+      expression: "1/4-3/8+5/16"
+    out: "3/16"
+  - name: lcm-thirty
+    in:
+      expression: "1/6+1/10+1/15"
+    out: "1/3"
+  - name: alternating-larger
+    in:
+      expression: "1/2-2/3+3/4-4/5+5/6"
+    out: "37/60"
+  - name: exact-zero-quarter-eighth
+    in:
+      expression: "7/8-1/8-1/4-1/2"
+    out: "0/1"
+  - name: improper-to-integer
+    in:
+      expression: "9/2-4/3-7/6"
+    out: "2/1"
+  - name: broad-lcm
+    in:
+      expression: "1/10+2/9+3/8+4/7+5/6"
+    out: "5297/2520"
+  - name: all-negative
+    in:
+      expression: "-1/2-1/3-1/4-1/5"
+    out: "-77/60"
+  - name: odd-denominators
+    in:
+      expression: "1/3+1/5+1/7+1/9"
+    out: "248/315"
+  - name: integer-cancel
+    in:
+      expression: "10/1-9/1-8/1+7/1"
+    out: "0/1"
+  - name: many-cancellations
+    in:
+      expression: "1/2-1/2+2/3-2/3+3/4-3/4+4/5"
+    out: "4/5"
+  - name: reduced-half
+    in:
+      expression: "5/6-1/2+1/3-2/9+1/18"
+    out: "1/2"
+  - name: ten-terms-ascending
+    in:
+      expression: "1/2+1/3+1/4+1/5+1/6+1/7+1/8+1/9+1/10+1/1"
+    out: "7381/2520"

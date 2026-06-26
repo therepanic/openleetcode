@@ -1,0 +1,587 @@
+entry:
+  id: 599
+  title: minimum-index-sum-of-two-lists
+  params:
+    list1:
+      type: array
+      items:
+        type: string
+    list2:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: Solution().findRestaurant({list1}, {list2})
+    rust: Solution::find_restaurant({list1}, {list2})
+    python3: Solution().findRestaurant({list1}, {list2})
+    python2: Solution().findRestaurant({list1}, {list2})
+    ruby: find_restaurant({list1}, {list2})
+    java: new Solution().findRestaurant({list1}, {list2})
+    csharp: new Solution().FindRestaurant({list1}, {list2})
+    kotlin: Solution().findRestaurant({list1}, {list2})
+    go: findRestaurant({list1}, {list2})
+    dart: Solution().findRestaurant({list1}, {list2})
+    swift: Solution().findRestaurant({list1}, {list2})
+    typescript: findRestaurant({list1}, {list2})
+judge:
+  type: ignore_order
+limits:
+  time_ms: 200
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().findRestaurant(list1, list2, {result})
+    checker:
+      "from typing import Any, List\nclass Checker:\n    def findRestaurant(self,\
+      \ list1: List[str], list2: List[str], result: Any) -> bool:\n        if not\
+      \ isinstance(result, list):\n            return False\n        pos1 = {s: i\
+      \ for i, s in enumerate(list1)}\n        pos2 = {s: i for i, s in enumerate(list2)}\n\
+      \        common = [s for s in list1 if s in pos2]\n        if not common:\n\
+      \            return False\n        best = min(pos1[s] + pos2[s] for s in common)\n\
+      \        expected = {s for s in common if pos1[s] + pos2[s] == best}\n     \
+      \   return set(result) == expected and len(result) == len(expected)\n"
+seed: 599
+tests:
+  - name: example-1
+    in:
+      list1:
+        - Shogun
+        - Tapioca Express
+        - Burger King
+        - KFC
+      list2:
+        - Piatti
+        - The Grill at Torrey Pines
+        - Hungry Hunter Steakhouse
+        - Shogun
+    out:
+      - Shogun
+  - name: example-2
+    in:
+      list1:
+        - Shogun
+        - Tapioca Express
+        - Burger King
+        - KFC
+      list2:
+        - KFC
+        - Shogun
+        - Burger King
+    out:
+      - Shogun
+  - name: example-3
+    in:
+      list1:
+        - happy
+        - sad
+        - good
+      list2:
+        - sad
+        - happy
+        - good
+    out:
+      - happy
+      - sad
+  - name: single-common-front
+    in:
+      list1:
+        - a
+        - b
+        - c
+      list2:
+        - a
+        - x
+        - "y"
+    out:
+      - a
+  - name: single-common-end
+    in:
+      list1:
+        - x
+        - "y"
+        - z
+        - target
+      list2:
+        - a
+        - b
+        - target
+    out:
+      - target
+  - name: all-common-same-order
+    in:
+      list1:
+        - a
+        - b
+        - c
+      list2:
+        - a
+        - b
+        - c
+    out:
+      - a
+  - name: all-common-reverse-order
+    in:
+      list1:
+        - a
+        - b
+        - c
+        - d
+      list2:
+        - d
+        - c
+        - b
+        - a
+    out:
+      - a
+      - b
+      - c
+      - d
+  - name: two-way-tie
+    in:
+      list1:
+        - a
+        - b
+        - c
+      list2:
+        - b
+        - a
+        - x
+    out:
+      - a
+      - b
+  - name: three-way-tie
+    in:
+      list1:
+        - a
+        - b
+        - c
+      list2:
+        - c
+        - b
+        - a
+    out:
+      - a
+      - b
+      - c
+  - name: longer-names
+    in:
+      list1:
+        - sushi-house
+        - ramen-bar
+        - pizza-palace
+      list2:
+        - burger-barn
+        - ramen-bar
+        - sushi-house
+    out:
+      - sushi-house
+      - ramen-bar
+  - name: common-middle
+    in:
+      list1:
+        - r1
+        - r2
+        - r3
+        - r4
+      list2:
+        - x
+        - r3
+        - "y"
+        - z
+    out:
+      - r3
+  - name: common-late-better
+    in:
+      list1:
+        - m1
+        - m2
+        - best
+        - m4
+      list2:
+        - x
+        - "y"
+        - best
+        - m2
+    out:
+      - m2
+      - best
+  - name: duplicate-prefixes-in-names
+    in:
+      list1:
+        - ab
+        - abc
+        - abcd
+      list2:
+        - x
+        - abcd
+        - ab
+    out:
+      - ab
+  - name: numeric-names
+    in:
+      list1:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+      list2:
+        - "9"
+        - "8"
+        - "2"
+        - "7"
+    out:
+      - "2"
+  - name: mixed-case-strings
+    in:
+      list1:
+        - Alpha
+        - beta
+        - Gamma
+      list2:
+        - theta
+        - Gamma
+        - Alpha
+    out:
+      - Alpha
+  - name: two-commons-unique-best
+    in:
+      list1:
+        - a
+        - best
+        - c
+        - d
+      list2:
+        - x
+        - "y"
+        - best
+        - a
+    out:
+      - a
+      - best
+  - name: near-front-best
+    in:
+      list1:
+        - best
+        - x
+        - "y"
+        - z
+      list2:
+        - q
+        - best
+        - z
+    out:
+      - best
+  - name: late-best
+    in:
+      list1:
+        - x
+        - "y"
+        - z
+        - best
+      list2:
+        - a
+        - b
+        - c
+        - best
+    out:
+      - best
+  - name: one-common-many-others
+    in:
+      list1:
+        - r1
+        - r2
+        - r3
+        - r4
+        - r5
+      list2:
+        - u1
+        - u2
+        - u3
+        - r4
+        - u5
+    out:
+      - r4
+  - name: common-first-second
+    in:
+      list1:
+        - aa
+        - bb
+        - cc
+        - dd
+      list2:
+        - bb
+        - aa
+        - ee
+        - ff
+    out:
+      - aa
+      - bb
+  - name: tie-nonadjacent
+    in:
+      list1:
+        - p
+        - q
+        - r
+        - s
+      list2:
+        - q
+        - x
+        - "y"
+        - p
+    out:
+      - q
+  - name: one-list-short
+    in:
+      list1:
+        - solo
+      list2:
+        - a
+        - solo
+        - b
+    out:
+      - solo
+  - name: other-list-short
+    in:
+      list1:
+        - a
+        - b
+        - c
+        - solo
+      list2:
+        - solo
+    out:
+      - solo
+  - name: common-with-large-lists
+    in:
+      list1:
+        - a1
+        - a2
+        - a3
+        - a4
+        - a5
+        - a6
+      list2:
+        - b1
+        - b2
+        - a4
+        - b4
+        - a1
+    out:
+      - a1
+  - name: words
+    in:
+      list1:
+        - olive
+        - mint
+        - sage
+        - thyme
+      list2:
+        - basil
+        - sage
+        - mint
+    out:
+      - mint
+      - sage
+  - name: best-at-zero-sum
+    in:
+      list1:
+        - target
+        - x1
+        - x2
+      list2:
+        - target
+        - y1
+        - y2
+    out:
+      - target
+  - name: best-at-one-sum
+    in:
+      list1:
+        - x
+        - target
+        - z
+      list2:
+        - target
+        - u
+        - v
+    out:
+      - target
+  - name: alphabetic
+    in:
+      list1:
+        - ant
+        - bee
+        - cat
+        - dog
+        - eel
+      list2:
+        - fox
+        - gnu
+        - cat
+        - hog
+    out:
+      - cat
+  - name: suffix-like
+    in:
+      list1:
+        - rest1
+        - rest2
+        - rest3
+      list2:
+        - a
+        - rest3
+        - rest1
+    out:
+      - rest1
+  - name: many-common-best-middle
+    in:
+      list1:
+        - c1
+        - c2
+        - c3
+        - c4
+        - c5
+      list2:
+        - z1
+        - c5
+        - z2
+        - c3
+        - c2
+    out:
+      - c2
+      - c3
+      - c5
+  - name: same-two-lists-long
+    in:
+      list1:
+        - aa1
+        - aa2
+        - aa3
+        - aa4
+        - aa5
+      list2:
+        - aa1
+        - aa2
+        - aa3
+        - aa4
+        - aa5
+    out:
+      - aa1
+  - name: best-last-vs-earlier
+    in:
+      list1:
+        - k1
+        - k2
+        - k3
+        - k4
+        - k5
+      list2:
+        - u
+        - v
+        - w
+        - k5
+        - k1
+    out:
+      - k1
+  - name: sparse-overlap
+    in:
+      list1:
+        - n1
+        - n2
+        - n3
+        - n4
+        - n5
+        - n6
+      list2:
+        - m1
+        - m2
+        - m3
+        - n6
+    out:
+      - n6
+  - name: three-common-unique-best
+    in:
+      list1:
+        - u1
+        - u2
+        - u3
+        - u4
+      list2:
+        - u4
+        - x
+        - u2
+        - "y"
+        - u1
+    out:
+      - u2
+      - u4
+  - name: descriptive
+    in:
+      list1:
+        - taco-truck
+        - pho-bowl
+        - noodle-hut
+        - curry-corner
+      list2:
+        - pho-bowl
+        - curry-corner
+        - taco-truck
+    out:
+      - pho-bowl
+  - name: large-symbolic-names
+    in:
+      list1:
+        - place01
+        - place02
+        - place03
+        - place04
+        - place05
+      list2:
+        - other01
+        - place04
+        - other02
+        - place01
+    out:
+      - place01
+  - name: minimal-two-lists
+    in:
+      list1:
+        - x
+        - "y"
+      list2:
+        - "y"
+        - x
+    out:
+      - x
+      - "y"
+  - name: best-with-near-tie
+    in:
+      list1:
+        - a
+        - b
+        - c
+        - d
+        - e
+      list2:
+        - x
+        - b
+        - "y"
+        - c
+        - z
+    out:
+      - b
+  - name: common-only-tail
+    in:
+      list1:
+        - p1
+        - p2
+        - p3
+        - p4
+        - tail
+      list2:
+        - u1
+        - u2
+        - u3
+        - tail
+    out:
+      - tail

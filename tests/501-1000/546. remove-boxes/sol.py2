@@ -1,0 +1,26 @@
+class Solution(object):
+    def removeBoxes(self, boxes):
+        """
+        :type boxes: List[int]
+        :rtype: int
+        """
+        from itertools import groupby
+
+        memo = {}
+
+        def dfs(grps):
+            if not grps:
+                return 0
+            if grps in memo:
+                return memo[grps]
+            key = grps
+            (colorL, lenL), grps = grps[0], grps[1:]
+            res = lenL * lenL + dfs(grps)
+            for i, (colorR, lenR) in enumerate(grps):
+                if colorL == colorR:
+                    res = max(res, dfs(grps[:i]) + dfs(((colorL, lenL + lenR),) + grps[i+1:]))
+            memo[key] = res
+            return res
+
+        box_grps = tuple((k, len(list(g))) for k, g in groupby(boxes))
+        return dfs(box_grps)

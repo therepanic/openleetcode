@@ -1,0 +1,524 @@
+entry:
+  id: 502
+  title: ipo
+  params:
+    k:
+      type: int
+    w:
+      type: int
+    profits:
+      type: array
+      items:
+        type: int
+    capital:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().findMaximizedCapital({k}, {w}, {profits}, {capital})
+    rust: Solution::find_maximized_capital({k}, {w}, {profits}, {capital})
+    python3: Solution().findMaximizedCapital({k}, {w}, {profits}, {capital})
+    python2: Solution().findMaximizedCapital({k}, {w}, {profits}, {capital})
+    ruby: find_maximized_capital({k}, {w}, {profits}, {capital})
+    java: new Solution().findMaximizedCapital({k}, {w}, {profits}, {capital})
+    csharp: new Solution().FindMaximizedCapital({k}, {w}, {profits}, {capital})
+    kotlin: Solution().findMaximizedCapital({k}, {w}, {profits}, {capital})
+    go: findMaximizedCapital({k}, {w}, {profits}, {capital})
+    dart: Solution().findMaximizedCapital({k}, {w}, {profits}, {capital})
+    swift: Solution().findMaximizedCapital({k}, {w}, {profits}, {capital})
+    typescript: findMaximizedCapital({k}, {w}, {profits}, {capital})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().findMaximizedCapital(k, w, profits, capital, {result})
+    checker:
+      "import heapq\n\nclass Checker:\n    def findMaximizedCapital(self, k,\
+      \ w, profits, capital, result):\n        projects = sorted(zip(capital, profits))\n\
+      \        heap = []\n        i = 0\n        for _ in range(k):\n            while\
+      \ i < len(projects) and projects[i][0] <= w:\n                heapq.heappush(heap,\
+      \ -projects[i][1])\n                i += 1\n            if not heap:\n     \
+      \           break\n            w -= heapq.heappop(heap)\n        return w ==\
+      \ result\n"
+seed: 502
+tests:
+  - name: example-1
+    in:
+      k: 2
+      w: 0
+      profits:
+        - 1
+        - 2
+        - 3
+      capital:
+        - 0
+        - 1
+        - 1
+    out: 4
+  - name: example-2
+    in:
+      k: 3
+      w: 0
+      profits:
+        - 1
+        - 2
+        - 3
+      capital:
+        - 0
+        - 1
+        - 2
+    out: 6
+  - name: single-project-affordable
+    in:
+      k: 1
+      w: 0
+      profits:
+        - 5
+      capital:
+        - 0
+    out: 5
+  - name: single-project-unaffordable
+    in:
+      k: 1
+      w: 0
+      profits:
+        - 5
+      capital:
+        - 1
+    out: 0
+  - name: no-projects-affordable
+    in:
+      k: 3
+      w: 0
+      profits:
+        - 1
+        - 2
+        - 3
+      capital:
+        - 5
+        - 6
+        - 7
+    out: 0
+  - name: all-affordable-pick-best
+    in:
+      k: 2
+      w: 1
+      profits:
+        - 1
+        - 2
+        - 10
+      capital:
+        - 0
+        - 0
+        - 0
+    out: 13
+  - name: zero-profit-projects
+    in:
+      k: 3
+      w: 2
+      profits:
+        - 0
+        - 0
+        - 5
+      capital:
+        - 0
+        - 1
+        - 2
+    out: 7
+  - name: tie-capitals
+    in:
+      k: 2
+      w: 0
+      profits:
+        - 1
+        - 2
+        - 3
+        - 4
+      capital:
+        - 0
+        - 0
+        - 1
+        - 1
+    out: 6
+  - name: increasing-capitals
+    in:
+      k: 3
+      w: 0
+      profits:
+        - 1
+        - 2
+        - 3
+        - 4
+      capital:
+        - 0
+        - 1
+        - 2
+        - 3
+    out: 7
+  - name: k-larger-than-n
+    in:
+      k: 10
+      w: 1
+      profits:
+        - 1
+        - 2
+        - 3
+      capital:
+        - 0
+        - 1
+        - 1
+    out: 7
+  - name: choose-highest-after-step
+    in:
+      k: 2
+      w: 0
+      profits:
+        - 1
+        - 100
+        - 2
+      capital:
+        - 0
+        - 50
+        - 60
+    out: 1
+  - name: multiple-steps-unlock-more
+    in:
+      k: 3
+      w: 1
+      profits:
+        - 2
+        - 3
+        - 5
+      capital:
+        - 1
+        - 1
+        - 2
+    out: 11
+  - name: same-capital-same-profit
+    in:
+      k: 4
+      w: 3
+      profits:
+        - 4
+        - 4
+        - 4
+        - 4
+      capital:
+        - 3
+        - 3
+        - 3
+        - 3
+    out: 19
+  - name: can-only-do-one
+    in:
+      k: 1
+      w: 10
+      profits:
+        - 1
+        - 2
+        - 3
+      capital:
+        - 0
+        - 1
+        - 2
+    out: 13
+  - name: large-capital-thresholds
+    in:
+      k: 2
+      w: 7
+      profits:
+        - 5
+        - 6
+        - 7
+      capital:
+        - 0
+        - 8
+        - 8
+    out: 19
+  - name: some-unlock-after-first
+    in:
+      k: 3
+      w: 0
+      profits:
+        - 0
+        - 0
+        - 10
+        - 10
+      capital:
+        - 0
+        - 0
+        - 0
+        - 1
+    out: 20
+  - name: need-to-break-early
+    in:
+      k: 4
+      w: 2
+      profits:
+        - 8
+        - 1
+        - 9
+        - 2
+      capital:
+        - 2
+        - 2
+        - 3
+        - 100
+    out: 20
+  - name: very-large-profit
+    in:
+      k: 2
+      w: 50
+      profits:
+        - 10000
+        - 9999
+        - 1
+      capital:
+        - 0
+        - 100
+        - 200
+    out: 20049
+  - name: repeated-profits
+    in:
+      k: 3
+      w: 1
+      profits:
+        - 2
+        - 2
+        - 2
+      capital:
+        - 1
+        - 1
+        - 1
+    out: 7
+  - name: mixed-order-input
+    in:
+      k: 3
+      w: 1
+      profits:
+        - 2
+        - 3
+        - 1
+        - 4
+      capital:
+        - 0
+        - 1
+        - 1
+        - 2
+    out: 10
+  - name: all-zero-profit
+    in:
+      k: 4
+      w: 0
+      profits:
+        - 5
+        - 1
+        - 1
+        - 1
+      capital:
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 8
+  - name: exact-capital-gate
+    in:
+      k: 2
+      w: 3
+      profits:
+        - 1
+        - 10
+        - 20
+      capital:
+        - 0
+        - 3
+        - 30
+    out: 14
+  - name: one-project-only
+    in:
+      k: 1
+      w: 0
+      profits:
+        - 100
+      capital:
+        - 0
+    out: 100
+  - name: equal-capital-projects
+    in:
+      k: 3
+      w: 2
+      profits:
+        - 6
+        - 7
+        - 8
+      capital:
+        - 2
+        - 2
+        - 2
+    out: 23
+  - name: all-unaffordable-after-first
+    in:
+      k: 3
+      w: 2
+      profits:
+        - 1
+        - 2
+        - 100
+      capital:
+        - 2
+        - 2
+        - 2
+    out: 105
+  - name: max-k-with-small-n
+    in:
+      k: 5
+      w: 10
+      profits:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      capital:
+        - 10
+        - 10
+        - 10
+        - 10
+        - 10
+    out: 25
+  - name: capital-zero-mix
+    in:
+      k: 2
+      w: 9
+      profits:
+        - 5
+        - 5
+        - 5
+      capital:
+        - 0
+        - 9
+        - 9
+    out: 19
+  - name: repeated-low-profits
+    in:
+      k: 2
+      w: 0
+      profits:
+        - 1
+        - 1
+        - 1
+        - 1
+      capital:
+        - 0
+        - 0
+        - 1
+        - 1
+    out: 2
+  - name: large-starting-capital
+    in:
+      k: 3
+      w: 1000000000
+      profits:
+        - 10000
+        - 10000
+        - 10000
+      capital:
+        - 0
+        - 0
+        - 0
+    out: 1000030000
+  - name: many-projects-small-k
+    in:
+      k: 4
+      w: 0
+      profits:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      capital:
+        - 0
+        - 0
+        - 1
+        - 1
+        - 2
+    out: 14
+  - name: delayed-unlock
+    in:
+      k: 2
+      w: 4
+      profits:
+        - 10
+        - 20
+        - 30
+      capital:
+        - 4
+        - 4
+        - 4
+    out: 54
+  - name: chained-growth
+    in:
+      k: 3
+      w: 6
+      profits:
+        - 1
+        - 1
+        - 1
+        - 50
+      capital:
+        - 0
+        - 1
+        - 2
+        - 6
+    out: 58
+  - name: no-choice-left
+    in:
+      k: 5
+      w: 0
+      profits:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+      capital:
+        - 0
+        - 1
+        - 1
+        - 2
+        - 3
+    out: 0
+  - name: unlock_big_after_two_steps
+    in:
+      k: 4
+      w: 0
+      profits:
+        - 1
+        - 2
+        - 3
+        - 100
+      capital:
+        - 0
+        - 1
+        - 3
+        - 6
+    out: 106
+  - name: choose_best_among_newly_unlocked
+    in:
+      k: 3
+      w: 2
+      profits:
+        - 2
+        - 50
+        - 4
+        - 3
+      capital:
+        - 2
+        - 4
+        - 2
+        - 3
+    out: 59

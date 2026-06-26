@@ -1,0 +1,355 @@
+entry:
+  id: 624
+  title: maximum-distance-in-arrays
+  params:
+    arrays:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxDistance({arrays})"
+    rust: "Solution::max_distance({arrays})"
+    python3: "Solution().maxDistance({arrays})"
+    python2: "Solution().maxDistance({arrays})"
+    ruby: "max_distance({arrays})"
+    java: "new Solution().maxDistance(java.util.Arrays.stream({arrays}).map(row -> java.util.Arrays.stream(row).boxed().collect(java.util.stream.Collectors.toList())).collect(java.util.stream.Collectors.toList()))"
+    csharp: "new Solution().MaxDistance({arrays})"
+    kotlin: "Solution().maxDistance({arrays}.map { it.toList() })"
+    go: "maxDistance({arrays})"
+    dart: "Solution().maxDistance({arrays})"
+    swift: "Solution().maxDistance({arrays})"
+    typescript: "maxDistance({arrays})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxDistance(arrays, {result})"
+    checker: |
+      class Checker:
+          def maxDistance(self, arrays, result):
+              if not arrays or len(arrays) < 2:
+                  return False
+              smallest = arrays[0][0]
+              largest = arrays[0][-1]
+              expected = 0
+              for i in range(1, len(arrays)):
+                  expected = max(expected, largest - arrays[i][0], arrays[i][-1] - smallest)
+                  smallest = min(smallest, arrays[i][0])
+                  largest = max(largest, arrays[i][-1])
+              return expected == result
+seed: 624
+tests:
+  - name: example-1
+    in:
+      arrays:
+        - [1, 2, 3]
+        - [4, 5]
+        - [1, 2, 3]
+    out: 4
+  - name: example-2
+    in:
+      arrays:
+        - [1]
+        - [1]
+    out: 0
+  - name: two-arrays-simple
+    in:
+      arrays:
+        - [1, 2, 3]
+        - [10, 11]
+    out: 10
+  - name: two-arrays-reversed-gap
+    in:
+      arrays:
+        - [-5, -4]
+        - [7, 8]
+    out: 13
+  - name: same-extremes-different-arrays
+    in:
+      arrays:
+        - [0, 2, 4]
+        - [1, 3, 5]
+    out: 5
+  - name: all-singletons
+    in:
+      arrays:
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+    out: 0
+  - name: increasing-singletons
+    in:
+      arrays:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+    out: 3
+  - name: decreasing-singletons
+    in:
+      arrays:
+        - [10]
+        - [7]
+        - [4]
+        - [1]
+    out: 9
+  - name: negative-and-positive
+    in:
+      arrays:
+        - [-10, -8, -6]
+        - [-3, -2]
+        - [4, 6, 8]
+    out: 18
+  - name: duplicates-in-arrays
+    in:
+      arrays:
+        - [1, 1, 1]
+        - [1, 1]
+        - [1, 2]
+    out: 1
+  - name: touch-boundary-with-same-array-extremes
+    in:
+      arrays:
+        - [1, 100]
+        - [2, 3]
+        - [4, 5]
+    out: 98
+  - name: max-on-first-and-last
+    in:
+      arrays:
+        - [-10000, -9999]
+        - [0]
+        - [9999, 10000]
+    out: 20000
+  - name: middle-array-best-right
+    in:
+      arrays:
+        - [5, 6, 7]
+        - [1, 2, 3]
+        - [4, 5, 6]
+    out: 6
+  - name: middle-array-best-left
+    in:
+      arrays:
+        - [1, 2, 3]
+        - [7, 8, 9]
+        - [4, 5, 6]
+    out: 8
+  - name: order-does-not-matter
+    in:
+      arrays:
+        - [2, 3]
+        - [100]
+        - [1]
+    out: 99
+  - name: mixed-lengths
+    in:
+      arrays:
+        - [-4, -1]
+        - [0]
+        - [2, 9, 10]
+        - [3, 4]
+    out: 14
+  - name: many-same-low-high
+    in:
+      arrays:
+        - [-7]
+        - [-7, -7]
+        - [7]
+        - [7, 7]
+    out: 14
+  - name: max-between-nonadjacent-arrays
+    in:
+      arrays:
+        - [8, 9]
+        - [1, 2]
+        - [6, 7]
+        - [3, 4]
+    out: 8
+  - name: alternating-extremes
+    in:
+      arrays:
+        - [0, 1]
+        - [100]
+        - [2, 3]
+        - [99]
+    out: 100
+  - name: zero-heavy
+    in:
+      arrays:
+        - [0]
+        - [0, 0, 0]
+        - [0, 1]
+        - [0, 2]
+    out: 2
+  - name: one-small-one-large-many-middle
+    in:
+      arrays:
+        - [-10000]
+        - [-1, 0, 1]
+        - [2, 3, 4]
+        - [10000]
+    out: 20000
+  - name: ascending-blocks
+    in:
+      arrays:
+        - [-9, -8, -7]
+        - [-2, -1]
+        - [0, 1]
+        - [5, 6, 7]
+    out: 16
+  - name: descending-minmax
+    in:
+      arrays:
+        - [4, 5, 6]
+        - [1, 2]
+        - [9, 10]
+        - [0]
+    out: 10
+  - name: first-array-minimum
+    in:
+      arrays:
+        - [-10, -5]
+        - [-4, -3]
+        - [-2, -1]
+        - [0, 1]
+    out: 11
+  - name: last-array-maximum
+    in:
+      arrays:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [9, 10]
+    out: 10
+  - name: repeated-extremes
+    in:
+      arrays:
+        - [-5, -4, -3]
+        - [2, 2, 2]
+        - [-5, -4]
+        - [2, 3]
+    out: 8
+  - name: singletons-with-extremes
+    in:
+      arrays:
+        - [10000]
+        - [9999]
+        - [-10000]
+        - [-9999]
+    out: 20000
+  - name: balanced-small
+    in:
+      arrays:
+        - [1, 4]
+        - [2, 3]
+        - [5, 8]
+        - [6, 7]
+    out: 7
+  - name: around-zero
+    in:
+      arrays:
+        - [-2, -1]
+        - [0]
+        - [1, 2]
+        - [-3]
+    out: 5
+  - name: long-small-1
+    in:
+      arrays:
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        - [0]
+        - [21]
+    out: 21
+  - name: long-small-2
+    in:
+      arrays:
+        - [-20, -19, -18, -17, -16]
+        - [-10, -9, -8, -7, -6]
+        - [5, 6, 7, 8, 9]
+        - [15, 16, 17, 18, 19]
+    out: 39
+  - name: many-arrays-near-max-1
+    in:
+      arrays:
+        - [-10000, -9999, -9998, -9997, -9996]
+        - [-9000, -8999, -8998, -8997, -8996]
+        - [-8000, -7999, -7998, -7997, -7996]
+        - [-7000, -6999, -6998, -6997, -6996]
+        - [7000, 7001, 7002, 7003, 7004]
+        - [8000, 8001, 8002, 8003, 8004]
+        - [9000, 9001, 9002, 9003, 9004]
+        - [9996, 9997, 9998, 9999, 10000]
+    out: 20000
+  - name: many-arrays-near-max-2
+    in:
+      arrays:
+        - [-10000]
+        - [-5000, -4999, -4998]
+        - [-1, 0, 1]
+        - [2, 3, 4]
+        - [1000, 1001, 1002]
+        - [5000, 5001, 5002]
+        - [9998, 9999, 10000]
+    out: 20000
+  - name: alternating-low-high-1
+    in:
+      arrays:
+        - [-10000, -9990]
+        - [9990, 10000]
+        - [-9000, -8000]
+        - [8000, 9000]
+    out: 20000
+  - name: alternating-low-high-2
+    in:
+      arrays:
+        - [-1]
+        - [0]
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [10000]
+    out: 10001
+  - name: stepwise-increase
+    in:
+      arrays:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [7, 8]
+        - [9, 10]
+    out: 9
+  - name: stepwise-decrease
+    in:
+      arrays:
+        - [10, 11]
+        - [8, 9]
+        - [6, 7]
+        - [4, 5]
+        - [2, 3]
+    out: 9
+  - name: max-from-middle-to-edge
+    in:
+      arrays:
+        - [4, 4, 4]
+        - [5, 6, 7]
+        - [-10, -9]
+        - [8, 9, 10]
+    out: 20
+  - name: wide-span-small-mix
+    in:
+      arrays:
+        - [-3, -2, -1]
+        - [100]
+        - [0, 1, 2]
+        - [50, 51]
+    out: 103

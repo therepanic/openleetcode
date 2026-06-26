@@ -1,0 +1,637 @@
+entry:
+  id: 587
+  title: erect-the-fence
+  params:
+    trees:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().outerTrees({trees})"
+    rust: "Solution::outer_trees({trees})"
+    python3: "Solution().outerTrees({trees})"
+    python2: "Solution().outerTrees({trees})"
+    ruby: "outer_trees({trees})"
+    java: "new Solution().outerTrees({trees})"
+    csharp: "new Solution().OuterTrees({trees})"
+    kotlin: "Solution().outerTrees({trees})"
+    go: "outerTrees({trees})"
+    dart: "Solution().outerTrees({trees})"
+    swift: "Solution().outerTrees({trees})"
+    typescript: "outerTrees({trees})"
+judge:
+  type: "ignore_order"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().outerTrees(trees, {result})"
+    checker: |
+      class Checker:
+          def outerTrees(self, trees, result):
+              try:
+                  points = [tuple(p) for p in trees]
+                  returned = [tuple(p) for p in result]
+              except Exception:
+                  return False
+
+              if any(len(p) != 2 for p in returned):
+                  return False
+              if len(set(returned)) != len(returned):
+                  return False
+
+              all_points = set(points)
+              if not set(returned).issubset(all_points):
+                  return False
+
+              expected = self.boundary_points(points)
+              return set(returned) == expected
+
+          def cross(self, o, a, b):
+              return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+          def on_segment(self, a, b, p):
+              if self.cross(a, b, p) != 0:
+                  return False
+              return (
+                  min(a[0], b[0]) <= p[0] <= max(a[0], b[0]) and
+                  min(a[1], b[1]) <= p[1] <= max(a[1], b[1])
+              )
+
+          def boundary_points(self, points):
+              pts = sorted(set(points))
+              if len(pts) <= 2:
+                  return set(pts)
+
+              def build(seq):
+                  hull = []
+                  for p in seq:
+                      while len(hull) >= 2 and self.cross(hull[-2], hull[-1], p) <= 0:
+                          hull.pop()
+                      hull.append(p)
+                  return hull
+
+              lower = build(pts)
+              upper = build(reversed(pts))
+              hull = lower[:-1] + upper[:-1]
+
+              vertices = []
+              seen = set()
+              for p in hull:
+                  if p not in seen:
+                      vertices.append(p)
+                      seen.add(p)
+
+              if len(vertices) <= 2:
+                  return set(pts)
+
+              boundary = set()
+              m = len(vertices)
+              for p in pts:
+                  for i in range(m):
+                      if self.on_segment(vertices[i], vertices[(i + 1) % m], p):
+                          boundary.add(p)
+                          break
+              return boundary
+seed: 587
+tests:
+  - name: example-1
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [2, 2]
+          - [2, 0]
+          - [2, 4]
+          - [3, 3]
+          - [4, 2]
+  - name: example-2
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 2]
+          - [4, 2]
+  - name: single-point
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+  - name: two-points-horizontal
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [3, 1]
+  - name: two-points-vertical
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [2, 2]
+          - [2, 5]
+  - name: simple-triangle
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [2, 0]
+          - [1, 2]
+  - name: triangle-with-base-collinear
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [2, 0]
+          - [4, 0]
+          - [2, 2]
+  - name: square-corners-only
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 2]
+          - [2, 0]
+          - [2, 2]
+  - name: square-with-center
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 2]
+          - [2, 0]
+          - [2, 2]
+          - [1, 1]
+  - name: square-with-edge-points
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 1]
+          - [0, 2]
+          - [1, 0]
+          - [1, 2]
+          - [2, 0]
+          - [2, 1]
+          - [2, 2]
+          - [1, 1]
+  - name: all-collinear-horizontal
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 3]
+          - [1, 3]
+          - [2, 3]
+          - [3, 3]
+          - [4, 3]
+          - [5, 3]
+  - name: all-collinear-vertical
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [7, 0]
+          - [7, 1]
+          - [7, 2]
+          - [7, 3]
+          - [7, 4]
+  - name: diamond-with-center
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [2, 0]
+          - [4, 2]
+          - [2, 4]
+          - [0, 2]
+          - [2, 2]
+  - name: diamond-with-boundary-points
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [2, 0]
+          - [3, 1]
+          - [4, 2]
+          - [3, 3]
+          - [2, 4]
+          - [1, 3]
+          - [0, 2]
+          - [1, 1]
+          - [2, 2]
+  - name: rectangle-with-interior
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 4]
+          - [6, 0]
+          - [6, 4]
+          - [3, 2]
+          - [2, 1]
+          - [4, 3]
+          - [1, 2]
+          - [5, 2]
+  - name: concave-cloud
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [2, 1]
+          - [4, 0]
+          - [5, 2]
+          - [4, 4]
+          - [2, 5]
+          - [0, 4]
+          - [1, 2]
+          - [2, 2]
+          - [3, 2]
+  - name: bottom-edge-many-collinear
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 0]
+          - [2, 0]
+          - [3, 0]
+          - [4, 0]
+          - [0, 3]
+          - [4, 3]
+          - [2, 1]
+          - [2, 2]
+  - name: left-edge-many-collinear
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [3, 0]
+          - [3, 3]
+          - [1, 1]
+          - [2, 2]
+  - name: top-edge-many-collinear
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [4, 0]
+          - [0, 4]
+          - [1, 4]
+          - [2, 4]
+          - [3, 4]
+          - [4, 4]
+          - [2, 2]
+          - [1, 2]
+  - name: right-edge-many-collinear
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 5]
+          - [5, 0]
+          - [5, 1]
+          - [5, 2]
+          - [5, 3]
+          - [5, 5]
+          - [2, 2]
+          - [3, 4]
+  - name: near-coordinate-bounds
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 100]
+          - [100, 0]
+          - [100, 100]
+          - [50, 50]
+          - [25, 25]
+          - [75, 75]
+          - [50, 0]
+          - [100, 50]
+  - name: multiple-same-y-levels
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [2, 1]
+          - [3, 1]
+          - [4, 1]
+          - [1, 4]
+          - [4, 4]
+          - [2, 2]
+          - [3, 3]
+          - [2, 3]
+  - name: triangle-many-boundary-points
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [2, 0]
+          - [4, 0]
+          - [6, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 2]
+          - [5, 1]
+          - [3, 1]
+  - name: plus-shape-cloud
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [3, 0]
+          - [3, 1]
+          - [3, 2]
+          - [3, 3]
+          - [3, 4]
+          - [0, 3]
+          - [1, 3]
+          - [2, 3]
+          - [4, 3]
+          - [5, 3]
+          - [2, 2]
+          - [4, 2]
+  - name: u-shape
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [1, 0]
+          - [2, 0]
+          - [3, 0]
+          - [4, 0]
+          - [4, 1]
+          - [4, 2]
+          - [4, 3]
+          - [2, 1]
+          - [2, 2]
+  - name: octagon-like
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [2, 0]
+          - [4, 0]
+          - [6, 2]
+          - [6, 4]
+          - [4, 6]
+          - [2, 6]
+          - [0, 4]
+          - [0, 2]
+          - [3, 3]
+          - [2, 3]
+          - [4, 3]
+  - name: diagonal-band
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [0, 4]
+          - [4, 0]
+          - [2, 1]
+          - [1, 2]
+          - [3, 2]
+          - [2, 3]
+  - name: all-points-on-boundary-hexagon
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [2, 0]
+          - [4, 1]
+          - [5, 3]
+          - [4, 5]
+          - [2, 6]
+          - [0, 5]
+          - [0, 3]
+          - [1, 1]
+  - name: horizontal-line-plus-apex
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 0]
+          - [2, 0]
+          - [3, 0]
+          - [4, 0]
+          - [5, 0]
+          - [2, 3]
+          - [3, 2]
+          - [1, 1]
+  - name: large-square-border
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 2]
+          - [0, 4]
+          - [0, 6]
+          - [2, 0]
+          - [4, 0]
+          - [6, 0]
+          - [6, 2]
+          - [6, 4]
+          - [6, 6]
+          - [4, 6]
+          - [2, 6]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+          - [3, 2]
+          - [2, 3]
+          - [4, 3]
+  - name: large-rectangle-with-diagonal-interior
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 3]
+          - [1, 5]
+          - [1, 7]
+          - [4, 1]
+          - [7, 1]
+          - [10, 1]
+          - [10, 3]
+          - [10, 5]
+          - [10, 7]
+          - [7, 7]
+          - [4, 7]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+          - [6, 6]
+          - [3, 5]
+          - [5, 3]
+          - [7, 5]
+  - name: dense-collinear-twenty
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 10]
+          - [1, 10]
+          - [2, 10]
+          - [3, 10]
+          - [4, 10]
+          - [5, 10]
+          - [6, 10]
+          - [7, 10]
+          - [8, 10]
+          - [9, 10]
+          - [10, 10]
+          - [11, 10]
+          - [12, 10]
+          - [13, 10]
+          - [14, 10]
+          - [15, 10]
+          - [16, 10]
+          - [17, 10]
+          - [18, 10]
+          - [19, 10]
+  - name: grid-corners-edges-and-interiors
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 5]
+          - [5, 0]
+          - [5, 5]
+          - [2, 0]
+          - [0, 2]
+          - [5, 2]
+          - [2, 5]
+          - [1, 1]
+          - [1, 4]
+          - [4, 1]
+          - [4, 4]
+          - [2, 2]
+          - [2, 3]
+          - [3, 2]
+          - [3, 3]
+  - name: irregular-hull-with-inner-cluster
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [3, 0]
+          - [6, 1]
+          - [8, 4]
+          - [7, 7]
+          - [4, 9]
+          - [1, 8]
+          - [0, 5]
+          - [2, 4]
+          - [3, 4]
+          - [4, 4]
+          - [5, 4]
+          - [4, 5]
+          - [4, 3]
+          - [2, 6]
+          - [6, 5]
+  - name: slanted-outer-triangle
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [3, 1]
+          - [6, 2]
+          - [9, 3]
+          - [8, 7]
+          - [5, 8]
+          - [2, 9]
+          - [1, 5]
+          - [4, 4]
+          - [5, 5]
+          - [6, 4]
+  - name: border-heavy-rectangle
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [10, 10]
+          - [10, 12]
+          - [10, 14]
+          - [10, 16]
+          - [12, 10]
+          - [14, 10]
+          - [16, 10]
+          - [18, 10]
+          - [18, 12]
+          - [18, 14]
+          - [18, 16]
+          - [16, 16]
+          - [14, 16]
+          - [12, 16]
+          - [11, 11]
+          - [12, 12]
+          - [13, 13]
+          - [14, 14]
+          - [15, 15]
+          - [16, 11]
+          - [15, 12]
+  - name: mixed-random-cloud
+    in:
+      trees:
+        elemType: "int"
+        value:
+          - [12, 3]
+          - [15, 1]
+          - [19, 2]
+          - [22, 6]
+          - [21, 11]
+          - [17, 14]
+          - [11, 13]
+          - [8, 9]
+          - [9, 5]
+          - [13, 7]
+          - [14, 8]
+          - [16, 9]
+          - [18, 8]
+          - [17, 6]
+          - [15, 5]
+          - [12, 10]
+          - [10, 8]
+          - [19, 10]

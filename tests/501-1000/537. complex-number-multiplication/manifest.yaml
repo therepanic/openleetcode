@@ -1,0 +1,232 @@
+entry:
+  id: 537
+  title: "complex-number-multiplication"
+  params:
+    num1:
+      type: string
+    num2:
+      type: string
+  call:
+    cpp: "Solution().complexNumberMultiply({num1}, {num2})"
+    rust: "Solution::complex_number_multiply({num1}, {num2})"
+    python3: "Solution().complexNumberMultiply({num1}, {num2})"
+    python2: "Solution().complexNumberMultiply({num1}, {num2})"
+    ruby: "complex_number_multiply({num1}, {num2})"
+    java: "new Solution().complexNumberMultiply({num1}, {num2})"
+    csharp: "new Solution().ComplexNumberMultiply({num1}, {num2})"
+    kotlin: "Solution().complexNumberMultiply({num1}, {num2})"
+    go: "complexNumberMultiply({num1}, {num2})"
+    dart: "Solution().complexNumberMultiply({num1}, {num2})"
+    swift: "Solution().complexNumberMultiply({num1}, {num2})"
+    typescript: "complexNumberMultiply({num1}, {num2})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(num1, num2, {result})"
+    checker: |
+      from typing import Any, Tuple
+
+      class Checker:
+          def parse(self, s: str) -> Tuple[int, int]:
+              if not isinstance(s, str) or not s.endswith("i") or "+" not in s:
+                  raise ValueError("invalid complex string")
+              real_str, imag_str = s[:-1].split("+", 1)
+              real = int(real_str)
+              imag = int(imag_str)
+              if real < -100 or real > 100 or imag < -100 or imag > 100:
+                  raise ValueError("value out of range")
+              return real, imag
+
+          def check(self, num1: str, num2: str, result: Any) -> bool:
+              if not isinstance(result, str):
+                  return False
+              try:
+                  a, b = self.parse(num1)
+                  c, d = self.parse(num2)
+                  real, imag = self.parse(result)
+              except Exception:
+                  return False
+              expected_real = a * c - b * d
+              expected_imag = a * d + b * c
+              return real == expected_real and imag == expected_imag
+seed: 537537
+tests:
+  - name: "example_1"
+    in:
+      num1: "1+1i"
+      num2: "1+1i"
+    out: "0+2i"
+  - name: "example_2"
+    in:
+      num1: "1+-1i"
+      num2: "1+-1i"
+    out: "0+-2i"
+  - name: "zero_zero"
+    in:
+      num1: "0+0i"
+      num2: "0+0i"
+    out: "0+0i"
+  - name: "one_times_zero"
+    in:
+      num1: "1+0i"
+      num2: "0+0i"
+    out: "0+0i"
+  - name: "zero_times_complex"
+    in:
+      num1: "0+0i"
+      num2: "1+1i"
+    out: "0+0i"
+  - name: "real_only_negative_product"
+    in:
+      num1: "5+0i"
+      num2: "-7+0i"
+    out: "-35+0i"
+  - name: "conjugates_cancel_imaginary"
+    in:
+      num1: "1+1i"
+      num2: "1+-1i"
+    out: "2+0i"
+  - name: "pure_imaginary_positive"
+    in:
+      num1: "0+2i"
+      num2: "0+3i"
+    out: "-6+0i"
+  - name: "pure_imaginary_mixed_sign"
+    in:
+      num1: "0+-2i"
+      num2: "0+3i"
+    out: "6+0i"
+  - name: "boundary_same_positive"
+    in:
+      num1: "100+100i"
+      num2: "100+100i"
+    out: "0+20000i"
+  - name: "boundary_same_negative_imag"
+    in:
+      num1: "100+-100i"
+      num2: "100+-100i"
+    out: "0+-20000i"
+  - name: "boundary_conjugate"
+    in:
+      num1: "100+100i"
+      num2: "100+-100i"
+    out: "20000+0i"
+  - name: "boundary_opposite_real"
+    in:
+      num1: "-100+100i"
+      num2: "100+100i"
+    out: "-20000+0i"
+  - name: "double_negative_boundary"
+    in:
+      num1: "-100+-100i"
+      num2: "-100+-100i"
+    out: "0+20000i"
+  - name: "negative_real_pure_imaginary"
+    in:
+      num1: "-100+0i"
+      num2: "0+100i"
+    out: "0+-10000i"
+  - name: "mixed_small_positive"
+    in:
+      num1: "3+2i"
+      num2: "1+7i"
+    out: "-11+23i"
+  - name: "mixed_small_negative_imag"
+    in:
+      num1: "3+-2i"
+      num2: "1+7i"
+    out: "17+19i"
+  - name: "negative_real_positive_imag"
+    in:
+      num1: "-3+2i"
+      num2: "1+7i"
+    out: "-17+-19i"
+  - name: "double_negative_mixed"
+    in:
+      num1: "-3+-2i"
+      num2: "1+-7i"
+    out: "-17+19i"
+  - name: "high_cross_imaginary"
+    in:
+      num1: "99+1i"
+      num2: "1+99i"
+    out: "0+9802i"
+  - name: "classic_2_3_4_5"
+    in:
+      num1: "2+3i"
+      num2: "4+5i"
+    out: "-7+22i"
+  - name: "mixed_signs_cross"
+    in:
+      num1: "-2+3i"
+      num2: "4+-5i"
+    out: "7+22i"
+  - name: "real_times_real_positive"
+    in:
+      num1: "-8+0i"
+      num2: "-3+0i"
+    out: "24+0i"
+  - name: "imaginary_times_real_negative"
+    in:
+      num1: "0+5i"
+      num2: "-7+0i"
+    out: "0+-35i"
+  - name: "negative_pure_imaginary_square"
+    in:
+      num1: "0+-5i"
+      num2: "0+-7i"
+    out: "-35+0i"
+  - name: "multiply_by_i"
+    in:
+      num1: "7+8i"
+      num2: "0+1i"
+    out: "-8+7i"
+  - name: "multiply_by_negative_i"
+    in:
+      num1: "7+8i"
+      num2: "0+-1i"
+    out: "8+-7i"
+  - name: "identity_complex"
+    in:
+      num1: "42+17i"
+      num2: "1+0i"
+    out: "42+17i"
+  - name: "negate_complex"
+    in:
+      num1: "42+17i"
+      num2: "-1+0i"
+    out: "-42+-17i"
+  - name: "conjugate_product_11_13"
+    in:
+      num1: "11+-13i"
+      num2: "11+13i"
+    out: "290+0i"
+  - name: "conjugate_product_6_9"
+    in:
+      num1: "6+9i"
+      num2: "6+-9i"
+    out: "117+0i"
+  - name: "mixed_signs_large"
+    in:
+      num1: "10+-1i"
+      num2: "-2+-3i"
+    out: "-23+-28i"
+  - name: "double_negative_with_negative_imag"
+    in:
+      num1: "-8+6i"
+      num2: "-3+-4i"
+    out: "48+14i"
+  - name: "boundary_zero_imaginary_factor"
+    in:
+      num1: "100+0i"
+      num2: "0+-100i"
+    out: "0+-10000i"
+  - name: "mixed_sparse_boundary"
+    in:
+      num1: "-1+100i"
+      num2: "100+-1i"
+    out: "0+10001i"

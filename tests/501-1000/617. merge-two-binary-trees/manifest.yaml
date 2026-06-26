@@ -1,0 +1,235 @@
+entry:
+  id: 617
+  title: merge-two-binary-trees
+  params:
+    root1:
+      type: tree_node
+    root2:
+      type: tree_node
+  call:
+    cpp: "treeNodeToArray(Solution().mergeTrees({root1}, {root2}))"
+    rust: "TreeNode::tree_node_to_array(Solution::merge_trees({root1}, {root2}))"
+    python3: "tree_node_to_array(Solution().mergeTrees({root1}, {root2}))"
+    python2: "tree_node_to_array(Solution().mergeTrees({root1}, {root2}))"
+    ruby: "tree_node_to_array(merge_trees({root1}, {root2}))"
+    java: "TreeNode.treeNodeToArray(new Solution().mergeTrees({root1}, {root2}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().MergeTrees({root1}, {root2}))"
+    kotlin: "treeNodeToArray(Solution().mergeTrees({root1}, {root2}))"
+    go: "treeNodeToArray(mergeTrees({root1}, {root2}))"
+    dart: "tree_node_to_array(Solution().mergeTrees({root1}, {root2}))"
+    swift: "tree_node_to_array(Solution().mergeTrees({root1}, {root2}))"
+    typescript: "treeNodeToArray(mergeTrees({root1}, {root2}))"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().mergeTrees(root1, root2, {result})"
+    checker: |
+      class Checker:
+          def _build_tree(self, values):
+              if not isinstance(values, list) or not values:
+                  return None
+              nodes = [None if v is None else type("Node", (), {"val": v, "left": None, "right": None})() for v in values]
+              kids = nodes[::-1]
+              root = kids.pop()
+              for node in nodes:
+                  if node is not None:
+                      if kids:
+                          node.left = kids.pop()
+                      if kids:
+                          node.right = kids.pop()
+              return root
+
+          def _serialize(self, node):
+              if node is None:
+                  return []
+              out = []
+              queue = [node]
+              while queue:
+                  cur = queue.pop(0)
+                  if cur is None:
+                      out.append(None)
+                      continue
+                  out.append(cur.val)
+                  queue.append(cur.left)
+                  queue.append(cur.right)
+              while out and out[-1] is None:
+                  out.pop()
+              return out
+
+          def _merge(self, a, b):
+              if a is None:
+                  return b
+              if b is None:
+                  return a
+              a.val += b.val
+              a.left = self._merge(a.left, b.left)
+              a.right = self._merge(a.right, b.right)
+              return a
+
+          def mergeTrees(self, root1, root2, result):
+              if not isinstance(result, list):
+                  return False
+              expected = self._serialize(self._merge(self._build_tree(root1), self._build_tree(root2)))
+              return result == expected
+seed: 617
+tests:
+  - name: example-1
+    in:
+      root1: [1, 3, 2, 5]
+      root2: [2, 1, 3, null, 4, null, 7]
+  - name: example-2
+    in:
+      root1: [1]
+      root2: [1, 2]
+  - name: both-empty
+    in:
+      root1: []
+      root2: []
+  - name: left-empty
+    in:
+      root1: []
+      root2: [1, 2, 3]
+  - name: right-empty
+    in:
+      root1: [4, 5, 6]
+      root2: []
+  - name: single-nodes-sum
+    in:
+      root1: [5]
+      root2: [7]
+  - name: single-and-child-left
+    in:
+      root1: [1]
+      root2: [2, 3]
+  - name: single-and-child-right
+    in:
+      root1: [1]
+      root2: [2, null, 3]
+  - name: one-side-left-chain
+    in:
+      root1: [1, 2, null, 3, null, 4]
+      root2: [5]
+  - name: one-side-right-chain
+    in:
+      root1: [1, null, 2, null, 3, null, 4]
+      root2: [5]
+  - name: full-small
+    in:
+      root1: [1, 2, 3, 4, 5, 6, 7]
+      root2: [10, 20, 30, 40, 50, 60, 70]
+  - name: mixed-overlap
+    in:
+      root1: [1, 3, 2, 5]
+      root2: [2, 1, 3, null, 4, null, 7]
+  - name: deeper-left
+    in:
+      root1: [1, 2, 3, 4, null, null, 7]
+      root2: [1, 2, 3, null, 5, 6, null]
+  - name: deeper-right
+    in:
+      root1: [1, null, 2, null, 3, null, 4]
+      root2: [9, null, 8, null, 7, null, 6]
+  - name: negatives
+    in:
+      root1: [0, -1, -2, -3, -4]
+      root2: [0, -5, -6, -7, null, null, -8]
+  - name: zeros
+    in:
+      root1: [0, 0, 0]
+      root2: [0, 0, 0]
+  - name: uneven-structure-1
+    in:
+      root1: [1, 2, 3, null, 4, 5]
+      root2: [6, 7, 8, 9, null, null, 10]
+  - name: uneven-structure-2
+    in:
+      root1: [1, null, 2, 3, null, null, 4]
+      root2: [5, 6, null, null, 7]
+  - name: leaf-to-leaf
+    in:
+      root1: [1, 2, 3, 4, 5]
+      root2: [10, null, 20, null, null, 30, 40]
+  - name: sparse-mix-1
+    in:
+      root1: [8, 3, 10, 1, 6, null, 14, null, null, 4, 7, 13]
+      root2: [1, null, 2, null, 3, 4]
+  - name: sparse-mix-2
+    in:
+      root1: [2, 1, 3, null, 4, null, 5]
+      root2: [3, 4, 5, 6, null, null, 7]
+  - name: duplicate-values
+    in:
+      root1: [1, 1, 1, 1, 1, 1, 1]
+      root2: [1, 1, 1, 1, 1, 1, 1]
+  - name: left-heavy-balanced
+    in:
+      root1: [4, 2, 6, 1, 3, 5, 7]
+      root2: [1, 2, 3, 4, null, null, 5]
+  - name: right-heavy-balanced
+    in:
+      root1: [4, 2, 6, 1, 3, 5, 7]
+      root2: [1, null, 2, null, 3, null, 4]
+  - name: long-left-chain
+    in:
+      root1: [1, 1, null, 1, null, 1, null, 1, null, 1]
+      root2: [2]
+  - name: long-right-chain
+    in:
+      root1: [1, null, 1, null, 1, null, 1, null, 1, null, 1]
+      root2: [2]
+  - name: cross-shape-1
+    in:
+      root1: [3, 4, 5, 1, 2]
+      root2: [3, 4, 5, 1, null, null, 2]
+  - name: cross-shape-2
+    in:
+      root1: [3, 4, 5, 1, null, 2]
+      root2: [3, null, 5, null, 4, 1]
+  - name: boundary-values
+    in:
+      root1: [10000, -10000, 10000]
+      root2: [-10000, 10000, -10000]
+  - name: root-plus-descendants
+    in:
+      root1: [7, 3, 9, 1, 5, 8, 10]
+      root2: [1, 2, 3, 4, 5, 6, 7]
+  - name: asymmetric-deep-left
+    in:
+      root1: [1, 2, null, 3, null, 4, null, 5]
+      root2: [1, null, 2, null, 3, null, 4, null, 5]
+  - name: asymmetric-deep-right
+    in:
+      root1: [1, null, 2, null, 3, null, 4, null, 5]
+      root2: [1, 2, null, 3, null, 4, null, 5]
+  - name: one-tree-subsumes-other-left
+    in:
+      root1: [1, 2, 3, 4, 5, 6, 7]
+      root2: [0, null, null, null, null, null, null]
+  - name: one-tree-subsumes-other-right
+    in:
+      root1: [0]
+      root2: [1, 2, 3, 4, 5, 6, 7]
+  - name: mixed-sign-sparse
+    in:
+      root1: [-3, 9, 20, null, null, 15, 7]
+      root2: [3, -9, -20, null, null, -15, -7]
+  - name: balanced-minus-chain
+    in:
+      root1: [5, 4, 8, 11, null, 13, 4, 7, 2, null, null, 5, 1]
+      root2: [1, 2, 3, 4, 5, 6, 7]
+  - name: big-root-values
+    in:
+      root1: [9999, 9999, 9999]
+      root2: [1, 1, 1]
+  - name: child-only-left
+    in:
+      root1: [1, 2]
+      root2: [3, 4, 5]
+  - name: child-only-right
+    in:
+      root1: [1, null, 2]
+      root2: [3, 4, 5]

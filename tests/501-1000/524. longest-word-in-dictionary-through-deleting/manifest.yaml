@@ -1,0 +1,282 @@
+entry:
+  id: 524
+  title: longest-word-in-dictionary-through-deleting
+  params:
+    s:
+      type: string
+    dictionary:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().findLongestWord({s}, {dictionary})"
+    rust: "Solution::find_longest_word({s}, {dictionary})"
+    python3: "Solution().findLongestWord({s}, {dictionary})"
+    python2: "Solution().findLongestWord({s}, {dictionary})"
+    ruby: "find_longest_word({s}, {dictionary})"
+    java: "new Solution().findLongestWord({s}, java.util.Arrays.asList({dictionary}))"
+    csharp: "new Solution().FindLongestWord({s}, {dictionary})"
+    kotlin: "Solution().findLongestWord({s}, {dictionary}.toList())"
+    go: "findLongestWord({s}, {dictionary})"
+    dart: "Solution().findLongestWord({s}, {dictionary})"
+    swift: "Solution().findLongestWord({s}, {dictionary})"
+    typescript: "findLongestWord({s}, {dictionary})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().findLongestWord(s, dictionary, {result})"
+    checker: |
+      class Checker:
+          def findLongestWord(self, s, dictionary, result):
+              if not isinstance(result, str):
+                  return False
+              if result not in dictionary and result != "":
+                  return False
+
+              def is_subsequence(word, source):
+                  i = 0
+                  for ch in source:
+                      if i < len(word) and word[i] == ch:
+                          i += 1
+                  return i == len(word)
+
+              if result != "" and not is_subsequence(result, s):
+                  return False
+
+              best = ""
+              for word in dictionary:
+                  if is_subsequence(word, s):
+                      if len(word) > len(best) or (len(word) == len(best) and word < best):
+                          best = word
+              return result == best
+seed: 524
+tests:
+  - name: example-1
+    in:
+      s: "abpcplea"
+      dictionary: ["ale", "apple", "monkey", "plea"]
+    out: "apple"
+  - name: example-2
+    in:
+      s: "abpcplea"
+      dictionary: ["a", "b", "c"]
+    out: "a"
+  - name: single-match
+    in:
+      s: "abc"
+      dictionary: ["abc"]
+    out: "abc"
+  - name: no-match
+    in:
+      s: "abc"
+      dictionary: ["d", "ef", "gh"]
+    out: ""
+  - name: prefer-longer-over-lexicographic
+    in:
+      s: "bab"
+      dictionary: ["ba", "ab", "b"]
+    out: "ab"
+  - name: tie-lexicographic
+    in:
+      s: "abce"
+      dictionary: ["abe", "abc"]
+    out: "abc"
+  - name: repeated-letters-form-word
+    in:
+      s: "aaaabaaa"
+      dictionary: ["aaaaa", "aaaa", "aaab"]
+    out: "aaaaa"
+  - name: repeated-letters-insufficient
+    in:
+      s: "aab"
+      dictionary: ["aaab", "aabb", "ab"]
+    out: "ab"
+  - name: exact-string-among-others
+    in:
+      s: "leetcode"
+      dictionary: ["leet", "code", "leetcode", "leetcoded"]
+    out: "leetcode"
+  - name: empty-answer-with-near-misses
+    in:
+      s: "xyz"
+      dictionary: ["xyzz", "yy", "zxz"]
+    out: ""
+  - name: choose-longer-subsequence-late
+    in:
+      s: "axbxcxdx"
+      dictionary: ["abcd", "axcd", "abcdx"]
+    out: "abcdx"
+  - name: many-candidates-same-prefix
+    in:
+      s: "banana"
+      dictionary: ["ban", "bana", "banan", "banana", "anan"]
+    out: "banana"
+  - name: lexicographic-with-duplicates-in-dictionary
+    in:
+      s: "abdc"
+      dictionary: ["abc", "adc", "abc", "adc"]
+    out: "abc"
+  - name: single-character-source
+    in:
+      s: "z"
+      dictionary: ["a", "z", "zz"]
+    out: "z"
+  - name: source-with-all-same-char
+    in:
+      s: "bbbbbb"
+      dictionary: ["bbb", "bbbb", "bbbbb", "bbbbbbb"]
+    out: "bbbbb"
+  - name: prefer-lexicographically-smaller-long-tie
+    in:
+      s: "axbycz"
+      dictionary: ["abc", "abz", "xyz"]
+    out: "abc"
+  - name: impossible-because-order
+    in:
+      s: "abcde"
+      dictionary: ["aed", "edc", "ace"]
+    out: "ace"
+  - name: choose-word-with-gaps
+    in:
+      s: "pneumonoultramicroscopicsilicovolcanoconiosis"
+      dictionary: ["volcano", "silicon", "piano", "music"]
+    out: "silicon"
+  - name: all-dictionary-words-valid
+    in:
+      s: "abracadabra"
+      dictionary: ["aaa", "abra", "cada", "abraca", "acad"]
+    out: "abraca"
+  - name: last-word-best
+    in:
+      s: "mississippi"
+      dictionary: ["mip", "misi", "missi", "mississippii", "mississippi"]
+    out: "mississippi"
+  - name: first-word-best
+    in:
+      s: "helloworld"
+      dictionary: ["helloworld", "hello", "world", "held"]
+    out: "helloworld"
+  - name: longer-invalid-shorter-valid
+    in:
+      s: "abcabc"
+      dictionary: ["aabbcc", "abccba", "abcabc", "cab"]
+    out: "abcabc"
+  - name: subsequence-needs-skips
+    in:
+      s: "axbxcxdxe"
+      dictionary: ["abcde", "ace", "bd"]
+    out: "abcde"
+  - name: only-one-of-equal-length-valid
+    in:
+      s: "qwerty"
+      dictionary: ["qwy", "qey", "qty"]
+    out: "qey"
+  - name: duplicate-words-and-empty-result
+    in:
+      s: "lmn"
+      dictionary: ["op", "op", "oo"]
+    out: ""
+  - name: large-source-1000-a
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      dictionary:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+          "aaaaaaaaaa",
+        ]
+    out: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  - name: large-source-alphabet-cycles
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd"
+      dictionary:
+        [
+          "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
+          "zzzzzzzzzz",
+          "abcdefghijklmnopqrstuvwxyza",
+          "acegikmoqsuwy",
+        ]
+    out: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+  - name: dictionary-size-many-short
+    in:
+      s: "abcde"
+      dictionary:
+        [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "ab",
+          "ac",
+          "ad",
+          "ae",
+          "bc",
+          "bd",
+          "be",
+          "cd",
+          "ce",
+          "de",
+          "abc",
+          "abd",
+          "abe",
+          "acd",
+          "ace",
+          "ade",
+          "bcd",
+          "bce",
+          "bde",
+          "cde",
+          "abcd",
+          "abce",
+          "abde",
+          "acde",
+          "bcde",
+          "abcde",
+        ]
+    out: "abcde"
+  - name: subsequence-vs-substring
+    in:
+      s: "axxxbxxxcxxx"
+      dictionary: ["abc", "abx", "axc"]
+    out: "abc"
+  - name: near-complete-fail-on-last-char
+    in:
+      s: "programming"
+      dictionary: ["programmina", "programming", "progrmming"]
+    out: "programming"
+  - name: choose-between-same-length-different-order
+    in:
+      s: "cadb"
+      dictionary: ["cab", "cdb", "adb"]
+    out: "adb"
+  - name: valid-word-not-first-lex
+    in:
+      s: "zzxyyx"
+      dictionary: ["zyx", "zxy", "zzx", "xyy"]
+    out: "xyy"
+  - name: many-duplicate-candidates
+    in:
+      s: "foobarbaz"
+      dictionary: ["foo", "foo", "fob", "foob", "foob", "bar", "baz"]
+    out: "foob"
+  - name: long-word-beats-multiple-shorts
+    in:
+      s: "character"
+      dictionary: ["cat", "char", "chart", "crate", "character"]
+    out: "character"
+  - name: minimal-length-and-order
+    in:
+      s: "ab"
+      dictionary: ["ba", "a", "b"]
+    out: "a"
+  - name: long-source-mixed-best-in-middle
+    in:
+      s: "thequickbrownfoxjumpsoverthelazydog"
+      dictionary:
+        ["quickfox", "brownjump", "overthe", "lazydog", "thequickbrown"]
+    out: "thequickbrown"

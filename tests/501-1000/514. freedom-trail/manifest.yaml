@@ -1,0 +1,222 @@
+entry:
+  id: 514
+  title: freedom-trail
+  params:
+    ring:
+      type: string
+    key:
+      type: string
+  call:
+    cpp: Solution().findRotateSteps({ring}, {key})
+    rust: Solution::find_rotate_steps({ring}, {key})
+    python3: Solution().findRotateSteps({ring}, {key})
+    python2: Solution().findRotateSteps({ring}, {key})
+    ruby: find_rotate_steps({ring}, {key})
+    java: new Solution().findRotateSteps({ring}, {key})
+    csharp: new Solution().FindRotateSteps({ring}, {key})
+    kotlin: Solution().findRotateSteps({ring}, {key})
+    go: findRotateSteps({ring}, {key})
+    dart: Solution().findRotateSteps({ring}, {key})
+    swift: Solution().findRotateSteps({ring}, {key})
+    typescript: findRotateSteps({ring}, {key})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+seed: 514
+tests:
+  - name: example1
+    in:
+      ring: godding
+      key: gd
+    out: 4
+  - name: example2
+    in:
+      ring: godding
+      key: godding
+    out: 13
+  - name: single_match
+    in:
+      ring: ab
+      key: a
+    out: 1
+  - name: rotate_one_step
+    in:
+      ring: ab
+      key: b
+    out: 2
+  - name: straight_forward
+    in:
+      ring: abcde
+      key: ade
+    out: 6
+  - name: all_same_chars
+    in:
+      ring: aaaaa
+      key: aaaaa
+    out: 5
+  - name: repeated_pattern
+    in:
+      ring: abcabc
+      key: cba
+    out: 6
+  - name: wrap_around_left
+    in:
+      ring: pqrst
+      key: tsp
+    out: 7
+  - name: word_like
+    in:
+      ring: leetcode
+      key: code
+    out: 11
+  - name: target_at_end_then_start
+    in:
+      ring: aaaab
+      key: ba
+    out: 4
+  - name: reverse_direction
+    in:
+      ring: xyz
+      key: zyx
+    out: 6
+  - name: multiple_occurrences
+    in:
+      ring: aabca
+      key: caa
+    out: 6
+  - name: all_same_short
+    in:
+      ring: abca
+      key: aaa
+    out: 3
+  - name: small_cycle
+    in:
+      ring: cab
+      key: abc
+    out: 6
+  - name: reverse_full
+    in:
+      ring: abcde
+      key: edcba
+    out: 10
+  - name: one_letter_repeated_key
+    in:
+      ring: ababab
+      key: bbbb
+    out: 5
+  - name: same_letter_only
+    in:
+      ring: abc
+      key: ccc
+    out: 4
+  - name: mixed_letters
+    in:
+      ring: qwerty
+      key: tqy
+    out: 8
+  - name: double_same
+    in:
+      ring: zzzz
+      key: zz
+    out: 2
+  - name: alternating
+    in:
+      ring: azaza
+      key: zaa
+    out: 5
+  - name: short_ring_long_key
+    in:
+      ring: abc
+      key: cabc
+    out: 8
+  - name: single_choice_each_step
+    in:
+      ring: abcdef
+      key: fed
+    out: 6
+  - name: near_neighbor
+    in:
+      ring: abcdefgh
+      key: ace
+    out: 7
+  - name: repeated_target_positions
+    in:
+      ring: aaaaab
+      key: baaa
+    out: 6
+  - name: simple_back_and_forth
+    in:
+      ring: abc
+      key: aba
+    out: 5
+  - name: longish_unique
+    in:
+      ring: mnopqr
+      key: rmn
+    out: 6
+  - name: two_positions
+    in:
+      ring: aab
+      key: baa
+    out: 5
+  - name: cross_over
+    in:
+      ring: abcdabcd
+      key: dcb
+    out: 6
+  - name: centered_choice
+    in:
+      ring: helloworld
+      key: hero
+    out: 10
+  - name: repeat_pick_same
+    in:
+      ring: banana
+      key: nana
+    out: 9
+  - name: short_repeat
+    in:
+      ring: aba
+      key: aaa
+    out: 3
+  - name: single_letter_ring
+    in:
+      ring: aaaaaa
+      key: aaa
+    out: 3
+  - name: edge_large_alphabetical
+    in:
+      ring: abcdefghijklmnopqrstuvwxyz
+      key: zaza
+    out: 8
+  - name: with_duplicates_and_gap
+    in:
+      ring: axyzay
+      key: yay
+    out: 6
+  - name: palindrome_ring
+    in:
+      ring: racecar
+      key: ace
+    out: 6
+  - name: final_spot
+    in:
+      ring: pqrs
+      key: spq
+    out: 6
+oracle:
+  python3:
+    call: Checker().check(ring, key, {result})
+    checker:
+      "from functools import lru_cache\n\nclass Checker:\n    def check(self,\
+      \ ring, key, result):\n        if not isinstance(result, int):\n           \
+      \ return False\n        positions = {}\n        for i, ch in enumerate(ring):\n\
+      \            positions.setdefault(ch, []).append(i)\n        n = len(ring)\n\
+      \n        @lru_cache(None)\n        def dp(pos, idx):\n            if idx ==\
+      \ len(key):\n                return 0\n            best = 10 ** 18\n       \
+      \     for j in positions[key[idx]]:\n                dist = abs(j - pos)\n \
+      \               step = min(dist, n - dist)\n                best = min(best,\
+      \ step + 1 + dp(j, idx + 1))\n            return best\n\n        return result\
+      \ == dp(0, 0)\n"

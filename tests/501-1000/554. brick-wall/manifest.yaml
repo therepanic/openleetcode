@@ -1,0 +1,459 @@
+entry:
+  id: 554
+  title: brick-wall
+  params:
+    wall:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().leastBricks({wall})"
+    rust: "Solution::least_bricks({wall})"
+    python3: "Solution().leastBricks({wall})"
+    python2: "Solution().leastBricks({wall})"
+    ruby: "least_bricks({wall})"
+    java: "new Solution().leastBricks(java.util.Arrays.stream({wall}).map(row -> java.util.Arrays.stream(row).boxed().collect(java.util.stream.Collectors.toList())).collect(java.util.stream.Collectors.toList()))"
+    csharp: "new Solution().LeastBricks({wall})"
+    kotlin: "Solution().leastBricks({wall}.map { it.toList() })"
+    go: "leastBricks({wall})"
+    dart: "Solution().leastBricks({wall})"
+    swift: "Solution().leastBricks({wall})"
+    typescript: "leastBricks({wall})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(wall, {result})"
+    checker: |
+      class Checker:
+          def check(self, wall, result):
+              if not isinstance(result, int):
+                  return False
+              edge_counts = {}
+              for row in wall:
+                  edge = 0
+                  for brick in row[:-1]:
+                      edge += brick
+                      edge_counts[edge] = edge_counts.get(edge, 0) + 1
+              best = 0
+              for count in edge_counts.values():
+                  if count > best:
+                      best = count
+              return result == len(wall) - best
+seed: 554
+tests:
+  - name: example1
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 2, 2, 1]
+          - [3, 1, 2]
+          - [1, 3, 2]
+          - [2, 4]
+          - [3, 1, 2]
+          - [1, 3, 1, 1]
+    out: 2
+  - name: example2
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1]
+          - [1]
+          - [1]
+    out: 3
+  - name: two_identical_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+    out: 0
+  - name: three_identical_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 2, 2]
+          - [2, 2, 2]
+          - [2, 2, 2]
+    out: 0
+  - name: no_shared_edges_small
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 3]
+          - [2, 2]
+          - [3, 1]
+    out: 2
+  - name: single_row_many_bricks
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4]
+    out: 0
+  - name: single_row_single_brick
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [10]
+    out: 1
+  - name: all_single_bricks_four_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [5]
+          - [5]
+          - [5]
+          - [5]
+    out: 4
+  - name: shared_first_edge_all_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 4]
+          - [1, 1, 3]
+          - [1, 2, 2]
+          - [1, 3, 1]
+    out: 0
+  - name: shared_middle_edge_pair
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 3]
+          - [1, 1, 3]
+          - [3, 2]
+          - [4, 1]
+    out: 2
+  - name: large_width_values
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1000000000, 1000000000]
+          - [500000000, 1500000000]
+          - [1500000000, 500000000]
+    out: 2
+  - name: triangle_overlap
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 1, 1]
+          - [1, 2, 1]
+          - [1, 1, 2]
+    out: 1
+  - name: staggered_six_width
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1]
+          - [2, 2, 2]
+          - [3, 3]
+          - [4, 1, 1]
+          - [5, 1]
+    out: 2
+  - name: width_seven_unique_edges
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [7]
+          - [2, 5]
+          - [3, 4]
+          - [4, 3]
+          - [5, 2]
+    out: 4
+  - name: repeated_pattern_all_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 2, 1, 2]
+          - [1, 2, 1, 2]
+          - [1, 2, 1, 2]
+          - [1, 2, 1, 2]
+          - [1, 2, 1, 2]
+    out: 0
+  - name: mixed_long_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 1, 2, 1]
+          - [1, 2, 1, 2]
+          - [3, 1, 2]
+          - [4, 2]
+    out: 1
+  - name: twenty_identical_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+    out: 0
+  - name: twenty_single_brick_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+    out: 20
+  - name: alternating_patterns
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 3, 4]
+          - [4, 1, 3]
+          - [2, 2, 2, 2]
+          - [5, 3]
+          - [3, 5]
+    out: 2
+  - name: width_nine_dense_overlap
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 2, 2, 3]
+          - [4, 5]
+          - [1, 3, 5]
+          - [6, 3]
+          - [3, 3, 3]
+          - [5, 1, 1, 2]
+    out: 2
+  - name: mirrored_prime_widths
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 5]
+          - [5, 2]
+          - [3, 4]
+          - [4, 3]
+          - [1, 6]
+          - [6, 1]
+    out: 5
+  - name: shared_last_internal_edge
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [6, 1]
+          - [2, 4, 1]
+          - [3, 3, 1]
+          - [1, 5, 1]
+    out: 0
+  - name: mirrored_last_internal_unique
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 6]
+          - [2, 5]
+          - [3, 4]
+          - [4, 3]
+          - [5, 2]
+          - [6, 1]
+    out: 5
+  - name: shared_edge_nine_all_rows
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [9, 1]
+          - [4, 5, 1]
+          - [2, 7, 1]
+          - [3, 6, 1]
+          - [1, 8, 1]
+    out: 0
+  - name: width_ten_unique_internal_edges
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 9]
+          - [2, 8]
+          - [3, 7]
+          - [4, 6]
+          - [5, 5]
+          - [6, 4]
+    out: 5
+  - name: one_row_all_ones
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 0
+  - name: two_rows_no_overlap
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 4]
+          - [2, 3]
+    out: 1
+  - name: two_rows_with_overlap
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 3]
+          - [2, 1, 2]
+    out: 0
+  - name: three_rows_shared_last_edge
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 2, 1]
+          - [1, 3, 1]
+          - [4, 1]
+    out: 0
+  - name: max_int_single_bricks
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2147483647]
+          - [2147483647]
+    out: 2
+  - name: max_int_split_variants
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2147483646, 1]
+          - [1, 2147483646]
+          - [1073741823, 1073741824]
+    out: 2
+  - name: ten_rows_shared_first_edge
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+          - [1, 999]
+    out: 0
+  - name: twelve_rows_single_brick
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+          - [100]
+    out: 12
+  - name: descending_internal_edges
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [1, 5]
+          - [2, 4]
+          - [3, 3]
+          - [4, 2]
+          - [5, 1]
+    out: 4
+  - name: repeated_edge_two_across_subset
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 5]
+          - [2, 2, 3]
+          - [1, 1, 5]
+          - [4, 3]
+          - [2, 1, 1, 3]
+    out: 1
+  - name: fifteen_rows_pair_pattern
+    in:
+      wall:
+        elemType: "int"
+        value:
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+          - [2, 2]
+    out: 0
