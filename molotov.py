@@ -183,18 +183,28 @@ def run(concurrency, model, api_key, limit, skip):
     else:
         problems = problems[skip:]
 
+    problem_iter = iter(problems)
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
-        futures = [
-            executor.submit(
-                process,
-                folder,
-                model,
-                api_key,
+        futures = {}
+        for _ in range(concurrency):
+            folder = next(problem_iter, None)
+            if not folder:
+                break
+            fut = executor.submit(process, folder, model, api_key)
+            futures[fut] = folder
+        while futures:
+            done, _ = concurrent.futures.wait(
+                futures,
+                return_when=concurrent.futures.FIRST_COMPLETED,
             )
-            for folder in problems
-        ]
-        for future in concurrent.futures.as_completed(futures):
-            future.result()
+            for fut in done:
+                folder = futures.pop(fut)
+                fut.result()
+                next_folder = next(problem_iter, None)
+                if next_folder:
+                    new_fut = executor.submit(process, next_folder, model, api_key)
+                    futures[new_fut] = next_folder
 
 
 def main():
