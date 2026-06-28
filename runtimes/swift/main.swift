@@ -1,4 +1,7 @@
 import Foundation
+import Algorithms
+import Collections
+import Numerics
 
 let _TEST_: [String: [String: [String: Any]]] = {
     let data = try! Data(contentsOf: URL(fileURLWithPath: "test.json"))

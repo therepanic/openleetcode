@@ -5,8 +5,12 @@ pub struct Solution;
 use std::time::Instant;
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::cmp::{max, min, Ordering, Reverse};
 use std::collections::*;
 use std::fs;
+use itertools::Itertools;
+use rand::prelude::*;
+use regex::Regex;
 
 ${IMPORTS}
 
@@ -26,4 +30,3 @@ fn main() {
 ${SOLUTION}
 
 ${UTILITIES}
-

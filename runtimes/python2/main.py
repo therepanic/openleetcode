@@ -5,6 +5,10 @@ import math
 import heapq
 import bisect
 import itertools
+import random
+import re
+import operator
+import string
 import datetime as _dt
 import collections
 import json

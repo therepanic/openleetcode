@@ -2,6 +2,10 @@ require "set"
 require "date"
 require "time"
 require "json"
+require "strscan"
+require "bigdecimal"
+require "prime"
+require "algorithms"
 
 $TEST_ = JSON.parse(File.read("test.json"))
 
