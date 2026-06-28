@@ -1,5 +1,3 @@
-import "math/rand"
-
 type Solution struct {
     m map[int][]int
 }

@@ -1,7 +1,3 @@
-import (
-	"regexp"
-)
-
 func isValid(code string) bool {
     tagPat := regexp.MustCompile(`^<(/?)([A-Z]{1,9})>$`)
     openCdata := "<![CDATA["
