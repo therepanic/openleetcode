@@ -1,0 +1,244 @@
+entry:
+  id: 692
+  title: top-k-frequent-words
+  params:
+    words:
+      type: array
+      items:
+        type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().topKFrequent({words}, {k})"
+    rust: "Solution::top_k_frequent({words}, {k})"
+    python3: "Solution().topKFrequent({words}, {k})"
+    python2: "Solution().topKFrequent({words}, {k})"
+    ruby: "top_k_frequent({words}, {k})"
+    java: "new Solution().topKFrequent({words}, {k})"
+    csharp: "new Solution().TopKFrequent({words}, {k})"
+    kotlin: "Solution().topKFrequent({words}, {k})"
+    go: "topKFrequent({words}, {k})"
+    dart: "Solution().topKFrequent({words}, {k})"
+    swift: "Solution().topKFrequent({words}, {k})"
+    typescript: "topKFrequent({words}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().topKFrequent(words, k, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def topKFrequent(self, words, k, result):
+              if not isinstance(result, list) or len(result) != k:
+                  return False
+              if any(not isinstance(word, str) for word in result):
+                  return False
+              counter = Counter(words)
+              expected = sorted(counter.items(), key=lambda item: (-item[1], item[0]))
+              return result == [word for word, _ in expected[:k]]
+seed: 692
+tests:
+  - name: example1
+    in:
+      words:
+        - "i"
+        - "love"
+        - "leetcode"
+        - "i"
+        - "love"
+        - "coding"
+      k: 2
+  - name: example2
+    in:
+      words:
+        - "the"
+        - "day"
+        - "is"
+        - "sunny"
+        - "the"
+        - "the"
+        - "the"
+        - "sunny"
+        - "is"
+        - "is"
+      k: 4
+  - name: single_word
+    in:
+      words:
+        - "a"
+      k: 1
+  - name: all_same
+    in:
+      words:
+        - "z"
+        - "z"
+        - "z"
+        - "z"
+      k: 1
+  - name: tie_two_words
+    in:
+      words:
+        - "b"
+        - "a"
+      k: 2
+  - name: unique_k1
+    in:
+      words:
+        - "c"
+        - "b"
+        - "a"
+      k: 1
+  - name: unique_all
+    in:
+      words:
+        - "c"
+        - "b"
+        - "a"
+      k: 3
+  - name: frequency_gap
+    in:
+      words:
+        - "a"
+        - "b"
+        - "c"
+        - "d"
+        - "a"
+        - "a"
+        - "b"
+      k: 2
+  - name: three_way_tie
+    in:
+      words:
+        - "dog"
+        - "cat"
+        - "bird"
+        - "dog"
+        - "cat"
+        - "bird"
+      k: 3
+  - name: prefixes
+    in:
+      words:
+        - "app"
+        - "apple"
+        - "app"
+        - "apply"
+        - "apple"
+        - "apply"
+        - "ape"
+      k: 4
+  - name: sample_with_singletons
+    in:
+      words:
+        - "aa"
+        - "bb"
+        - "cc"
+        - "aa"
+        - "bb"
+        - "dd"
+        - "ee"
+      k: 4
+  - name: mixed_frequencies
+    in:
+      words:
+        - "i"
+        - "love"
+        - "coding"
+        - "i"
+        - "coding"
+        - "coding"
+        - "love"
+        - "a"
+      k: 3
+  - name: all_equal_freq
+    in:
+      words:
+        - "e"
+        - "d"
+        - "c"
+        - "b"
+        - "a"
+        - "e"
+        - "d"
+        - "c"
+        - "b"
+        - "a"
+      k: 5
+  - name: sorted_by_count_then_lex
+    in:
+      words:
+        - "x"
+        - "x"
+        - "y"
+        - "y"
+        - "z"
+        - "z"
+        - "z"
+      k: 3
+  - name: top_four
+    in:
+      words:
+        - "ff"
+        - "aa"
+        - "dd"
+        - "bb"
+        - "aa"
+        - "dd"
+        - "ff"
+        - "ff"
+        - "ee"
+        - "cc"
+      k: 4
+  - name: k_equals_unique
+    in:
+      words:
+        - "one"
+        - "two"
+        - "two"
+        - "three"
+        - "three"
+        - "three"
+      k: 3
+  - name: long_words
+    in:
+      words:
+        - "abcdefghij"
+        - "abcdefghik"
+        - "abcdefghij"
+        - "abcdefghik"
+        - "abcdefghil"
+      k: 3
+  - name: one_double_many_single
+    in:
+      words:
+        - "aa"
+        - "ab"
+        - "ac"
+        - "ad"
+        - "ae"
+        - "af"
+        - "aa"
+      k: 3
+  - name: alternating_pairs
+    in:
+      words:
+        - "red"
+        - "blue"
+        - "red"
+        - "green"
+        - "blue"
+        - "green"
+      k: 3
+  - name: all_single_sorted
+    in:
+      words:
+        - "kiwi"
+        - "pear"
+        - "apple"
+        - "mango"
+      k: 4

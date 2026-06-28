@@ -1,0 +1,31 @@
+class Solution {
+  int findNumberOfLIS(List<int> nums) {
+    int n = nums.length;
+    if (n == 0) return 0;
+
+    List<int> lengths = List.filled(n, 1);
+    List<int> counts = List.filled(n, 1);
+
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < i; j++) {
+        if (nums[j] < nums[i]) {
+          if (lengths[j] + 1 > lengths[i]) {
+            lengths[i] = lengths[j] + 1;
+            counts[i] = counts[j];
+          } else if (lengths[j] + 1 == lengths[i]) {
+            counts[i] += counts[j];
+          }
+        }
+      }
+    }
+
+    int maxLength = lengths.reduce((a, b) => a > b ? a : b);
+    int result = 0;
+    for (int i = 0; i < n; i++) {
+      if (lengths[i] == maxLength) {
+        result += counts[i];
+      }
+    }
+    return result;
+  }
+}

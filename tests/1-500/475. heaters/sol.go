@@ -1,5 +1,3 @@
-import "sort"
-
 func findRadius(houses []int, heaters []int) int {
     sort.Ints(houses)
     sort.Ints(heaters)

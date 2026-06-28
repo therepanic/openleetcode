@@ -1,0 +1,347 @@
+entry:
+  id: 508
+  title: most-frequent-subtree-sum
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().findFrequentTreeSum({root})
+    rust: Solution::find_frequent_tree_sum({root})
+    python3: Solution().findFrequentTreeSum({root})
+    python2: Solution().findFrequentTreeSum({root})
+    ruby: find_frequent_tree_sum({root})
+    java: new Solution().findFrequentTreeSum({root})
+    csharp: new Solution().FindFrequentTreeSum({root})
+    kotlin: Solution().findFrequentTreeSum({root})
+    go: findFrequentTreeSum({root})
+    dart: Solution().findFrequentTreeSum({root})
+    swift: Solution().findFrequentTreeSum({root})
+    typescript: findFrequentTreeSum({root})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().findFrequentTreeSum(root, {result})
+    checker:
+      "from collections import Counter, deque\n\nclass Checker:\n    class Node:\n        __slots__ = (\"val\", \"left\", \"right\")\n\n        def __init__(self, val):\n            self.val = val\n            self.left = None\n            self.right = None\n\n    def _build_tree(self, arr):\n        if arr == [] or arr is None:\n            return None\n        vals = list(arr)\n        if not vals or vals[0] is None:\n            return None\n        root = self.Node(vals[0])\n        queue = deque([root])\n        i = 1\n        while queue and i < len(vals):\n            node = queue.popleft()\n            if i < len(vals):\n                left_val = vals[i]\n                i += 1\n                if left_val is not None:\n                    node.left = self.Node(left_val)\n                    queue.append(node.left)\n            if i < len(vals):\n                right_val = vals[i]\n                i += 1\n                if right_val is not None:\n                    node.right\
+      \ = self.Node(right_val)\n                    queue.append(node.right)\n        return root\n\n    def findFrequentTreeSum(self, root_arr, result):\n        if not isinstance(result, list):\n            return False\n        root = self._build_tree(root_arr)\n        if root is None:\n            return result == []\n        sums = []\n\n        def dfs(node):\n            if node is None:\n                return 0\n            total = node.val + dfs(node.left) + dfs(node.right)\n            sums.append(total)\n            return total\n\n        dfs(root)\n        freq = Counter(sums)\n        max_freq = max(freq.values())\n        expected = Counter(k for k, v in freq.items() if v == max_freq)\n        return Counter(result) == expected\n"
+seed: 508
+tests:
+  - name: example_1
+    in:
+      root:
+        - 5
+        - 2
+        - -3
+  - name: example_2
+    in:
+      root:
+        - 5
+        - 2
+        - -5
+  - name: single_positive
+    in:
+      root:
+        - 7
+  - name: single_negative
+    in:
+      root:
+        - -8
+  - name: two_nodes_left_heavy
+    in:
+      root:
+        - 1
+        - 2
+  - name: two_nodes_right_heavy
+    in:
+      root:
+        - 1
+        - null
+        - 2
+  - name: all_zero_full_tree
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+  - name: all_same_small
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+  - name: balanced_mixed
+    in:
+      root:
+        - 4
+        - 2
+        - -5
+        - 1
+        - 1
+  - name: left_skewed_three
+    in:
+      root:
+        - 2
+        - 3
+        - null
+        - 4
+  - name: right_skewed_three
+    in:
+      root:
+        - 2
+        - null
+        - 3
+        - null
+        - null
+        - null
+        - 4
+  - name: tie_two_values
+    in:
+      root:
+        - 1
+        - 0
+        - 0
+  - name: duplicate_frequent_sum
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+  - name: negative_and_zero
+    in:
+      root:
+        - -1
+        - 0
+        - 0
+        - -1
+        - -1
+  - name: distinct_sums_full_tree
+    in:
+      root:
+        - 3
+        - 1
+        - 2
+        - 4
+        - 5
+        - 6
+        - 7
+  - name: all_leaves_same_sum
+    in:
+      root:
+        - 2
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+  - name: mixed_with_nulls
+    in:
+      root:
+        - 5
+        - 2
+        - 3
+        - null
+        - 1
+        - null
+        - -1
+  - name: negative_chain
+    in:
+      root:
+        - -2
+        - -3
+        - null
+        - -4
+  - name: repeated_subtree_sum
+    in:
+      root:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+  - name: zero_root_positive_children
+    in:
+      root:
+        - 0
+        - 1
+        - 1
+        - 1
+        - 1
+  - name: zero_root_negative_children
+    in:
+      root:
+        - 0
+        - -1
+        - -1
+        - -1
+        - -1
+  - name: deep_left_mixed
+    in:
+      root:
+        - 10
+        - 5
+        - null
+        - 3
+        - null
+        - 2
+  - name: deep_right_mixed
+    in:
+      root:
+        - 10
+        - null
+        - 5
+        - null
+        - null
+        - null
+        - 3
+  - name: balanced_with_tie
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 2
+        - 2
+        - 3
+        - 3
+  - name: large_values_positive
+    in:
+      root:
+        - 100000
+        - 100000
+        - 100000
+  - name: large_values_negative
+    in:
+      root:
+        - -100000
+        - -100000
+        - -100000
+  - name: alternating_values
+    in:
+      root:
+        - 1
+        - -1
+        - 1
+        - -1
+        - 1
+        - -1
+        - 1
+  - name: chain_four_with_duplicates
+    in:
+      root:
+        - 1
+        - 1
+        - null
+        - 1
+        - null
+        - 1
+  - name: wide_tree_many_leaves
+    in:
+      root:
+        - 6
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+  - name: unbalanced_with_null_gaps
+    in:
+      root:
+        - 8
+        - 3
+        - 5
+        - null
+        - 4
+        - null
+        - 2
+        - null
+        - null
+        - null
+        - 1
+  - name: many_zero_sums
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - null
+        - 0
+        - null
+  - name: root_only_frequent
+    in:
+      root:
+        - 9
+        - 4
+        - 5
+  - name: larger_balanced_mix
+    in:
+      root:
+        - 7
+        - 3
+        - 4
+        - 1
+        - 2
+        - 3
+        - 1
+        - null
+        - null
+        - 1
+        - null
+        - null
+        - 2
+        - null
+        - null
+  - name: repeated_leaf_sum
+    in:
+      root:
+        - 2
+        - 1
+        - 1
+        - null
+        - null
+        - 1
+        - 1
+  - name: mixed_negative_positive
+    in:
+      root:
+        - 3
+        - -2
+        - 4
+        - 5
+        - 1
+        - -1
+        - 2
+  - name: final_case_asymmetric
+    in:
+      root:
+        - 5
+        - 2
+        - 6
+        - 2
+        - null
+        - 1
+        - 3

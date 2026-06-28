@@ -1,0 +1,26 @@
+class Solution(object):
+    def isBipartite(self, graph):
+        """
+        :type graph: List[List[int]]
+        :rtype: bool
+        """
+        N = len(graph)
+        colors = [-1] * N
+        curr_color = 0
+        
+        for u in range(N):
+            if colors[u] == -1:
+                if not self.check_bipartite(u, curr_color, colors, graph):
+                    return False
+        return True
+
+    def check_bipartite(self, u, curr_color, colors, graph):
+        colors[u] = curr_color
+        for v in graph[u]:
+            if colors[v] == -1:
+                if not self.check_bipartite(v, 1 - curr_color, colors, graph):
+                    return False
+            else:
+                if colors[v] == curr_color:
+                    return False
+        return True

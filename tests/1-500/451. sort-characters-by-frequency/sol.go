@@ -1,7 +1,3 @@
-import (
-    "sort"
-)
-
 func frequencySort(s string) string {
     freq := make(map[rune]int)
     for _, c := range s {

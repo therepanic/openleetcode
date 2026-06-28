@@ -1,0 +1,465 @@
+entry:
+  id: 542
+  title: 01-matrix
+  params:
+    mat:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().updateMatrix({mat})"
+    rust: "Solution::update_matrix({mat})"
+    python3: "Solution().updateMatrix({mat})"
+    python2: "Solution().updateMatrix({mat})"
+    ruby: "update_matrix({mat})"
+    java: "new Solution().updateMatrix({mat})"
+    csharp: "new Solution().UpdateMatrix({mat})"
+    kotlin: "Solution().updateMatrix({mat})"
+    go: "updateMatrix({mat})"
+    dart: "Solution().updateMatrix({mat})"
+    swift: "Solution().updateMatrix({mat})"
+    typescript: "updateMatrix({mat})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(mat, {result})"
+    checker: |
+      class Checker:
+          def check(self, mat, result):
+              if not isinstance(result, list) or len(result) != len(mat):
+                  return False
+              if not mat or not isinstance(result[0], list) or len(result[0]) != len(mat[0]):
+                  return False
+              rows = len(mat)
+              cols = len(mat[0])
+              for row in result:
+                  if not isinstance(row, list) or len(row) != cols:
+                      return False
+                  for value in row:
+                      if not isinstance(value, int) or value < 0:
+                          return False
+              from collections import deque
+              q = deque()
+              dist = [[10 ** 9] * cols for _ in range(rows)]
+              for i in range(rows):
+                  for j in range(cols):
+                      if mat[i][j] == 0:
+                          dist[i][j] = 0
+                          q.append((i, j))
+              while q:
+                  i, j = q.popleft()
+                  for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                      ni, nj = i + di, j + dj
+                      if 0 <= ni < rows and 0 <= nj < cols and dist[ni][nj] > dist[i][j] + 1:
+                          dist[ni][nj] = dist[i][j] + 1
+                          q.append((ni, nj))
+              return result == dist
+seed: 542
+tests:
+  - name: example1
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+          - [0, 1, 0]
+          - [0, 0, 0]
+    out:
+      - [0, 0, 0]
+      - [0, 1, 0]
+      - [0, 0, 0]
+  - name: example2
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+          - [0, 1, 0]
+          - [1, 1, 1]
+    out:
+      - [0, 0, 0]
+      - [0, 1, 0]
+      - [1, 2, 1]
+  - name: single_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0]
+    out:
+      - [0]
+  - name: single_row_mixed
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 0, 1]
+    out:
+      - [0, 1, 1, 0, 1]
+  - name: single_col_mixed
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1]
+          - [1]
+          - [0]
+          - [1]
+          - [1]
+    out:
+      - [2]
+      - [1]
+      - [0]
+      - [1]
+      - [2]
+  - name: all_zeros_square
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 0]
+    out:
+      - [0, 0]
+      - [0, 0]
+  - name: center_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 0, 1]
+          - [1, 1, 1]
+    out:
+      - [2, 1, 2]
+      - [1, 0, 1]
+      - [2, 1, 2]
+  - name: corner_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+    out:
+      - [0, 1, 2]
+      - [1, 2, 3]
+      - [2, 3, 4]
+  - name: two_corners_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 0]
+    out:
+      - [0, 1, 2]
+      - [1, 2, 1]
+      - [2, 1, 0]
+  - name: cross_zeros
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 0, 1]
+          - [0, 1, 0]
+          - [1, 0, 1]
+    out:
+      - [1, 0, 1]
+      - [0, 1, 0]
+      - [1, 0, 1]
+  - name: row_of_zeros
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [0, 0, 0]
+          - [1, 1, 1]
+    out:
+      - [1, 1, 1]
+      - [0, 0, 0]
+      - [1, 1, 1]
+  - name: col_of_zeros
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 0, 1]
+          - [1, 0, 1]
+          - [1, 0, 1]
+    out:
+      - [1, 0, 1]
+      - [1, 0, 1]
+      - [1, 0, 1]
+  - name: checker_small
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 0]
+          - [1, 0, 1]
+          - [0, 1, 0]
+  - name: rectangular_wide
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 0, 1, 1]
+          - [1, 1, 1, 1, 1, 1]
+  - name: rectangular_tall
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 0]
+          - [1, 1]
+          - [1, 1]
+          - [0, 1]
+  - name: zeros_on_edges
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 0]
+          - [1, 1, 1, 1]
+          - [0, 1, 1, 0]
+  - name: inner_zero_cluster
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1]
+          - [1, 0, 0, 1]
+          - [1, 0, 0, 1]
+          - [1, 1, 1, 1]
+  - name: sparse_zeros
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1]
+          - [1, 1, 0, 1, 1]
+          - [1, 1, 1, 1, 1]
+          - [0, 1, 1, 1, 0]
+  - name: diagonalish
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1]
+          - [1, 1, 1, 1]
+          - [1, 1, 0, 1]
+          - [1, 1, 1, 1]
+  - name: single_zero_last
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 0]
+  - name: single_zero_first_col
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+  - name: banded
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 0, 1, 1]
+          - [1, 1, 1, 1, 1]
+          - [0, 1, 1, 1, 0]
+  - name: narrow_three_by_four
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 0, 1, 1]
+          - [1, 1, 1, 1]
+          - [1, 1, 0, 1]
+  - name: wide_with_many_zeros
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1, 0, 1, 1, 0]
+  - name: large_row_20
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: large_col_20
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [0]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+  - name: fifteen_by_fifteen_top_left_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: twenty_by_twenty_center_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: sixteen_by_sixteen_border_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: ten_by_ten_four_corners
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [0, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+  - name: five_by_fifteen_pattern
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1]
+          - [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1]
+          - [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0]
+          - [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1]
+          - [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1]
+  - name: three_by_twenty_periodic
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1]
+          - [0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1]
+          - [0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1]
+  - name: eight_by_eight_ring_zero
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 1, 1, 1, 1, 1, 1, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+  - name: six_by_six_two_regions
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1]
+          - [1, 0, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 0, 1]
+          - [1, 1, 1, 1, 1, 1]
+  - name: staircase_zeros
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1, 1]
+          - [1, 0, 1, 1, 1]
+          - [1, 1, 0, 1, 1]
+          - [1, 1, 1, 0, 1]
+          - [1, 1, 1, 1, 0]

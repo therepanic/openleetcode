@@ -1,0 +1,239 @@
+entry:
+  id: 724
+  title: find-pivot-index
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().pivotIndex({nums})"
+    rust: "Solution::pivot_index({nums})"
+    python3: "Solution().pivotIndex({nums})"
+    python2: "Solution().pivotIndex({nums})"
+    ruby: "pivot_index({nums})"
+    java: "new Solution().pivotIndex({nums})"
+    csharp: "new Solution().PivotIndex({nums})"
+    kotlin: "Solution().pivotIndex({nums})"
+    go: "pivotIndex({nums})"
+    dart: "Solution().pivotIndex({nums})"
+    swift: "Solution().pivotIndex({nums})"
+    typescript: "pivotIndex({nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().pivotIndex(nums, {result})"
+    checker: |
+      class Checker:
+          def pivotIndex(self, nums, result):
+              if not isinstance(result, int):
+                  return False
+              n = len(nums)
+              if result < -1 or result >= n:
+                  return False
+              total = sum(nums)
+              if result == -1:
+                  left = 0
+                  for x in nums:
+                      if left == total - left - x:
+                          return False
+                      left += x
+                  return True
+              left = sum(nums[:result])
+              right = total - left - nums[result]
+              if left != right:
+                  return False
+              running = 0
+              for i, x in enumerate(nums):
+                  if i >= result:
+                      break
+                  if running == total - running - x:
+                      return False
+                  running += x
+              return True
+seed: 724
+tests:
+  - name: example-1
+    in:
+      nums: [1, 7, 3, 6, 5, 6]
+    out: 3
+  - name: example-2
+    in:
+      nums: [1, 2, 3]
+    out: -1
+  - name: example-3
+    in:
+      nums: [2, 1, -1]
+    out: 0
+  - name: single-zero
+    in:
+      nums: [0]
+    out: 0
+  - name: single-positive
+    in:
+      nums: [5]
+    out: 0
+  - name: single-negative
+    in:
+      nums: [-1000]
+    out: 0
+  - name: two-zeros
+    in:
+      nums: [0, 0]
+    out: 0
+  - name: two-no-pivot
+    in:
+      nums: [1, -1]
+    out: -1
+  - name: all-zeros-5
+    in:
+      nums: [0, 0, 0, 0, 0]
+    out: 0
+  - name: left-edge-pivot
+    in:
+      nums: [0, 1, -1]
+    out: 0
+  - name: right-edge-pivot
+    in:
+      nums: [1, -1, 0]
+    out: 2
+  - name: small-middle-pivot
+    in:
+      nums: [1, 0, 1]
+    out: 1
+  - name: negative-middle-pivot
+    in:
+      nums: [-1, 0, -1]
+    out: 1
+  - name: negative-center-pivot
+    in:
+      nums: [-1, -1, 0, -1, -1]
+    out: 2
+  - name: late-leftmost-among-many
+    in:
+      nums: [1, -1, 0, 0]
+    out: 2
+  - name: alternating-no-pivot
+    in:
+      nums: [1, -1, 1, -1]
+    out: -1
+  - name: classic-middle
+    in:
+      nums: [1, 2, 1]
+    out: 1
+  - name: pivot-before-end
+    in:
+      nums: [2, 3, -1, 8, 4]
+    out: 3
+  - name: zero-total-last-pivot
+    in:
+      nums: [3, -3, 2, -2, 5]
+    out: 4
+  - name: duplicate-values-center
+    in:
+      nums: [4, 4, 4, 0, 4, 4, 4]
+    out: 3
+  - name: center-one-still-pivot
+    in:
+      nums: [4, 4, 4, 1, 4, 4, 4]
+    out: 3
+  - name: min-max-center
+    in:
+      nums: [1000, -1000, 0]
+    out: 2
+  - name: min-max-last-pivot
+    in:
+      nums: [1000, 1000, -1000, -1000, 1]
+    out: 4
+  - name: negative-left-edge
+    in:
+      nums: [0, -1000, 1000]
+    out: 0
+  - name: longer-middle
+    in:
+      nums: [1, 2, 3, 4, 0, 4, 3, 2, 1]
+    out: 4
+  - name: longer-no-pivot
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: -1
+  - name: zeros-around-cancel
+    in:
+      nums: [0, 0, 5, -5, 0]
+    out: 0
+  - name: symmetric-with-zero-center
+    in:
+      nums: [10, -5, -5, 0, -5, -5, 10]
+    out: 3
+  - name: leftmost-not-latest
+    in:
+      nums: [0, 0, 1, -1]
+    out: 0
+  - name: mixed-sign-no-pivot
+    in:
+      nums: [8, -6, 2, 1, -1]
+    out: -1
+  - name: generated-small-random
+    in:
+      nums:
+        gen: array
+        len: 8
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-medium-random
+    in:
+      nums:
+        gen: array
+        len: 64
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-large-random-2048
+    in:
+      nums:
+        gen: array
+        len: 2048
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-near-max-random-9999
+    in:
+      nums:
+        gen: array
+        len: 9999
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated-max-random-10000
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int

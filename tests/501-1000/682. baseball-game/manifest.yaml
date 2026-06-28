@@ -1,0 +1,517 @@
+entry:
+  id: 682
+  title: baseball-game
+  params:
+    operations:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().calPoints({operations})"
+    rust: "Solution::cal_points({operations})"
+    python3: "Solution().calPoints({operations})"
+    python2: "Solution().calPoints({operations})"
+    ruby: "cal_points({operations})"
+    java: "new Solution().calPoints({operations})"
+    csharp: "new Solution().CalPoints({operations})"
+    kotlin: "Solution().calPoints({operations})"
+    go: "calPoints({operations})"
+    dart: "Solution().calPoints({operations})"
+    swift: "Solution().calPoints({operations})"
+    typescript: "calPoints({operations})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().calPoints(operations, {result})"
+    checker: |
+      class Checker:
+          def calPoints(self, operations, result):
+              stack = []
+              for op in operations:
+                  if op == "C":
+                      if not stack:
+                          return False
+                      stack.pop()
+                  elif op == "D":
+                      if not stack:
+                          return False
+                      stack.append(stack[-1] * 2)
+                  elif op == "+":
+                      if len(stack) < 2:
+                          return False
+                      stack.append(stack[-1] + stack[-2])
+                  else:
+                      try:
+                          value = int(op)
+                      except Exception:
+                          return False
+                      if value < -30000 or value > 30000:
+                          return False
+                      stack.append(value)
+              return sum(stack) == result
+seed: 682
+tests:
+  - name: example_1
+    in:
+      operations:
+        - "5"
+        - "2"
+        - "C"
+        - "D"
+        - "+"
+    out: 30
+  - name: example_2
+    in:
+      operations:
+        - "5"
+        - "-2"
+        - "4"
+        - "C"
+        - "D"
+        - "9"
+        - "+"
+        - "+"
+    out: 27
+  - name: example_3
+    in:
+      operations:
+        - "1"
+        - "C"
+    out: 0
+  - name: single_positive
+    in:
+      operations:
+        - "7"
+    out: 7
+  - name: single_negative
+    in:
+      operations:
+        - "-8"
+    out: -8
+  - name: two_numbers_plus
+    in:
+      operations:
+        - "3"
+        - "4"
+        - "+"
+    out: 14
+  - name: two_numbers_double
+    in:
+      operations:
+        - "3"
+        - "4"
+        - "D"
+    out: 15
+  - name: cancel_to_empty_then_rebuild
+    in:
+      operations:
+        - "9"
+        - "C"
+        - "5"
+        - "6"
+        - "+"
+    out: 22
+  - name: alternating_cancel_double
+    in:
+      operations:
+        - "1"
+        - "2"
+        - "D"
+        - "C"
+        - "3"
+        - "D"
+    out: 12
+  - name: all_negative_chain
+    in:
+      operations:
+        - "-1"
+        - "-2"
+        - "+"
+        - "D"
+    out: -12
+  - name: zero_handling
+    in:
+      operations:
+        - "0"
+        - "0"
+        - "+"
+        - "D"
+    out: 0
+  - name: simple_mixed_1
+    in:
+      operations:
+        - "10"
+        - "5"
+        - "+"
+        - "D"
+        - "C"
+    out: 30
+  - name: simple_mixed_2
+    in:
+      operations:
+        - "10"
+        - "-5"
+        - "D"
+        - "+"
+    out: -20
+  - name: simple_mixed_3
+    in:
+      operations:
+        - "6"
+        - "1"
+        - "C"
+        - "2"
+        - "+"
+        - "D"
+    out: 32
+  - name: simple_mixed_4
+    in:
+      operations:
+        - "4"
+        - "8"
+        - "D"
+        - "+"
+        - "C"
+        - "7"
+    out: 35
+  - name: simple_mixed_5
+    in:
+      operations:
+        - "2"
+        - "3"
+        - "+"
+        - "+"
+        - "D"
+    out: 34
+  - name: simple_mixed_6
+    in:
+      operations:
+        - "1"
+        - "2"
+        - "3"
+        - "+"
+        - "D"
+        - "C"
+        - "+"
+    out: 19
+  - name: example_like_longer_1
+    in:
+      operations:
+        - "5"
+        - "2"
+        - "C"
+        - "D"
+        - "+"
+        - "9"
+        - "C"
+    out: 30
+  - name: example_like_longer_2
+    in:
+      operations:
+        - "5"
+        - "-2"
+        - "4"
+        - "C"
+        - "D"
+        - "9"
+        - "+"
+        - "+"
+        - "C"
+    out: 13
+  - name: max_positive_values
+    in:
+      operations:
+        - "30000"
+        - "30000"
+        - "+"
+        - "D"
+        - "+"
+    out: 420000
+  - name: max_negative_values
+    in:
+      operations:
+        - "-30000"
+        - "-30000"
+        - "+"
+        - "D"
+        - "+"
+    out: -420000
+  - name: boundary_mix_1
+    in:
+      operations:
+        - "30000"
+        - "-30000"
+        - "D"
+        - "+"
+        - "C"
+        - "1"
+    out: -59999
+  - name: boundary_mix_2
+    in:
+      operations:
+        - "-30000"
+        - "1"
+        - "+"
+        - "D"
+        - "+"
+    out: -209993
+  - name: boundary_mix_3
+    in:
+      operations:
+        - "30000"
+        - "1"
+        - "+"
+        - "D"
+        - "+"
+    out: 210007
+  - name: repeated_plus
+    in:
+      operations:
+        - "1"
+        - "2"
+        - "3"
+        - "+"
+        - "+"
+        - "+"
+    out: 32
+  - name: repeated_double
+    in:
+      operations:
+        - "2"
+        - "D"
+        - "D"
+        - "D"
+    out: 30
+  - name: repeated_cancel
+    in:
+      operations:
+        - "4"
+        - "5"
+        - "C"
+        - "C"
+        - "6"
+        - "7"
+        - "+"
+    out: 26
+  - name: rolling_window
+    in:
+      operations:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "C"
+        - "+"
+        - "D"
+        - "+"
+    out: 36
+  - name: cancel_and_plus
+    in:
+      operations:
+        - "8"
+        - "9"
+        - "+"
+        - "C"
+        - "7"
+        - "+"
+    out: 40
+  - name: cancel_and_double
+    in:
+      operations:
+        - "8"
+        - "9"
+        - "+"
+        - "D"
+        - "C"
+        - "7"
+    out: 41
+  - name: many_small_values
+    in:
+      operations:
+        - "1"
+        - "1"
+        - "1"
+        - "1"
+        - "+"
+        - "+"
+        - "+"
+    out: 14
+  - name: many_mixed_values
+    in:
+      operations:
+        - "3"
+        - "-1"
+        - "2"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "4"
+    out: 11
+  - name: large_valid_sequence_1
+    in:
+      operations:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+        - "7"
+        - "8"
+        - "9"
+        - "10"
+        - "+"
+        - "+"
+        - "D"
+        - "C"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "11"
+        - "12"
+    out: 270
+  - name: large_valid_sequence_2
+    in:
+      operations:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+        - "7"
+        - "8"
+        - "9"
+        - "10"
+        - "11"
+        - "12"
+        - "13"
+        - "14"
+        - "15"
+        - "16"
+        - "17"
+        - "18"
+        - "19"
+        - "20"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "D"
+        - "+"
+        - "C"
+        - "+"
+    out: 717
+  - name: long_alternating_1
+    in:
+      operations:
+        - "5"
+        - "6"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "7"
+        - "D"
+        - "+"
+        - "C"
+        - "8"
+        - "+"
+    out: 95
+  - name: long_alternating_2
+    in:
+      operations:
+        - "-3"
+        - "4"
+        - "D"
+        - "+"
+        - "C"
+        - "5"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "6"
+        - "D"
+    out: 71
+  - name: long_alternating_3
+    in:
+      operations:
+        - "2"
+        - "3"
+        - "+"
+        - "4"
+        - "D"
+        - "+"
+        - "C"
+        - "5"
+        - "D"
+        - "+"
+        - "+"
+    out: 77
+  - name: stress_large_1
+    in:
+      operations:
+        - "100"
+        - "200"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "300"
+        - "D"
+        - "+"
+        - "C"
+        - "400"
+        - "+"
+        - "D"
+        - "+"
+    out: 8500
+  - name: stress_large_2
+    in:
+      operations:
+        - "30000"
+        - "-30000"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "29999"
+        - "1"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "0"
+        - "D"
+    out: 120000
+  - name: max_length_pattern
+    in:
+      operations:
+        - "1"
+        - "2"
+        - "3"
+        - "+"
+        - "D"
+        - "C"
+        - "4"
+        - "5"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "6"
+        - "7"
+        - "+"
+        - "D"
+        - "+"
+        - "C"
+        - "8"
+        - "9"
+    out: 116

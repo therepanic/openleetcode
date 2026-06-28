@@ -1,0 +1,36 @@
+class Solution(object):
+    def minStickers(self, stickers, target):
+        """
+        :type stickers: List[str]
+        :type target: str
+        :rtype: int
+        """
+        def dfs(stickers, target, idx, memo):
+            if target == "":
+                return 0
+            if idx == len(stickers):
+                return float("inf")
+            
+            key = (idx, target)
+            if key in memo:
+                return memo[key]
+            
+            result = dfs(stickers, target, idx + 1, memo)
+            
+            currentSticker = stickers[idx]
+            newTarget = target
+            somethingRemoved = False
+            for c in currentSticker:
+                idxToRemove = newTarget.find(c)
+                if idxToRemove != -1:
+                    newTarget = newTarget[:idxToRemove] + newTarget[idxToRemove+1:]
+                    somethingRemoved = True
+            
+            if somethingRemoved:
+                result = min(result, 1 + dfs(stickers, newTarget, idx, memo))
+            
+            memo[key] = result
+            return result
+        
+        result = dfs(stickers, target, 0, {})
+        return result if result != float("inf") else -1

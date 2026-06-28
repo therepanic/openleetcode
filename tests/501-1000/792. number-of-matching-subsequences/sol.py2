@@ -1,0 +1,33 @@
+class Solution(object):
+    def numMatchingSubseq(self, s, words):
+        """
+        :type s: str
+        :type words: List[str]
+        :rtype: int
+        """
+        import bisect
+        from collections import defaultdict
+        
+        n = len(s)
+        mp = defaultdict(list)
+        for i, val in enumerate(s):
+            mp[val].append(i)
+        for val in range(26):
+            ch = chr(ord('a') + val)
+            mp[ch].append(n)
+            mp[ch].sort()
+        
+        def found(word):
+            curr = -1
+            for ch in word:
+                if curr >= n:
+                    return False
+                idx = bisect.bisect_left(mp[ch], curr + 1)
+                curr = mp[ch][idx]
+            return curr < n
+        
+        cnt = 0
+        for word in words:
+            if found(word):
+                cnt += 1
+        return cnt

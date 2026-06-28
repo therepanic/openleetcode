@@ -1,5 +1,3 @@
-import "strconv"
-
 func compress(chars []byte) int {
     i, j := 0, 0
     for j < len(chars) {

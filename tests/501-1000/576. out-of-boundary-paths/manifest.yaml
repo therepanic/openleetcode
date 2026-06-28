@@ -1,0 +1,345 @@
+entry:
+  id: 576
+  title: out-of-boundary-paths
+  params:
+    m:
+      type: int
+    n:
+      type: int
+    maxMove:
+      type: int
+    startRow:
+      type: int
+    startColumn:
+      type: int
+  call:
+    cpp: Solution().findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    rust: Solution::find_paths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    python3: Solution().findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    python2: Solution().findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    ruby: find_paths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    java: new Solution().findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    csharp: new Solution().FindPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    kotlin: Solution().findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    go: findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    dart: Solution().findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    swift: Solution().findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+    typescript: findPaths({m}, {n}, {maxMove}, {startRow}, {startColumn})
+judge:
+  type: exact
+limits:
+  time_ms: 1200
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().findPaths(m, n, maxMove, startRow, startColumn, {result})
+    checker: |
+      class Checker:
+          def findPaths(self, m, n, maxMove, startRow, startColumn, result):
+              mod = 10**9 + 7
+              dp = [[0] * n for _ in range(m)]
+              for _ in range(maxMove):
+                  ndp = [[0] * n for _ in range(m)]
+                  for i in range(m):
+                      for j in range(n):
+                          val = 0
+                          for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                              x = i + di
+                              y = j + dj
+                              if x < 0 or x >= m or y < 0 or y >= n:
+                                  val += 1
+                              else:
+                                  val += dp[x][y]
+                          ndp[i][j] = val % mod
+                  dp = ndp
+              return isinstance(result, int) and result == dp[startRow][startColumn]
+seed: 576
+tests:
+  - name: example-1
+    in:
+      m: 2
+      n: 2
+      maxMove: 2
+      startRow: 0
+      startColumn: 0
+    out: 6
+  - name: example-2
+    in:
+      m: 1
+      n: 3
+      maxMove: 3
+      startRow: 0
+      startColumn: 1
+    out: 12
+  - name: zero-move-single
+    in:
+      m: 1
+      n: 1
+      maxMove: 0
+      startRow: 0
+      startColumn: 0
+    out: 0
+  - name: one-move-single
+    in:
+      m: 1
+      n: 1
+      maxMove: 1
+      startRow: 0
+      startColumn: 0
+    out: 4
+  - name: two-move-single
+    in:
+      m: 1
+      n: 1
+      maxMove: 2
+      startRow: 0
+      startColumn: 0
+    out: 4
+  - name: center-no-exit
+    in:
+      m: 3
+      n: 3
+      maxMove: 1
+      startRow: 1
+      startColumn: 1
+    out: 0
+  - name: corner-one-move
+    in:
+      m: 3
+      n: 3
+      maxMove: 1
+      startRow: 0
+      startColumn: 0
+    out: 2
+  - name: edge-one-move
+    in:
+      m: 3
+      n: 4
+      maxMove: 1
+      startRow: 0
+      startColumn: 2
+    out: 1
+  - name: center-two-moves
+    in:
+      m: 3
+      n: 3
+      maxMove: 2
+      startRow: 1
+      startColumn: 1
+    out: 4
+  - name: edge-two-moves
+    in:
+      m: 2
+      n: 3
+      maxMove: 2
+      startRow: 0
+      startColumn: 1
+    out: 6
+  - name: corner-two-moves
+    in:
+      m: 2
+      n: 3
+      maxMove: 2
+      startRow: 0
+      startColumn: 0
+    out: 5
+  - name: rect-center-three
+    in:
+      m: 2
+      n: 4
+      maxMove: 3
+      startRow: 1
+      startColumn: 2
+    out: 16
+  - name: row-end
+    in:
+      m: 1
+      n: 5
+      maxMove: 4
+      startRow: 0
+      startColumn: 0
+    out: 16
+  - name: row-middle
+    in:
+      m: 1
+      n: 5
+      maxMove: 4
+      startRow: 0
+      startColumn: 2
+    out: 28
+  - name: col-end
+    in:
+      m: 5
+      n: 1
+      maxMove: 4
+      startRow: 0
+      startColumn: 0
+    out: 16
+  - name: col-middle
+    in:
+      m: 5
+      n: 1
+      maxMove: 4
+      startRow: 2
+      startColumn: 0
+    out: 28
+  - name: zero-moves-corner-large
+    in:
+      m: 5
+      n: 7
+      maxMove: 0
+      startRow: 0
+      startColumn: 0
+    out: 0
+  - name: two-by-two-four-moves
+    in:
+      m: 2
+      n: 2
+      maxMove: 4
+      startRow: 1
+      startColumn: 1
+    out: 30
+  - name: two-by-two-five-moves
+    in:
+      m: 2
+      n: 2
+      maxMove: 5
+      startRow: 0
+      startColumn: 1
+    out: 62
+  - name: symmetry-upper-left
+    in:
+      m: 4
+      n: 4
+      maxMove: 3
+      startRow: 1
+      startColumn: 1
+    out: 12
+  - name: symmetry-lower-right
+    in:
+      m: 4
+      n: 4
+      maxMove: 3
+      startRow: 2
+      startColumn: 2
+    out: 12
+  - name: near-boundary-four-moves
+    in:
+      m: 4
+      n: 5
+      maxMove: 4
+      startRow: 0
+      startColumn: 3
+    out: 32
+  - name: deep-center-five
+    in:
+      m: 5
+      n: 5
+      maxMove: 5
+      startRow: 2
+      startColumn: 2
+    out: 136
+  - name: deep-corner-five
+    in:
+      m: 5
+      n: 5
+      maxMove: 5
+      startRow: 0
+      startColumn: 0
+    out: 64
+  - name: thin-row-wide
+    in:
+      m: 2
+      n: 50
+      maxMove: 5
+      startRow: 1
+      startColumn: 25
+    out: 121
+  - name: thin-col-tall
+    in:
+      m: 50
+      n: 2
+      maxMove: 5
+      startRow: 25
+      startColumn: 1
+    out: 121
+  - name: max-grid-zero
+    in:
+      m: 50
+      n: 50
+      maxMove: 0
+      startRow: 25
+      startColumn: 25
+    out: 0
+  - name: max-grid-corner-one
+    in:
+      m: 50
+      n: 50
+      maxMove: 1
+      startRow: 0
+      startColumn: 0
+    out: 2
+  - name: max-grid-center-one
+    in:
+      m: 50
+      n: 50
+      maxMove: 1
+      startRow: 25
+      startColumn: 25
+    out: 0
+  - name: max-grid-edge-two
+    in:
+      m: 50
+      n: 50
+      maxMove: 2
+      startRow: 0
+      startColumn: 25
+    out: 3
+  - name: max-grid-center-five
+    in:
+      m: 50
+      n: 50
+      maxMove: 5
+      startRow: 25
+      startColumn: 25
+    out: 0
+  - name: max-grid-corner-ten
+    in:
+      m: 50
+      n: 50
+      maxMove: 10
+      startRow: 0
+      startColumn: 0
+    out: 15604
+  - name: mid-grid-ten-moves
+    in:
+      m: 8
+      n: 7
+      maxMove: 10
+      startRow: 3
+      startColumn: 3
+    out: 64943
+  - name: asym-eight-moves
+    in:
+      m: 6
+      n: 9
+      maxMove: 8
+      startRow: 5
+      startColumn: 4
+    out: 2453
+  - name: near-max-moves-small-grid
+    in:
+      m: 3
+      n: 4
+      maxMove: 12
+      startRow: 1
+      startColumn: 2
+    out: 406276
+  - name: high-paths-mod
+    in:
+      m: 8
+      n: 8
+      maxMove: 20
+      startRow: 3
+      startColumn: 3
+    out: 920657225

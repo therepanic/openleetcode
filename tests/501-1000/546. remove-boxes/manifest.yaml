@@ -1,0 +1,1031 @@
+entry:
+  id: 546
+  title: remove-boxes
+  params:
+    boxes:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().removeBoxes({boxes})
+    rust: Solution::remove_boxes({boxes})
+    python3: Solution().removeBoxes({boxes})
+    python2: Solution().removeBoxes({boxes})
+    ruby: remove_boxes({boxes})
+    java: new Solution().removeBoxes({boxes})
+    csharp: new Solution().RemoveBoxes({boxes})
+    kotlin: Solution().removeBoxes({boxes})
+    go: removeBoxes({boxes})
+    dart: Solution().removeBoxes({boxes})
+    swift: Solution().removeBoxes({boxes})
+    typescript: removeBoxes({boxes})
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(boxes, {result})
+    checker:
+      "from functools import lru_cache\nfrom itertools import groupby\n\nclass\
+      \ Checker:\n    def check(self, boxes, result):\n        if not isinstance(result,\
+      \ int):\n            return False\n\n        groups = tuple((color, len(list(group)))\
+      \ for color, group in groupby(boxes))\n\n        @lru_cache(None)\n        def\
+      \ solve(state):\n            if not state:\n                return 0\n     \
+      \       (left_color, left_len), rest = state[0], state[1:]\n            best\
+      \ = left_len * left_len + solve(rest)\n            for idx, (color, length)\
+      \ in enumerate(rest):\n                if color != left_color:\n           \
+      \         continue\n                merged = ((left_color, left_len + length),)\
+      \ + rest[idx + 1:]\n                best = max(best, solve(rest[:idx]) + solve(merged))\n\
+      \            return best\n\n        return result == solve(groups)\n"
+seed: 546
+tests:
+  - name: example1
+    in:
+      boxes:
+        - 1
+        - 3
+        - 2
+        - 2
+        - 2
+        - 3
+        - 4
+        - 3
+        - 1
+    out: 23
+  - name: example2
+    in:
+      boxes:
+        - 1
+        - 1
+        - 1
+    out: 9
+  - name: example3
+    in:
+      boxes:
+        - 1
+    out: 1
+  - name: all_distinct_4
+    in:
+      boxes:
+        - 1
+        - 2
+        - 3
+        - 4
+    out: 4
+  - name: all_distinct_7
+    in:
+      boxes:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out: 7
+  - name: all_same_5
+    in:
+      boxes:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+    out: 25
+  - name: all_same_10
+    in:
+      boxes:
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+    out: 100
+  - name: alternating_4
+    in:
+      boxes:
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 6
+  - name: alternating_5
+    in:
+      boxes:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+    out: 11
+  - name: alternating_6
+    in:
+      boxes:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 12
+  - name: pal_merge_small
+    in:
+      boxes:
+        - 1
+        - 2
+        - 2
+        - 1
+    out: 8
+  - name: pal_merge_medium
+    in:
+      boxes:
+        - 1
+        - 2
+        - 3
+        - 3
+        - 2
+        - 1
+    out: 12
+  - name: bridge_singleton
+    in:
+      boxes:
+        - 1
+        - 2
+        - 1
+    out: 5
+  - name: two_large_blocks
+    in:
+      boxes:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 1
+        - 1
+    out: 25
+  - name: three_color_merge
+    in:
+      boxes:
+        - 1
+        - 3
+        - 1
+        - 3
+        - 1
+    out: 11
+  - name: cluster_then_bridge
+    in:
+      boxes:
+        - 4
+        - 4
+        - 1
+        - 4
+    out: 10
+  - name: end_merge
+    in:
+      boxes:
+        - 5
+        - 1
+        - 1
+        - 1
+        - 5
+    out: 13
+  - name: sandwich_single
+    in:
+      boxes:
+        - 2
+        - 3
+        - 2
+    out: 5
+  - name: multi_bridge
+    in:
+      boxes:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+    out: 19
+  - name: growing_groups
+    in:
+      boxes:
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 3
+    out: 29
+  - name: descending_groups
+    in:
+      boxes:
+        - 4
+        - 4
+        - 4
+        - 3
+        - 3
+        - 2
+        - 1
+    out: 15
+  - name: split_same_color
+    in:
+      boxes:
+        - 1
+        - 1
+        - 2
+        - 3
+        - 2
+        - 1
+        - 1
+    out: 21
+  - name: many_merges
+    in:
+      boxes:
+        - 1
+        - 2
+        - 2
+        - 3
+        - 3
+        - 2
+        - 2
+        - 1
+    out: 24
+  - name: mixed_blocks
+    in:
+      boxes:
+        - 1
+        - 1
+        - 2
+        - 3
+        - 3
+        - 3
+        - 2
+        - 2
+        - 1
+    out: 27
+  - name: large_uniform_100
+    in:
+      boxes:
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+        - 9
+    out: 10000
+  - name: large_alternating_100
+    in:
+      boxes:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+        - 2
+    out: 2550
+  - name: large_triple_pattern_99
+    in:
+      boxes:
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+        - 1
+        - 2
+        - 3
+    out: 1155
+  - name: large_half_blocks_100
+    in:
+      boxes:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+    out: 3750
+  - name: large_quarters_100
+    in:
+      boxes:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 3
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 3600
+  - name: near_max_varied_100
+    in:
+      boxes:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 4
+        - 4
+        - 5
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 4
+        - 4
+        - 5
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 4
+        - 4
+        - 5
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 4
+        - 4
+        - 5
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 4
+        - 4
+        - 5
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 2
+        - 2
+        - 3
+        - 3
+        - 3
+        - 4
+        - 4
+        - 5
+        - 6
+        - 6
+        - 6
+        - 6
+        - 6
+        - 6
+        - 6
+        - 6
+        - 6
+        - 6
+    out: 1180
+  - name: color_range_high
+    in:
+      boxes:
+        - 100
+        - 1
+        - 100
+        - 1
+        - 100
+    out: 11
+  - name: max_color_uniform
+    in:
+      boxes:
+        - 100
+        - 100
+        - 100
+        - 100
+        - 100
+        - 100
+        - 100
+        - 100
+    out: 64
+  - name: zigzag_with_runs
+    in:
+      boxes:
+        - 1
+        - 2
+        - 2
+        - 1
+        - 3
+        - 3
+        - 1
+    out: 17
+  - name: embedded_center_block
+    in:
+      boxes:
+        - 8
+        - 1
+        - 1
+        - 1
+        - 8
+        - 8
+    out: 18
+  - name: small_two_colors_runs
+    in:
+      boxes:
+        - 1
+        - 1
+        - 2
+        - 1
+        - 1
+    out: 17
+  - name: generated_small_dense
+    seed: 5461
+    in:
+      boxes:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 15
+        of:
+          gen: int
+          min: 1
+          max: 5
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_medium_sparse
+    seed: 5462
+    in:
+      boxes:
+        gen: array
+        len:
+          gen: int
+          min: 16
+          max: 40
+        of:
+          gen: int
+          min: 1
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_large_dense
+    seed: 5463
+    in:
+      boxes:
+        gen: array
+        len:
+          gen: int
+          min: 80
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 4
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_large_wide_colors
+    seed: 5464
+    in:
+      boxes:
+        gen: array
+        len:
+          gen: int
+          min: 70
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_any_valid
+    seed: 5465
+    in:
+      boxes:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int

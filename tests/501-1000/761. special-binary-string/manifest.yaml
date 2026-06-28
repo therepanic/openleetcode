@@ -1,0 +1,193 @@
+entry:
+  id: 761
+  title: special-binary-string
+  params:
+    s:
+      type: string
+  call:
+    cpp: Solution().makeLargestSpecial({s})
+    rust: Solution::make_largest_special({s})
+    python3: Solution().makeLargestSpecial({s})
+    python2: Solution().makeLargestSpecial({s})
+    ruby: make_largest_special({s})
+    java: new Solution().makeLargestSpecial({s})
+    csharp: new Solution().MakeLargestSpecial({s})
+    kotlin: Solution().makeLargestSpecial({s})
+    go: makeLargestSpecial({s})
+    dart: Solution().makeLargestSpecial({s})
+    swift: Solution().makeLargestSpecial({s})
+    typescript: makeLargestSpecial({s})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(s, {result})
+    checker:
+      "class Checker:\n    def check(self, s, result):\n        if not isinstance(s,\
+      \ str) or not isinstance(result, str):\n            return False\n        if\
+      \ len(s) < 2 or len(s) > 50 or len(s) % 2 != 0:\n            return False\n\
+      \        if any(ch not in \"01\" for ch in s) or any(ch not in \"01\" for ch\
+      \ in result):\n            return False\n        if not self._is_special(s)\
+      \ or not self._is_special(result):\n            return False\n        if len(result)\
+      \ != len(s):\n            return False\n        expected = self._canonical(s)\n\
+      \        return expected is not None and result == expected\n\n    def _is_special(self,\
+      \ s):\n        balance = 0\n        for ch in s:\n            balance += 1 if\
+      \ ch == \"1\" else -1\n            if balance < 0:\n                return False\n\
+      \        return balance == 0\n\n    def _canonical(self, s):\n        if not\
+      \ s:\n            return \"\"\n        parts = []\n        balance = 0\n   \
+      \     start = 0\n        for i, ch in enumerate(s):\n            balance +=\
+      \ 1 if ch == \"1\" else -1\n            if balance < 0:\n                return\
+      \ None\n            if balance == 0:\n                inner = self._canonical(s[start\
+      \ + 1:i])\n                if inner is None:\n                    return None\n\
+      \                parts.append(\"1\" + inner + \"0\")\n                start\
+      \ = i + 1\n        if balance != 0 or start != len(s):\n            return None\n\
+      \        parts.sort(reverse=True)\n        return \"\".join(parts)\n"
+seed: 761
+tests:
+  - name: example_reorder
+    in:
+      s: "11011000"
+    out: '"11100100"'
+  - name: example_smallest
+    in:
+      s: "10"
+    out: '"10"'
+  - name: two_pairs_split
+    in:
+      s: "1010"
+    out: '"1010"'
+  - name: two_pairs_nested
+    in:
+      s: "1100"
+    out: '"1100"'
+  - name: three_pairs_all_atomic
+    in:
+      s: "101010"
+    out: '"101010"'
+  - name: three_pairs_reorder_to_front
+    in:
+      s: "101100"
+    out: '"110010"'
+  - name: three_pairs_already_best_split
+    in:
+      s: "110010"
+    out: '"110010"'
+  - name: three_pairs_outer_with_tail
+    in:
+      s: "110100"
+    out: '"110100"'
+  - name: three_pairs_fully_nested
+    in:
+      s: "111000"
+    out: '"111000"'
+  - name: four_pairs_all_atomic
+    in:
+      s: "10101010"
+    out: '"10101010"'
+  - name: four_pairs_small_reorder
+    in:
+      s: "10101100"
+    out: '"11001010"'
+  - name: four_pairs_split_then_nested
+    in:
+      s: "10110010"
+    out: '"11001010"'
+  - name: four_pairs_middle_chunk_swap
+    in:
+      s: "10110100"
+    out: '"11010010"'
+  - name: four_pairs_promote_large_chunk
+    in:
+      s: "10111000"
+    out: '"11100010"'
+  - name: four_pairs_already_sorted_chunks
+    in:
+      s: "11001010"
+    out: '"11001010"'
+  - name: four_pairs_equal_chunks
+    in:
+      s: "11001100"
+    out: '"11001100"'
+  - name: four_pairs_outer_then_atoms
+    in:
+      s: "11010010"
+    out: '"11010010"'
+  - name: four_pairs_outer_and_nested
+    in:
+      s: "11010100"
+    out: '"11010100"'
+  - name: four_pairs_example_variant
+    in:
+      s: "11011000"
+    out: '"11100100"'
+  - name: four_pairs_nested_then_atom
+    in:
+      s: "11100010"
+    out: '"11100010"'
+  - name: four_pairs_best_after_internal_sort
+    in:
+      s: "11100100"
+    out: '"11100100"'
+  - name: four_pairs_deep_with_tail
+    in:
+      s: "11101000"
+    out: '"11101000"'
+  - name: five_pairs_all_atomic
+    in:
+      s: "1010101010"
+    out: '"1010101010"'
+  - name: five_pairs_move_nested_chunk_left
+    in:
+      s: "1010101100"
+    out: '"1100101010"'
+  - name: five_pairs_atomic_then_mid_chunk
+    in:
+      s: "1010110010"
+    out: '"1100101010"'
+  - name: five_pairs_two_chunk_reorder
+    in:
+      s: "1010110100"
+    out: '"1101001010"'
+  - name: five_pairs_promote_biggest_chunk
+    in:
+      s: "1010111000"
+    out: '"1110001010"'
+  - name: five_pairs_pair_chunk_mix
+    in:
+      s: "1011001010"
+    out: '"1100101010"'
+  - name: five_pairs_adjacent_balanced_blocks
+    in:
+      s: "1011001100"
+    out: '"1100110010"'
+  - name: five_pairs_split_with_outer_chunk
+    in:
+      s: "1011100100"
+    out: '"1110010010"'
+  - name: five_pairs_near_fully_nested_with_tail
+    in:
+      s: "1101101000"
+    out: '"1110100100"'
+  - name: max_len_all_atomic_pairs
+    in:
+      s: "10101010101010101010101010101010101010101010101010"
+    out: '"10101010101010101010101010101010101010101010101010"'
+  - name: max_len_single_outer_shell
+    in:
+      s: "11111111111111111111111110000000000000000000000000"
+    out: '"11111111111111111111111110000000000000000000000000"'
+  - name: max_len_many_small_then_big_chunk
+    in:
+      s: "10101010101010101010101010101010101010101011110000"
+    out: '"11110000101010101010101010101010101010101010101010"'
+  - name: max_len_repeated_1100_then_four_chunk
+    in:
+      s: "11001100110011001100110011001100110011001111000010"
+    out: '"11110000110011001100110011001100110011001100110010"'
+  - name: max_len_repeated_example_pattern
+    in:
+      s: "11011000110110001101100011011000110110001101100010"
+    out: '"11100100111001001110010011100100111001001110010010"'

@@ -1,0 +1,248 @@
+entry:
+  id: 763
+  title: partition-labels
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().partitionLabels({s})"
+    rust: "Solution::partition_labels({s})"
+    python3: "Solution().partitionLabels({s})"
+    python2: "Solution().partitionLabels({s})"
+    ruby: "partition_labels({s})"
+    java: "new Solution().partitionLabels({s})"
+    csharp: "new Solution().PartitionLabels({s})"
+    kotlin: "Solution().partitionLabels({s})"
+    go: "partitionLabels({s})"
+    dart: "Solution().partitionLabels({s})"
+    swift: "Solution().partitionLabels({s})"
+    typescript: "partitionLabels({s})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().partitionLabels(s, {result})"
+    checker: |
+      class Checker:
+          def partitionLabels(self, s, result):
+              if not isinstance(result, list):
+                  return False
+              total = 0
+              for length in result:
+                  if not isinstance(length, int) or length <= 0:
+                      return False
+                  total += length
+              if total != len(s):
+                  return False
+              last = {}
+              for i, ch in enumerate(s):
+                  last[ch] = i
+              expected = []
+              start = 0
+              end = 0
+              for i, ch in enumerate(s):
+                  if last[ch] > end:
+                      end = last[ch]
+                  if i == end:
+                      expected.append(end - start + 1)
+                      start = i + 1
+              return result == expected
+seed: 763
+tests:
+  - name: example-1
+    in:
+      s: "ababcbacadefegdehijhklij"
+    out: [9, 7, 8]
+  - name: example-2
+    in:
+      s: "eccbbbbdec"
+    out: [10]
+  - name: single-char
+    in:
+      s: "z"
+    out: [1]
+  - name: double-same
+    in:
+      s: "aa"
+    out: [2]
+  - name: double-distinct
+    in:
+      s: "ab"
+    out: [1, 1]
+  - name: triple-unique
+    in:
+      s: "abc"
+    out: [1, 1, 1]
+  - name: triple-wrap
+    in:
+      s: "aba"
+    out: [3]
+  - name: simple-tail
+    in:
+      s: "abca"
+    out: [4]
+  - name: simple-split
+    in:
+      s: "abbc"
+    out: [1, 2, 1]
+  - name: mirror-pair
+    in:
+      s: "abccba"
+    out: [6]
+  - name: staggered-merge
+    in:
+      s: "abaccb"
+    out: [6]
+  - name: split-then-merge
+    in:
+      s: "eccbbaad"
+    out: [1, 2, 2, 2, 1]
+  - name: single-then-dense
+    in:
+      s: "caedbdedda"
+    out: [1, 9]
+  - name: dense-then-singletons
+    in:
+      s: "qiejxqfnqceocmy"
+    out: [13, 1, 1]
+  - name: outer-wrap-two-chunks
+    in:
+      s: "abcddcbaefgfe"
+    out: [8, 5]
+  - name: tiny-prefix-two-tail
+    in:
+      s: "vhaagbqkaq"
+    out: [1, 1, 8]
+  - name: all-unique-10
+    in:
+      s: "abcdefghij"
+    out: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: all-same-12
+    in:
+      s: "aaaaaaaaaaaa"
+    out: [12]
+  - name: alternating-8
+    in:
+      s: "abababab"
+    out: [8]
+  - name: paired-blocks-20
+    in:
+      s: "aabbccddeeffgghhiijj"
+    out: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+  - name: nested-end
+    in:
+      s: "abcbad"
+    out: [5, 1]
+  - name: three-parts-mixed
+    in:
+      s: "abacdefegdehijhklij"
+    out: [3, 1, 7, 8]
+  - name: long-first-part
+    in:
+      s: "abcadeafghibjklmnoip"
+    out: [19, 1]
+  - name: full-merge-10
+    in:
+      s: "abcdaefgha"
+    out: [10]
+  - name: two-balanced-parts
+    in:
+      s: "abaccbdeffed"
+    out: [6, 6]
+  - name: prefix-suffix-overlap
+    in:
+      s: "abccaddbeffe"
+    out: [8, 4]
+  - name: all-unique-26
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+    out:
+      [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+      ]
+  - name: repeat-alpha-52
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+    out: [52]
+  - name: five-blocks-25
+    in:
+      s: "aaaaabbbbbcccccdddddeeeee"
+    out: [5, 5, 5, 5, 5]
+  - name: block-then-tail
+    in:
+      s: "aaaabbbbcccd"
+    out: [4, 4, 3, 1]
+  - name: tail-singleton-after-wrap
+    in:
+      s: "zzxyxz"
+    out: [6]
+  - name: early-singletons-then-pair
+    in:
+      s: "abcdd"
+    out: [1, 1, 1, 2]
+  - name: max-blocks-500
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    out: [100, 100, 100, 100, 100]
+  - name: max-merge-500
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef"
+    out: [500]
+  - name: generated-len-1
+    in:
+      s:
+        gen: "str"
+        len: 1
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-len-2
+    in:
+      s:
+        gen: "str"
+        len: 2
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-len-50
+    in:
+      s:
+        gen: "str"
+        len: 50
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-len-499
+    in:
+      s:
+        gen: "str"
+        len: 499
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-len-500
+    in:
+      s:
+        gen: "str"
+        len: 500
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

@@ -1,0 +1,95 @@
+class Solution(object):
+    def basicCalculatorIV(self, expression, evalvars, evalints):
+        """
+        :type expression: str
+        :type evalvars: List[str]
+        :type evalints: List[int]
+        :rtype: List[str]
+        """
+        evalmap = dict(zip(evalvars, evalints))
+
+        def combine(poly):
+            res = {}
+            for k, v in poly.items():
+                if v != 0:
+                    res[k] = res.get(k, 0) + v
+            return {k: v for k, v in res.items() if v != 0}
+
+        def add(p1, p2):
+            res = dict(p1)
+            for k, v in p2.items():
+                res[k] = res.get(k, 0) + v
+            return combine(res)
+
+        def sub(p1, p2):
+            res = dict(p1)
+            for k, v in p2.items():
+                res[k] = res.get(k, 0) - v
+            return combine(res)
+
+        def mul(p1, p2):
+            res = {}
+            for k1, v1 in p1.items():
+                for k2, v2 in p2.items():
+                    merged = tuple(sorted((k1 if k1 else tuple()) + (k2 if k2 else tuple())))
+                    res[merged] = res.get(merged, 0) + v1 * v2
+            return combine(res)
+
+        def parse_token(tok):
+            if tok.lstrip('-').isdigit():
+                return {(): int(tok)}
+            if tok in evalmap:
+                return {(): evalmap[tok]}
+            return {(tok,): 1}
+
+        tokens = []
+        buf = ''
+        for ch in expression:
+            if ch.isalnum():
+                buf += ch
+            else:
+                if buf:
+                    tokens.append(buf); buf = ''
+                if ch in '+-*()':
+                    tokens.append(ch)
+        if buf:
+            tokens.append(buf)
+
+        def apply_op(vals, ops):
+            op = ops.pop()
+            b = vals.pop(); a = vals.pop()
+            if op == '+': vals.append(add(a, b))
+            elif op == '-': vals.append(sub(a, b))
+            else: vals.append(mul(a, b))
+
+        vals, ops = [], []
+        prec = {'+':1, '-':1, '*':2}
+        i = 0
+        while i < len(tokens):
+            tok = tokens[i]
+            if tok == '(':
+                ops.append(tok)
+            elif tok == ')':
+                while ops and ops[-1] != '(':
+                    apply_op(vals, ops)
+                ops.pop()
+            elif tok in prec:
+                while ops and ops[-1] in prec and prec[ops[-1]] >= prec[tok]:
+                    apply_op(vals, ops)
+                ops.append(tok)
+            else:
+                vals.append(parse_token(tok))
+            i += 1
+        while ops:
+            apply_op(vals, ops)
+        poly = vals[-1] if vals else {}
+
+        items = sorted(poly.items(), key=lambda iv: (-len(iv[0]) if iv[0] else 0, iv[0]))
+        ans = []
+        for vars_tuple, coeff in items:
+            if coeff == 0: continue
+            if vars_tuple and vars_tuple != '':
+                ans.append(str(coeff) + '*' + '*'.join(vars_tuple))
+            else:
+                ans.append(str(coeff))
+        return ans

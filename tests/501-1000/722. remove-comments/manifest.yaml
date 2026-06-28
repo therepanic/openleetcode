@@ -1,0 +1,358 @@
+entry:
+  id: 722
+  title: remove-comments
+  params:
+    source:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: Solution().removeComments({source})
+    rust: Solution::remove_comments({source})
+    python3: Solution().removeComments({source})
+    python2: Solution().removeComments({source})
+    ruby: remove_comments({source})
+    java: new Solution().removeComments({source})
+    csharp: new Solution().RemoveComments({source})
+    kotlin: Solution().removeComments({source})
+    go: removeComments({source})
+    dart: Solution().removeComments({source})
+    swift: Solution().removeComments({source})
+    typescript: removeComments({source})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 128
+oracle:
+  python3:
+    call: Checker().check(source, {result})
+    checker: |
+      class Checker(object):
+          def check(self, source, result):
+              if not isinstance(result, list):
+                  return False
+              for line in result:
+                  if not isinstance(line, str):
+                      return False
+                  if line == "":
+                      return False
+              in_block = False
+              current = []
+              expected = []
+              for line in source:
+                  i = 0
+                  if not in_block:
+                      current = []
+                  while i < len(line):
+                      pair = line[i:i + 2]
+                      if not in_block and pair == "/*":
+                          in_block = True
+                          i += 2
+                          continue
+                      if in_block and pair == "*/":
+                          in_block = False
+                          i += 2
+                          continue
+                      if not in_block and pair == "//":
+                          break
+                      if not in_block:
+                          current.append(line[i])
+                      i += 1
+                  if not in_block and current:
+                      expected.append("".join(current))
+              return result == expected
+seed: 722
+tests:
+  - name: example_1
+    in:
+      source:
+        - "/*Test program */"
+        - "int main()"
+        - "{ "
+        - "  // variable declaration "
+        - "int a, b, c;"
+        - "/* This is a test"
+        - "   multiline  "
+        - "   comment for "
+        - "   testing */"
+        - "a = b + c;"
+        - "}"
+    out:
+      - "int main()"
+      - "{ "
+      - "  "
+      - "int a, b, c;"
+      - "a = b + c;"
+      - "}"
+  - name: example_2
+    in:
+      source:
+        - "a/*comment"
+        - "line"
+        - "more_comment*/b"
+    out:
+      - "ab"
+  - name: no_comments_simple
+    in:
+      source:
+        - "int x = 1;"
+        - "return x + 2;"
+    out:
+      - "int x = 1;"
+      - "return x + 2;"
+  - name: single_line_comment_after_code
+    in:
+      source:
+        - "int x = 1; // initialize"
+    out:
+      - "int x = 1; "
+  - name: single_line_comment_only_removed
+    in:
+      source:
+        - "// comment only"
+        - "keep"
+    out:
+      - "keep"
+  - name: block_comment_same_line_middle
+    in:
+      source:
+        - "ab/* comment */cd"
+    out:
+      - "abcd"
+  - name: block_comment_same_line_entire_line
+    in:
+      source:
+        - "/* hidden */"
+        - "visible"
+    out:
+      - "visible"
+  - name: block_comment_multiline_join
+    in:
+      source:
+        - "abc/*def"
+        - "ghi*/jkl"
+    out:
+      - "abcjkl"
+  - name: block_comment_multiline_with_prefix_suffix
+    in:
+      source:
+        - "pre/*one"
+        - "two"
+        - "three*/post"
+    out:
+      - "prepost"
+  - name: line_comment_inside_block_is_ignored
+    in:
+      source:
+        - "aa/* block // still block"
+        - "end */bb"
+    out:
+      - "aabb"
+  - name: block_marker_inside_line_comment_is_ignored
+    in:
+      source:
+        - "keep// ignore /* not block"
+        - "next"
+    out:
+      - "keep"
+      - "next"
+  - name: block_then_line_comment_same_line
+    in:
+      source:
+        - "ab/*x*/cd//tail"
+    out:
+      - "abcd"
+  - name: adjacent_block_comments
+    in:
+      source:
+        - "a/*x*//*y*/b"
+    out:
+      - "ab"
+  - name: non_overlapping_block_end_pattern
+    in:
+      source:
+        - "x/*/y*/z"
+    out:
+      - "xz"
+  - name: block_comment_spans_empty_lines
+    in:
+      source:
+        - "a/*x"
+        - ""
+        - ""
+        - "y*/b"
+    out:
+      - "ab"
+  - name: empty_input_lines_are_dropped
+    in:
+      source:
+        - ""
+        - "abc"
+        - ""
+    out:
+      - "abc"
+  - name: slashes_without_comment_pair
+    in:
+      source:
+        - "a/b/c"
+        - "path/to/file"
+    out:
+      - "a/b/c"
+      - "path/to/file"
+  - name: stars_without_comment_pair
+    in:
+      source:
+        - "a*b**c"
+    out:
+      - "a*b**c"
+  - name: block_then_line_comment_after_code
+    in:
+      source:
+        - "ab/*c*/de//fg"
+    out:
+      - "abde"
+  - name: multiple_block_comments_same_line
+    in:
+      source:
+        - "a/*x*/b/*y*/c"
+    out:
+      - "abc"
+  - name: mixed_program_structure
+    in:
+      source:
+        - "int main(){"
+        - "  int x = 0; /* init */"
+        - "  x++; // increment"
+        - "  return x;"
+        - "}"
+    out:
+      - "int main(){"
+      - "  int x = 0; "
+      - "  x++; "
+      - "  return x;"
+      - "}"
+  - name: line_comment_keeps_prefix_spaces
+    in:
+      source:
+        - "abc//  "
+    out:
+      - "abc"
+  - name: block_comment_at_start_then_code
+    in:
+      source:
+        - "/*x*/abc"
+    out:
+      - "abc"
+  - name: block_comment_deletes_newlines
+    in:
+      source:
+        - "a/*x"
+        - "y"
+        - "z*/b"
+        - "c"
+    out:
+      - "ab"
+      - "c"
+  - name: spaces_only_line_is_kept
+    in:
+      source:
+        - "   "
+    out:
+      - "   "
+  - name: block_comment_leaves_spaces_only
+    in:
+      source:
+        - "  /*x*/  "
+    out:
+      - "    "
+  - name: multiple_line_comments_separate_lines
+    in:
+      source:
+        - "one//x"
+        - "two//y"
+        - "three"
+    out:
+      - "one"
+      - "two"
+      - "three"
+  - name: block_close_then_reopen_next_segment
+    in:
+      source:
+        - "a/*x*/b/*y"
+        - "z*/c"
+    out:
+      - "abc"
+  - name: full_block_comment_token
+    in:
+      source:
+        - "/**/"
+        - "done"
+    out:
+      - "done"
+  - name: nested_looking_markers_are_not_nested
+    in:
+      source:
+        - "a/*b/*c*/d*/e"
+    out:
+      - "ad*/e"
+  - name: line_comment_precedence_before_block_opener
+    in:
+      source:
+        - "abc//def/*ghi"
+        - "jkl"
+    out:
+      - "abc"
+      - "jkl"
+  - name: comment_starts_at_line_beginning
+    in:
+      source:
+        - "/*abc*/x"
+        - "y"
+    out:
+      - "x"
+      - "y"
+  - name: comment_ends_and_keeps_suffix
+    in:
+      source:
+        - "m/*n*/o"
+        - "p"
+    out:
+      - "mo"
+      - "p"
+  - name: block_comment_consumes_whole_middle_line
+    in:
+      source:
+        - "left/*a"
+        - "b"
+        - "c*/right"
+    out:
+      - "leftright"
+  - name: line_comment_after_block_close
+    in:
+      source:
+        - "ab/*x*/cd//tail"
+        - "ef"
+    out:
+      - "abcd"
+      - "ef"
+  - name: multiple_empty_lines_between_comments
+    in:
+      source:
+        - "a/*x"
+        - ""
+        - ""
+        - "*/b"
+        - ""
+        - "c"
+    out:
+      - "ab"
+      - "c"
+  - name: trailing_spaces_preserved
+    in:
+      source:
+        - "keep   "
+        - "drop//   "
+    out:
+      - "keep   "
+      - "drop"

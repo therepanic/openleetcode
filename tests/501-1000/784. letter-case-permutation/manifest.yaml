@@ -1,0 +1,229 @@
+entry:
+  id: 784
+  title: letter-case-permutation
+  params:
+    s:
+      type: string
+  call:
+    cpp: Solution().letterCasePermutation({s})
+    rust: Solution::letter_case_permutation({s})
+    python3: Solution().letterCasePermutation({s})
+    python2: Solution().letterCasePermutation({s})
+    ruby: letter_case_permutation({s})
+    java: new Solution().letterCasePermutation({s})
+    csharp: new Solution().LetterCasePermutation({s})
+    kotlin: Solution().letterCasePermutation({s})
+    go: letterCasePermutation({s})
+    dart: Solution().letterCasePermutation({s})
+    swift: Solution().letterCasePermutation({s})
+    typescript: letterCasePermutation({s})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: Checker().letterCasePermutation(s, {result})
+    checker: |
+      class Checker:
+          def letterCasePermutation(self, s, result):
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, str) for x in result):
+                  return False
+
+              expected = set()
+
+              def build(i: int, cur: str) -> None:
+                  if i == len(s):
+                      expected.add(cur)
+                      return
+                  ch = s[i]
+                  if ch.isdigit():
+                      build(i + 1, cur + ch)
+                  elif ch.isalpha():
+                      build(i + 1, cur + ch.lower())
+                      build(i + 1, cur + ch.upper())
+                  else:
+                      return
+
+              build(0, "")
+              if len(expected) != len(result):
+                  return False
+              if len(set(result)) != len(result):
+                  return False
+              if set(result) != expected:
+                  return False
+
+              for cand in result:
+                  if len(cand) != len(s):
+                      return False
+                  for a, b in zip(s, cand):
+                      if a.isdigit():
+                          if a != b:
+                              return False
+                      elif a.isalpha():
+                          if a.lower() != b.lower():
+                              return False
+                      else:
+                          return False
+              return True
+seed: 784784
+tests:
+  - name: example_1
+    in:
+      s: a1b2
+  - name: example_2
+    in:
+      s: 3z4
+  - name: single_lower
+    in:
+      s: a
+  - name: single_upper
+    in:
+      s: Z
+  - name: single_digit
+    in:
+      s: 7
+  - name: two_letters
+    in:
+      s: ab
+  - name: mixed_simple
+    in:
+      s: aB3
+  - name: mixed_digits_edges
+    in:
+      s: 1a2B3
+  - name: all_digits_short
+    in:
+      s: 123456
+  - name: all_letters_lower
+    in:
+      s: abcdef
+  - name: all_letters_upper
+    in:
+      s: ABCDEF
+  - name: alternating_cases
+    in:
+      s: aBcDeF
+  - name: alpha_numeric_1
+    in:
+      s: 0a0
+  - name: alpha_numeric_2
+    in:
+      s: 9Z9
+  - name: alpha_numeric_3
+    in:
+      s: a0b0c
+  - name: alpha_numeric_4
+    in:
+      s: A1b2C3
+  - name: alpha_numeric_5
+    in:
+      s: 4q5
+  - name: alpha_numeric_6
+    in:
+      s: m7N8
+  - name: alpha_numeric_7
+    in:
+      s: x9y8z7
+  - name: alpha_numeric_8
+    in:
+      s: P0q1R2
+  - name: alpha_numeric_9
+    in:
+      s: tTtT
+  - name: alpha_numeric_10
+    in:
+      s: 0
+  - name: alpha_numeric_11
+    in:
+      s: b0
+  - name: alpha_numeric_12
+    in:
+      s: 0b
+  - name: alpha_numeric_13
+    in:
+      s: b1c2d3
+  - name: alpha_numeric_14
+    in:
+      s: 1A2B3C
+  - name: gen_short_1
+    seed: 101
+    in:
+      s:
+        gen: str
+        len: 1
+        alphabet: "aB7"
+  - name: gen_short_2
+    seed: 102
+    in:
+      s:
+        gen: str
+        len: 4
+        alphabet: "ab12CD"
+  - name: gen_medium_1
+    seed: 201
+    in:
+      s:
+        gen: str
+        len: 8
+        alphabet: "abcd01"
+  - name: gen_medium_2
+    seed: 202
+    in:
+      s:
+        gen: str
+        len: 10
+        alphabet: "mNoP34"
+  - name: gen_max_1
+    seed: 301
+    in:
+      s:
+        gen: str
+        len: 12
+        alphabet: "aBcDeF01"
+  - name: gen_max_2
+    seed: 302
+    in:
+      s:
+        gen: str
+        len: 12
+        alphabet: "xYz78"
+  - name: gen_max_3
+    seed: 303
+    in:
+      s:
+        gen: str
+        len: 12
+        alphabet: "hIjKlM"
+  - name: gen_max_4
+    seed: 304
+    in:
+      s:
+        gen: str
+        len: 12
+        alphabet: "0a1B2c3"
+  - name: gen_max_5
+    seed: 305
+    in:
+      s:
+        gen: str
+        len: 12
+        alphabet: "pQrStU56"
+  - name: edge_digits_then_letters
+    in:
+      s: 123a
+  - name: edge_letters_then_digits
+    in:
+      s: a123
+  - name: edge_alternating_12
+    in:
+      s: a1B2c3D4e5F6
+  - name: edge_all_same_letter
+    in:
+      s: aaaaaa
+  - name: edge_all_same_upper
+    in:
+      s: ZZZZZZ

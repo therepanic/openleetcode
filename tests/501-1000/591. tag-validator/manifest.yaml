@@ -1,0 +1,220 @@
+entry:
+  id: 591
+  title: tag-validator
+  params:
+    code:
+      type: string
+  call:
+    cpp: "Solution().isValid({code})"
+    rust: "Solution::is_valid({code})"
+    python3: "Solution().isValid({code})"
+    python2: "Solution().isValid({code})"
+    ruby: "is_valid({code})"
+    java: "new Solution().isValid({code})"
+    csharp: "new Solution().IsValid({code})"
+    kotlin: "Solution().isValid({code})"
+    go: "isValid({code})"
+    dart: "Solution().isValid({code})"
+    swift: "Solution().isValid({code})"
+    typescript: "isValid({code})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().isValid(code, {result})"
+    checker: |
+      import re
+
+      class Checker:
+          def isValid(self, code, result):
+              tag_pat = r"<(/?)([A-Z]{1,9})>"
+              open_cdata = "<![CDATA["
+              close_cdata = "]]>"
+              stack = []
+              first_tag_seen = False
+              i = 0
+              n = len(code)
+
+              while i <= n:
+                  s = code.find("<", i)
+                  if s == -1:
+                      break
+                  e = code.find(">", s + 1)
+                  if e == -1:
+                      return result is False
+
+                  candidate = code[s:e + 1]
+                  match = re.fullmatch(tag_pat, candidate)
+                  if match:
+                      closing, tag = match.groups()
+                      if closing == "":
+                          if not first_tag_seen and s != 0:
+                              return result is False
+                          stack.append(tag)
+                          first_tag_seen = True
+                      else:
+                          if not stack or stack[-1] != tag:
+                              return result is False
+                          if len(stack) == 1 and e != n - 1:
+                              return result is False
+                          stack.pop()
+                      i = e + 1
+                  elif code.startswith(open_cdata, s):
+                      k = code.find(close_cdata, s + len(open_cdata))
+                      if k == -1:
+                          return result is False
+                      i = k + len(close_cdata)
+                  else:
+                      return result is False
+
+              expected = (not stack) and first_tag_seen
+              return result == expected
+seed: 591
+tests:
+  - name: example-1
+    in:
+      code: "<DIV>This is the first line <![CDATA[<div>]]></DIV>"
+    out: true
+  - name: example-2
+    in:
+      code: "<DIV>>>  ![cdata[]] <![CDATA[<div>]>]]>]]>>]</DIV>"
+    out: true
+  - name: example-3
+    in:
+      code: "<A>  <B> </A>   </B>"
+    out: false
+  - name: minimal-valid
+    in:
+      code: "<A></A>"
+    out: true
+  - name: simple-text-content
+    in:
+      code: "<A>text</A>"
+    out: true
+  - name: nested-single-tag
+    in:
+      code: "<A><B></B></A>"
+    out: true
+  - name: nested-siblings
+    in:
+      code: "<A><B></B><C></C></A>"
+    out: true
+  - name: cdata-only-content
+    in:
+      code: "<A><![CDATA[xyz]]></A>"
+    out: true
+  - name: nine-char-tag
+    in:
+      code: "<ABCDEFGHI>ok</ABCDEFGHI>"
+    out: true
+  - name: ten-char-tag
+    in:
+      code: "<ABCDEFGHIJ>bad</ABCDEFGHIJ>"
+    out: false
+  - name: mismatched-close
+    in:
+      code: "<A></B>"
+    out: false
+  - name: text-before-root
+    in:
+      code: "text<A></A>"
+    out: false
+  - name: text-after-root
+    in:
+      code: "<A></A>text"
+    out: false
+  - name: unmatched-angle-inside
+    in:
+      code: "<A><</A>"
+    out: false
+  - name: malformed-cdata-start
+    in:
+      code: "<A><!CDATA[abc]]></A>"
+    out: false
+  - name: cdata-without-root
+    in:
+      code: "<![CDATA[abc]]>"
+    out: false
+  - name: unterminated-cdata
+    in:
+      code: "<A><![CDATA[abc]</A>"
+    out: false
+  - name: missing-root-close
+    in:
+      code: "<A><B></B>"
+    out: false
+  - name: two-top-level-roots
+    in:
+      code: "<A></A><B></B>"
+    out: false
+  - name: mismatched-nested-close
+    in:
+      code: "<A><B></C></A>"
+    out: false
+  - name: extra-trailing-angle
+    in:
+      code: "<A><B></B></A>>"
+    out: false
+  - name: text-plus-valid-child
+    in:
+      code: "<A>123<Z></Z></A>"
+    out: true
+  - name: long-uppercase-tag-invalid
+    in:
+      code: "<LONGTAGNAME></LONGTAGNAME>"
+    out: false
+  - name: cdata-hides-close-tag
+    in:
+      code: "<A><B><![CDATA[</B>]]></B></A>"
+    out: true
+  - name: cdata-before-sibling
+    in:
+      code: "<A><![CDATA[<B></B>]]><C></C></A>"
+    out: true
+  - name: empty-cdata-inside
+    in:
+      code: "<A><B><![CDATA[]]></B><C>ok</C></A>"
+    out: true
+  - name: comment-like-construct
+    in:
+      code: "<A><B></B><!----></A>"
+    out: false
+  - name: cdata-as-sibling-content
+    in:
+      code: "<A><B></B><![CDATA[test]]></A>"
+    out: true
+  - name: cdata-with-tag-like-text
+    in:
+      code: "<A><B><![CDATA[<tag>]]></B></A>"
+    out: true
+  - name: missing-final-angle
+    in:
+      code: "<A><B></B></A"
+    out: false
+  - name: self-closing-not-supported
+    in:
+      code: "<A/>"
+    out: false
+  - name: empty-tag-name
+    in:
+      code: "<>"
+    out: false
+  - name: multi-char-uppercase-nesting
+    in:
+      code: "<A><AA></AA><B></B></A>"
+    out: true
+  - name: crossing-close-order
+    in:
+      code: "<A><AA></A></AA>"
+    out: false
+  - name: dangling-opening-angle
+    in:
+      code: "<A>text</A><"
+    out: false
+  - name: complex-valid-root
+    in:
+      code: "<ROOT><CHILD>data</CHILD><INNER><![CDATA[<bad></bad>]]></INNER></ROOT>"
+    out: true

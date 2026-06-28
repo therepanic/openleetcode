@@ -1,0 +1,277 @@
+entry:
+  id: 714
+  title: best-time-to-buy-and-sell-stock-with-transaction-fee
+  params:
+    prices:
+      type: array
+      items:
+        type: int
+    fee:
+      type: int
+  call:
+    cpp: "Solution().maxProfit({prices}, {fee})"
+    rust: "Solution::max_profit({prices}, {fee})"
+    python3: "Solution().maxProfit({prices}, {fee})"
+    python2: "Solution().maxProfit({prices}, {fee})"
+    ruby: "max_profit({prices}, {fee})"
+    java: "new Solution().maxProfit({prices}, {fee})"
+    csharp: "new Solution().MaxProfit({prices}, {fee})"
+    kotlin: "Solution().maxProfit({prices}, {fee})"
+    go: "maxProfit({prices}, {fee})"
+    dart: "Solution().maxProfit({prices}, {fee})"
+    swift: "Solution().maxProfit({prices}, {fee})"
+    typescript: "maxProfit({prices}, {fee})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxProfit(prices, fee, {result})"
+    checker: |
+      class Checker:
+          def maxProfit(self, prices, fee, result):
+              if not isinstance(result, int):
+                  return False
+              if not isinstance(prices, list) or len(prices) < 1:
+                  return False
+              if not isinstance(fee, int) or fee < 0:
+                  return False
+              if any((not isinstance(p, int)) for p in prices):
+                  return False
+              if any(p < 1 or p >= 50000 for p in prices):
+                  return False
+              if fee >= 50000:
+                  return False
+
+              hold = -prices[0]
+              cash = 0
+              for price in prices[1:]:
+                  prev_cash = cash
+                  cash = max(cash, hold + price - fee)
+                  hold = max(hold, prev_cash - price)
+
+              return result == cash
+seed: 714
+tests:
+  - name: example_1
+    in:
+      prices: [1, 3, 2, 8, 4, 9]
+      fee: 2
+    out: 8
+  - name: example_2
+    in:
+      prices: [1, 3, 7, 5, 10, 3]
+      fee: 3
+    out: 6
+  - name: single_day_low_fee
+    in:
+      prices: [5]
+      fee: 0
+    out: 0
+  - name: single_day_high_fee
+    in:
+      prices: [49999]
+      fee: 49999
+    out: 0
+  - name: two_days_no_profit
+    in:
+      prices: [7, 6]
+      fee: 1
+    out: 0
+  - name: two_days_exact_break_even
+    in:
+      prices: [1, 3]
+      fee: 2
+    out: 0
+  - name: two_days_profit
+    in:
+      prices: [1, 4]
+      fee: 1
+    out: 2
+  - name: all_increasing_small_fee
+    in:
+      prices: [1, 2, 3, 4, 5]
+      fee: 1
+    out: 3
+  - name: all_increasing_large_fee
+    in:
+      prices: [1, 2, 3, 4, 5]
+      fee: 10
+    out: 0
+  - name: all_decreasing
+    in:
+      prices: [9, 8, 7, 6, 5]
+      fee: 1
+    out: 0
+  - name: plateau_prices
+    in:
+      prices: [4, 4, 4, 4]
+      fee: 0
+    out: 0
+  - name: plateau_with_fee
+    in:
+      prices: [4, 4, 4, 4]
+      fee: 2
+    out: 0
+  - name: alternating_small_spread
+    in:
+      prices: [1, 5, 2, 6, 3, 7]
+      fee: 2
+    out: 6
+  - name: alternating_tight_fee
+    in:
+      prices: [1, 5, 2, 6, 3, 7]
+      fee: 3
+    out: 3
+  - name: fee_zero_classic
+    in:
+      prices: [1, 3, 2, 8, 4, 9]
+      fee: 0
+    out: 13
+  - name: fee_just_above_gain
+    in:
+      prices: [2, 4, 1]
+      fee: 2
+    out: 0
+  - name: local_optima
+    in:
+      prices: [1, 4, 6, 2, 8, 3, 10, 14]
+      fee: 3
+    out: 13
+  - name: many_small_waves
+    in:
+      prices: [3, 1, 4, 2, 5, 1, 6]
+      fee: 1
+    out: 8
+  - name: many_small_waves_high_fee
+    in:
+      prices: [3, 1, 4, 2, 5, 1, 6]
+      fee: 4
+    out: 1
+  - name: peak_then_valley_then_peak
+    in:
+      prices: [2, 10, 1, 8, 3, 12]
+      fee: 2
+    out: 18
+  - name: peak_then_valley_then_peak_high_fee
+    in:
+      prices: [2, 10, 1, 8, 3, 12]
+      fee: 7
+    out: 5
+  - name: large_prices_low_fee
+    in:
+      prices: [49999, 1, 49999]
+      fee: 1
+    out: 49997
+  - name: large_prices_high_fee
+    in:
+      prices: [49999, 1, 49999]
+      fee: 49998
+    out: 0
+  - name: descending_then_rise
+    in:
+      prices: [10, 9, 8, 7, 8, 9, 10]
+      fee: 1
+    out: 2
+  - name: descending_then_rise_zero_fee
+    in:
+      prices: [10, 9, 8, 7, 8, 9, 10]
+      fee: 0
+    out: 3
+  - name: long_but_simple_1
+    in:
+      prices: [1, 2, 1, 2, 1, 2, 1, 2]
+      fee: 1
+    out: 0
+  - name: long_but_simple_2
+    in:
+      prices: [1, 2, 1, 2, 1, 2, 1, 2]
+      fee: 0
+    out: 4
+  - name: zigzag_medium
+    in:
+      prices: [6, 1, 3, 2, 4, 7]
+      fee: 2
+    out: 4
+  - name: zigzag_medium_2
+    in:
+      prices: [1, 4, 2, 7]
+      fee: 2
+    out: 4
+  - name: zigzag_medium_3
+    in:
+      prices: [1, 4, 2, 7]
+      fee: 3
+    out: 3
+  - name: repeated_peaks
+    in:
+      prices: [2, 5, 2, 5, 2, 5]
+      fee: 1
+    out: 6
+  - name: repeated_peaks_high_fee
+    in:
+      prices: [2, 5, 2, 5, 2, 5]
+      fee: 4
+    out: 0
+  - name: max_length_increasing
+    seed: 101
+    in:
+      prices:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 49999
+        elemType: int
+      fee: 1
+  - name: max_length_flat
+    seed: 102
+    in:
+      prices:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 25000
+          max: 25000
+        elemType: int
+      fee: 0
+  - name: max_length_alternating
+    seed: 103
+    in:
+      prices:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 49999
+        elemType: int
+      fee: 25000
+  - name: max_length_descending
+    seed: 104
+    in:
+      prices:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 49999
+        elemType: int
+      fee: 0
+  - name: max_length_two_level
+    seed: 105
+    in:
+      prices:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 49999
+        elemType: int
+      fee: 49998

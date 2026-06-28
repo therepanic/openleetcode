@@ -1,0 +1,304 @@
+entry:
+  id: 701
+  title: insert-into-a-binary-search-tree
+  params:
+    root:
+      type: tree_node
+    val:
+      type: int
+  call:
+    cpp: "treeNodeToArray(Solution().insertIntoBST({root}, {val}))"
+    rust: "TreeNode::tree_node_to_array(Solution::insert_into_bst({root}, {val}))"
+    python3: "tree_node_to_array(Solution().insertIntoBST({root}, {val}))"
+    python2: "tree_node_to_array(Solution().insertIntoBST({root}, {val}))"
+    ruby: "tree_node_to_array(insert_into_bst({root}, {val}))"
+    java: "TreeNode.treeNodeToArray(new Solution().insertIntoBST({root}, {val}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().InsertIntoBST({root}, {val}))"
+    kotlin: "treeNodeToArray(Solution().insertIntoBST({root}, {val}))"
+    go: "treeNodeToArray(insertIntoBST({root}, {val}))"
+    dart: "tree_node_to_array(Solution().insertIntoBST({root}, {val}))"
+    swift: "tree_node_to_array(Solution().insertIntoBST({root}, {val}))"
+    typescript: "treeNodeToArray(insertIntoBST({root}, {val}))"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().insertIntoBST(root, val, {result})"
+    checker: |
+      from collections import deque
+      from typing import Any
+
+      class Checker:
+          def insertIntoBST(self, root: Any, val: int, result: Any) -> bool:
+              def node_val(node):
+                  if node is None:
+                      return None
+                  if isinstance(node, dict):
+                      return node.get("val", node.get("value"))
+                  return getattr(node, "val", getattr(node, "value", None))
+
+              def node_left(node):
+                  if node is None:
+                      return None
+                  if isinstance(node, dict):
+                      return node.get("left")
+                  return getattr(node, "left", None)
+
+              def node_right(node):
+                  if node is None:
+                      return None
+                  if isinstance(node, dict):
+                      return node.get("right")
+                  return getattr(node, "right", None)
+
+              def is_tree_object(node):
+                  return node is None or hasattr(node, "val") or isinstance(node, dict)
+
+              def normalize_tree(obj):
+                  if obj is None:
+                      return None
+                  if isinstance(obj, list):
+                      if not obj or obj[0] is None:
+                          return None
+                      nodes = [None if x is None else {"val": x, "left": None, "right": None} for x in obj]
+                      q = deque([0])
+                      idx = 1
+                      while q and idx < len(nodes):
+                          cur = q.popleft()
+                          if nodes[cur] is None:
+                              continue
+                          if idx < len(nodes):
+                              if nodes[idx] is not None:
+                                  nodes[cur]["left"] = idx
+                                  q.append(idx)
+                              idx += 1
+                          if idx < len(nodes):
+                              if nodes[idx] is not None:
+                                  nodes[cur]["right"] = idx
+                                  q.append(idx)
+                              idx += 1
+
+                      def rec(i):
+                          if i is None:
+                              return None
+                          n = nodes[i]
+                          if n is None:
+                              return None
+                          return {"val": n["val"], "left": rec(n["left"]), "right": rec(n["right"])}
+
+                      return rec(0)
+                  if is_tree_object(obj):
+                      v = node_val(obj)
+                      if v is None:
+                          return None
+                      return {
+                          "val": v,
+                          "left": normalize_tree(node_left(obj)),
+                          "right": normalize_tree(node_right(obj)),
+                      }
+                  return None
+
+              def inorder(node):
+                  if node is None:
+                      return []
+                  return inorder(node["left"]) + [node["val"]] + inorder(node["right"])
+
+              def validate_bst(node, lo, hi):
+                  if node is None:
+                      return True
+                  v = node["val"]
+                  if not (lo < v < hi):
+                      return False
+                  return validate_bst(node["left"], lo, v) and validate_bst(node["right"], v, hi)
+
+              def values_set(node):
+                  if node is None:
+                      return set()
+                  return {node["val"]} | values_set(node["left"]) | values_set(node["right"])
+
+              def count(node):
+                  if node is None:
+                      return 0
+                  return 1 + count(node["left"]) + count(node["right"])
+
+              input_tree = normalize_tree(root)
+              output_tree = normalize_tree(result)
+              if output_tree is None:
+                  return False
+              if not validate_bst(output_tree, float("-inf"), float("inf")):
+                  return False
+              if input_tree is not None and not validate_bst(input_tree, float("-inf"), float("inf")):
+                  return False
+
+              input_values = values_set(input_tree)
+              output_values = values_set(output_tree)
+              if val in input_values:
+                  return False
+              if output_values != (input_values | {val}):
+                  return False
+              if count(output_tree) != count(input_tree) + 1:
+                  return False
+              if inorder(output_tree) != sorted(output_values):
+                  return False
+              return True
+seed: 701
+tests:
+  - name: example_1
+    in:
+      root: [4, 2, 7, 1, 3]
+      val: 5
+  - name: example_2
+    in:
+      root: [40, 20, 60, 10, 30, 50, 70]
+      val: 25
+  - name: example_3
+    in:
+      root: [4, 2, 7, 1, 3, null, null, null, null, null, null]
+      val: 5
+  - name: empty_tree
+    in:
+      root: []
+      val: 1
+  - name: single_insert_left
+    in:
+      root: [2]
+      val: 1
+  - name: single_insert_right
+    in:
+      root: [2]
+      val: 3
+  - name: root_with_left_child_insert_leftmost
+    in:
+      root: [5, 3]
+      val: 2
+  - name: root_with_left_child_insert_right_of_left
+    in:
+      root: [5, 3]
+      val: 4
+  - name: root_with_right_child_insert_left_of_right
+    in:
+      root: [5, null, 8]
+      val: 7
+  - name: root_with_right_child_insert_rightmost
+    in:
+      root: [5, null, 8]
+      val: 9
+  - name: balanced_7_insert_middle
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+      val: 8
+  - name: balanced_7_insert_leaf_left
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+      val: 0
+  - name: balanced_7_insert_internal_left
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+      val: 8
+  - name: left_skew_4_insert_bottom
+    in:
+      root: [4, 3, null, 2, null, 1]
+      val: 0
+  - name: left_skew_4_insert_middle
+    in:
+      root: [4, 3, null, 2, null, 1]
+      val: 5
+  - name: right_skew_4_insert_bottom
+    in:
+      root: [1, null, 2, null, 3, null, 4]
+      val: 5
+  - name: right_skew_4_insert_middle
+    in:
+      root: [1, null, 2, null, 3, null, 4]
+      val: 0
+  - name: negative_values_left
+    in:
+      root: [0, -3, 9, -10, -1, 5, 12]
+      val: -2
+  - name: negative_values_right
+    in:
+      root: [0, -3, 9, -10, -1, 5, 12]
+      val: 8
+  - name: insert_between_levels
+    in:
+      root: [10, 5, 15, 3, 7, 12, 18]
+      val: 6
+  - name: insert_far_left
+    in:
+      root: [10, 5, 15, 3, 7, 12, 18]
+      val: 1
+  - name: insert_far_right
+    in:
+      root: [10, 5, 15, 3, 7, 12, 18]
+      val: 20
+  - name: sparse_tree_left_gap
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, null, 5, 7, 9, 11, 13, 15]
+      val: 16
+  - name: sparse_tree_right_gap
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, null, 5, 7, 9, 11, 13, 15]
+      val: 0
+  - name: insert_root_between_children
+    in:
+      root: [50, 25, 75, 10, 37, 62, 87]
+      val: 60
+  - name: insert_left_chain_new_leaf
+    in:
+      root: [7, 3, null, 2, null, 1]
+      val: 6
+  - name: insert_right_chain_new_leaf
+    in:
+      root: [7, null, 11, null, 13, null, 15]
+      val: 16
+  - name: insert_near_min
+    in:
+      root: [0, -100000000, 100000000]
+      val: -99999999
+  - name: insert_near_max
+    in:
+      root: [0, -100000000, 100000000]
+      val: 99999999
+  - name: deep_left_branch
+    in:
+      root: [30, 20, 40, 10, 25, 35, 50, 5, null, 22, 27, 33, 37, 45, 55]
+      val: 24
+  - name: deep_right_branch
+    in:
+      root: [30, 20, 40, 10, 25, 35, 50, 5, null, 22, 27, 33, 37, 45, 55]
+      val: 53
+  - name: complete_tree_small
+    in:
+      root: [6, 3, 9, 1, 4, 7, 10]
+      val: 8
+  - name: complete_tree_small_left
+    in:
+      root: [6, 3, 9, 1, 4, 7, 10]
+      val: 2
+  - name: complete_tree_small_right
+    in:
+      root: [6, 3, 9, 1, 4, 7, 10]
+      val: 11
+  - name: mixed_sparse_1
+    in:
+      root: [15, 6, 20, 3, 7, 18, 24, 2, null, null, 13, 17, 19, 22, 27]
+      val: 14
+  - name: mixed_sparse_2
+    in:
+      root: [15, 6, 20, 3, 7, 18, 24, 2, null, null, 13, 17, 19, 22, 27]
+      val: 21
+  - name: long_left_spine
+    in:
+      root: [100, 50, null, 25, null, 12, null, 6, null, 3]
+      val: 1
+  - name: long_right_spine
+    in:
+      root: [100, null, 150, null, 175, null, 187, null, 193]
+      val: 200
+  - name: root_level_insert
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14]
+      val: 11

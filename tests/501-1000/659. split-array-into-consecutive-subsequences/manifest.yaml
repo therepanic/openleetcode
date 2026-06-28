@@ -1,0 +1,241 @@
+entry:
+  id: 659
+  title: split-array-into-consecutive-subsequences
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().isPossible({nums})"
+    rust: "Solution::is_possible({nums})"
+    python3: "Solution().isPossible({nums})"
+    python2: "Solution().isPossible({nums})"
+    ruby: "is_possible({nums})"
+    java: "new Solution().isPossible({nums})"
+    csharp: "new Solution().IsPossible({nums})"
+    kotlin: "Solution().isPossible({nums})"
+    go: "isPossible({nums})"
+    dart: "Solution().isPossible({nums})"
+    swift: "Solution().isPossible({nums})"
+    typescript: "isPossible({nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().isPossible(nums, {result})"
+    checker: |
+      from collections import Counter, defaultdict
+
+      class Checker:
+          def _expected(self, nums):
+              count = Counter(nums)
+              subseq = defaultdict(int)
+
+              for num in nums:
+                  if count[num] == 0:
+                      continue
+                  if subseq[num - 1] > 0:
+                      subseq[num - 1] -= 1
+                      subseq[num] += 1
+                  elif count[num + 1] > 0 and count[num + 2] > 0:
+                      count[num + 1] -= 1
+                      count[num + 2] -= 1
+                      subseq[num + 2] += 1
+                  else:
+                      return False
+                  count[num] -= 1
+
+              return True
+
+          def isPossible(self, nums, result):
+              return result == self._expected(nums)
+seed: 659
+tests:
+  - name: example-1
+    in:
+      nums: [1, 2, 3, 3, 4, 5]
+    out: true
+  - name: example-2
+    in:
+      nums: [1, 2, 3, 3, 4, 4, 5, 5]
+    out: true
+  - name: example-3
+    in:
+      nums: [1, 2, 3, 4, 4, 5]
+    out: false
+  - name: single-element
+    in:
+      nums: [7]
+    out: false
+  - name: two-elements-consecutive
+    in:
+      nums: [4, 5]
+    out: false
+  - name: minimal-valid-triple
+    in:
+      nums: [0, 1, 2]
+    out: true
+  - name: simple-four
+    in:
+      nums: [10, 11, 12, 13]
+    out: true
+  - name: simple-five
+    in:
+      nums: [2, 3, 4, 5, 6]
+    out: true
+  - name: gap-breaks-chain
+    in:
+      nums: [1, 2, 4, 5, 6]
+    out: false
+  - name: duplicate-needs-branching
+    in:
+      nums: [1, 2, 3, 3, 4, 5, 6]
+    out: true
+  - name: duplicate-fails-late
+    in:
+      nums: [1, 2, 3, 4, 4, 5, 6]
+    out: true
+  - name: insufficient-tail
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 7, 8]
+    out: false
+  - name: all-same-short
+    in:
+      nums: [5, 5, 5]
+    out: false
+  - name: all-same-longer
+    in:
+      nums: [5, 5, 5, 5, 5, 5]
+    out: false
+  - name: negatives-valid
+    in:
+      nums: [-3, -2, -1]
+    out: true
+  - name: negatives-and-zero-valid
+    in:
+      nums: [-2, -1, 0, 1, 2, 3]
+    out: true
+  - name: negatives-fail
+    in:
+      nums: [-4, -3, -2, 0]
+    out: false
+  - name: two-triples
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: true
+  - name: two-overlapping-subsequences
+    in:
+      nums: [1, 2, 3, 3, 4, 4, 5, 6]
+    out: true
+  - name: overlapping-fail
+    in:
+      nums: [1, 2, 3, 4, 5, 5, 6, 7]
+    out: true
+  - name: separated-fail
+    in:
+      nums: [1, 2, 3, 7, 8, 9]
+    out: true
+  - name: impossible-extra-middle
+    in:
+      nums: [1, 2, 3, 4, 4, 4, 5, 6]
+    out: false
+  - name: repeated-pairs-fail
+    in:
+      nums: [1, 1, 2, 2, 3, 3]
+    out: true
+  - name: repeated-pattern-true
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 5, 6]
+    out: true
+  - name: boundary-low-values
+    in:
+      nums: [-1000, -999, -998]
+    out: true
+  - name: boundary-high-values
+    in:
+      nums: [998, 999, 1000]
+    out: true
+  - name: boundary-mixed-fail
+    in:
+      nums: [-1000, -999, -998, 1000]
+    out: false
+  - name: triple-plus-single-fail
+    in:
+      nums: [1, 2, 3, 4, 5, 8]
+    out: false
+  - name: chain-with-extra-copy
+    in:
+      nums: [1, 2, 3, 4, 5, 5, 6, 7, 8]
+    out: true
+  - name: two-short-runs-fail
+    in:
+      nums: [1, 2, 3, 10, 11]
+    out: false
+  - name: long-run-single-gap
+    in:
+      nums: [1, 2, 3, 4, 5, 7, 8, 9]
+    out: true
+  - name: extra-tail-valid
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 6, 7, 8]
+    out: true
+  - name: many-small-runs
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    out: true
+  - name: large-generated-1
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+    seed: 6591
+  - name: large-generated-2
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+    seed: 6592
+  - name: large-generated-3
+    in:
+      nums:
+        gen: array
+        len: 9999
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+    seed: 6593
+  - name: large-generated-4
+    in:
+      nums:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: true
+        elemType: int
+    seed: 6594

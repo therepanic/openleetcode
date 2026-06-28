@@ -1,0 +1,30 @@
+class Solution(object):
+    def countPalindromicSubsequences(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        MOD = 1000000007
+        memo = {}
+        
+        def dp(left, right):
+            if left >= right:
+                return 0
+            key = (left, right)
+            if key in memo:
+                return memo[key]
+            res = 0
+            for ch in 'abcd':
+                l = s.find(ch, left, right)
+                r = s.rfind(ch, left, right)
+                if l == -1:
+                    continue
+                if l == r:
+                    res += 1
+                else:
+                    res += dp(l + 1, r) + 2
+            res %= MOD
+            memo[key] = res
+            return res
+        
+        return dp(0, len(s))

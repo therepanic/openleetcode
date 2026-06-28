@@ -1,7 +1,3 @@
-import (
-    "sort"
-)
-
 func findMinStep(board string, hand string) int {
     var removeSame func(string, int) string
     removeSame = func(s string, i int) string {

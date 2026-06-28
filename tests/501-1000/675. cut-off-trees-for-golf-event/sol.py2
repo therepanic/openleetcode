@@ -1,0 +1,55 @@
+class Solution(object):
+    def cutOffTree(self, forest):
+        """
+        :type forest: List[List[int]]
+        :rtype: int
+        """
+        rows, cols = len(forest), len(forest[0])
+        
+        if forest[0][0] == 0:
+            return -1
+        
+        def findShortestPath(startRow, startCol, targetRow, targetCol):
+            from collections import deque
+            queue = deque([(startRow, startCol, 0)])
+            visited = set()
+            visited.add((startRow, startCol))
+            directions = [(-1, 0), (0, -1), (0, 1), (1, 0)]
+            
+            while queue:
+                currentRow, currentCol, steps = queue.popleft()
+                
+                if currentRow == targetRow and currentCol == targetCol:
+                    return steps
+                
+                for deltaRow, deltaCol in directions:
+                    newRow, newCol = currentRow + deltaRow, currentCol + deltaCol
+                    
+                    if (0 <= newRow < rows and 0 <= newCol < cols and 
+                        forest[newRow][newCol] > 0 and (newRow, newCol) not in visited):
+                        queue.append((newRow, newCol, steps + 1))
+                        visited.add((newRow, newCol))
+            
+            return -1
+        
+        import heapq
+        treeHeap = []
+        for row in range(rows):
+            for col in range(cols):
+                if forest[row][col] > 1:
+                    heapq.heappush(treeHeap, (forest[row][col], row, col))
+        
+        totalSteps = 0
+        currentRow, currentCol = 0, 0
+        
+        while treeHeap:
+            treeHeight, targetRow, targetCol = heapq.heappop(treeHeap)
+            stepsToTree = findShortestPath(currentRow, currentCol, targetRow, targetCol)
+            
+            if stepsToTree == -1:
+                return -1
+            
+            totalSteps += stepsToTree
+            currentRow, currentCol = targetRow, targetCol
+        
+        return totalSteps

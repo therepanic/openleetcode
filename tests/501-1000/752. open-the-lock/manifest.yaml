@@ -1,0 +1,492 @@
+entry:
+  id: 752
+  title: open-the-lock
+  params:
+    deadends:
+      type: array
+      items:
+        type: string
+    target:
+      type: string
+  call:
+    cpp: "Solution().openLock({deadends}, {target})"
+    rust: "Solution::open_lock({deadends}, {target})"
+    python3: "Solution().openLock({deadends}, {target})"
+    python2: "Solution().openLock({deadends}, {target})"
+    ruby: "open_lock({deadends}, {target})"
+    java: "new Solution().openLock({deadends}, {target})"
+    csharp: "new Solution().OpenLock({deadends}, {target})"
+    kotlin: "Solution().openLock({deadends}, {target})"
+    go: "openLock({deadends}, {target})"
+    dart: "Solution().openLock({deadends}, {target})"
+    swift: "Solution().openLock({deadends}, {target})"
+    typescript: "openLock({deadends}, {target})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().openLock(deadends, target, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def _neighbors(self, state):
+              for i, ch in enumerate(state):
+                  digit = ord(ch) - ord("0")
+                  yield state[:i] + str((digit + 1) % 10) + state[i + 1:]
+                  yield state[:i] + str((digit - 1) % 10) + state[i + 1:]
+
+          def _expected(self, deadends, target):
+              if target == "0000":
+                  return 0
+              dead = set(deadends)
+              if "0000" in dead:
+                  return -1
+
+              queue = deque([("0000", 0)])
+              seen = {"0000"}
+
+              while queue:
+                  state, dist = queue.popleft()
+                  if state == target:
+                      return dist
+                  for nxt in self._neighbors(state):
+                      if nxt in dead or nxt in seen:
+                          continue
+                      seen.add(nxt)
+                      queue.append((nxt, dist + 1))
+              return -1
+
+          def openLock(self, deadends, target, result):
+              if not isinstance(result, int):
+                  return False
+              return result == self._expected(deadends, target)
+seed: 752
+tests:
+  - name: example-1
+    in:
+      deadends: ["0201", "0101", "0102", "1212", "2002"]
+      target: "0202"
+    out: 6
+  - name: example-2
+    in:
+      deadends: ["8888"]
+      target: "0009"
+    out: 1
+  - name: example-3
+    in:
+      deadends: ["8887", "8889", "8878", "8898", "8788", "8988", "7888", "9888"]
+      target: "8888"
+    out: -1
+  - name: target-is-start
+    in:
+      deadends: ["8888"]
+      target: "0000"
+    out: 0
+  - name: start-blocked
+    in:
+      deadends: ["0000"]
+      target: "8888"
+    out: -1
+  - name: single-step-forward
+    in:
+      deadends: ["8888"]
+      target: "1000"
+    out: 1
+  - name: single-step-backward
+    in:
+      deadends: ["8888"]
+      target: "9000"
+    out: 1
+  - name: double-step-same-wheel
+    in:
+      deadends: ["8888"]
+      target: "2000"
+    out: 2
+  - name: wrap-two-wheels
+    in:
+      deadends: ["8888"]
+      target: "9090"
+    out: 2
+  - name: all-wheels-once
+    in:
+      deadends: ["8888"]
+      target: "1111"
+    out: 4
+  - name: all-wheels-reverse
+    in:
+      deadends: ["8888"]
+      target: "9999"
+    out: 4
+  - name: alternating-digits
+    in:
+      deadends: ["8888"]
+      target: "0909"
+    out: 2
+  - name: neighbors-of-start-blocked
+    in:
+      deadends: ["1000", "9000", "0100", "0900", "0010", "0090", "0001", "0009"]
+      target: "8888"
+    out: -1
+  - name: duplicate-deadends
+    in:
+      deadends: ["8888", "8888", "9998"]
+      target: "0009"
+    out: 1
+  - name: direct-path-blocked-last-wheel
+    in:
+      deadends: ["0001"]
+      target: "0002"
+    out: 4
+  - name: direct-path-blocked-first-wheel
+    in:
+      deadends: ["1000"]
+      target: "2000"
+    out: 4
+  - name: wall-but-open
+    in:
+      deadends: ["9000", "0900", "0090", "0009"]
+      target: "1111"
+    out: 4
+  - name: many-duplicates-open
+    in:
+      deadends: ["5555", "5555", "5555", "1234", "1234"]
+      target: "5554"
+    out: 19
+  - name: force-longer-around
+    in:
+      deadends: ["0001", "0010", "0100"]
+      target: "1111"
+    out: 4
+  - name: near-target-deadends
+    in:
+      deadends: ["5554", "5545", "5455", "4555"]
+      target: "5555"
+    out: 20
+  - name: symmetric-middle
+    in:
+      deadends: ["4445", "4454", "4544", "5444"]
+      target: "4444"
+    out: 16
+  - name: block-lower-route
+    in:
+      deadends: ["9000", "9900", "9990"]
+      target: "9999"
+    out: 4
+  - name: block-upper-route
+    in:
+      deadends: ["1000", "1100", "1110"]
+      target: "1111"
+    out: 4
+  - name: mixed-obstacles
+    in:
+      deadends: ["0200", "2000", "0020", "0002", "2222"]
+      target: "2020"
+    out: 4
+  - name: dense-local-obstacles
+    in:
+      deadends: ["1000", "0100", "0010", "0001", "9001", "9010", "9100"]
+      target: "9999"
+    out: 4
+  - name: far-target-open
+    in:
+      deadends: ["5555"]
+      target: "7531"
+    out: 12
+  - name: block-around-1234
+    in:
+      deadends: ["1235", "1233", "1244", "1224", "1334", "1134", "2234", "0234"]
+      target: "1234"
+    out: -1
+  - name: simple-with-zero-deadend-like
+    in:
+      deadends: ["9999"]
+      target: "0001"
+    out: 1
+  - name: all-zero-adjacent-blocked-except-one
+    in:
+      deadends: ["1000", "9000", "0100", "0900", "0010", "0090", "0009"]
+      target: "0001"
+    out: 1
+  - name: two-opposite-wheels
+    in:
+      deadends: ["8888"]
+      target: "5005"
+    out: 10
+  - name: reverse-heavy-target
+    in:
+      deadends: ["8888"]
+      target: "8080"
+    out: 4
+  - name: middle-wheel-detour
+    in:
+      deadends: ["0090", "0100", "0110"]
+      target: "0200"
+    out: 4
+  - name: corridor-to-target
+    in:
+      deadends: ["1000", "1100", "1110", "1112", "1121", "1211", "2111"]
+      target: "1111"
+    out: 4
+  - name: high-digit-open
+    in:
+      deadends: ["1234", "4321"]
+      target: "6789"
+    out: 10
+  - name: large_static_without_nines
+    in:
+      deadends:
+        [
+          "8487",
+          "5803",
+          "8443",
+          "6544",
+          "2150",
+          "3163",
+          "7404",
+          "7418",
+          "2580",
+          "0032",
+          "7327",
+          "5530",
+          "4187",
+          "0436",
+          "0030",
+          "3041",
+          "0457",
+          "3816",
+          "4277",
+          "5731",
+          "1367",
+          "0701",
+          "1227",
+          "3010",
+          "7780",
+          "4253",
+          "8646",
+          "0661",
+          "0663",
+          "2311",
+          "3334",
+          "6650",
+          "8338",
+          "0674",
+          "1633",
+          "0622",
+          "2085",
+          "4650",
+          "7711",
+          "7547",
+          "7751",
+          "0851",
+          "0500",
+          "6088",
+          "4470",
+          "7663",
+          "6032",
+          "6368",
+          "2161",
+          "3680",
+          "8336",
+          "5111",
+          "6161",
+          "1417",
+          "0535",
+          "8821",
+          "8134",
+          "0183",
+          "4213",
+          "8881",
+          "8623",
+          "5334",
+          "0653",
+          "0568",
+          "5734",
+          "1583",
+          "1128",
+          "5006",
+          "1045",
+          "2042",
+          "5134",
+          "6103",
+          "2048",
+          "6510",
+          "6756",
+          "3835",
+          "4701",
+          "5146",
+          "0322",
+          "8353",
+          "8464",
+          "1474",
+          "8832",
+          "4534",
+          "1874",
+          "5326",
+          "7134",
+          "8807",
+          "6577",
+          "1763",
+          "8723",
+          "2783",
+          "4367",
+          "6655",
+          "5534",
+          "1601",
+          "2783",
+          "4357",
+          "1568",
+          "0213",
+          "2516",
+          "8351",
+          "3368",
+          "7413",
+          "4482",
+          "7566",
+          "1216",
+          "2462",
+          "1048",
+          "1082",
+          "5747",
+          "6568",
+          "7470",
+          "1848",
+          "7272",
+          "1722",
+          "3541",
+          "4301",
+          "5124",
+          "0223",
+        ]
+      target: "9999"
+    out: 4
+  - name: large_static_without_ones
+    in:
+      deadends:
+        [
+          "6527",
+          "3695",
+          "4499",
+          "3774",
+          "2420",
+          "5283",
+          "2286",
+          "8473",
+          "0477",
+          "4724",
+          "3979",
+          "5420",
+          "2095",
+          "4887",
+          "4097",
+          "6836",
+          "0552",
+          "5473",
+          "0570",
+          "5364",
+          "9994",
+          "8750",
+          "8803",
+          "4827",
+          "2388",
+          "6998",
+          "5203",
+          "7954",
+          "5368",
+          "6773",
+          "5982",
+          "9483",
+          "0544",
+          "6970",
+          "4850",
+          "7350",
+          "9308",
+          "9277",
+          "2039",
+          "4045",
+          "2926",
+          "2929",
+          "5240",
+          "4972",
+          "3296",
+          "5230",
+          "2775",
+          "7647",
+          "6476",
+          "9074",
+          "5892",
+          "0668",
+          "9825",
+          "9655",
+          "5559",
+          "9883",
+          "9208",
+          "3564",
+          "9688",
+          "6035",
+          "6349",
+          "2476",
+          "4229",
+          "9500",
+          "7225",
+          "7880",
+          "5063",
+          "2035",
+          "6798",
+          "3832",
+          "3235",
+          "5883",
+          "0668",
+          "0542",
+          "5449",
+          "7622",
+          "4788",
+          "6397",
+          "6827",
+          "2569",
+          "7278",
+          "8630",
+          "2829",
+          "5554",
+          "0690",
+          "9882",
+          "9297",
+          "8589",
+          "8455",
+          "9732",
+          "9526",
+          "3667",
+          "4726",
+          "2773",
+          "9305",
+          "0944",
+          "6903",
+          "3323",
+          "0272",
+          "6659",
+          "5503",
+          "0749",
+          "0206",
+          "0025",
+          "8785",
+          "2234",
+          "5024",
+          "7593",
+          "4935",
+          "5253",
+          "4605",
+          "9058",
+          "4836",
+          "7329",
+          "6745",
+          "8990",
+          "8099",
+          "7256",
+          "3222",
+          "0226",
+        ]
+      target: "1111"
+    out: 4

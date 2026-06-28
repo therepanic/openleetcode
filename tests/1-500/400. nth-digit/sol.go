@@ -1,5 +1,3 @@
-import "strconv"
-
 func findNthDigit(n int) int {
     i := 1
     count := 9

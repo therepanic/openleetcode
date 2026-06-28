@@ -1,0 +1,243 @@
+entry:
+  id: 567
+  title: permutation-in-string
+  params:
+    s1:
+      type: string
+    s2:
+      type: string
+  call:
+    cpp: "Solution().checkInclusion({s1}, {s2})"
+    rust: "Solution::check_inclusion({s1}, {s2})"
+    python3: "Solution().checkInclusion({s1}, {s2})"
+    python2: "Solution().checkInclusion({s1}, {s2})"
+    ruby: "check_inclusion({s1}, {s2})"
+    java: "new Solution().checkInclusion({s1}, {s2})"
+    csharp: "new Solution().CheckInclusion({s1}, {s2})"
+    kotlin: "Solution().checkInclusion({s1}, {s2})"
+    go: "checkInclusion({s1}, {s2})"
+    dart: "Solution().checkInclusion({s1}, {s2})"
+    swift: "Solution().checkInclusion({s1}, {s2})"
+    typescript: "checkInclusion({s1}, {s2})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().checkInclusion(s1, s2, {result})"
+    checker: |
+      class Checker:
+          def checkInclusion(self, s1, s2, result):
+              if not isinstance(result, bool):
+                  return False
+              if not isinstance(s1, str) or not isinstance(s2, str):
+                  return False
+              if not (1 <= len(s1) <= 10000 and 1 <= len(s2) <= 10000):
+                  return False
+              if any(not ("a" <= ch <= "z") for ch in s1 + s2):
+                  return False
+              n1, n2 = len(s1), len(s2)
+              if n2 < n1:
+                  return result is False
+              c1 = [0] * 26
+              c2 = [0] * 26
+              for i in range(n1):
+                  c1[ord(s1[i]) - 97] += 1
+                  c2[ord(s2[i]) - 97] += 1
+              if c1 == c2:
+                  return result is True
+              for i in range(n1, n2):
+                  c2[ord(s2[i]) - 97] += 1
+                  c2[ord(s2[i - n1]) - 97] -= 1
+                  if c1 == c2:
+                      return result is True
+              return result is False
+seed: 567
+tests:
+  - name: example-1
+    in:
+      s1: "ab"
+      s2: "eidbaooo"
+    out: true
+  - name: example-2
+    in:
+      s1: "ab"
+      s2: "eidboaoo"
+    out: false
+  - name: single-char-match
+    in:
+      s1: "a"
+      s2: "a"
+    out: true
+  - name: single-char-miss
+    in:
+      s1: "a"
+      s2: "b"
+    out: false
+  - name: shorter-second-string
+    in:
+      s1: "abcd"
+      s2: "abc"
+    out: false
+  - name: exact-same-string
+    in:
+      s1: "abcd"
+      s2: "dcba"
+    out: true
+  - name: permutation-at-start
+    in:
+      s1: "qwer"
+      s2: "rqew"
+    out: true
+  - name: permutation-at-end
+    in:
+      s1: "xyz"
+      s2: "afdgzyx"
+    out: true
+  - name: no-permutation-same-letters-nearby
+    in:
+      s1: "qwer"
+      s2: "qqwe"
+    out: false
+  - name: repeated-char-true
+    in:
+      s1: "aa"
+      s2: "eidbaaoo"
+    out: true
+  - name: repeated-char-false
+    in:
+      s1: "aab"
+      s2: "abba"
+    out: false
+  - name: repeated-char-window-true
+    in:
+      s1: "aab"
+      s2: "eidbaaoob"
+    out: true
+  - name: all-same-source
+    in:
+      s1: "aaa"
+      s2: "aaaaaa"
+    out: true
+  - name: all-same-with-interruption
+    in:
+      s1: "aaa"
+      s2: "aaabaa"
+    out: true
+  - name: mid-window-match
+    in:
+      s1: "adc"
+      s2: "dcda"
+    out: true
+  - name: impossible-frequency
+    in:
+      s1: "abc"
+      s2: "defghi"
+    out: false
+  - name: trailing-match
+    in:
+      s1: "abc"
+      s2: "bbbca"
+    out: true
+  - name: prefix-match
+    in:
+      s1: "abc"
+      s2: "cabx"
+    out: true
+  - name: suffix-match
+    in:
+      s1: "abc"
+      s2: "bbbbac"
+    out: true
+  - name: inner-match
+    in:
+      s1: "abc"
+      s2: "cbaebabacd"
+    out: true
+  - name: multiple-overlapping-windows
+    in:
+      s1: "abc"
+      s2: "acbbca"
+    out: true
+  - name: count-mismatch-large-blocks
+    in:
+      s1: "abcd"
+      s2: "bbbccaaaaddd"
+    out: false
+  - name: long-noise-no-match
+    in:
+      s1: "hello"
+      s2: "ooolleoooleh"
+    out: false
+  - name: single-window-true
+    in:
+      s1: "abc"
+      s2: "bac"
+    out: true
+  - name: single-window-false
+    in:
+      s1: "ab"
+      s2: "b"
+    out: false
+  - name: true-with-duplicates-and-noise
+    in:
+      s1: "abbc"
+      s2: "cbabadcbbabbcbabaabccbabc"
+    out: true
+  - name: true-near-end-with-duplicates
+    in:
+      s1: "abbc"
+      s2: "cbabadcbbabbcbabaabccba"
+    out: true
+  - name: all-z-true
+    in:
+      s1: "zz"
+      s2: "zzzz"
+    out: true
+  - name: all-z-false
+    in:
+      s1: "zz"
+      s2: "azbz"
+    out: false
+  - name: longer-exact-permutation
+    in:
+      s1: "abcdxabcde"
+      s2: "abcdeabcdx"
+    out: true
+  - name: true-with-extra-prefix
+    in:
+      s1: "ab"
+      s2: "baa"
+    out: true
+  - name: dense-repeats-still-true
+    in:
+      s1: "aba"
+      s2: "ccccbbbbaaaa"
+    out: true
+  - name: generated-small-random
+    in:
+      s1: "abcddcba"
+      s2: "zzzzabcddcbazzzzzzzz"
+    out: true
+  - name: generated-medium-random
+    in:
+      s1: "abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+      s2: "zzzzzzzzzzabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdyyyyyyyyyy"
+    out: true
+  - name: generated-large-max-source
+    in:
+      s1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      s2: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: false
+  - name: generated-large-second-string
+    in:
+      s1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+      s2: "ccccccccccccccccccccccccccccccccccccccccccccccccccbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: false
+  - name: generated-near-max-binary-alphabet
+    in:
+      s1: "abababababababababababababababababababababababababababababab"
+      s2: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: false

@@ -1,0 +1,892 @@
+entry:
+  id: 700
+  title: search-in-a-binary-search-tree
+  params:
+    root:
+      type: tree_node
+    val:
+      type: int
+  call:
+    cpp: "treeNodeToArray(Solution().searchBST({root}, {val}))"
+    rust: "TreeNode::tree_node_to_array(Solution::search_bst({root}, {val}))"
+    python3: "tree_node_to_array(Solution().searchBST({root}, {val}))"
+    python2: "tree_node_to_array(Solution().searchBST({root}, {val}))"
+    ruby: "tree_node_to_array(search_bst({root}, {val}))"
+    java: "TreeNode.treeNodeToArray(new Solution().searchBST({root}, {val}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().SearchBST({root}, {val}))"
+    kotlin: "treeNodeToArray(Solution().searchBST({root}, {val}))"
+    go: "treeNodeToArray(searchBST({root}, {val}))"
+    dart: "tree_node_to_array(Solution().searchBST({root}, {val}))"
+    swift: "tree_node_to_array(Solution().searchBST({root}, {val}))"
+    typescript: "treeNodeToArray(searchBST({root}, {val}))"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().searchBST(root, val, {result})"
+    checker: |
+      class Checker:
+          def _is_nullish(self, node):
+              return node is None or node == []
+
+          def _has_tree_shape(self, node):
+              return isinstance(node, (list, tuple, dict)) or hasattr(node, 'val')
+
+          def _from_level_order(self, values):
+              if not values:
+                  return None
+              nodes = [None if v is None else [v, None, None] for v in values]
+              for i, node in enumerate(nodes):
+                  if node is None:
+                      continue
+                  left = 2 * i + 1
+                  right = 2 * i + 2
+                  if left < len(nodes):
+                      node[1] = nodes[left]
+                  if right < len(nodes):
+                      node[2] = nodes[right]
+              return nodes[0]
+
+          def _to_tree(self, node):
+              if self._is_nullish(node):
+                  return None
+              if hasattr(node, 'val'):
+                  return [
+                      node.val,
+                      self._to_tree(getattr(node, 'left', None)),
+                      self._to_tree(getattr(node, 'right', None)),
+                  ]
+              if isinstance(node, dict) and 'val' in node:
+                  return [
+                      node['val'],
+                      self._to_tree(node.get('left')),
+                      self._to_tree(node.get('right')),
+                  ]
+              if isinstance(node, tuple):
+                  node = list(node)
+              if isinstance(node, list):
+                  if not node:
+                      return None
+                  if len(node) == 3 and any(self._has_tree_shape(x) for x in node[1:]):
+                      return [
+                          node[0],
+                          self._to_tree(node[1]),
+                          self._to_tree(node[2]),
+                      ]
+                  if len(node) == 1 and not self._has_tree_shape(node[0]):
+                      return [node[0], None, None]
+                  if all(not self._has_tree_shape(x) for x in node):
+                      return self._from_level_order(node)
+                  return self._from_level_order(node)
+              return [node, None, None]
+
+          def _search(self, node, target):
+              if node is None:
+                  return None
+              if node[0] == target:
+                  return node
+              if target < node[0]:
+                  return self._search(node[1], target)
+              return self._search(node[2], target)
+
+          def searchBST(self, root, val, result):
+              root_arr = self._to_tree(root)
+              expected = self._search(root_arr, val)
+              actual = self._to_tree(result)
+              return expected == actual
+seed: 700
+tests:
+  - name: example_1
+    in:
+      root:
+        - 4
+        - 2
+        - 7
+        - 1
+        - 3
+      val: 2
+    out:
+      - 2
+      - 1
+      - 3
+  - name: example_2
+    in:
+      root:
+        - 4
+        - 2
+        - 7
+        - 1
+        - 3
+      val: 5
+    out: null
+  - name: single_node_hit
+    in:
+      root:
+        - 1
+      val: 1
+    out:
+      - 1
+  - name: single_node_miss
+    in:
+      root:
+        - 1
+      val: 2
+    out: null
+  - name: root_hit_balanced
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 8
+    out:
+      - 8
+      - 4
+      - 12
+      - 2
+      - 6
+      - 10
+      - 14
+      - 1
+      - 3
+      - 5
+      - 7
+      - 9
+      - 11
+      - 13
+      - 15
+  - name: left_child_hit
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 4
+    out:
+      - 4
+      - 2
+      - 6
+      - 1
+      - 3
+      - 5
+      - 7
+  - name: right_child_hit
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 12
+    out:
+      - 12
+      - 10
+      - 14
+      - 9
+      - 11
+      - 13
+      - 15
+  - name: leaf_hit_min
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 1
+    out:
+      - 1
+  - name: leaf_hit_max
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 15
+    out:
+      - 15
+  - name: internal_hit_middle
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 6
+    out:
+      - 6
+      - 5
+      - 7
+  - name: internal_hit_deep
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 13
+    out:
+      - 13
+  - name: miss_between_nodes
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 16
+    out: null
+  - name: miss_below_min
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 0
+    out: null
+  - name: miss_above_max
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+      val: 100
+    out: null
+  - name: right_skew_hit_top
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+      val: 4
+    out:
+      - 4
+      - null
+      - 5
+  - name: right_skew_hit_bottom
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+      val: 5
+    out:
+      - 5
+  - name: right_skew_miss
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+      val: 6
+    out: null
+  - name: left_skew_hit_top
+    in:
+      root:
+        - 5
+        - 4
+        - null
+        - 3
+        - null
+        - 2
+        - null
+        - 1
+      val: 4
+    out:
+      - 4
+      - 3
+      - null
+      - 2
+      - null
+      - 1
+  - name: left_skew_hit_bottom
+    in:
+      root:
+        - 5
+        - 4
+        - null
+        - 3
+        - null
+        - 2
+        - null
+        - 1
+      val: 1
+    out:
+      - 1
+  - name: left_skew_miss
+    in:
+      root:
+        - 5
+        - 4
+        - null
+        - 3
+        - null
+        - 2
+        - null
+        - 1
+      val: 0
+    out: null
+  - name: zigzag_hit
+    in:
+      root:
+        - 8
+        - 3
+        - 10
+        - 1
+        - 6
+        - null
+        - 14
+        - null
+        - null
+        - 4
+        - 7
+        - 13
+      val: 6
+    out:
+      - 6
+      - 4
+      - 7
+  - name: zigzag_hit_root
+    in:
+      root:
+        - 8
+        - 3
+        - 10
+        - 1
+        - 6
+        - null
+        - 14
+        - null
+        - null
+        - 4
+        - 7
+        - 13
+      val: 8
+    out:
+      - 8
+      - 3
+      - 10
+      - 1
+      - 6
+      - null
+      - 14
+      - null
+      - null
+      - 4
+      - 7
+      - 13
+  - name: zigzag_miss
+    in:
+      root:
+        - 8
+        - 3
+        - 10
+        - 1
+        - 6
+        - null
+        - 14
+        - null
+        - null
+        - 4
+        - 7
+        - 13
+      val: 12
+    out: null
+  - name: asymmetric_hit_left
+    in:
+      root:
+        - 15
+        - 10
+        - 20
+        - 8
+        - 12
+        - 17
+        - 25
+        - 6
+        - 9
+        - 11
+        - 13
+        - 16
+        - 19
+        - 22
+        - 27
+      val: 10
+    out:
+      - 10
+      - 8
+      - 12
+      - 6
+      - 9
+      - 11
+      - 13
+  - name: asymmetric_hit_right
+    in:
+      root:
+        - 15
+        - 10
+        - 20
+        - 8
+        - 12
+        - 17
+        - 25
+        - 6
+        - 9
+        - 11
+        - 13
+        - 16
+        - 19
+        - 22
+        - 27
+      val: 25
+    out:
+      - 25
+      - 22
+      - 27
+  - name: asymmetric_hit_deep
+    in:
+      root:
+        - 15
+        - 10
+        - 20
+        - 8
+        - 12
+        - 17
+        - 25
+        - 6
+        - 9
+        - 11
+        - 13
+        - 16
+        - 19
+        - 22
+        - 27
+      val: 19
+    out:
+      - 19
+  - name: asymmetric_miss
+    in:
+      root:
+        - 15
+        - 10
+        - 20
+        - 8
+        - 12
+        - 17
+        - 25
+        - 6
+        - 9
+        - 11
+        - 13
+        - 16
+        - 19
+        - 22
+        - 27
+      val: 14
+    out: null
+  - name: balanced_missing_between_levels
+    in:
+      root:
+        - 20
+        - 10
+        - 30
+        - 5
+        - 15
+        - 25
+        - 35
+        - 3
+        - 7
+        - 13
+        - 17
+        - 23
+        - 27
+        - 33
+        - 37
+      val: 18
+    out: null
+  - name: balanced_hit_near_bottom
+    in:
+      root:
+        - 20
+        - 10
+        - 30
+        - 5
+        - 15
+        - 25
+        - 35
+        - 3
+        - 7
+        - 13
+        - 17
+        - 23
+        - 27
+        - 33
+        - 37
+      val: 23
+    out:
+      - 23
+  - name: balanced_hit_subtree
+    in:
+      root:
+        - 20
+        - 10
+        - 30
+        - 5
+        - 15
+        - 25
+        - 35
+        - 3
+        - 7
+        - 13
+        - 17
+        - 23
+        - 27
+        - 33
+        - 37
+      val: 25
+    out:
+      - 25
+      - 23
+      - 27
+  - name: balanced_miss_high
+    in:
+      root:
+        - 20
+        - 10
+        - 30
+        - 5
+        - 15
+        - 25
+        - 35
+        - 3
+        - 7
+        - 13
+        - 17
+        - 23
+        - 27
+        - 33
+        - 37
+      val: 38
+    out: null
+  - name: min_boundary_hit
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - 1
+        - 30
+        - 60
+        - 90
+        - 110
+        - 130
+        - 160
+        - 200
+      val: 1
+    out:
+      - 1
+  - name: min_boundary_miss
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - 1
+        - 30
+        - 60
+        - 90
+        - 110
+        - 130
+        - 160
+        - 200
+      val: 2
+    out: null
+  - name: max_boundary_hit
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - 1
+        - 30
+        - 60
+        - 90
+        - 110
+        - 130
+        - 160
+        - 200
+      val: 200
+    out:
+      - 200
+  - name: max_boundary_miss
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - 1
+        - 30
+        - 60
+        - 90
+        - 110
+        - 130
+        - 160
+        - 200
+      val: 201
+    out: null
+  - name: deep_left_branch_hit
+    in:
+      root:
+        - 64
+        - 32
+        - 96
+        - 16
+        - 48
+        - 80
+        - 112
+        - 8
+        - 24
+        - 40
+        - 56
+        - 72
+        - 88
+        - 104
+        - 120
+      val: 24
+    out:
+      - 24
+  - name: deep_right_branch_hit
+    in:
+      root:
+        - 64
+        - 32
+        - 96
+        - 16
+        - 48
+        - 80
+        - 112
+        - 8
+        - 24
+        - 40
+        - 56
+        - 72
+        - 88
+        - 104
+        - 120
+      val: 104
+    out:
+      - 104
+  - name: deep_left_branch_miss
+    in:
+      root:
+        - 64
+        - 32
+        - 96
+        - 16
+        - 48
+        - 80
+        - 112
+        - 8
+        - 24
+        - 40
+        - 56
+        - 72
+        - 88
+        - 104
+        - 120
+      val: 17
+    out: null
+  - name: deep_right_branch_miss
+    in:
+      root:
+        - 64
+        - 32
+        - 96
+        - 16
+        - 48
+        - 80
+        - 112
+        - 8
+        - 24
+        - 40
+        - 56
+        - 72
+        - 88
+        - 104
+        - 120
+      val: 119
+    out: null
+  - name: large_balanced_hit
+    in:
+      root:
+        - 5000
+        - 2500
+        - 7500
+        - 1250
+        - 3750
+        - 6250
+        - 8750
+        - 625
+        - 1875
+        - 3125
+        - 4375
+        - 5625
+        - 6875
+        - 8125
+        - 9375
+      val: 6250
+    out:
+      - 6250
+      - 5625
+      - 6875

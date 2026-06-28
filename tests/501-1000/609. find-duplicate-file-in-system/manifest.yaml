@@ -1,0 +1,312 @@
+entry:
+  id: 609
+  title: find-duplicate-file-in-system
+  params:
+    paths:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().findDuplicate({paths})"
+    rust: "Solution::find_duplicate({paths})"
+    python3: "Solution().findDuplicate({paths})"
+    python2: "Solution().findDuplicate({paths})"
+    ruby: "find_duplicate({paths})"
+    java: "new Solution().findDuplicate({paths})"
+    csharp: "new Solution().FindDuplicate({paths})"
+    kotlin: "Solution().findDuplicate({paths})"
+    go: "findDuplicate({paths})"
+    dart: "Solution().findDuplicate({paths})"
+    swift: "Solution().findDuplicate({paths})"
+    typescript: "findDuplicate({paths})"
+judge:
+  type: ignore_order
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().findDuplicate(paths, {result})"
+    checker: |
+      from typing import Any
+
+      class Checker:
+          def findDuplicate(self, paths, result):
+              if not isinstance(result, list):
+                  return False
+
+              expected = {}
+              for path in paths:
+                  parts = path.split(" ")
+                  if not parts:
+                      return False
+                  directory = parts[0]
+                  for file in parts[1:]:
+                      if "(" not in file or not file.endswith(")"):
+                          return False
+                      name, content = file.split("(", 1)
+                      content = content[:-1]
+                      full_path = directory + "/" + name
+                      expected.setdefault(content, []).append(full_path)
+
+              expected_groups = {
+                  frozenset(group)
+                  for group in expected.values()
+                  if len(group) > 1
+              }
+
+              try:
+                  actual_groups = []
+                  seen_paths = set()
+                  for group in result:
+                      if not isinstance(group, list) or len(group) < 2:
+                          return False
+                      normalized = []
+                      for path in group:
+                          if not isinstance(path, str):
+                              return False
+                          if path in seen_paths:
+                              return False
+                          seen_paths.add(path)
+                          normalized.append(path)
+                      actual_groups.append(frozenset(normalized))
+              except Exception:
+                  return False
+
+              if len(actual_groups) != len(set(actual_groups)):
+                  return False
+              return set(actual_groups) == expected_groups
+seed: 609
+tests:
+  - name: example-1
+    in:
+      paths:
+        - root/a 1.txt(abcd) 2.txt(efgh)
+        - root/c 3.txt(abcd)
+        - root/c/d 4.txt(efgh)
+        - root 4.txt(efgh)
+  - name: example-2
+    in:
+      paths:
+        - root/a 1.txt(abcd) 2.txt(efgh)
+        - root/c 3.txt(abcd)
+        - root/c/d 4.txt(efgh)
+  - name: single-directory-single-file
+    in:
+      paths:
+        - root a.txt(x)
+  - name: single-directory-two-unique-files
+    in:
+      paths:
+        - root a.txt(x) b.txt(y)
+  - name: two-directories-one-duplicate-group
+    in:
+      paths:
+        - root/a 1.txt(abcd) 2.txt(efgh)
+        - root/b 3.txt(abcd)
+  - name: two-directories-two-duplicate-groups
+    in:
+      paths:
+        - root/a 1.txt(abcd) 2.txt(efgh)
+        - root/b 3.txt(abcd) 4.txt(efgh)
+  - name: duplicate-with-root-directory
+    in:
+      paths:
+        - root/a 1.txt(abcd)
+        - root 2.txt(abcd)
+  - name: all-unique-many-files
+    in:
+      paths:
+        - root/a 1.txt(a) 2.txt(b) 3.txt(c)
+        - root/b 4.txt(d) 5.txt(e)
+        - root/c 6.txt(f)
+  - name: duplicate-only-two-files
+    in:
+      paths:
+        - root/a 1.txt(x)
+        - root/b 2.txt(x)
+  - name: three-files-same-content
+    in:
+      paths:
+        - root/a 1.txt(same)
+        - root/b 2.txt(same)
+        - root/c 3.txt(same)
+  - name: duplicate-and-singleton-mixed
+    in:
+      paths:
+        - root/a 1.txt(alpha) 2.txt(beta)
+        - root/b 3.txt(alpha) 4.txt(gamma)
+        - root/c 5.txt(delta)
+  - name: nested-directories
+    in:
+      paths:
+        - root/a/b/c 1.txt(k)
+        - root/a/b/d 2.txt(k)
+        - root/x/y 3.txt(z)
+  - name: content-with-digits
+    in:
+      paths:
+        - root/a 1.txt(a1b2) 2.txt(c3d4)
+        - root/b 3.txt(a1b2)
+  - name: content-with-punctuation
+    in:
+      paths:
+        - root/a 1.txt(abc123) 2.txt(x_y-z)
+        - root/b 3.txt(x_y-z)
+  - name: repeated-file-name-different-directories
+    in:
+      paths:
+        - root/a 1.txt(foo)
+        - root/b 1.txt(foo)
+        - root/c 1.txt(bar)
+  - name: many-groups-small
+    in:
+      paths:
+        - root/a 1.txt(c1) 2.txt(c2) 3.txt(c3)
+        - root/b 4.txt(c1) 5.txt(c2) 6.txt(c4)
+        - root/c 7.txt(c3) 8.txt(c4)
+  - name: group-size-four
+    in:
+      paths:
+        - root/a 1.txt(shared)
+        - root/b 2.txt(shared)
+        - root/c 3.txt(shared)
+        - root/d 4.txt(shared)
+  - name: group-size-five
+    in:
+      paths:
+        - root/a 1.txt(same) 2.txt(u1)
+        - root/b 3.txt(same) 4.txt(u2)
+        - root/c 5.txt(same)
+        - root/d 6.txt(same)
+        - root/e 7.txt(v)
+  - name: two-groups-disjoint
+    in:
+      paths:
+        - root/a 1.txt(a) 2.txt(b)
+        - root/b 3.txt(a) 4.txt(c)
+        - root/c 5.txt(b) 6.txt(c)
+  - name: one-big-group-one-small-group
+    in:
+      paths:
+        - root/a 1.txt(x) 2.txt(y)
+        - root/b 3.txt(x) 4.txt(y)
+        - root/c 5.txt(x)
+        - root/d 6.txt(z)
+  - name: same-content-across-many-directories
+    in:
+      paths:
+        - root/a 1.txt(shared)
+        - root/b/c 2.txt(shared)
+        - root/d/e/f 3.txt(shared)
+        - root/g/h/i/j 4.txt(shared)
+  - name: root-only-files
+    in:
+      paths:
+        - root 1.txt(a) 2.txt(b) 3.txt(a)
+  - name: multiple-files-per-directory
+    in:
+      paths:
+        - root/a 1.txt(p) 2.txt(q) 3.txt(p)
+        - root/b 4.txt(q) 5.txt(r)
+  - name: alternating-contents
+    in:
+      paths:
+        - root/a 1.txt(a) 2.txt(b) 3.txt(a) 4.txt(b)
+        - root/b 5.txt(a) 6.txt(b)
+  - name: long-directory-paths
+    in:
+      paths:
+        - root/alpha/beta/gamma/delta 1.txt(content1) 2.txt(content2)
+        - root/alpha/beta/theta/lambda 3.txt(content1)
+  - name: long-content-strings
+    in:
+      paths:
+        - root/a 1.txt(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) 2.txt(bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        - root/b 3.txt(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+  - name: similar-prefixes-different-contents
+    in:
+      paths:
+        - root/a 1.txt(abc) 2.txt(abcd) 3.txt(abcde)
+        - root/b 4.txt(abcd)
+  - name: multiple-directories-same-file-name
+    in:
+      paths:
+        - root/a 1.txt(x)
+        - root/b 1.txt(y)
+        - root/c 1.txt(x)
+        - root/d 1.txt(y)
+  - name: content-collision-test
+    in:
+      paths:
+        - root/a 1.txt(ab) 2.txt(ac)
+        - root/b 3.txt(ab)
+  - name: many-singletons-one-group
+    in:
+      paths:
+        - root/a 1.txt(a1) 2.txt(a2) 3.txt(a3) 4.txt(a4)
+        - root/b 5.txt(a5) 6.txt(a6) 7.txt(a1)
+  - name: mixed-directory-depths
+    in:
+      paths:
+        - root/a 1.txt(m)
+        - root/a/b 2.txt(n)
+        - root/a/b/c 3.txt(m)
+        - root/a/b/c/d 4.txt(n)
+  - name: large-like-balance-small
+    in:
+      paths:
+        - root/a 1.txt(x1) 2.txt(x2) 3.txt(x3) 4.txt(x4) 5.txt(x5)
+        - root/b 6.txt(x1) 7.txt(x2) 8.txt(x3) 9.txt(x4) 10.txt(x5)
+  - name: duplicate-and-unique-interleaved
+    in:
+      paths:
+        - root/a 1.txt(u) 2.txt(v)
+        - root/b 3.txt(w) 4.txt(u)
+        - root/c 5.txt(x) 6.txt(y)
+        - root/d 7.txt(v) 8.txt(z)
+  - name: four-directories-two-shared-contents
+    in:
+      paths:
+        - root/a 1.txt(a) 2.txt(b)
+        - root/b 3.txt(a) 4.txt(c)
+        - root/c 5.txt(b) 6.txt(c)
+        - root/d 7.txt(d)
+  - name: large-group-with-many-files
+    in:
+      paths:
+        - root/a 1.txt(same)
+        - root/b 2.txt(same)
+        - root/c 3.txt(same)
+        - root/d 4.txt(same)
+        - root/e 5.txt(same)
+        - root/f 6.txt(same)
+        - root/g 7.txt(same)
+        - root/h 8.txt(same)
+  - name: duplicate-at-end-of-directory-list
+    in:
+      paths:
+        - root/a 1.txt(a) 2.txt(b)
+        - root/b 3.txt(c)
+        - root/c 4.txt(d) 5.txt(a)
+  - name: duplicate-at-start-of-directory-list
+    in:
+      paths:
+        - root/a 1.txt(same) 2.txt(x)
+        - root/b 3.txt(y) 4.txt(z)
+        - root/c 5.txt(same)
+  - name: many-empty-different-groups
+    in:
+      paths:
+        - root/a 1.txt(a)
+        - root/b 2.txt(b)
+        - root/c 3.txt(c)
+        - root/d 4.txt(d)
+        - root/e 5.txt(e)
+  - name: multiple-groups-with-overlapping-file-names
+    in:
+      paths:
+        - root/a 1.txt(c1) 2.txt(c2)
+        - root/b 1.txt(c1) 2.txt(c3)
+        - root/c 1.txt(c2) 2.txt(c3)
+        - root/d 1.txt(c4)

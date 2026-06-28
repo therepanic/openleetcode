@@ -1,5 +1,3 @@
-import "sort"
-
 func eraseOverlapIntervals(intervals [][]int) int {
     if len(intervals) == 0 {
         return 0

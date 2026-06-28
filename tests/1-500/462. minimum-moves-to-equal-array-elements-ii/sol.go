@@ -1,5 +1,3 @@
-import "sort"
-
 func minMoves2(nums []int) int64 {
     sort.Ints(nums)
     median := nums[len(nums)/2]

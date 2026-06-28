@@ -1,0 +1,509 @@
+entry:
+  id: 699
+  title: falling-squares
+  params:
+    positions:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().fallingSquares({positions})"
+    rust: "Solution::falling_squares({positions})"
+    python3: "Solution().fallingSquares({positions})"
+    python2: "Solution().fallingSquares({positions})"
+    ruby: "falling_squares({positions})"
+    java: "new Solution().fallingSquares({positions})"
+    csharp: "new Solution().FallingSquares({positions})"
+    kotlin: "Solution().fallingSquares({positions})"
+    go: "fallingSquares({positions})"
+    dart: "Solution().fallingSquares({positions})"
+    swift: "Solution().fallingSquares({positions})"
+    typescript: "fallingSquares({positions})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().fallingSquares(positions, result)"
+    checker: |
+      class Checker:
+          def fallingSquares(self, positions, result):
+              if not isinstance(result, list):
+                  return False
+              if len(result) != len(positions):
+                  return False
+              cur = []
+              expected = []
+              best = 0
+              for left, side in positions:
+                  right = left + side
+                  height = 0
+                  for l, r, h in cur:
+                      if l < right and left < r:
+                          if h > height:
+                              height = h
+                  height += side
+                  cur.append((left, right, height))
+                  if height > best:
+                      best = height
+                  expected.append(best)
+              return expected == result
+
+seed: 699
+
+tests:
+  - name: example-1
+    in:
+      positions:
+        - [1, 2]
+        - [2, 3]
+        - [6, 1]
+    out:
+      - 2
+      - 5
+      - 5
+  - name: example-2
+    in:
+      positions:
+        - [100, 100]
+        - [200, 100]
+    out:
+      - 100
+      - 100
+  - name: single-square
+    in:
+      positions:
+        - [1, 1]
+    out:
+      - 1
+  - name: two-disjoint
+    in:
+      positions:
+        - [1, 2]
+        - [4, 3]
+    out:
+      - 2
+      - 3
+  - name: touch-not-overlap-right
+    in:
+      positions:
+        - [1, 2]
+        - [3, 2]
+    out:
+      - 2
+      - 2
+  - name: touch-not-overlap-left
+    in:
+      positions:
+        - [5, 4]
+        - [1, 4]
+    out:
+      - 4
+      - 4
+  - name: full-overlap-later
+    in:
+      positions:
+        - [2, 5]
+        - [3, 2]
+        - [4, 1]
+    out:
+      - 5
+      - 7
+      - 8
+  - name: nested-stack
+    in:
+      positions:
+        - [1, 10]
+        - [2, 8]
+        - [3, 6]
+        - [4, 4]
+    out:
+      - 10
+      - 18
+      - 24
+      - 28
+  - name: alternating-overlap
+    in:
+      positions:
+        - [1, 3]
+        - [5, 3]
+        - [2, 4]
+        - [8, 2]
+    out:
+      - 3
+      - 3
+      - 7
+      - 7
+  - name: same-left
+    in:
+      positions:
+        - [7, 2]
+        - [7, 3]
+        - [7, 1]
+    out:
+      - 2
+      - 5
+      - 6
+  - name: same-right-edge-touch
+    in:
+      positions:
+        - [10, 5]
+        - [15, 4]
+        - [19, 1]
+    out:
+      - 5
+      - 5
+      - 5
+  - name: chain-growth
+    in:
+      positions:
+        - [1, 2]
+        - [2, 2]
+        - [3, 2]
+        - [4, 2]
+    out:
+      - 2
+      - 4
+      - 6
+      - 8
+  - name: tall-first-wide-later
+    in:
+      positions:
+        - [50, 20]
+        - [40, 50]
+        - [60, 5]
+    out:
+      - 20
+      - 70
+      - 75
+  - name: non-overlap-many
+    in:
+      positions:
+        - [1, 1]
+        - [3, 1]
+        - [5, 1]
+        - [7, 1]
+        - [9, 1]
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: increasing-lefts
+    in:
+      positions:
+        - [1, 4]
+        - [2, 3]
+        - [4, 2]
+        - [7, 5]
+    out:
+      - 4
+      - 7
+      - 9
+      - 9
+  - name: decreasing-lefts
+    in:
+      positions:
+        - [20, 4]
+        - [15, 4]
+        - [10, 4]
+        - [5, 4]
+    out:
+      - 4
+      - 4
+      - 4
+      - 4
+  - name: bridge-over-gap
+    in:
+      positions:
+        - [1, 2]
+        - [5, 2]
+        - [2, 4]
+    out:
+      - 2
+      - 2
+      - 6
+  - name: exact-coverage
+    in:
+      positions:
+        - [10, 10]
+        - [11, 8]
+        - [12, 6]
+    out:
+      - 10
+      - 18
+      - 24
+  - name: separated-by-one
+    in:
+      positions:
+        - [1, 2]
+        - [4, 2]
+        - [7, 2]
+    out:
+      - 2
+      - 2
+      - 2
+  - name: large-values-simple
+    in:
+      positions:
+        - [100000000, 1000000]
+        - [1, 1]
+    out:
+      - 1000000
+      - 1000000
+  - name: large-values-overlap
+    in:
+      positions:
+        - [99999000, 1000]
+        - [99999500, 1000]
+        - [100000000, 1]
+    out:
+      - 1000
+      - 2000
+      - 2001
+  - name: staircase
+    in:
+      positions:
+        - [1, 2]
+        - [2, 4]
+        - [4, 8]
+        - [8, 16]
+    out:
+      - 2
+      - 6
+      - 14
+      - 30
+  - name: reverse-staircase
+    in:
+      positions:
+        - [8, 16]
+        - [4, 8]
+        - [2, 4]
+        - [1, 2]
+    out:
+      - 16
+      - 24
+      - 28
+      - 30
+  - name: all-overlap-same-span
+    in:
+      positions:
+        - [10, 5]
+        - [10, 5]
+        - [10, 5]
+    out:
+      - 5
+      - 10
+      - 15
+  - name: partial-overlap-right
+    in:
+      positions:
+        - [1, 5]
+        - [4, 3]
+        - [7, 2]
+    out:
+      - 5
+      - 8
+      - 8
+  - name: partial-overlap-left
+    in:
+      positions:
+        - [10, 5]
+        - [6, 6]
+        - [1, 7]
+    out:
+      - 5
+      - 11
+      - 18
+  - name: many-small-disjoint
+    in:
+      positions:
+        - [1, 1]
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [5, 1]
+        - [6, 1]
+        - [7, 1]
+        - [8, 1]
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: many-small-chain
+    in:
+      positions:
+        - [1, 2]
+        - [2, 2]
+        - [4, 2]
+        - [6, 2]
+        - [8, 2]
+    out:
+      - 2
+      - 4
+      - 4
+      - 4
+      - 4
+  - name: center-pile
+    in:
+      positions:
+        - [50, 10]
+        - [45, 20]
+        - [40, 30]
+        - [35, 40]
+    out:
+      - 10
+      - 30
+      - 60
+      - 100
+  - name: edge-touch-mixed
+    in:
+      positions:
+        - [1, 3]
+        - [4, 3]
+        - [7, 3]
+        - [3, 1]
+    out:
+      - 3
+      - 3
+      - 3
+      - 4
+  - name: overlapping-intervals
+    in:
+      positions:
+        - [1, 6]
+        - [3, 4]
+        - [5, 2]
+        - [2, 5]
+    out:
+      - 6
+      - 10
+      - 12
+      - 17
+  - name: long-disjoint-run
+    in:
+      positions:
+        - [10, 1]
+        - [20, 1]
+        - [30, 1]
+        - [40, 1]
+        - [50, 1]
+        - [60, 1]
+        - [70, 1]
+        - [80, 1]
+        - [90, 1]
+        - [100, 1]
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+  - name: alternating-large-small
+    in:
+      positions:
+        - [1000, 100]
+        - [1050, 10]
+        - [1010, 20]
+        - [990, 30]
+    out:
+      - 100
+      - 110
+      - 120
+      - 150
+  - name: single-big
+    in:
+      positions:
+        - [1, 1000000]
+    out:
+      - 1000000
+  - name: two-big-separated
+    in:
+      positions:
+        - [1, 500000]
+        - [1000000, 500000]
+    out:
+      - 500000
+      - 500000
+  - name: two-big-overlap
+    in:
+      positions:
+        - [1, 500000]
+        - [250000, 500000]
+    out:
+      - 500000
+      - 1000000
+  - name: midrange-mix
+    in:
+      positions:
+        - [13, 7]
+        - [5, 10]
+        - [20, 3]
+        - [9, 4]
+        - [17, 8]
+    out:
+      - 7
+      - 17
+      - 17
+      - 21
+      - 21
+  - name: broad-overlap
+    in:
+      positions:
+        - [100, 40]
+        - [120, 40]
+        - [140, 40]
+    out:
+      - 40
+      - 80
+      - 120
+  - name: boundary-adjacent
+    in:
+      positions:
+        - [1, 2]
+        - [2, 1]
+        - [3, 2]
+        - [5, 1]
+    out:
+      - 2
+      - 3
+      - 3
+      - 3
+  - name: max-count-compact
+    in:
+      positions:
+        - [1, 1]
+        - [1, 2]
+        - [2, 2]
+        - [3, 2]
+        - [4, 2]
+        - [5, 2]
+        - [6, 2]
+        - [7, 2]
+    out:
+      - 1
+      - 3
+      - 5
+      - 7
+      - 9
+      - 11
+      - 13
+      - 15

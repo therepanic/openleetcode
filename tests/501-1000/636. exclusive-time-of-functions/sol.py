@@ -1,0 +1,20 @@
+class Solution:
+    def exclusiveTime(self, n: int, logs: List[str]) -> List[int]:
+        callstack = []
+        exectime = [0] * n
+
+        for log in logs:
+            idn, status, curtime = log.split(":")
+            idn, curtime = int(idn), int(curtime)
+            if status == "start":
+                callstack.append([idn, curtime])
+
+            else:
+                x, y = callstack.pop()
+                time = curtime - y + 1
+                exectime[x] += time
+                if callstack:
+                    x, _ = callstack[-1]
+                    exectime[x] -= time
+
+        return exectime

@@ -1,0 +1,205 @@
+entry:
+  id: 640
+  title: solve-the-equation
+  params:
+    equation:
+      type: string
+  call:
+    cpp: Solution().solveEquation({equation})
+    rust: Solution::solve_equation({equation})
+    python3: Solution().solveEquation({equation})
+    python2: Solution().solveEquation({equation})
+    ruby: solve_equation({equation})
+    java: new Solution().solveEquation({equation})
+    csharp: new Solution().SolveEquation({equation})
+    kotlin: Solution().solveEquation({equation})
+    go: solveEquation({equation})
+    dart: Solution().solveEquation({equation})
+    swift: Solution().solveEquation({equation})
+    typescript: solveEquation({equation})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().solveEquation(equation, {result})
+    checker: |
+      class Checker:
+          def solveEquation(self, equation, result):
+              left, right = equation.split("=")
+
+              def parse_side(side):
+                  coeff = 0
+                  const = 0
+                  num = ""
+                  sign = 1
+                  for char in side + "+":
+                      if char in "+-":
+                          if num:
+                              const += sign * int(num)
+                              num = ""
+                          sign = 1 if char == "+" else -1
+                      elif char.isdigit():
+                          num += char
+                      elif char == "x":
+                          coeff += sign * (int(num) if num else 1)
+                          num = ""
+                  return coeff, const
+
+              left_coeff, left_const = parse_side(left)
+              right_coeff, right_const = parse_side(right)
+              coeff = left_coeff - right_coeff
+              const = right_const - left_const
+              if coeff == 0:
+                  expected = "No solution" if const != 0 else "Infinite solutions"
+              else:
+                  expected = "x={}".format(const / coeff)
+              return result == expected
+seed: 640
+tests:
+  - name: example_1
+    in:
+      equation: x+5-3+x=6+x-2
+    out: x=2
+  - name: example_2
+    in:
+      equation: x=x
+    out: Infinite solutions
+  - name: example_3
+    in:
+      equation: 2x=x
+    out: x=0
+  - name: simple_no_solution
+    in:
+      equation: x=x+2
+    out: No solution
+  - name: simple_infinite_1
+    in:
+      equation: 2x=2x
+    out: Infinite solutions
+  - name: simple_infinite_2
+    in:
+      equation: 3x+2=3x+2
+    out: Infinite solutions
+  - name: constant_only_no_solution
+    in:
+      equation: 5=3
+    out: No solution
+  - name: constant_only_infinite
+    in:
+      equation: 7=7
+    out: Infinite solutions
+  - name: zero_solution_positive
+    in:
+      equation: x+1=1
+    out: x=0
+  - name: zero_solution_negative
+    in:
+      equation: x-1=-1
+    out: x=0
+  - name: positive_solution_one
+    in:
+      equation: x+2=5
+    out: x=3
+  - name: negative_solution_one
+    in:
+      equation: x+5=2
+    out: x=-3
+  - name: positive_solution_two
+    in:
+      equation: 2x+3=x+8
+    out: x=5
+  - name: negative_solution_two
+    in:
+      equation: 4x+1=2x-5
+    out: x=-3
+  - name: solution_with_right_side_constant
+    in:
+      equation: 3x=9
+    out: x=3
+  - name: solution_with_left_side_constant
+    in:
+      equation: 9=3x
+    out: x=3
+  - name: one_x_each_side_with_constants
+    in:
+      equation: 5+x=2+2x
+    out: x=3
+  - name: coefficients_cancel_to_constant
+    in:
+      equation: 2x+3=2x+4
+    out: No solution
+  - name: coefficients_cancel_equal_constants
+    in:
+      equation: 2x+3=2x+3
+    out: Infinite solutions
+  - name: negative_constants
+    in:
+      equation: x-5=2
+    out: x=7
+  - name: minus_on_both_sides
+    in:
+      equation: x-5=x-2
+    out: No solution
+  - name: multiple_terms_left
+    in:
+      equation: 2x+3x-6=4
+    out: x=2
+  - name: multiple_terms_right
+    in:
+      equation: 4=2x+3x-6
+    out: x=2
+  - name: larger_coefficients
+    in:
+      equation: 10x-20=5x+5
+    out: x=5
+  - name: larger_constants
+    in:
+      equation: 100=50x-150
+    out: x=5
+  - name: many_small_terms
+    in:
+      equation: x+x+x+x=8
+    out: x=2
+  - name: mixed_signs
+    in:
+      equation: x-2+x+3=2x+1
+    out: Infinite solutions
+  - name: mixed_signs_no_solution
+    in:
+      equation: x-2+x+3=2x+2
+    out: No solution
+  - name: zero_constant_balance
+    in:
+      equation: x+0=0
+    out: x=0
+  - name: zero_coefficient_solution
+    in:
+      equation: 0x=0
+    out: Infinite solutions
+  - name: zero_coefficient_no_solution
+    in:
+      equation: 0x=1
+    out: No solution
+  - name: leading_zero_constant
+    in:
+      equation: x+10=010+x
+    out: Infinite solutions
+  - name: max_digit_constants
+    in:
+      equation: 100x+100=200x
+    out: x=1
+  - name: max_digit_mix
+    in:
+      equation: 100x-100=0
+    out: x=1
+  - name: many_terms_balanced
+    in:
+      equation: 2x+3-4x+5+6x-7=4x+7
+    out: No solution
+  - name: many_terms_unbalanced
+    in:
+      equation: 2x+3-4x+5+6x-7=3x+1
+    out: x=0

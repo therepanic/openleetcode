@@ -1,0 +1,448 @@
+entry:
+  id: 675
+  title: cut-off-trees-for-golf-event
+  params:
+    forest:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: Solution().cutOffTree({forest})
+    rust: Solution::cut_off_tree({forest})
+    python3: Solution().cutOffTree({forest})
+    python2: Solution().cutOffTree({forest})
+    ruby: cut_off_tree({forest})
+    java: new Solution().cutOffTree({forest})
+    csharp: new Solution().CutOffTree({forest})
+    kotlin: Solution().cutOffTree({forest})
+    go: cutOffTree({forest})
+    dart: Solution().cutOffTree({forest})
+    swift: Solution().cutOffTree({forest})
+    typescript: cutOffTree({forest})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().cutOffTree(forest, {result})
+    checker: |
+      from collections import deque
+      import heapq
+
+      class Checker:
+          def cutOffTree(self, forest, result):
+              if not isinstance(result, int):
+                  return False
+              if not isinstance(forest, list) or not forest or not isinstance(forest[0], list) or not forest[0]:
+                  return False
+              rows = len(forest)
+              cols = len(forest[0])
+              if any(not isinstance(row, list) or len(row) != cols for row in forest):
+                  return False
+              if forest[0][0] == 0:
+                  return result == -1
+
+              trees = []
+              for r in range(rows):
+                  for c in range(cols):
+                      v = forest[r][c]
+                      if not isinstance(v, int) or v < 0:
+                          return False
+                      if v > 1:
+                          heapq.heappush(trees, (v, r, c))
+
+              def bfs(sr, sc, tr, tc):
+                  if sr == tr and sc == tc:
+                      return 0
+                  q = deque([(sr, sc, 0)])
+                  seen = {(sr, sc)}
+                  while q:
+                      r, c, d = q.popleft()
+                      for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                          nr, nc = r + dr, c + dc
+                          if 0 <= nr < rows and 0 <= nc < cols and forest[nr][nc] > 0 and (nr, nc) not in seen:
+                              if nr == tr and nc == tc:
+                                  return d + 1
+                              seen.add((nr, nc))
+                              q.append((nr, nc, d + 1))
+                  return -1
+
+              total = 0
+              cr = cc = 0
+              while trees:
+                  _, tr, tc = heapq.heappop(trees)
+                  dist = bfs(cr, cc, tr, tc)
+                  if dist == -1:
+                      return result == -1
+                  total += dist
+                  cr, cc = tr, tc
+              return result == total
+seed: 675675
+tests:
+  - name: example_1
+    in:
+      forest:
+        - [1, 2, 3]
+        - [0, 0, 4]
+        - [7, 6, 5]
+    out: 6
+  - name: example_2
+    in:
+      forest:
+        - [1, 2, 3]
+        - [0, 0, 0]
+        - [7, 6, 5]
+    out: -1
+  - name: example_3
+    in:
+      forest:
+        - [2, 3, 4]
+        - [0, 0, 5]
+        - [8, 7, 6]
+    out: 6
+  - name: single_tree_start
+    in:
+      forest:
+        - [2]
+    out: 0
+  - name: single_empty_cell
+    in:
+      forest:
+        - [1]
+    out: 0
+  - name: blocked_start_with_tree
+    in:
+      forest:
+        - [0, 2]
+    out: -1
+  - name: unreachable_due_to_wall
+    in:
+      forest:
+        - [1, 2, 3]
+        - [0, 0, 0]
+        - [4, 5, 6]
+    out: -1
+  - name: two_trees_line
+    in:
+      forest:
+        - [2, 3]
+    out: 1
+  - name: two_trees_vertical
+    in:
+      forest:
+        - [2]
+        - [3]
+    out: 1
+  - name: start_is_lowest_then_far
+    in:
+      forest:
+        - [2, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 3]
+    out: 4
+  - name: detour_around_walls
+    in:
+      forest:
+        - [1, 2, 3]
+        - [1, 0, 4]
+        - [1, 1, 5]
+    out: 4
+  - name: zigzag_path
+    in:
+      forest:
+        - [1, 2, 1, 1]
+        - [1, 0, 0, 1]
+        - [3, 4, 5, 6]
+    out: 7
+  - name: cut_start_then_move
+    in:
+      forest:
+        - [2, 1]
+        - [1, 3]
+    out: 2
+  - name: larger_sparse_reachable
+    in:
+      forest:
+        - [1, 1, 1, 1]
+        - [1, 2, 0, 3]
+        - [1, 1, 1, 1]
+        - [4, 0, 5, 6]
+    out: 16
+  - name: around_obstacle_chain
+    in:
+      forest:
+        - [1, 2, 3, 4]
+        - [1, 0, 0, 5]
+        - [1, 6, 7, 8]
+        - [1, 1, 1, 9]
+    out: 10
+  - name: tree_at_end_of_row
+    in:
+      forest:
+        - [1, 1, 1, 1, 2]
+    out: 4
+  - name: tree_at_end_of_column
+    in:
+      forest:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [2]
+    out: 4
+  - name: two_by_two_all_trees
+    in:
+      forest:
+        - [2, 3]
+        - [4, 5]
+    out: 4
+  - name: all_walkable_no_block
+    in:
+      forest:
+        - [1, 1, 1]
+        - [1, 2, 1]
+        - [1, 1, 3]
+    out: 4
+  - name: medium_blocked_middle
+    in:
+      forest:
+        - [1, 2, 3, 4]
+        - [1, 0, 0, 0]
+        - [5, 6, 7, 8]
+        - [9, 10, 11, 12]
+    out: 18
+  - name: medium_snake
+    in:
+      forest:
+        - [1, 2, 3, 4, 5]
+        - [10, 9, 8, 7, 6]
+        - [11, 12, 13, 14, 15]
+    out: 14
+  - name: high_values_sparse
+    in:
+      forest:
+        - [1, 1000000000, 1]
+        - [1, 1, 1]
+        - [1, 1, 999999999]
+    out: 7
+  - name: one_tree_far_corner
+    in:
+      forest:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 2]
+    out: 6
+  - name: corridor_with_choice
+    in:
+      forest:
+        - [1, 2, 1, 3]
+        - [1, 1, 1, 1]
+        - [4, 1, 5, 1]
+    out: 10
+  - name: unreachable_isolated_tree
+    in:
+      forest:
+        - [1, 2, 1]
+        - [0, 0, 0]
+        - [1, 3, 1]
+    out: -1
+  - name: path_then_branch
+    in:
+      forest:
+        - [2, 1, 1, 1]
+        - [1, 1, 1, 3]
+        - [1, 0, 0, 1]
+        - [4, 5, 6, 7]
+    out: 12
+  - name: row_of_trees
+    in:
+      forest:
+        - [2, 3, 4, 5, 6, 7]
+    out: 5
+  - name: column_of_trees
+    in:
+      forest:
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+    out: 5
+  - name: wall_along_edge
+    in:
+      forest:
+        - [1, 2, 3, 4]
+        - [0, 0, 0, 5]
+        - [6, 7, 8, 9]
+    out: 11
+  - name: start_and_finish_far
+    in:
+      forest:
+        - [2, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 3]
+    out: 7
+  - name: medium_full_access
+    in:
+      forest:
+        - [1, 2, 1, 3]
+        - [4, 5, 6, 7]
+        - [8, 9, 10, 11]
+        - [12, 13, 14, 15]
+    out: 24
+  - name: large_row_50
+    in:
+      forest:
+        - [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+          ]
+    out: 49
+  - name: large_column_50
+    in:
+      forest:
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+        - [9]
+        - [10]
+        - [11]
+        - [12]
+        - [13]
+        - [14]
+        - [15]
+        - [16]
+        - [17]
+        - [18]
+        - [19]
+        - [20]
+        - [21]
+        - [22]
+        - [23]
+        - [24]
+        - [25]
+        - [26]
+        - [27]
+        - [28]
+        - [29]
+        - [30]
+        - [31]
+        - [32]
+        - [33]
+        - [34]
+        - [35]
+        - [36]
+        - [37]
+        - [38]
+        - [39]
+        - [40]
+        - [41]
+        - [42]
+        - [43]
+        - [44]
+        - [45]
+        - [46]
+        - [47]
+        - [48]
+        - [49]
+        - [50]
+        - [51]
+    out: 49
+  - name: large_checkerboard_blocked
+    in:
+      forest:
+        - [1, 2, 0, 3, 0, 4]
+        - [1, 0, 0, 0, 0, 5]
+        - [6, 7, 8, 9, 10, 11]
+        - [0, 0, 0, 0, 0, 12]
+        - [13, 14, 15, 16, 17, 18]
+        - [19, 0, 0, 0, 0, 20]
+    out: -1
+  - name: large_open_grid_ordered
+    in:
+      forest:
+        - [1, 2, 3, 4, 5, 6, 7]
+        - [8, 9, 10, 11, 12, 13, 14]
+        - [15, 16, 17, 18, 19, 20, 21]
+        - [22, 23, 24, 25, 26, 27, 28]
+        - [29, 30, 31, 32, 33, 34, 35]
+        - [36, 37, 38, 39, 40, 41, 42]
+        - [43, 44, 45, 46, 47, 48, 49]
+    out: 84
+  - name: large_two_blocks
+    in:
+      forest:
+        - [1, 1, 1, 1, 1, 1, 2]
+        - [0, 0, 0, 0, 0, 1, 3]
+        - [4, 5, 6, 7, 8, 9, 10]
+        - [11, 0, 0, 0, 0, 0, 12]
+        - [13, 14, 15, 16, 17, 18, 19]
+    out: 48
+  - name: large_unreachable_end
+    in:
+      forest:
+        - [1, 2, 3, 4, 5]
+        - [0, 0, 0, 0, 6]
+        - [7, 8, 9, 10, 11]
+        - [12, 13, 14, 15, 16]
+        - [17, 18, 19, 20, 21]
+    out: 32

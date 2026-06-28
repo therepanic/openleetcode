@@ -1,5 +1,3 @@
-import "sort"
-
 func groupAnagrams(strs []string) [][]string {
     groups := map[string][]string{}
     keys := []string{}

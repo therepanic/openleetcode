@@ -1,0 +1,20 @@
+class Solution:
+    def shoppingOffers(
+        self, price: List[int], special: List[List[int]], needs: List[int]
+    ) -> int:
+        p = len(price)
+
+        def dp(curr, memo):
+            if all(i == 0 for i in curr):
+                return 0
+            key = tuple(curr)
+            if key not in memo:
+                n = len(curr)
+                memo[key] = sum(curr[i] * price[i] for i in range(p))
+                for offer in special:
+                    if all(curr[i] >= offer[i] for i in range(n)):
+                        new = [curr[i] - offer[i] for i in range(n)]
+                        memo[key] = min(memo[key], offer[-1] + dp(new, memo))
+            return memo[key]
+
+        return dp(needs, {})

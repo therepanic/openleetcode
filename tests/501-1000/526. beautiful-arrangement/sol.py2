@@ -1,0 +1,19 @@
+class Solution(object):
+    def countArrangement(self, n):
+        memo = {}
+
+        def backtrack(index, mask):
+            if index > n:
+                return 1
+            key = (index, mask)
+            if key in memo:
+                return memo[key]
+            count = 0
+            for value in range(1, n + 1):
+                bit = 1 << (value - 1)
+                if not (mask & bit) and (value % index == 0 or index % value == 0):
+                    count += backtrack(index + 1, mask | bit)
+            memo[key] = count
+            return count
+
+        return backtrack(1, 0)

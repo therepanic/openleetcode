@@ -1,0 +1,41 @@
+class Solution(object):
+    def findRedundantConnection(self, edges):
+        """
+        :type edges: List[List[int]]
+        :rtype: List[int]
+        """
+        matrix = [[] for _ in range(len(edges) + 1)]
+        for a, b in edges:
+            matrix[a].append(b)
+            matrix[b].append(a)
+
+        visited = set()
+        path = set()
+        cycle_start = [-1]
+
+        def dfs(i, parent):
+            if i in visited:
+                return False
+            visited.add(i)
+            for node in matrix[i]:
+                if node not in visited:
+                    if dfs(node, i):
+                        if cycle_start[0] != -1:
+                            path.add(node)
+                        if node == cycle_start[0]:
+                            cycle_start[0] = -1
+                        return True
+                elif node != parent:
+                    path.add(node)
+                    cycle_start[0] = node
+                    return True
+            return False
+
+        for i in range(len(edges), 0, -1):
+            if dfs(i, -1):
+                break
+
+        for k in range(len(edges) - 1, -1, -1):
+            a, b = edges[k]
+            if a in path and b in path:
+                return [a, b]

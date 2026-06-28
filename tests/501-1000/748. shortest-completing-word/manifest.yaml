@@ -1,0 +1,651 @@
+entry:
+  id: 748
+  title: shortest-completing-word
+  params:
+    licensePlate:
+      type: string
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().shortestCompletingWord({licensePlate}, {words})"
+    rust: "Solution::shortest_completing_word({licensePlate}, {words})"
+    python3: "Solution().shortestCompletingWord({licensePlate}, {words})"
+    python2: "Solution().shortestCompletingWord({licensePlate}, {words})"
+    ruby: "shortest_completing_word({licensePlate}, {words})"
+    java: "new Solution().shortestCompletingWord({licensePlate}, {words})"
+    csharp: "new Solution().ShortestCompletingWord({licensePlate}, {words})"
+    kotlin: "Solution().shortestCompletingWord({licensePlate}, {words})"
+    go: "shortestCompletingWord({licensePlate}, {words})"
+    dart: "Solution().shortestCompletingWord({licensePlate}, {words})"
+    swift: "Solution().shortestCompletingWord({licensePlate}, {words})"
+    typescript: "shortestCompletingWord({licensePlate}, {words})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().shortestCompletingWord(licensePlate, words, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def shortestCompletingWord(self, licensePlate, words, result):
+              if not isinstance(result, str):
+                  return False
+              if result not in words:
+                  return False
+              need = Counter(c for c in licensePlate.lower() if c.isalpha())
+              counts = Counter(result)
+              if any(counts.get(c, 0) < need[c] for c in need):
+                  return False
+              best = None
+              for word in words:
+                  word_counts = Counter(word)
+                  if all(word_counts.get(c, 0) >= need[c] for c in need):
+                      if best is None or len(word) < len(best):
+                          best = word
+              return result == best
+seed: 748
+tests:
+  - name: example_1
+    in:
+      licensePlate: "1s3 PSt"
+      words:
+        - "step"
+        - "steps"
+        - "stripe"
+        - "stepple"
+    out: "steps"
+  - name: example_2
+    in:
+      licensePlate: "1s3 456"
+      words:
+        - "looks"
+        - "pest"
+        - "stew"
+        - "show"
+    out: "pest"
+  - name: single_letter_case_insensitive
+    in:
+      licensePlate: "Z"
+      words:
+        - "zap"
+        - "ooze"
+        - "z"
+        - "pizza"
+    out: "z"
+  - name: repeated_letter_requirement
+    in:
+      licensePlate: "aBc 12c"
+      words:
+        - "abccdef"
+        - "caaacab"
+        - "cbca"
+        - "acbc"
+    out: "cbca"
+  - name: digits_and_spaces_only
+    in:
+      licensePlate: "123 456"
+      words:
+        - "bbb"
+        - "aa"
+        - "c"
+        - "dd"
+    out: "c"
+  - name: all_caps_plate
+    in:
+      licensePlate: "RT 7R"
+      words:
+        - "torr"
+        - "rarity"
+        - "tractor"
+        - "trr"
+    out: "trr"
+  - name: tie_same_length_first_wins
+    in:
+      licensePlate: "OgEu"
+      words:
+        - "ogue"
+        - "geuo"
+        - "eugo"
+        - "rogue"
+    out: "ogue"
+  - name: plate_length_max_seven
+    in:
+      licensePlate: "Ab1 cD2"
+      words:
+        - "abcd"
+        - "cabd"
+        - "abcdd"
+        - "bdca"
+    out: "abcd"
+  - name: duplicate_count_blocks_shorter_word
+    in:
+      licensePlate: "PP"
+      words:
+        - "p"
+        - "pp"
+        - "ppp"
+        - "app"
+    out: "pp"
+  - name: nonmatching_prefix_words
+    in:
+      licensePlate: "3x 2x"
+      words:
+        - "axe"
+        - "box"
+        - "xx"
+        - "taxx"
+        - "xylx"
+    out: "xx"
+  - name: exact_word_present
+    in:
+      licensePlate: "Gr8"
+      words:
+        - "rag"
+        - "gear"
+        - "gr"
+        - "great"
+    out: "gr"
+  - name: answer_late_in_list
+    in:
+      licensePlate: "nN2 a"
+      words:
+        - "bananaa"
+        - "ann"
+        - "naan"
+        - "an"
+    out: "ann"
+  - name: shortest_not_lexicographic
+    in:
+      licensePlate: "te1"
+      words:
+        - "tide"
+        - "emit"
+        - "let"
+        - "wet"
+    out: "let"
+  - name: single_word_list
+    in:
+      licensePlate: "s 9"
+      words:
+        - "s"
+    out: "s"
+  - name: license_needs_three_same_letters
+    in:
+      licensePlate: "cC c"
+      words:
+        - "cc"
+        - "ccc"
+        - "accc"
+        - "cccc"
+    out: "ccc"
+  - name: short_word_beats_longer_earlier_match
+    in:
+      licensePlate: "m2n"
+      words:
+        - "moon"
+        - "mn"
+        - "mnoon"
+        - "name"
+    out: "mn"
+  - name: first_shortest_among_many_matches
+    in:
+      licensePlate: "lP"
+      words:
+        - "apple"
+        - "slip"
+        - "clap"
+        - "alp"
+        - "pal"
+    out: "alp"
+  - name: ignore_nonletters_only_count_letters
+    in:
+      licensePlate: "1 a2B"
+      words:
+        - "ba"
+        - "abacus"
+        - "cab"
+        - "aaab"
+    out: "ba"
+  - name: answer_requires_extra_duplicate
+    in:
+      licensePlate: "ttt"
+      words:
+        - "tt"
+        - "tntt"
+        - "tttt"
+        - "tattoo"
+    out: "tntt"
+  - name: repeated_letters_multiple_candidates
+    in:
+      licensePlate: "bB2 aA"
+      words:
+        - "abba"
+        - "baba"
+        - "baab"
+        - "aaabb"
+    out: "abba"
+  - name: earliest_among_equal_minimal
+    in:
+      licensePlate: "k9k"
+      words:
+        - "akk"
+        - "kak"
+        - "kka"
+        - "bookkeeper"
+    out: "akk"
+  - name: max_word_length_15
+    in:
+      licensePlate: "q1w2e3"
+      words:
+        - "qweqqqqqqqqqqqq"
+        - "qqwweerrttyyuio"
+        - "qwe"
+        - "eqwxyzabcdefghi"
+    out: "qwe"
+  - name: two_letter_plate_with_single_char_words
+    in:
+      licensePlate: "hi"
+      words:
+        - "h"
+        - "i"
+        - "ih"
+        - "hit"
+        - "high"
+    out: "ih"
+  - name: duplicate_with_noise
+    in:
+      licensePlate: "sS1s"
+      words:
+        - "misses"
+        - "sss"
+        - "ss"
+        - "classs"
+    out: "sss"
+  - name: letters_scattered_in_plate
+    in:
+      licensePlate: "A 4 b C"
+      words:
+        - "abc"
+        - "cab"
+        - "scab"
+        - "abacus"
+    out: "abc"
+  - name: only_one_completing_among_many
+    in:
+      licensePlate: "j7d"
+      words:
+        - "jam"
+        - "judo"
+        - "dj"
+        - "jade"
+        - "jaded"
+    out: "dj"
+  - name: answer_can_be_first_word
+    in:
+      licensePlate: "m1"
+      words:
+        - "am"
+        - "mood"
+        - "time"
+    out: "am"
+  - name: answer_can_be_last_word
+    in:
+      licensePlate: "v2"
+      words:
+        - "alpha"
+        - "bravo"
+        - "civic"
+        - "v"
+    out: "v"
+  - name: long_plate_all_letters_used
+    in:
+      licensePlate: "sP4aCe"
+      words:
+        - "space"
+        - "capes"
+        - "escape"
+        - "paces"
+    out: "space"
+  - name: repeated_and_order_irrelevant
+    in:
+      licensePlate: "L3lE"
+      words:
+        - "ell"
+        - "label"
+        - "hello"
+        - "eell"
+    out: "ell"
+  - name: shortest_with_embedded_duplicates
+    in:
+      licensePlate: "rR5u"
+      words:
+        - "rural"
+        - "urr"
+        - "blur"
+        - "urrr"
+    out: "urr"
+  - name: large_word_set_1
+    in:
+      licensePlate: "1a2b3c"
+      words:
+        - "a"
+        - "b"
+        - "c"
+        - "ab"
+        - "ac"
+        - "bc"
+        - "abc"
+        - "cab"
+        - "bca"
+        - "aaaaabbbbbccccc"
+        - "alphabet"
+        - "backpack"
+        - "crab"
+        - "scab"
+        - "abacus"
+        - "cabbage"
+        - "brace"
+        - "abracadabra"
+        - "abcabc"
+        - "abcc"
+        - "bacc"
+        - "ccab"
+        - "tree"
+        - "stone"
+        - "tablet"
+        - "binary"
+        - "coding"
+        - "python"
+        - "java"
+        - "swift"
+        - "kotlin"
+        - "ruby"
+        - "go"
+        - "rust"
+        - "scala"
+        - "elixir"
+        - "haskell"
+        - "clojure"
+    out: "abc"
+  - name: large_word_set_2
+    in:
+      licensePlate: "M2mN3"
+      words:
+        - "mn"
+        - "nm"
+        - "man"
+        - "name"
+        - "minimum"
+        - "common"
+        - "moment"
+        - "mnm"
+        - "mnnm"
+        - "nomnom"
+        - "banana"
+        - "cinnamon"
+        - "aluminum"
+        - "monument"
+        - "random"
+        - "nomad"
+        - "animal"
+        - "mnemonic"
+        - "mainframe"
+        - "moonman"
+        - "ironman"
+        - "snowman"
+        - "manymany"
+        - "mine"
+        - "mean"
+        - "omen"
+    out: "mnm"
+  - name: large_word_set_3
+    in:
+      licensePlate: "7 t T y"
+      words:
+        - "ty"
+        - "yt"
+        - "tty"
+        - "tasty"
+        - "tatty"
+        - "thirty"
+        - "trophy"
+        - "entity"
+        - "titty"
+        - "tottery"
+        - "kitty"
+        - "pretty"
+        - "tyrant"
+        - "style"
+        - "types"
+        - "tyt"
+        - "ttty"
+        - "tytt"
+        - "typhoon"
+        - "tiny"
+    out: "tty"
+  - name: large_word_set_4
+    in:
+      licensePlate: "B4oB"
+      words:
+        - "bob"
+        - "boob"
+        - "bobo"
+        - "baboon"
+        - "robot"
+        - "blob"
+        - "cabob"
+        - "bbq"
+        - "book"
+        - "boot"
+        - "booboo"
+        - "babble"
+        - "bubble"
+        - "oboe"
+        - "orb"
+        - "broom"
+        - "broth"
+        - "bomb"
+        - "boon"
+        - "bonobo"
+    out: "bob"
+  - name: large_word_set_5
+    in:
+      licensePlate: "c1a1t"
+      words:
+        - "cat"
+        - "act"
+        - "tack"
+        - "coat"
+        - "cart"
+        - "trace"
+        - "cater"
+        - "scatter"
+        - "tacit"
+        - "attack"
+        - "at"
+        - "ta"
+        - "cta"
+        - "chat"
+        - "concat"
+        - "locator"
+        - "react"
+        - "crate"
+        - "artifact"
+        - "contact"
+    out: "cat"
+  - name: stress_many_words_alpha
+    in:
+      licensePlate: "A1b2c3"
+      words:
+        - "dddddd"
+        - "eeeeee"
+        - "ffffff"
+        - "gggggg"
+        - "hhhhhh"
+        - "iiiiii"
+        - "jjjjjj"
+        - "kkkkkk"
+        - "llllll"
+        - "mmmmmm"
+        - "nnnnnn"
+        - "oooooo"
+        - "pppppp"
+        - "qqqqqq"
+        - "rrrrrr"
+        - "ssssss"
+        - "tttttt"
+        - "uuuuuu"
+        - "vvvvvv"
+        - "wwwwww"
+        - "xxxxxx"
+        - "yyyyyy"
+        - "dedede"
+        - "efefef"
+        - "fgfgfg"
+        - "ghghgh"
+        - "hihihi"
+        - "ijijij"
+        - "jkjkjk"
+        - "klklkl"
+        - "lmlmlm"
+        - "mnmnmn"
+        - "nonono"
+        - "opopop"
+        - "pqpqpq"
+        - "qrqrqr"
+        - "rsrsrs"
+        - "ststst"
+        - "tututu"
+        - "uvuvuv"
+        - "vwvwvw"
+        - "wxwxwx"
+        - "xyxyxy"
+        - "ywywyw"
+        - "tetete"
+        - "rerere"
+        - "qeqeqe"
+        - "pepepe"
+        - "ofofof"
+        - "nfnfnf"
+        - "mfmfmf"
+        - "lglglg"
+        - "khkhkh"
+        - "jijiji"
+        - "abcabc"
+        - "abccba"
+        - "cabcab"
+        - "abacus"
+        - "cabbage"
+        - "scab"
+        - "brace"
+        - "crab"
+        - "tablet"
+        - "binary"
+        - "coding"
+        - "python"
+        - "kotlin"
+        - "haskell"
+        - "clojure"
+        - "rustace"
+        - "swiftly"
+        - "gopher"
+        - "elixir"
+        - "fortran"
+        - "nimble"
+        - "zigzag"
+        - "perl"
+        - "lisp"
+        - "scheme"
+        - "abc"
+    out: "abc"
+  - name: stress_many_words_zeta
+    in:
+      licensePlate: "zZ9 z"
+      words:
+        - "aaaaaa"
+        - "bbbbbb"
+        - "cccccc"
+        - "dddddd"
+        - "eeeeee"
+        - "ffffff"
+        - "gggggg"
+        - "hhhhhh"
+        - "iiiiii"
+        - "jjjjjj"
+        - "kkkkkk"
+        - "llllll"
+        - "mmmmmm"
+        - "nnnnnn"
+        - "oooooo"
+        - "pppppp"
+        - "qqqqqq"
+        - "rrrrrr"
+        - "ssssss"
+        - "tttttt"
+        - "uuuuuu"
+        - "vvvvvv"
+        - "wwwwww"
+        - "xxxxxx"
+        - "yyyyyy"
+        - "ababab"
+        - "bcbcbc"
+        - "cdcdcd"
+        - "dedede"
+        - "efefef"
+        - "fgfgfg"
+        - "ghghgh"
+        - "hihihi"
+        - "ijijij"
+        - "jkjkjk"
+        - "klklkl"
+        - "lmlmlm"
+        - "mnmnmn"
+        - "nonono"
+        - "opopop"
+        - "pqpqpq"
+        - "qrqrqr"
+        - "rsrsrs"
+        - "ststst"
+        - "tututu"
+        - "uvuvuv"
+        - "vwvwvw"
+        - "wxwxwx"
+        - "xyxyxy"
+        - "yzyzyz"
+        - "pizza"
+        - "fizz"
+        - "jazzy"
+        - "puzzle"
+        - "muzzle"
+        - "dazzle"
+        - "frozen"
+        - "hazel"
+        - "bronze"
+        - "blaze"
+        - "amazing"
+        - "sneeze"
+        - "dizzy"
+        - "razzmatazz"
+        - "fizzle"
+        - "buzzing"
+        - "topaz"
+        - "waltz"
+        - "snooze"
+        - "graze"
+        - "zzzzzz"
+        - "zzza"
+        - "azzz"
+        - "zzzb"
+        - "zebra"
+        - "zenith"
+        - "zephyr"
+        - "cozy"
+        - "lazy"
+        - "crazy"
+    out: "zzza"

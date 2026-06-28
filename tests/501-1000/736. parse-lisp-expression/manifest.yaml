@@ -1,0 +1,282 @@
+entry:
+  id: 736
+  title: "parse-lisp-expression"
+  params:
+    expression:
+      type: string
+  call:
+    cpp: "Solution().evaluate({expression})"
+    rust: "Solution::evaluate({expression})"
+    python3: "Solution().evaluate({expression})"
+    python2: "Solution().evaluate({expression})"
+    ruby: "evaluate({expression})"
+    java: "new Solution().evaluate({expression})"
+    csharp: "new Solution().Evaluate({expression})"
+    kotlin: "Solution().evaluate({expression})"
+    go: "evaluate({expression})"
+    dart: "Solution().evaluate({expression})"
+    swift: "Solution().evaluate({expression})"
+    typescript: "evaluate({expression})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(expression, {result})"
+    checker: |
+      class Checker:
+          def check(self, expression, result):
+              if not isinstance(expression, str) or not isinstance(result, int):
+                  return False
+
+              def is_number(token):
+                  return token[0] == "-" or token[0].isdigit()
+
+              def split_parts(src):
+                  parts = []
+                  depth = 0
+                  start = 0
+                  for i, ch in enumerate(src):
+                      if ch == "(":
+                          depth += 1
+                      elif ch == ")":
+                          depth -= 1
+                      elif ch == " " and depth == 0:
+                          parts.append(src[start:i])
+                          start = i + 1
+                  parts.append(src[start:])
+                  return parts
+
+              def lookup(name, scopes):
+                  for scope in reversed(scopes):
+                      if name in scope:
+                          return scope[name]
+                  return None
+
+              def evaluate(expr, scopes):
+                  if expr[0] != "(":
+                      if is_number(expr):
+                          return int(expr)
+                      return lookup(expr, scopes)
+
+                  parts = split_parts(expr[1:-1])
+                  op = parts[0]
+                  if op == "add":
+                      return evaluate(parts[1], scopes) + evaluate(parts[2], scopes)
+                  if op == "mult":
+                      return evaluate(parts[1], scopes) * evaluate(parts[2], scopes)
+
+                  local = {}
+                  scopes.append(local)
+                  i = 1
+                  while i < len(parts) - 1:
+                      local[parts[i]] = evaluate(parts[i + 1], scopes)
+                      i += 2
+                  value = evaluate(parts[-1], scopes)
+                  scopes.pop()
+                  return value
+
+              return result == evaluate(expression, [])
+
+seed: 736026
+
+tests:
+  - name: "example_scope_shadowing"
+    in:
+      expression: "(let x 2 (mult x (let x 3 y 4 (add x y))))"
+    out: 14
+
+  - name: "example_sequential_rebind"
+    in:
+      expression: "(let x 3 x 2 x)"
+    out: 2
+
+  - name: "example_assignment_uses_previous"
+    in:
+      expression: "(let x 1 y 2 x (add x y) (add x y))"
+    out: 5
+
+  - name: "positive_integer_literal"
+    in:
+      expression: "7"
+    out: 7
+
+  - name: "negative_integer_literal"
+    in:
+      expression: "-42"
+    out: -42
+
+  - name: "simple_addition"
+    in:
+      expression: "(add 1 2)"
+    out: 3
+
+  - name: "simple_multiplication_negative"
+    in:
+      expression: "(mult -3 4)"
+    out: -12
+
+  - name: "nested_add_and_mult"
+    in:
+      expression: "(add (mult 2 3) (add 4 5))"
+    out: 15
+
+  - name: "single_binding_return_var"
+    in:
+      expression: "(let x 5 x)"
+    out: 5
+
+  - name: "binding_uses_previous_var"
+    in:
+      expression: "(let x 5 y (add x 3) (mult y 2))"
+    out: 16
+
+  - name: "deep_shadow_same_name"
+    in:
+      expression: "(let x 2 (let x 3 (let x 4 x)))"
+    out: 4
+
+  - name: "inner_shadow_outer_reference_afterwards"
+    in:
+      expression: "(let x 2 (add (let x 3 (let x 4 x)) x))"
+    out: 6
+
+  - name: "three_bindings_sum"
+    in:
+      expression: "(let x 1 y 2 z 3 (add (add x y) z))"
+    out: 6
+
+  - name: "negative_binding_and_arithmetic"
+    in:
+      expression: "(let x -2 y (mult x -3) (add y x))"
+    out: 4
+
+  - name: "digit_suffixed_variables"
+    in:
+      expression: "(let a1 3 b2 4 (add a1 b2))"
+    out: 7
+
+  - name: "rebind_chain_same_scope"
+    in:
+      expression: "(let x 1 x (add x 1) x (add x 1) x)"
+    out: 3
+
+  - name: "sequential_dependency_multiple_vars"
+    in:
+      expression: "(let x 3 y 4 x (mult x y) y (add x y) (add x y))"
+    out: 28
+
+  - name: "inner_let_result_bound_outer_var"
+    in:
+      expression: "(let x 2 y (let x 3 (add x 4)) (add x y))"
+    out: 9
+
+  - name: "outer_var_visible_in_nested_binding"
+    in:
+      expression: "(let x 5 (let y (add x -2) (mult y x)))"
+    out: 15
+
+  - name: "outer_binding_captured_inside_inner_final"
+    in:
+      expression: "(let x 1 y 2 z (add x y) (let x 4 y 5 (add z (mult x y))))"
+    out: 23
+
+  - name: "mult_with_nested_let_sum"
+    in:
+      expression: "(let x 2 (mult x (let x 3 y (add x 1) (add y x))))"
+    out: 14
+
+  - name: "independent_inner_bindings_feed_outer_sum"
+    in:
+      expression: "(let a 5 b (let a 6 (add a 1)) c (let b 3 (mult b 2)) (add a (add b c)))"
+    out: 18
+
+  - name: "increment_through_nested_lets"
+    in:
+      expression: "(let x 10 (let x (add x 1) (let x (add x 1) (let x (add x 1) x))))"
+    out: 13
+
+  - name: "inner_rebind_depends_on_outer_pair"
+    in:
+      expression: "(let x 2 y 3 (let x (add x y) y (mult x y) (add x y)))"
+    out: 20
+
+  - name: "inner_final_mult_after_two_rebinds"
+    in:
+      expression: "(let x 1 y 2 (let x (add x y) y (add x y) (mult x y)))"
+    out: 15
+
+  - name: "zero_from_cancelling_products"
+    in:
+      expression: "(let x 7 (let y 2 (let z (mult x y) (add z (mult z -1)))))"
+    out: 0
+
+  - name: "mixed_ops_with_outer_vars"
+    in:
+      expression: "(let x 2 y 3 (add (mult x y) (mult (add x y) (add y -1))))"
+    out: 16
+
+  - name: "negative_result_from_named_vars"
+    in:
+      expression: "(let foo 8 bar9 (mult foo -2) (add foo bar9))"
+    out: -8
+
+  - name: "nested_scopes_feed_two_outer_bindings"
+    in:
+      expression: "(let x 1 y (let x 2 (let x 3 (add x 4))) z (let y 5 (add y x)) (add y z))"
+    out: 13
+
+  - name: "product_of_compound_sums"
+    in:
+      expression: "(mult (add 1 2) (add (mult 2 3) (mult 4 5)))"
+    out: 78
+
+  - name: "long_sequential_rebind_sixty_times"
+    in:
+      expression: "(let x 0 x 1 x 2 x 3 x 4 x 5 x 6 x 7 x 8 x 9 x 10 x 11 x 12 x 13 x 14 x 15 x 16 x 17 x 18 x 19 x 20 x 21 x 22 x 23 x 24 x 25 x 26 x 27 x 28 x 29 x 30 x 31 x 32 x 33 x 34 x 35 x 36 x 37 x 38 x 39 x 40 x 41 x 42 x 43 x 44 x 45 x 46 x 47 x 48 x 49 x 50 x 51 x 52 x 53 x 54 x 55 x 56 x 57 x 58 x 59 x)"
+    out: 59
+
+  - name: "near_limit_nested_add_240_terms"
+    in:
+      expression: >-
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1
+        (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add 1 (add
+        1 (add 1 1)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    out: 240
+
+  - name: "near_limit_wide_let_168_bindings"
+    in:
+      expression: "(let value0 0 value1 1 value2 2 value3 3 value4 4 value5 5 value6 6 value7 7 value8 8 value9 9 value10 10 value11 11 value12 12 value13 13 value14 14 value15 15 value16 16 value17 17 value18 18 value19 19 value20 20 value21 21 value22 22 value23 23 value24 24 value25 25 value26 26 value27 27 value28 28 value29 29 value30 30 value31 31 value32 32 value33 33 value34 34 value35 35 value36 36 value37 37 value38 38 value39 39 value40 40 value41 41 value42 42 value43 43 value44 44 value45 45 value46 46 value47 47 value48 48 value49 49 value50 50 value51 51 value52 52 value53 53 value54 54 value55 55 value56 56 value57 57 value58 58 value59 59 value60 60 value61 61 value62 62 value63 63 value64 64 value65 65 value66 66 value67 67 value68 68 value69 69 value70 70 value71 71 value72 72 value73 73 value74 74 value75 75 value76 76 value77 77 value78 78 value79 79 value80 80 value81 81 value82 82 value83 83 value84 84 value85 85 value86 86 value87 87 value88 88 value89 89 value90 90 value91 91 value92 92 value93 93 value94 94 value95 95 value96 96 value97 97 value98 98 value99 99 value100 100 value101 101 value102 102 value103 103 value104 104 value105 105 value106 106 value107 107 value108 108 value109 109 value110 110 value111 111 value112 112 value113 113 value114 114 value115 115 value116 116 value117 117 value118 118 value119 119 value120 120 value121 121 value122 122 value123 123 value124 124 value125 125 value126 126 value127 127 value128 128 value129 129 value130 130 value131 131 value132 132 value133 133 value134 134 value135 135 value136 136 value137 137 value138 138 value139 139 value140 140 value141 141 value142 142 value143 143 value144 144 value145 145 value146 146 value147 147 value148 148 value149 149 value150 150 value151 151 value152 152 value153 153 value154 154 value155 155 value156 156 value157 157 value158 158 value159 159 value160 160 value161 161 value162 162 value163 163 value164 164 value165 165 value166 166 value167 167 value167)"
+    out: 167
+
+  - name: "wide_let_many_distinct_bindings"
+    in:
+      expression: "(let a0 -35 a1 -34 a2 -33 a3 -32 a4 -31 a5 -30 a6 -29 a7 -28 a8 -27 a9 -26 a10 -25 a11 -24 a12 -23 a13 -22 a14 -21 a15 -20 a16 -19 a17 -18 a18 -17 a19 -16 a20 -15 a21 -14 a22 -13 a23 -12 a24 -11 a25 -10 a26 -9 a27 -8 a28 -7 a29 -6 a30 -5 a31 -4 a32 -3 a33 -2 a34 -1 a35 0 a36 1 a37 2 a38 3 a39 4 a40 5 a41 6 a42 7 a43 8 a44 9 a45 10 a46 11 a47 12 a48 13 a49 14 a50 15 a51 16 a52 17 a53 18 a54 19 a55 20 a56 21 a57 22 a58 23 a59 24 a60 25 a61 26 a62 27 a63 28 a64 29 a65 30 a66 31 a67 32 a68 33 a69 34 (add a0 (add a35 a69)))"
+    out: -1
+
+  - name: "multi_level_names_and_shadowing"
+    in:
+      expression: "(let root 2 branch (let root 3 twig (let root 4 leaf (add root 5) (mult leaf root)) (add twig root)) fruit (mult branch root) (add fruit branch))"
+    out: 117

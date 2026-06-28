@@ -1,0 +1,587 @@
+entry:
+  id: 733
+  title: flood-fill
+  params:
+    image:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    sr:
+      type: int
+    sc:
+      type: int
+    color:
+      type: int
+  call:
+    cpp: Solution().floodFill({image}, {sr}, {sc}, {color})
+    rust: Solution::flood_fill({image}, {sr}, {sc}, {color})
+    python3: Solution().floodFill({image}, {sr}, {sc}, {color})
+    python2: Solution().floodFill({image}, {sr}, {sc}, {color})
+    ruby: flood_fill({image}, {sr}, {sc}, {color})
+    java: new Solution().floodFill({image}, {sr}, {sc}, {color})
+    csharp: new Solution().FloodFill({image}, {sr}, {sc}, {color})
+    kotlin: Solution().floodFill({image}, {sr}, {sc}, {color})
+    go: floodFill({image}, {sr}, {sc}, {color})
+    dart: Solution().floodFill({image}, {sr}, {sc}, {color})
+    swift: Solution().floodFill({image}, {sr}, {sc}, {color})
+    typescript: floodFill({image}, {sr}, {sc}, {color})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().floodFill(image, sr, sc, color, {result})
+    checker: |
+      class Checker:
+          def floodFill(self, image, sr, sc, color, result):
+              if not isinstance(image, list) or not image:
+                  return False
+              if not all(isinstance(row, list) and row for row in image):
+                  return False
+              m = len(image)
+              n = len(image[0])
+              if not all(len(row) == n for row in image):
+                  return False
+              if not isinstance(result, list) or len(result) != m:
+                  return False
+              for row in result:
+                  if not isinstance(row, list) or len(row) != n:
+                      return False
+                  for val in row:
+                      if not isinstance(val, int):
+                          return False
+
+              expected = [row[:] for row in image]
+              old = expected[sr][sc]
+              if old != color:
+                  stack = [(sr, sc)]
+                  while stack:
+                      i, j = stack.pop()
+                      if i < 0 or i >= m or j < 0 or j >= n or expected[i][j] != old:
+                          continue
+                      expected[i][j] = color
+                      stack.append((i + 1, j))
+                      stack.append((i - 1, j))
+                      stack.append((i, j + 1))
+                      stack.append((i, j - 1))
+
+              return result == expected
+seed: 733
+tests:
+  - name: example-1
+    in:
+      image:
+        - [1, 1, 1]
+        - [1, 1, 0]
+        - [1, 0, 1]
+      sr: 1
+      sc: 1
+      color: 2
+    out:
+      - [2, 2, 2]
+      - [2, 2, 0]
+      - [2, 0, 1]
+  - name: example-2
+    in:
+      image:
+        - [0, 0, 0]
+        - [0, 0, 0]
+      sr: 0
+      sc: 0
+      color: 0
+    out:
+      - [0, 0, 0]
+      - [0, 0, 0]
+  - name: single-pixel-change
+    in:
+      image:
+        - [5]
+      sr: 0
+      sc: 0
+      color: 9
+    out:
+      - [9]
+  - name: single-pixel-noop
+    in:
+      image:
+        - [7]
+      sr: 0
+      sc: 0
+      color: 7
+    out:
+      - [7]
+  - name: one-row-fill-all
+    in:
+      image:
+        - [3, 3, 3, 3, 3]
+      sr: 0
+      sc: 2
+      color: 8
+    out:
+      - [8, 8, 8, 8, 8]
+  - name: one-row-middle-segment
+    in:
+      image:
+        - [1, 1, 2, 2, 2, 3, 3]
+      sr: 0
+      sc: 3
+      color: 9
+    out:
+      - [1, 1, 9, 9, 9, 3, 3]
+  - name: one-column-fill-all
+    in:
+      image:
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+      sr: 2
+      sc: 0
+      color: 1
+    out:
+      - [1]
+      - [1]
+      - [1]
+      - [1]
+  - name: one-column-middle-segment
+    in:
+      image:
+        - [6]
+        - [6]
+        - [5]
+        - [5]
+        - [5]
+        - [6]
+      sr: 3
+      sc: 0
+      color: 2
+    out:
+      - [6]
+      - [6]
+      - [2]
+      - [2]
+      - [2]
+      - [6]
+  - name: diagonal-not-connected
+    in:
+      image:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 1]
+      sr: 1
+      sc: 1
+      color: 2
+    out:
+      - [1, 0, 1]
+      - [0, 2, 0]
+      - [1, 0, 1]
+  - name: checkerboard-no-spread
+    in:
+      image:
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+      sr: 0
+      sc: 0
+      color: 7
+    out:
+      - [7, 1, 0, 1]
+      - [1, 0, 1, 0]
+      - [0, 1, 0, 1]
+  - name: center-island
+    in:
+      image:
+        - [2, 2, 2]
+        - [2, 3, 2]
+        - [2, 2, 2]
+      sr: 1
+      sc: 1
+      color: 4
+    out:
+      - [2, 2, 2]
+      - [2, 4, 2]
+      - [2, 2, 2]
+  - name: border-start-top-left
+    in:
+      image:
+        - [1, 1, 0]
+        - [1, 0, 0]
+        - [0, 0, 1]
+      sr: 0
+      sc: 0
+      color: 5
+    out:
+      - [5, 5, 0]
+      - [5, 0, 0]
+      - [0, 0, 1]
+  - name: border-start-bottom-right
+    in:
+      image:
+        - [2, 2, 2]
+        - [2, 1, 1]
+        - [2, 1, 1]
+      sr: 2
+      sc: 2
+      color: 8
+    out:
+      - [2, 2, 2]
+      - [2, 8, 8]
+      - [2, 8, 8]
+  - name: enclosed-hole-preserved
+    in:
+      image:
+        - [1, 1, 1, 1]
+        - [1, 0, 0, 1]
+        - [1, 0, 1, 1]
+        - [1, 1, 1, 1]
+      sr: 0
+      sc: 0
+      color: 2
+    out:
+      - [2, 2, 2, 2]
+      - [2, 0, 0, 2]
+      - [2, 0, 2, 2]
+      - [2, 2, 2, 2]
+  - name: cross-shape
+    in:
+      image:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+      sr: 1
+      sc: 1
+      color: 3
+    out:
+      - [0, 3, 0]
+      - [3, 3, 3]
+      - [0, 3, 0]
+  - name: unique-start-pixel
+    in:
+      image:
+        - [9, 9, 9]
+        - [9, 4, 9]
+        - [9, 9, 9]
+      sr: 1
+      sc: 1
+      color: 1
+    out:
+      - [9, 9, 9]
+      - [9, 1, 9]
+      - [9, 9, 9]
+  - name: zero-to-max
+    in:
+      image:
+        - [0, 0]
+        - [0, 1]
+      sr: 0
+      sc: 1
+      color: 65535
+    out:
+      - [65535, 65535]
+      - [65535, 1]
+  - name: max-to-zero
+    in:
+      image:
+        - [65535, 65535, 1]
+        - [1, 65535, 1]
+      sr: 0
+      sc: 0
+      color: 0
+    out:
+      - [0, 0, 1]
+      - [1, 0, 1]
+  - name: multiple-components-same-color
+    in:
+      image:
+        - [4, 4, 0, 4]
+        - [4, 0, 0, 4]
+        - [0, 0, 4, 4]
+      sr: 0
+      sc: 0
+      color: 7
+    out:
+      - [7, 7, 0, 4]
+      - [7, 0, 0, 4]
+      - [0, 0, 4, 4]
+  - name: snake-corridor
+    in:
+      image:
+        - [1, 1, 0, 0, 0]
+        - [0, 1, 1, 1, 0]
+        - [0, 0, 0, 1, 0]
+        - [1, 1, 0, 1, 1]
+      sr: 0
+      sc: 0
+      color: 6
+    out:
+      - [6, 6, 0, 0, 0]
+      - [0, 6, 6, 6, 0]
+      - [0, 0, 0, 6, 0]
+      - [1, 1, 0, 6, 6]
+  - name: tall-rectangle
+    in:
+      image:
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+        - [2, 2]
+        - [2, 1]
+      sr: 4
+      sc: 1
+      color: 5
+    out:
+      - [1, 2]
+      - [1, 2]
+      - [1, 2]
+      - [2, 2]
+      - [2, 5]
+  - name: wide-rectangle
+    in:
+      image:
+        - [3, 3, 3, 2, 2]
+        - [2, 2, 3, 2, 3]
+      sr: 0
+      sc: 1
+      color: 4
+    out:
+      - [4, 4, 4, 2, 2]
+      - [2, 2, 4, 2, 3]
+  - name: plus-touching-edge
+    in:
+      image:
+        - [5, 5, 5, 5]
+        - [5, 0, 5, 0]
+        - [5, 5, 5, 5]
+        - [0, 0, 5, 0]
+      sr: 0
+      sc: 2
+      color: 9
+    out:
+      - [9, 9, 9, 9]
+      - [9, 0, 9, 0]
+      - [9, 9, 9, 9]
+      - [0, 0, 9, 0]
+  - name: all-same-change
+    in:
+      image:
+        - [8, 8, 8]
+        - [8, 8, 8]
+        - [8, 8, 8]
+      sr: 2
+      sc: 1
+      color: 6
+    out:
+      - [6, 6, 6]
+      - [6, 6, 6]
+      - [6, 6, 6]
+  - name: all-same-noop
+    in:
+      image:
+        - [10, 10]
+        - [10, 10]
+      sr: 1
+      sc: 0
+      color: 10
+    out:
+      - [10, 10]
+      - [10, 10]
+  - name: large-static-10x10-border
+    in:
+      image:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      sr: 0
+      sc: 0
+      color: 3
+    out:
+      - [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+      - [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+  - name: large-static-10x10-interior
+    in:
+      image:
+        - [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+        - [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+      sr: 4
+      sc: 4
+      color: 7
+    out:
+      - [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 7, 7, 7, 7, 7, 7, 7, 7, 5]
+      - [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+  - name: winding-cavity
+    in:
+      image:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+      sr: 1
+      sc: 1
+      color: 2
+    out:
+      - [1, 1, 1, 1, 1]
+      - [1, 2, 2, 2, 1]
+      - [1, 2, 1, 2, 1]
+      - [1, 2, 1, 2, 1]
+      - [1, 1, 1, 1, 1]
+  - name: start-on-zero-in-mixed
+    in:
+      image:
+        - [2, 2, 2, 2]
+        - [2, 0, 0, 2]
+        - [2, 0, 2, 2]
+        - [2, 2, 2, 2]
+      sr: 1
+      sc: 1
+      color: 3
+    out:
+      - [2, 2, 2, 2]
+      - [2, 3, 3, 2]
+      - [2, 3, 2, 2]
+      - [2, 2, 2, 2]
+  - name: three-regions
+    in:
+      image:
+        - [1, 1, 0, 0, 2]
+        - [1, 0, 0, 2, 2]
+        - [3, 3, 0, 2, 4]
+        - [3, 0, 0, 4, 4]
+      sr: 2
+      sc: 0
+      color: 9
+    out:
+      - [1, 1, 0, 0, 2]
+      - [1, 0, 0, 2, 2]
+      - [9, 9, 0, 2, 4]
+      - [9, 0, 0, 4, 4]
+  - name: generated-50x50-random-center
+    in:
+      image:
+        gen: array
+        len: 50
+        of:
+          gen: array
+          len: 50
+          of:
+            gen: int
+            min: 0
+            max: 65535
+          elemType: int
+      sr: 25
+      sc: 25
+      color:
+        gen: int
+        min: 0
+        max: 65535
+  - name: generated-50x49-random-top-right
+    in:
+      image:
+        gen: array
+        len: 50
+        of:
+          gen: array
+          len: 49
+          of:
+            gen: int
+            min: 0
+            max: 65535
+          elemType: int
+      sr: 0
+      sc: 48
+      color:
+        gen: int
+        min: 0
+        max: 65535
+  - name: generated-49x50-random-bottom-left
+    in:
+      image:
+        gen: array
+        len: 49
+        of:
+          gen: array
+          len: 50
+          of:
+            gen: int
+            min: 0
+            max: 65535
+          elemType: int
+      sr: 48
+      sc: 0
+      color:
+        gen: int
+        min: 0
+        max: 65535
+  - name: generated-1x50-random-row
+    in:
+      image:
+        gen: array
+        len: 1
+        of:
+          gen: array
+          len: 50
+          of:
+            gen: int
+            min: 0
+            max: 65535
+          elemType: int
+      sr: 0
+      sc: 17
+      color:
+        gen: int
+        min: 0
+        max: 65535
+  - name: generated-50x1-random-column
+    in:
+      image:
+        gen: array
+        len: 50
+        of:
+          gen: array
+          len: 1
+          of:
+            gen: int
+            min: 0
+            max: 65535
+          elemType: int
+      sr: 17
+      sc: 0
+      color:
+        gen: int
+        min: 0
+        max: 65535

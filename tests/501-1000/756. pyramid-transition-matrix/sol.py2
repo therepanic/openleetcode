@@ -1,0 +1,38 @@
+class Solution(object):
+    def pyramidTransition(self, bottom, allowed):
+        """
+        :type bottom: str
+        :type allowed: List[str]
+        :rtype: bool
+        """
+        from collections import defaultdict
+        tab = defaultdict(set)
+        for a in allowed:
+            tab[(a[0], a[1])].add(a[2])
+        
+        def add_neighbor(node):
+            res = ['']
+            for i in range(1, len(node)):
+                key = (node[i-1], node[i])
+                if key in tab:
+                    res = [a + e for e in tab[key] for a in res]
+                else:
+                    return []
+            return res
+        
+        visited = set()
+        
+        def dfs(node):
+            if len(node) == 1:
+                return True
+            if node in visited:
+                return False
+            
+            for nxt in add_neighbor(node):
+                if dfs(nxt):
+                    return True
+            
+            visited.add(node)
+            return False
+        
+        return dfs(bottom)

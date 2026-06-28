@@ -1,0 +1,406 @@
+entry:
+  id: 638
+  title: shopping-offers
+  params:
+    price:
+      type: array
+      items:
+        type: int
+    special:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    needs:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().shoppingOffers({price}, {special}, {needs})
+    rust: Solution::shopping_offers({price}, {special}, {needs})
+    python3: Solution().shoppingOffers({price}, {special}, {needs})
+    python2: Solution().shoppingOffers({price}, {special}, {needs})
+    ruby: shopping_offers({price}, {special}, {needs})
+    java: new Solution().shoppingOffers({price}, {special}, {needs})
+    csharp: new Solution().ShoppingOffers({price}, {special}, {needs})
+    kotlin: Solution().shoppingOffers({price}, {special}, {needs})
+    go: shoppingOffers({price}, {special}, {needs})
+    dart: Solution().shoppingOffers({price}, {special}, {needs})
+    swift: Solution().shoppingOffers({price}, {special}, {needs})
+    typescript: shoppingOffers({price}, {special}, {needs})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().shoppingOffers(price, special, needs, {result})
+    checker: |
+      class Checker:
+          def shoppingOffers(self, price, special, needs, result):
+              from functools import lru_cache
+
+              p = len(price)
+
+              @lru_cache(None)
+              def dp(curr):
+                  if all(x == 0 for x in curr):
+                      return 0
+                  best = sum(curr[i] * price[i] for i in range(p))
+                  for offer in special:
+                      if all(curr[i] >= offer[i] for i in range(p)):
+                          nxt = tuple(curr[i] - offer[i] for i in range(p))
+                          best = min(best, offer[-1] + dp(nxt))
+                  return best
+
+              return result == dp(tuple(needs))
+seed: 638
+tests:
+  - name: example-1
+    in:
+      price: [2, 5]
+      special:
+        - [3, 0, 5]
+        - [1, 2, 10]
+      needs: [3, 2]
+    out: 14
+  - name: example-2
+    in:
+      price: [2, 3, 4]
+      special:
+        - [1, 1, 0, 4]
+        - [2, 2, 1, 9]
+      needs: [1, 2, 1]
+    out: 11
+  - name: single-item-zero-price
+    in:
+      price: [0]
+      special:
+        - [1, 0]
+      needs: [10]
+    out: 0
+  - name: zero-needs-with-specials
+    in:
+      price: [5]
+      special:
+        - [1, 4]
+        - [2, 9]
+        - [3, 20]
+      needs: [0]
+    out: 0
+  - name: single-item-one-unit
+    in:
+      price: [5]
+      special:
+        - [1, 4]
+        - [2, 9]
+        - [3, 20]
+      needs: [1]
+    out: 4
+  - name: single-item-two-units
+    in:
+      price: [5]
+      special:
+        - [1, 4]
+        - [2, 9]
+        - [3, 20]
+      needs: [2]
+    out: 8
+  - name: single-item-three-units
+    in:
+      price: [5]
+      special:
+        - [1, 4]
+        - [2, 9]
+        - [3, 20]
+      needs: [3]
+    out: 12
+  - name: better-than-unit-buy
+    in:
+      price: [2, 5]
+      special:
+        - [1, 0, 1]
+        - [0, 1, 4]
+        - [1, 1, 6]
+      needs: [2, 2]
+    out: 10
+  - name: mixed-offers-small
+    in:
+      price: [2, 5]
+      special:
+        - [1, 0, 3]
+        - [0, 1, 6]
+        - [1, 1, 8]
+      needs: [3, 1]
+    out: 11
+  - name: exact-packaging
+    in:
+      price: [1, 1]
+      special:
+        - [1, 1, 1]
+      needs: [5, 5]
+    out: 5
+  - name: dominated-by-special-combo
+    in:
+      price: [9, 9, 9]
+      special:
+        - [1, 1, 1, 20]
+        - [2, 2, 2, 35]
+        - [3, 0, 0, 25]
+      needs: [3, 3, 3]
+    out: 55
+  - name: multiple-packs
+    in:
+      price: [2, 2, 2]
+      special:
+        - [1, 1, 0, 3]
+        - [0, 1, 1, 3]
+        - [1, 0, 1, 3]
+        - [2, 2, 2, 5]
+      needs: [2, 2, 2]
+    out: 5
+  - name: overlapping-savings
+    in:
+      price: [3, 4, 5]
+      special:
+        - [1, 1, 0, 6]
+        - [0, 1, 1, 7]
+        - [1, 0, 1, 7]
+        - [2, 2, 1, 16]
+      needs: [2, 3, 1]
+    out: 19
+  - name: three-items-balanced
+    in:
+      price: [6, 7, 8]
+      special:
+        - [1, 0, 1, 12]
+        - [0, 2, 1, 20]
+        - [2, 1, 0, 17]
+      needs: [2, 2, 2]
+    out: 38
+  - name: six-items-all-one
+    in:
+      price: [1, 2, 3, 4, 5, 6]
+      special:
+        - [1, 1, 1, 1, 1, 1, 10]
+        - [2, 2, 0, 0, 0, 0, 2]
+        - [0, 0, 0, 1, 1, 1, 8]
+      needs: [1, 1, 1, 1, 1, 1]
+    out: 10
+  - name: four-items-equal-price
+    in:
+      price: [4, 4, 4, 4]
+      special:
+        - [1, 1, 1, 1, 10]
+        - [2, 0, 0, 0, 7]
+        - [0, 2, 0, 0, 7]
+        - [0, 0, 2, 0, 7]
+        - [0, 0, 0, 2, 7]
+      needs: [2, 2, 2, 2]
+    out: 20
+  - name: off-by-one-choice
+    in:
+      price: [10, 1]
+      special:
+        - [1, 0, 9]
+        - [0, 1, 1]
+        - [1, 1, 10]
+      needs: [3, 10]
+    out: 37
+  - name: three-items-deep-search
+    in:
+      price: [7, 8, 9]
+      special:
+        - [1, 1, 1, 20]
+        - [2, 0, 1, 19]
+        - [0, 2, 1, 22]
+        - [1, 0, 0, 6]
+      needs: [4, 4, 4]
+    out: 80
+  - name: six-items-cross-coupled
+    in:
+      price: [2, 3, 4, 5, 6, 7]
+      special:
+        - [1, 1, 0, 0, 0, 0, 4]
+        - [0, 0, 1, 1, 0, 0, 7]
+        - [0, 0, 0, 0, 1, 1, 12]
+        - [1, 0, 1, 0, 1, 0, 10]
+      needs: [3, 3, 3, 3, 3, 3]
+    out: 69
+  - name: large-needs-three-items
+    in:
+      price: [1, 10, 100]
+      special:
+        - [1, 1, 0, 10]
+        - [0, 1, 1, 105]
+        - [2, 0, 1, 102]
+      needs: [10, 10, 10]
+    out: 1060
+  - name: symmetric-three-items
+    in:
+      price: [9, 1, 9]
+      special:
+        - [1, 0, 1, 17]
+        - [0, 1, 0, 1]
+        - [1, 1, 1, 18]
+        - [2, 0, 0, 16]
+      needs: [5, 5, 5]
+    out: 90
+  - name: three-items-strong-pack
+    in:
+      price: [3, 3, 3]
+      special:
+        - [1, 1, 0, 5]
+        - [0, 1, 1, 5]
+        - [1, 0, 1, 5]
+        - [2, 1, 0, 7]
+      needs: [4, 4, 4]
+    out: 30
+  - name: five-items-balanced
+    in:
+      price: [8, 6, 4, 2, 1]
+      special:
+        - [1, 1, 1, 1, 1, 20]
+        - [2, 2, 0, 0, 0, 25]
+        - [0, 0, 2, 2, 0, 12]
+        - [0, 0, 0, 1, 1, 2]
+      needs: [2, 2, 2, 2, 2]
+    out: 37
+  - name: unit-buy-only
+    in:
+      price: [2, 4, 6]
+      special:
+        - [1, 0, 0, 1]
+        - [0, 1, 0, 2]
+        - [0, 0, 1, 3]
+        - [1, 1, 1, 5]
+      needs: [10, 10, 10]
+    out: 50
+  - name: four-items-small-needs
+    in:
+      price: [4, 5, 6]
+      special:
+        - [1, 0, 1, 9]
+        - [0, 1, 1, 10]
+        - [1, 1, 0, 8]
+        - [2, 1, 1, 14]
+      needs: [1, 1, 1]
+    out: 14
+  - name: six-items-frequent-reuse
+    in:
+      price: [5, 5, 5, 5, 5, 5]
+      special:
+        - [1, 1, 1, 1, 1, 1, 20]
+        - [2, 2, 2, 0, 0, 0, 25]
+        - [0, 0, 0, 2, 2, 2, 25]
+        - [3, 0, 0, 3, 0, 0, 28]
+      needs: [3, 3, 3, 3, 3, 3]
+    out: 60
+  - name: five-items-large-uniform
+    in:
+      price: [1, 2, 3, 4, 5]
+      special:
+        - [1, 0, 1, 0, 1, 8]
+        - [0, 1, 0, 1, 0, 6]
+        - [1, 1, 1, 1, 1, 12]
+        - [2, 2, 0, 0, 0, 5]
+      needs: [4, 4, 4, 4, 4]
+    out: 48
+  - name: single-item-large-needs
+    in:
+      price: [7]
+      special:
+        - [1, 5]
+        - [2, 9]
+        - [3, 12]
+      needs: [10]
+    out: 41
+  - name: two-items-mixed
+    in:
+      price: [3, 8]
+      special:
+        - [2, 1, 12]
+        - [1, 2, 17]
+        - [3, 3, 25]
+      needs: [6, 6]
+    out: 50
+  - name: three-items-imbalanced
+    in:
+      price: [2, 9, 1]
+      special:
+        - [1, 0, 1, 2]
+        - [0, 1, 0, 8]
+        - [1, 1, 0, 10]
+        - [0, 2, 1, 17]
+      needs: [7, 7, 7]
+    out: 70
+  - name: four-items-broad
+    in:
+      price: [4, 7, 1, 9]
+      special:
+        - [1, 1, 0, 0, 10]
+        - [0, 0, 1, 1, 9]
+        - [2, 1, 1, 0, 18]
+        - [1, 0, 0, 2, 20]
+      needs: [5, 5, 5, 5]
+    out: 95
+  - name: five-items-deep-reuse
+    in:
+      price: [6, 6, 6, 6, 6]
+      special:
+        - [1, 1, 1, 1, 1, 29]
+        - [2, 0, 2, 0, 2, 30]
+        - [0, 2, 0, 2, 0, 22]
+        - [3, 3, 0, 0, 0, 31]
+      needs: [4, 4, 4, 4, 4]
+    out: 104
+  - name: six-items-broad
+    in:
+      price: [1, 3, 5, 7, 9, 11]
+      special:
+        - [1, 1, 1, 1, 1, 1, 28]
+        - [2, 2, 2, 0, 0, 0, 14]
+        - [0, 0, 0, 2, 2, 2, 30]
+        - [1, 0, 1, 0, 1, 0, 13]
+      needs: [3, 3, 3, 3, 3, 3]
+    out: 72
+  - name: high-prices-six-items
+    in:
+      price: [10, 10, 10, 10, 10, 10]
+      special:
+        - [1, 1, 1, 1, 1, 1, 59]
+        - [2, 2, 2, 2, 2, 2, 110]
+        - [3, 0, 0, 0, 0, 0, 25]
+      needs: [5, 5, 5, 5, 5, 5]
+    out: 279
+  - name: large-rectangle-needs
+    in:
+      price: [2, 4, 6, 8, 10, 12]
+      special:
+        - [1, 0, 1, 0, 1, 0, 15]
+        - [0, 1, 0, 1, 0, 1, 20]
+        - [1, 1, 1, 1, 1, 1, 40]
+        - [2, 2, 0, 0, 0, 0, 10]
+      needs: [10, 9, 8, 7, 6, 5]
+    out: 238
+  - name: all-ones
+    in:
+      price: [1, 1, 1, 1, 1, 1]
+      special:
+        - [1, 1, 1, 1, 1, 1, 5]
+        - [2, 2, 2, 2, 2, 2, 11]
+        - [3, 3, 0, 0, 0, 0, 5]
+      needs: [10, 10, 10, 10, 10, 10]
+    out: 50
+  - name: uneven-six-items
+    in:
+      price: [9, 8, 7, 6, 5, 4]
+      special:
+        - [1, 1, 0, 0, 0, 0, 15]
+        - [0, 0, 1, 1, 0, 0, 11]
+        - [0, 0, 0, 0, 1, 1, 7]
+        - [1, 0, 1, 0, 1, 0, 18]
+      needs: [1, 2, 3, 4, 5, 6]
+    out: 101

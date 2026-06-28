@@ -1,0 +1,488 @@
+entry:
+  id: 637
+  title: average-of-levels-in-binary-tree
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().averageOfLevels({root})
+    rust: Solution::average_of_levels({root})
+    python3: Solution().averageOfLevels({root})
+    python2: Solution().averageOfLevels({root})
+    ruby: average_of_levels({root})
+    java: new Solution().averageOfLevels({root})
+    csharp: new Solution().AverageOfLevels({root})
+    kotlin: Solution().averageOfLevels({root})
+    go: averageOfLevels({root})
+    dart: Solution().averageOfLevels({root})
+    swift: Solution().averageOfLevels({root})
+    typescript: averageOfLevels({root})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().averageOfLevels(root, {result})
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def averageOfLevels(self, root_arr, result):
+              if root_arr is None or root_arr == []:
+                  return result == []
+              if not isinstance(root_arr, list) or not isinstance(result, list):
+                  return False
+              if root_arr[0] is None:
+                  return result == []
+
+              expected = []
+              queue = deque([root_arr[0]])
+              idx = 1
+              while queue:
+                  level_sum = 0
+                  count = 0
+                  next_queue = deque()
+                  while queue:
+                      val = queue.popleft()
+                      if val is None:
+                          continue
+                      if not isinstance(val, int):
+                          return False
+                      level_sum += val
+                      count += 1
+                      if idx < len(root_arr):
+                          next_queue.append(root_arr[idx])
+                          idx += 1
+                      if idx < len(root_arr):
+                          next_queue.append(root_arr[idx])
+                          idx += 1
+                  if count == 0:
+                      break
+                  expected.append(level_sum / count)
+                  queue = next_queue
+              if len(result) != len(expected):
+                  return False
+              for actual, exp in zip(result, expected):
+                  if not isinstance(actual, (int, float)):
+                      return False
+                  if abs(float(actual) - exp) > 1e-5:
+                      return False
+              return True
+seed: 637
+tests:
+  - name: Example 1
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - null
+        - null
+        - 15
+        - 7
+  - name: Example 2
+    in:
+      root:
+        - 3
+        - 9
+        - 20
+        - 15
+        - 7
+  - name: Single node
+    in:
+      root:
+        - 5
+  - name: Left child only
+    in:
+      root:
+        - 1
+        - 2
+  - name: Right child only
+    in:
+      root:
+        - 1
+        - null
+        - 3
+  - name: Left chain three
+    in:
+      root:
+        - 4
+        - 5
+        - null
+        - 6
+  - name: Right chain three
+    in:
+      root:
+        - 4
+        - null
+        - 5
+        - null
+        - 6
+  - name: Perfect tree height two
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+  - name: Perfect tree height three
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+  - name: Mixed sparse tree
+    in:
+      root:
+        - 10
+        - 6
+        - 15
+        - 3
+        - 8
+        - null
+        - 20
+        - null
+        - 4
+        - 7
+        - 9
+        - null
+        - null
+        - 18
+        - 25
+  - name: Negative values
+    in:
+      root:
+        - -1
+        - -2
+        - -3
+        - -4
+        - -5
+        - -6
+        - -7
+  - name: Duplicate values
+    in:
+      root:
+        - 5
+        - 5
+        - 5
+        - 5
+        - null
+        - 5
+        - 5
+  - name: Boundary values
+    in:
+      root:
+        - 2147483647
+        - -2147483648
+        - 2147483647
+        - -2147483648
+        - 2147483647
+        - -2147483648
+        - 2147483647
+  - name: Wide third level
+    in:
+      root:
+        - 8
+        - 4
+        - 12
+        - 2
+        - 6
+        - 10
+        - 14
+        - 1
+        - 3
+        - 5
+        - 7
+        - 9
+        - 11
+        - 13
+        - 15
+  - name: Zigzag sparse tree
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - 5
+        - null
+        - null
+        - 6
+        - 7
+  - name: Left heavy with right leaf
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - 5
+  - name: Right heavy with left leaf
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - 4
+  - name: Balanced with interior gaps
+    in:
+      root:
+        - 6
+        - 3
+        - 9
+        - 1
+        - 4
+        - 8
+        - 10
+        - null
+        - 2
+        - null
+        - 5
+        - 7
+        - null
+        - null
+        - 11
+  - name: Asymmetric tree
+    in:
+      root:
+        - 4
+        - 2
+        - 6
+        - 1
+        - 3
+        - 5
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 7
+  - name: Root and one grandchild
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - null
+        - 3
+  - name: Root and opposite grandchild
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - 3
+  - name: Alternating duplicates
+    in:
+      root:
+        - 2
+        - 1
+        - 1
+        - 2
+        - 2
+        - 1
+        - 1
+  - name: Sparse breadth with nulls
+    in:
+      root:
+        - 9
+        - 4
+        - 12
+        - null
+        - 6
+        - 10
+        - 15
+        - null
+        - null
+        - 5
+        - 7
+        - null
+        - 11
+        - 14
+        - 16
+  - name: Three levels with interior gap
+    in:
+      root:
+        - 11
+        - 5
+        - 17
+        - 2
+        - 7
+        - 13
+        - 19
+        - null
+        - 3
+        - 6
+        - null
+        - 12
+        - 14
+        - 18
+        - 20
+  - name: Small tree with repeated leaves
+    in:
+      root:
+        - 5
+        - 3
+        - 8
+        - 3
+        - 3
+        - 8
+        - 8
+  - name: Larger balanced sample
+    in:
+      root:
+        - 50
+        - 25
+        - 75
+        - 10
+        - 30
+        - 60
+        - 90
+        - 5
+        - 15
+        - 27
+        - 35
+        - 55
+        - 65
+        - 85
+        - 95
+  - name: Perfect tree with negatives
+    in:
+      root:
+        - 0
+        - -1
+        - 1
+        - -2
+        - 2
+        - -3
+        - 3
+  - name: Deep left branch
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+  - name: Deep right branch
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+        - null
+        - null
+        - 5
+  - name: Mixed sparse medium
+    in:
+      root:
+        - 13
+        - 7
+        - 19
+        - 3
+        - 9
+        - 17
+        - 23
+        - null
+        - 4
+        - 8
+        - null
+        - null
+        - 18
+        - 21
+        - 25
+  - name: Another mixed sparse tree
+    in:
+      root:
+        - 2
+        - null
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+        - 6
+  - name: Balanced with signed leaves
+    in:
+      root:
+        - 0
+        - -10
+        - 10
+        - -20
+        - -5
+        - 5
+        - 20
+  - name: Multi-branch mid-size tree
+    in:
+      root:
+        - 100
+        - 50
+        - 150
+        - 25
+        - 75
+        - 125
+        - 175
+        - null
+        - 30
+        - 60
+        - 90
+        - 110
+        - 140
+        - 160
+        - 190
+  - name: Generated full tree 10000 ascending
+    seed: 637001
+    in:
+      root:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: -2147483648
+          max: 2147483647
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: Generated full tree 10000 descending
+    seed: 637002
+    in:
+      root:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: -2147483648
+          max: 2147483647
+        distinct: false
+        sorted: false
+        elemType: int

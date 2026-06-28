@@ -1,0 +1,35 @@
+class Solution(object):
+    def minSwapsCouples(self, row):
+        """
+        :type row: List[int]
+        :rtype: int
+        """
+        n = len(row) // 2
+        parent = list(range(n))
+        
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(a, b):
+            pa = find(a)
+            pb = find(b)
+            if pa != pb:
+                parent[pa] = pb
+        
+        for i in range(0, len(row), 2):
+            couple1 = row[i] // 2
+            couple2 = row[i+1] // 2
+            union(couple1, couple2)
+        
+        component_size = {}
+        for couple in range(n):
+            root = find(couple)
+            component_size[root] = component_size.get(root, 0) + 1
+        
+        swaps = 0
+        for size in component_size.values():
+            swaps += size - 1
+        
+        return swaps
