@@ -1,0 +1,28 @@
+class Solution(object):
+    def accountsMerge(self, accounts):
+        n = len(accounts)
+        location = {}
+        for name in set(acc[0] for acc in accounts):
+            location[name] = set()
+        content = []
+        
+        for i in range(n):
+            name = accounts[i][0]
+            location[name].add(i)
+            content.append(set(accounts[i][1:]))
+            
+        for name, indices in list(location.items()):
+            for i in list(indices):
+                for j in list(indices):
+                    if i != j and not content[i].isdisjoint(content[j]):
+                        content[j].update(content[i])
+                        indices.discard(i)
+                        location[name].discard(i)
+                        break
+                        
+        result = []
+        for name, indices in location.items():
+            for idx in indices:
+                result.append([name] + sorted(list(content[idx])))
+                
+        return result

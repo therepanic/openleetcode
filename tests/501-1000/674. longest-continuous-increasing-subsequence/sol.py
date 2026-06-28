@@ -1,0 +1,12 @@
+class Solution:
+    def findLengthOfLCIS(self, nums):
+        ptr1, ptr2 = 0, 1
+        n = len(nums)
+        maxLenSubseq = 1
+        while ptr2 < n:
+            while ptr2 < n and nums[ptr2] > nums[ptr2 - 1]:
+                ptr2 += 1
+            maxLenSubseq = max(maxLenSubseq, ptr2 - ptr1)
+            ptr1 = ptr2
+            ptr2 += 1
+        return maxLenSubseq

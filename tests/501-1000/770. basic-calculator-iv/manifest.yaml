@@ -1,0 +1,643 @@
+entry:
+  id: 770
+  title: "basic-calculator-iv"
+  params:
+    expression:
+      type: string
+    evalvars:
+      type: array
+      items:
+        type: string
+    evalints:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    rust: "Solution::basic_calculator_iv({expression}, {evalvars}, {evalints})"
+    python3: "Solution().basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    python2: "Solution().basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    ruby: "basic_calculator_iv({expression}, {evalvars}, {evalints})"
+    java: "new Solution().basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    csharp: "new Solution().BasicCalculatorIV({expression}, {evalvars}, {evalints})"
+    kotlin: "Solution().basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    go: "basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    dart: "Solution().basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    swift: "Solution().basicCalculatorIV({expression}, {evalvars}, {evalints})"
+    typescript: "basicCalculatorIV({expression}, {evalvars}, {evalints})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(expression, evalvars, evalints, {result})"
+    checker: |
+      class Checker:
+          def check(self, expression, evalvars, evalints, result):
+              if not isinstance(expression, str):
+                  return False
+              if not isinstance(evalvars, list) or not all(isinstance(v, str) for v in evalvars):
+                  return False
+              if not isinstance(evalints, list) or not all(isinstance(v, int) for v in evalints):
+                  return False
+              if len(evalvars) != len(evalints):
+                  return False
+              if not isinstance(result, list) or not all(isinstance(v, str) for v in result):
+                  return False
+
+              from collections import defaultdict
+
+              evalmap = dict(zip(evalvars, evalints))
+
+              def combine(poly):
+                  merged = defaultdict(int)
+                  for key, value in poly.items():
+                      if value != 0:
+                          merged[key] += value
+                  return {key: value for key, value in merged.items() if value != 0}
+
+              def add(p1, p2):
+                  merged = defaultdict(int, p1)
+                  for key, value in p2.items():
+                      merged[key] += value
+                  return combine(merged)
+
+              def sub(p1, p2):
+                  merged = defaultdict(int, p1)
+                  for key, value in p2.items():
+                      merged[key] -= value
+                  return combine(merged)
+
+              def mul(p1, p2):
+                  merged = defaultdict(int)
+                  for key1, value1 in p1.items():
+                      for key2, value2 in p2.items():
+                          merged[tuple(sorted(key1 + key2))] += value1 * value2
+                  return combine(merged)
+
+              def parse_token(token):
+                  if token.isdigit():
+                      return {(): int(token)}
+                  if token in evalmap:
+                      return {(): evalmap[token]}
+                  return {(token,): 1}
+
+              tokens = []
+              buffer = ""
+              for ch in expression:
+                  if ch.isalnum():
+                      buffer += ch
+                      continue
+                  if buffer:
+                      tokens.append(buffer)
+                      buffer = ""
+                  if ch in "+-*()":
+                      tokens.append(ch)
+              if buffer:
+                  tokens.append(buffer)
+
+              precedence = {
+                  "+": 1,
+                  "-": 1,
+                  "*": 2
+              }
+
+              def apply_op(values, ops):
+                  op = ops.pop()
+                  right = values.pop()
+                  left = values.pop()
+                  if op == "+":
+                      values.append(add(left, right))
+                  elif op == "-":
+                      values.append(sub(left, right))
+                  else:
+                      values.append(mul(left, right))
+
+              values = []
+              ops = []
+              for token in tokens:
+                  if token == "(":
+                      ops.append(token)
+                  elif token == ")":
+                      while ops and ops[-1] != "(":
+                          apply_op(values, ops)
+                      if not ops:
+                          return False
+                      ops.pop()
+                  elif token in precedence:
+                      while ops and ops[-1] in precedence and precedence[ops[-1]] >= precedence[token]:
+                          apply_op(values, ops)
+                      ops.append(token)
+                  else:
+                      values.append(parse_token(token))
+
+              while ops:
+                  if ops[-1] == "(":
+                      return False
+                  apply_op(values, ops)
+
+              poly = values[-1] if values else {}
+              expected = []
+              for variables, coefficient in sorted(poly.items(), key=lambda item: (-len(item[0]), item[0])):
+                  if coefficient == 0:
+                      continue
+                  if variables:
+                      expected.append(str(coefficient) + "*" + "*".join(variables))
+                  else:
+                      expected.append(str(coefficient))
+              return result == expected
+seed: 770
+tests:
+  - name: example_eval_single_var
+    in:
+      expression: "e + 8 - a + 5"
+      evalvars:
+        - "e"
+      evalints:
+        - 1
+    out:
+      - "-1*a"
+      - "14"
+
+  - name: example_eval_two_vars
+    in:
+      expression: "e - 8 + temperature - pressure"
+      evalvars:
+        - "e"
+        - "temperature"
+      evalints:
+        - 1
+        - 12
+    out:
+      - "-1*pressure"
+      - "5"
+
+  - name: example_multiply_binomials
+    in:
+      expression: "(e + 8) * (e - 8)"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*e*e"
+      - "-64"
+
+  - name: single_zero_constant
+    in:
+      expression: "0"
+      evalvars: []
+      evalints: []
+    out: []
+
+  - name: operator_precedence_constant
+    in:
+      expression: "1 + 2 * 3"
+      evalvars: []
+      evalints: []
+    out:
+      - "7"
+
+  - name: parentheses_override_precedence
+    in:
+      expression: "(1 + 2) * 3"
+      evalvars: []
+      evalints: []
+    out:
+      - "9"
+
+  - name: simple_symbolic_addition
+    in:
+      expression: "a + b + c"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a"
+      - "1*b"
+      - "1*c"
+
+  - name: simple_symbolic_subtraction_to_zero
+    in:
+      expression: "a - a"
+      evalvars: []
+      evalints: []
+    out: []
+
+  - name: evaluated_subtraction_to_zero
+    in:
+      expression: "a - b"
+      evalvars:
+        - "a"
+        - "b"
+      evalints:
+        - 7
+        - 7
+    out: []
+
+  - name: multiply_by_zero_constant
+    in:
+      expression: "(a + b + c) * 0"
+      evalvars: []
+      evalints: []
+    out: []
+
+  - name: full_evaluation_to_constant
+    in:
+      expression: "a * b + 3 * a - b"
+      evalvars:
+        - "a"
+        - "b"
+      evalints:
+        - 2
+        - 5
+    out:
+      - "11"
+
+  - name: partial_evaluation_leaves_symbol
+    in:
+      expression: "a * b + 3 * a - b"
+      evalvars:
+        - "a"
+      evalints:
+        - 2
+    out:
+      - "1*b"
+      - "6"
+
+  - name: repeated_variable_multiplicity
+    in:
+      expression: "a * a * b + b * a * a"
+      evalvars: []
+      evalints: []
+    out:
+      - "2*a*a*b"
+
+  - name: lexicographic_order_same_degree
+    in:
+      expression: "b * a + a * c + b * b"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*b"
+      - "1*a*c"
+      - "1*b*b"
+
+  - name: degree_then_lex_order
+    in:
+      expression: "a * a + a * b + b * b + c"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*a"
+      - "1*a*b"
+      - "1*b*b"
+      - "1*c"
+
+  - name: nested_distribution
+    in:
+      expression: "x * (y + z * 2)"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*x*y"
+      - "2*x*z"
+
+  - name: nested_parentheses_and_subtraction
+    in:
+      expression: "((a - b) * (b - c)) + a * c"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*b"
+      - "-1*b*b"
+      - "1*b*c"
+
+  - name: constant_cancellation_inside_product
+    in:
+      expression: "(a + 5 - 5) * (b + 2 - 2)"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*b"
+
+  - name: duplicate_terms_cancel
+    in:
+      expression: "a * b + b * a - 2 * a * b"
+      evalvars: []
+      evalints: []
+    out: []
+
+  - name: substitute_to_zero_in_product
+    in:
+      expression: "x * y + z"
+      evalvars:
+        - "x"
+      evalints:
+        - 0
+    out:
+      - "1*z"
+
+  - name: multi_letter_variables
+    in:
+      expression: "temperature * pressure - pressure * humidity + humidity"
+      evalvars: []
+      evalints: []
+    out:
+      - "-1*humidity*pressure"
+      - "1*pressure*temperature"
+      - "1*humidity"
+
+  - name: multi_letter_with_substitution
+    in:
+      expression: "temperature * pressure - pressure * humidity + humidity"
+      evalvars:
+        - "pressure"
+        - "humidity"
+      evalints:
+        - 2
+        - 3
+    out:
+      - "2*temperature"
+      - "-3"
+
+  - name: high_degree_monomial
+    in:
+      expression: "a * b * c * d"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*b*c*d"
+
+  - name: high_degree_with_duplicate_symbols
+    in:
+      expression: "a * a * a * b - a * b * a * a"
+      evalvars: []
+      evalints: []
+    out: []
+
+  - name: nested_balanced_expansion
+    in:
+      expression: "(a + b) * (c + d)"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*c"
+      - "1*a*d"
+      - "1*b*c"
+      - "1*b*d"
+
+  - name: quadratic_square_expansion
+    in:
+      expression: "(a + b) * (a + b)"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*a"
+      - "2*a*b"
+      - "1*b*b"
+
+  - name: substitution_reduces_degree
+    in:
+      expression: "a * a + a * b + b * b"
+      evalvars:
+        - "a"
+      evalints:
+        - 2
+    out:
+      - "1*b*b"
+      - "2*b"
+      - "4"
+
+  - name: constants_and_symbols_mix
+    in:
+      expression: "10 - x + 3 * y - 2 * y + x * x"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*x*x"
+      - "-1*x"
+      - "1*y"
+      - "10"
+
+  - name: all_variables_evaluated_after_expansion
+    in:
+      expression: "(x + 1) * (x + 1)"
+      evalvars:
+        - "x"
+      evalints:
+        - 3
+    out:
+      - "16"
+
+  - name: partial_eval_with_negative_constant
+    in:
+      expression: "(x + 1) * (x + 1)"
+      evalvars:
+        - "x"
+      evalints:
+        - -2
+    out:
+      - "1"
+
+  - name: deep_nested_linear_combo
+    in:
+      expression: "(((a + b) - c) + (d - e)) * 1"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a"
+      - "1*b"
+      - "-1*c"
+      - "1*d"
+      - "-1*e"
+
+  - name: long_sum_many_terms
+    in:
+      expression: "a + b + c + d + e + f + g + h + i + j + k + l + m + n + o + p + q + r + s + t + u + v + w + x + y + z"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a"
+      - "1*b"
+      - "1*c"
+      - "1*d"
+      - "1*e"
+      - "1*f"
+      - "1*g"
+      - "1*h"
+      - "1*i"
+      - "1*j"
+      - "1*k"
+      - "1*l"
+      - "1*m"
+      - "1*n"
+      - "1*o"
+      - "1*p"
+      - "1*q"
+      - "1*r"
+      - "1*s"
+      - "1*t"
+      - "1*u"
+      - "1*v"
+      - "1*w"
+      - "1*x"
+      - "1*y"
+      - "1*z"
+
+  - name: long_product_chain_with_substitution
+    in:
+      expression: "a * b * c * d * e * f"
+      evalvars:
+        - "b"
+        - "d"
+        - "f"
+      evalints:
+        - 2
+        - 3
+        - 4
+    out:
+      - "24*a*c*e"
+
+  - name: near_limit_repeated_add_sub_cancel
+    in:
+      expression: "a * b + a * b + a * b + a * b + a * b + a * b + a * b + a * b + a * b + a * b - a * b - a * b - a * b - a * b - a * b"
+      evalvars: []
+      evalints: []
+    out:
+      - "5*a*b"
+
+  - name: near_limit_many_linear_factors
+    in:
+      expression: "(a + 1) * (b + 1) * (c + 1) * (d + 1)"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*a*b*c*d"
+      - "1*a*b*c"
+      - "1*a*b*d"
+      - "1*a*c*d"
+      - "1*b*c*d"
+      - "1*a*b"
+      - "1*a*c"
+      - "1*a*d"
+      - "1*b*c"
+      - "1*b*d"
+      - "1*c*d"
+      - "1*a"
+      - "1*b"
+      - "1*c"
+      - "1*d"
+      - "1"
+
+  - name: near_limit_mixed_multiletter_terms
+    in:
+      expression: "alpha * beta + beta * gamma + gamma * delta + delta * epsilon + epsilon * zeta + zeta * eta + eta * theta"
+      evalvars: []
+      evalints: []
+    out:
+      - "1*alpha*beta"
+      - "1*beta*gamma"
+      - "1*delta*epsilon"
+      - "1*delta*gamma"
+      - "1*epsilon*zeta"
+      - "1*eta*theta"
+      - "1*eta*zeta"
+
+  - name: near_limit_large_constant_offsets
+    in:
+      expression: "(x + 100) * (y + 90) - (x * y) - 9000"
+      evalvars: []
+      evalints: []
+    out:
+      - "90*x"
+      - "100*y"
+
+  - name: near_limit_sum_50_distinct_vars
+    in:
+      expression: >-
+        aa + ab + ac + ad + ae + af + ag + ah + ai + aj + ak + al + am + an + ao + ap + aq + ar + as + at + au + av + aw + ax + ay + az + ba + bb + bc + bd + be + bf + bg + bh + bi + bj + bk + bl + bm + bn + bo + bp + bq + br + bs + bt + bu + bv + bw + bx
+      evalvars: []
+      evalints: []
+    out:
+      - "1*aa"
+      - "1*ab"
+      - "1*ac"
+      - "1*ad"
+      - "1*ae"
+      - "1*af"
+      - "1*ag"
+      - "1*ah"
+      - "1*ai"
+      - "1*aj"
+      - "1*ak"
+      - "1*al"
+      - "1*am"
+      - "1*an"
+      - "1*ao"
+      - "1*ap"
+      - "1*aq"
+      - "1*ar"
+      - "1*as"
+      - "1*at"
+      - "1*au"
+      - "1*av"
+      - "1*aw"
+      - "1*ax"
+      - "1*ay"
+      - "1*az"
+      - "1*ba"
+      - "1*bb"
+      - "1*bc"
+      - "1*bd"
+      - "1*be"
+      - "1*bf"
+      - "1*bg"
+      - "1*bh"
+      - "1*bi"
+      - "1*bj"
+      - "1*bk"
+      - "1*bl"
+      - "1*bm"
+      - "1*bn"
+      - "1*bo"
+      - "1*bp"
+      - "1*bq"
+      - "1*br"
+      - "1*bs"
+      - "1*bt"
+      - "1*bu"
+      - "1*bv"
+      - "1*bw"
+      - "1*bx"
+
+  - name: near_limit_24_distinct_products
+    in:
+      expression: >-
+        aa * ma + ab * mb + ac * mc + ad * md + ae * me + af * mf + ag * mg + ah * mh + ai * mi + aj * mj + ak * mk + al * ml + ba * na + bb * nb + bc * nc + bd * nd + be * ne + bf * nf + bg * ng + bh * nh + bi * ni + bj * nj + bk * nk + bl * nl
+      evalvars: []
+      evalints: []
+    out:
+      - "1*aa*ma"
+      - "1*ab*mb"
+      - "1*ac*mc"
+      - "1*ad*md"
+      - "1*ae*me"
+      - "1*af*mf"
+      - "1*ag*mg"
+      - "1*ah*mh"
+      - "1*ai*mi"
+      - "1*aj*mj"
+      - "1*ak*mk"
+      - "1*al*ml"
+      - "1*ba*na"
+      - "1*bb*nb"
+      - "1*bc*nc"
+      - "1*bd*nd"
+      - "1*be*ne"
+      - "1*bf*nf"
+      - "1*bg*ng"
+      - "1*bh*nh"
+      - "1*bi*ni"
+      - "1*bj*nj"
+      - "1*bk*nk"
+      - "1*bl*nl"

@@ -1,0 +1,209 @@
+entry:
+  id: 679
+  title: 24-game
+  params:
+    cards:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().judgePoint24({cards})"
+    rust: "Solution::judge_point24({cards})"
+    python3: "Solution().judgePoint24({cards})"
+    python2: "Solution().judgePoint24({cards})"
+    ruby: "judge_point24({cards})"
+    java: "new Solution().judgePoint24({cards})"
+    csharp: "new Solution().JudgePoint24({cards})"
+    kotlin: "Solution().judgePoint24({cards})"
+    go: "judgePoint24({cards})"
+    dart: "Solution().judgePoint24({cards})"
+    swift: "Solution().judgePoint24({cards})"
+    typescript: "judgePoint24({cards})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().judgePoint24(cards, {result})"
+    checker: |
+      class Checker:
+          def judgePoint24(self, cards, result):
+              if not isinstance(result, bool):
+                  return False
+
+              EPS = 1e-6
+
+              def dfs(nums):
+                  if len(nums) == 1:
+                      return abs(nums[0] - 24.0) < EPS
+
+                  for i in range(len(nums)):
+                      for j in range(len(nums)):
+                          if i == j:
+                              continue
+                          next_nums = [nums[k] for k in range(len(nums)) if k != i and k != j]
+                          a, b = nums[i], nums[j]
+                          candidates = [a + b, a - b, b - a, a * b]
+                          if abs(b) > EPS:
+                              candidates.append(a / b)
+                          if abs(a) > EPS:
+                              candidates.append(b / a)
+
+                          for val in candidates:
+                              if dfs(next_nums + [val]):
+                                  return True
+                  return False
+
+              return result == dfs([float(x) for x in cards])
+seed: 679
+tests:
+  - name: example_true
+    in:
+      cards: [4, 1, 8, 7]
+    out: true
+  - name: example_false
+    in:
+      cards: [1, 2, 1, 2]
+    out: false
+  - name: all_same_low
+    in:
+      cards: [1, 1, 1, 1]
+    out: false
+  - name: all_same_high
+    in:
+      cards: [9, 9, 9, 9]
+    out: false
+  - name: simple_mul
+    in:
+      cards: [3, 3, 8, 8]
+    out: true
+  - name: simple_add_mul
+    in:
+      cards: [6, 6, 6, 6]
+    out: true
+  - name: division_chain_true
+    in:
+      cards: [3, 4, 6, 8]
+    out: true
+  - name: division_chain_false
+    in:
+      cards: [1, 5, 5, 5]
+    out: true
+  - name: subtraction_true
+    in:
+      cards: [7, 7, 3, 3]
+    out: true
+  - name: subtraction_false
+    in:
+      cards: [2, 2, 2, 2]
+    out: false
+  - name: example_variant_true
+    in:
+      cards: [4, 1, 8, 6]
+    out: true
+  - name: example_variant_false
+    in:
+      cards: [1, 1, 8, 8]
+    out: true
+  - name: permutation_true_1
+    in:
+      cards: [1, 5, 5, 5]
+    out: true
+  - name: permutation_true_2
+    in:
+      cards: [2, 3, 4, 6]
+    out: true
+  - name: permutation_true_3
+    in:
+      cards: [2, 4, 6, 6]
+    out: true
+  - name: permutation_true_4
+    in:
+      cards: [5, 5, 5, 1]
+    out: true
+  - name: permutation_true_5
+    in:
+      cards: [1, 3, 4, 6]
+    out: true
+  - name: permutation_true_6
+    in:
+      cards: [2, 2, 6, 6]
+    out: true
+  - name: permutation_true_7
+    in:
+      cards: [3, 4, 5, 6]
+    out: true
+  - name: permutation_true_8
+    in:
+      cards: [1, 4, 5, 6]
+    out: true
+  - name: permutation_false_1
+    in:
+      cards: [1, 1, 1, 2]
+    out: false
+  - name: permutation_false_2
+    in:
+      cards: [1, 2, 3, 4]
+    out: true
+  - name: permutation_false_3
+    in:
+      cards: [1, 2, 2, 3]
+    out: false
+  - name: permutation_false_4
+    in:
+      cards: [1, 3, 3, 8]
+    out: true
+  - name: permutation_false_5
+    in:
+      cards: [2, 2, 3, 9]
+    out: true
+  - name: permutation_false_6
+    in:
+      cards: [2, 3, 7, 7]
+    out: true
+  - name: permutation_false_7
+    in:
+      cards: [1, 2, 8, 8]
+    out: true
+  - name: permutation_false_8
+    in:
+      cards: [1, 4, 4, 7]
+    out: true
+  - name: permutation_false_9
+    in:
+      cards: [2, 5, 5, 9]
+    out: true
+  - name: permutation_false_10
+    in:
+      cards: [1, 6, 6, 6]
+    out: true
+  - name: permutation_false_11
+    in:
+      cards: [1, 2, 5, 9]
+    out: true
+  - name: permutation_false_12
+    in:
+      cards: [3, 3, 7, 7]
+    out: true
+  - name: permutation_false_13
+    in:
+      cards: [1, 1, 7, 7]
+    out: false
+  - name: permutation_false_14
+    in:
+      cards: [2, 4, 4, 9]
+    out: true
+  - name: permutation_false_15
+    in:
+      cards: [3, 5, 5, 8]
+    out: true
+  - name: permutation_false_16
+    in:
+      cards: [4, 4, 7, 8]
+    out: true
+  - name: permutation_false_17
+    in:
+      cards: [1, 3, 7, 9]
+    out: true

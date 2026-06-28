@@ -1,0 +1,256 @@
+entry:
+  id: 673
+  title: number-of-longest-increasing-subsequence
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().findNumberOfLIS({nums})"
+    rust: "Solution::find_number_of_lis({nums})"
+    python3: "Solution().findNumberOfLIS({nums})"
+    python2: "Solution().findNumberOfLIS({nums})"
+    ruby: "find_number_of_lis({nums})"
+    java: "new Solution().findNumberOfLIS({nums})"
+    csharp: "new Solution().FindNumberOfLIS({nums})"
+    kotlin: "Solution().findNumberOfLIS({nums})"
+    go: "findNumberOfLIS({nums})"
+    dart: "Solution().findNumberOfLIS({nums})"
+    swift: "Solution().findNumberOfLIS({nums})"
+    typescript: "findNumberOfLIS({nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().findNumberOfLIS(nums, {result})"
+    checker: |
+      class Checker:
+          def findNumberOfLIS(self, nums, result):
+              n = len(nums)
+              if n == 0:
+                  return result == 0
+
+              lengths = [1] * n
+              counts = [1] * n
+              for i in range(n):
+                  for j in range(i):
+                      if nums[j] < nums[i]:
+                          if lengths[j] + 1 > lengths[i]:
+                              lengths[i] = lengths[j] + 1
+                              counts[i] = counts[j]
+                          elif lengths[j] + 1 == lengths[i]:
+                              counts[i] += counts[j]
+
+              max_length = max(lengths)
+              expected = sum(counts[i] for i in range(n) if lengths[i] == max_length)
+              return result == expected and isinstance(result, int)
+seed: 673
+tests:
+  - name: example-1
+    in:
+      nums: [1, 3, 5, 4, 7]
+    out: 2
+  - name: example-2
+    in:
+      nums: [2, 2, 2, 2, 2]
+    out: 5
+  - name: single-element
+    in:
+      nums: [42]
+    out: 1
+  - name: two-increasing
+    in:
+      nums: [1, 2]
+    out: 1
+  - name: two-decreasing
+    in:
+      nums: [2, 1]
+    out: 2
+  - name: all-equal-three
+    in:
+      nums: [7, 7, 7]
+    out: 3
+  - name: strictly-increasing-five
+    in:
+      nums: [1, 2, 3, 4, 5]
+    out: 1
+  - name: strictly-decreasing-five
+    in:
+      nums: [5, 4, 3, 2, 1]
+    out: 5
+  - name: plateau-then-rise
+    in:
+      nums: [1, 1, 1, 2, 2]
+    out: 6
+  - name: alternating-small
+    in:
+      nums: [1, 3, 2, 4]
+    out: 2
+  - name: valley
+    in:
+      nums: [3, 1, 2]
+    out: 1
+  - name: duplicate-peaks
+    in:
+      nums: [1, 2, 4, 3, 5, 4, 7, 2]
+    out: 3
+  - name: leetcode-style
+    in:
+      nums: [1, 3, 5, 4, 7, 6]
+    out: 4
+  - name: negative-values
+    in:
+      nums: [-5, -4, -3, -2, -1]
+    out: 1
+  - name: negatives-with-duplicates
+    in:
+      nums: [-1, -1, 0, -1, 1]
+    out: 2
+  - name: mixed-low-high
+    in:
+      nums: [10, 20, 10, 30, 20, 50]
+    out: 1
+  - name: zigzag
+    in:
+      nums: [1, 5, 2, 6, 3, 7]
+    out: 3
+  - name: repeated-blocks
+    in:
+      nums: [1, 2, 1, 2, 1, 2]
+    out: 6
+  - name: late-rise
+    in:
+      nums: [9, 8, 7, 1, 2, 3]
+    out: 1
+  - name: three-levels
+    in:
+      nums: [1, 2, 2, 3]
+    out: 2
+  - name: many-branches
+    in:
+      nums: [1, 2, 4, 3, 4, 5]
+    out: 1
+  - name: long-run-with-tail
+    in:
+      nums: [2, 1, 3, 5, 4, 7, 6, 8]
+    out: 8
+  - name: max-int-range
+    in:
+      nums: [-1000000, 0, 1000000]
+    out: 1
+  - name: max-int-duplicates
+    in:
+      nums: [1000000, 1000000, 999999, 1000000]
+    out: 1
+  - name: all-descending-six
+    in:
+      nums: [6, 5, 4, 3, 2, 1]
+    out: 6
+  - name: all-ascending-six
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 1
+  - name: repeated-same-prefix
+    in:
+      nums: [4, 4, 4, 1, 2, 3]
+    out: 1
+  - name: mixed-duplicates
+    in:
+      nums: [1, 1, 2, 2, 3, 3]
+    out: 8
+  - name: center-bump
+    in:
+      nums: [2, 1, 2, 3, 2, 4]
+    out: 1
+  - name: sample-branching
+    in:
+      nums: [1, 2, 8, 3, 4, 5]
+    out: 1
+  - name: short-random-1
+    in:
+      nums: [4, 10, 4, 3, 8, 9]
+    out: 3
+  - name: short-random-2
+    in:
+      nums: [1, 7, 2, 8, 3, 4]
+    out: 1
+  - name: short-random-3
+    in:
+      nums: [2, 2, 1, 3, 2, 4]
+    out: 4
+  - name: large-increasing-2000
+    in:
+      nums:
+        gen: array
+        len: 2000
+        of:
+          gen: int
+          min: 1
+          max: 2000
+        distinct: true
+        sorted: true
+        elemType: int
+  - name: large-sorted-2000
+    in:
+      nums:
+        gen: array
+        len: 2000
+        of:
+          gen: int
+          min: 1
+          max: 2000
+        distinct: true
+        sorted: true
+        elemType: int
+  - name: large-equal-2000
+    in:
+      nums:
+        gen: array
+        len: 2000
+        of:
+          gen: int
+          min: 7
+          max: 7
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large-two-blocks
+    in:
+      nums:
+        gen: array
+        len: 2000
+        of:
+          gen: int
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large-random-1
+    in:
+      nums:
+        gen: array
+        len: 1999
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: large-random-2
+    in:
+      nums:
+        gen: array
+        len: 2000
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: int

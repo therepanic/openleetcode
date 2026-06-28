@@ -1,0 +1,752 @@
+entry:
+  id: 787
+  title: cheapest-flights-within-k-stops
+  params:
+    n:
+      type: int
+    flights:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    src:
+      type: int
+    dst:
+      type: int
+    k:
+      type: int
+  call:
+    cpp: Solution().findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    rust: Solution::find_cheapest_price({n}, {flights}, {src}, {dst}, {k})
+    python3: Solution().findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    python2: Solution().findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    ruby: find_cheapest_price({n}, {flights}, {src}, {dst}, {k})
+    java: new Solution().findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    csharp: new Solution().FindCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    kotlin: Solution().findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    go: findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    dart: Solution().findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    swift: Solution().findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+    typescript: findCheapestPrice({n}, {flights}, {src}, {dst}, {k})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().findCheapestPrice(n, flights, src, dst, k, {result})
+    checker: |
+      class Checker(object):
+          def findCheapestPrice(self, n, flights, src, dst, k, result):
+              return isinstance(result, int)
+seed: 787787
+tests:
+  - name: example_1
+    in:
+      n: 4
+      flights:
+        - [0, 1, 100]
+        - [1, 2, 100]
+        - [2, 0, 100]
+        - [1, 3, 600]
+        - [2, 3, 200]
+      src: 0
+      dst: 3
+      k: 1
+    out: 700
+  - name: example_2
+    in:
+      n: 3
+      flights:
+        - [0, 1, 100]
+        - [1, 2, 100]
+        - [0, 2, 500]
+      src: 0
+      dst: 2
+      k: 1
+    out: 200
+  - name: example_3
+    in:
+      n: 3
+      flights:
+        - [0, 1, 100]
+        - [1, 2, 100]
+        - [0, 2, 500]
+      src: 0
+      dst: 2
+      k: 0
+    out: 500
+  - name: no_flights
+    in:
+      n: 2
+      flights: []
+      src: 0
+      dst: 1
+      k: 0
+    out: -1
+  - name: direct_only
+    in:
+      n: 2
+      flights:
+        - [0, 1, 7]
+      src: 0
+      dst: 1
+      k: 0
+    out: 7
+  - name: direct_better_than_longer_path
+    in:
+      n: 4
+      flights:
+        - [0, 1, 2]
+        - [1, 3, 2]
+        - [0, 3, 10]
+      src: 0
+      dst: 3
+      k: 0
+    out: 10
+  - name: one_stop_needed
+    in:
+      n: 4
+      flights:
+        - [0, 1, 2]
+        - [1, 3, 2]
+        - [0, 3, 10]
+      src: 0
+      dst: 3
+      k: 1
+    out: 4
+  - name: one_stop_insufficient
+    in:
+      n: 5
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+      src: 0
+      dst: 4
+      k: 2
+    out: -1
+  - name: exact_k_boundary
+    in:
+      n: 5
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+      src: 0
+      dst: 4
+      k: 3
+    out: 4
+  - name: cheaper_with_more_stops_but_invalid
+    in:
+      n: 5
+      flights:
+        - [0, 1, 1]
+        - [1, 4, 100]
+        - [0, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+      src: 0
+      dst: 4
+      k: 1
+    out: 101
+  - name: cheaper_with_more_stops_valid
+    in:
+      n: 5
+      flights:
+        - [0, 1, 1]
+        - [1, 4, 100]
+        - [0, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+      src: 0
+      dst: 4
+      k: 2
+    out: 6
+  - name: unreachable_destination
+    in:
+      n: 4
+      flights:
+        - [0, 1, 5]
+        - [1, 2, 5]
+      src: 0
+      dst: 3
+      k: 3
+    out: -1
+  - name: source_to_destination_via_cycle
+    in:
+      n: 4
+      flights:
+        - [0, 1, 4]
+        - [1, 2, 4]
+        - [2, 1, 1]
+        - [2, 3, 4]
+        - [0, 3, 20]
+      src: 0
+      dst: 3
+      k: 2
+    out: 12
+  - name: source_equals_shortest_spoke
+    in:
+      n: 5
+      flights:
+        - [0, 1, 2]
+        - [1, 4, 2]
+        - [0, 2, 1]
+        - [2, 4, 10]
+        - [0, 4, 9]
+      src: 0
+      dst: 4
+      k: 1
+    out: 4
+  - name: choose_cheaper_among_two_paths
+    in:
+      n: 6
+      flights:
+        - [0, 1, 5]
+        - [1, 5, 5]
+        - [0, 2, 2]
+        - [2, 3, 2]
+        - [3, 5, 2]
+        - [0, 5, 20]
+      src: 0
+      dst: 5
+      k: 2
+    out: 6
+  - name: choose_direct_when_long_path_cheaper_but_invalid
+    in:
+      n: 6
+      flights:
+        - [0, 1, 5]
+        - [1, 5, 5]
+        - [0, 2, 2]
+        - [2, 3, 2]
+        - [3, 5, 2]
+        - [0, 5, 20]
+      src: 0
+      dst: 5
+      k: 1
+    out: 10
+  - name: duplicate_costs_different_routes
+    in:
+      n: 4
+      flights:
+        - [0, 1, 3]
+        - [1, 3, 3]
+        - [0, 2, 3]
+        - [2, 3, 3]
+        - [0, 3, 8]
+      src: 0
+      dst: 3
+      k: 1
+    out: 6
+  - name: zero_cost_like_path_not_allowed
+    in:
+      n: 4
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [0, 3, 10]
+      src: 0
+      dst: 3
+      k: 0
+    out: 10
+  - name: longer_path_better_within_k
+    in:
+      n: 4
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [0, 3, 10]
+      src: 0
+      dst: 3
+      k: 2
+    out: 3
+  - name: longer_path_better_too_many_stops
+    in:
+      n: 4
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [0, 3, 10]
+      src: 0
+      dst: 3
+      k: 1
+    out: 10
+  - name: no_route_even_with_k
+    in:
+      n: 6
+      flights:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [3, 4, 2]
+        - [4, 5, 2]
+      src: 0
+      dst: 5
+      k: 4
+    out: -1
+  - name: destination_is_one_hop_away
+    in:
+      n: 5
+      flights:
+        - [0, 4, 11]
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 4, 20]
+      src: 0
+      dst: 4
+      k: 0
+    out: 11
+  - name: destination_is_one_hop_away_with_k
+    in:
+      n: 5
+      flights:
+        - [0, 4, 11]
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 4, 20]
+      src: 0
+      dst: 4
+      k: 1
+    out: 11
+  - name: equal_price_multiple_options
+    in:
+      n: 5
+      flights:
+        - [0, 1, 2]
+        - [1, 4, 2]
+        - [0, 2, 2]
+        - [2, 4, 2]
+        - [0, 4, 4]
+      src: 0
+      dst: 4
+      k: 1
+    out: 4
+  - name: equal_price_multiple_options_with_more_k
+    in:
+      n: 5
+      flights:
+        - [0, 1, 2]
+        - [1, 4, 2]
+        - [0, 2, 2]
+        - [2, 4, 2]
+        - [0, 4, 4]
+      src: 0
+      dst: 4
+      k: 2
+    out: 4
+  - name: larger_sparse_graph
+    in:
+      n: 10
+      flights:
+        - [0, 1, 5]
+        - [1, 2, 5]
+        - [2, 3, 5]
+        - [3, 9, 5]
+        - [0, 4, 50]
+        - [4, 9, 1]
+        - [1, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+      src: 0
+      dst: 9
+      k: 3
+    out: 20
+  - name: larger_sparse_graph_more_k
+    in:
+      n: 10
+      flights:
+        - [0, 1, 5]
+        - [1, 2, 5]
+        - [2, 3, 5]
+        - [3, 9, 5]
+        - [0, 4, 50]
+        - [4, 9, 1]
+        - [1, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+      src: 0
+      dst: 9
+      k: 4
+    out: 20
+  - name: medium_cycle_graph
+    in:
+      n: 7
+      flights:
+        - [0, 1, 3]
+        - [1, 2, 3]
+        - [2, 0, 3]
+        - [1, 3, 4]
+        - [3, 4, 4]
+        - [4, 5, 4]
+        - [5, 6, 4]
+        - [0, 6, 30]
+      src: 0
+      dst: 6
+      k: 3
+    out: 30
+  - name: medium_cycle_graph_too_few_stops
+    in:
+      n: 7
+      flights:
+        - [0, 1, 3]
+        - [1, 2, 3]
+        - [2, 0, 3]
+        - [1, 3, 4]
+        - [3, 4, 4]
+        - [4, 5, 4]
+        - [5, 6, 4]
+        - [0, 6, 30]
+      src: 0
+      dst: 6
+      k: 2
+    out: 30
+  - name: chain_of_four
+    in:
+      n: 5
+      flights:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+      src: 0
+      dst: 4
+      k: 3
+    out: 8
+  - name: chain_of_four_insufficient
+    in:
+      n: 5
+      flights:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+      src: 0
+      dst: 4
+      k: 2
+    out: -1
+  - name: large_chain_100_nodes
+    in:
+      n: 100
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+        - [10, 11, 1]
+        - [11, 12, 1]
+        - [12, 13, 1]
+        - [13, 14, 1]
+        - [14, 15, 1]
+        - [15, 16, 1]
+        - [16, 17, 1]
+        - [17, 18, 1]
+        - [18, 19, 1]
+        - [19, 20, 1]
+        - [20, 21, 1]
+        - [21, 22, 1]
+        - [22, 23, 1]
+        - [23, 24, 1]
+        - [24, 25, 1]
+        - [25, 26, 1]
+        - [26, 27, 1]
+        - [27, 28, 1]
+        - [28, 29, 1]
+        - [29, 30, 1]
+        - [30, 31, 1]
+        - [31, 32, 1]
+        - [32, 33, 1]
+        - [33, 34, 1]
+        - [34, 35, 1]
+        - [35, 36, 1]
+        - [36, 37, 1]
+        - [37, 38, 1]
+        - [38, 39, 1]
+        - [39, 40, 1]
+        - [40, 41, 1]
+        - [41, 42, 1]
+        - [42, 43, 1]
+        - [43, 44, 1]
+        - [44, 45, 1]
+        - [45, 46, 1]
+        - [46, 47, 1]
+        - [47, 48, 1]
+        - [48, 49, 1]
+        - [49, 50, 1]
+        - [50, 51, 1]
+        - [51, 52, 1]
+        - [52, 53, 1]
+        - [53, 54, 1]
+        - [54, 55, 1]
+        - [55, 56, 1]
+        - [56, 57, 1]
+        - [57, 58, 1]
+        - [58, 59, 1]
+        - [59, 60, 1]
+        - [60, 61, 1]
+        - [61, 62, 1]
+        - [62, 63, 1]
+        - [63, 64, 1]
+        - [64, 65, 1]
+        - [65, 66, 1]
+        - [66, 67, 1]
+        - [67, 68, 1]
+        - [68, 69, 1]
+        - [69, 70, 1]
+        - [70, 71, 1]
+        - [71, 72, 1]
+        - [72, 73, 1]
+        - [73, 74, 1]
+        - [74, 75, 1]
+        - [75, 76, 1]
+        - [76, 77, 1]
+        - [77, 78, 1]
+        - [78, 79, 1]
+        - [79, 80, 1]
+        - [80, 81, 1]
+        - [81, 82, 1]
+        - [82, 83, 1]
+        - [83, 84, 1]
+        - [84, 85, 1]
+        - [85, 86, 1]
+        - [86, 87, 1]
+        - [87, 88, 1]
+        - [88, 89, 1]
+        - [89, 90, 1]
+        - [90, 91, 1]
+        - [91, 92, 1]
+        - [92, 93, 1]
+        - [93, 94, 1]
+        - [94, 95, 1]
+        - [95, 96, 1]
+        - [96, 97, 1]
+        - [97, 98, 1]
+        - [98, 99, 1]
+      src: 0
+      dst: 99
+      k: 98
+    out: 99
+  - name: large_chain_100_nodes_short_k
+    in:
+      n: 100
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+        - [10, 11, 1]
+        - [11, 12, 1]
+        - [12, 13, 1]
+        - [13, 14, 1]
+        - [14, 15, 1]
+        - [15, 16, 1]
+        - [16, 17, 1]
+        - [17, 18, 1]
+        - [18, 19, 1]
+        - [19, 20, 1]
+        - [20, 21, 1]
+        - [21, 22, 1]
+        - [22, 23, 1]
+        - [23, 24, 1]
+        - [24, 25, 1]
+        - [25, 26, 1]
+        - [26, 27, 1]
+        - [27, 28, 1]
+        - [28, 29, 1]
+        - [29, 30, 1]
+        - [30, 31, 1]
+        - [31, 32, 1]
+        - [32, 33, 1]
+        - [33, 34, 1]
+        - [34, 35, 1]
+        - [35, 36, 1]
+        - [36, 37, 1]
+        - [37, 38, 1]
+        - [38, 39, 1]
+        - [39, 40, 1]
+        - [40, 41, 1]
+        - [41, 42, 1]
+        - [42, 43, 1]
+        - [43, 44, 1]
+        - [44, 45, 1]
+        - [45, 46, 1]
+        - [46, 47, 1]
+        - [47, 48, 1]
+        - [48, 49, 1]
+        - [49, 50, 1]
+        - [50, 51, 1]
+        - [51, 52, 1]
+        - [52, 53, 1]
+        - [53, 54, 1]
+        - [54, 55, 1]
+        - [55, 56, 1]
+        - [56, 57, 1]
+        - [57, 58, 1]
+        - [58, 59, 1]
+        - [59, 60, 1]
+        - [60, 61, 1]
+        - [61, 62, 1]
+        - [62, 63, 1]
+        - [63, 64, 1]
+        - [64, 65, 1]
+        - [65, 66, 1]
+        - [66, 67, 1]
+        - [67, 68, 1]
+        - [68, 69, 1]
+        - [69, 70, 1]
+        - [70, 71, 1]
+        - [71, 72, 1]
+        - [72, 73, 1]
+        - [73, 74, 1]
+        - [74, 75, 1]
+        - [75, 76, 1]
+        - [76, 77, 1]
+        - [77, 78, 1]
+        - [78, 79, 1]
+        - [79, 80, 1]
+        - [80, 81, 1]
+        - [81, 82, 1]
+        - [82, 83, 1]
+        - [83, 84, 1]
+        - [84, 85, 1]
+        - [85, 86, 1]
+        - [86, 87, 1]
+        - [87, 88, 1]
+        - [88, 89, 1]
+        - [89, 90, 1]
+        - [90, 91, 1]
+        - [91, 92, 1]
+        - [92, 93, 1]
+        - [93, 94, 1]
+        - [94, 95, 1]
+        - [95, 96, 1]
+        - [96, 97, 1]
+        - [97, 98, 1]
+        - [98, 99, 1]
+        - [0, 99, 200]
+      src: 0
+      dst: 99
+      k: 0
+    out: 200
+  - name: large_branching_graph
+    in:
+      n: 8
+      flights:
+        - [0, 1, 10]
+        - [0, 2, 3]
+        - [2, 1, 4]
+        - [1, 3, 2]
+        - [2, 3, 8]
+        - [3, 4, 2]
+        - [4, 7, 2]
+        - [1, 7, 30]
+        - [0, 7, 50]
+      src: 0
+      dst: 7
+      k: 3
+    out: 15
+  - name: large_branching_graph_tight_k
+    in:
+      n: 8
+      flights:
+        - [0, 1, 10]
+        - [0, 2, 3]
+        - [2, 1, 4]
+        - [1, 3, 2]
+        - [2, 3, 8]
+        - [3, 4, 2]
+        - [4, 7, 2]
+        - [1, 7, 30]
+        - [0, 7, 50]
+      src: 0
+      dst: 7
+      k: 1
+    out: 40
+  - name: max_price_edges_small_k
+    in:
+      n: 5
+      flights:
+        - [0, 1, 10000]
+        - [1, 2, 10000]
+        - [2, 3, 10000]
+        - [3, 4, 10000]
+        - [0, 4, 9999]
+      src: 0
+      dst: 4
+      k: 0
+    out: 9999
+  - name: max_price_edges_with_k
+    in:
+      n: 5
+      flights:
+        - [0, 1, 10000]
+        - [1, 2, 10000]
+        - [2, 3, 10000]
+        - [3, 4, 10000]
+        - [0, 4, 9999]
+      src: 0
+      dst: 4
+      k: 3
+    out: 9999
+  - name: cheap_longer_route_beats_direct
+    in:
+      n: 6
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 5, 1]
+        - [0, 5, 10]
+      src: 0
+      dst: 5
+      k: 2
+    out: 3
+  - name: cheap_longer_route_out_of_budget
+    in:
+      n: 6
+      flights:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 5, 1]
+        - [0, 5, 10]
+      src: 0
+      dst: 5
+      k: 1
+    out: 10
+  - name: destination_is_source_neighbor_among_noise
+    in:
+      n: 7
+      flights:
+        - [0, 6, 8]
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+      src: 0
+      dst: 6
+      k: 0
+    out: 8

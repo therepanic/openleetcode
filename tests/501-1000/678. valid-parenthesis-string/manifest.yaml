@@ -1,0 +1,198 @@
+entry:
+  id: 678
+  title: valid-parenthesis-string
+  params:
+    s:
+      type: string
+  call:
+    cpp: Solution().checkValidString({s})
+    rust: Solution::check_valid_string({s})
+    python3: Solution().checkValidString({s})
+    python2: Solution().checkValidString({s})
+    ruby: check_valid_string({s})
+    java: new Solution().checkValidString({s})
+    csharp: new Solution().CheckValidString({s})
+    kotlin: Solution().checkValidString({s})
+    go: checkValidString({s})
+    dart: Solution().checkValidString({s})
+    swift: Solution().checkValidString({s})
+    typescript: checkValidString({s})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().checkValidString(s, {result})
+    checker: |
+      class Checker:
+          def checkValidString(self, s, result):
+              if not isinstance(result, bool):
+                  return False
+              low = 0
+              high = 0
+              for char in s:
+                  if char == '(':
+                      low += 1
+                      high += 1
+                  elif char == ')':
+                      low = max(low - 1, 0)
+                      high -= 1
+                  else:
+                      low = max(low - 1, 0)
+                      high += 1
+                  if high < 0:
+                      return result is False
+              expected = (low == 0)
+              return result == expected
+seed: 678
+tests:
+  - name: example_1
+    in:
+      s: "()"
+    out: true
+  - name: example_2
+    in:
+      s: "(*)"
+    out: true
+  - name: example_3
+    in:
+      s: "(*))"
+    out: true
+  - name: single_open
+    in:
+      s: "("
+    out: false
+  - name: single_close
+    in:
+      s: ")"
+    out: false
+  - name: single_star
+    in:
+      s: "*"
+    out: true
+  - name: empty_effective_pair
+    in:
+      s: "**"
+    out: true
+  - name: star_as_close
+    in:
+      s: "*)"
+    out: true
+  - name: star_as_open
+    in:
+      s: "(*"
+    out: true
+  - name: simple_invalid_prefix
+    in:
+      s: "())"
+    out: false
+  - name: balanced_plain
+    in:
+      s: "()()"
+    out: true
+  - name: nested_plain
+    in:
+      s: "(())"
+    out: true
+  - name: interleaved_star
+    in:
+      s: "(*()"
+    out: true
+  - name: star_middle_invalid
+    in:
+      s: "())*"
+    out: false
+  - name: star_suffix_fix
+    in:
+      s: "(()*)"
+    out: true
+  - name: star_prefix_fix
+    in:
+      s: "*(()"
+    out: false
+  - name: close_then_star
+    in:
+      s: ")*("
+    out: false
+  - name: many_stars
+    in:
+      s: "******"
+    out: true
+  - name: alternating_valid
+    in:
+      s: "(*)(*)"
+    out: true
+  - name: alternating_invalid
+    in:
+      s: "(*))(*"
+    out: true
+  - name: open_heavy_valid
+    in:
+      s: "(((***)))"
+    out: true
+  - name: open_heavy_invalid
+    in:
+      s: "(((**))"
+    out: true
+  - name: early_close_fail
+    in:
+      s: ")))***"
+    out: false
+  - name: late_close_repair
+    in:
+      s: "***((()))"
+    out: true
+  - name: stars_and_parens
+    in:
+      s: "(*()*)"
+    out: true
+  - name: mismatch_after_star
+    in:
+      s: "(*(()"
+    out: false
+  - name: suffix_balance
+    in:
+      s: "((*)"
+    out: true
+  - name: prefix_balance
+    in:
+      s: ")*()"
+    out: false
+  - name: complex_valid_1
+    in:
+      s: "((*)())"
+    out: true
+  - name: complex_valid_2
+    in:
+      s: "(*((*)*))"
+    out: true
+  - name: complex_invalid_1
+    in:
+      s: "(*((*)*)"
+    out: true
+  - name: complex_invalid_2
+    in:
+      s: "(()*(()"
+    out: false
+  - name: max_all_stars
+    in:
+      s: "****************************************************************************************************"
+    out: true
+  - name: max_balanced_mix
+    in:
+      s: "((((((((((**************************************************))))))))))"
+    out: true
+  - name: max_unbalanced_prefix
+    in:
+      s: "))))))))))**************************************************((((((((((("
+    out: false
+  - name: max_valid_spread
+    in:
+      s: "(*()(*()(*()(*()(*()(*()(*()(*()(*()(*()"
+    out: true
+  - name: max_invalid_spread
+    in:
+      s: "(*()(*()(*()(*()(*()(*()(*()(*()(*()(*("
+    out: false

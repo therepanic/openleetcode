@@ -1,0 +1,284 @@
+entry:
+  id: 688
+  title: knight-probability-in-chessboard
+  params:
+    n:
+      type: int
+    k:
+      type: int
+    row:
+      type: int
+    column:
+      type: int
+  call:
+    cpp: "Solution().knightProbability({n}, {k}, {row}, {column})"
+    rust: "Solution::knight_probability({n}, {k}, {row}, {column})"
+    python3: "Solution().knightProbability({n}, {k}, {row}, {column})"
+    python2: "Solution().knightProbability({n}, {k}, {row}, {column})"
+    ruby: "knight_probability({n}, {k}, {row}, {column})"
+    java: "new Solution().knightProbability({n}, {k}, {row}, {column})"
+    csharp: "new Solution().KnightProbability({n}, {k}, {row}, {column})"
+    kotlin: "Solution().knightProbability({n}, {k}, {row}, {column})"
+    go: "knightProbability({n}, {k}, {row}, {column})"
+    dart: "Solution().knightProbability({n}, {k}, {row}, {column})"
+    swift: "Solution().knightProbability({n}, {k}, {row}, {column})"
+    typescript: "knightProbability({n}, {k}, {row}, {column})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().knightProbability(n, k, row, column, {result})"
+    checker: |
+      import math
+      from functools import lru_cache
+
+      class Checker:
+          def knightProbability(self, n, k, row, column, result):
+              if not isinstance(result, (int, float)):
+                  return False
+              if not math.isfinite(result):
+                  return False
+              if result < -1e-12 or result > 1.0 + 1e-12:
+                  return False
+
+              moves = ((1, 2), (2, 1), (-1, 2), (-2, 1), (1, -2), (2, -1), (-1, -2), (-2, -1))
+
+              @lru_cache(None)
+              def dp(steps, r, c):
+                  if r < 0 or r >= n or c < 0 or c >= n:
+                      return 0.0
+                  if steps == 0:
+                      return 1.0
+                  total = 0.0
+                  for dr, dc in moves:
+                      total += dp(steps - 1, r + dr, c + dc)
+                  return total / 8.0
+
+              expected = dp(k, row, column)
+              return abs(float(result) - expected) <= 1e-9 + 1e-12 * max(1.0, abs(expected))
+
+seed: 688
+
+tests:
+  - name: example-1
+    in:
+      n: 3
+      k: 2
+      row: 0
+      column: 0
+  - name: example-2
+    in:
+      n: 1
+      k: 0
+      row: 0
+      column: 0
+  - name: n1-k1
+    in:
+      n: 1
+      k: 1
+      row: 0
+      column: 0
+  - name: n1-k100
+    in:
+      n: 1
+      k: 100
+      row: 0
+      column: 0
+  - name: corner-k1
+    in:
+      n: 2
+      k: 1
+      row: 0
+      column: 0
+  - name: corner-k2
+    in:
+      n: 2
+      k: 2
+      row: 0
+      column: 0
+  - name: edge-3x3-k1
+    in:
+      n: 3
+      k: 1
+      row: 0
+      column: 1
+  - name: center-3x3-k1
+    in:
+      n: 3
+      k: 1
+      row: 1
+      column: 1
+  - name: center-3x3-k2
+    in:
+      n: 3
+      k: 2
+      row: 1
+      column: 1
+  - name: center-4x4-k3
+    in:
+      n: 4
+      k: 3
+      row: 1
+      column: 1
+  - name: center-4x4-k4
+    in:
+      n: 4
+      k: 4
+      row: 1
+      column: 2
+  - name: corner-4x4-k4
+    in:
+      n: 4
+      k: 4
+      row: 0
+      column: 0
+  - name: mid-5x5-k2
+    in:
+      n: 5
+      k: 2
+      row: 2
+      column: 2
+  - name: edge-5x5-k5
+    in:
+      n: 5
+      k: 5
+      row: 0
+      column: 2
+  - name: corner-5x5-k6
+    in:
+      n: 5
+      k: 6
+      row: 0
+      column: 0
+  - name: center-6x6-k1
+    in:
+      n: 6
+      k: 1
+      row: 3
+      column: 3
+  - name: center-6x6-k2
+    in:
+      n: 6
+      k: 2
+      row: 3
+      column: 3
+  - name: edge-6x6-k7
+    in:
+      n: 6
+      k: 7
+      row: 0
+      column: 5
+  - name: corner-7x7-k8
+    in:
+      n: 7
+      k: 8
+      row: 0
+      column: 0
+  - name: center-7x7-k9
+    in:
+      n: 7
+      k: 9
+      row: 3
+      column: 3
+  - name: near-edge-8x8-k10
+    in:
+      n: 8
+      k: 10
+      row: 1
+      column: 1
+  - name: center-8x8-k10
+    in:
+      n: 8
+      k: 10
+      row: 3
+      column: 4
+  - name: corner-8x8-k11
+    in:
+      n: 8
+      k: 11
+      row: 0
+      column: 0
+  - name: center-10x10-k12
+    in:
+      n: 10
+      k: 12
+      row: 5
+      column: 5
+  - name: edge-10x10-k12
+    in:
+      n: 10
+      k: 12
+      row: 0
+      column: 9
+  - name: corner-12x12-k15
+    in:
+      n: 12
+      k: 15
+      row: 0
+      column: 0
+  - name: center-12x12-k15
+    in:
+      n: 12
+      k: 15
+      row: 6
+      column: 6
+  - name: edge-15x15-k20
+    in:
+      n: 15
+      k: 20
+      row: 0
+      column: 7
+  - name: center-15x15-k20
+    in:
+      n: 15
+      k: 20
+      row: 7
+      column: 7
+  - name: corner-20x20-k25
+    in:
+      n: 20
+      k: 25
+      row: 0
+      column: 0
+  - name: center-20x20-k25
+    in:
+      n: 20
+      k: 25
+      row: 10
+      column: 10
+  - name: edge-20x20-k40
+    in:
+      n: 20
+      k: 40
+      row: 0
+      column: 19
+  - name: center-25x25-k50
+    in:
+      n: 25
+      k: 50
+      row: 12
+      column: 12
+  - name: corner-25x25-k50
+    in:
+      n: 25
+      k: 50
+      row: 0
+      column: 0
+  - name: edge-25x25-k100
+    in:
+      n: 25
+      k: 100
+      row: 0
+      column: 24
+  - name: center-25x25-k100
+    in:
+      n: 25
+      k: 100
+      row: 12
+      column: 12

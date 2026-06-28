@@ -1,0 +1,237 @@
+entry:
+  id: 649
+  title: dota2-senate
+  params:
+    senate:
+      type: string
+  call:
+    cpp: Solution().predictPartyVictory({senate})
+    rust: Solution::predict_party_victory({senate})
+    python3: Solution().predictPartyVictory({senate})
+    python2: Solution().predictPartyVictory({senate})
+    ruby: predict_party_victory({senate})
+    java: new Solution().predictPartyVictory({senate})
+    csharp: new Solution().PredictPartyVictory({senate})
+    kotlin: Solution().predictPartyVictory({senate})
+    go: predictPartyVictory({senate})
+    dart: Solution().predictPartyVictory({senate})
+    swift: Solution().predictPartyVictory({senate})
+    typescript: predictPartyVictory({senate})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().predictPartyVictory(senate, {result})
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def predictPartyVictory(self, senate, result):
+              if result not in ("Radiant", "Dire"):
+                  return False
+              if not senate or any(ch not in "RD" for ch in senate):
+                  return False
+
+              r = deque()
+              d = deque()
+              n = len(senate)
+
+              for i, ch in enumerate(senate):
+                  if ch == "R":
+                      r.append(i)
+                  else:
+                      d.append(i)
+
+              while r and d:
+                  r_idx = r.popleft()
+                  d_idx = d.popleft()
+                  if r_idx < d_idx:
+                      r.append(r_idx + n)
+                  else:
+                      d.append(d_idx + n)
+
+              expected = "Radiant" if r else "Dire"
+              return result == expected
+seed: 649
+tests:
+  - name: example_1
+    in:
+      senate: RD
+    out: Radiant
+  - name: example_2
+    in:
+      senate: RDD
+    out: Dire
+  - name: single_r
+    in:
+      senate: R
+    out: Radiant
+  - name: single_d
+    in:
+      senate: D
+    out: Dire
+  - name: two_rr
+    in:
+      senate: RR
+    out: Radiant
+  - name: two_dd
+    in:
+      senate: DD
+    out: Dire
+  - name: dr
+    in:
+      senate: DR
+    out: Dire
+  - name: rrd
+    in:
+      senate: RRD
+    out: Radiant
+  - name: ddr
+    in:
+      senate: DDR
+    out: Dire
+  - name: rdr
+    in:
+      senate: RDR
+    out: Radiant
+  - name: drr
+    in:
+      senate: DRR
+    out: Radiant
+  - name: rddr
+    in:
+      senate: RDDR
+    out: Radiant
+  - name: ddrr
+    in:
+      senate: DDRR
+    out: Dire
+  - name: rrrrd
+    in:
+      senate: RRRRD
+    out: Radiant
+  - name: ddddr
+    in:
+      senate: DDDDR
+    out: Dire
+  - name: rdrd
+    in:
+      senate: RDRD
+    out: Radiant
+  - name: drdr
+    in:
+      senate: DRDR
+    out: Dire
+  - name: rrdd
+    in:
+      senate: RRDD
+    out: Radiant
+  - name: ddrr_2
+    in:
+      senate: DDRR
+    out: Dire
+  - name: rdrrr
+    in:
+      senate: RDRRR
+    out: Radiant
+  - name: ddrdd
+    in:
+      senate: DDRDD
+    out: Dire
+  - name: rrrdd
+    in:
+      senate: RRRDD
+    out: Radiant
+  - name: rdrddr
+    in:
+      senate: RDRDDR
+    out: Radiant
+  - name: drrrd
+    in:
+      senate: DRRRD
+    out: Radiant
+  - name: rrdddr
+    in:
+      senate: RRDDDR
+    out: Radiant
+  - name: ddrrr
+    in:
+      senate: DDRRR
+    out: Dire
+  - name: rdrrdr
+    in:
+      senate: RDRRDR
+    out: Radiant
+  - name: drddrr
+    in:
+      senate: DRDDRR
+    out: Dire
+  - name: rrrddd
+    in:
+      senate: RRRDDD
+    out: Radiant
+  - name: dddrrr
+    in:
+      senate: DDDRRR
+    out: Dire
+  - name: short_skew_r
+    in:
+      senate: RDRRR
+    out: Radiant
+  - name: short_skew_d
+    in:
+      senate: DDRDD
+    out: Dire
+  - name: rddrrd
+    in:
+      senate: RDDRRD
+    out: Radiant
+  - name: drrdrr
+    in:
+      senate: DRRDRR
+    out: Radiant
+  - name: max_r_prefix
+    seed: 64901
+    in:
+      senate:
+        gen: "str"
+        len: 10000
+        alphabet: RD
+  - name: max_d_prefix
+    seed: 64902
+    in:
+      senate:
+        gen: "str"
+        len: 10000
+        alphabet: DR
+  - name: alternating_rd
+    seed: 64903
+    in:
+      senate:
+        gen: "str"
+        len: 10000
+        alphabet: RD
+  - name: alternating_dr
+    seed: 64904
+    in:
+      senate:
+        gen: "str"
+        len: 10000
+        alphabet: DR
+  - name: leading_r_many_d
+    seed: 64905
+    in:
+      senate:
+        gen: "str"
+        len: 10000
+        alphabet: RD
+  - name: leading_d_many_r
+    seed: 64906
+    in:
+      senate:
+        gen: "str"
+        len: 10000
+        alphabet: DR

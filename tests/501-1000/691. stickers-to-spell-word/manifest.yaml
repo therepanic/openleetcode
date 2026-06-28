@@ -1,0 +1,468 @@
+entry:
+  id: 691
+  title: stickers-to-spell-word
+  params:
+    stickers:
+      type: array
+      items:
+        type: string
+    target:
+      type: string
+  call:
+    cpp: Solution().minStickers({stickers}, {target})
+    rust: Solution::min_stickers({stickers}, {target})
+    python3: Solution().minStickers({stickers}, {target})
+    python2: Solution().minStickers({stickers}, {target})
+    ruby: min_stickers({stickers}, {target})
+    java: new Solution().minStickers({stickers}, {target})
+    csharp: new Solution().MinStickers({stickers}, {target})
+    kotlin: Solution().minStickers({stickers}, {target})
+    go: minStickers({stickers}, {target})
+    dart: Solution().minStickers({stickers}, {target})
+    swift: Solution().minStickers({stickers}, {target})
+    typescript: minStickers({stickers}, {target})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(stickers, target, {result})
+    checker: |
+      class Checker:
+          def check(self, stickers, target, result):
+              if not isinstance(result, int):
+                  return False
+
+              from functools import lru_cache
+              from collections import Counter
+
+              target_counts = Counter(target)
+              needed_chars = sorted(target_counts)
+              if not needed_chars:
+                  return result == 0
+
+              sticker_counts = []
+              for s in stickers:
+                  counts = Counter(s)
+                  sticker_counts.append(tuple(counts.get(ch, 0) for ch in needed_chars))
+
+              @lru_cache(None)
+              def dfs(state):
+                  if all(x == 0 for x in state):
+                      return 0
+                  best = float("inf")
+                  first = next(i for i, x in enumerate(state) if x > 0)
+                  for sc in sticker_counts:
+                      if sc[first] == 0:
+                          continue
+                      new_state = []
+                      for need, have in zip(state, sc):
+                          new_state.append(max(0, need - have))
+                      cand = dfs(tuple(new_state))
+                      if cand != float("inf"):
+                          best = min(best, 1 + cand)
+                  return best
+
+              start = tuple(target_counts[ch] for ch in needed_chars)
+              expected = dfs(start)
+              if expected == float("inf"):
+                  expected = -1
+              return result == expected
+seed: 691
+tests:
+  - name: example_1
+    in:
+      stickers:
+        - with
+        - example
+        - science
+      target: thehat
+    out: 3
+  - name: example_2
+    in:
+      stickers:
+        - notice
+        - possible
+      target: basicbasic
+    out: -1
+  - name: single_exact
+    in:
+      stickers:
+        - a
+      target: a
+    out: 1
+  - name: single_repeat
+    in:
+      stickers:
+        - a
+      target: aa
+    out: 2
+  - name: two_letters_one_sticker
+    in:
+      stickers:
+        - ab
+      target: ba
+    out: 1
+  - name: two_stickers_two_letters
+    in:
+      stickers:
+        - ab
+        - bc
+      target: abc
+    out: 2
+  - name: reverse_letters
+    in:
+      stickers:
+        - abc
+        - def
+      target: fed
+    out: 1
+  - name: reuse_same_sticker
+    in:
+      stickers:
+        - abc
+        - ab
+        - bc
+      target: cba
+    out: 1
+  - name: mixed_duplicates
+    in:
+      stickers:
+        - aaaa
+        - bbbb
+      target: ab
+    out: 2
+  - name: impossible_missing_char
+    in:
+      stickers:
+        - abc
+        - xyz
+      target: zzz
+    out: 3
+  - name: balanced_mix
+    in:
+      stickers:
+        - aabb
+        - bccd
+      target: abcd
+    out: 2
+  - name: alternating_stickers
+    in:
+      stickers:
+        - abab
+        - baba
+      target: aabb
+    out: 1
+  - name: example_like_short
+    in:
+      stickers:
+        - leetcode
+        - practice
+        - makes
+      target: leet
+    out: 1
+  - name: two_words_combined
+    in:
+      stickers:
+        - hello
+        - world
+      target: helloworld
+    out: 2
+  - name: simple_cover
+    in:
+      stickers:
+        - an
+        - example
+        - of
+        - sticker
+      target: stick
+    out: 1
+  - name: exact_two
+    in:
+      stickers:
+        - the
+        - hat
+      target: thehat
+    out: 2
+  - name: classic_unreachable
+    in:
+      stickers:
+        - these
+        - guess
+        - about
+        - garden
+        - him
+      target: atomher
+    out: 3
+  - name: travel_plan
+    in:
+      stickers:
+        - travel
+        - trip
+        - plan
+      target: planet
+    out: 2
+  - name: color_overlap
+    in:
+      stickers:
+        - green
+        - blue
+        - red
+      target: reed
+    out: 2
+  - name: repeated_single_letter
+    in:
+      stickers:
+        - aaa
+        - aa
+        - a
+      target: aaaaaaa
+    out: 3
+  - name: triple_overlap
+    in:
+      stickers:
+        - abca
+        - bcab
+        - cabc
+      target: abcabc
+    out: 2
+  - name: impossible_missing_letter
+    in:
+      stickers:
+        - abc
+        - ade
+        - fgh
+      target: abcdef
+    out: 3
+  - name: disjoint_pairs
+    in:
+      stickers:
+        - ab
+        - cd
+        - ef
+        - gh
+      target: abcdefgh
+    out: 4
+  - name: three_pair_cover
+    in:
+      stickers:
+        - ab
+        - ac
+        - bc
+      target: abcabc
+    out: 3
+  - name: recycled_overlap
+    in:
+      stickers:
+        - xyz
+        - yxz
+        - zxy
+      target: xxyz
+    out: 2
+  - name: triple_repeats
+    in:
+      stickers:
+        - aaaaa
+        - bbbbb
+        - ccccc
+      target: abcabcabc
+    out: 3
+  - name: impossible_ordering
+    in:
+      stickers:
+        - abcde
+        - fghij
+        - klmno
+      target: kjihgfedcba
+    out: 3
+  - name: no_help
+    in:
+      stickers:
+        - "no"
+        - way
+        - to
+      target: noway
+    out: 2
+  - name: exact_match_short
+    in:
+      stickers:
+        - miss
+        - issue
+        - sue
+      target: issue
+    out: 1
+  - name: overflow_cover
+    in:
+      stickers:
+        - stack
+        - overflow
+        - flow
+      target: overflow
+    out: 1
+  - name: partial_overlap
+    in:
+      stickers:
+        - aab
+        - bbc
+        - cca
+      target: abccab
+    out: 3
+  - name: simple_concat
+    in:
+      stickers:
+        - cat
+        - dog
+        - mouse
+      target: catdog
+    out: 2
+  - name: prefix_suffix
+    in:
+      stickers:
+        - alpha
+        - beta
+        - gamma
+      target: alphabet
+    out: 2
+  - name: chain_words
+    in:
+      stickers:
+        - rain
+        - brain
+        - train
+      target: braintrain
+    out: 2
+  - name: three_words
+    in:
+      stickers:
+        - one
+        - two
+        - three
+      target: onetwothree
+    out: 3
+  - name: long_single_char_target
+    in:
+      stickers:
+        - zzz
+        - zz
+      target: zzzzzzzzzzzzzzz
+    out: 5
+  - name: all_letters_repeated
+    in:
+      stickers:
+        - abc
+        - bca
+        - cab
+      target: aaabbbccc
+    out: 3
+  - name: max_stickers_cover
+    in:
+      stickers:
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+        - abcdefghij
+      target: abcdefghijabcde
+    out: 2
+  - name: max_stickers_impossible
+    in:
+      stickers:
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+        - aaaaabbbbb
+        - cccccddddd
+        - eeeeefffff
+        - ggggghhhhh
+        - iiiiiqqqqq
+      target: abcdefghijklmno
+    out: -1

@@ -1,0 +1,232 @@
+entry:
+  id: 686
+  title: repeated-string-match
+  params:
+    a:
+      type: string
+    b:
+      type: string
+  call:
+    cpp: "Solution().repeatedStringMatch({a}, {b})"
+    rust: "Solution::repeated_string_match({a}, {b})"
+    python3: "Solution().repeatedStringMatch({a}, {b})"
+    python2: "Solution().repeatedStringMatch({a}, {b})"
+    ruby: "repeated_string_match({a}, {b})"
+    java: "new Solution().repeatedStringMatch({a}, {b})"
+    csharp: "new Solution().RepeatedStringMatch({a}, {b})"
+    kotlin: "Solution().repeatedStringMatch({a}, {b})"
+    go: "repeatedStringMatch({a}, {b})"
+    dart: "Solution().repeatedStringMatch({a}, {b})"
+    swift: "Solution().repeatedStringMatch({a}, {b})"
+    typescript: "repeatedStringMatch({a}, {b})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().repeatedStringMatch(a, b, {result})"
+    checker: |
+      class Checker:
+          def repeatedStringMatch(self, a, b, result):
+              if not isinstance(result, int):
+                  return False
+              if result < -1:
+                  return False
+              if len(a) == 0 or len(b) == 0:
+                  return False
+              if any(c < 'a' or c > 'z' for c in a + b):
+                  return False
+              repeat = a
+              count = 1
+              while len(repeat) < len(b) + len(a):
+                  if b in repeat:
+                      return result == count
+                  repeat += a
+                  count += 1
+              if b in repeat:
+                  return result == count
+              return result == -1
+seed: 686
+tests:
+  - name: ex1
+    in:
+      a: abcd
+      b: cdabcdab
+    out: 3
+  - name: ex2
+    in:
+      a: a
+      b: aa
+    out: 2
+  - name: same_single
+    in:
+      a: a
+      b: a
+    out: 2
+  - name: impossible_single
+    in:
+      a: a
+      b: b
+    out: -1
+  - name: exact_match
+    in:
+      a: abc
+      b: abc
+    out: 2
+  - name: one_extra_wrap
+    in:
+      a: abc
+      b: cab
+    out: 2
+  - name: two_repeats
+    in:
+      a: abc
+      b: abcabc
+    out: 2
+  - name: three_repeats
+    in:
+      a: abcd
+      b: dabcdab
+    out: 3
+  - name: overlap_prefix
+    in:
+      a: ab
+      b: bababa
+    out: 4
+  - name: overlap_suffix
+    in:
+      a: abc
+      b: bcabcab
+    out: 3
+  - name: no_match_chars
+    in:
+      a: abc
+      b: def
+    out: -1
+  - name: repeated_single_char
+    in:
+      a: a
+      b: aaaaa
+    out: 5
+  - name: repeated_two_chars
+    in:
+      a: ab
+      b: baba
+    out: 3
+  - name: repeated_cycle
+    in:
+      a: abca
+      b: caabca
+    out: 2
+  - name: needs_three_after_boundary
+    in:
+      a: abcd
+      b: cdabcdabc
+    out: 3
+  - name: impossible_partial
+    in:
+      a: abc
+      b: cabd
+    out: -1
+  - name: long_a_small_b
+    in:
+      a: abcdefghij
+      b: fgh
+    out: 2
+  - name: long_a_wrap
+    in:
+      a: abcdefghij
+      b: hijabcde
+    out: 2
+  - name: two_chars_longer
+    in:
+      a: xy
+      b: yxyxy
+    out: 3
+  - name: boundary_mismatch
+    in:
+      a: xyz
+      b: zyx
+    out: -1
+  - name: prefix_suffix_overlap
+    in:
+      a: aaab
+      b: abaaab
+    out: 2
+  - name: repeated_longer_b
+    in:
+      a: abcde
+      b: deabcdeab
+    out: 3
+  - name: exact_two
+    in:
+      a: xyz
+      b: xyzxyz
+    out: 2
+  - name: impossible_with_shared_letters
+    in:
+      a: abcd
+      b: cdabce
+    out: -1
+  - name: all_same_char_even
+    in:
+      a: aa
+      b: aaaaaa
+    out: 3
+  - name: all_same_char_odd
+    in:
+      a: aaa
+      b: aaaaa
+    out: 2
+  - name: shift_one
+    in:
+      a: wxyz
+      b: zwxyzw
+    out: 3
+  - name: shift_two
+    in:
+      a: bcda
+      b: dabcdab
+    out: 3
+  - name: large_repeat_exact
+    in:
+      a: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      b: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: 2
+  - name: large_repeat_double
+    in:
+      a: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      b: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: 2
+  - name: large_repeat_triple
+    in:
+      a: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      b: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: 4
+  - name: large_impossible
+    in:
+      a: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      b: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+    out: -1
+  - name: near_limit_wrap
+    in:
+      a: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx
+      b: wxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxabcde
+    out: -1
+  - name: near_limit_exact
+    in:
+      a: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx
+      b: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx
+    out: 2
+  - name: near_limit_three
+    in:
+      a: ab
+      b: babababababababababababababababababababababababababababababababababababababababababababababababababababa
+    out: 53
+  - name: long_impossible_suffix
+    in:
+      a: abcdefghijklmnopqrstuvwxyz
+      b: zyxwvutsrqponmlkjihgfedcba
+    out: -1

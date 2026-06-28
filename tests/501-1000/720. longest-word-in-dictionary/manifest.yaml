@@ -1,0 +1,519 @@
+entry:
+  id: 720
+  title: longest-word-in-dictionary
+  params:
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().longestWord({words})"
+    rust: "Solution::longest_word({words})"
+    python3: "Solution().longestWord({words})"
+    python2: "Solution().longestWord({words})"
+    ruby: "longest_word({words})"
+    java: "new Solution().longestWord({words})"
+    csharp: "new Solution().LongestWord({words})"
+    kotlin: "Solution().longestWord({words})"
+    go: "longestWord({words})"
+    dart: "Solution().longestWord({words})"
+    swift: "Solution().longestWord({words})"
+    typescript: "longestWord({words})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().longestWord(words, {result})"
+    checker: |
+      class Checker:
+          def longestWord(self, words, result):
+              if not isinstance(words, list):
+                  return False
+              if not isinstance(result, str):
+                  return False
+              seen = set()
+              best = ""
+              for word in sorted(words):
+                  if len(word) == 1 or word[:-1] in seen:
+                      seen.add(word)
+                      if len(word) > len(best) or (len(word) == len(best) and word < best):
+                          best = word
+              return result == best
+seed: 720
+tests:
+  - name: example-world
+    in:
+      words:
+        - w
+        - wo
+        - wor
+        - worl
+        - world
+    out: world
+  - name: example-apple
+    in:
+      words:
+        - a
+        - banana
+        - app
+        - appl
+        - ap
+        - apply
+        - apple
+    out: apple
+  - name: single-letter-only
+    in:
+      words:
+        - a
+    out: a
+  - name: single-long-only
+    in:
+      words:
+        - banana
+    out: ""
+  - name: no-single-letter
+    in:
+      words:
+        - ab
+        - abc
+        - abcd
+    out: ""
+  - name: simple-two-step
+    in:
+      words:
+        - a
+        - ab
+    out: ab
+  - name: lex-tie-length-three
+    in:
+      words:
+        - a
+        - ab
+        - abc
+        - abd
+    out: abc
+  - name: duplicate-chain
+    in:
+      words:
+        - a
+        - a
+        - ab
+        - abc
+        - abc
+    out: abc
+  - name: longer-invalid-shorter-valid
+    in:
+      words:
+        - a
+        - banana
+        - ban
+        - bana
+        - banan
+    out: a
+  - name: choose-longer-over-lex-smaller
+    in:
+      words:
+        - b
+        - ba
+        - ban
+        - bana
+        - banan
+        - banana
+        - a
+        - ap
+        - app
+    out: banana
+  - name: apple-vs-apply
+    in:
+      words:
+        - a
+        - ap
+        - app
+        - appl
+        - apple
+        - apply
+        - b
+        - ba
+        - ban
+    out: apple
+  - name: contiguous-prefix-required
+    in:
+      words:
+        - c
+        - ca
+        - cat
+        - cats
+        - cater
+    out: cats
+  - name: chain-with-noise
+    in:
+      words:
+        - w
+        - wo
+        - wor
+        - worl
+        - world
+        - wx
+        - wxy
+        - wxyz
+    out: world
+  - name: empty-despite-many-long
+    in:
+      words:
+        - ab
+        - abc
+        - abcd
+        - yz
+        - yza
+    out: ""
+  - name: one-letter-tie
+    in:
+      words:
+        - b
+        - a
+    out: a
+  - name: all-single-letters
+    in:
+      words:
+        - z
+        - m
+        - a
+        - q
+    out: a
+  - name: max-word-length-chain
+    in:
+      words:
+        - a
+        - aa
+        - aaa
+        - aaaa
+        - aaaaa
+        - aaaaaa
+        - aaaaaaa
+        - aaaaaaaa
+        - aaaaaaaaa
+        - aaaaaaaaaa
+        - aaaaaaaaaaa
+        - aaaaaaaaaaaa
+        - aaaaaaaaaaaaa
+        - aaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  - name: banana-vs-canary
+    in:
+      words:
+        - b
+        - ba
+        - ban
+        - bana
+        - banan
+        - banana
+        - c
+        - ca
+        - can
+        - cana
+        - canar
+        - canary
+    out: banana
+  - name: tester-gap
+    in:
+      words:
+        - t
+        - te
+        - tes
+        - test
+        - tests
+        - tester
+        - testers
+    out: tests
+  - name: many-vs-invalid-mango
+    in:
+      words:
+        - m
+        - ma
+        - man
+        - many
+        - mango
+        - mangos
+    out: many
+  - name: duplicate-prefixes-and-answer
+    in:
+      words:
+        - k
+        - k
+        - ki
+        - kin
+        - kind
+        - kinde
+        - kinder
+        - kind
+    out: kinder
+  - name: longer-branch-later
+    in:
+      words:
+        - z
+        - zo
+        - zoo
+        - a
+        - ap
+        - app
+        - appl
+        - apple
+    out: apple
+  - name: dog-cat-tie
+    in:
+      words:
+        - d
+        - do
+        - dog
+        - c
+        - ca
+        - cat
+    out: cat
+  - name: reader-vs-reading
+    in:
+      words:
+        - r
+        - re
+        - rea
+        - read
+        - reade
+        - reader
+        - reading
+    out: reader
+  - name: helloo-valid
+    in:
+      words:
+        - h
+        - he
+        - hel
+        - hell
+        - hello
+        - helloo
+    out: helloo
+  - name: later-valid
+    in:
+      words:
+        - a
+        - at
+        - ate
+        - l
+        - la
+        - lat
+        - late
+        - later
+    out: later
+  - name: singles-no-two
+    in:
+      words:
+        - a
+        - b
+        - c
+        - dog
+    out: a
+  - name: missing-initial-prefix
+    in:
+      words:
+        - ab
+        - abc
+        - abcd
+        - abcde
+        - f
+    out: f
+  - name: nates-beats-news
+    in:
+      words:
+        - "n"
+        - na
+        - nat
+        - nate
+        - nates
+        - ne
+        - new
+        - news
+    out: nates
+  - name: their-vs-there
+    in:
+      words:
+        - t
+        - th
+        - the
+        - thei
+        - their
+        - ther
+        - there
+    out: their
+  - name: stress_many_single_letters
+    in:
+      words:
+        - z
+        - "y"
+        - x
+        - w
+        - v
+        - u
+        - t
+        - s
+        - r
+        - q
+        - p
+        - o
+        - "n"
+        - m
+        - l
+        - k
+        - j
+        - i
+        - h
+        - g
+        - f
+        - e
+        - d
+        - c
+        - b
+        - a
+        - a
+        - b
+        - c
+        - d
+    out: a
+  - name: stress_full_alphabet_chain
+    in:
+      words:
+        - a
+        - ab
+        - abc
+        - abcd
+        - abcde
+        - abcdef
+        - abcdefg
+        - abcdefgh
+        - abcdefghi
+        - abcdefghij
+        - abcdefghijk
+        - abcdefghijkl
+        - abcdefghijklm
+        - abcdefghijklmn
+        - abcdefghijklmno
+        - abcdefghijklmnop
+        - abcdefghijklmnopq
+        - abcdefghijklmnopqr
+        - abcdefghijklmnopqrs
+        - abcdefghijklmnopqrst
+        - abcdefghijklmnopqrstu
+        - abcdefghijklmnopqrstuv
+        - abcdefghijklmnopqrstuvw
+        - abcdefghijklmnopqrstuvwx
+        - abcdefghijklmnopqrstuvwxy
+        - abcdefghijklmnopqrstuvwxyz
+        - banana
+        - apply
+        - world
+    out: abcdefghijklmnopqrstuvwxyz
+  - name: stress_branching_competitors
+    in:
+      words:
+        - a
+        - ap
+        - app
+        - appl
+        - apple
+        - apply
+        - b
+        - ba
+        - ban
+        - bana
+        - banan
+        - banana
+        - c
+        - ca
+        - cat
+        - cats
+        - cater
+    out: banana
+  - name: stress_missing_last_prefix
+    in:
+      words:
+        - a
+        - ab
+        - abc
+        - abcd
+        - abcde
+        - abcdef
+        - abcdefg
+        - abcdefgh
+        - abcdefghi
+        - abcdefghij
+        - abcdefghijk
+        - abcdefghijkl
+        - abcdefghijklm
+        - abcdefghijklmn
+        - abcdefghijklmno
+        - abcdefghijklmnop
+        - abcdefghijklmnopq
+        - abcdefghijklmnopqr
+        - abcdefghijklmnopqrs
+        - abcdefghijklmnopqrst
+        - abcdefghijklmnopqrstu
+        - abcdefghijklmnopqrstuv
+        - abcdefghijklmnopqrstuvw
+        - abcdefghijklmnopqrstuvwx
+        - abcdefghijklmnopqrstuvwxy
+        - abcdefghijklmnopqrstuvwxyz
+        - abcdefghijklmnopqrstuvwxyzq
+    out: abcdefghijklmnopqrstuvwxyzq
+  - name: stress_long_z_chain
+    in:
+      words:
+        - z
+        - zz
+        - zzz
+        - zzzz
+        - zzzzz
+        - zzzzzz
+        - zzzzzzz
+        - zzzzzzzz
+        - zzzzzzzzz
+        - zzzzzzzzzz
+        - zzzzzzzzzzz
+        - zzzzzzzzzzzz
+        - zzzzzzzzzzzzz
+        - zzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+        - zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+        - a
+        - az
+        - aza
+    out: zzzzzzzzzzzzzzzzzzzzzzzzzz

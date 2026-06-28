@@ -1,0 +1,373 @@
+entry:
+  id: 648
+  title: replace-words
+  params:
+    dictionary:
+      type: array
+      items:
+        type: string
+    sentence:
+      type: string
+  call:
+    cpp: "Solution().replaceWords({dictionary}, {sentence})"
+    rust: "Solution::replace_words({dictionary}, {sentence})"
+    python3: "Solution().replaceWords({dictionary}, {sentence})"
+    python2: "Solution().replaceWords({dictionary}, {sentence})"
+    ruby: "replace_words({dictionary}, {sentence})"
+    java: "new Solution().replaceWords({dictionary}, {sentence})"
+    csharp: "new Solution().ReplaceWords({dictionary}, {sentence})"
+    kotlin: "Solution().replaceWords({dictionary}, {sentence})"
+    go: "replaceWords({dictionary}, {sentence})"
+    dart: "Solution().replaceWords({dictionary}, {sentence})"
+    swift: "Solution().replaceWords({dictionary}, {sentence})"
+    typescript: "replaceWords({dictionary}, {sentence})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().replaceWords(dictionary, sentence, {result})"
+    checker: |
+      class Checker:
+          def _replace(self, dictionary, sentence):
+              trie = {}
+              end = "*"
+              for word in dictionary:
+                  node = trie
+                  for ch in word:
+                      if ch not in node:
+                          node[ch] = {}
+                      node = node[ch]
+                  node[end] = True
+              out = []
+              for word in sentence.split(" "):
+                  node = trie
+                  rep = word
+                  for i, ch in enumerate(word):
+                      if end in node:
+                          rep = word[:i]
+                          break
+                      if ch not in node:
+                          break
+                      node = node[ch]
+                  else:
+                      if end in node:
+                          rep = word
+                  out.append(rep)
+              return " ".join(out)
+
+          def replaceWords(self, dictionary, sentence, result):
+              return self._replace(dictionary, sentence) == result
+seed: 648
+tests:
+  - name: example-1
+    in:
+      dictionary:
+        - cat
+        - bat
+        - rat
+      sentence: the cattle was rattled by the battery
+    out: the cat was rat by the bat
+  - name: example-2
+    in:
+      dictionary:
+        - a
+        - b
+        - c
+      sentence: aadsfasf absbs bbab cadsfafs
+    out: a a b c
+  - name: single-root-all-match
+    in:
+      dictionary:
+        - a
+      sentence: a aa aaa aaaa
+    out: a a a a
+  - name: no-replacement
+    in:
+      dictionary:
+        - xyz
+        - qqq
+      sentence: alpha beta gamma
+    out: alpha beta gamma
+  - name: shortest-root-wins
+    in:
+      dictionary:
+        - abc
+        - ab
+        - a
+      sentence: abcde abacus aaaaa
+    out: a a a
+  - name: duplicate-roots
+    in:
+      dictionary:
+        - car
+        - car
+        - carpet
+      sentence: car carpets carpenter
+    out: car car car
+  - name: root-equals-word
+    in:
+      dictionary:
+        - help
+        - helpful
+      sentence: help helpful helped
+    out: help help help
+  - name: mixed-replacements
+    in:
+      dictionary:
+        - run
+        - walk
+        - talk
+      sentence: running walked talkative runner walk talk
+    out: run walk talk run walk talk
+  - name: prefix-chain
+    in:
+      dictionary:
+        - c
+        - ca
+        - cat
+        - cattle
+      sentence: cattle cat catch cater
+    out: c c c c
+  - name: repeated-words
+    in:
+      dictionary:
+        - blue
+        - bl
+      sentence: bluebird bluebird bluebird bluebird
+    out: bl bl bl bl
+  - name: single-letter-mixed
+    in:
+      dictionary:
+        - a
+        - m
+        - z
+      sentence: apple mango zebra dog
+    out: a m z dog
+  - name: no-root-prefix
+    in:
+      dictionary:
+        - abc
+        - def
+      sentence: ab ac ad ae
+    out: ab ac ad ae
+  - name: long-word-match
+    in:
+      dictionary:
+        - supercalifragilistic
+        - super
+      sentence: supercalifragilisticexpialidocious superstructure super
+    out: super super super
+  - name: long-word-no-match
+    in:
+      dictionary:
+        - orange
+        - apple
+      sentence: bananas strawberries watermelons
+    out: bananas strawberries watermelons
+  - name: multiple-shortest-choice
+    in:
+      dictionary:
+        - pre
+        - prefix
+        - preform
+        - press
+      sentence: prefixing preformed pressing preview
+    out: pre pre pre pre
+  - name: root-at-first-char
+    in:
+      dictionary:
+        - x
+        - xy
+        - xyz
+      sentence: xyzzy xylophone xray
+    out: x x x
+  - name: punctuation-free-mass
+    in:
+      dictionary:
+        - red
+        - green
+        - blue
+      sentence: redgreen bluegreen greenblue bluered
+    out: red blue green blue
+  - name: mixed-short-roots
+    in:
+      dictionary:
+        - do
+        - dog
+        - dot
+      sentence: doggedly dotted doing done
+    out: do do do do
+  - name: exact-root-in-sentence
+    in:
+      dictionary:
+        - moon
+        - sun
+      sentence: moon sun moonlight sunlight
+    out: moon sun moon sun
+  - name: multiple-spaces-none
+    in:
+      dictionary:
+        - he
+        - her
+      sentence: hello help hero herb
+    out: he he he he
+  - name: small-prefix-variety
+    in:
+      dictionary:
+        - car
+        - cart
+        - care
+      sentence: career carpenter cartwheel car care
+    out: car car car car car
+  - name: large-repeated-word-one
+    in:
+      dictionary:
+        - a
+        - aa
+        - aaa
+      sentence: aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa
+    out: a a a a a a a a a a
+  - name: large-repeated-word-two
+    in:
+      dictionary:
+        - z
+        - zz
+        - zzz
+      sentence: zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz zzzzzzzzzz
+    out: z z z z z z z z z z
+  - name: boundary-long-root
+    in:
+      dictionary:
+        - abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv
+        - abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr
+      sentence: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu
+    out: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr
+  - name: boundary-short-root
+    in:
+      dictionary:
+        - p
+        - pq
+        - pqr
+      sentence: ppppp qqqqq rrrrr
+    out: p qqqqq rrrrr
+  - name: varied-words-1
+    in:
+      dictionary:
+        - an
+        - ant
+        - anti
+      sentence: antic antler anatomy banana
+    out: an an an banana
+  - name: varied-words-2
+    in:
+      dictionary:
+        - fin
+        - fish
+      sentence: fishing finisher finish
+    out: fish fin fin
+  - name: varied-words-3
+    in:
+      dictionary:
+        - pro
+        - program
+        - progress
+      sentence: programming progress prologue prototype
+    out: pro pro pro pro
+  - name: varied-words-4
+    in:
+      dictionary:
+        - st
+        - sta
+        - star
+      sentence: starting stable stars
+    out: st st st
+  - name: varied-words-5
+    in:
+      dictionary:
+        - mi
+        - mid
+        - mind
+      sentence: midnight mindless missing mission
+    out: mi mi mi mi
+  - name: varied-words-6
+    in:
+      dictionary:
+        - top
+        - to
+      sentence: today tomorrow topical top
+    out: to to to to
+  - name: varied-words-7
+    in:
+      dictionary:
+        - un
+        - uni
+        - unit
+      sentence: unicode unique unit unify
+    out: un un un un
+  - name: varied-words-8
+    in:
+      dictionary:
+        - ca
+        - cab
+        - cane
+      sentence: cabin canary candle caress
+    out: ca ca ca ca
+  - name: varied-words-9
+    in:
+      dictionary:
+        - de
+        - del
+        - demo
+      sentence: delta develop demonstrate
+    out: de de de
+  - name: varied-words-10
+    in:
+      dictionary:
+        - re
+        - rep
+        - report
+      sentence: replay repeat report reported
+    out: re re re re
+  - name: varied-words-11
+    in:
+      dictionary:
+        - li
+        - lin
+        - link
+      sentence: linear linked linking listen
+    out: li li li li
+  - name: varied-words-12
+    in:
+      dictionary:
+        - go
+        - gol
+        - gold
+      sentence: golden goose golf
+    out: go go go
+  - name: varied-words-13
+    in:
+      dictionary:
+        - he
+        - her
+        - hero
+      sentence: helium heron heroic helper
+    out: he he he he
+  - name: varied-words-14
+    in:
+      dictionary:
+        - pa
+        - par
+        - park
+      sentence: parent parallel parked parade
+    out: pa pa pa pa
+  - name: varied-words-15
+    in:
+      dictionary:
+        - tr
+        - tra
+        - trap
+      sentence: travel train trapping transfer
+    out: tr tr tr tr

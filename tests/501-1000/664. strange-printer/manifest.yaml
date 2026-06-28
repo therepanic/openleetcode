@@ -1,0 +1,216 @@
+entry:
+  id: 664
+  title: strange-printer
+  params:
+    s:
+      type: string
+  call:
+    cpp: Solution().strangePrinter({s})
+    rust: Solution::strange_printer({s})
+    python3: Solution().strangePrinter({s})
+    python2: Solution().strangePrinter({s})
+    ruby: strange_printer({s})
+    java: new Solution().strangePrinter({s})
+    csharp: new Solution().StrangePrinter({s})
+    kotlin: Solution().strangePrinter({s})
+    go: strangePrinter({s})
+    dart: Solution().strangePrinter({s})
+    swift: Solution().strangePrinter({s})
+    typescript: strangePrinter({s})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().strangePrinter({s}, {result})
+    checker: |
+      class Checker:
+          def strangePrinter(self, s, result):
+              if not isinstance(result, int):
+                  return False
+              if result < 1:
+                  return False
+              n = len(s)
+              if n == 0:
+                  return result == 0
+              t = []
+              for ch in s:
+                  if not t or t[-1] != ch:
+                      t.append(ch)
+              m = len(t)
+              dp = [[0] * m for _ in range(m)]
+              for i in range(m):
+                  dp[i][i] = 1
+              for length in range(2, m + 1):
+                  for i in range(m - length + 1):
+                      j = i + length - 1
+                      best = dp[i][j - 1] + 1
+                      for k in range(i, j):
+                          if t[k] == t[j]:
+                              left = dp[i][k]
+                              mid = 0 if k + 1 > j - 1 else dp[k + 1][j - 1]
+                              cand = left + mid
+                              if cand < best:
+                                  best = cand
+                      dp[i][j] = best
+              return result == dp[0][m - 1]
+seed: 664
+tests:
+  - name: single_a
+    in:
+      s: a
+    out: 1
+  - name: double_same
+    in:
+      s: aa
+    out: 1
+  - name: double_diff
+    in:
+      s: ab
+    out: 2
+  - name: aba
+    in:
+      s: aba
+    out: 2
+  - name: abc
+    in:
+      s: abc
+    out: 3
+  - name: abba
+    in:
+      s: abba
+    out: 2
+  - name: aaabbb
+    in:
+      s: aaabbb
+    out: 2
+  - name: abab
+    in:
+      s: abab
+    out: 3
+  - name: aabbaa
+    in:
+      s: aabbaa
+    out: 2
+  - name: abcabc
+    in:
+      s: abcabc
+    out: 5
+  - name: zzzz
+    in:
+      s: zzzz
+    out: 1
+  - name: azazaz
+    in:
+      s: azazaz
+    out: 4
+  - name: abcba
+    in:
+      s: abcba
+    out: 3
+  - name: abca
+    in:
+      s: abca
+    out: 3
+  - name: aabbcc
+    in:
+      s: aabbcc
+    out: 3
+  - name: bacab
+    in:
+      s: bacab
+    out: 3
+  - name: leetcode
+    in:
+      s: leetcode
+    out: 6
+  - name: ten_as
+    in:
+      s: aaaaaaaaaa
+    out: 1
+  - name: ten_bs
+    in:
+      s: bbbbbbbbbb
+    out: 1
+  - name: ten_alternating
+    in:
+      s: ababababab
+    out: 6
+  - name: repeated_abc
+    in:
+      s: abcabcabcabc
+    out: 9
+  - name: aaabbaaa
+    in:
+      s: aaabbaaa
+    out: 2
+  - name: baab
+    in:
+      s: baab
+    out: 2
+  - name: cabac
+    in:
+      s: cabac
+    out: 3
+  - name: abcdabcd
+    in:
+      s: abcdabcd
+    out: 7
+  - name: aabbbaaa
+    in:
+      s: aabbbaaa
+    out: 2
+  - name: aaaabaaa
+    in:
+      s: aaaabaaa
+    out: 2
+  - name: qwerty
+    in:
+      s: qwerty
+    out: 6
+  - name: xxyyzzxxyyzz
+    in:
+      s: xxyyzzxxyyzz
+    out: 5
+  - name: single_c
+    in:
+      s: c
+    out: 1
+  - name: long_blocked
+    in:
+      s: aaaaabbbbbccccc
+    out: 3
+  - name: all_unique_16
+    in:
+      s: abcdefghijklmnop
+    out: 16
+  - name: repeated_abba
+    in:
+      s: abbaabbaabba
+    out: 4
+  - name: repeated_zzxy
+    in:
+      s: zzxyzzxyzzxy
+    out: 7
+  - name: hundred_as
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: 1
+  - name: hundred_alternating
+    in:
+      s: abababababababababababababababababababababababababababababababababababababababababababababababababab
+    out: 51
+  - name: hundred_repeated_abc
+    in:
+      s: abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabca
+    out: 67
+  - name: long_three_blocks
+    in:
+      s: aaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbb
+    out: 3
+  - name: long_repeated_abca
+    in:
+      s: abcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabcaabca
+    out: 51

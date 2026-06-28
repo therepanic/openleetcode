@@ -1,0 +1,236 @@
+entry:
+  id: 712
+  title: minimum-ascii-delete-sum-for-two-strings
+  params:
+    s1:
+      type: string
+    s2:
+      type: string
+  call:
+    cpp: Solution().minimumDeleteSum({s1}, {s2})
+    rust: Solution::minimum_delete_sum({s1}, {s2})
+    python3: Solution().minimumDeleteSum({s1}, {s2})
+    python2: Solution().minimumDeleteSum({s1}, {s2})
+    ruby: minimum_delete_sum({s1}, {s2})
+    java: new Solution().minimumDeleteSum({s1}, {s2})
+    csharp: new Solution().MinimumDeleteSum({s1}, {s2})
+    kotlin: Solution().minimumDeleteSum({s1}, {s2})
+    go: minimumDeleteSum({s1}, {s2})
+    dart: Solution().minimumDeleteSum({s1}, {s2})
+    swift: Solution().minimumDeleteSum({s1}, {s2})
+    typescript: minimumDeleteSum({s1}, {s2})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().minimumDeleteSum({s1}, {s2}, {result})
+    checker: |
+      class Checker:
+          def minimumDeleteSum(self, s1, s2, result):
+              if not isinstance(result, int):
+                  return False
+              n, m = len(s1), len(s2)
+              dp = [[0] * (m + 1) for _ in range(n + 1)]
+              for i in range(n):
+                  for j in range(m):
+                      if s1[i] == s2[j]:
+                          dp[i + 1][j + 1] = dp[i][j] + ord(s1[i])
+                      else:
+                          dp[i + 1][j + 1] = max(dp[i][j + 1], dp[i + 1][j])
+              expected = sum(ord(c) for c in s1) + sum(ord(c) for c in s2) - 2 * dp[n][m]
+              return result == expected
+seed: 712
+tests:
+  - name: example_1
+    in:
+      s1: sea
+      s2: eat
+    out: 231
+  - name: example_2
+    in:
+      s1: delete
+      s2: leet
+    out: 403
+  - name: both_single_same
+    in:
+      s1: a
+      s2: a
+    out: 0
+  - name: both_single_diff
+    in:
+      s1: a
+      s2: b
+    out: 195
+  - name: one_char_vs_longer
+    in:
+      s1: a
+      s2: abc
+    out: 197
+  - name: identical_word
+    in:
+      s1: abcde
+      s2: abcde
+    out: 0
+  - name: completely_disjoint_short
+    in:
+      s1: abc
+      s2: def
+    out: 597
+  - name: one_empty_like_not_allowed
+    in:
+      s1: zz
+      s2: z
+    out: 122
+  - name: subsequence_case_1
+    in:
+      s1: abc
+      s2: ac
+    out: 98
+  - name: subsequence_case_2
+    in:
+      s1: abcd
+      s2: bd
+    out: 196
+  - name: repeated_chars_same
+    in:
+      s1: aaaa
+      s2: aaaa
+    out: 0
+  - name: repeated_chars_partial
+    in:
+      s1: aaaa
+      s2: aa
+    out: 194
+  - name: repeated_chars_disjoint
+    in:
+      s1: aaaa
+      s2: bbbb
+    out: 780
+  - name: overlapping_multiset
+    in:
+      s1: aabcc
+      s2: adcaa
+    out: 588
+  - name: example_like_prefix_suffix
+    in:
+      s1: xsea
+      s2: seat
+    out: 236
+  - name: long_common_prefix
+    in:
+      s1: abcdef
+      s2: abcxyz
+    out: 666
+  - name: long_common_suffix
+    in:
+      s1: zzzabc
+      s2: yyyabc
+    out: 729
+  - name: alternating_small
+    in:
+      s1: abab
+      s2: baba
+    out: 194
+  - name: order_matters_1
+    in:
+      s1: park
+      s2: spark
+    out: 115
+  - name: order_matters_2
+    in:
+      s1: abcxyz
+      s2: xaybzc
+    out: 588
+  - name: near_max_identical_1
+    in:
+      s1: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      s2: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: 0
+  - name: near_max_disjoint_1
+    in:
+      s1: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      s2: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    out: 19500
+  - name: near_max_identical_2
+    in:
+      s1: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+      s2: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+    out: 0
+  - name: near_max_disjoint_2
+    in:
+      s1: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+      s2: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    out: 21900
+  - name: prefix_trim
+    in:
+      s1: abcdefgh
+      s2: abcdef
+    out: 207
+  - name: suffix_trim
+    in:
+      s1: mnopqr
+      s2: opqr
+    out: 219
+  - name: mixed_repeats_1
+    in:
+      s1: banana
+      s2: ananas
+    out: 213
+  - name: mixed_repeats_2
+    in:
+      s1: mississippi
+      s2: imiss
+    out: 874
+  - name: mixed_repeats_3
+    in:
+      s1: character
+      s2: charter
+    out: 196
+  - name: mixed_repeats_4
+    in:
+      s1: algorithm
+      s2: logarithm
+    out: 400
+  - name: short_shuffle_1
+    in:
+      s1: azby
+      s2: byaz
+    out: 438
+  - name: short_shuffle_2
+    in:
+      s1: abcd
+      s2: cadb
+    out: 390
+  - name: distinct_lengths_1
+    in:
+      s1: qwerty
+      s2: qwert
+    out: 121
+  - name: distinct_lengths_2
+    in:
+      s1: hello
+      s2: yellow
+    out: 344
+  - name: all_same_letter_short
+    in:
+      s1: ccc
+      s2: cc
+    out: 99
+  - name: all_same_letter_long
+    in:
+      s1: cccccccccc
+      s2: ccccc
+    out: 495
+  - name: close_strings_1
+    in:
+      s1: kitten
+      s2: sitting
+    out: 531
+  - name: close_strings_2
+    in:
+      s1: sunday
+      s2: saturday
+    out: 437

@@ -1,0 +1,35 @@
+class Solution(object):
+    def replaceWords(self, dictionary, sentence):
+        """
+        :type dictionary: List[str]
+        :type sentence: str
+        :rtype: str
+        """
+        trie = {'*': False}
+        arr = sentence.split(" ")
+        
+        def add_in_trie(trie, word):
+            n = trie
+            for letter in word:
+                if letter not in n:
+                    n[letter] = {'*': False}
+                n = n[letter]
+            n['*'] = True
+        
+        def get_replacement(trie, word):
+            n = trie
+            for i in range(len(word)):
+                if n['*']:
+                    return word[0:i]
+                if word[i] not in n:
+                    break
+                n = n[word[i]]
+            return word
+        
+        for word in dictionary:
+            add_in_trie(trie, word)
+        
+        for i in range(len(arr)):
+            arr[i] = get_replacement(trie, arr[i])
+        
+        return " ".join(arr)

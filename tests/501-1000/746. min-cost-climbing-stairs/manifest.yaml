@@ -1,0 +1,298 @@
+entry:
+  id: 746
+  title: min-cost-climbing-stairs
+  params:
+    cost:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minCostClimbingStairs({cost})"
+    rust: "Solution::min_cost_climbing_stairs({cost})"
+    python3: "Solution().minCostClimbingStairs({cost})"
+    python2: "Solution().minCostClimbingStairs({cost})"
+    ruby: "min_cost_climbing_stairs({cost})"
+    java: "new Solution().minCostClimbingStairs({cost})"
+    csharp: "new Solution().MinCostClimbingStairs({cost})"
+    kotlin: "Solution().minCostClimbingStairs({cost})"
+    go: "minCostClimbingStairs({cost})"
+    dart: "Solution().minCostClimbingStairs({cost})"
+    swift: "Solution().minCostClimbingStairs({cost})"
+    typescript: "minCostClimbingStairs({cost})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minCostClimbingStairs(cost, {result})"
+    checker: |
+      class Checker:
+          def _expected(self, arr):
+              prev2 = 0
+              prev1 = 0
+              for value in arr:
+                  prev2, prev1 = prev1, min(prev1, prev2) + value
+              return min(prev1, prev2)
+
+          def _valid_cost(self, arr):
+              return (
+                  isinstance(arr, list)
+                  and 2 <= len(arr) <= 1000
+                  and all(isinstance(x, int) and 0 <= x <= 999 for x in arr)
+              )
+
+          def _recover_original(self, arr):
+              if not isinstance(arr, list):
+                  return None
+              if len(arr) < 3 or len(arr) > 1001:
+                  return None
+              if any((not isinstance(x, int)) or x < 0 for x in arr):
+                  return None
+              if arr[-1] != 0:
+                  return None
+
+              original_len = len(arr) - 1
+              original = [0] * original_len
+              if arr[original_len - 1] > 999 or arr[original_len - 2] > 999:
+                  return None
+
+              original[original_len - 2] = arr[original_len - 2]
+              original[original_len - 1] = arr[original_len - 1]
+
+              for i in range(original_len - 3, -1, -1):
+                  value = arr[i] - min(arr[i + 1], arr[i + 2])
+                  if value < 0 or value > 999:
+                      return None
+                  original[i] = value
+
+              replay = original[:] + [0]
+              for i in range(len(replay) - 4, -1, -1):
+                  replay[i] += min(replay[i + 1], replay[i + 2])
+              if replay != arr:
+                  return None
+
+              return original
+
+          def minCostClimbingStairs(self, cost, result):
+              if not isinstance(result, int):
+                  return False
+              if not isinstance(cost, list):
+                  return False
+
+              candidates = []
+              if self._valid_cost(cost):
+                  candidates.append(cost)
+
+              recovered = self._recover_original(cost)
+              if recovered is not None:
+                  candidates.append(recovered)
+
+              if not candidates:
+                  return False
+
+              return any(result == self._expected(candidate) for candidate in candidates)
+seed: 746
+tests:
+  - name: example_1
+    in:
+      cost: [10, 15, 20]
+    out: 15
+  - name: example_2
+    in:
+      cost: [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+    out: 6
+  - name: two_zero_steps
+    in:
+      cost: [0, 0]
+    out: 0
+  - name: two_different_steps
+    in:
+      cost: [5, 7]
+    out: 5
+  - name: two_with_zero_second
+    in:
+      cost: [8, 0]
+    out: 0
+  - name: all_zeroes_short
+    in:
+      cost: [0, 0, 0, 0]
+    out: 0
+  - name: all_same_small
+    in:
+      cost: [5, 5, 5]
+    out: 5
+  - name: all_same_even
+    in:
+      cost: [7, 7, 7, 7]
+    out: 14
+  - name: increasing_small
+    in:
+      cost: [1, 2, 3, 4, 5]
+    out: 6
+  - name: decreasing_small
+    in:
+      cost: [5, 4, 3, 2, 1]
+    out: 6
+  - name: alternating_easy
+    in:
+      cost: [1, 100, 1, 100, 1, 100]
+    out: 3
+  - name: alternating_reverse
+    in:
+      cost: [100, 1, 100, 1, 100, 1]
+    out: 3
+  - name: needs_last_step
+    in:
+      cost: [9, 1, 9, 1, 9]
+    out: 2
+  - name: prefer_single_jump_chain
+    in:
+      cost: [2, 1, 2, 1, 2, 1]
+    out: 3
+  - name: prefer_double_jump_chain
+    in:
+      cost: [1, 2, 1, 2, 1, 2]
+    out: 3
+  - name: with_internal_zeroes
+    in:
+      cost: [3, 0, 3, 0, 3]
+    out: 0
+  - name: zero_at_end
+    in:
+      cost: [4, 9, 2, 0]
+    out: 6
+  - name: zero_at_start
+    in:
+      cost: [0, 9, 2, 9]
+    out: 2
+  - name: mixed_mid_values
+    in:
+      cost: [8, 3, 4, 9, 2, 7]
+    out: 9
+  - name: longer_example_like
+    in:
+      cost: [1, 100, 1, 1, 100, 1, 1, 100, 1, 1]
+    out: 6
+  - name: near_upper_small
+    in:
+      cost: [999, 998, 997]
+    out: 998
+  - name: upper_alternating
+    in:
+      cost: [999, 0, 999, 0, 999, 0]
+    out: 0
+  - name: upper_dense
+    in:
+      cost: [999, 999, 1, 999, 999, 1]
+    out: 1999
+  - name: greedy_trap
+    in:
+      cost: [10, 15, 20, 1]
+    out: 16
+  - name: greedy_trap_2
+    in:
+      cost: [1, 2, 99, 2]
+    out: 4
+  - name: odd_length_plateau
+    in:
+      cost: [6, 6, 6, 6, 6]
+    out: 12
+  - name: even_length_plateau
+    in:
+      cost: [6, 6, 6, 6, 6, 6]
+    out: 18
+  - name: boundary_len_two_high
+    in:
+      cost: [999, 999]
+    out: 999
+  - name: boundary_len_two_mix
+    in:
+      cost: [0, 999]
+    out: 0
+  - name: sparse_zero_choices
+    in:
+      cost: [0, 5, 0, 5, 0, 5, 0]
+    out: 0
+  - name: high_low_mix
+    in:
+      cost: [999, 1, 999, 1, 999, 1, 999]
+    out: 3
+  - name: clustered_lows
+    in:
+      cost: [8, 8, 1, 1, 8, 8]
+    out: 17
+  - name: late_cheaper_path
+    in:
+      cost: [5, 100, 100, 1, 1, 1]
+    out: 102
+  - name: zigzag_medium
+    in:
+      cost: [3, 6, 1, 8, 2, 9, 4]
+    out: 10
+  - name: generated_len_8_full_range
+    seed: 101
+    in:
+      cost:
+        gen: array
+        len: 8
+        of:
+          gen: int
+          min: 0
+          max: 999
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_31_low_band
+    seed: 102
+    in:
+      cost:
+        gen: array
+        len: 31
+        of:
+          gen: int
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_128_mid_band
+    seed: 103
+    in:
+      cost:
+        gen: array
+        len: 128
+        of:
+          gen: int
+          min: 100
+          max: 900
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_999_upper_band
+    seed: 104
+    in:
+      cost:
+        gen: array
+        len: 999
+        of:
+          gen: int
+          min: 900
+          max: 999
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_1000_full_range
+    seed: 105
+    in:
+      cost:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: 0
+          max: 999
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,0 +1,500 @@
+entry:
+  id: 687
+  title: longest-univalue-path
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: Solution().longestUnivaluePath({root})
+    rust: Solution::longest_univalue_path({root})
+    python3: Solution().longestUnivaluePath({root})
+    python2: Solution().longestUnivaluePath({root})
+    ruby: longest_univalue_path({root})
+    java: new Solution().longestUnivaluePath({root})
+    csharp: new Solution().LongestUnivaluePath({root})
+    kotlin: Solution().longestUnivaluePath({root})
+    go: longestUnivaluePath({root})
+    dart: Solution().longestUnivaluePath({root})
+    swift: Solution().longestUnivaluePath({root})
+    typescript: longestUnivaluePath({root})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().longestUnivaluePath(root, {result})
+    checker: |
+      class Checker:
+          class _Node:
+              __slots__ = ("val", "left", "right")
+
+              def __init__(self, val=0, left=None, right=None):
+                  self.val = val
+                  self.left = left
+                  self.right = right
+
+          def _build(self, root):
+              if root is None:
+                  return None
+              if hasattr(root, "val"):
+                  return root
+              if not isinstance(root, list) or not root:
+                  return None
+              it = iter(root)
+              first = next(it, None)
+              if first is None:
+                  return None
+              head = self._Node(first)
+              queue = [head]
+              for node in queue:
+                  left = next(it, None)
+                  if left is not None:
+                      node.left = self._Node(left)
+                      queue.append(node.left)
+                  right = next(it, None)
+                  if right is not None:
+                      node.right = self._Node(right)
+                      queue.append(node.right)
+              return head
+
+          def longestUnivaluePath(self, root, result):
+              root = self._build(root)
+
+              ans = 0
+
+              def dfs(node):
+                  nonlocal ans
+                  if node is None:
+                      return 0
+                  left = dfs(node.left)
+                  right = dfs(node.right)
+                  lp = 0
+                  rp = 0
+                  if node.left is not None and node.left.val == node.val:
+                      lp = left + 1
+                  if node.right is not None and node.right.val == node.val:
+                      rp = right + 1
+                  if lp + rp > ans:
+                      ans = lp + rp
+                  return lp if lp > rp else rp
+
+              dfs(root)
+              return isinstance(result, int) and result == ans
+seed: 687
+tests:
+  - name: example_1
+    in:
+      root:
+        - 5
+        - 4
+        - 5
+        - 1
+        - 1
+        - null
+        - 5
+    out: 2
+  - name: example_2
+    in:
+      root:
+        - 1
+        - 4
+        - 5
+        - 4
+        - 4
+        - null
+        - 5
+    out: 2
+  - name: empty_tree
+    in:
+      root: null
+    out: 0
+  - name: single_node
+    in:
+      root:
+        - 7
+    out: 0
+  - name: two_same_left
+    in:
+      root:
+        - 1
+        - 1
+    out: 1
+  - name: two_same_right
+    in:
+      root:
+        - 1
+        - null
+        - 1
+    out: 1
+  - name: two_different
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+    out: 0
+  - name: chain_three_same
+    in:
+      root:
+        - 1
+        - 1
+        - null
+        - 1
+    out: 2
+  - name: chain_three_mixed
+    in:
+      root:
+        - 1
+        - 1
+        - null
+        - 2
+    out: 1
+  - name: balanced_same_three_levels
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 4
+  - name: root_breaks_path
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 1
+        - 1
+    out: 4
+  - name: left_subtree_longer
+    in:
+      root:
+        - 5
+        - 5
+        - 1
+        - 5
+        - 5
+        - null
+        - 1
+        - 5
+        - null
+        - null
+        - 5
+    out: 4
+  - name: right_subtree_longer
+    in:
+      root:
+        - 2
+        - 1
+        - 2
+        - null
+        - null
+        - 2
+        - 2
+        - null
+        - null
+        - 2
+        - 2
+    out: 3
+  - name: all_distinct_complete
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    out: 0
+  - name: deeper_left_chain
+    in:
+      root:
+        - 1
+        - 1
+        - null
+        - 1
+        - null
+        - 1
+    out: 3
+  - name: deeper_right_chain
+    in:
+      root:
+        - 1
+        - null
+        - 1
+        - null
+        - 1
+        - null
+        - 1
+    out: 3
+  - name: mixed_with_root_not_included
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 2
+        - 2
+        - 1
+        - 1
+        - null
+        - null
+        - 2
+        - 2
+        - null
+        - null
+        - 1
+    out: 6
+  - name: long_right_spine_same
+    in:
+      root:
+        - 4
+        - null
+        - 4
+        - null
+        - 4
+        - null
+        - 4
+        - null
+        - 4
+    out: 4
+  - name: long_left_spine_same
+    in:
+      root:
+        - 4
+        - 4
+        - null
+        - 4
+        - null
+        - 4
+        - null
+        - 4
+    out: 4
+  - name: root_and_children_same
+    in:
+      root:
+        - 9
+        - 9
+        - 9
+    out: 2
+  - name: one_side_match
+    in:
+      root:
+        - 8
+        - 8
+        - 7
+        - 8
+        - 8
+        - 7
+        - 7
+    out: 2
+  - name: no_match_with_duplicates_elsewhere
+    in:
+      root:
+        - 1
+        - 2
+        - 2
+        - 2
+        - 3
+        - 2
+        - 4
+    out: 1
+  - name: alternating_levels
+    in:
+      root:
+        - 1
+        - 1
+        - 2
+        - 1
+        - 2
+        - 2
+        - 1
+    out: 2
+  - name: full_same_height_four
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+    out: 6
+  - name: asymmetric_bridge
+    in:
+      root:
+        - 3
+        - 3
+        - 3
+        - 3
+        - null
+        - null
+        - 3
+        - 3
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 3
+        - 3
+    out: 5
+  - name: center_breaks_long_path
+    in:
+      root:
+        - 6
+        - 6
+        - 6
+        - 6
+        - 7
+        - 6
+        - 6
+        - 6
+        - null
+        - null
+        - 7
+        - 6
+        - 6
+        - null
+        - null
+    out: 6
+  - name: isolated_equal_pairs
+    in:
+      root:
+        - 5
+        - 5
+        - 5
+        - 1
+        - 1
+        - 2
+        - 2
+    out: 2
+  - name: root_single_branch_same
+    in:
+      root:
+        - 2
+        - 2
+        - null
+        - 2
+    out: 2
+  - name: root_single_branch_diff
+    in:
+      root:
+        - 2
+        - 2
+        - null
+        - 3
+    out: 1
+  - name: all_zeros
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    out: 4
+  - name: negative_values_same
+    in:
+      root:
+        - -1
+        - -1
+        - -1
+        - -1
+        - null
+        - null
+        - -1
+    out: 4
+  - name: negative_values_mixed
+    in:
+      root:
+        - -2
+        - -2
+        - 3
+        - -2
+        - -2
+        - 3
+        - 3
+    out: 2
+  - name: sparse_same_path
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - null
+        - 1
+        - null
+        - 1
+    out: 4
+  - name: path_in_right_subtree
+    in:
+      root:
+        - 10
+        - 11
+        - 10
+        - 11
+        - 11
+        - 10
+        - 10
+        - null
+        - null
+        - null
+        - null
+        - 10
+        - 10
+    out: 3
+  - name: path_crosses_subtree_root
+    in:
+      root:
+        - 4
+        - 4
+        - 4
+        - 4
+        - 4
+        - 4
+        - 5
+        - 4
+        - 4
+        - 4
+        - 4
+    out: 5
+  - name: wide_same_bottom
+    in:
+      root:
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - null
+        - null
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+        - 7
+    out: 6

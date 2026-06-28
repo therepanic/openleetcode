@@ -1,0 +1,991 @@
+entry:
+  id: 744
+  title: find-smallest-letter-greater-than-target
+  params:
+    letters:
+      type: array
+      items:
+        type: char
+    target:
+      type: char
+  call:
+    cpp: "Solution().nextGreatestLetter({letters}, {target})"
+    rust: "Solution::next_greatest_letter({letters}, {target})"
+    python3: "Solution().nextGreatestLetter({letters}, {target})"
+    python2: "Solution().nextGreatestLetter({letters}, {target})"
+    ruby: "next_greatest_letter({letters}, {target})"
+    java: "new Solution().nextGreatestLetter({letters}, {target})"
+    csharp: "new Solution().NextGreatestLetter({letters}, {target})"
+    kotlin: "Solution().nextGreatestLetter({letters}, {target})"
+    go: "string(nextGreatestLetter({letters}, {target}))"
+    dart: "Solution().nextGreatestLetter({letters}, {target})"
+    swift: "Solution().nextGreatestLetter({letters}, {target})"
+    typescript: "nextGreatestLetter({letters}, {target})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().nextGreatestLetter(letters, target, {result})"
+    checker: |
+      class Checker:
+          def nextGreatestLetter(self, letters, target, result):
+              if not isinstance(result, str) or len(result) != 1:
+                  return False
+              if not isinstance(letters, list) or len(letters) < 2:
+                  return False
+              prev = None
+              distinct = set()
+              for ch in letters:
+                  if not isinstance(ch, str) or len(ch) != 1:
+                      return False
+                  if prev is not None and ch < prev:
+                      return False
+                  prev = ch
+                  distinct.add(ch)
+              if len(distinct) < 2:
+                  return False
+              expected = letters[0]
+              for ch in letters:
+                  if ch > target:
+                      expected = ch
+                      break
+              return result == expected
+seed: 744
+tests:
+  - name: example-1
+    in:
+      letters: ["c", "f", "j"]
+      target: "a"
+    out: "c"
+  - name: example-2
+    in:
+      letters: ["c", "f", "j"]
+      target: "c"
+    out: "f"
+  - name: example-3
+    in:
+      letters: ["x", "x", "y", "y"]
+      target: "z"
+    out: "x"
+  - name: min-length-basic
+    in:
+      letters: ["a", "b"]
+      target: "a"
+    out: "b"
+  - name: min-length-wrap
+    in:
+      letters: ["a", "b"]
+      target: "z"
+    out: "a"
+  - name: target-before-all
+    in:
+      letters: ["d", "e"]
+      target: "c"
+    out: "d"
+  - name: target-equals-first
+    in:
+      letters: ["d", "e"]
+      target: "d"
+    out: "e"
+  - name: duplicates-next-block
+    in:
+      letters: ["c", "f", "f", "j"]
+      target: "f"
+    out: "j"
+  - name: duplicates-wrap-from-end
+    in:
+      letters: ["c", "f", "f", "j"]
+      target: "j"
+    out: "c"
+  - name: two-blocks-basic
+    in:
+      letters: ["a", "a", "b", "b"]
+      target: "a"
+    out: "b"
+  - name: two-blocks-wrap
+    in:
+      letters: ["a", "a", "b", "b"]
+      target: "b"
+    out: "a"
+  - name: target-middle-gap
+    in:
+      letters: ["a", "d", "h"]
+      target: "f"
+    out: "h"
+  - name: target-just-before-gap
+    in:
+      letters: ["a", "d", "h"]
+      target: "g"
+    out: "h"
+  - name: target-after-largest
+    in:
+      letters: ["a", "d", "h"]
+      target: "h"
+    out: "a"
+  - name: heavy-front-duplicates
+    in:
+      letters: ["a", "a", "a", "a", "m", "z"]
+      target: "a"
+    out: "m"
+  - name: heavy-middle-duplicates
+    in:
+      letters: ["a", "m", "m", "m", "z"]
+      target: "m"
+    out: "z"
+  - name: heavy-end-duplicates
+    in:
+      letters: ["a", "m", "z", "z", "z"]
+      target: "y"
+    out: "z"
+  - name: full-alphabet-middle
+    in:
+      letters:
+        [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "k",
+          "l",
+          "m",
+          "n",
+          "o",
+          "p",
+          "q",
+          "r",
+          "s",
+          "t",
+          "u",
+          "v",
+          "w",
+          "x",
+          "y",
+          "z",
+        ]
+      target: "m"
+    out: "n"
+  - name: full-alphabet-wrap
+    in:
+      letters:
+        [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "k",
+          "l",
+          "m",
+          "n",
+          "o",
+          "p",
+          "q",
+          "r",
+          "s",
+          "t",
+          "u",
+          "v",
+          "w",
+          "x",
+          "y",
+          "z",
+        ]
+      target: "z"
+    out: "a"
+  - name: only-two-values-high-target
+    in:
+      letters: ["a", "a", "a", "z", "z"]
+      target: "b"
+    out: "z"
+  - name: only-two-values-wrap
+    in:
+      letters: ["a", "a", "a", "z", "z"]
+      target: "z"
+    out: "a"
+  - name: boundary-target-x
+    in:
+      letters: ["x", "x", "y", "y"]
+      target: "x"
+    out: "y"
+  - name: boundary-target-y
+    in:
+      letters: ["x", "x", "y", "y"]
+      target: "y"
+    out: "x"
+  - name: immediate-successor-late
+    in:
+      letters: ["b", "d", "f", "h", "j"]
+      target: "i"
+    out: "j"
+  - name: target-before-first-duplicate
+    in:
+      letters: ["m", "m", "n", "n", "o", "o"]
+      target: "l"
+    out: "m"
+  - name: target-between-duplicate-blocks
+    in:
+      letters: ["m", "m", "n", "n", "o", "o"]
+      target: "m"
+    out: "n"
+  - name: target-last-duplicate-block
+    in:
+      letters: ["m", "m", "n", "n", "o", "o"]
+      target: "o"
+    out: "m"
+  - name: sparse-letters
+    in:
+      letters: ["b", "e", "k", "q"]
+      target: "p"
+    out: "q"
+  - name: sparse-wrap
+    in:
+      letters: ["b", "e", "k", "q"]
+      target: "q"
+    out: "b"
+  - name: larger-static-repeated-alphabet
+    in:
+      letters:
+        [
+          "a",
+          "a",
+          "a",
+          "a",
+          "b",
+          "b",
+          "b",
+          "b",
+          "c",
+          "c",
+          "c",
+          "c",
+          "d",
+          "d",
+          "d",
+          "d",
+          "e",
+          "e",
+          "e",
+          "e",
+          "f",
+          "f",
+          "f",
+          "f",
+          "g",
+          "g",
+          "g",
+          "g",
+          "h",
+          "h",
+          "h",
+          "h",
+          "i",
+          "i",
+          "i",
+          "i",
+          "j",
+          "j",
+          "j",
+          "j",
+          "k",
+          "k",
+          "k",
+          "k",
+          "l",
+          "l",
+          "l",
+          "l",
+          "m",
+          "m",
+          "m",
+          "m",
+          "n",
+          "n",
+          "n",
+          "n",
+          "o",
+          "o",
+          "o",
+          "o",
+          "p",
+          "p",
+          "p",
+          "p",
+          "q",
+          "q",
+          "q",
+          "q",
+          "r",
+          "r",
+          "r",
+          "r",
+          "s",
+          "s",
+          "s",
+          "s",
+          "t",
+          "t",
+          "t",
+          "t",
+          "u",
+          "u",
+          "u",
+          "u",
+          "v",
+          "v",
+          "v",
+          "v",
+          "w",
+          "w",
+          "w",
+          "w",
+          "x",
+          "x",
+          "x",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "z",
+          "z",
+          "z",
+          "z",
+        ]
+      target: "x"
+    out: "y"
+  - name: larger-static-ten-per-letter
+    in:
+      letters:
+        [
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "b",
+          "b",
+          "b",
+          "b",
+          "b",
+          "b",
+          "b",
+          "b",
+          "b",
+          "b",
+          "c",
+          "c",
+          "c",
+          "c",
+          "c",
+          "c",
+          "c",
+          "c",
+          "c",
+          "c",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "e",
+          "e",
+          "e",
+          "e",
+          "e",
+          "e",
+          "e",
+          "e",
+          "e",
+          "e",
+          "f",
+          "f",
+          "f",
+          "f",
+          "f",
+          "f",
+          "f",
+          "f",
+          "f",
+          "f",
+          "g",
+          "g",
+          "g",
+          "g",
+          "g",
+          "g",
+          "g",
+          "g",
+          "g",
+          "g",
+          "h",
+          "h",
+          "h",
+          "h",
+          "h",
+          "h",
+          "h",
+          "h",
+          "h",
+          "h",
+          "i",
+          "i",
+          "i",
+          "i",
+          "i",
+          "i",
+          "i",
+          "i",
+          "i",
+          "i",
+          "j",
+          "j",
+          "j",
+          "j",
+          "j",
+          "j",
+          "j",
+          "j",
+          "j",
+          "j",
+          "k",
+          "k",
+          "k",
+          "k",
+          "k",
+          "k",
+          "k",
+          "k",
+          "k",
+          "k",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l",
+          "m",
+          "m",
+          "m",
+          "m",
+          "m",
+          "m",
+          "m",
+          "m",
+          "m",
+          "m",
+          "n",
+          "n",
+          "n",
+          "n",
+          "n",
+          "n",
+          "n",
+          "n",
+          "n",
+          "n",
+          "o",
+          "o",
+          "o",
+          "o",
+          "o",
+          "o",
+          "o",
+          "o",
+          "o",
+          "o",
+          "p",
+          "p",
+          "p",
+          "p",
+          "p",
+          "p",
+          "p",
+          "p",
+          "p",
+          "p",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "r",
+          "r",
+          "r",
+          "r",
+          "r",
+          "r",
+          "r",
+          "r",
+          "r",
+          "r",
+          "s",
+          "s",
+          "s",
+          "s",
+          "s",
+          "s",
+          "s",
+          "s",
+          "s",
+          "s",
+          "t",
+          "t",
+          "t",
+          "t",
+          "t",
+          "t",
+          "t",
+          "t",
+          "t",
+          "t",
+          "u",
+          "u",
+          "u",
+          "u",
+          "u",
+          "u",
+          "u",
+          "u",
+          "u",
+          "u",
+          "v",
+          "v",
+          "v",
+          "v",
+          "v",
+          "v",
+          "v",
+          "v",
+          "v",
+          "v",
+          "w",
+          "w",
+          "w",
+          "w",
+          "w",
+          "w",
+          "w",
+          "w",
+          "w",
+          "w",
+          "x",
+          "x",
+          "x",
+          "x",
+          "x",
+          "x",
+          "x",
+          "x",
+          "x",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "z",
+          "z",
+          "z",
+          "z",
+          "z",
+          "z",
+          "z",
+          "z",
+          "z",
+          "z",
+        ]
+      target: "z"
+    out: "a"
+  - name: generated-distinct-2
+    seed: 1744
+    in:
+      letters:
+        gen: array
+        len: 2
+        of:
+          gen: char
+          variety:
+            [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m",
+              "n",
+              "o",
+              "p",
+              "q",
+              "r",
+              "s",
+              "t",
+              "u",
+              "v",
+              "w",
+              "x",
+              "y",
+              "z",
+            ]
+        distinct: true
+        sorted: true
+        elemType: char
+      target:
+        gen: char
+        variety:
+          [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "r",
+            "s",
+            "t",
+            "u",
+            "v",
+            "w",
+            "x",
+            "y",
+            "z",
+          ]
+  - name: generated-distinct-5
+    seed: 1745
+    in:
+      letters:
+        gen: array
+        len: 5
+        of:
+          gen: char
+          variety:
+            [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m",
+              "n",
+              "o",
+              "p",
+              "q",
+              "r",
+              "s",
+              "t",
+              "u",
+              "v",
+              "w",
+              "x",
+              "y",
+              "z",
+            ]
+        distinct: true
+        sorted: true
+        elemType: char
+      target:
+        gen: char
+        variety:
+          [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "r",
+            "s",
+            "t",
+            "u",
+            "v",
+            "w",
+            "x",
+            "y",
+            "z",
+          ]
+  - name: generated-distinct-13
+    seed: 1746
+    in:
+      letters:
+        gen: array
+        len: 13
+        of:
+          gen: char
+          variety:
+            [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m",
+              "n",
+              "o",
+              "p",
+              "q",
+              "r",
+              "s",
+              "t",
+              "u",
+              "v",
+              "w",
+              "x",
+              "y",
+              "z",
+            ]
+        distinct: true
+        sorted: true
+        elemType: char
+      target:
+        gen: char
+        variety:
+          [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "r",
+            "s",
+            "t",
+            "u",
+            "v",
+            "w",
+            "x",
+            "y",
+            "z",
+          ]
+  - name: generated-distinct-20
+    seed: 1747
+    in:
+      letters:
+        gen: array
+        len: 20
+        of:
+          gen: char
+          variety:
+            [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m",
+              "n",
+              "o",
+              "p",
+              "q",
+              "r",
+              "s",
+              "t",
+              "u",
+              "v",
+              "w",
+              "x",
+              "y",
+              "z",
+            ]
+        distinct: true
+        sorted: true
+        elemType: char
+      target:
+        gen: char
+        variety:
+          [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "r",
+            "s",
+            "t",
+            "u",
+            "v",
+            "w",
+            "x",
+            "y",
+            "z",
+          ]
+  - name: generated-distinct-26
+    seed: 1748
+    in:
+      letters:
+        gen: array
+        len: 26
+        of:
+          gen: char
+          variety:
+            [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m",
+              "n",
+              "o",
+              "p",
+              "q",
+              "r",
+              "s",
+              "t",
+              "u",
+              "v",
+              "w",
+              "x",
+              "y",
+              "z",
+            ]
+        distinct: true
+        sorted: true
+        elemType: char
+      target:
+        gen: char
+        variety:
+          [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "r",
+            "s",
+            "t",
+            "u",
+            "v",
+            "w",
+            "x",
+            "y",
+            "z",
+          ]

@@ -1,0 +1,396 @@
+entry:
+  id: 713
+  title: subarray-product-less-than-k
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: Solution().numSubarrayProductLessThanK({nums}, {k})
+    rust: Solution::num_subarray_product_less_than_k({nums}, {k})
+    python3: Solution().numSubarrayProductLessThanK({nums}, {k})
+    python2: Solution().numSubarrayProductLessThanK({nums}, {k})
+    ruby: num_subarray_product_less_than_k({nums}, {k})
+    java: new Solution().numSubarrayProductLessThanK({nums}, {k})
+    csharp: new Solution().NumSubarrayProductLessThanK({nums}, {k})
+    kotlin: Solution().numSubarrayProductLessThanK({nums}, {k})
+    go: numSubarrayProductLessThanK({nums}, {k})
+    dart: Solution().numSubarrayProductLessThanK({nums}, {k})
+    swift: Solution().numSubarrayProductLessThanK({nums}, {k})
+    typescript: numSubarrayProductLessThanK({nums}, {k})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().numSubarrayProductLessThanK(nums, k, {result})
+    checker: |
+      class Checker:
+          def numSubarrayProductLessThanK(self, nums, k, result):
+              if not isinstance(result, int):
+                  return False
+              if not isinstance(nums, list) or not isinstance(k, int):
+                  return False
+              if any(not isinstance(x, int) or x < 1 or x > 1000 for x in nums):
+                  return False
+              n = len(nums)
+              if not (1 <= n <= 30000):
+                  return False
+              if not (0 <= k <= 1000000):
+                  return False
+              if k <= 1:
+                  return result == 0
+              expected = 0
+              left = 0
+              product = 1
+              for right, value in enumerate(nums):
+                  product *= value
+                  while left <= right and product >= k:
+                      product //= nums[left]
+                      left += 1
+                  expected += right - left + 1
+              return result == expected
+seed: 713713
+tests:
+  - name: example_1
+    in:
+      nums:
+        - 10
+        - 5
+        - 2
+        - 6
+      k: 100
+    out: 8
+  - name: example_2
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+      k: 0
+    out: 0
+  - name: k_equals_one
+    in:
+      nums:
+        - 1
+      k: 1
+    out: 0
+  - name: single_small
+    in:
+      nums:
+        - 1
+      k: 2
+    out: 1
+  - name: single_equal_k
+    in:
+      nums:
+        - 5
+      k: 5
+    out: 0
+  - name: single_less_k
+    in:
+      nums:
+        - 5
+      k: 6
+    out: 1
+  - name: all_ones_small_k
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+      k: 2
+    out: 10
+  - name: all_ones_k_one
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+      k: 1
+    out: 0
+  - name: increasing_small
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+      k: 10
+    out: 7
+  - name: decreasing_small
+    in:
+      nums:
+        - 8
+        - 4
+        - 2
+      k: 9
+    out: 4
+  - name: all_equal
+    in:
+      nums:
+        - 2
+        - 2
+        - 2
+        - 2
+      k: 8
+    out: 7
+  - name: all_equal_strict
+    in:
+      nums:
+        - 2
+        - 2
+        - 2
+      k: 8
+    out: 5
+  - name: mixed_example_like
+    in:
+      nums:
+        - 10
+        - 5
+        - 2
+        - 6
+        - 1
+      k: 100
+    out: 12
+  - name: threshold_products
+    in:
+      nums:
+        - 3
+        - 3
+        - 3
+      k: 9
+    out: 3
+  - name: threshold_off_by_one
+    in:
+      nums:
+        - 3
+        - 3
+        - 3
+      k: 10
+    out: 5
+  - name: zero_result_large_k_boundary
+    in:
+      nums:
+        - 1000
+        - 1000
+        - 1000
+      k: 999
+    out: 0
+  - name: pair_over_k
+    in:
+      nums:
+        - 9
+        - 9
+      k: 81
+    out: 2
+  - name: pair_under_k
+    in:
+      nums:
+        - 9
+        - 9
+      k: 82
+    out: 3
+  - name: many_small_numbers
+    in:
+      nums:
+        - 1
+        - 2
+        - 1
+        - 2
+        - 1
+      k: 3
+    out: 11
+  - name: alternating_growth
+    in:
+      nums:
+        - 1
+        - 1000
+        - 1
+        - 1000
+        - 1
+      k: 1001
+    out: 11
+  - name: long_run_with_one_break
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 50
+        - 1
+        - 1
+      k: 50
+    out: 9
+  - name: large_elements_no_pairs
+    in:
+      nums:
+        - 1000
+        - 1000
+        - 1000
+        - 1000
+      k: 1000000
+    out: 4
+  - name: large_elements_exact_pair
+    in:
+      nums:
+        - 1000
+        - 1000
+        - 1000
+      k: 1000001
+    out: 5
+  - name: mixed_zeros_absent
+    in:
+      nums:
+        - 2
+        - 5
+        - 3
+        - 10
+        - 2
+        - 6
+      k: 30
+    out: 10
+  - name: prefix_heavy
+    in:
+      nums:
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+        - 2
+      k: 5
+    out: 11
+  - name: suffix_heavy
+    in:
+      nums:
+        - 100
+        - 1
+        - 1
+        - 1
+        - 1
+      k: 2
+    out: 10
+  - name: boundary_1000s
+    in:
+      nums:
+        - 1000
+        - 1
+        - 1000
+        - 1
+        - 1000
+      k: 1000
+    out: 2
+  - name: powers_of_two
+    in:
+      nums:
+        - 2
+        - 4
+        - 8
+        - 16
+      k: 33
+    out: 6
+  - name: powers_of_two_strict
+    in:
+      nums:
+        - 2
+        - 4
+        - 8
+        - 16
+      k: 32
+    out: 5
+  - name: two_segment
+    in:
+      nums:
+        - 1
+        - 1
+        - 1000
+        - 1
+        - 1
+      k: 1000
+    out: 6
+  - name: short_window
+    in:
+      nums:
+        - 7
+        - 2
+        - 1
+        - 4
+      k: 8
+    out: 6
+  - name: generated_long_ones
+    seed: 713001
+    in:
+      nums:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: int
+      k: 1000000
+  - name: generated_long_alt
+    seed: 713002
+    in:
+      nums:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+      k: 2
+  - name: generated_medium_high_k
+    seed: 713003
+    in:
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+      k: 1000000
+  - name: generated_medium_small_k
+    seed: 713004
+    in:
+      nums:
+        gen: array
+        len: 2000
+        of:
+          gen: int
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+      k: 3
+  - name: generated_all_twos
+    seed: 713005
+    in:
+      nums:
+        gen: array
+        len: 5000
+        of:
+          gen: int
+          min: 2
+          max: 2
+        distinct: false
+        sorted: false
+        elemType: int
+      k: 1024

@@ -1,0 +1,272 @@
+entry:
+  id: 740
+  title: delete-and-earn
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().deleteAndEarn({nums})"
+    rust: "Solution::delete_and_earn({nums})"
+    python3: "Solution().deleteAndEarn({nums})"
+    python2: "Solution().deleteAndEarn({nums})"
+    ruby: "delete_and_earn({nums})"
+    java: "new Solution().deleteAndEarn({nums})"
+    csharp: "new Solution().DeleteAndEarn({nums})"
+    kotlin: "Solution().deleteAndEarn({nums})"
+    go: "deleteAndEarn({nums})"
+    dart: "Solution().deleteAndEarn({nums})"
+    swift: "Solution().deleteAndEarn({nums})"
+    typescript: "deleteAndEarn({nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().deleteAndEarn(nums, {result})"
+    checker: |
+      class Checker:
+          def deleteAndEarn(self, nums, result):
+              if not isinstance(result, int):
+                  return False
+              if not isinstance(nums, list):
+                  return False
+              if len(nums) < 1 or len(nums) > 20000:
+                  return False
+              if any((not isinstance(x, int)) for x in nums):
+                  return False
+              if any(x < 1 or x > 10000 for x in nums):
+                  return False
+
+              points = [0] * (max(nums) + 1)
+              for num in nums:
+                  points[num] += num
+
+              take = 0
+              skip = 0
+              for value in points:
+                  new_take = skip + value
+                  new_skip = max(skip, take)
+                  take = new_take
+                  skip = new_skip
+
+              return result == max(take, skip)
+seed: 740
+tests:
+  - name: example_1
+    in:
+      nums: [3, 4, 2]
+    out: 6
+  - name: example_2
+    in:
+      nums: [2, 2, 3, 3, 3, 4]
+    out: 9
+  - name: single_min
+    in:
+      nums: [1]
+    out: 1
+  - name: single_max
+    in:
+      nums: [10000]
+    out: 10000
+  - name: all_same_small
+    in:
+      nums: [5, 5, 5]
+    out: 15
+  - name: all_same_large
+    in:
+      nums: [10000, 10000, 10000, 10000]
+    out: 40000
+  - name: adjacent_pair
+    in:
+      nums: [2, 3]
+    out: 3
+  - name: non_adjacent_pair
+    in:
+      nums: [2, 4]
+    out: 6
+  - name: choose_middle_block
+    in:
+      nums: [2, 2, 3, 3, 3, 4, 4]
+    out: 12
+  - name: gaps_chain
+    in:
+      nums: [1, 1, 3, 3, 5, 5]
+    out: 18
+  - name: consecutive_run
+    in:
+      nums: [1, 2, 3, 4, 5]
+    out: 9
+  - name: dense_duplicates
+    in:
+      nums: [1, 1, 1, 2, 2, 2, 3, 3, 3]
+    out: 12
+  - name: high_low_mix
+    in:
+      nums: [1, 1, 1, 9999, 10000, 10000]
+    out: 20003
+  - name: alternating_clusters
+    in:
+      nums: [8, 8, 9, 9, 10, 10]
+    out: 36
+  - name: skip_better_than_take
+    in:
+      nums: [4, 4, 5, 5, 5, 6]
+    out: 15
+  - name: scattered
+    in:
+      nums: [1, 4, 4, 5, 6, 6]
+    out: 21
+  - name: many_ones_and_twos
+    in:
+      nums: [1, 1, 1, 1, 2, 2, 2]
+    out: 6
+  - name: many_nines_and_tens
+    in:
+      nums: [9, 9, 10, 10, 10]
+    out: 30
+  - name: near_upper_adjacent
+    in:
+      nums: [9998, 9999, 9999, 10000]
+    out: 19998
+  - name: repeated_with_gap
+    in:
+      nums: [2, 2, 2, 4, 4, 4, 6, 6]
+    out: 30
+  - name: boundary_span
+    in:
+      nums: [1, 2, 2, 10000]
+    out: 10004
+  - name: choose_edges
+    in:
+      nums: [3, 3, 4, 4, 5, 5]
+    out: 16
+  - name: isolated_peak
+    in:
+      nums: [7, 7, 7, 8, 9, 9, 9]
+    out: 48
+  - name: sparse_large
+    in:
+      nums: [100, 100, 102, 102, 104]
+    out: 508
+  - name: bridge_value_loss
+    in:
+      nums: [10, 10, 11, 12, 12, 12, 13]
+    out: 56
+  - name: long_consecutive_small
+    in:
+      nums: [1, 2, 2, 3, 3, 3, 4, 4, 5]
+    out: 15
+  - name: large_duplicate_advantage
+    in:
+      nums: [5000, 5000, 5000, 4999, 5001]
+    out: 15000
+  - name: two_far_blocks
+    in:
+      nums: [1, 1, 2, 2, 50, 50, 51, 52, 52]
+    out: 208
+  - name: single_between_large_blocks
+    in:
+      nums: [6, 6, 7, 8, 8]
+    out: 28
+  - name: prime_like
+    in:
+      nums: [2, 2, 3, 5, 5, 6, 7, 7]
+    out: 28
+  - name: triplet_tie
+    in:
+      nums: [4, 5, 6]
+    out: 10
+  - name: cluster_then_gap
+    in:
+      nums: [2, 3, 3, 3, 6, 6, 7]
+    out: 21
+  - name: upper_range_sparse
+    in:
+      nums: [9990, 9990, 9992, 9994, 9994, 9995]
+    out: 49960
+  - name: all_values_same_then_neighbor
+    in:
+      nums: [8, 8, 8, 9]
+    out: 24
+  - name: generated_len_50_full_range
+    seed: 101
+    in:
+      nums:
+        gen: array
+        len: 50
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_200_small_band
+    seed: 102
+    in:
+      nums:
+        gen: array
+        len: 200
+        of:
+          gen: int
+          min: 1
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_1000_upper_band
+    seed: 103
+    in:
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: 9990
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_20000_full_range
+    seed: 104
+    in:
+      nums:
+        gen: array
+        len: 20000
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_20000_two_values
+    seed: 105
+    in:
+      nums:
+        gen: array
+        len: 20000
+        of:
+          gen: int
+          min: 5000
+          max: 5001
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_len_12000_sorted
+    seed: 106
+    in:
+      nums:
+        gen: array
+        len: 12000
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: true
+        elemType: int

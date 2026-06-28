@@ -1,0 +1,213 @@
+entry:
+  id: 671
+  title: second-minimum-node-in-a-binary-tree
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().findSecondMinimumValue({root})"
+    rust: "Solution::find_second_minimum_value({root})"
+    python3: "Solution().findSecondMinimumValue({root})"
+    python2: "Solution().findSecondMinimumValue({root})"
+    ruby: "find_second_minimum_value({root})"
+    java: "new Solution().findSecondMinimumValue({root})"
+    csharp: "new Solution().FindSecondMinimumValue({root})"
+    kotlin: "Solution().findSecondMinimumValue({root})"
+    go: "findSecondMinimumValue({root})"
+    dart: "Solution().findSecondMinimumValue({root})"
+    swift: "Solution().findSecondMinimumValue({root})"
+    typescript: "findSecondMinimumValue({root})"
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().findSecondMinimumValue(root, {result})"
+    checker: |
+      class Checker:
+          def _second_min(self, node):
+              vals = []
+              stack = [node]
+              while stack:
+                  cur = stack.pop()
+                  if cur is None:
+                      continue
+                  if isinstance(cur, list):
+                      vals.extend(v for v in cur if v is not None)
+                      continue
+                  if hasattr(cur, "val"):
+                      vals.append(cur.val)
+                      stack.append(getattr(cur, "left", None))
+                      stack.append(getattr(cur, "right", None))
+                  else:
+                      vals.append(cur)
+              if not vals:
+                  return -1
+              first = min(vals)
+              second = min((v for v in vals if v > first), default=None)
+              return -1 if second is None else second
+
+          def findSecondMinimumValue(self, root, result):
+              if not isinstance(result, int):
+                  return False
+              return result == self._second_min(root)
+seed: 671
+tests:
+  - name: ex1
+    in:
+      root: [2, 2, 5, null, null, 5, 7]
+    out: 5
+  - name: ex2
+    in:
+      root: [2, 2, 2]
+    out: -1
+  - name: single_root_small
+    in:
+      root: [1]
+    out: -1
+  - name: single_root_large
+    in:
+      root: [2147483647]
+    out: -1
+  - name: two_leaf_children_second_on_right
+    in:
+      root: [1, 1, 3]
+    out: 3
+  - name: two_leaf_children_second_on_left
+    in:
+      root: [1, 2, 1]
+    out: 2
+  - name: balanced_depth2_second_at_leaf
+    in:
+      root: [1, 1, 4, null, null, 4, 6]
+    out: 4
+  - name: balanced_depth2_all_same
+    in:
+      root: [5, 5, 5, 5, 5, 5, 5]
+    out: -1
+  - name: balanced_depth3_second_at_root_child
+    in:
+      root: [2, 2, 5, 2, 2, 5, 7]
+    out: 5
+  - name: balanced_depth3_second_deep_left
+    in:
+      root: [2, 2, 8, 2, 2, 8, 9]
+    out: 8
+  - name: balanced_depth3_second_deep_right
+    in:
+      root: [2, 2, 4, 2, 2, 4, 6]
+    out: 4
+  - name: mixed_small_1
+    in:
+      root: [3, 3, 4]
+    out: 4
+  - name: mixed_small_2
+    in:
+      root: [3, 3, 3, 3, 3, 3, 4]
+    out: 4
+  - name: mixed_small_3
+    in:
+      root: [7, 7, 9, null, null, 9, 10]
+    out: 9
+  - name: mixed_small_4
+    in:
+      root: [7, 7, 7, null, null, 7, 7]
+    out: -1
+  - name: left_heavy_min_second_leaf
+    in:
+      root: [1, 1, 2, 1, 1, null, null]
+    out: 2
+  - name: right_heavy_min_second_leaf
+    in:
+      root: [1, 1, 2, null, null, 2, 2]
+    out: 2
+  - name: second_min_in_left_subtree
+    in:
+      root: [4, 4, 9, 4, 4, 9, 12]
+    out: 9
+  - name: second_min_in_right_subtree
+    in:
+      root: [4, 4, 6, 4, 4, 6, 8]
+    out: 6
+  - name: second_min_far_right_leaf
+    in:
+      root: [2, 2, 9, 2, 2, 9, 11, null, null, null, null, 9, 10, 11, 12]
+    out: 9
+  - name: internal_duplicate_second
+    in:
+      root: [10, 10, 11, 10, 10, 11, 11]
+    out: 11
+  - name: internal_duplicate_all_same_big
+    in:
+      root: [100, 100, 100, 100, 100, 100, 100]
+    out: -1
+  - name: one_branch_second_at_depth_3
+    in:
+      root: [1, 1, 2, 1, null, 2, 3]
+    out: 2
+  - name: one_branch_second_at_depth_4
+    in:
+      root: [1, 1, 2, 1, 1, 2, 2, 1, null, null, null, null, null, 2, 4]
+    out: 2
+  - name: near_max_value_second
+    in:
+      root: [2147483646, 2147483646, 2147483647]
+    out: 2147483647
+  - name: near_max_value_no_second
+    in:
+      root: [2147483646, 2147483646, 2147483646]
+    out: -1
+  - name: root_one_second_two
+    in:
+      root: [1, 1, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 2, 3]
+    out: 2
+  - name: root_two_second_three
+    in:
+      root: [2, 2, 3, 2, 2, 3, 4]
+    out: 3
+  - name: root_four_second_five
+    in:
+      root: [4, 4, 5, 4, 4, 5, 6, 4, 4, 4, 4, 5, 5, 6, 7]
+    out: 5
+  - name: root_five_second_six
+    in:
+      root: [5, 5, 6, 5, 5, 6, 7, 5, 5, 5, 5, 6, 6, 7, 8]
+    out: 6
+  - name: root_six_second_seven
+    in:
+      root: [6, 6, 7, 6, 6, 7, 8]
+    out: 7
+  - name: root_seven_second_eight
+    in:
+      root: [7, 7, 8, 7, 7, 8, 9]
+    out: 8
+  - name: root_eight_second_nine
+    in:
+      root: [8, 8, 9, 8, 8, 9, 10]
+    out: 9
+  - name: root_nine_second_ten
+    in:
+      root: [9, 9, 10, 9, 9, 10, 11]
+    out: 10
+  - name: root_ten_second_eleven
+    in:
+      root: [10, 10, 11, 10, 10, 11, 12]
+    out: 11
+  - name: compact_second_leftmost
+    in:
+      root: [1, 1, 3, 1, 1, 1, 1]
+    out: 3
+  - name: compact_second_rightmost
+    in:
+      root: [1, 1, 4, 1, 1, 4, 4]
+    out: 4
+  - name: larger_depth_second_small_gap
+    in:
+      root: [2, 2, 3, 2, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4]
+    out: 3
+  - name: larger_depth_no_second
+    in:
+      root: [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+    out: -1

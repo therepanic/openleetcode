@@ -1,0 +1,389 @@
+entry:
+  id: 756
+  title: pyramid-transition-matrix
+  params:
+    bottom:
+      type: string
+    allowed:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().pyramidTransition({bottom}, {allowed})"
+    rust: "Solution::pyramid_transition({bottom}, {allowed})"
+    python3: "Solution().pyramidTransition({bottom}, {allowed})"
+    python2: "Solution().pyramidTransition({bottom}, {allowed})"
+    ruby: "pyramid_transition({bottom}, {allowed})"
+    java: "new Solution().pyramidTransition({bottom}, {allowed})"
+    csharp: "new Solution().PyramidTransition({bottom}, {allowed})"
+    kotlin: "Solution().pyramidTransition({bottom}, {allowed})"
+    go: "pyramidTransition({bottom}, {allowed})"
+    dart: "Solution().pyramidTransition({bottom}, {allowed})"
+    swift: "Solution().pyramidTransition({bottom}, {allowed})"
+    typescript: "pyramidTransition({bottom}, {allowed})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().pyramidTransition(bottom, allowed, {result})"
+    checker: |
+      class Checker:
+          def pyramidTransition(self, bottom, allowed, result):
+              if not isinstance(result, bool):
+                  return False
+              if not isinstance(bottom, str):
+                  return False
+              if not isinstance(allowed, list):
+                  return False
+
+              table = {}
+              for triple in allowed:
+                  if not isinstance(triple, str) or len(triple) != 3:
+                      return False
+                  key = triple[:2]
+                  if key not in table:
+                      table[key] = set()
+                  table[key].add(triple[2])
+
+              memo = {}
+
+              def can_build(row):
+                  if len(row) == 1:
+                      return True
+                  if row in memo:
+                      return memo[row]
+
+                  next_rows = [""]
+                  for i in range(len(row) - 1):
+                      tops = table.get(row[i:i + 2])
+                      if not tops:
+                          memo[row] = False
+                          return False
+                      built = []
+                      for prefix in next_rows:
+                          for ch in tops:
+                              built.append(prefix + ch)
+                      next_rows = built
+
+                  for nxt in next_rows:
+                      if can_build(nxt):
+                          memo[row] = True
+                          return True
+
+                  memo[row] = False
+                  return False
+
+              expected = can_build(bottom)
+              return result == expected
+seed: 756
+tests:
+  - name: example_1
+    in:
+      bottom: "BCD"
+      allowed:
+        - "BCC"
+        - "CDE"
+        - "CEA"
+        - "FFF"
+    out: true
+  - name: example_2
+    in:
+      bottom: "AAAA"
+      allowed:
+        - "AAB"
+        - "AAC"
+        - "BCD"
+        - "BBE"
+        - "DEF"
+    out: false
+  - name: len2_single_match
+    in:
+      bottom: "AB"
+      allowed:
+        - "ABC"
+    out: true
+  - name: len2_no_match
+    in:
+      bottom: "AB"
+      allowed: []
+    out: false
+  - name: len2_wrong_order
+    in:
+      bottom: "AB"
+      allowed:
+        - "BAC"
+    out: false
+  - name: len3_single_path
+    in:
+      bottom: "BCD"
+      allowed:
+        - "BCC"
+        - "CDE"
+        - "CEA"
+    out: true
+  - name: len3_missing_top
+    in:
+      bottom: "BCD"
+      allowed:
+        - "BCC"
+        - "CDE"
+    out: false
+  - name: len3_no_first_pair
+    in:
+      bottom: "BCD"
+      allowed:
+        - "CDE"
+        - "CEA"
+    out: false
+  - name: aaa_all_same_true
+    in:
+      bottom: "AAA"
+      allowed:
+        - "AAA"
+    out: true
+  - name: aaa_missing_upper
+    in:
+      bottom: "AAA"
+      allowed:
+        - "AAB"
+    out: false
+  - name: aaaaaa_same_true
+    in:
+      bottom: "AAAAAA"
+      allowed:
+        - "AAA"
+    out: true
+  - name: abcdef_empty
+    in:
+      bottom: "ABCDEF"
+      allowed: []
+    out: false
+  - name: max_bottom_unique_chain_true
+    in:
+      bottom: "ABCDEF"
+      allowed:
+        - "ABF"
+        - "BCF"
+        - "CDF"
+        - "DEF"
+        - "EFF"
+        - "FFA"
+        - "AAB"
+        - "BBC"
+        - "CCD"
+    out: true
+  - name: max_bottom_unique_chain_missing_top
+    in:
+      bottom: "ABCDEF"
+      allowed:
+        - "ABF"
+        - "BCF"
+        - "CDF"
+        - "DEF"
+        - "EFF"
+        - "FFA"
+        - "AAB"
+        - "BBC"
+    out: false
+  - name: bac_order_true
+    in:
+      bottom: "BAC"
+      allowed:
+        - "BAA"
+        - "ACA"
+        - "AAA"
+    out: true
+  - name: bac_order_false
+    in:
+      bottom: "BAC"
+      allowed:
+        - "ABA"
+        - "CAA"
+        - "AAA"
+    out: false
+  - name: aba_center_true
+    in:
+      bottom: "ABA"
+      allowed:
+        - "ABA"
+        - "BAA"
+        - "AAA"
+    out: true
+  - name: aabb_unique_chain_true
+    in:
+      bottom: "AABB"
+      allowed:
+        - "AAC"
+        - "ABD"
+        - "BBE"
+        - "CDF"
+        - "DEA"
+        - "FAB"
+    out: true
+  - name: aabb_unique_chain_missing_top
+    in:
+      bottom: "AABB"
+      allowed:
+        - "AAC"
+        - "ABD"
+        - "BBE"
+        - "CDF"
+        - "DEA"
+    out: false
+  - name: abcd_unique_top_true
+    in:
+      bottom: "ABCD"
+      allowed:
+        - "ABE"
+        - "BCF"
+        - "CDA"
+        - "EFA"
+        - "FAA"
+        - "AAB"
+    out: true
+  - name: abcd_unique_top_false
+    in:
+      bottom: "ABCD"
+      allowed:
+        - "ABE"
+        - "BCF"
+        - "CDA"
+        - "EFA"
+        - "FAA"
+    out: false
+  - name: aabc_unique_chain_true
+    in:
+      bottom: "AABC"
+      allowed:
+        - "AAC"
+        - "ABD"
+        - "BCE"
+        - "CDF"
+        - "DEA"
+        - "FAB"
+    out: true
+  - name: aabc_unique_chain_false
+    in:
+      bottom: "AABC"
+      allowed:
+        - "AAC"
+        - "ABD"
+        - "BCE"
+        - "CDF"
+        - "DEA"
+    out: false
+  - name: ffff_self_loop_true
+    in:
+      bottom: "FFFF"
+      allowed:
+        - "FFF"
+    out: true
+  - name: ffff_to_a_false
+    in:
+      bottom: "FFFF"
+      allowed:
+        - "FFA"
+    out: false
+  - name: multi_choice_true
+    in:
+      bottom: "AAAA"
+      allowed:
+        - "AAB"
+        - "AAC"
+        - "BBB"
+    out: true
+  - name: multi_choice_false
+    in:
+      bottom: "AAAA"
+      allowed:
+        - "AAB"
+        - "AAC"
+        - "BBC"
+    out: false
+  - name: dense_decoys_true
+    in:
+      bottom: "BDBD"
+      allowed:
+        - "BDC"
+        - "DBE"
+        - "BDD"
+        - "DBD"
+        - "DDD"
+        - "CEA"
+        - "EAF"
+        - "AFB"
+    out: true
+  - name: sparse_decoys_false
+    in:
+      bottom: "BDBD"
+      allowed:
+        - "BDC"
+        - "DBE"
+        - "CEA"
+        - "EAF"
+    out: false
+  - name: cccccc_true
+    in:
+      bottom: "CCCCCC"
+      allowed:
+        - "CCC"
+    out: true
+  - name: cccccc_false
+    in:
+      bottom: "CCCCCC"
+      allowed:
+        - "CCD"
+    out: false
+  - name: zigzag_len5_true
+    in:
+      bottom: "ABCBA"
+      allowed:
+        - "ABD"
+        - "BCE"
+        - "CBF"
+        - "BAE"
+        - "DEA"
+        - "EFB"
+        - "FEB"
+        - "ABC"
+        - "BBD"
+        - "CDE"
+    out: true
+  - name: zigzag_len5_false
+    in:
+      bottom: "ABCBA"
+      allowed:
+        - "ABD"
+        - "BCE"
+        - "CBF"
+        - "BAE"
+        - "DEA"
+        - "EFB"
+        - "FEB"
+        - "ABC"
+        - "BBD"
+    out: false
+  - name: bcda_true
+    in:
+      bottom: "BCDA"
+      allowed:
+        - "BCE"
+        - "CDF"
+        - "DAA"
+        - "EFB"
+        - "FAB"
+        - "BBC"
+    out: true
+  - name: bcda_false
+    in:
+      bottom: "BCDA"
+      allowed:
+        - "BCE"
+        - "CDF"
+        - "DAA"
+        - "EFB"
+        - "FAB"
+    out: false
