@@ -2,7 +2,7 @@ function levelOrder(root: TreeNode | null): number[][] {
   if (root === null) return [];
   const result: number[][] = [];
   const queue: TreeNode[] = [root];
-  for (let head = 0; head < queue.length; ) {
+  for (let head = 0; head < queue.length;) {
     const size = queue.length - head;
     const level: number[] = [];
     for (let i = 0; i < size; i++) {

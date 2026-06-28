@@ -3,7 +3,7 @@ function zigzagLevelOrder(root: TreeNode | null): number[][] {
   const result: number[][] = [];
   const queue: TreeNode[] = [root];
   let leftToRight = true;
-  for (let head = 0; head < queue.length; ) {
+  for (let head = 0; head < queue.length;) {
     const size = queue.length - head;
     const level = new Array<number>(size);
     for (let i = 0; i < size; i++) {
