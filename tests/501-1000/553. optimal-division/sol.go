@@ -1,7 +1,3 @@
-import (
-	"strconv"
-)
-
 func optimalDivision(nums []int) string {
     result := strconv.Itoa(nums[0])
     

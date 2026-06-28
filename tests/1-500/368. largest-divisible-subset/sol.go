@@ -1,5 +1,3 @@
-import "sort"
-
 func largestDivisibleSubset(nums []int) []int {
     sort.Ints(nums)
     n := len(nums)

@@ -1,8 +1,3 @@
-import (
-	"math"
-	"strconv"
-)
-
 func nextGreaterElement(n int) int {
     digits := []rune(strconv.Itoa(n))
     length := len(digits)

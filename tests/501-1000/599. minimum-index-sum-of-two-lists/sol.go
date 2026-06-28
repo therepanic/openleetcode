@@ -1,7 +1,3 @@
-import (
-	"math"
-)
-
 func findRestaurant(list1 []string, list2 []string) []string {
     mp := make(map[string]int)
     mp[list1[0]] = math.MinInt32

@@ -1,9 +1,3 @@
-import (
-	"math"
-	"sort"
-	"strconv"
-)
-
 func findMinDifference(timePoints []string) int {
     times := make([]int, len(timePoints))
     for i, t := range timePoints {

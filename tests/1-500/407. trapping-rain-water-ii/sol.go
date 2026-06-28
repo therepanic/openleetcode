@@ -1,5 +1,3 @@
-import "container/heap"
-
 type Cell struct {
 	height, x, y int
 }

@@ -1,5 +1,3 @@
-import "sort"
-
 func combinationSum2(candidates []int, target int) [][]int {
     sort.Ints(candidates)
     res := [][]int{}

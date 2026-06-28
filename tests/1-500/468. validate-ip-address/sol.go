@@ -1,7 +1,3 @@
-import (
-    "strconv"
-)
-
 func validIPAddress(queryIP string) string {
     if strings.Count(queryIP, ".") == 3 {
         parts := strings.Split(queryIP, ".")

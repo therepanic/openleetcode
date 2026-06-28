@@ -1,7 +1,3 @@
-import (
-	"math"
-)
-
 func judgeSquareSum(c int) bool {
     left := 0
     right := int(math.Sqrt(float64(c)))

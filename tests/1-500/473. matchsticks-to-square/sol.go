@@ -1,5 +1,3 @@
-import "sort"
-
 func makesquare(matchsticks []int) bool {
     total := 0
     for _, m := range matchsticks {

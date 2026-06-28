@@ -1,8 +1,3 @@
-import (
-    "math"
-    "strconv"
-)
-
 func smallestGoodBase(n string) string {
     num, _ := strconv.ParseUint(n, 10, 64)
     maxM := int(math.Log2(float64(num)))

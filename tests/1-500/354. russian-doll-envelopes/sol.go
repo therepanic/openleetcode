@@ -1,5 +1,3 @@
-import "sort"
-
 func maxEnvelopes(envelopes [][]int) int {
     sort.Slice(envelopes, func(i, j int) bool {
         if envelopes[i][0] == envelopes[j][0] {

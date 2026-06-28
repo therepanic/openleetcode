@@ -1,5 +1,3 @@
-import "container/heap"
-
 type Pair struct {
     sum int
     i   int

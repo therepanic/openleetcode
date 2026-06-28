@@ -1,7 +1,3 @@
-import (
-	"strconv"
-)
-
 func complexNumberMultiply(num1 string, num2 string) string {
     parseComplex := func(s string) (int, int) {
         parts := strings.Split(s, "+")

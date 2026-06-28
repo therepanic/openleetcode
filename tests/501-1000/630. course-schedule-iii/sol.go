@@ -1,8 +1,3 @@
-import (
-	"container/heap"
-	"sort"
-)
-
 func scheduleCourse(courses [][]int) int {
     sort.Slice(courses, func(i, j int) bool {
         if courses[i][1] == courses[j][1] {

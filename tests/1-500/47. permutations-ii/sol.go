@@ -1,5 +1,3 @@
-import "sort"
-
 func permuteUnique(nums []int) [][]int {
     sort.Ints(nums)
     used := make([]bool, len(nums))

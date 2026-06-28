@@ -1,7 +1,3 @@
-import (
-	"sort"
-)
-
 func findLUSlength(strs []string) int {
     sort.Slice(strs, func(i, j int) bool {
         return len(strs[i]) > len(strs[j])

@@ -1,7 +1,3 @@
-import (
-	"strconv"
-)
-
 func convertToBase7(num int) string {
     if num == 0 {
         return "0"

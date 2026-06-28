@@ -1,7 +1,3 @@
-import (
-	"sort"
-)
-
 func maximumProduct(nums []int) int {
     sort.Ints(nums)
     n := len(nums)

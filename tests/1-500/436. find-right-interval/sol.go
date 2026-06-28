@@ -1,5 +1,3 @@
-import "sort"
-
 func findRightInterval(intervals [][]int) []int {
     n := len(intervals)
     starts := make([][2]int, n)

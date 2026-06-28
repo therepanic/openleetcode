@@ -1,7 +1,3 @@
-import (
-	"sort"
-)
-
 func findUnsortedSubarray(nums []int) int {
     n := len(nums)
     sortedNums := make([]int, n)

@@ -1,5 +1,3 @@
-import "sort"
-
 func topKFrequent(nums []int, k int) []int {
     type info struct {
         count int

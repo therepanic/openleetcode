@@ -1,5 +1,3 @@
-import "sort"
-
 func findMinArrowShots(points [][]int) int {
     if len(points) == 0 {
         return 0

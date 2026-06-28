@@ -1,5 +1,3 @@
-import "container/heap"
-
 type MinHeap []int
 
 func (h MinHeap) Len() int            { return len(h) }

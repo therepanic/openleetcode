@@ -1,7 +1,3 @@
-import (
-	"sort"
-)
-
 func triangleNumber(nums []int) int {
     sort.Ints(nums)
     n := len(nums)

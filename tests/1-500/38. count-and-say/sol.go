@@ -1,5 +1,3 @@
-import "strconv"
-
 func countAndSay(n int) string {
     current := "1"
     for step := 1; step < n; step++ {

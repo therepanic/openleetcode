@@ -1,8 +1,3 @@
-import (
-	"container/heap"
-	"sort"
-)
-
 func findMaximizedCapital(k int, w int, profits []int, capital []int) int {
     n := len(profits)
     type Project struct {

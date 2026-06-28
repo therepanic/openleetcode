@@ -1,8 +1,3 @@
-import (
-    "container/heap"
-    "sort"
-)
-
 func getSkyline(buildings [][]int) [][]int {
     type Event struct {
         x int

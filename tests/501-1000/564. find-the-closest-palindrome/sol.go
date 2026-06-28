@@ -1,7 +1,3 @@
-import (
-	"strconv"
-)
-
 func nearestPalindromic(n string) string {
 	num, _ := strconv.ParseInt(n, 10, 64)
 

@@ -1,7 +1,3 @@
-import (
-	"math"
-)
-
 func updateMatrix(mat [][]int) [][]int {
     rows := len(mat)
     cols := len(mat[0])

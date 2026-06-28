@@ -1,7 +1,3 @@
-import (
-	"sort"
-)
-
 func outerTrees(trees [][]int) [][]int {
     if len(trees) == 1 {
         return trees

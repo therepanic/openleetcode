@@ -1,8 +1,3 @@
-import (
-	"container/heap"
-	"math"
-)
-
 func smallestRange(nums [][]int) []int {
     h := &MinHeap{}
     curMax := math.MinInt32

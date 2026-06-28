@@ -1,8 +1,3 @@
-import (
-	"sort"
-	"strconv"
-)
-
 func findRelativeRanks(score []int) []string {
     n := len(score)
     sorted := make([]int, n)

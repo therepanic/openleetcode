@@ -1,5 +1,3 @@
-import "strconv"
-
 func fizzBuzz(n int) []string {
     result := make([]string, 0, n)
     for i := 1; i <= n; i++ {

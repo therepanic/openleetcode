@@ -1,5 +1,3 @@
-import "sort"
-
 func reconstructQueue(people [][]int) [][]int {
     sort.Slice(people, func(i, j int) bool {
         if people[i][0] != people[j][0] {

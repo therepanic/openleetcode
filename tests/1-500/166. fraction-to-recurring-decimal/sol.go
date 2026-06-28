@@ -1,5 +1,3 @@
-import "strconv"
-
 func fractionToDecimal(numerator int, denominator int) string {
 	if numerator == 0 {
 		return "0"
