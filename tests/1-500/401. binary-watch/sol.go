@@ -1,5 +1,3 @@
-import "math/bits"
-
 func readBinaryWatch(turnedOn int) []string {
     result := []string{}
     for hour := 0; hour < 12; hour++ {
