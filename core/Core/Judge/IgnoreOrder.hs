@@ -17,7 +17,7 @@ instance Judge IgnoreOrder where
       (Just e, Just a) ->
         if sortValue e == sortValue a
           then Pass
-          else Fail ("Expected: " <> T.pack (show expected) <> " Got: " <> T.pack (show actual))
+          else Fail ("Output: " <> T.pack (show actual) <> " Expected: " <> T.pack (show expected))
       _ -> Fail "Failed to parse json"
 
 sortValue :: Value -> Value

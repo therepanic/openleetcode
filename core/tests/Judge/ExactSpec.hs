@@ -23,5 +23,5 @@ spec = do
 
     it "fails when there are extra spaces" $ do
       case judge Exact "1, 2" "1,2" of
-        Fail msg -> msg `shouldSatisfy` T.isInfixOf "Expected: 1, 2 Got: 1,2"
+        Fail msg -> msg `shouldSatisfy` T.isInfixOf "Output: 1,2 Expected: 1, 2"
         _ -> expectationFailure "should have failed due to space mismatch"
