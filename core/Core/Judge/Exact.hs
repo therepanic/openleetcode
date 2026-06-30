@@ -17,7 +17,7 @@ instance Judge Exact where
       _ -> case (expected == actual, compareString expected actual) of
         (True, _) -> Pass
         (_, Just True) -> Pass
-        _ -> Fail ("Expected: " <> expected <> " Got: " <> actual)
+        _ -> Fail ("Output: " <> actual <> " Expected: " <> expected)
 
 compareJson :: T.Text -> T.Text -> Maybe Bool
 compareJson expected actual =
