@@ -339,7 +339,7 @@ renderVerdict ui idx input verdict = case verdict of
   WA expected got out -> do
     renderVerdictHeader ui "wa" ("Wrong answer on test #" ++ show idx)
     renderVerdictInput ui "wa" input
-    emitVerdictDetail ui "wa" ("  Output:      " ++ T.unpack got)
+    emitVerdictDetail ui "wa" ("  Output: " ++ T.unpack got)
     emitVerdictDetail ui "wa" ("  Expected: " ++ T.unpack (fromMaybe "Multiple valid outputs allowed" expected))
     if T.null out
       then pure ()
