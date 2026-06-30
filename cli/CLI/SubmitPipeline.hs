@@ -1,7 +1,7 @@
 module CLI.SubmitPipeline where
 
 import CLI.AppEnv (Config)
-import Core.Test.Runner (SolutionBatch, TestResult)
+import Core.Test.Runner (SolutionBatch, TestInput, TestResult)
 import Core.Test.Types (TestSuite)
 import Core.Types (Language)
 import Data.Text (Text)
@@ -20,8 +20,8 @@ data SubmitFailure
   | SubmitSuiteNotFoundById Int
   | SubmitSuiteNotFoundByTitle Text
   | SubmitBackendUnavailable Text
-  | SubmitInternalWhileJudging (Maybe Int) Text
-  | SubmitJudgeInternal (Maybe Int) Text
+  | SubmitInternalWhileJudging (Maybe Int) (Maybe TestInput) Text
+  | SubmitJudgeInternal (Maybe Int) (Maybe TestInput) Text
   | SubmitInfraFailure Text
-  | SubmitVerdict Int TestResult
+  | SubmitVerdict Int TestInput TestResult
   deriving (Eq, Show)

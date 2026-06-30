@@ -25,6 +25,15 @@ import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
 import Data.Vector qualified as V
 
+newtype TestInput = TestInput [(Text, Text)] deriving (Show, Eq)
+
+data TestCaseResult = TestCaseResult
+  { tcrIdx :: Int,
+    tcrInput :: TestInput,
+    tcrResult :: TestResult
+  }
+  deriving (Show, Eq)
+
 data TestResult = Pass Int | WA (Maybe Text) Text Text | TLE Text | RE Text Text | Internal Text deriving (Show, Eq)
 
 data SolutionBatch = SolutionBatch {entryMain :: Text, sbLang :: Language, solution :: Text, utilities :: Text, python3Utilities :: Text, sbTimeout :: Int}
@@ -35,6 +44,7 @@ data PreparedCase = PreparedCase
     pcExpected :: Maybe Text,
     pcPrelude :: [Text],
     pcJsonInputs :: M.Map Text Value,
+    pcInput :: TestInput,
     pcMainCall :: Text,
     pcOracleCall :: Maybe Text
   }
@@ -51,7 +61,7 @@ runSuite ::
   g ->
   SolutionBatch ->
   Types.TestSuite ->
-  IO [(Int, TestResult)]
+  IO [TestCaseResult]
 runSuite exec gen batch suite = runSuiteWithProgress exec gen batch suite (\_ _ -> pure ())
 
 runSuiteWithProgress ::
@@ -61,12 +71,12 @@ runSuiteWithProgress ::
   SolutionBatch ->
   Types.TestSuite ->
   (Int -> Int -> IO ()) ->
-  IO [(Int, TestResult)]
+  IO [TestCaseResult]
 runSuiteWithProgress exec gen batch suite onProgress = do
   let preparedCases = zipWith (prepareCase gen batch (Types.tsSeed suite) suite) [1 ..] (Types.tsCases suite)
-  mainOutputsOrExc <- try (runMainBatch exec batch suite preparedCases) :: IO (Either SomeException (Either (Int, TestResult) (M.Map Int MainCaseOutput)))
+  mainOutputsOrExc <- try (runMainBatch exec batch suite preparedCases) :: IO (Either SomeException (Either TestCaseResult (M.Map Int MainCaseOutput)))
   case mainOutputsOrExc of
-    Left exc -> pure [(1, Internal (T.pack (displayException exc)))]
+    Left exc -> pure [caseResultForIdx preparedCases 1 (Internal (T.pack (displayException exc)))]
     Right (Left failed) -> pure [failed]
     Right (Right mainOutputs) -> do
       oracleOutputsOrExc <- try (runOracleBatch exec gen batch suite preparedCases mainOutputs) :: IO (Either SomeException (M.Map Int Bool))
@@ -77,7 +87,7 @@ runSuiteWithProgress exec gen batch suite onProgress = do
       results <- mapM (evaluateCase timeLimit oracleFailure oracleOutputs mainOutputs) preparedCases
       mapM_ (`onProgress` total) [1 .. total]
       pure $
-        case Data.List.find (\(_, res) -> case res of Pass _ -> False; _ -> True) results of
+        case Data.List.find (\result -> case tcrResult result of Pass _ -> False; _ -> True) results of
           Just failed -> [failed]
           Nothing -> results
 
@@ -130,6 +140,7 @@ prepareCase gen batch sSeed suite idx test =
               cases
       mainCall = foldl (\acc (var, _) -> T.replace ("{" <> var <> "}") (jsonVarName idx var) acc) callStr (M.toList entryParams)
       jsonInputs = buildJsonInputs gen seed entryParams test
+      input = buildTestInput test jsonInputs
       prelude = buildParamPrelude lang idx entryParams
       oracleCall =
         case Types.tcOut test of
@@ -147,6 +158,7 @@ prepareCase gen batch sSeed suite idx test =
             Nothing -> Nothing,
           pcPrelude = prelude,
           pcJsonInputs = jsonInputs,
+          pcInput = input,
           pcMainCall = mainCall,
           pcOracleCall = oracleCall
         }
@@ -157,7 +169,7 @@ runMainBatch ::
   SolutionBatch ->
   Types.TestSuite ->
   [PreparedCase] ->
-  IO (Either (Int, TestResult) (M.Map Int MainCaseOutput))
+  IO (Either TestCaseResult (M.Map Int MainCaseOutput))
 runMainBatch exec batch suite cases = do
   response <-
     C.execute
@@ -176,9 +188,9 @@ runMainBatch exec batch suite cases = do
       inferMainBatchFailure idx status err stdout =
         let out = T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines stdout))
          in case status of
-              C.TLE -> (idx, TLE out)
-              C.RE -> (idx, RE (T.strip err) out)
-              C.Unknown _ -> (idx, Internal (renderExecError status err))
+              C.TLE -> caseResultForIdx cases idx (TLE out)
+              C.RE -> caseResultForIdx cases idx (RE (T.strip err) out)
+              C.Unknown _ -> caseResultForIdx cases idx (Internal (renderExecError status err))
   case response of
     C.ExecFail err stdout s ->
       pure (Left (inferMainBatchFailure (inferFailedCaseIndex stdout) s err stdout))
@@ -222,28 +234,45 @@ evaluateCase ::
   M.Map Int Bool ->
   M.Map Int MainCaseOutput ->
   PreparedCase ->
-  IO (Int, TestResult)
+  IO TestCaseResult
 evaluateCase timeLimit oracleFailure oracleOutputs mainOutputs pc =
   let out = fromJust (M.lookup (pcIdx pc) mainOutputs)
    in if mcoTimeMs out > timeLimit
-        then pure (pcIdx pc, TLE (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out)))))
+        then pure (caseResult pc (TLE (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out))))))
         else case pcExpected pc of
           Just expected ->
             let res = judge (pcJudge pc) expected (mcoResult out)
              in pure $
                   case res of
-                    J.Pass -> (pcIdx pc, Pass (mcoTimeMs out))
-                    J.Fail _ -> (pcIdx pc, WA (Just expected) (mcoResult out) (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out)))))
+                    J.Pass -> caseResult pc (Pass (mcoTimeMs out))
+                    J.Fail _ -> caseResult pc (WA (Just expected) (mcoResult out) (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out)))))
           Nothing ->
             case oracleFailure of
-              Just msg -> pure (pcIdx pc, Internal msg)
+              Just msg -> pure (caseResult pc (Internal msg))
               Nothing ->
                 ( if fromJust (M.lookup (pcIdx pc) oracleOutputs)
                     then
-                      pure (pcIdx pc, Pass (mcoTimeMs out))
+                      pure (caseResult pc (Pass (mcoTimeMs out)))
                     else
-                      pure (pcIdx pc, WA Nothing (mcoResult out) (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out)))))
+                      pure (caseResult pc (WA Nothing (mcoResult out) (T.unlines (filter (not . T.isPrefixOf "SOL_CASE_") (T.lines (mcoStdout out))))))
                 )
+
+caseResultForIdx :: [PreparedCase] -> Int -> TestResult -> TestCaseResult
+caseResultForIdx cases idx result =
+  case Data.List.find ((== idx) . pcIdx) cases of
+    Just pc -> caseResult pc result
+    Nothing -> TestCaseResult idx (TestInput []) result
+
+caseResult :: PreparedCase -> TestResult -> TestCaseResult
+caseResult pc = TestCaseResult (pcIdx pc) (pcInput pc)
+
+buildTestInput :: Types.TestCase -> M.Map Text Value -> TestInput
+buildTestInput test jsonInputs =
+  TestInput $ map buildInputVar (Types.tcIn test)
+  where
+    buildInputVar (name, _) =
+      let val = fromJust (M.lookup name jsonInputs)
+       in (name, TE.decodeUtf8 (BL.toStrict (encode val)))
 
 buildMainProgram :: SolutionBatch -> [PreparedCase] -> Text
 buildMainProgram batch cases =
