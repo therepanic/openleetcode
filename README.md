@@ -23,6 +23,12 @@ $ openleetcode submit ./solution.py --id 1
 $ openleetcode submit ./solution.rs --title two-sum
 ```
 
+## Demo
+
+<p align="center">
+  <img src="assets/demo.gif" alt="openleetcode demo" width="860">
+</p>
+
 ## Install
 
 You need Docker for the execution backend. On Linux and macOS the installer will try to start the default Piston backend for you through Docker Compose.
