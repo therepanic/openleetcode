@@ -14,6 +14,8 @@ import Core.Generator.Splitmix (SplitmixGenerator (SplitmixGenerator))
 import Core.Test.Loader (loadTestSuite)
 import Core.Test.Runner
   ( SolutionBatch (SolutionBatch, entryMain, python3Utilities, sbLang, sbTimeout, solution, utilities),
+    TestCaseResult (tcrIdx, tcrInput, tcrResult),
+    TestInput (TestInput),
     TestResult (Internal, Pass, RE, TLE, WA),
     runSuiteWithProgress,
   )
@@ -140,15 +142,18 @@ executeSubmit ui resolved = do
           Left exc ->
             failSubmitStep runningChecklist (classifySuiteException exc)
           Right results ->
-            case find (\(_, res) -> case res of Pass _ -> False; _ -> True) results of
-              Just (idx, verdict) ->
-                failSubmitStep runningChecklist $
-                  case verdict of
-                    Internal msg
-                      | isOracleExecutionMessage msg -> SubmitInternalWhileJudging (Just idx) (stripOracleExecutionPrefix msg)
-                      | otherwise -> SubmitJudgeInternal (Just idx) (stripOracleExecutionPrefix msg)
-                    _ -> SubmitVerdict idx verdict
-              Nothing -> pure (Right (sum [t | (_, Pass t) <- results]))
+            case find (\caseResult -> case tcrResult caseResult of Pass _ -> False; _ -> True) results of
+              Just failedCase ->
+                let idx = tcrIdx failedCase
+                    input = tcrInput failedCase
+                    verdict = tcrResult failedCase
+                 in failSubmitStep runningChecklist $
+                      case verdict of
+                        Internal msg
+                          | isOracleExecutionMessage msg -> SubmitInternalWhileJudging (Just idx) (Just input) (stripOracleExecutionPrefix msg)
+                          | otherwise -> SubmitJudgeInternal (Just idx) (Just input) (stripOracleExecutionPrefix msg)
+                        _ -> SubmitVerdict idx input verdict
+              Nothing -> pure (Right (sum [t | Pass t <- map tcrResult results]))
 
 loadRuntimeTemplates :: FilePath -> Language -> IO (Either SubmitFailure (Text, Text, Text))
 loadRuntimeTemplates root lang = do
@@ -311,26 +316,29 @@ renderSubmitFailure ui failure = case failure of
   SubmitBackendUnavailable backendUrl -> do
     renderErrorHeader ui "submit" ("Backend is not reachable: " ++ T.unpack backendUrl)
     emitDetail ui "submit" "Check `openleetcode config list` and your backend service"
-  SubmitJudgeInternal maybeIdx msg -> do
+  SubmitJudgeInternal maybeIdx maybeInput msg -> do
     renderErrorHeader ui "submit" $
       case maybeIdx of
         Just idx -> "Judge internal error on test #" ++ show idx
         Nothing -> "Judge internal error"
     emitDetail ui "submit" ("  " ++ T.unpack msg)
-  SubmitInternalWhileJudging maybeIdx msg -> do
+    renderMaybeVerdictInput ui "submit" maybeInput
+  SubmitInternalWhileJudging maybeIdx maybeInput msg -> do
     renderErrorHeader ui "submit" $
       case maybeIdx of
         Just idx -> "Internal error while judging test #" ++ show idx
         Nothing -> "Internal error while judging"
     emitDetail ui "submit" ("  " ++ T.unpack msg)
+    renderMaybeVerdictInput ui "submit" maybeInput
   SubmitInfraFailure msg ->
     renderErrorHeader ui "submit" ("Internal error: " ++ T.unpack msg)
-  SubmitVerdict idx verdict -> renderVerdict ui idx verdict
+  SubmitVerdict idx input verdict -> renderVerdict ui idx input verdict
 
-renderVerdict :: UI -> Int -> TestResult -> IO ()
-renderVerdict ui idx verdict = case verdict of
+renderVerdict :: UI -> Int -> TestInput -> TestResult -> IO ()
+renderVerdict ui idx input verdict = case verdict of
   WA expected got out -> do
     renderVerdictHeader ui "wa" ("Wrong answer on test #" ++ show idx)
+    renderVerdictInput ui "wa" input
     emitVerdictDetail ui "wa" ("  Expected: " ++ T.unpack (fromMaybe "Multiple valid outputs allowed" expected))
     emitVerdictDetail ui "wa" ("  Got:      " ++ T.unpack got)
     if T.null out
@@ -340,6 +348,7 @@ renderVerdict ui idx verdict = case verdict of
         emitVerdictDetail ui "wa" (T.unpack out)
   TLE out -> do
     renderVerdictHeader ui "tle" ("Time limit exceeded on test #" ++ show idx)
+    renderVerdictInput ui "tle" input
     if T.null out
       then pure ()
       else do
@@ -347,6 +356,7 @@ renderVerdict ui idx verdict = case verdict of
         emitVerdictDetail ui "tle" (T.unpack out)
   RE err out -> do
     renderVerdictHeader ui "re" ("Runtime error on test #" ++ show idx)
+    renderVerdictInput ui "re" input
     emitVerdictDetail ui "re" ("  " ++ T.unpack err)
     if T.null out
       then pure ()
@@ -355,8 +365,30 @@ renderVerdict ui idx verdict = case verdict of
         emitVerdictDetail ui "re" (T.unpack out)
   Internal msg -> do
     renderErrorHeader ui "submit" ("Judge internal error on test #" ++ show idx)
+    renderVerdictInput ui "submit" input
     emitDetail ui "submit" ("  " ++ T.unpack (stripOracleExecutionPrefix msg))
   Pass _ -> pure ()
+
+renderMaybeVerdictInput :: UI -> String -> Maybe TestInput -> IO ()
+renderMaybeVerdictInput _ _ Nothing = pure ()
+renderMaybeVerdictInput ui verdictTag (Just input) = renderVerdictInput ui verdictTag input
+
+renderVerdictInput :: UI -> String -> TestInput -> IO ()
+renderVerdictInput ui verdictTag (TestInput vars) = do
+  emitVerdictDetail ui verdictTag "  Input:"
+  case vars of
+    [] -> emitVerdictDetail ui verdictTag "    <unsupported>"
+    _ -> mapM_ renderVar vars
+  where
+    renderVar (name, value) =
+      emitVerdictDetail ui verdictTag ("    " ++ T.unpack name ++ ": " ++ T.unpack (truncateInputValue value))
+
+truncateInputValue :: Text -> Text
+truncateInputValue value
+  | T.length value <= inputValuePreviewLimit = value
+  | otherwise = T.take inputValuePreviewLimit value <> "..."
+  where
+    inputValuePreviewLimit = 200
 
 renderErrorHeader :: UI -> String -> String -> IO ()
 renderErrorHeader ui scope msg = case uiMode ui of
@@ -386,15 +418,15 @@ submitFailureExitCode failure = case failure of
   SubmitSuiteNotFoundById _ -> renderExitCode ExitInput
   SubmitSuiteNotFoundByTitle _ -> renderExitCode ExitInput
   SubmitBackendUnavailable _ -> renderExitCode ExitInfra
-  SubmitInternalWhileJudging _ _ -> renderExitCode ExitInfra
-  SubmitJudgeInternal _ _ -> renderExitCode ExitInfra
+  SubmitInternalWhileJudging _ _ _ -> renderExitCode ExitInfra
+  SubmitJudgeInternal _ _ _ -> renderExitCode ExitInfra
   SubmitInfraFailure _ -> renderExitCode ExitInfra
-  SubmitVerdict _ _ -> renderExitCode ExitVerdict
+  SubmitVerdict _ _ _ -> renderExitCode ExitVerdict
 
 classifySuiteException :: SomeException -> SubmitFailure
 classifySuiteException exc =
   if "Oracle execution error:" `isInfixOf` shown
-    then SubmitInternalWhileJudging Nothing (stripOracleExecutionPrefix (T.pack shown))
+    then SubmitInternalWhileJudging Nothing Nothing (stripOracleExecutionPrefix (T.pack shown))
     else SubmitInfraFailure (classifyException exc)
   where
     shown = show exc
