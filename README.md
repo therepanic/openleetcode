@@ -26,7 +26,7 @@ $ openleetcode submit ./solution.rs --title two-sum
 ## Demo
 
 <p align="center">
-  <img src="assets/demo.gif" alt="openleetcode demo" width="860">
+  <img src="assets/demo.gif" alt="openleetcode demo" width="760">
 </p>
 
 ## Install
