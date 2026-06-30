@@ -23,6 +23,12 @@ $ openleetcode submit ./solution.py --id 1
 $ openleetcode submit ./solution.rs --title two-sum
 ```
 
+## Demo
+
+<p align="center">
+  <img src="assets/demo.gif" alt="openleetcode demo" width="860">
+</p>
+
 ## Install
 
 You need Docker for the execution backend. On Linux and macOS the installer will try to start the default Piston backend for you through Docker Compose.
@@ -152,3 +158,7 @@ $ python molotov.py --skip 0 --limit 10 --concurrency 5
 ## Status
 
 openleetcode is young and some manifests will be better than others. That is fine. The whole point is that the judge and tests are not sealed away somewhere.
+
+<p align="center">
+  <img src="assets/support_us.png" alt="open source maintenance department" width="260">
+</p>
