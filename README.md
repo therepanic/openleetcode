@@ -160,5 +160,5 @@ $ python molotov.py --skip 0 --limit 10 --concurrency 5
 openleetcode is young and some manifests will be better than others. That is fine. The whole point is that the judge and tests are not sealed away somewhere.
 
 <p align="center">
-  <img src="assets/support_us.png" alt="open source maintenance department" width="260">
+  <img src="assets/support_us.png" alt="open source maintenance department" width="300">
 </p>
