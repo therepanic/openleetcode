@@ -4,10 +4,12 @@ module CLI.AppEnv where
 
 import Core.Types
 import Data.Aeson
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Yaml (decodeFileEither, encodeFile)
 import System.Directory (XdgDirectory (..), createDirectoryIfMissing, doesFileExist, getXdgDirectory)
+import System.Environment (lookupEnv)
 
 data Config = Config
   { backendType :: ExecutorType,
@@ -28,11 +30,12 @@ loadConfig = do
   if confExist
     then do
       result <- decodeFileEither configPath
+      config <- defaultConfig
       case result of
         Left err ->
           pure
             ConfigLoadResult
-              { clrConfig = defaultConfig,
+              { clrConfig = config,
                 clrWarning = Just (T.pack (show err))
               }
         Right config ->
@@ -42,10 +45,11 @@ loadConfig = do
                 clrWarning = Nothing
               }
     else do
-      saveConfig defaultConfig
+      config <- defaultConfig
+      saveConfig config
       pure
         ConfigLoadResult
-          { clrConfig = defaultConfig,
+          { clrConfig = config,
             clrWarning = Nothing
           }
 
@@ -60,12 +64,18 @@ saveConfig conf = do
   createDirectoryIfMissing True configRoot
   Data.Yaml.encodeFile (configRoot <> "/config.yml") conf
 
-defaultConfig :: Config
-defaultConfig =
-  Config
-    { backendType = Piston,
-      backendUrl = "http://localhost:2000"
-    }
+defaultConfig :: IO Config
+defaultConfig = do
+  envUrl <- lookupEnv "OPENLEETCODE_BACKEND_URL"
+  let url = fromMaybe defaultBackendUrl (T.pack <$> envUrl)
+  pure
+    Config
+      { backendType = Piston,
+        backendUrl = url
+      }
+
+defaultBackendUrl :: Text
+defaultBackendUrl = "http://localhost:2000"
 
 defaultConfigRoot :: IO FilePath
 defaultConfigRoot = getXdgDirectory XdgConfig "openleetcode"
