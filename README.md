@@ -31,23 +31,21 @@ $ openleetcode submit ./solution.rs --title two-sum
 
 ## Install
 
-You need Docker for the execution backend. On Linux and macOS the installer will try to start the default Piston backend for you through Docker Compose.
+You need Docker for the execution backend. On Linux and macOS the installer will try to start the default Piston backend for you through Docker Compose. On Windows, the installer only installs the CLI. Bring Docker yourself and start the backend manually.
 
-**Linux and macOS:**
+Linux and macOS:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/install.sh | sh
 ```
 
-**Windows PowerShell:**
+Windows PowerShell:
 
 ```powershell
 irm https://raw.githubusercontent.com/therepanic/openleetcode/main/install.ps1 | iex
 ```
 
-On Windows, the installer only installs the CLI. Bring Docker yourself and start the backend manually.
-
-**Docker:**
+Docker:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/openleetcode.yml -o openleetcode.yml
