@@ -18,7 +18,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates libgmp10 \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /work
+WORKDIR /app
 
 COPY --from=build /out/openleetcode /usr/local/bin/openleetcode
 

@@ -47,6 +47,14 @@ irm https://raw.githubusercontent.com/therepanic/openleetcode/main/install.ps1 |
 
 On Windows, the installer only installs the CLI. Bring Docker yourself and start the backend manually.
 
+Docker:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/openleetcode.yml -o openleetcode.yml
+curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/backends/piston/docker-compose.yml -o piston.yml
+docker compose -f openleetcode.yml -f piston.yml run --rm openleetcode submit ./solution.py --id 1
+```
+
 ## Backend
 
 openleetcode currently uses [Piston](/backends/piston/docker-compose.yml) as its execution backend. The default config points to:
