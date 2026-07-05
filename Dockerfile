@@ -1,4 +1,4 @@
-FROM haskell:9.8-bookworm AS build
+FROM haskell:9.8-slim-bullseye AS build
 
 WORKDIR /src
 
@@ -12,7 +12,7 @@ RUN cabal update \
     && test -n "$exe" \
     && install -D "$exe" /out/openleetcode
 
-FROM debian:bookworm-slim
+FROM debian:bullseye-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates libgmp10 \
