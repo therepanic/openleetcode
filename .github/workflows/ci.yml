@@ -71,12 +71,35 @@ jobs:
 
           Copy-Item $exe.FullName "artifacts/${{ matrix.artifact }}.exe"
 
+      - name: Smoke test executable
+        if: runner.os != 'Windows'
+        run: |
+          ./artifacts/${{ matrix.artifact }} --version
+
+      - name: Smoke test executable
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          .\artifacts\${{ matrix.artifact }}.exe --version
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
           path: artifacts/*
           if-no-files-found: error
+
+  build-container:
+    name: Build container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t openleetcode:test .
+
+      - name: Smoke test
+        run: docker run --rm openleetcode:test --version
 
   discover-test-ranges:
     name: Discover test ranges
