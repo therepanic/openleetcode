@@ -48,12 +48,14 @@ irm https://raw.githubusercontent.com/therepanic/openleetcode/main/install.ps1 |
 Docker:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/openleetcode.yml -o openleetcode.yml
-curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/backends/piston/docker-compose.yml -o piston.yml
+curl -fsSL \
+  -o openleetcode.yml https://raw.githubusercontent.com/therepanic/openleetcode/main/openleetcode.yml \
+  -o piston.yml https://raw.githubusercontent.com/therepanic/openleetcode/main/backends/piston/docker-compose.yml
+docker compose -f piston.yml up -d
 docker compose -f openleetcode.yml -f piston.yml run --rm openleetcode --version
 ```
 
-The first run may take a while while the backend installs runtimes.
+The backend may take a while to install runtimes on the first start.
 
 ## Backend
 
