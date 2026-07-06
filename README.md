@@ -53,6 +53,8 @@ curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/backen
 docker compose -f openleetcode.yml -f piston.yml run --rm openleetcode submit ./solution.py --id 1
 ```
 
+The first run installs runtimes and may take a while.
+
 ## Backend
 
 openleetcode currently uses [Piston](/backends/piston/docker-compose.yml) as its execution backend. The default config points to:
