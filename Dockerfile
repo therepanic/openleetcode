@@ -14,6 +14,8 @@ RUN cabal update \
 
 FROM debian:bullseye-slim
 
+LABEL org.opencontainers.image.source="https://github.com/therepanic/openleetcode"
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates libgmp10 \
     && rm -rf /var/lib/apt/lists/*
