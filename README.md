@@ -53,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/backen
 docker compose -f openleetcode.yml -f piston.yml run --rm openleetcode --version
 ```
 
-The first run installs runtimes and may take a while.
+The first run may take a while while the backend installs runtimes.
 
 ## Backend
 
