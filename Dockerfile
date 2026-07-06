@@ -15,6 +15,8 @@ RUN cabal update \
 FROM debian:bullseye-slim
 
 LABEL org.opencontainers.image.source="https://github.com/therepanic/openleetcode"
+LABEL org.opencontainers.image.description="Run LeetCode solutions locally against open tests"
+LABEL org.opencontainers.image.licenses="Unlicense"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates libgmp10 \
