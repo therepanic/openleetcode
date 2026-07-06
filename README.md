@@ -50,7 +50,7 @@ Docker:
 ```sh
 curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/openleetcode.yml -o openleetcode.yml
 curl -fsSL https://raw.githubusercontent.com/therepanic/openleetcode/main/backends/piston/docker-compose.yml -o piston.yml
-docker compose -f openleetcode.yml -f piston.yml run --rm openleetcode submit ./solution.py --id 1
+docker compose -f openleetcode.yml -f piston.yml run --rm openleetcode --version
 ```
 
 The first run installs runtimes and may take a while.
