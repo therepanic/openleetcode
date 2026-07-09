@@ -42,10 +42,14 @@ jobs:
           ghc-version: "9.8.2"
           cabal-version: "3.12.1.0"
 
-      - run: |
-          cabal update
-          cabal build all
-          cabal test all
+      - name: Update Cabal index
+        run: cabal update
+
+      - name: Build
+        run: cabal build all
+
+      - name: Tests
+        run: cabal test all
 
       - name: Collect executable
         if: runner.os != 'Windows'
@@ -71,12 +75,12 @@ jobs:
 
           Copy-Item $exe.FullName "artifacts/${{ matrix.artifact }}.exe"
 
-      - name: Smoke test executable
+      - name: Smoke test
         if: runner.os != 'Windows'
         run: |
           ./artifacts/${{ matrix.artifact }} --version
 
-      - name: Smoke test executable
+      - name: Smoke test
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
