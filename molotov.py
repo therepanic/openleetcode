@@ -9,7 +9,7 @@ from pathlib import Path
 from string import Template
 
 PROBLEMS_DIR = Path(__file__).parent / "generated_problems"
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_URL = "https://openrouter.ai"
 DEFAULT_MODEL = "deepseek/deepseek-v4-pro"
 DEFAULT_CONCURRENCY = 10
 TARGET_LANGS = [
@@ -98,7 +98,7 @@ def generate(prompt, model, api_key):
     }
 
     req = urllib.request.Request(
-        OPENROUTER_URL,
+        OPENROUTER_URL + "/api/v1/chat/completions",
         data=payload,
         headers=headers,
     )
