@@ -19,26 +19,22 @@ else
   RESET=""
 fi
 
-open() {
+banner() {
   while IFS= read -r line; do
-    prefix=${line%%#*}
+    open_part=${line%%#*}
     rest=${line#*#}
-    open_part=${rest%%#*}
-    rest=${rest#*#}
     leet_part=${rest%%#*}
     code_part=${rest#*#}
-    printf '%s%s%s%s%s%s%s\n' "$GRAY" "${prefix}${open_part}" "$ORANGE" "$leet_part" "$GRAY" "$code_part" "$RESET"
+    if [ "$line" = "$open_part" ]; then
+      printf '%s%s%s\n' "$GRAY" "$line" "$RESET"
+      continue
+    fi
+    printf '%s%s%s%s%s%s%s\n' "$GRAY" "$open_part" "$ORANGE" "$leet_part" "$GRAY" "$code_part" "$RESET"
   done << 'EOF'
- #▄▄▄  ▄▄▄▄  ▄▄▄▄▄ ▄▄  ▄▄ #▄▄    ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄▄ #▄▄▄▄  ▄▄▄  ▄▄▄▄  ▄▄▄▄▄
-#██▀██ ██▄█▀ ██▄▄  ███▄██ #██    ██▄▄  ██▄▄    ██  #██▀▀▀ ██▀██ ██▀██ ██▄▄ 
-#▀███▀ ██    ██▄▄▄ ██ ▀██ #██▄▄▄ ██▄▄▄ ██▄▄▄   ██  #▀████ ▀███▀ ████▀ ██▄▄▄
+▄▄▄▄ ▄▄▄▄ ▄▄▄▄ ▄▄▄  #██ ▄▄▄▄ ▄▄▄▄ ▄██▄ #▄▄▄▄ ▄▄▄▄ ▄▄▄█ ▄▄▄▄
+█▄▄█ █▄▄█ ███▄ █  █ #██ ███▄ ███▄  ██▄ #█▄▄▄ █▄▄█ █▄▄█ ███▄
+     ▀
 EOF
-  printf '%s' "$RESET"
-}
-
-banner() {
-  open
-  printf '\n'
 }
 
 info() {
