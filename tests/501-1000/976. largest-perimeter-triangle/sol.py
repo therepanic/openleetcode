@@ -1,0 +1,23 @@
+from typing import List
+
+
+class Solution:
+    def largestPerimeter(self, nums: List[int]) -> int:
+        minVal = min(nums)
+        maxVal = max(nums)
+
+        freq = [0] * (maxVal - minVal + 1)
+        for x in nums:
+            freq[x - minVal] += 1
+
+        idx = 0
+        for v in range(maxVal, minVal - 1, -1):
+            while freq[v - minVal] > 0:
+                nums[idx] = v
+                idx += 1
+                freq[v - minVal] -= 1
+
+        for i in range(len(nums) - 2):
+            if nums[i + 1] + nums[i + 2] > nums[i]:
+                return nums[i] + nums[i + 1] + nums[i + 2]
+        return 0

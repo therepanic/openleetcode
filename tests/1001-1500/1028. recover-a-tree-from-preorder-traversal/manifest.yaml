@@ -1,0 +1,160 @@
+entry:
+  id: 1028
+  title: recover-a-tree-from-preorder-traversal
+  params:
+    traversal:
+      type: string
+  call:
+    cpp: treeNodeToArray(Solution().recoverFromPreorder({traversal}))
+    rust: TreeNode::tree_node_to_array(Solution::recover_from_preorder({traversal}))
+    python3: tree_node_to_array(Solution().recoverFromPreorder({traversal}))
+    python2: tree_node_to_array(Solution().recoverFromPreorder({traversal}))
+    ruby: tree_node_to_array(recover_from_preorder({traversal}))
+    java: TreeNode.treeNodeToArray(new Solution().recoverFromPreorder({traversal}))
+    csharp: TreeNode.TreeNodeToArray(new Solution().RecoverFromPreorder({traversal}))
+    kotlin: treeNodeToArray(Solution().recoverFromPreorder({traversal}))
+    go: treeNodeToArray(recoverFromPreorder({traversal}))
+    dart: tree_node_to_array(Solution().recoverFromPreorder({traversal}))
+    swift: tree_node_to_array(Solution().recoverFromPreorder({traversal}))
+    typescript: treeNodeToArray(recoverFromPreorder({traversal}))
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 300
+oracle:
+  python3:
+    call: Checker().recoverFromPreorder(traversal, {result})
+    checker: |
+      class Checker:
+          def _build(self, values):
+              if not values:
+                  return None
+              nodes = [None if v is None else TreeNode(v) for v in values]
+              kids = nodes[::-1]
+              root = kids.pop()
+              for node in nodes:
+                  if node is not None:
+                      if kids:
+                          node.left = kids.pop()
+                      if kids:
+                          node.right = kids.pop()
+              return root
+
+          def _serialize(self, node, depth=0):
+              if node is None:
+                  return []
+              return ["-" * depth + str(node.val)] + self._serialize(node.left, depth + 1) + self._serialize(node.right, depth + 1)
+
+          def recoverFromPreorder(self, traversal, result):
+              if not isinstance(result, list):
+                  return False
+              root = self._build(result)
+              return "".join(self._serialize(root)) == traversal
+seed: 1028
+tests:
+  - name: single_node
+    in:
+      traversal: "1"
+  - name: left_child
+    in:
+      traversal: 1-2
+  - name: right_child
+    in:
+      traversal: 1-2-3
+  - name: example_1
+    in:
+      traversal: 1-2--3--4-5--6--7
+  - name: example_2
+    in:
+      traversal: 1-2--3---4-5--6---7
+  - name: example_3
+    in:
+      traversal: 1-401--349---90--88
+  - name: two_level_full
+    in:
+      traversal: 10-7--4--6-15--12--20
+  - name: deep_left
+    in:
+      traversal: 1-2--3---4----5
+  - name: deep_rightish
+    in:
+      traversal: 1-2--3-4--5---6
+  - name: mixed_1
+    in:
+      traversal: 8-3--1--6---4---7-10--9--14
+  - name: mixed_2
+    in:
+      traversal: 5-4--3---2----1-8--7---6
+  - name: mixed_3
+    in:
+      traversal: 7-2--1--3-9--8--10
+  - name: mixed_4
+    in:
+      traversal: 15-6--4---2----1--5-18--16---17--20
+  - name: mixed_5
+    in:
+      traversal: 100-50--25---12----6-150--125---110
+  - name: balanced_1
+    in:
+      traversal: 4-2--1--3-6--5--7
+  - name: balanced_2
+    in:
+      traversal: 12-6--3--9-18--15--21
+  - name: unbalanced_1
+    in:
+      traversal: 1-2--4---8----16-3
+  - name: unbalanced_2
+    in:
+      traversal: 30-20--10---5----2-25
+  - name: small_1
+    in:
+      traversal: 2-1-3
+  - name: small_2
+    in:
+      traversal: 2-1--0
+  - name: small_3
+    in:
+      traversal: 9-8--7---6
+  - name: small_4
+    in:
+      traversal: 9-10--11---12
+  - name: small_5
+    in:
+      traversal: 1-10--100---1000
+  - name: small_6
+    in:
+      traversal: 8-4--2--6-12--10--14
+  - name: small_7
+    in:
+      traversal: 3-1--0-2
+  - name: small_8
+    in:
+      traversal: 6-3--1--4-9--7--10
+  - name: small_9
+    in:
+      traversal: 50-40--30---20-60
+  - name: small_10
+    in:
+      traversal: 42-21--11--31-63--52--73
+  - name: small_11
+    in:
+      traversal: 7-3--2---1-5
+  - name: small_12
+    in:
+      traversal: 13-8--5--10-17--15--19
+  - name: small_13
+    in:
+      traversal: 5-2--1-4--3
+  - name: small_14
+    in:
+      traversal: 11-7--4---2-9
+  - name: small_15
+    in:
+      traversal: 24-12--6--18-36--30--42
+  - name: small_16
+    in:
+      traversal: 4-1--0-2--3
+  - name: extra_balanced_4
+    in:
+      traversal: 2-1--3-4--5

@@ -1,0 +1,861 @@
+entry:
+  id: 1109
+  title: corporate-flight-bookings
+  params:
+    bookings:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    n:
+      type: int
+  call:
+    cpp: Solution().corpFlightBookings({bookings}, {n})
+    rust: Solution::corp_flight_bookings({bookings}, {n})
+    python3: Solution().corpFlightBookings({bookings}, {n})
+    python2: Solution().corpFlightBookings({bookings}, {n})
+    ruby: corp_flight_bookings({bookings}, {n})
+    java: new Solution().corpFlightBookings({bookings}, {n})
+    csharp: new Solution().CorpFlightBookings({bookings}, {n})
+    kotlin: Solution().corpFlightBookings({bookings}, {n})
+    go: corpFlightBookings({bookings}, {n})
+    dart: Solution().corpFlightBookings({bookings}, {n})
+    swift: Solution().corpFlightBookings({bookings}, {n})
+    typescript: corpFlightBookings({bookings}, {n})
+judge:
+  type: exact
+limits:
+  time_ms: 200
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().corpFlightBookings(bookings, n, {result})
+    checker:
+      "class Checker:\n    def corpFlightBookings(self, bookings, n, result):\n\
+      \        if not isinstance(result, list) or len(result) != n:\n            return\
+      \ False\n        expected = [0] * n\n        for first, last, seats in bookings:\n\
+      \            if not (1 <= first <= last <= n):\n                return False\n\
+      \            for i in range(first - 1, last):\n                expected[i] +=\
+      \ seats\n        return result == expected\n"
+seed: 1109
+tests:
+  - name: ex1
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 10
+          - - 2
+            - 3
+            - 20
+          - - 2
+            - 5
+            - 25
+      n: 5
+    out:
+      - 10
+      - 55
+      - 45
+      - 25
+      - 25
+  - name: ex2
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 10
+          - - 2
+            - 2
+            - 15
+      n: 2
+    out:
+      - 10
+      - 25
+  - name: single_booking_first
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 7
+      n: 1
+    out:
+      - 7
+  - name: single_booking_tail
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 3
+            - 5
+            - 4
+      n: 5
+    out:
+      - 0
+      - 0
+      - 4
+      - 4
+      - 4
+  - name: no_overlap
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 5
+          - - 2
+            - 2
+            - 7
+          - - 3
+            - 3
+            - 9
+      n: 3
+    out:
+      - 5
+      - 7
+      - 9
+  - name: full_cover
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 4
+            - 3
+      n: 4
+    out:
+      - 3
+      - 3
+      - 3
+      - 3
+  - name: nested_ranges
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 5
+            - 2
+          - - 2
+            - 4
+            - 3
+          - - 3
+            - 3
+            - 4
+      n: 5
+    out:
+      - 2
+      - 5
+      - 9
+      - 5
+      - 2
+  - name: repeated_ranges
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 2
+            - 4
+            - 1
+          - - 2
+            - 4
+            - 2
+          - - 2
+            - 4
+            - 3
+      n: 5
+    out:
+      - 0
+      - 6
+      - 6
+      - 6
+      - 0
+  - name: prefix_only
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 3
+            - 8
+          - - 1
+            - 2
+            - 1
+      n: 4
+    out:
+      - 9
+      - 9
+      - 8
+      - 0
+  - name: suffix_only
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 4
+            - 6
+            - 11
+      n: 6
+    out:
+      - 0
+      - 0
+      - 0
+      - 11
+      - 11
+      - 11
+  - name: mixed_small_1
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 5
+          - - 2
+            - 5
+            - 1
+          - - 4
+            - 5
+            - 10
+      n: 5
+    out:
+      - 5
+      - 6
+      - 1
+      - 11
+      - 11
+  - name: mixed_small_2
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 2
+            - 2
+            - 100
+          - - 1
+            - 3
+            - 1
+          - - 3
+            - 3
+            - 2
+      n: 3
+    out:
+      - 1
+      - 101
+      - 3
+  - name: mixed_small_3
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 4
+            - 1
+          - - 2
+            - 3
+            - 2
+          - - 3
+            - 4
+            - 3
+      n: 4
+    out:
+      - 1
+      - 3
+      - 6
+      - 4
+  - name: mixed_small_4
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 9
+          - - 1
+            - 5
+            - 1
+          - - 5
+            - 5
+            - 9
+      n: 5
+    out:
+      - 10
+      - 1
+      - 1
+      - 1
+      - 10
+  - name: mixed_small_5
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 2
+            - 5
+            - 4
+          - - 1
+            - 3
+            - 6
+          - - 3
+            - 5
+            - 2
+      n: 5
+    out:
+      - 6
+      - 10
+      - 12
+      - 6
+      - 6
+  - name: random_1
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 6
+            - 1
+          - - 2
+            - 2
+            - 2
+          - - 4
+            - 6
+            - 3
+      n: 6
+    out:
+      - 1
+      - 3
+      - 1
+      - 4
+      - 4
+      - 4
+  - name: random_2
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 3
+            - 7
+            - 2
+          - - 1
+            - 4
+            - 5
+          - - 5
+            - 7
+            - 1
+      n: 7
+    out:
+      - 5
+      - 5
+      - 7
+      - 7
+      - 3
+      - 3
+      - 3
+  - name: random_3
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 10
+          - - 2
+            - 6
+            - 10
+          - - 4
+            - 6
+            - 10
+      n: 6
+    out:
+      - 10
+      - 20
+      - 10
+      - 20
+      - 20
+      - 20
+  - name: random_4
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 8
+            - 1
+          - - 8
+            - 8
+            - 8
+      n: 8
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 9
+  - name: random_5
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 2
+            - 6
+            - 7
+          - - 2
+            - 3
+            - 1
+          - - 6
+            - 6
+            - 9
+      n: 6
+    out:
+      - 0
+      - 8
+      - 8
+      - 7
+      - 7
+      - 16
+  - name: random_6
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 4
+          - - 1
+            - 2
+            - 4
+          - - 2
+            - 2
+            - 4
+      n: 2
+    out:
+      - 8
+      - 8
+  - name: random_7
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 4
+            - 4
+            - 12
+          - - 1
+            - 4
+            - 1
+          - - 2
+            - 3
+            - 2
+      n: 4
+    out:
+      - 1
+      - 3
+      - 3
+      - 13
+  - name: random_8
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 5
+            - 2
+          - - 5
+            - 5
+            - 8
+          - - 1
+            - 1
+            - 1
+      n: 5
+    out:
+      - 3
+      - 2
+      - 2
+      - 2
+      - 10
+  - name: random_9
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 2
+            - 4
+            - 9
+          - - 1
+            - 2
+            - 1
+          - - 3
+            - 5
+            - 3
+      n: 5
+    out:
+      - 1
+      - 10
+      - 12
+      - 12
+      - 3
+  - name: random_10
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 7
+            - 7
+          - - 7
+            - 7
+            - 7
+          - - 3
+            - 5
+            - 1
+      n: 7
+    out:
+      - 7
+      - 7
+      - 8
+      - 8
+      - 8
+      - 7
+      - 14
+  - name: random_11
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 3
+            - 100
+          - - 2
+            - 5
+            - 1
+          - - 5
+            - 5
+            - 100
+      n: 5
+    out:
+      - 100
+      - 101
+      - 101
+      - 1
+      - 101
+  - name: random_12
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 3
+            - 3
+            - 5
+          - - 1
+            - 6
+            - 2
+          - - 6
+            - 6
+            - 3
+      n: 6
+    out:
+      - 2
+      - 2
+      - 7
+      - 2
+      - 2
+      - 5
+  - name: random_13
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 9
+            - 1
+          - - 2
+            - 8
+            - 2
+          - - 3
+            - 7
+            - 3
+      n: 9
+    out:
+      - 1
+      - 3
+      - 6
+      - 6
+      - 6
+      - 6
+      - 6
+      - 3
+      - 1
+  - name: random_14
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 4
+            - 2
+          - - 2
+            - 4
+            - 2
+          - - 3
+            - 4
+            - 2
+      n: 4
+    out:
+      - 2
+      - 4
+      - 6
+      - 6
+  - name: random_15
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 5
+            - 5
+            - 5
+          - - 1
+            - 10
+            - 1
+          - - 10
+            - 10
+            - 9
+      n: 10
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 6
+      - 1
+      - 1
+      - 1
+      - 1
+      - 10
+  - name: random_16
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 3
+          - - 3
+            - 4
+            - 4
+          - - 5
+            - 6
+            - 5
+      n: 6
+    out:
+      - 3
+      - 3
+      - 4
+      - 4
+      - 5
+      - 5
+  - name: random_17
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 2
+            - 7
+            - 2
+          - - 1
+            - 1
+            - 1
+          - - 7
+            - 7
+            - 4
+      n: 7
+    out:
+      - 1
+      - 2
+      - 2
+      - 2
+      - 2
+      - 2
+      - 6
+  - name: random_18
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 3
+            - 7
+          - - 2
+            - 2
+            - 8
+          - - 3
+            - 3
+            - 9
+      n: 3
+    out:
+      - 7
+      - 15
+      - 16
+  - name: random_19
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 4
+            - 8
+            - 4
+          - - 1
+            - 4
+            - 1
+          - - 8
+            - 8
+            - 2
+      n: 8
+    out:
+      - 1
+      - 1
+      - 1
+      - 5
+      - 4
+      - 4
+      - 4
+      - 6
+  - name: random_20
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 5
+            - 10
+          - - 2
+            - 4
+            - 20
+          - - 3
+            - 3
+            - 30
+      n: 5
+    out:
+      - 10
+      - 30
+      - 60
+      - 30
+      - 10
+  - name: random_21
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 6
+            - 6
+            - 1
+          - - 1
+            - 6
+            - 1
+      n: 6
+    out:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 2
+  - name: random_22
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 5
+          - - 2
+            - 3
+            - 5
+          - - 3
+            - 4
+            - 5
+      n: 4
+    out:
+      - 5
+      - 10
+      - 10
+      - 5
+  - name: random_23
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+          - - 2
+            - 2
+            - 2
+          - - 3
+            - 3
+            - 3
+          - - 4
+            - 4
+            - 4
+      n: 4
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: random_24
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 6
+            - 2
+          - - 2
+            - 5
+            - 3
+          - - 4
+            - 6
+            - 4
+      n: 6
+    out:
+      - 2
+      - 5
+      - 5
+      - 9
+      - 9
+      - 6
+  - name: random_25
+    in:
+      bookings:
+        elemType: int
+        value:
+          - - 1
+            - 8
+            - 1
+          - - 2
+            - 7
+            - 2
+          - - 3
+            - 6
+            - 3
+          - - 4
+            - 5
+            - 4
+      n: 8
+    out:
+      - 1
+      - 3
+      - 6
+      - 10
+      - 10
+      - 6
+      - 3
+      - 1

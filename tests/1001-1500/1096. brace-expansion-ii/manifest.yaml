@@ -1,0 +1,337 @@
+entry:
+  id: 1096
+  title: brace-expansion-ii
+  params:
+    expression:
+      type: string
+  call:
+    cpp: Solution().braceExpansionII({expression})
+    rust: Solution::brace_expansion_ii({expression})
+    python3: Solution().braceExpansionII({expression})
+    python2: Solution().braceExpansionII({expression})
+    ruby: brace_expansion_ii({expression})
+    java: new Solution().braceExpansionII({expression})
+    csharp: new Solution().BraceExpansionII({expression})
+    kotlin: Solution().braceExpansionII({expression})
+    go: braceExpansionII({expression})
+    dart: Solution().braceExpansionII({expression})
+    swift: Solution().braceExpansionII({expression})
+    typescript: braceExpansionII({expression})
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 1000
+  memory_mb: 128
+
+oracle:
+  python3:
+    call: Checker().check(expression, {result})
+    checker: |
+      class Checker(object):
+          def check(self, expression, result):
+              stack = []
+              res = []
+              cur = []
+              for ch in expression:
+                  if ch.isalpha():
+                      cur = [c + ch for c in (cur or [''])]
+                  elif ch == '{':
+                      stack.append(res)
+                      stack.append(cur)
+                      res, cur = [], []
+                  elif ch == '}':
+                      pre = stack.pop()
+                      pre_res = stack.pop()
+                      cur = [p + c for c in res + cur for p in (pre or [''])]
+                      res = pre_res
+                  elif ch == ',':
+                      res += cur
+                      cur = []
+              expected = sorted(set(res + cur))
+              return result == expected
+
+seed: 1096
+
+tests:
+  - name: example_1
+    in:
+      expression: "{a,b}{c,{d,e}}"
+    out:
+      - ac
+      - ad
+      - ae
+      - bc
+      - bd
+      - be
+  - name: example_2
+    in:
+      expression: "{{a,z},a{b,c},{ab,z}}"
+    out:
+      - a
+      - ab
+      - ac
+      - z
+  - name: single_letter
+    in:
+      expression: a
+    out:
+      - a
+  - name: simple_union
+    in:
+      expression: "{a,b}"
+    out:
+      - a
+      - b
+  - name: simple_concat
+    in:
+      expression: "ab"
+    out:
+      - ab
+  - name: nested_union_concat
+    in:
+      expression: "{a,b}{c,d}"
+    out:
+      - ac
+      - ad
+      - bc
+      - bd
+  - name: repeated_duplicates
+    in:
+      expression: "{{a,a},{a}}"
+    out:
+      - a
+  - name: three_way_union
+    in:
+      expression: "{a,b,c}"
+    out:
+      - a
+      - b
+      - c
+  - name: concat_with_tail
+    in:
+      expression: "a{b,c}d"
+    out:
+      - abd
+      - acd
+  - name: union_of_concats
+    in:
+      expression: "{ab,cd}{e,f}"
+    out:
+      - abe
+      - abf
+      - cde
+      - cdf
+  - name: deep_nesting_1
+    in:
+      expression: "{{a,b},{c,{d,e}}}"
+    out:
+      - a
+      - b
+      - c
+      - d
+      - e
+  - name: deep_nesting_2
+    in:
+      expression: "{{a,b}c,{d,e}f}"
+    out:
+      - ac
+      - bc
+      - df
+      - ef
+  - name: product_of_unions
+    in:
+      expression: "{a,b}{c,{d,e}}{f,g}"
+    out:
+      - acf
+      - acg
+      - adf
+      - adg
+      - aef
+      - aeg
+      - bcf
+      - bcg
+      - bdf
+      - bdg
+      - bef
+      - beg
+  - name: singleton_union_concat
+    in:
+      expression: "{a}{b}{c}"
+    out:
+      - abc
+  - name: long_simple_concat
+    in:
+      expression: abcdef
+    out:
+      - abcdef
+  - name: mix_commas_and_concat
+    in:
+      expression: "{a,b}{c}"
+    out:
+      - ac
+      - bc
+  - name: inner_union_chain
+    in:
+      expression: "{a,{b,c},d}"
+    out:
+      - a
+      - b
+      - c
+      - d
+  - name: duplicated_products
+    in:
+      expression: "{a,a}{b,b}"
+    out:
+      - ab
+  - name: bracketed_prefix
+    in:
+      expression: "{{a,b}c,{a,b}d}"
+    out:
+      - ac
+      - ad
+      - bc
+      - bd
+  - name: triple_group_concat
+    in:
+      expression: "{a,b}{c,d}{e,f}"
+    out:
+      - ace
+      - acf
+      - ade
+      - adf
+      - bce
+      - bcf
+      - bde
+      - bdf
+  - name: one_side_duplicate
+    in:
+      expression: "{a,b}{a,b}"
+    out:
+      - aa
+      - ab
+      - ba
+      - bb
+  - name: union_inside_concat
+    in:
+      expression: "x{a,b,c}y"
+    out:
+      - xay
+      - xby
+      - xcy
+  - name: adjacent_groups
+    in:
+      expression: "{a,b}{c,d}{e}"
+    out:
+      - ace
+      - ade
+      - bce
+      - bde
+  - name: simple_nested_one
+    in:
+      expression: "{a,{b,c}}d"
+    out:
+      - ad
+      - bd
+      - cd
+  - name: simple_nested_two
+    in:
+      expression: "a{{b,c},d}"
+    out:
+      - ab
+      - ac
+      - ad
+  - name: chain_with_duplicate_union
+    in:
+      expression: "{a,b}{c,c}{d,e}"
+    out:
+      - acd
+      - ace
+      - bcd
+      - bce
+  - name: nested_product_union
+    in:
+      expression: "{a,{b,c}}{d,{e,f}}"
+    out:
+      - ad
+      - ae
+      - af
+      - bd
+      - be
+      - bf
+      - cd
+      - ce
+      - cf
+  - name: four_way_union
+    in:
+      expression: "{a,b,c,d}"
+    out:
+      - a
+      - b
+      - c
+      - d
+  - name: trailing_concat
+    in:
+      expression: "{a,b}xy"
+    out:
+      - axy
+      - bxy
+  - name: leading_concat
+    in:
+      expression: "xy{a,b}"
+    out:
+      - xya
+      - xyb
+  - name: mixed_depth
+    in:
+      expression: "{{a,b}{c,d},e}"
+    out:
+      - ac
+      - ad
+      - bc
+      - bd
+      - e
+  - name: duplicate_merge
+    in:
+      expression: "{{a,b},{a,b}}"
+    out:
+      - a
+      - b
+  - name: flat_concat_with_union
+    in:
+      expression: "m{n,o}p{q,r}"
+    out:
+      - mnpq
+      - mnpr
+      - mopq
+      - mopr
+  - name: nested_singletons
+    in:
+      expression: "{{a},{b},{c}}"
+    out:
+      - a
+      - b
+      - c
+  - name: union_and_plain
+    in:
+      expression: "{ab,c}d"
+    out:
+      - abd
+      - cd
+  - name: many_duplicates
+    in:
+      expression: "{a,a,a}{b,b,c}"
+    out:
+      - ab
+      - ac
+  - name: final_mix
+    in:
+      expression: "{a,b}{c,{d,e}}f"
+    out:
+      - acf
+      - adf
+      - aef
+      - bcf
+      - bdf
+      - bef

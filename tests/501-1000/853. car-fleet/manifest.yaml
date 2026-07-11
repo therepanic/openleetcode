@@ -1,0 +1,279 @@
+entry:
+  id: 853
+  title: car-fleet
+  params:
+    target:
+      type: int
+    position:
+      type: array
+      items:
+        type: int
+    speed:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().carFleet({target}, {position}, {speed})
+    rust: Solution::car_fleet({target}, {position}, {speed})
+    python3: Solution().carFleet({target}, {position}, {speed})
+    python2: Solution().carFleet({target}, {position}, {speed})
+    ruby: car_fleet({target}, {position}, {speed})
+    java: new Solution().carFleet({target}, {position}, {speed})
+    csharp: new Solution().CarFleet({target}, {position}, {speed})
+    kotlin: Solution().carFleet({target}, {position}, {speed})
+    go: carFleet({target}, {position}, {speed})
+    dart: Solution().carFleet({target}, {position}, {speed})
+    swift: Solution().carFleet({target}, {position}, {speed})
+    typescript: carFleet({target}, {position}, {speed})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().carFleet(target, position, speed, {result})"
+    checker: |
+      class Checker:
+          def carFleet(self, target, position, speed, result):
+              if not isinstance(result, int):
+                  return False
+              cars = sorted(zip(position, speed), reverse=True)
+              fleets = 0
+              last_time = -1
+              for p, s in cars:
+                  t = (target - p) / s
+                  if t > last_time:
+                      fleets += 1
+                      last_time = t
+              return result == fleets
+seed: 853
+tests:
+  - name: ex1
+    in:
+      target: 12
+      position: [10, 8, 0, 5, 3]
+      speed: [2, 4, 1, 1, 3]
+    out: 3
+  - name: ex2
+    in:
+      target: 10
+      position: [3]
+      speed: [3]
+    out: 1
+  - name: ex3
+    in:
+      target: 100
+      position: [0, 2, 4]
+      speed: [4, 2, 1]
+    out: 1
+  - name: two_cars_merge
+    in:
+      target: 10
+      position: [6, 8]
+      speed: [3, 2]
+    out: 2
+  - name: three_cars_one_fleet
+    in:
+      target: 10
+      position: [0, 4, 2]
+      speed: [2, 1, 3]
+    out: 1
+  - name: three_distinct
+    in:
+      target: 17
+      position: [8, 12, 16]
+      speed: [4, 2, 1]
+    out: 2
+  - name: chain_merge
+    in:
+      target: 20
+      position: [5, 10, 15]
+      speed: [5, 4, 3]
+    out: 3
+  - name: four_all_separate
+    in:
+      target: 30
+      position: [0, 5, 10, 15]
+      speed: [1, 2, 3, 4]
+    out: 4
+  - name: one_fleet_by_slow_front
+    in:
+      target: 30
+      position: [10, 20, 25]
+      speed: [5, 4, 1]
+    out: 1
+  - name: all_merge
+    in:
+      target: 50
+      position: [10, 20, 30, 40]
+      speed: [4, 3, 2, 1]
+    out: 1
+  - name: mixed_two
+    in:
+      target: 25
+      position: [1, 3, 6, 10]
+      speed: [2, 1, 4, 3]
+    out: 2
+  - name: all_one
+    in:
+      target: 40
+      position: [2, 8, 14, 20]
+      speed: [6, 5, 4, 3]
+    out: 1
+  - name: five_all
+    in:
+      target: 100
+      position: [10, 30, 50, 70, 90]
+      speed: [10, 9, 8, 7, 6]
+    out: 5
+  - name: five_separate
+    in:
+      target: 100
+      position: [10, 20, 30, 40, 50]
+      speed: [1, 1, 1, 1, 1]
+    out: 5
+  - name: two_fleets
+    in:
+      target: 100
+      position: [20, 40, 60, 80]
+      speed: [2, 4, 1, 3]
+    out: 2
+  - name: short_two
+    in:
+      target: 12
+      position: [6, 4, 2]
+      speed: [4, 6, 2]
+    out: 2
+  - name: small_one
+    in:
+      target: 13
+      position: [0, 5, 8]
+      speed: [4, 2, 1]
+    out: 1
+  - name: two_equal_times
+    in:
+      target: 100
+      position: [0, 50]
+      speed: [1, 1]
+    out: 2
+  - name: faster_back_catches_front
+    in:
+      target: 100
+      position: [0, 50]
+      speed: [2, 1]
+    out: 1
+  - name: monotone_positions
+    in:
+      target: 100
+      position: [0, 1, 2, 3]
+      speed: [4, 3, 2, 1]
+    out: 1
+  - name: reverse_positions
+    in:
+      target: 100
+      position: [90, 80, 70, 60]
+      speed: [1, 2, 3, 4]
+    out: 1
+  - name: all_equal_speeds
+    in:
+      target: 100
+      position: [1, 2, 3, 4, 5]
+      speed: [5, 4, 3, 2, 1]
+    out: 1
+  - name: three_fleets
+    in:
+      target: 18
+      position: [3, 6, 9, 12, 15]
+      speed: [1, 2, 1, 2, 1]
+    out: 3
+  - name: all_distinct_ascending
+    in:
+      target: 15
+      position: [1, 4, 7, 10, 13]
+      speed: [1, 2, 3, 4, 5]
+    out: 5
+  - name: same_speeds_many
+    in:
+      target: 9
+      position: [0, 2, 4, 6, 8]
+      speed: [1, 1, 1, 1, 1]
+    out: 5
+  - name: many_merge
+    in:
+      target: 9
+      position: [0, 2, 4, 6, 8]
+      speed: [5, 4, 3, 2, 1]
+    out: 5
+  - name: zigzag_one
+    in:
+      target: 50
+      position: [1, 10, 20, 30, 40]
+      speed: [10, 1, 10, 1, 10]
+    out: 3
+  - name: five_same
+    in:
+      target: 60
+      position: [5, 15, 25, 35, 45]
+      speed: [2, 2, 2, 2, 2]
+    out: 5
+  - name: slow_front_blocks
+    in:
+      target: 60
+      position: [5, 10, 20, 30, 50]
+      speed: [6, 5, 4, 3, 1]
+    out: 1
+  - name: increasing_speed_positions
+    in:
+      target: 30
+      position: [1, 2, 3, 4, 5, 6]
+      speed: [1, 2, 3, 4, 5, 6]
+    out: 6
+  - name: decreasing_speed_positions
+    in:
+      target: 30
+      position: [1, 2, 3, 4, 5, 6]
+      speed: [6, 5, 4, 3, 2, 1]
+    out: 1
+  - name: six_all
+    in:
+      target: 100
+      position: [10, 11, 12, 13, 14, 15]
+      speed: [1, 2, 3, 4, 5, 6]
+    out: 6
+  - name: six_one
+    in:
+      target: 100
+      position: [10, 11, 12, 13, 14, 15]
+      speed: [6, 5, 4, 3, 2, 1]
+    out: 1
+  - name: six_stacked
+    in:
+      target: 70
+      position: [0, 10, 20, 30, 40, 50]
+      speed: [7, 6, 5, 4, 3, 2]
+    out: 1
+  - name: six_separate
+    in:
+      target: 70
+      position: [0, 10, 20, 30, 40, 50]
+      speed: [2, 3, 4, 5, 6, 7]
+    out: 6
+  - name: mixed_small
+    in:
+      target: 100
+      position: [1, 25, 50, 75]
+      speed: [24, 1, 25, 1]
+    out: 2
+  - name: more_fleets
+    in:
+      target: 40
+      position: [5, 15, 25, 35]
+      speed: [3, 1, 2, 4]
+    out: 3
+  - name: clustered
+    in:
+      target: 80
+      position: [2, 18, 33, 47, 60]
+      speed: [8, 7, 6, 5, 4]
+    out: 5

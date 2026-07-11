@@ -1,0 +1,42 @@
+class Solution(object):
+    def reachableNodes(self, edges, maxMoves, n):
+        """
+        :type edges: List[List[int]]
+        :type maxMoves: int
+        :type n: int
+        :rtype: int
+        """
+        import heapq
+        
+        graph = [[] for _ in range(n)]
+        dist = [maxMoves + 1] * n
+        
+        for u, v, cnt in edges:
+            graph[u].append((v, cnt))
+            graph[v].append((u, cnt))
+        
+        def dijkstra():
+            dist[0] = 0
+            min_heap = [(0, 0)]
+            
+            while min_heap:
+                d, u = heapq.heappop(min_heap)
+                if dist[u] >= maxMoves:
+                    break
+                for v, w in graph[u]:
+                    newDist = d + w + 1
+                    if newDist < dist[v]:
+                        dist[v] = newDist
+                        heapq.heappush(min_heap, (newDist, v))
+            
+            return sum(1 for d in dist if d <= maxMoves)
+        
+        reachableNodes = dijkstra()
+        reachableSubnodes = 0
+        
+        for u, v, cnt in edges:
+            a = 0 if dist[u] > maxMoves else min(maxMoves - dist[u], cnt)
+            b = 0 if dist[v] > maxMoves else min(maxMoves - dist[v], cnt)
+            reachableSubnodes += min(a + b, cnt)
+        
+        return reachableNodes + reachableSubnodes

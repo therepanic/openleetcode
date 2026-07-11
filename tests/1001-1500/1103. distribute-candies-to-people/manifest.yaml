@@ -1,0 +1,410 @@
+entry:
+  id: 1103
+  title: distribute-candies-to-people
+  params:
+    candies:
+      type: int
+    num_people:
+      type: int
+  call:
+    cpp: Solution().distributeCandies({candies}, {num_people})
+    rust: Solution::distribute_candies({candies}, {num_people})
+    python3: Solution().distributeCandies({candies}, {num_people})
+    python2: Solution().distributeCandies({candies}, {num_people})
+    ruby: distribute_candies({candies}, {num_people})
+    java: new Solution().distributeCandies({candies}, {num_people})
+    csharp: new Solution().DistributeCandies({candies}, {num_people})
+    kotlin: Solution().distributeCandies({candies}, {num_people})
+    go: distributeCandies({candies}, {num_people})
+    dart: Solution().distributeCandies({candies}, {num_people})
+    swift: Solution().distributeCandies({candies}, {num_people})
+    typescript: distributeCandies({candies}, {num_people})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 128
+oracle:
+  python3:
+    call: Checker().check(candies, num_people, {result})
+    checker:
+      "class Checker(object):\n    def check(self, candies, num_people, result):\n\
+      \        if not isinstance(result, list) or len(result) != num_people:\n   \
+      \         return False\n        if any((not isinstance(x, int)) for x in result):\n\
+      \            return False\n        if sum(result) != candies:\n            return\
+      \ False\n        exp = [0] * num_people\n        give = 1\n        i = 0\n \
+      \       while candies > 0:\n            exp[i % num_people] += min(give, candies)\n\
+      \            candies -= give\n            give += 1\n            i += 1\n  \
+      \      return exp == result\n"
+seed: 1103
+tests:
+  - name: example_1
+    in:
+      candies: 7
+      num_people: 4
+    out:
+      - 1
+      - 2
+      - 3
+      - 1
+  - name: example_2
+    in:
+      candies: 10
+      num_people: 3
+    out:
+      - 5
+      - 2
+      - 3
+  - name: minimum_candies_one_person
+    in:
+      candies: 1
+      num_people: 1
+    out:
+      - 1
+  - name: exact_first_round
+    in:
+      candies: 3
+      num_people: 3
+    out:
+      - 1
+      - 2
+      - 0
+  - name: exact_second_round_start
+    in:
+      candies: 6
+      num_people: 3
+    out:
+      - 1
+      - 2
+      - 3
+  - name: partial_second_round
+    in:
+      candies: 8
+      num_people: 3
+    out:
+      - 3
+      - 2
+      - 3
+  - name: one_person_small
+    in:
+      candies: 5
+      num_people: 1
+    out:
+      - 5
+  - name: two_people_even
+    in:
+      candies: 5
+      num_people: 2
+    out:
+      - 3
+      - 2
+  - name: two_people_exact
+    in:
+      candies: 3
+      num_people: 2
+    out:
+      - 1
+      - 2
+  - name: three_people_partial
+    in:
+      candies: 4
+      num_people: 3
+    out:
+      - 1
+      - 2
+      - 1
+  - name: four_people_small
+    in:
+      candies: 2
+      num_people: 4
+    out:
+      - 1
+      - 1
+      - 0
+      - 0
+  - name: four_people_round_one
+    in:
+      candies: 10
+      num_people: 4
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+  - name: four_people_after_wrap
+    in:
+      candies: 11
+      num_people: 4
+    out:
+      - 2
+      - 2
+      - 3
+      - 4
+  - name: larger_people_first_round
+    in:
+      candies: 15
+      num_people: 5
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: larger_people_partial_wrap
+    in:
+      candies: 16
+      num_people: 5
+    out:
+      - 2
+      - 2
+      - 3
+      - 4
+      - 5
+  - name: two_full_rounds_exact
+    in:
+      candies: 21
+      num_people: 3
+    out:
+      - 5
+      - 7
+      - 9
+  - name: nontrivial_small
+    in:
+      candies: 19
+      num_people: 4
+    out:
+      - 6
+      - 6
+      - 3
+      - 4
+  - name: sequential_wrap
+    in:
+      candies: 20
+      num_people: 4
+    out:
+      - 6
+      - 7
+      - 3
+      - 4
+  - name: exact_row_with_leftover
+    in:
+      candies: 28
+      num_people: 4
+    out:
+      - 6
+      - 8
+      - 10
+      - 4
+  - name: moderately_large_people
+    in:
+      candies: 100
+      num_people: 10
+    out:
+      - 12
+      - 14
+      - 16
+      - 13
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+  - name: exact_large_rounds
+    in:
+      candies: 55
+      num_people: 5
+    out:
+      - 7
+      - 9
+      - 11
+      - 13
+      - 15
+  - name: leftover_after_many_turns
+    in:
+      candies: 60
+      num_people: 5
+    out:
+      - 12
+      - 9
+      - 11
+      - 13
+      - 15
+  - name: wide_people_small_candies
+    in:
+      candies: 9
+      num_people: 8
+    out:
+      - 1
+      - 2
+      - 3
+      - 3
+      - 0
+      - 0
+      - 0
+      - 0
+  - name: wide_people_exact_first_round
+    in:
+      candies: 36
+      num_people: 8
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+  - name: wide_people_second_round_start
+    in:
+      candies: 37
+      num_people: 8
+    out:
+      - 2
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+  - name: larger_partial
+    in:
+      candies: 50
+      num_people: 6
+    out:
+      - 8
+      - 10
+      - 12
+      - 9
+      - 5
+      - 6
+  - name: leftmost_overflow
+    in:
+      candies: 51
+      num_people: 6
+    out:
+      - 8
+      - 10
+      - 12
+      - 10
+      - 5
+      - 6
+  - name: exact_after_two_rounds
+    in:
+      candies: 78
+      num_people: 6
+    out:
+      - 8
+      - 10
+      - 12
+      - 14
+      - 16
+      - 18
+  - name: near_round_boundary
+    in:
+      candies: 79
+      num_people: 6
+    out:
+      - 9
+      - 10
+      - 12
+      - 14
+      - 16
+      - 18
+  - name: large_people_one_round
+    in:
+      candies: 210
+      num_people: 20
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+  - name: large_people_leftover
+    in:
+      candies: 211
+      num_people: 20
+    out:
+      - 2
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+  - name: large_candies_small_people
+    in:
+      candies: 1000
+      num_people: 3
+    out:
+      - 330
+      - 345
+      - 325
+  - name: large_candies_medium_people
+    in:
+      candies: 1000
+      num_people: 7
+    out:
+      - 154
+      - 161
+      - 133
+      - 129
+      - 135
+      - 141
+      - 147
+  - name: exact_triangular_1
+    in:
+      candies: 21
+      num_people: 6
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  - name: exact_triangular_2
+    in:
+      candies: 45
+      num_people: 9
+    out:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9

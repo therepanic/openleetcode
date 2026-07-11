@@ -1,0 +1,33 @@
+class Solution(object):
+    def rectangleArea(self, rectangles):
+        """
+        :type rectangles: List[List[int]]
+        :rtype: int
+        """
+        OPEN, CLOSE = 0, 1
+        events = []
+        for x1, y1, x2, y2 in rectangles:
+            events.append((y1, OPEN, x1, x2))
+            events.append((y2, CLOSE, x1, x2))
+        events.sort()
+        
+        res = 0
+        cur_y = events[0][0]
+        active = []
+        
+        for y, typ, x1, x2 in events:
+            q = 0
+            cur = -1
+            for ax1, ax2 in sorted(active):
+                q += max(0, ax2 - max(cur, ax1))
+                cur = max(cur, ax2)
+            
+            res += q * (y - cur_y)
+            cur_y = y
+            
+            if typ == OPEN:
+                active.append((x1, x2))
+            else:
+                active.remove((x1, x2))
+        
+        return res % (10**9 + 7)

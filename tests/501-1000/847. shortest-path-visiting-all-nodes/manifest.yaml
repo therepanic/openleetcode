@@ -1,0 +1,655 @@
+entry:
+  id: 847
+  title: shortest-path-visiting-all-nodes
+  params:
+    graph:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: Solution().shortestPathLength({graph})
+    rust: Solution::shortest_path_length({graph})
+    python3: Solution().shortestPathLength({graph})
+    python2: Solution().shortestPathLength({graph})
+    ruby: shortest_path_length({graph})
+    java: new Solution().shortestPathLength({graph})
+    csharp: new Solution().ShortestPathLength({graph})
+    kotlin: Solution().shortestPathLength({graph})
+    go: shortestPathLength({graph})
+    dart: Solution().shortestPathLength({graph})
+    swift: Solution().shortestPathLength({graph})
+    typescript: shortestPathLength({graph})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().shortestPathLength(graph, {result})
+    checker: "from collections import deque\n\nclass Checker:\n    def shortestPathLength(self, graph, result):\n        n = len(graph)\n        if n == 1:\n            return result == 0\n        full = (1 << n) - 1\n        seen = [[False] * (1 << n) for _ in range(n)]\n        q = deque()\n        for i in range(n):\n            mask = 1 << i\n            q.append((i, mask, 0))\n            seen[i][mask] = True\n        while q:\n            node, mask, dist = q.popleft()\n            if mask == full:\n                return result == dist\n            for nei in graph[node]:\n                new_mask = mask | (1 << nei)\n                if not seen[nei][new_mask]:\n                    seen[nei][new_mask] = True\n                    q.append((nei, new_mask, dist + 1))\n        return False\n"
+seed: 847
+tests:
+  - name: single-node
+    in:
+      graph:
+        - []
+    out: 0
+  - name: two-nodes-edge
+    in:
+      graph:
+        - - 1
+        - - 0
+    out: 1
+  - name: line-three
+    in:
+      graph:
+        - - 1
+        - - 0
+          - 2
+        - - 1
+    out: 2
+  - name: star-four
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+        - - 0
+        - - 0
+        - - 0
+    out: 4
+  - name: cycle-four
+    in:
+      graph:
+        - - 1
+          - 3
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 0
+          - 2
+    out: 3
+  - name: complete-four
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+        - - 0
+          - 2
+          - 3
+        - - 0
+          - 1
+          - 3
+        - - 0
+          - 1
+          - 2
+    out: 3
+  - name: example-one
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+        - - 0
+        - - 0
+        - - 0
+    out: 4
+  - name: example-two
+    in:
+      graph:
+        - - 1
+        - - 0
+          - 2
+          - 4
+        - - 1
+          - 3
+          - 4
+        - - 2
+        - - 1
+          - 2
+    out: 4
+  - name: path-four
+    in:
+      graph:
+        - - 1
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+    out: 3
+  - name: broom-five
+    in:
+      graph:
+        - - 1
+        - - 0
+          - 2
+          - 3
+          - 4
+        - - 1
+        - - 1
+        - - 1
+    out: 6
+  - name: lollipop-five
+    in:
+      graph:
+        - - 1
+          - 4
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+          - 4
+        - - 3
+          - 0
+    out: 4
+  - name: double-star-six
+    in:
+      graph:
+        - - 1
+          - 2
+        - - 0
+          - 3
+          - 4
+        - - 0
+          - 5
+        - - 1
+        - - 1
+        - - 2
+    out: 6
+  - name: path-five
+    in:
+      graph:
+        - - 1
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+          - 4
+        - - 3
+    out: 4
+  - name: path-six
+    in:
+      graph:
+        - - 1
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+          - 4
+        - - 3
+          - 5
+        - - 4
+    out: 5
+  - name: cycle-five
+    in:
+      graph:
+        - - 1
+          - 4
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+          - 4
+        - - 3
+          - 0
+    out: 4
+  - name: cycle-six
+    in:
+      graph:
+        - - 1
+          - 5
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+          - 4
+        - - 3
+          - 5
+        - - 4
+          - 0
+    out: 5
+  - name: star-five
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+          - 4
+        - - 0
+        - - 0
+        - - 0
+        - - 0
+    out: 6
+  - name: star-six
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        - - 0
+        - - 0
+        - - 0
+        - - 0
+        - - 0
+    out: 8
+  - name: complete-five
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+          - 4
+        - - 0
+          - 2
+          - 3
+          - 4
+        - - 0
+          - 1
+          - 3
+          - 4
+        - - 0
+          - 1
+          - 2
+          - 4
+        - - 0
+          - 1
+          - 2
+          - 3
+    out: 4
+  - name: diamond-six
+    in:
+      graph:
+        - - 1
+          - 2
+        - - 0
+          - 2
+          - 3
+        - - 0
+          - 1
+          - 3
+          - 4
+        - - 1
+          - 2
+          - 5
+        - - 2
+          - 5
+        - - 3
+          - 4
+    out: 5
+  - name: tree-six
+    in:
+      graph:
+        - - 1
+          - 2
+        - - 0
+          - 3
+          - 4
+        - - 0
+          - 5
+        - - 1
+        - - 1
+        - - 2
+    out: 6
+  - name: ladder-six
+    in:
+      graph:
+        - - 1
+          - 3
+        - - 0
+          - 2
+          - 4
+        - - 1
+          - 5
+        - - 0
+          - 4
+        - - 1
+          - 3
+          - 5
+        - - 2
+          - 4
+    out: 5
+  - name: bowtie-six
+    in:
+      graph:
+        - - 1
+          - 2
+        - - 0
+          - 2
+          - 3
+        - - 0
+          - 1
+          - 4
+        - - 1
+          - 4
+          - 5
+        - - 2
+          - 3
+          - 5
+        - - 3
+          - 4
+    out: 5
+  - name: path-seven
+    in:
+      graph:
+        - - 1
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+          - 4
+        - - 3
+          - 5
+        - - 4
+          - 6
+        - - 5
+    out: 6
+  - name: cycle-seven
+    in:
+      graph:
+        - - 1
+          - 6
+        - - 0
+          - 2
+        - - 1
+          - 3
+        - - 2
+          - 4
+        - - 3
+          - 5
+        - - 4
+          - 6
+        - - 5
+          - 0
+    out: 6
+  - name: star-seven
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        - - 0
+        - - 0
+        - - 0
+        - - 0
+        - - 0
+        - - 0
+    out: 10
+  - name: complete-six
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        - - 0
+          - 2
+          - 3
+          - 4
+          - 5
+        - - 0
+          - 1
+          - 3
+          - 4
+          - 5
+        - - 0
+          - 1
+          - 2
+          - 4
+          - 5
+        - - 0
+          - 1
+          - 2
+          - 3
+          - 5
+        - - 0
+          - 1
+          - 2
+          - 3
+          - 4
+    out: 5
+  - name: complete-seven
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        - - 0
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        - - 0
+          - 1
+          - 3
+          - 4
+          - 5
+          - 6
+        - - 0
+          - 1
+          - 2
+          - 4
+          - 5
+          - 6
+        - - 0
+          - 1
+          - 2
+          - 3
+          - 5
+          - 6
+        - - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 6
+        - - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+    out: 6
+  - name: house-seven
+    in:
+      graph:
+        - - 1
+          - 2
+        - - 0
+          - 2
+          - 3
+        - - 0
+          - 1
+          - 4
+        - - 1
+          - 5
+        - - 2
+          - 5
+        - - 3
+          - 4
+          - 6
+        - - 5
+    out: 6
+  - name: barbell-eight
+    in:
+      graph:
+        - - 1
+          - 2
+          - 3
+        - - 0
+          - 2
+          - 3
+        - - 0
+          - 1
+          - 3
+          - 4
+        - - 0
+          - 1
+          - 2
+          - 5
+        - - 2
+          - 6
+        - - 3
+          - 7
+        - - 4
+          - 7
+        - - 5
+          - 6
+    out: 7
+  - name: balanced-tree-seven
+    in:
+      graph:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 0
+            - 3
+            - 4
+          - - 0
+            - 5
+            - 6
+          - - 1
+          - - 1
+          - - 2
+          - - 2
+    out: 8
+  - name: clique-bridge-eight
+    in:
+      graph:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 3
+          - - 0
+            - 2
+            - 3
+          - - 0
+            - 1
+            - 3
+            - 4
+          - - 0
+            - 1
+            - 2
+          - - 2
+            - 5
+            - 6
+          - - 4
+            - 7
+          - - 4
+            - 7
+          - - 5
+            - 6
+    out: 7
+  - name: wheel-eight
+    in:
+      graph:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+          - - 0
+            - 2
+            - 7
+          - - 0
+            - 1
+            - 3
+          - - 0
+            - 2
+            - 4
+          - - 0
+            - 3
+            - 5
+          - - 0
+            - 4
+            - 6
+          - - 0
+            - 5
+            - 7
+          - - 0
+            - 6
+            - 1
+    out: 7
+  - name: line-twelve
+    in:
+      graph:
+        elemType: int
+        value:
+          - - 1
+          - - 0
+            - 2
+          - - 1
+            - 3
+          - - 2
+            - 4
+          - - 3
+            - 5
+          - - 4
+            - 6
+          - - 5
+            - 7
+          - - 6
+            - 8
+          - - 7
+            - 9
+          - - 8
+            - 10
+          - - 9
+            - 11
+          - - 10
+    out: 11
+  - name: star-twelve
+    in:
+      graph:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+          - - 0
+    out: 20

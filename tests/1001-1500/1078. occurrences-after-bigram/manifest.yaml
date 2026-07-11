@@ -1,0 +1,323 @@
+entry:
+  id: 1078
+  title: occurrences-after-bigram
+  params:
+    text:
+      type: string
+    first:
+      type: string
+    second:
+      type: string
+  call:
+    cpp: "Solution().findOcurrences({text}, {first}, {second})"
+    rust: "Solution::find_ocurrences({text}, {first}, {second})"
+    python3: "Solution().findOcurrences({text}, {first}, {second})"
+    python2: "Solution().findOcurrences({text}, {first}, {second})"
+    ruby: "find_ocurrences({text}, {first}, {second})"
+    java: "new Solution().findOcurrences({text}, {first}, {second})"
+    csharp: "new Solution().FindOcurrences({text}, {first}, {second})"
+    kotlin: "Solution().findOcurrences({text}, {first}, {second})"
+    go: "findOcurrences({text}, {first}, {second})"
+    dart: "Solution().findOcurrences({text}, {first}, {second})"
+    swift: "Solution().findOcurrences({text}, {first}, {second})"
+    typescript: "findOcurrences({text}, {first}, {second})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check({result}, {text}, {first}, {second})"
+    checker: |
+      class Checker:
+          def check(self, result, text=None, first=None, second=None):
+              if not isinstance(result, list):
+                  return False
+              words = text.split()
+              expected = []
+              for i in range(len(words) - 2):
+                  if words[i] == first and words[i + 1] == second:
+                      expected.append(words[i + 2])
+              return result == expected
+seed: 1078
+tests:
+  - name: ex1
+    in:
+      text: "alice is a good girl she is a good student"
+      first: a
+      second: good
+    out:
+      - girl
+      - student
+  - name: ex2
+    in:
+      text: "we will we will rock you"
+      first: we
+      second: will
+    out:
+      - we
+      - rock
+  - name: no_match
+    in:
+      text: "a b c d"
+      first: x
+      second: "y"
+    out: []
+  - name: single_triplet
+    in:
+      text: "a b c"
+      first: a
+      second: b
+    out:
+      - c
+  - name: overlapping_matches
+    in:
+      text: "a a a a"
+      first: a
+      second: a
+    out:
+      - a
+      - a
+  - name: repeated_three
+    in:
+      text: "a b c a b d"
+      first: a
+      second: b
+    out:
+      - c
+      - d
+  - name: first_at_start
+    in:
+      text: "alpha beta gamma"
+      first: alpha
+      second: beta
+    out:
+      - gamma
+  - name: first_at_end
+    in:
+      text: "foo bar baz"
+      first: bar
+      second: baz
+    out: []
+  - name: second_repeated
+    in:
+      text: "a b a b c"
+      first: a
+      second: b
+    out:
+      - a
+      - c
+  - name: three_occurrences
+    in:
+      text: "t u v t u w t u x"
+      first: t
+      second: u
+    out:
+      - v
+      - w
+      - x
+  - name: many_words_1
+    in:
+      text: "one two three four five six"
+      first: two
+      second: three
+    out:
+      - four
+  - name: many_words_2
+    in:
+      text: "red blue red blue green red blue yellow"
+      first: red
+      second: blue
+    out:
+      - red
+      - green
+      - yellow
+  - name: many_words_3
+    in:
+      text: "p q r p q s p q t"
+      first: p
+      second: q
+    out:
+      - r
+      - s
+      - t
+  - name: no_triplet_due_to_gap
+    in:
+      text: "a x b c"
+      first: a
+      second: b
+    out: []
+  - name: multiple_same_third
+    in:
+      text: "a b c a b c a b d"
+      first: a
+      second: b
+    out:
+      - c
+      - c
+      - d
+  - name: adjacent_repetitions
+    in:
+      text: "a b c a b c a b c"
+      first: a
+      second: b
+    out:
+      - c
+      - c
+      - c
+  - name: two_word_text
+    in:
+      text: "a b"
+      first: a
+      second: b
+    out: []
+  - name: different_case_letters_not_allowed
+    in:
+      text: "abc def ghi"
+      first: abc
+      second: def
+    out:
+      - ghi
+  - name: boundary_longish_1
+    in:
+      text: "a b c d e f g h i j k l"
+      first: d
+      second: e
+    out:
+      - f
+  - name: boundary_longish_2
+    in:
+      text: "aa bb cc dd ee ff gg hh ii jj kk ll mm"
+      first: ee
+      second: ff
+    out:
+      - gg
+  - name: boundary_longish_3
+    in:
+      text: "a b c a b d a b e a b f"
+      first: a
+      second: b
+    out:
+      - c
+      - d
+      - e
+      - f
+  - name: boundary_longish_4
+    in:
+      text: "cat dog bird cat dog fish cat dog ant"
+      first: cat
+      second: dog
+    out:
+      - bird
+      - fish
+      - ant
+  - name: boundary_longish_5
+    in:
+      text: "a b a c a b a d"
+      first: a
+      second: b
+    out:
+      - a
+      - a
+  - name: many_matches_1
+    in:
+      text: "a b c a b c a b c"
+      first: a
+      second: b
+    out:
+      - c
+      - c
+      - c
+  - name: many_matches_2
+    in:
+      text: "x y z x y z x y a x y b"
+      first: x
+      second: "y"
+    out:
+      - z
+      - z
+      - a
+      - b
+  - name: many_matches_3
+    in:
+      text: "p q r s p q r t p q r u"
+      first: p
+      second: q
+    out:
+      - r
+      - r
+      - r
+  - name: many_matches_4
+    in:
+      text: "alpha beta gamma alpha beta delta alpha beta epsilon"
+      first: alpha
+      second: beta
+    out:
+      - gamma
+      - delta
+      - epsilon
+  - name: many_matches_5
+    in:
+      text: "a a b a a c a a d"
+      first: a
+      second: a
+    out:
+      - b
+      - c
+      - d
+  - name: not_enough_words
+    in:
+      text: "hello world"
+      first: hello
+      second: world
+    out: []
+  - name: trailing_match_absent
+    in:
+      text: "w x y z"
+      first: x
+      second: "y"
+    out:
+      - z
+  - name: leading_match_absent
+    in:
+      text: "x y z"
+      first: "y"
+      second: z
+    out: []
+  - name: repeated_first_second
+    in:
+      text: "a b c a b d a b e"
+      first: a
+      second: b
+    out:
+      - c
+      - d
+      - e
+  - name: varied_words_1
+    in:
+      text: "one one two one one three one one four"
+      first: one
+      second: one
+    out:
+      - two
+      - three
+      - four
+  - name: varied_words_2
+    in:
+      text: "red red blue red red green red red yellow"
+      first: red
+      second: red
+    out:
+      - blue
+      - green
+      - yellow
+  - name: varied_words_3
+    in:
+      text: "a b a b a b a c"
+      first: a
+      second: b
+    out:
+      - a
+      - a
+      - a

@@ -1,0 +1,23 @@
+class Solution(object):
+    def maxSatisfied(self, customers, grumpy, minutes):
+        n = len(customers)
+        total_satisfied = 0
+        current_window_gain = 0
+        
+        for i in range(n):
+            if not grumpy[i]:
+                total_satisfied += customers[i]
+            elif i < minutes:
+                current_window_gain += customers[i]
+        
+        max_window_gain = current_window_gain
+        
+        for i in range(minutes, n):
+            if grumpy[i]:
+                current_window_gain += customers[i]
+            if grumpy[i - minutes]:
+                current_window_gain -= customers[i - minutes]
+            if current_window_gain > max_window_gain:
+                max_window_gain = current_window_gain
+                
+        return total_satisfied + max_window_gain

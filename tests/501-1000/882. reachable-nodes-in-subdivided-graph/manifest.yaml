@@ -1,0 +1,381 @@
+entry:
+  id: 882
+  title: reachable-nodes-in-subdivided-graph
+  params:
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    maxMoves:
+      type: int
+    n:
+      type: int
+  call:
+    cpp: "Solution().reachableNodes({edges}, {maxMoves}, {n})"
+    rust: "Solution::reachable_nodes({edges}, {maxMoves}, {n})"
+    python3: "Solution().reachableNodes({edges}, {maxMoves}, {n})"
+    python2: "Solution().reachableNodes({edges}, {maxMoves}, {n})"
+    ruby: "reachable_nodes({edges}, {maxMoves}, {n})"
+    java: "new Solution().reachableNodes({edges}, {maxMoves}, {n})"
+    csharp: "new Solution().ReachableNodes({edges}, {maxMoves}, {n})"
+    kotlin: "Solution().reachableNodes({edges}, {maxMoves}, {n})"
+    go: "reachableNodes({edges}, {maxMoves}, {n})"
+    dart: "Solution().reachableNodes({edges}, {maxMoves}, {n})"
+    swift: "Solution().reachableNodes({edges}, {maxMoves}, {n})"
+    typescript: "reachableNodes({edges}, {maxMoves}, {n})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().reachableNodes(edges, maxMoves, n, {result})"
+    checker: |
+      from heapq import heappop, heappush
+
+      class Checker:
+          def reachableNodes(self, edges, maxMoves, n, result):
+              graph = [[] for _ in range(n)]
+              dist = [maxMoves + 1] * n
+              for u, v, cnt in edges:
+                  graph[u].append((v, cnt))
+                  graph[v].append((u, cnt))
+              dist[0] = 0
+              heap = [(0, 0)]
+              while heap:
+                  d, u = heappop(heap)
+                  if d != dist[u] or d >= maxMoves:
+                      continue
+                  for v, w in graph[u]:
+                      nd = d + w + 1
+                      if nd < dist[v]:
+                          dist[v] = nd
+                          heappush(heap, (nd, v))
+              reachable = sum(d <= maxMoves for d in dist)
+              sub = 0
+              for u, v, cnt in edges:
+                  a = 0 if dist[u] > maxMoves else min(maxMoves - dist[u], cnt)
+                  b = 0 if dist[v] > maxMoves else min(maxMoves - dist[v], cnt)
+                  sub += min(a + b, cnt)
+              return reachable + sub == result
+seed: 882
+tests:
+  - name: ex1
+    in:
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 1]
+        - [1, 2, 2]
+      maxMoves: 6
+      n: 3
+  - name: ex2
+    in:
+      edges:
+        - [0, 1, 4]
+        - [1, 2, 6]
+        - [0, 2, 8]
+        - [1, 3, 1]
+      maxMoves: 10
+      n: 4
+  - name: ex3
+    in:
+      edges:
+        - [1, 2, 4]
+        - [1, 4, 5]
+        - [1, 3, 1]
+        - [2, 3, 4]
+        - [3, 4, 5]
+      maxMoves: 17
+      n: 5
+  - name: isolated
+    in:
+      edges: []
+      maxMoves: 0
+      n: 1
+  - name: one_edge_zero_subdivision
+    in:
+      edges:
+        - [0, 1, 0]
+      maxMoves: 0
+      n: 2
+  - name: one_edge_partial
+    in:
+      edges:
+        - [0, 1, 5]
+      maxMoves: 3
+      n: 2
+  - name: triangle_small_budget
+    in:
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [0, 2, 2]
+      maxMoves: 2
+      n: 3
+  - name: triangle_large_budget
+    in:
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [0, 2, 2]
+      maxMoves: 10
+      n: 3
+  - name: line_exact_reach
+    in:
+      edges:
+        - [0, 1, 3]
+        - [1, 2, 3]
+      maxMoves: 4
+      n: 3
+  - name: star_center
+    in:
+      edges:
+        - [0, 1, 4]
+        - [0, 2, 4]
+        - [0, 3, 4]
+        - [0, 4, 4]
+      maxMoves: 5
+      n: 5
+  - name: disconnected_source
+    in:
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 1]
+      maxMoves: 7
+      n: 4
+  - name: direct_zero_edge_chain
+    in:
+      edges:
+        - [0, 1, 0]
+        - [1, 2, 0]
+        - [2, 3, 0]
+      maxMoves: 2
+      n: 4
+  - name: only_half_of_edge_reachable
+    in:
+      edges:
+        - [0, 1, 8]
+      maxMoves: 4
+      n: 2
+  - name: edge_reachable_from_both_sides
+    in:
+      edges:
+        - [0, 1, 4]
+        - [1, 2, 4]
+      maxMoves: 6
+      n: 3
+  - name: competing_paths
+    in:
+      edges:
+        - [0, 1, 5]
+        - [1, 3, 5]
+        - [0, 2, 2]
+        - [2, 3, 2]
+      maxMoves: 6
+      n: 4
+  - name: budget_exactly_hits_node
+    in:
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [2, 3, 2]
+      maxMoves: 3
+      n: 4
+  - name: budget_past_all_nodes
+    in:
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+      maxMoves: 20
+      n: 5
+  - name: zero_budget_with_edges
+    in:
+      edges:
+        - [0, 1, 7]
+        - [0, 2, 3]
+        - [2, 3, 1]
+      maxMoves: 0
+      n: 4
+  - name: triangle_with_zero_and_nonzero
+    in:
+      edges:
+        - [0, 1, 0]
+        - [1, 2, 3]
+        - [0, 2, 1]
+      maxMoves: 2
+      n: 3
+  - name: square_perimeter
+    in:
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 0, 2]
+      maxMoves: 5
+      n: 4
+  - name: square_shortcut
+    in:
+      edges:
+        - [0, 1, 9]
+        - [1, 2, 9]
+        - [2, 3, 9]
+        - [0, 3, 1]
+      maxMoves: 3
+      n: 4
+  - name: duplicate_distance_tie
+    in:
+      edges:
+        - [0, 1, 3]
+        - [0, 2, 3]
+        - [1, 3, 1]
+        - [2, 3, 1]
+      maxMoves: 4
+      n: 4
+  - name: long_chain_small_budget
+    in:
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+        - [4, 5, 10]
+      maxMoves: 1
+      n: 6
+  - name: long_chain_mid_budget
+    in:
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+        - [4, 5, 10]
+      maxMoves: 23
+      n: 6
+  - name: star_zero_subdivisions
+    in:
+      edges:
+        - [0, 1, 0]
+        - [0, 2, 0]
+        - [0, 3, 0]
+        - [0, 4, 0]
+        - [0, 5, 0]
+      maxMoves: 1
+      n: 6
+  - name: source_blocked_by_long_edge
+    in:
+      edges:
+        - [0, 1, 10000]
+        - [1, 2, 0]
+      maxMoves: 3
+      n: 3
+  - name: large_cnt_split_across_ends
+    in:
+      edges:
+        - [0, 1, 10000]
+        - [1, 2, 10000]
+      maxMoves: 10000
+      n: 3
+  - name: complete_graph_small
+    in:
+      edges:
+        - [0, 1, 1]
+        - [0, 2, 2]
+        - [0, 3, 3]
+        - [1, 2, 4]
+        - [1, 3, 5]
+        - [2, 3, 6]
+      maxMoves: 7
+      n: 4
+  - name: no_edges_single_node
+    in:
+      edges: []
+      maxMoves: 999
+      n: 1
+  - name: two_hops_with_dead_end
+    in:
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 100]
+        - [2, 3, 1]
+        - [1, 4, 0]
+      maxMoves: 2
+      n: 5
+  - name: branch_and_merge
+    in:
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [0, 3, 2]
+        - [3, 2, 2]
+      maxMoves: 5
+      n: 4
+  - name: high_budget_medium_graph
+    in:
+      edges:
+        - [0, 1, 7]
+        - [0, 2, 5]
+        - [1, 3, 4]
+        - [2, 3, 6]
+        - [3, 4, 8]
+        - [4, 5, 1]
+      maxMoves: 30
+      n: 6
+  - name: asymmetrical_reach
+    in:
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 9]
+        - [0, 3, 9]
+        - [3, 4, 1]
+      maxMoves: 4
+      n: 5
+  - name: budget_one_on_zero_cnt
+    in:
+      edges:
+        - [0, 1, 0]
+        - [1, 2, 5]
+        - [2, 3, 0]
+      maxMoves: 1
+      n: 4
+  - name: sparse_random_like_1
+    in:
+      edges:
+        - [0, 2, 3]
+        - [2, 5, 1]
+        - [5, 7, 4]
+        - [1, 4, 2]
+        - [4, 6, 2]
+      maxMoves: 5
+      n: 8
+  - name: sparse_random_like_2
+    in:
+      edges:
+        - [0, 1, 6]
+        - [1, 3, 1]
+        - [3, 4, 1]
+        - [0, 2, 6]
+        - [2, 4, 1]
+      maxMoves: 8
+      n: 5
+  - name: cycle_all_reachable
+    in:
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 0, 1]
+      maxMoves: 4
+      n: 4
+  - name: many_subnodes_one_edge
+    in:
+      edges:
+        - [0, 1, 10000]
+        - [0, 2, 0]
+        - [1, 2, 0]
+      maxMoves: 5000
+      n: 3

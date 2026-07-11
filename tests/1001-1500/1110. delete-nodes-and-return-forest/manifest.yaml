@@ -1,0 +1,579 @@
+entry:
+  id: 1110
+  title: delete-nodes-and-return-forest
+  params:
+    root:
+      type: tree_node
+    to_delete:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().delNodes({root}, {to_delete})"
+    rust: "Solution::del_nodes({root}, {to_delete})"
+    python3: "Solution().delNodes({root}, {to_delete})"
+    python2: "Solution().delNodes({root}, {to_delete})"
+    ruby: "del_nodes({root}, {to_delete})"
+    java: "new Solution().delNodes({root}, {to_delete})"
+    csharp: "new Solution().DelNodes({root}, {to_delete})"
+    kotlin: "Solution().delNodes({root}, {to_delete})"
+    go: "delNodes({root}, {to_delete})"
+    dart: "Solution().delNodes({root}, {to_delete})"
+    swift: "Solution().delNodes({root}, {to_delete})"
+    typescript: "delNodes({root}, {to_delete})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().delNodes(root, to_delete, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def delNodes(self, root, to_delete, result):
+              def normalize(node):
+                  if node is None:
+                      return None
+                  if isinstance(node, list):
+                      if not node:
+                          return None
+                      nodes = [None if v is None else {"val": v, "left": None, "right": None} for v in node]
+                      kids = deque(nodes[1:])
+                      for item in nodes:
+                          if item is not None:
+                              if kids:
+                                  item["left"] = kids.popleft()
+                              if kids:
+                                  item["right"] = kids.popleft()
+                      return nodes[0]
+                  if isinstance(node, dict):
+                      return {
+                          "val": node.get("val"),
+                          "left": normalize(node.get("left")),
+                          "right": normalize(node.get("right")),
+                      }
+                  if hasattr(node, "val"):
+                      return {
+                          "val": node.val,
+                          "left": normalize(getattr(node, "left", None)),
+                          "right": normalize(getattr(node, "right", None)),
+                      }
+                  return None
+
+              def serialize(node):
+                  node = normalize(node)
+                  if node is None:
+                      return None
+                  out = []
+                  q = deque([node])
+                  while q:
+                      cur = q.popleft()
+                      if cur is None:
+                          out.append(None)
+                          continue
+                      out.append(cur["val"])
+                      q.append(cur["left"])
+                      q.append(cur["right"])
+                  while out and out[-1] is None:
+                      out.pop()
+                  return tuple(out)
+
+              def build_tree(arr):
+                  if not arr:
+                      return None
+                  nodes = [None if v is None else {"val": v, "left": None, "right": None} for v in arr]
+                  kids = deque(nodes[1:])
+                  for node in nodes:
+                      if node is not None:
+                          if kids:
+                              node["left"] = kids.popleft()
+                          if kids:
+                              node["right"] = kids.popleft()
+                  return nodes[0]
+
+              def clone_and_delete(node, deletes):
+                  ans = []
+                  st = set(deletes)
+
+                  def dfs(cur, is_root):
+                      if cur is None:
+                          return None
+                      deleted = cur["val"] in st
+                      if is_root and not deleted:
+                          ans.append(cur)
+                      cur["left"] = dfs(cur["left"], deleted)
+                      cur["right"] = dfs(cur["right"], deleted)
+                      return None if deleted else cur
+
+                  dfs(node, True)
+                  return ans
+
+              if not isinstance(result, list):
+                  return False
+              tree = build_tree(root)
+              expected = clone_and_delete(tree, to_delete)
+              got = [serialize(item) for item in result]
+              exp = [serialize(item) for item in expected]
+              return sorted(got, key=str) == sorted(exp, key=str)
+seed: 1110
+tests:
+  - name: ex1
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [3, 5]
+  - name: ex2
+    in:
+      root:
+        - 1
+        - 2
+        - 4
+        - null
+        - 3
+      to_delete: [3]
+  - name: keep_all_small
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+      to_delete: []
+  - name: delete_root_only
+    in:
+      root:
+        - 1
+      to_delete: [1]
+  - name: delete_leaf
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      to_delete: [5]
+  - name: delete_internal_left
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [2]
+  - name: delete_internal_right
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - null
+        - 6
+        - 7
+      to_delete: [3]
+  - name: delete_both_children
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+      to_delete: [2, 3]
+  - name: chain_left_1
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+      to_delete: [2]
+  - name: chain_left_2
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+      to_delete: [3]
+  - name: chain_left_3
+    in:
+      root:
+        - 1
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+      to_delete: [4]
+  - name: chain_right_1
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+      to_delete: [2]
+  - name: chain_right_2
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+      to_delete: [3]
+  - name: chain_right_3
+    in:
+      root:
+        - 1
+        - null
+        - 2
+        - null
+        - 3
+        - null
+        - 4
+      to_delete: [4]
+  - name: balanced_middle
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [4, 7]
+  - name: balanced_split
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [1, 6]
+  - name: balanced_many
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [2, 5]
+  - name: left_subtree_removed
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - null
+        - 7
+      to_delete: [2, 7]
+  - name: right_subtree_removed
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - 7
+      to_delete: [3, 6]
+  - name: all_leaves_removed
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [4, 5, 6, 7]
+  - name: delete_alternating
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [1, 3, 5, 7]
+  - name: delete_even
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [2, 4, 6]
+  - name: delete_odd
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [1, 3, 5]
+  - name: sparse_tree_1
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 4
+        - null
+        - 5
+      to_delete: [4]
+  - name: sparse_tree_2
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - null
+      to_delete: [2, 6]
+  - name: sparse_tree_3
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - null
+        - 6
+        - 7
+      to_delete: [1, 6]
+  - name: sparse_tree_4
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - null
+        - 5
+      to_delete: [1, 4, 5]
+  - name: sparse_tree_5
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [2, 3, 6]
+  - name: mixed_1
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - 7
+      to_delete: [1, 4]
+  - name: mixed_2
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - 7
+      to_delete: [5, 7]
+  - name: mixed_3
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - null
+      to_delete: [2, 6]
+  - name: mixed_4
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [3, 4, 5]
+  - name: mixed_5
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [1, 2, 7]
+  - name: mixed_6
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      to_delete: [8, 9, 10]
+  - name: mixed_7
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+      to_delete: [1, 4, 7, 10]
+  - name: mixed_8
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - null
+        - 6
+        - 7
+        - null
+        - 9
+        - 10
+        - null
+        - 12
+        - 13
+        - null
+        - 15
+      to_delete: [2, 6, 13]
+  - name: mixed_9
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - null
+        - 5
+        - 6
+        - 7
+        - 8
+        - null
+        - null
+        - 11
+      to_delete: [3, 8]
+  - name: mixed_10
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+      to_delete: [2, 4, 6, 8]
+  - name: mixed_11
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - null
+        - null
+        - 10
+        - 11
+      to_delete: [5, 11]
+  - name: mixed_12
+    in:
+      root:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      to_delete: [1, 2, 3, 4, 5, 6]

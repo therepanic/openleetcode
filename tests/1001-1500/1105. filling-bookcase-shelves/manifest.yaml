@@ -1,0 +1,663 @@
+entry:
+  id: 1105
+  title: filling-bookcase-shelves
+  params:
+    books:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    shelfWidth:
+      type: int
+  call:
+    cpp: Solution().minHeightShelves({books}, {shelfWidth})
+    rust: Solution::min_height_shelves({books}, {shelfWidth})
+    python3: Solution().minHeightShelves({books}, {shelfWidth})
+    python2: Solution().minHeightShelves({books}, {shelfWidth})
+    ruby: min_height_shelves({books}, {shelfWidth})
+    java: new Solution().minHeightShelves({books}, {shelfWidth})
+    csharp: new Solution().MinHeightShelves({books}, {shelfWidth})
+    kotlin: Solution().minHeightShelves({books}, {shelfWidth})
+    go: minHeightShelves({books}, {shelfWidth})
+    dart: Solution().minHeightShelves({books}, {shelfWidth})
+    swift: Solution().minHeightShelves({books}, {shelfWidth})
+    typescript: minHeightShelves({books}, {shelfWidth})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 128
+oracle:
+  python3:
+    call: Checker().check(books, shelfWidth, {result})
+    checker:
+      "class Checker(object):\n    def check(self, books, shelfWidth, result):\n\
+      \        if not isinstance(result, int) or result <= 0:\n            return\
+      \ False\n        n = len(books)\n        dp = [float('inf')] * (n + 1)\n   \
+      \     dp[0] = 0\n        for i in range(1, n + 1):\n            dp[i] = dp[i\
+      \ - 1] + books[i - 1][1]\n            height = 0\n            width = 0\n  \
+      \          for j in range(i - 1, -1, -1):\n                height = max(height,\
+      \ books[j][1])\n                width += books[j][0]\n                if width\
+      \ > shelfWidth:\n                    break\n                dp[i] = min(dp[i],\
+      \ dp[j] + height)\n        return dp[n] == result\n"
+seed: 1105
+tests:
+  - name: example_1
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 2
+            - 3
+          - - 2
+            - 3
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 2
+      shelfWidth: 4
+    out: 6
+  - name: example_2
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 3
+          - - 2
+            - 4
+          - - 3
+            - 2
+      shelfWidth: 6
+    out: 4
+  - name: single_book
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 7
+      shelfWidth: 1
+    out: 7
+  - name: all_fit_one_shelf
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 2
+          - - 1
+            - 3
+      shelfWidth: 3
+    out: 3
+  - name: each_book_separate
+    in:
+      books:
+        elemType: int
+        value:
+          - - 3
+            - 1
+          - - 3
+            - 2
+          - - 3
+            - 3
+      shelfWidth: 3
+    out: 6
+  - name: two_books_one_shelf
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 4
+          - - 2
+            - 3
+      shelfWidth: 4
+    out: 4
+  - name: three_books_split
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 4
+          - - 2
+            - 3
+          - - 1
+            - 2
+      shelfWidth: 4
+    out: 6
+  - name: sample_merge_choice
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 2
+            - 3
+          - - 2
+            - 3
+          - - 1
+            - 1
+      shelfWidth: 3
+    out: 6
+  - name: wide_shelf
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 7
+          - - 3
+            - 4
+          - - 1
+            - 5
+      shelfWidth: 10
+    out: 7
+  - name: narrow_shelf
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 9
+          - - 1
+            - 1
+          - - 1
+            - 8
+          - - 1
+            - 2
+      shelfWidth: 1
+    out: 20
+  - name: alternating_heights
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 10
+          - - 1
+            - 1
+          - - 1
+            - 10
+      shelfWidth: 2
+    out: 20
+  - name: compact_pairing
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 6
+          - - 1
+            - 1
+          - - 1
+            - 6
+          - - 1
+            - 1
+      shelfWidth: 2
+    out: 12
+  - name: greedy_trap
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 1
+          - - 2
+            - 100
+          - - 2
+            - 1
+          - - 2
+            - 100
+      shelfWidth: 4
+    out: 200
+  - name: trap_variant
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 100
+          - - 2
+            - 1
+          - - 2
+            - 100
+          - - 1
+            - 1
+      shelfWidth: 3
+    out: 200
+  - name: all_same_height
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 5
+          - - 2
+            - 5
+          - - 3
+            - 5
+          - - 1
+            - 5
+      shelfWidth: 4
+    out: 10
+  - name: all_same_thickness
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 1
+          - - 2
+            - 2
+          - - 2
+            - 3
+          - - 2
+            - 4
+      shelfWidth: 4
+    out: 6
+  - name: small_mixed
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 3
+            - 4
+          - - 2
+            - 2
+          - - 1
+            - 7
+      shelfWidth: 4
+    out: 11
+  - name: exact_partition
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 1
+            - 3
+          - - 1
+            - 1
+          - - 1
+            - 4
+      shelfWidth: 2
+    out: 7
+  - name: max_height_first
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 10
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+      shelfWidth: 3
+    out: 11
+  - name: max_height_last
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 10
+      shelfWidth: 3
+    out: 11
+  - name: two_shelves_optimal
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 3
+          - - 1
+            - 4
+          - - 1
+            - 2
+          - - 2
+            - 1
+      shelfWidth: 4
+    out: 5
+  - name: longish_1
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 2
+            - 2
+          - - 1
+            - 3
+          - - 2
+            - 4
+          - - 1
+            - 5
+      shelfWidth: 3
+    out: 9
+  - name: longish_2
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 10
+          - - 1
+            - 1
+          - - 2
+            - 10
+          - - 1
+            - 1
+          - - 2
+            - 10
+      shelfWidth: 3
+    out: 30
+  - name: longish_3
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 4
+          - - 1
+            - 4
+          - - 1
+            - 4
+          - - 1
+            - 4
+          - - 1
+            - 4
+      shelfWidth: 2
+    out: 12
+  - name: longish_4
+    in:
+      books:
+        elemType: int
+        value:
+          - - 3
+            - 2
+          - - 1
+            - 8
+          - - 2
+            - 1
+          - - 1
+            - 8
+          - - 3
+            - 2
+      shelfWidth: 4
+    out: 12
+  - name: longish_5
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 9
+          - - 2
+            - 7
+          - - 1
+            - 8
+          - - 2
+            - 6
+          - - 1
+            - 5
+      shelfWidth: 4
+    out: 15
+  - name: longish_6
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 1
+          - - 2
+            - 2
+          - - 2
+            - 3
+          - - 2
+            - 4
+          - - 2
+            - 5
+      shelfWidth: 6
+    out: 7
+  - name: longish_7
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 100
+          - - 1
+            - 99
+          - - 1
+            - 98
+          - - 1
+            - 97
+      shelfWidth: 2
+    out: 198
+  - name: longish_8
+    in:
+      books:
+        elemType: int
+        value:
+          - - 4
+            - 4
+          - - 4
+            - 3
+          - - 4
+            - 2
+      shelfWidth: 4
+    out: 9
+  - name: longish_9
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 2
+            - 2
+          - - 1
+            - 2
+          - - 2
+            - 2
+          - - 1
+            - 2
+          - - 2
+            - 2
+      shelfWidth: 3
+    out: 6
+  - name: longish_10
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 2
+          - - 1
+            - 3
+          - - 1
+            - 4
+          - - 1
+            - 5
+          - - 1
+            - 6
+      shelfWidth: 4
+    out: 8
+  - name: longish_11
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 5
+          - - 2
+            - 5
+          - - 2
+            - 5
+          - - 2
+            - 5
+      shelfWidth: 5
+    out: 10
+  - name: longish_12
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 2
+            - 10
+          - - 1
+            - 1
+          - - 2
+            - 10
+          - - 1
+            - 1
+      shelfWidth: 3
+    out: 21
+  - name: longish_13
+    in:
+      books:
+        elemType: int
+        value:
+          - - 3
+            - 1
+          - - 1
+            - 2
+          - - 1
+            - 3
+          - - 3
+            - 4
+      shelfWidth: 4
+    out: 6
+  - name: longish_14
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 7
+          - - 3
+            - 8
+          - - 1
+            - 9
+          - - 3
+            - 1
+      shelfWidth: 4
+    out: 17
+  - name: longish_15
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+          - - 1
+            - 1
+      shelfWidth: 3
+    out: 3
+  - name: longish_16
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 9
+          - - 2
+            - 1
+          - - 2
+            - 9
+          - - 2
+            - 1
+          - - 2
+            - 9
+      shelfWidth: 4
+    out: 27
+  - name: longish_17
+    in:
+      books:
+        elemType: int
+        value:
+          - - 1
+            - 6
+          - - 2
+            - 6
+          - - 1
+            - 6
+          - - 2
+            - 6
+          - - 1
+            - 6
+      shelfWidth: 3
+    out: 18
+  - name: longish_18
+    in:
+      books:
+        elemType: int
+        value:
+          - - 4
+            - 1
+          - - 1
+            - 9
+          - - 1
+            - 9
+          - - 4
+            - 1
+      shelfWidth: 5
+    out: 11
+  - name: longish_19
+    in:
+      books:
+        elemType: int
+        value:
+          - - 2
+            - 2
+          - - 1
+            - 8
+          - - 2
+            - 2
+          - - 1
+            - 8
+          - - 2
+            - 2
+      shelfWidth: 3
+    out: 18

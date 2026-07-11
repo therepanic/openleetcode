@@ -1,0 +1,31 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def sufficientSubset(
+        self, root: Optional[TreeNode], limit: int
+    ) -> Optional[TreeNode]:
+
+        def dfs(node, path_sum):
+            if not node:
+                return False
+
+            curr = path_sum + node.val
+
+            if not node.left and not node.right:
+                return curr >= limit
+
+            left_good = dfs(node.left, curr)
+            right_good = dfs(node.right, curr)
+
+            if not left_good:
+                node.left = None
+            if not right_good:
+                node.right = None
+
+            return left_good or right_good
+
+        return root if dfs(root, 0) else None

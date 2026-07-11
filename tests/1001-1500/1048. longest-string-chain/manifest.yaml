@@ -1,0 +1,373 @@
+entry:
+  id: 1048
+  title: "longest-string-chain"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().longestStrChain({words})"
+    rust: "Solution::longest_str_chain({words})"
+    python3: "Solution().longestStrChain({words})"
+    python2: "Solution().longestStrChain({words})"
+    ruby: "longest_str_chain({words})"
+    java: "new Solution().longestStrChain({words})"
+    csharp: "new Solution().LongestStrChain({words})"
+    kotlin: "Solution().longestStrChain({words})"
+    go: "longestStrChain({words})"
+    dart: "Solution().longestStrChain({words})"
+    swift: "Solution().longestStrChain({words})"
+    typescript: "longestStrChain({words})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().longestStrChain(words, {result})"
+    checker: |
+      class Checker:
+          def longestStrChain(self, words, result) -> bool:
+              words = sorted(words, key=len)
+              dp = {}
+              best = 0
+              for word in words:
+                  cur = 1
+                  for i in range(len(word)):
+                      pred = word[:i] + word[i + 1:]
+                      if pred in dp and dp[pred] + 1 > cur:
+                          cur = dp[pred] + 1
+                  dp[word] = cur
+                  if cur > best:
+                      best = cur
+              return result == best
+
+seed: 1048
+
+tests:
+  - name: "single_word"
+    in:
+      words:
+        - "a"
+    out: 1
+  - name: "single_long_word"
+    in:
+      words:
+        - "ab"
+    out: 1
+  - name: "two_singletons"
+    in:
+      words:
+        - "a"
+        - "b"
+    out: 1
+  - name: "simple_chain"
+    in:
+      words:
+        - "ab"
+        - "abc"
+    out: 2
+  - name: "sample_chain"
+    in:
+      words:
+        - "a"
+        - "b"
+        - "ba"
+        - "bca"
+        - "bda"
+        - "bdca"
+    out: 4
+  - name: "long_sample"
+    in:
+      words:
+        - "xbc"
+        - "pcxbcf"
+        - "xb"
+        - "cxbc"
+        - "pcxbc"
+    out: 5
+  - name: "branching"
+    in:
+      words:
+        - "a"
+        - "ab"
+        - "ac"
+        - "bd"
+        - "abc"
+        - "abd"
+        - "abdd"
+    out: 4
+  - name: "extra_tail"
+    in:
+      words:
+        - "a"
+        - "ba"
+        - "bca"
+        - "bda"
+        - "bdca"
+        - "bdcaa"
+    out: 5
+  - name: "four_step"
+    in:
+      words:
+        - "x"
+        - "xy"
+        - "xyz"
+        - "wxyz"
+    out: 4
+  - name: "kirah"
+    in:
+      words:
+        - "k"
+        - "ki"
+        - "kir"
+        - "kira"
+        - "kirah"
+    out: 5
+  - name: "three_way"
+    in:
+      words:
+        - "a"
+        - "b"
+        - "c"
+        - "ab"
+        - "ac"
+        - "bc"
+        - "abc"
+    out: 3
+  - name: "plate_chain"
+    in:
+      words:
+        - "a"
+        - "at"
+        - "ate"
+        - "late"
+        - "plate"
+        - "plates"
+    out: 6
+  - name: "meet"
+    in:
+      words:
+        - "me"
+        - "met"
+        - "meet"
+        - "meets"
+    out: 4
+  - name: "chain_with_noise"
+    in:
+      words:
+        - "a"
+        - "ba"
+        - "bca"
+        - "bdca"
+        - "bdcab"
+        - "bdcaba"
+    out: 6
+  - name: "ordered_prefix"
+    in:
+      words:
+        - "a"
+        - "b"
+        - "ab"
+        - "abc"
+        - "abcd"
+        - "abcde"
+    out: 5
+  - name: "z_chain"
+    in:
+      words:
+        - "z"
+        - "za"
+        - "zab"
+        - "zabc"
+        - "zabcd"
+    out: 5
+  - name: "m_chain"
+    in:
+      words:
+        - "m"
+        - "am"
+        - "mam"
+        - "maam"
+        - "maaam"
+    out: 5
+  - name: "geek_chain"
+    in:
+      words:
+        - "g"
+        - "ge"
+        - "gee"
+        - "geek"
+        - "geeks"
+        - "geekss"
+    out: 6
+  - name: "missing_step"
+    in:
+      words:
+        - "a"
+        - "ba"
+        - "bda"
+        - "bdca"
+        - "bcdca"
+    out: 5
+  - name: "top_stop"
+    in:
+      words:
+        - "t"
+        - "to"
+        - "top"
+        - "stop"
+        - "stops"
+    out: 5
+  - name: "spray"
+    in:
+      words:
+        - "p"
+        - "pa"
+        - "pat"
+        - "prat"
+        - "sprat"
+        - "spray"
+    out: 5
+  - name: "hands"
+    in:
+      words:
+        - "h"
+        - "ha"
+        - "han"
+        - "hand"
+        - "hands"
+    out: 5
+  - name: "cars"
+    in:
+      words:
+        - "c"
+        - "ca"
+        - "car"
+        - "cars"
+        - "scars"
+    out: 5
+  - name: "bread"
+    in:
+      words:
+        - "r"
+        - "re"
+        - "red"
+        - "read"
+        - "bread"
+    out: 5
+  - name: "strops"
+    in:
+      words:
+        - "o"
+        - "op"
+        - "top"
+        - "stop"
+        - "stops"
+        - "strops"
+    out: 6
+  - name: "notes"
+    in:
+      words:
+        - "n"
+        - "no"
+        - "not"
+        - "note"
+        - "notes"
+    out: 5
+  - name: "string"
+    in:
+      words:
+        - "s"
+        - "st"
+        - "str"
+        - "stri"
+        - "strin"
+        - "string"
+    out: 6
+  - name: "foooo"
+    in:
+      words:
+        - "f"
+        - "fo"
+        - "foo"
+        - "fooo"
+        - "foooo"
+    out: 5
+  - name: "unity"
+    in:
+      words:
+        - "u"
+        - "un"
+        - "uni"
+        - "unit"
+        - "unity"
+    out: 5
+  - name: "depth"
+    in:
+      words:
+        - "d"
+        - "de"
+        - "def"
+        - "deft"
+        - "depth"
+    out: 4
+  - name: "plane"
+    in:
+      words:
+        - "l"
+        - "la"
+        - "lap"
+        - "plan"
+        - "plane"
+    out: 3
+  - name: "qabde"
+    in:
+      words:
+        - "q"
+        - "qa"
+        - "qab"
+        - "qabd"
+        - "qabde"
+    out: 5
+  - name: "ward"
+    in:
+      words:
+        - "w"
+        - "wa"
+        - "war"
+        - "ward"
+        - "words"
+    out: 4
+  - name: "yaks"
+    in:
+      words:
+        - "y"
+        - "ya"
+        - "yak"
+        - "yaks"
+    out: 4
+  - name: "learn"
+    in:
+      words:
+        - "e"
+        - "ea"
+        - "ear"
+        - "earn"
+        - "learn"
+    out: 5
+  - name: "barker"
+    in:
+      words:
+        - "b"
+        - "ba"
+        - "bar"
+        - "bark"
+        - "barke"
+        - "barker"
+    out: 6

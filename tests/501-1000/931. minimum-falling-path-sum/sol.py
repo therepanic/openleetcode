@@ -1,0 +1,26 @@
+class Solution:
+    def minFallingPathSum(self, matrix: List[List[int]]) -> int:
+        m, n = len(matrix), len(matrix[0])
+        if m == 1 and n == 1:
+            return min(matrix[0])
+        dp = []
+        for i in range(m - 1):
+            dp.append([None] * n)
+        mini = float("inf")
+
+        def f(i, j):
+            if j >= n or j < 0:
+                return float("inf")
+            if i == m - 1:
+                return matrix[i][j]
+            if dp[i][j] is not None:
+                return dp[i][j]
+            down = matrix[i][j] + f(i + 1, j)
+            leftd = matrix[i][j] + f(i + 1, j - 1)
+            rightd = matrix[i][j] + f(i + 1, j + 1)
+            dp[i][j] = min(down, leftd, rightd)
+            return dp[i][j]
+
+        for i in range(n):
+            mini = min(mini, f(0, i))
+        return mini

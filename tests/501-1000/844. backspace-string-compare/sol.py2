@@ -1,0 +1,37 @@
+class Solution(object):
+    def backspaceCompare(self, s, t):
+        """
+        :type s: str
+        :type t: str
+        :rtype: bool
+        """
+        def get_next_valid_char_index(s, end):
+            backspace_count = 0
+            while end >= 0:
+                if s[end] == '#':
+                    backspace_count += 1
+                elif backspace_count > 0:
+                    backspace_count -= 1
+                else:
+                    break
+                end -= 1
+            return end
+
+        ps = len(s) - 1
+        pt = len(t) - 1
+
+        while ps >= 0 or pt >= 0:
+            ps = get_next_valid_char_index(s, ps)
+            pt = get_next_valid_char_index(t, pt)
+
+            if ps < 0 and pt < 0:
+                return True
+            if ps < 0 or pt < 0:
+                return False
+            elif s[ps] != t[pt]:
+                return False
+
+            ps -= 1
+            pt -= 1
+
+        return True

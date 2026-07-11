@@ -1,0 +1,202 @@
+entry:
+  id: 904
+  title: fruit-into-baskets
+  params:
+    fruits:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().totalFruit({fruits})"
+    rust: "Solution::total_fruit({fruits})"
+    python3: "Solution().totalFruit({fruits})"
+    python2: "Solution().totalFruit({fruits})"
+    ruby: "total_fruit({fruits})"
+    java: "new Solution().totalFruit({fruits})"
+    csharp: "new Solution().TotalFruit({fruits})"
+    kotlin: "Solution().totalFruit({fruits})"
+    go: "totalFruit({fruits})"
+    dart: "Solution().totalFruit({fruits})"
+    swift: "Solution().totalFruit({fruits})"
+    typescript: "totalFruit({fruits})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().totalFruit(fruits, {result})"
+    checker: |
+      from collections import defaultdict
+
+      class Checker:
+          def totalFruit(self, fruits, result):
+              if not isinstance(result, int):
+                  return False
+              start = 0
+              max_len = 0
+              fruit_count = defaultdict(int)
+              for end in range(len(fruits)):
+                  fruit_count[fruits[end]] += 1
+                  while len(fruit_count) > 2:
+                      fruit_count[fruits[start]] -= 1
+                      if fruit_count[fruits[start]] == 0:
+                          del fruit_count[fruits[start]]
+                      start += 1
+                  max_len = max(max_len, end - start + 1)
+              return result == max_len
+seed: 904
+tests:
+  - name: example-1
+    in:
+      fruits: [1, 2, 1]
+    out: 3
+  - name: example-2
+    in:
+      fruits: [0, 1, 2, 2]
+    out: 3
+  - name: example-3
+    in:
+      fruits: [1, 2, 3, 2, 2]
+    out: 4
+  - name: single
+    in:
+      fruits: [5]
+    out: 1
+  - name: two-same
+    in:
+      fruits: [7, 7]
+    out: 2
+  - name: two-diff
+    in:
+      fruits: [7, 8]
+    out: 2
+  - name: all-same-6
+    in:
+      fruits: [3, 3, 3, 3, 3, 3]
+    out: 6
+  - name: pair-repeat
+    in:
+      fruits: [1, 2, 1, 2, 1, 2]
+    out: 6
+  - name: three-alt
+    in:
+      fruits: [1, 2, 3, 1, 2, 3]
+    out: 2
+  - name: long-two
+    in:
+      fruits: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+    out: 20
+  - name: long-three
+    in:
+      fruits: [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]
+    out: 2
+  - name: block-two
+    in:
+      fruits: [2, 2, 2, 2, 2, 3, 3, 3, 3, 2, 2, 2]
+    out: 12
+  - name: block-three
+    in:
+      fruits: [2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4]
+    out: 9
+  - name: mixed1
+    in:
+      fruits: [1, 2, 3, 2, 2, 1, 1]
+    out: 4
+  - name: mixed2
+    in:
+      fruits: [0, 1, 0, 1, 2, 2, 1]
+    out: 4
+  - name: edge-high
+    in:
+      fruits: [0, 49999, 0, 49999, 1]
+    out: 4
+  - name: edge-many
+    in:
+      fruits: [0, 1, 2, 3, 2, 2, 1, 1, 4, 4]
+    out: 4
+  - name: pattern1
+    in:
+      fruits: [1, 2, 1, 3, 3, 2, 2, 2]
+    out: 5
+  - name: pattern2
+    in:
+      fruits: [4, 5, 4, 5, 6, 6, 6, 5, 4]
+    out: 5
+  - name: pattern3
+    in:
+      fruits: [9, 8, 7, 8, 9, 8, 7, 7]
+    out: 3
+  - name: pattern4
+    in:
+      fruits: [0, 1, 0, 2, 2, 2, 1, 1, 0]
+    out: 5
+  - name: pattern5
+    in:
+      fruits: [1, 1, 2, 2, 3, 3, 2, 2, 1, 1]
+    out: 6
+  - name: pattern6
+    in:
+      fruits: [1, 2, 2, 3, 3, 3, 2, 2, 1]
+    out: 7
+  - name: pattern7
+    in:
+      fruits: [3, 4, 5, 5, 4, 4, 3, 3]
+    out: 5
+  - name: pattern8
+    in:
+      fruits: [6, 7, 6, 7, 6, 8, 8, 7, 6]
+    out: 5
+  - name: pattern9
+    in:
+      fruits: [1, 2, 1, 2, 3, 4, 4, 4, 3]
+    out: 5
+  - name: pattern10
+    in:
+      fruits: [2, 2, 2, 3, 4, 5, 5, 4, 4, 4]
+    out: 6
+  - name: pattern11
+    in:
+      fruits: [0, 0, 1, 2, 2, 1, 1, 0, 0]
+    out: 5
+  - name: pattern12
+    in:
+      fruits: [5, 6, 7, 6, 5, 6, 7, 7, 6]
+    out: 4
+  - name: gen-large-a
+    in:
+      fruits:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+          elemType: "int"
+  - name: gen-large-b
+    in:
+      fruits:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+          elemType: "int"
+  - name: extra-1
+    in:
+      fruits: [4, 1, 4, 1, 4, 2, 2, 2, 1]
+    out: 5
+  - name: extra-2
+    in:
+      fruits: [2, 3, 2, 4, 4, 4, 3, 3]
+    out: 5
+  - name: extra-3
+    in:
+      fruits: [1, 2, 1, 2, 3, 3, 3, 2, 2, 1]
+    out: 6
+  - name: extra-4
+    in:
+      fruits: [0, 1, 1, 0, 2, 2, 2, 1, 1, 0, 0]
+    out: 5

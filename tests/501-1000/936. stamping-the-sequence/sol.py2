@@ -1,0 +1,46 @@
+class Solution(object):
+    def movesToStamp(self, stamp, target):
+        """
+        :type stamp: str
+        :type target: str
+        :rtype: List[int]
+        """
+        m, n = len(stamp), len(target)
+        stamp = list(stamp)
+        target = list(target)
+        
+        def can_stamp(i):
+            for j in range(m):
+                if target[i + j] != '?' and target[i + j] != stamp[j]:
+                    return False
+            return True
+        
+        def apply_stamp(i):
+            for j in range(m):
+                target[i + j] = '?'
+        
+        stamped = [False] * n
+        result = []
+        queue = []
+        
+        for i in range(n - m + 1):
+            if can_stamp(i):
+                queue.append(i)
+                apply_stamp(i)
+                result.append(i)
+                stamped[i] = True
+        
+        while queue:
+            pos = queue.pop(0)
+            for i in range(max(0, pos - m + 1), min(n - m + 1, pos + m)):
+                if can_stamp(i):
+                    if not stamped[i]:
+                        queue.append(i)
+                        apply_stamp(i)
+                        result.append(i)
+                        stamped[i] = True
+        
+        if all(c == '?' for c in target):
+            return result[::-1]
+        else:
+            return []

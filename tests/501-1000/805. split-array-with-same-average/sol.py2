@@ -1,0 +1,56 @@
+class Solution(object):
+    def splitArraySameAverage(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        if len(nums) < 2:
+            return False
+        total = sum(nums)
+        n = len(nums)
+        k = total / float(n)
+        nums = [nums[i] * n - total for i in range(n)]
+        
+        mp_a = {}
+        mid = n >> 1
+        arr = nums[:mid]
+        for mask in range(1, 1 << len(arr)):
+            s = 0
+            cnt = 0
+            for i in range(len(arr)):
+                if mask & (1 << i):
+                    s += arr[i]
+                    cnt += 1
+            if cnt not in mp_a:
+                mp_a[cnt] = set()
+            mp_a[cnt].add(s)
+        
+        mp_b = {}
+        arr = nums[mid:]
+        for mask in range(1, 1 << len(arr)):
+            s = 0
+            cnt = 0
+            for i in range(len(arr)):
+                if mask & (1 << i):
+                    s += arr[i]
+                    cnt += 1
+            if cnt not in mp_b:
+                mp_b[cnt] = set()
+            mp_b[cnt].add(s)
+        
+        for cnt in mp_a:
+            if 0 in mp_a[cnt] and cnt != 0:
+                return True
+        for cnt in mp_b:
+            if 0 in mp_b[cnt] and cnt != 0:
+                return True
+        
+        for cnt_a in mp_a:
+            for cnt_b in mp_b:
+                total_cnt = cnt_a + cnt_b
+                if total_cnt == 0 or total_cnt == n:
+                    continue
+                for val in mp_a[cnt_a]:
+                    if -val in mp_b[cnt_b]:
+                        return True
+        return False

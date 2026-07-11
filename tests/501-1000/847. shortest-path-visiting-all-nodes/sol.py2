@@ -1,0 +1,35 @@
+class Solution(object):
+    def shortestPathLength(self, graph):
+        """
+        :type graph: List[List[int]]
+        :rtype: int
+        """
+        from collections import deque
+        
+        n = len(graph)
+        if n == 1:
+            return 0
+        
+        FULL = (1 << n) - 1
+        visited = [[False] * (1 << n) for _ in range(n)]
+        q = deque()
+        
+        for i in range(n):
+            mask = 1 << i
+            q.append((i, mask, 0))
+            visited[i][mask] = True
+        
+        while q:
+            node, mask, dist = q.popleft()
+            
+            if mask == FULL:
+                return dist
+            
+            for nei in graph[node]:
+                new_mask = mask | (1 << nei)
+                
+                if not visited[nei][new_mask]:
+                    visited[nei][new_mask] = True
+                    q.append((nei, new_mask, dist + 1))
+        
+        return -1

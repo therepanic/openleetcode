@@ -1,0 +1,34 @@
+class Solution(object):
+    def colorBorder(self, grid, row, col, color):
+        rows, cols = len(grid), len(grid[0])
+        start_color = grid[row][col]
+        
+        if start_color == color:
+            return grid
+            
+        queue = [(row, col)]
+        visited = {(row, col)}
+        borders = []
+        
+        while queue:
+            r, c = queue.pop(0)
+            is_border = False
+            
+            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nr, nc = r + dr, c + dc
+                
+                if not (0 <= nr < rows and 0 <= nc < cols):
+                    is_border = True
+                elif grid[nr][nc] != start_color:
+                    is_border = True
+                elif (nr, nc) not in visited:
+                    visited.add((nr, nc))
+                    queue.append((nr, nc))
+            
+            if is_border:
+                borders.append((r, c))
+        
+        for r, c in borders:
+            grid[r][c] = color
+            
+        return grid

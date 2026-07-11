@@ -1,0 +1,28 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def pruneTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        def traverseAndRemove(temp):
+            if not temp:
+                return False
+            if not temp.left and not temp.right:
+                if temp.val == 1:
+                    return True
+                else:
+                    return False
+            left = traverseAndRemove(temp.left)
+            right = traverseAndRemove(temp.right)
+            if not left:
+                temp.left = None
+            if not right:
+                temp.right = None
+            return left or right or temp.val == 1
+
+        traverseAndRemove(root)
+        if not root.left and not root.right and root.val == 0:
+            return
+        return root

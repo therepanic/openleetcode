@@ -1,0 +1,20 @@
+class Solution:
+    """Iterative 1D Solution"""
+
+    def lastStoneWeightII(self, stones: list[int]) -> int:
+        n = len(stones)
+        total = sum(stones)
+        target = total // 2
+        dp_prev = [0] * (target + 1)
+        for i in range(n - 1, -1, -1):
+            dp_curr = [0] * (target + 1)
+            for size in range(target + 1):
+                skip = dp_prev[size]
+                take = (
+                    dp_prev[size - stones[i]] + stones[i]
+                    if size >= stones[i]
+                    else float("-inf")
+                )
+                dp_curr[size] = max(skip, take)
+            dp_prev = dp_curr
+        return total - 2 * dp_prev[target]

@@ -1,0 +1,57 @@
+class Solution(object):
+    def largestComponentSize(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        def get_prime_factors(n):
+            s = set()
+            while n % 2 == 0:
+                s.add(2)
+                n //= 2
+            i = 3
+            while i * i <= n:
+                while n % i == 0:
+                    s.add(i)
+                    n //= i
+                i += 2
+            if n > 2:
+                s.add(n)
+            return list(s)
+
+        n = len(nums)
+        root = list(range(n))
+        rank = [1] * n
+
+        def find(x):
+            while root[x] != x:
+                root[x] = root[root[x]]
+                x = root[x]
+            return x
+
+        def union(x, y):
+            rx, ry = find(x), find(y)
+            if rx == ry:
+                return
+            if rank[rx] > rank[ry]:
+                root[ry] = rx
+            elif rank[rx] < rank[ry]:
+                root[rx] = ry
+            else:
+                root[ry] = rx
+                rank[rx] += 1
+
+        prime_to_idx = {}
+        for i, num in enumerate(nums):
+            primes = get_prime_factors(num)
+            for p in primes:
+                if p in prime_to_idx:
+                    union(prime_to_idx[p], i)
+                prime_to_idx[p] = i
+
+        count = {}
+        for i in range(n):
+            r = find(i)
+            count[r] = count.get(r, 0) + 1
+
+        return max(count.values())

@@ -1,0 +1,20 @@
+from collections import deque
+from typing import List
+
+
+class Solution:
+    def shortestSubarray(self, nums: List[int], k: int) -> int:
+        prefix = [0]
+        for num in nums:
+            prefix.append(prefix[-1] + num)
+
+        best = len(nums) + 1
+        dq = deque()
+        for i, cur in enumerate(prefix):
+            while dq and cur - prefix[dq[0]] >= k:
+                best = min(best, i - dq.popleft())
+            while dq and prefix[dq[-1]] >= cur:
+                dq.pop()
+            dq.append(i)
+
+        return -1 if best == len(nums) + 1 else best

@@ -1,0 +1,334 @@
+entry:
+  id: 809
+  title: expressive-words
+  params:
+    s:
+      type: string
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: Solution().expressiveWords({s}, {words})
+    rust: Solution::expressive_words({s}, {words})
+    python3: Solution().expressiveWords({s}, {words})
+    python2: Solution().expressiveWords({s}, {words})
+    ruby: expressive_words({s}, {words})
+    java: new Solution().expressiveWords({s}, {words})
+    csharp: new Solution().ExpressiveWords({s}, {words})
+    kotlin: Solution().expressiveWords({s}, {words})
+    go: expressiveWords({s}, {words})
+    dart: Solution().expressiveWords({s}, {words})
+    swift: Solution().expressiveWords({s}, {words})
+    typescript: expressiveWords({s}, {words})
+judge:
+  type: ignore_order
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().expressiveWords(s, words, {result})
+    checker:
+      "class Checker:\n    def expressiveWords(self, s, words, result):\n \
+      \       def encode(x):\n            chars, cnts = [], []\n            prev =\
+      \ None\n            cnt = 0\n            for ch in x:\n                if ch\
+      \ == prev:\n                    cnt += 1\n                else:\n          \
+      \          if prev is not None:\n                        chars.append(prev)\n\
+      \                        cnts.append(cnt)\n                    prev = ch\n \
+      \                   cnt = 1\n            chars.append(prev)\n            cnts.append(cnt)\n\
+      \            return chars, cnts\n\n        s_chars, s_cnts = encode(s)\n   \
+      \     expected = 0\n        for w in words:\n            w_chars, w_cnts = encode(w)\n\
+      \            if w_chars != s_chars:\n                continue\n            ok\
+      \ = True\n            for sc, wc in zip(s_cnts, w_cnts):\n                if\
+      \ sc < wc or (sc < 3 and sc != wc):\n                    ok = False\n      \
+      \              break\n            if ok:\n                expected += 1\n  \
+      \      return expected == result\n"
+seed: 809
+tests:
+  - name: example-1
+    in:
+      s: heeellooo
+      words:
+        - hello
+        - hi
+        - helo
+  - name: example-2
+    in:
+      s: zzzzzyyyyy
+      words:
+        - zzyy
+        - zy
+        - zyy
+  - name: single-word-match
+    in:
+      s: a
+      words:
+        - a
+  - name: single-word-no-match
+    in:
+      s: a
+      words:
+        - b
+  - name: repeated-groups
+    in:
+      s: aaa
+      words:
+        - a
+        - aa
+        - aaa
+        - aaaa
+  - name: three-groups
+    in:
+      s: abcccd
+      words:
+        - abcd
+        - abccd
+        - abcccd
+        - abcccdx
+  - name: alternating
+    in:
+      s: abcd
+      words:
+        - abc
+        - abcd
+        - abcdd
+  - name: long-middle-run
+    in:
+      s: heeellllooo
+      words:
+        - hello
+        - helo
+        - heello
+  - name: many-short-words
+    in:
+      s: qqqrrrsss
+      words:
+        - qrs
+        - qqrrss
+        - qqqrrrsss
+        - qqrrrsss
+        - qrrs
+  - name: different-first-char
+    in:
+      s: mmnnn
+      words:
+        - mn
+        - mmn
+        - mnn
+  - name: two-groups-tough
+    in:
+      s: aaabbb
+      words:
+        - ab
+        - aabb
+        - aaabbb
+        - aaabb
+  - name: one-long-run
+    in:
+      s: zzzz
+      words:
+        - z
+        - zz
+        - zzz
+        - zzzz
+        - zzzzz
+  - name: no-stretch-possible
+    in:
+      s: abc
+      words:
+        - ab
+        - ac
+        - bc
+        - abcd
+  - name: mixed-counts
+    in:
+      s: kelllloo
+      words:
+        - kelo
+        - kelloo
+        - kello
+  - name: long-run-and-singletons
+    in:
+      s: ppqqqqrr
+      words:
+        - pqr
+        - ppqqrr
+        - ppqqqqrr
+        - ppqrr
+  - name: exact-equality
+    in:
+      s: abcdef
+      words:
+        - abcdef
+        - abcdeg
+        - abcde
+    out: 1
+  - name: baseline-stretch
+    in:
+      s: heeellooo
+      words:
+        - hello
+        - hi
+        - helo
+    out: 1
+  - name: all-miss
+    in:
+      s: a
+      words:
+        - b
+        - c
+        - d
+    out: 0
+  - name: all-match-simple
+    in:
+      s: aaa
+      words:
+        - a
+        - aa
+        - aaa
+    out: 3
+  - name: strict-lengths
+    in:
+      s: abcd
+      words:
+        - abcd
+        - abc
+        - abcdd
+    out: 1
+  - name: multi-group-stretch
+    in:
+      s: abcccd
+      words:
+        - abcd
+        - abccd
+        - abcccd
+        - abcccdx
+    out: 3
+  - name: no-stretch-possible
+    in:
+      s: abc
+      words:
+        - ab
+        - ac
+        - bc
+        - abcd
+    out: 0
+  - name: long-middle-run
+    in:
+      s: heeellllooo
+      words:
+        - hello
+        - helo
+        - heello
+    out: 3
+  - name: many-candidates
+    in:
+      s: qqqrrrsss
+      words:
+        - qrs
+        - qqrrss
+        - qqqrrrsss
+        - qqrrrsss
+        - qrrs
+    out: 5
+  - name: different-prefix
+    in:
+      s: mmnnn
+      words:
+        - mn
+        - mmn
+        - mnn
+    out: 1
+  - name: two-groups
+    in:
+      s: aaabbb
+      words:
+        - ab
+        - aabb
+        - aaabbb
+        - aaabb
+    out: 4
+  - name: one-run
+    in:
+      s: zzzz
+      words:
+        - z
+        - zz
+        - zzz
+        - zzzz
+        - zzzzz
+    out: 4
+  - name: mixed-counts
+    in:
+      s: kelllloo
+      words:
+        - kelo
+        - kelloo
+        - kello
+    out: 1
+  - name: long-run-and-singletons
+    in:
+      s: ppqqqqrr
+      words:
+        - pqr
+        - ppqqrr
+        - ppqqqqrr
+        - ppqrr
+    out: 3
+  - name: repeated-pattern
+    in:
+      s: aaaaabbbbcccc
+      words:
+        - abc
+        - aabbcc
+        - aaaabbbccc
+        - aaaaabbbbcccc
+        - aaaabbcccc
+    out: 5
+  - name: mixed-singletons
+    in:
+      s: xxyzzzz
+      words:
+        - xyz
+        - xxyz
+        - xyzz
+        - xxyzzzz
+        - xxz
+    out: 2
+  - name: trailing-singleton
+    in:
+      s: hhhhhiiiiij
+      words:
+        - hij
+        - hhij
+        - hhiij
+        - hhhhhiiiiij
+        - hhhhhiij
+    out: 5
+  - name: short-tail
+    in:
+      s: mnnnnop
+      words:
+        - mnop
+        - mnop
+        - mnnop
+        - mnnnnop
+    out: 4
+  - name: alternating-edge
+    in:
+      s: ababab
+      words:
+        - ababab
+        - abab
+        - ababa
+        - aabbab
+    out: 1
+  - name: complete-mismatch
+    in:
+      s: abcdefg
+      words:
+        - hijklmn
+        - opqrstu
+        - vwxyzab
+    out: 0

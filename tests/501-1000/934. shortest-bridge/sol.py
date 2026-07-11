@@ -1,0 +1,42 @@
+import collections
+from typing import List
+
+
+class Solution:
+    def shortestBridge(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        directions = [(-1, 0), (1, 0), (0, 1), (0, -1)]
+        visited = set()
+        q = collections.deque()
+
+        def dfs(r, c):
+            visited.add((r, c))
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in visited:
+                    if grid[nr][nc] == 0:
+                        visited.add((nr, nc))
+                        q.append((nr, nc, 1))
+                    else:
+                        dfs(nr, nc)
+
+        found = False
+        for i in range(n):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    dfs(i, j)
+                    found = True
+                    break
+            if found:
+                break
+
+        while q:
+            r, c, dist = q.popleft()
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in visited:
+                    if grid[nr][nc] == 1:
+                        return dist
+                    visited.add((nr, nc))
+                    q.append((nr, nc, dist + 1))
+        return 0

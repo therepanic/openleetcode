@@ -1,0 +1,296 @@
+entry:
+  id: 864
+  title: shortest-path-to-get-all-keys
+  params:
+    grid:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().shortestPathAllKeys({grid})"
+    rust: "Solution::shortest_path_all_keys({grid})"
+    python3: "Solution().shortestPathAllKeys({grid})"
+    python2: "Solution().shortestPathAllKeys({grid})"
+    ruby: "shortest_path_all_keys({grid})"
+    java: "new Solution().shortestPathAllKeys({grid})"
+    csharp: "new Solution().ShortestPathAllKeys({grid})"
+    kotlin: "Solution().shortestPathAllKeys({grid})"
+    go: "shortestPathAllKeys({grid})"
+    dart: "Solution().shortestPathAllKeys({grid})"
+    swift: "Solution().shortestPathAllKeys({grid})"
+    typescript: "shortestPathAllKeys({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().shortestPathAllKeys(grid, {result})"
+    checker: |
+      from collections import deque
+      class Checker:
+          def shortestPathAllKeys(self, grid, result):
+              if not isinstance(result, int):
+                  return False
+              m, n = len(grid), len(grid[0])
+              start = None
+              total = 0
+              for i in range(m):
+                  for j, ch in enumerate(grid[i]):
+                      if ch == '@': start = (i, j)
+                      if 'a' <= ch <= 'f': total += 1
+              target = (1 << total) - 1
+              q = deque([(start[0], start[1], 0)])
+              seen = {(start[0], start[1], 0)}
+              d = [(1,0),(-1,0),(0,1),(0,-1)]
+              steps = 0
+              while q:
+                  for _ in range(len(q)):
+                      r,c,mask = q.popleft()
+                      if mask == target:
+                          return result == steps
+                      for dr,dc in d:
+                          nr,nc = r+dr,c+dc
+                          if not (0<=nr<m and 0<=nc<n):
+                              continue
+                          ch = grid[nr][nc]
+                          if ch == '#':
+                              continue
+                          nmask = mask
+                          if 'a' <= ch <= 'f': nmask |= 1 << (ord(ch)-97)
+                          if 'A' <= ch <= 'F' and not (nmask & (1 << (ord(ch.lower())-97))):
+                              continue
+                          st = (nr,nc,nmask)
+                          if st not in seen:
+                              seen.add(st)
+                              q.append(st)
+                  steps += 1
+              return result == -1
+
+seed: 864
+tests:
+  - name: t1
+    in:
+      grid:
+        - "@.a.."
+        - "###.#"
+        - "b.A.B"
+    out: 8
+  - name: t2
+    in:
+      grid:
+        - "@..aA"
+        - "..B#."
+        - "....b"
+    out: 6
+  - name: t3
+    in:
+      grid:
+        - "@Aa"
+    out: -1
+  - name: t4
+    in:
+      grid:
+        - "@a"
+    out: 1
+  - name: t5
+    in:
+      grid:
+        - "@#a"
+        - "###"
+        - "A.."
+    out: -1
+  - name: t6
+    in:
+      grid:
+        - "@.."
+        - "..a"
+    out: 3
+  - name: t7
+    in:
+      grid:
+        - "@..a"
+        - "...."
+        - "..A."
+    out: 3
+  - name: t8
+    in:
+      grid:
+        - "@..b"
+        - "###."
+        - "a.B."
+    out: 8
+  - name: t9
+    in:
+      grid:
+        - "@..."
+        - "####"
+        - "aA.."
+    out: -1
+  - name: t10
+    in:
+      grid:
+        - "@ab"
+        - "..."
+        - "AB."
+    out: 2
+  - name: t11
+    in:
+      grid:
+        - "@..a.."
+        - "..#..B"
+        - "..#b#."
+        - "..A..."
+    out: 5
+  - name: t12
+    in:
+      grid:
+        - "@...."
+        - "..#.."
+        - "a#B#b"
+        - "..#.."
+        - "A...."
+    out: 10
+  - name: t13
+    in:
+      grid:
+        - "@#..a"
+        - ".##.#"
+        - "b..A."
+    out: -1
+  - name: t14
+    in:
+      grid:
+        - "@..aA"
+        - "....."
+        - "....."
+    out: 3
+  - name: t15
+    in:
+      grid:
+        - "@.a.."
+        - "..#.."
+        - "..#.."
+        - "..bB."
+        - "..A.."
+    out: 7
+  - name: t16
+    in:
+      grid:
+        - "@....a"
+        - "######"
+        - "b....B"
+    out: -1
+  - name: t17
+    in:
+      grid:
+        - "@b..A"
+        - ".#.#."
+        - "a...#"
+    out: 4
+  - name: t18
+    in:
+      grid:
+        - "@..cC"
+        - "..#.."
+        - "a#B#b"
+        - "..#.."
+        - "A...."
+    out: 10
+  - name: t19
+    in:
+      grid:
+        - "@..."
+        - ".aA."
+        - "...."
+    out: 2
+  - name: t20
+    in:
+      grid:
+        - "@..aA"
+        - "b...."
+        - "..B.."
+    out: 5
+  - name: t21
+    in:
+      grid:
+        - "@abcABC"
+  - name: t22
+    in:
+      grid:
+        - "@..a..A"
+  - name: t23
+    in:
+      grid:
+        - "@..a.."
+        - "..#..."
+        - "..bB.."
+        - "..A..."
+  - name: t24
+    in:
+      grid:
+        - "@.aA"
+        - "...."
+        - "...."
+  - name: t25
+    in:
+      grid:
+        - "@#aA"
+  - name: t26
+    in:
+      grid:
+        - "@..a"
+        - "##.#"
+        - "b..B"
+        - "A..."
+  - name: t27
+    in:
+      grid:
+        - "@..b"
+        - "a#B."
+        - "..A."
+  - name: t28
+    in:
+      grid:
+        - "@..a..b"
+        - "..#..#."
+        - "..A..B."
+  - name: t29
+    in:
+      grid:
+        - "@..aA..bB"
+  - name: t30
+    in:
+      grid:
+        - "@...aA...bB"
+  - name: t31
+    in:
+      grid:
+        - "@.a.#"
+        - "..#B#"
+        - "b..A."
+  - name: t32
+    in:
+      grid:
+        - "@..aA"
+        - "##.##"
+        - "b..B."
+  - name: t33
+    in:
+      grid:
+        - "@aA"
+  - name: t34
+    in:
+      grid:
+        - "@..a..A..bB"
+  - name: t35
+    in:
+      grid:
+        - "@#..a#"
+        - "#.#.#."
+        - "b..B.."
+        - "A....."

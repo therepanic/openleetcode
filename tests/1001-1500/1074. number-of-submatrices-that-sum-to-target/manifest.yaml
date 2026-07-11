@@ -1,0 +1,426 @@
+entry:
+  id: 1074
+  title: number-of-submatrices-that-sum-to-target
+  params:
+    matrix:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    target:
+      type: int
+  call:
+    cpp: Solution().numSubmatrixSumTarget({matrix}, {target})
+    rust: Solution::num_submatrix_sum_target({matrix}, {target})
+    python3: Solution().numSubmatrixSumTarget({matrix}, {target})
+    python2: Solution().numSubmatrixSumTarget({matrix}, {target})
+    ruby: num_submatrix_sum_target({matrix}, {target})
+    java: new Solution().numSubmatrixSumTarget({matrix}, {target})
+    csharp: new Solution().NumSubmatrixSumTarget({matrix}, {target})
+    kotlin: Solution().numSubmatrixSumTarget({matrix}, {target})
+    go: numSubmatrixSumTarget({matrix}, {target})
+    dart: Solution().numSubmatrixSumTarget({matrix}, {target})
+    swift: Solution().numSubmatrixSumTarget({matrix}, {target})
+    typescript: numSubmatrixSumTarget({matrix}, {target})
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().numSubmatrixSumTarget(matrix, target, {result})
+    checker:
+      "class Checker:\n    def numSubmatrixSumTarget(self, matrix, target,\
+      \ result):\n        if not isinstance(result, int):\n            return False\n\
+      \        grid = [row[:] for row in matrix]\n        m, n = len(grid), len(grid[0])\n\
+      \        for r in range(m):\n            for c in range(1, n):\n           \
+      \     grid[r][c] += grid[r][c - 1]\n        ans = 0\n        for c1 in range(n):\n\
+      \            for c2 in range(c1, n):\n                seen = {0: 1}\n      \
+      \          cur = 0\n                for r in range(m):\n                   \
+      \ cur += grid[r][c2] - (grid[r][c1 - 1] if c1 > 0 else 0)\n                \
+      \    ans += seen.get(cur - target, 0)\n                    seen[cur] = seen.get(cur,\
+      \ 0) + 1\n        return result == ans\n"
+seed: 1074
+tests:
+  - name: ex1
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 0
+            - 1
+            - 0
+          - - 1
+            - 1
+            - 1
+          - - 0
+            - 1
+            - 0
+      target: 0
+  - name: ex2
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - -1
+          - - -1
+            - 1
+      target: 0
+  - name: ex3
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 904
+      target: 0
+  - name: single_zero
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 0
+      target: 0
+  - name: single_nonzero
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 5
+      target: 5
+  - name: single_neg
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - -5
+      target: -5
+  - name: row_two
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 2
+      target: 3
+  - name: row_three
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+      target: 2
+  - name: col_two
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+          - - 2
+      target: 3
+  - name: zeros_2x2
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 0
+            - 0
+          - - 0
+            - 0
+      target: 0
+  - name: ones_2x2_t2
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 1
+      target: 2
+  - name: ones_2x2_t4
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 1
+      target: 4
+  - name: mixed_2x3
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - -1
+            - 0
+          - - 2
+            - 3
+            - -2
+      target: 3
+  - name: mixed_3x2
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 2
+            - -2
+          - - 1
+            - 1
+          - - -1
+            - 3
+      target: 2
+  - name: neg_target
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - -1
+          - - 1
+            - -1
+      target: -1
+  - name: large_vals
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1000
+            - 1000
+          - - 1000
+            - 1000
+      target: 2000
+  - name: zero_target_mixed
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 0
+            - 1
+          - - 0
+            - -1
+            - 0
+          - - 1
+            - 0
+            - 1
+      target: 0
+  - name: target_one
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 0
+          - - 0
+            - 1
+      target: 1
+  - name: target_minus_two
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - -1
+            - -1
+          - - -1
+            - -1
+      target: -2
+  - name: rect_3x4
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 3
+            - 4
+          - - 0
+            - 1
+            - 0
+            - 1
+          - - 2
+            - -2
+            - 2
+            - -2
+      target: 3
+  - name: rect_4x3
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 0
+            - -1
+          - - 2
+            - 3
+            - -3
+          - - 1
+            - -1
+            - 1
+          - - 0
+            - 2
+            - -2
+      target: 2
+  - name: all_twos
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 2
+            - 2
+            - 2
+          - - 2
+            - 2
+            - 2
+      target: 4
+  - name: checker_1
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 3
+            - -1
+            - 2
+          - - -2
+            - 4
+            - -1
+      target: 5
+  - name: checker_2
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - -3
+          - - 4
+            - -4
+            - 0
+          - - 2
+            - 2
+            - -2
+      target: 0
+  - name: checker_3
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - -1
+            - 2
+          - - 3
+            - -4
+          - - 5
+            - -6
+      target: -1
+  - name: checker_4
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 0
+            - 1
+            - 0
+            - 1
+      target: 1
+  - name: checker_5
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+          - - 0
+          - - 1
+          - - 0
+      target: 1
+  - name: checker_6
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 2
+            - 1
+          - - 1
+            - 2
+      target: 3
+  - name: checker_7
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 5
+            - -5
+            - 5
+          - - -5
+            - 5
+            - -5
+      target: 0
+  - name: checker_8
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+          - - 1
+            - 1
+            - 1
+          - - 1
+            - 1
+            - 1
+      target: 3
+  - name: checker_9
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 7
+      target: 8
+  - name: checker_10
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - -2
+            - -2
+          - - -2
+            - -2
+      target: -4
+  - name: checker_11
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 4
+            - 1
+            - -2
+          - - 3
+            - -1
+            - 2
+      target: 6
+  - name: checker_12
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 8
+            - 0
+          - - 0
+            - 8
+      target: 8
+  - name: checker_13
+    in:
+      matrix:
+        elemType: int
+        value:
+          - - 1
+            - -1
+            - 1
+            - -1
+      target: 0

@@ -1,0 +1,246 @@
+entry:
+  id: 837
+  title: new-21-game
+  params:
+    n:
+      type: int
+    k:
+      type: int
+    maxPts:
+      type: int
+  call:
+    cpp: "Solution().new21Game({n}, {k}, {maxPts})"
+    rust: "Solution::new21_game({n}, {k}, {maxPts})"
+    python3: "Solution().new21Game({n}, {k}, {maxPts})"
+    python2: "Solution().new21Game({n}, {k}, {maxPts})"
+    ruby: "new21_game({n}, {k}, {maxPts})"
+    java: "new Solution().new21Game({n}, {k}, {maxPts})"
+    csharp: "new Solution().New21Game({n}, {k}, {maxPts})"
+    kotlin: "Solution().new21Game({n}, {k}, {maxPts})"
+    go: "new21Game({n}, {k}, {maxPts})"
+    dart: "Solution().new21Game({n}, {k}, {maxPts})"
+    swift: "Solution().new21Game({n}, {k}, {maxPts})"
+    typescript: "new21Game({n}, {k}, {maxPts})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().new21Game(n, k, maxPts, {result})"
+    checker: |
+      class Checker:
+          def new21Game(self, n, k, maxPts, result):
+              if not isinstance(result, (int, float)):
+                  return False
+              if k == 0 or n >= k - 1 + maxPts:
+                  expected = 1.0
+              else:
+                  dp = [0.0] * maxPts
+                  dp[0] = 1.0
+                  window_sum = 1.0
+                  expected = 0.0
+                  for i in range(1, n + 1):
+                      prob = window_sum / maxPts
+                      if i < k:
+                          window_sum += prob
+                      else:
+                          expected += prob
+                      if i >= maxPts:
+                          window_sum -= dp[i % maxPts]
+                      dp[i % maxPts] = prob
+              return abs(float(result) - expected) <= 1e-5
+
+seed: 837
+
+tests:
+  - name: example-1
+    in:
+      n: 10
+      k: 1
+      maxPts: 10
+  - name: example-2
+    in:
+      n: 6
+      k: 1
+      maxPts: 10
+  - name: example-3
+    in:
+      n: 21
+      k: 17
+      maxPts: 10
+  - name: k-zero
+    in:
+      n: 0
+      k: 0
+      maxPts: 1
+  - name: trivial-win
+    in:
+      n: 1
+      k: 1
+      maxPts: 1
+  - name: no-need-to-draw
+    in:
+      n: 5
+      k: 0
+      maxPts: 7
+  - name: small-boundary-1
+    in:
+      n: 1
+      k: 2
+      maxPts: 2
+  - name: small-boundary-2
+    in:
+      n: 2
+      k: 2
+      maxPts: 2
+  - name: small-boundary-3
+    in:
+      n: 2
+      k: 3
+      maxPts: 2
+  - name: small-boundary-4
+    in:
+      n: 3
+      k: 3
+      maxPts: 2
+  - name: small-boundary-5
+    in:
+      n: 4
+      k: 3
+      maxPts: 2
+  - name: small-boundary-6
+    in:
+      n: 4
+      k: 4
+      maxPts: 3
+  - name: small-boundary-7
+    in:
+      n: 5
+      k: 4
+      maxPts: 3
+  - name: small-boundary-8
+    in:
+      n: 6
+      k: 4
+      maxPts: 3
+  - name: sample-like-1
+    in:
+      n: 7
+      k: 5
+      maxPts: 3
+  - name: sample-like-2
+    in:
+      n: 8
+      k: 5
+      maxPts: 3
+  - name: sample-like-3
+    in:
+      n: 9
+      k: 5
+      maxPts: 3
+  - name: larger-1
+    in:
+      n: 15
+      k: 10
+      maxPts: 10
+  - name: larger-2
+    in:
+      n: 20
+      k: 10
+      maxPts: 10
+  - name: larger-3
+    in:
+      n: 25
+      k: 15
+      maxPts: 10
+  - name: larger-4
+    in:
+      n: 30
+      k: 15
+      maxPts: 10
+  - name: larger-5
+    in:
+      n: 40
+      k: 20
+      maxPts: 10
+  - name: larger-6
+    in:
+      n: 50
+      k: 25
+      maxPts: 10
+  - name: larger-7
+    in:
+      n: 100
+      k: 50
+      maxPts: 25
+  - name: larger-8
+    in:
+      n: 250
+      k: 100
+      maxPts: 25
+  - name: larger-9
+    in:
+      n: 1000
+      k: 500
+      maxPts: 100
+  - name: larger-10
+    in:
+      n: 2000
+      k: 1000
+      maxPts: 100
+  - name: near-max-1
+    in:
+      n: 9999
+      k: 9999
+      maxPts: 2
+  - name: near-max-2
+    in:
+      n: 10000
+      k: 9999
+      maxPts: 2
+  - name: near-max-3
+    in:
+      n: 10000
+      k: 5000
+      maxPts: 5000
+  - name: near-max-4
+    in:
+      n: 10000
+      k: 1
+      maxPts: 10000
+  - name: near-max-5
+    in:
+      n: 10000
+      k: 0
+      maxPts: 10000
+    out: 1.0
+  - name: near-max-6
+    in:
+      n: 9990
+      k: 8000
+      maxPts: 3000
+  - name: near-max-7
+    in:
+      n: 8500
+      k: 7000
+      maxPts: 4000
+  - name: near-max-8
+    in:
+      n: 7000
+      k: 6500
+      maxPts: 3500
+  - name: near-max-9
+    in:
+      n: 6000
+      k: 5500
+      maxPts: 2000
+  - name: near-max-10
+    in:
+      n: 5000
+      k: 4999
+      maxPts: 1000

@@ -1,0 +1,54 @@
+from collections import deque
+
+
+class Solution:
+    def delNodes(self, root, to_delete):
+        ans = []
+        if not root:
+            return ans
+
+        st = set(to_delete)
+
+        ref = TreeNode(-1)
+        ref.left = root
+
+        q1 = deque()
+        to_process = deque([ref])
+
+        while to_process:
+            new_tree = to_process.popleft()
+
+            if new_tree.left:
+                if new_tree.left.val in st:
+                    to_process.append(new_tree.left)
+                else:
+                    ans.append(new_tree.left)
+                    q1.append(new_tree.left)
+                new_tree.left = None
+
+            if new_tree.right:
+                if new_tree.right.val in st:
+                    to_process.append(new_tree.right)
+                else:
+                    ans.append(new_tree.right)
+                    q1.append(new_tree.right)
+                new_tree.right = None
+
+            while q1:
+                temp = q1.popleft()
+
+                if temp.left:
+                    if temp.left.val in st:
+                        to_process.append(temp.left)
+                        temp.left = None
+                    else:
+                        q1.append(temp.left)
+
+                if temp.right:
+                    if temp.right.val in st:
+                        to_process.append(temp.right)
+                        temp.right = None
+                    else:
+                        q1.append(temp.right)
+
+        return ans

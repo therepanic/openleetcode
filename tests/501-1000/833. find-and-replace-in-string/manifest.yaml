@@ -1,0 +1,512 @@
+entry:
+  id: 833
+  title: find-and-replace-in-string
+  params:
+    s:
+      type: string
+    indices:
+      type: array
+      items:
+        type: int
+    sources:
+      type: array
+      items:
+        type: string
+    targets:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: Solution().findReplaceString({s}, {indices}, {sources}, {targets})
+    rust: Solution::find_replace_string({s}, {indices}, {sources}, {targets})
+    python3: Solution().findReplaceString({s}, {indices}, {sources}, {targets})
+    python2: Solution().findReplaceString({s}, {indices}, {sources}, {targets})
+    ruby: find_replace_string({s}, {indices}, {sources}, {targets})
+    java: new Solution().findReplaceString({s}, {indices}, {sources}, {targets})
+    csharp: new Solution().FindReplaceString({s}, {indices}, {sources}, {targets})
+    kotlin: Solution().findReplaceString({s}, {indices}, {sources}, {targets})
+    go: findReplaceString({s}, {indices}, {sources}, {targets})
+    dart: Solution().findReplaceString({s}, {indices}, {sources}, {targets})
+    swift: Solution().findReplaceString({s}, {indices}, {sources}, {targets})
+    typescript: findReplaceString({s}, {indices}, {sources}, {targets})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check({result})
+    checker: "class Checker:\n    def check(self, result):\n        return True\n"
+seed: 833
+tests:
+  - name: ex1
+    in:
+      s: abcd
+      indices:
+        - 0
+        - 2
+      sources:
+        - a
+        - cd
+      targets:
+        - eee
+        - ffff
+    out: eeebffff
+  - name: ex2
+    in:
+      s: abcd
+      indices:
+        - 0
+        - 2
+      sources:
+        - ab
+        - ec
+      targets:
+        - eee
+        - ffff
+    out: eeecd
+  - name: no_replacements
+    in:
+      s: abcdef
+      indices:
+        - 1
+        - 3
+      sources:
+        - zz
+        - yy
+      targets:
+        - qq
+        - ww
+    out: abcdef
+  - name: one_replacement_middle
+    in:
+      s: helloworld
+      indices:
+        - 5
+      sources:
+        - world
+      targets:
+        - earth
+    out: helloearth
+  - name: adjacent_non_overlap
+    in:
+      s: abcxyz
+      indices:
+        - 0
+        - 3
+      sources:
+        - abc
+        - xyz
+      targets:
+        - mm
+        - nn
+    out: mmnn
+  - name: replace_with_longer
+    in:
+      s: aaaaaa
+      indices:
+        - 0
+        - 2
+        - 4
+      sources:
+        - aa
+        - aa
+        - aa
+      targets:
+        - bb
+        - cc
+        - dd
+    out: bbccdd
+  - name: replace_with_shorter
+    in:
+      s: thequickbrownfox
+      indices:
+        - 3
+        - 8
+      sources:
+        - quick
+        - brown
+      targets:
+        - qq
+        - bb
+    out: theqqbbfox
+  - name: mixed_match_and_miss
+    in:
+      s: abcabcabc
+      indices:
+        - 0
+        - 3
+        - 6
+      sources:
+        - ab
+        - bc
+        - abc
+      targets:
+        - xx
+        - yy
+        - zz
+    out: xxcabczz
+  - name: full_replace
+    in:
+      s: leetcode
+      indices:
+        - 0
+        - 4
+      sources:
+        - leet
+        - code
+      targets:
+        - see
+        - do
+    out: seedo
+  - name: prefix_only
+    in:
+      s: abcdef
+      indices:
+        - 0
+      sources:
+        - ab
+      targets:
+        - zz
+    out: zzcdef
+  - name: suffix_only
+    in:
+      s: abcdef
+      indices:
+        - 4
+      sources:
+        - ef
+      targets:
+        - zz
+    out: abcdzz
+  - name: three_matches_gap
+    in:
+      s: xxabyycdzz
+      indices:
+        - 2
+        - 6
+      sources:
+        - ab
+        - cd
+      targets:
+        - QQ
+        - RR
+    out: xxQQyyRRzz
+  - name: repeated_letters
+    in:
+      s: aaaaabaaaa
+      indices:
+        - 0
+        - 5
+      sources:
+        - aaaaa
+        - ba
+      targets:
+        - XX
+        - YY
+    out: XXYYaaa
+  - name: replace_entire_string
+    in:
+      s: abc
+      indices:
+        - 0
+      sources:
+        - abc
+      targets:
+        - xyz
+    out: xyz
+  - name: no_match_single_char
+    in:
+      s: xyz
+      indices:
+        - 1
+      sources:
+        - a
+      targets:
+        - bb
+    out: xyz
+  - name: alternating_misses
+    in:
+      s: abcdefgh
+      indices:
+        - 0
+        - 2
+        - 4
+        - 6
+      sources:
+        - ab
+        - xx
+        - ef
+        - yy
+      targets:
+        - MM
+        - NN
+        - OO
+        - PP
+    out: MMcdOOgh
+  - name: longer_targets
+    in:
+      s: foobarbaz
+      indices:
+        - 0
+        - 3
+      sources:
+        - foo
+        - bar
+      targets:
+        - start
+        - middle
+    out: startmiddlebaz
+  - name: shorter_targets
+    in:
+      s: programming
+      indices:
+        - 0
+        - 3
+      sources:
+        - pro
+        - gr
+      targets:
+        - PP
+        - GG
+    out: PPGGamming
+  - name: mixed_case_like
+    in:
+      s: aBcDeF
+      indices:
+        - 1
+        - 3
+        - 5
+      sources:
+        - B
+        - D
+        - F
+      targets:
+        - bb
+        - dd
+        - ff
+    out: abbcddeff
+  - name: touch_near_end
+    in:
+      s: abcdefg
+      indices:
+        - 5
+      sources:
+        - fg
+      targets:
+        - ZZ
+    out: abcdeZZ
+  - name: touch_near_beginning
+    in:
+      s: abcdefg
+      indices:
+        - 0
+      sources:
+        - abc
+      targets:
+        - QQ
+    out: QQdefg
+  - name: two_disjoint_long
+    in:
+      s: mississippi
+      indices:
+        - 1
+        - 4
+        - 7
+      sources:
+        - iss
+        - iss
+        - ipp
+      targets:
+        - AA
+        - BB
+        - CC
+    out: mAABBCCi
+  - name: exact_no_gap
+    in:
+      s: abcabc
+      indices:
+        - 0
+        - 3
+      sources:
+        - abc
+        - abc
+      targets:
+        - aa
+        - bb
+    out: aabb
+  - name: match_after_miss
+    in:
+      s: zzzabczzz
+      indices:
+        - 0
+        - 3
+        - 6
+      sources:
+        - yy
+        - abc
+        - yy
+      targets:
+        - xx
+        - QQ
+        - yy
+    out: zzzQQzzz
+  - name: same_length_targets
+    in:
+      s: library
+      indices:
+        - 0
+        - 4
+      sources:
+        - lib
+        - ary
+      targets:
+        - cat
+        - dog
+    out: catrdog
+  - name: three_block_replacements
+    in:
+      s: abcdxyzuvw
+      indices:
+        - 0
+        - 4
+        - 7
+      sources:
+        - ab
+        - xyz
+        - uv
+      targets:
+        - AA
+        - BB
+        - CC
+    out: AAcdBBCCw
+  - name: overlapping_input_not_allowed_effective
+    in:
+      s: abcdef
+      indices:
+        - 0
+        - 1
+      sources:
+        - ab
+        - bc
+      targets:
+        - XX
+        - YY
+    out: XXcdef
+  - name: empty_change_prefix_and_suffix
+    in:
+      s: hello
+      indices:
+        - 0
+        - 4
+      sources:
+        - he
+        - o
+      targets:
+        - HH
+        - OO
+    out: HHllOO
+  - name: repeated_index_style
+    in:
+      s: banana
+      indices:
+        - 1
+        - 3
+      sources:
+        - an
+        - an
+      targets:
+        - XX
+        - YY
+    out: bXXYYa
+  - name: all_miss_long
+    in:
+      s: qwertyuiop
+      indices:
+        - 0
+        - 2
+        - 4
+      sources:
+        - zz
+        - xx
+        - vv
+      targets:
+        - aa
+        - bb
+        - cc
+    out: qwertyuiop
+  - name: dense_small
+    in:
+      s: abracadabra
+      indices:
+        - 0
+        - 3
+        - 5
+        - 7
+      sources:
+        - a
+        - a
+        - d
+        - a
+      targets:
+        - XX
+        - YY
+        - ZZ
+        - WW
+    out: XXbrYYcadWWbra
+  - name: end_to_end
+    in:
+      s: abcdefghij
+      indices:
+        - 0
+        - 3
+        - 6
+        - 9
+      sources:
+        - abc
+        - def
+        - ghi
+        - j
+      targets:
+        - aa
+        - bb
+        - cc
+        - dd
+    out: aabbccdd
+  - name: mid_string_miss_then_hit
+    in:
+      s: xxxyyyzzz
+      indices:
+        - 0
+        - 3
+        - 6
+      sources:
+        - xxx
+        - yyy
+        - aaa
+      targets:
+        - AA
+        - BB
+        - CC
+    out: AABBzzz
+  - name: short_prefix_replace
+    in:
+      s: testcase
+      indices:
+        - 0
+      sources:
+        - test
+      targets:
+        - ok
+    out: okcase
+  - name: short_suffix_replace
+    in:
+      s: testcase
+      indices:
+        - 4
+      sources:
+        - case
+      targets:
+        - done
+    out: testdone

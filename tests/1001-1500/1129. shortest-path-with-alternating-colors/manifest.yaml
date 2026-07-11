@@ -1,0 +1,673 @@
+entry:
+  id: 1129
+  title: shortest-path-with-alternating-colors
+  params:
+    n:
+      type: int
+    redEdges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    blueEdges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: Solution().shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    rust: Solution::shortest_alternating_paths({n}, {redEdges}, {blueEdges})
+    python3: Solution().shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    python2: Solution().shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    ruby: shortest_alternating_paths({n}, {redEdges}, {blueEdges})
+    java: new Solution().shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    csharp: new Solution().ShortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    kotlin: Solution().shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    go: shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    dart: Solution().shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    swift: Solution().shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+    typescript: shortestAlternatingPaths({n}, {redEdges}, {blueEdges})
+judge:
+  type: exact
+limits:
+  time_ms: 1500
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().shortestAlternatingPaths(n, redEdges, blueEdges, {result})
+    checker:
+      "import collections\nclass Checker:\n    def shortestAlternatingPaths(self,\
+      \ n, redEdges, blueEdges, result):\n        if not isinstance(result, list)\
+      \ or len(result) != n:\n            return False\n        RED, BLUE = 0, 1\n\
+      \        graph = [[[] for _ in range(n)] for _ in range(2)]\n        for u,\
+      \ v in redEdges:\n            graph[RED][u].append(v)\n        for u, v in blueEdges:\n\
+      \            graph[BLUE][u].append(v)\n        dist = [[-1] * n for _ in range(2)]\n\
+      \        q = collections.deque([(0, RED), (0, BLUE)])\n        dist[RED][0]\
+      \ = 0\n        dist[BLUE][0] = 0\n        while q:\n            node, last =\
+      \ q.popleft()\n            nxt = 1 - last\n            for nei in graph[nxt][node]:\n\
+      \                if dist[nxt][nei] == -1:\n                    dist[nxt][nei]\
+      \ = dist[last][node] + 1\n                    q.append((nei, nxt))\n       \
+      \ expected = []\n        for i in range(n):\n            a, b = dist[RED][i],\
+      \ dist[BLUE][i]\n            if a == -1 or (b != -1 and b < a):\n          \
+      \      expected.append(b)\n            else:\n                expected.append(a)\n\
+      \        return result == expected\n"
+seed: 1129
+tests:
+  - name: ex1
+    in:
+      n: 3
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 2
+      blueEdges:
+        elemType: int
+        value: []
+  - name: ex2
+    in:
+      n: 3
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+      blueEdges:
+        elemType: int
+        value:
+          - - 2
+            - 1
+  - name: ex3
+    in:
+      n: 3
+      redEdges:
+        elemType: int
+        value:
+          - - 1
+            - 0
+      blueEdges:
+        elemType: int
+        value:
+          - - 2
+            - 1
+  - name: ex4
+    in:
+      n: 3
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+  - name: single
+    in:
+      n: 1
+      redEdges:
+        elemType: int
+        value: []
+      blueEdges:
+        elemType: int
+        value: []
+  - name: two_red
+    in:
+      n: 2
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+      blueEdges:
+        elemType: int
+        value: []
+  - name: two_blue
+    in:
+      n: 2
+      redEdges:
+        elemType: int
+        value: []
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+  - name: parallel_both
+    in:
+      n: 2
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+  - name: cycle_small
+    in:
+      n: 3
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 2
+      blueEdges:
+        elemType: int
+        value:
+          - - 2
+            - 0
+  - name: alt_cycle
+    in:
+      n: 4
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 3
+            - 0
+  - name: unreachable
+    in:
+      n: 4
+      redEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+      blueEdges:
+        elemType: int
+        value:
+          - - 2
+            - 3
+  - name: red_chain
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 2
+          - - 2
+            - 3
+          - - 3
+            - 4
+      blueEdges:
+        elemType: int
+        value: []
+  - name: blue_chain
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value: []
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 2
+          - - 2
+            - 3
+          - - 3
+            - 4
+  - name: perfect_alt
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 3
+            - 4
+  - name: branch_red
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 0
+            - 2
+          - - 2
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 3
+          - - 3
+            - 4
+  - name: branch_blue
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 1
+            - 3
+          - - 3
+            - 4
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 0
+            - 2
+          - - 2
+            - 3
+  - name: self_loops
+    in:
+      n: 3
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 0
+          - - 0
+            - 1
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 2
+  - name: double_edges
+    in:
+      n: 4
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 0
+            - 1
+          - - 2
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 1
+            - 2
+  - name: cross_edges
+    in:
+      n: 4
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 2
+          - - 1
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 3
+  - name: back_edges
+    in:
+      n: 4
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 1
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 1
+            - 3
+  - name: dense_4
+    in:
+      n: 4
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 0
+            - 2
+          - - 1
+            - 2
+          - - 2
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 3
+          - - 1
+            - 3
+          - - 2
+            - 1
+  - name: sparse_6
+    in:
+      n: 6
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 4
+            - 5
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 2
+            - 3
+  - name: reach_last_only
+    in:
+      n: 6
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 2
+          - - 2
+            - 4
+      blueEdges:
+        elemType: int
+        value:
+          - - 4
+            - 5
+  - name: all_colors_needed
+    in:
+      n: 6
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 3
+          - - 4
+            - 5
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 3
+            - 4
+  - name: many_options
+    in:
+      n: 6
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 0
+            - 3
+          - - 2
+            - 5
+          - - 4
+            - 5
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 3
+            - 4
+          - - 1
+            - 4
+  - name: diamond
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 0
+            - 2
+          - - 3
+            - 4
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 3
+          - - 2
+            - 3
+  - name: zigzag
+    in:
+      n: 7
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 3
+          - - 4
+            - 5
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 3
+            - 4
+          - - 5
+            - 6
+  - name: mixed_shortcuts
+    in:
+      n: 7
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 2
+          - - 2
+            - 4
+          - - 1
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 5
+          - - 5
+            - 6
+          - - 4
+            - 6
+  - name: isolated_zero_only
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 2
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 3
+            - 4
+  - name: return_edge
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 1
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 1
+            - 0
+  - name: two_components
+    in:
+      n: 8
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 2
+          - - 5
+            - 6
+      blueEdges:
+        elemType: int
+        value:
+          - - 2
+            - 3
+          - - 6
+            - 7
+  - name: alt_needed_long
+    in:
+      n: 8
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 2
+            - 3
+          - - 4
+            - 5
+          - - 6
+            - 7
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 3
+            - 4
+          - - 5
+            - 6
+  - name: blue_start_better
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 2
+            - 4
+      blueEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 3
+          - - 3
+            - 4
+  - name: red_start_better
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 1
+            - 3
+          - - 3
+            - 4
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 2
+            - 4
+  - name: duplicate_mix
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 1
+          - - 0
+            - 1
+          - - 2
+            - 3
+          - - 2
+            - 3
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 1
+            - 2
+          - - 3
+            - 4
+  - name: self_and_path
+    in:
+      n: 5
+      redEdges:
+        elemType: int
+        value:
+          - - 0
+            - 0
+          - - 0
+            - 1
+          - - 2
+            - 2
+      blueEdges:
+        elemType: int
+        value:
+          - - 1
+            - 2
+          - - 2
+            - 3
+          - - 3
+            - 4

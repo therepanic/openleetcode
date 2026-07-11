@@ -1,0 +1,374 @@
+entry:
+  id: 913
+  title: cat-and-mouse
+  params:
+    graph:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().catMouseGame({graph})"
+    rust: "Solution::cat_mouse_game({graph})"
+    python3: "Solution().catMouseGame({graph})"
+    python2: "Solution().catMouseGame({graph})"
+    ruby: "cat_mouse_game({graph})"
+    java: "new Solution().catMouseGame({graph})"
+    csharp: "new Solution().CatMouseGame({graph})"
+    kotlin: "Solution().catMouseGame({graph})"
+    go: "catMouseGame({graph})"
+    dart: "Solution().catMouseGame({graph})"
+    swift: "Solution().catMouseGame({graph})"
+    typescript: "catMouseGame({graph})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().catMouseGame(graph, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def catMouseGame(self, graph, result):
+              n = len(graph)
+              MOUSE, CAT = 0, 1
+              MOUSE_WIN, CAT_WIN, DRAW = 1, 2, 0
+              results = {}
+              for i in range(1, n):
+                  results[0, i, CAT] = results[0, i, MOUSE] = MOUSE_WIN
+                  results[i, i, CAT] = results[i, i, MOUSE] = CAT_WIN
+              degree = {}
+              for mouse in range(1, n):
+                  for cat in range(1, n):
+                      degree[mouse, cat, MOUSE] = len(graph[mouse])
+                      degree[mouse, cat, CAT] = len(graph[cat]) - int(0 in graph[cat])
+              q = deque(results.keys())
+              while q:
+                  mouse, cat, turn = q.popleft()
+                  cur = results[mouse, cat, turn]
+                  if turn == MOUSE:
+                      prev_states = [(mouse, prev_cat, CAT) for prev_cat in graph[cat]]
+                  else:
+                      prev_states = [(prev_mouse, cat, MOUSE) for prev_mouse in graph[mouse]]
+                  for prev in prev_states:
+                      if prev in results:
+                          continue
+                      pm, pc, pt = prev
+                      if pc == 0:
+                          continue
+                      degree[prev] -= 1
+                      mover_wins = (cur == MOUSE_WIN and pt == MOUSE) or (cur == CAT_WIN and pt == CAT)
+                      if mover_wins or degree[prev] == 0:
+                          results[prev] = cur
+                          q.append(prev)
+              return result == results.get((1, 2, MOUSE), DRAW)
+seed: 913
+tests:
+  - name: ex1
+    in:
+      graph:
+        - [2, 5]
+        - [3]
+        - [0, 4, 5]
+        - [1, 4, 5]
+        - [2, 3]
+        - [0, 2, 3]
+  - name: ex2
+    in:
+      graph:
+        - [1, 3]
+        - [0]
+        - [3]
+        - [0, 2]
+  - name: triangle_hole
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2]
+        - [0, 1]
+  - name: line_four
+    in:
+      graph:
+        - [1]
+        - [0, 2]
+        - [1, 3]
+        - [2]
+  - name: cat_traps_mouse
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 3]
+        - [1, 2]
+  - name: draw_cycle
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 3]
+        - [1, 2, 4]
+        - [3]
+  - name: small_win
+    in:
+      graph:
+        - [1]
+        - [0, 2, 3]
+        - [1]
+        - [1]
+  - name: cat_win_direct
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2]
+        - [0, 1, 3]
+        - [2]
+  - name: draw_square
+    in:
+      graph:
+        - [1, 3]
+        - [0, 2]
+        - [1, 3]
+        - [0, 2]
+  - name: hole_adjacent
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3]
+        - [0, 3]
+        - [1, 2]
+  - name: cat_forced
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 4]
+        - [0, 1, 3]
+        - [2, 4]
+        - [1, 3]
+  - name: mouse_escape
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3]
+        - [0, 4]
+        - [1, 4]
+        - [2, 3]
+  - name: symmetric_draw
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 3, 4]
+        - [1, 2]
+        - [1, 2]
+  - name: bigger_win
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3]
+        - [0, 3, 4]
+        - [1, 2, 5]
+        - [2, 5]
+        - [3, 4]
+  - name: bigger_cat
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 4]
+        - [1, 4]
+        - [2, 3]
+  - name: random_like_1
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 4, 5]
+        - [1, 5]
+        - [1, 2, 5]
+        - [2, 3, 4]
+  - name: random_like_2
+    in:
+      graph:
+        - [1, 2, 3]
+        - [0, 4]
+        - [0, 4, 5]
+        - [0, 5]
+        - [1, 2]
+        - [2, 3]
+  - name: random_like_3
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 4]
+        - [1, 4]
+        - [2, 3, 5]
+        - [4]
+  - name: g20
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 4, 5]
+        - [1, 6]
+        - [1, 2, 6]
+        - [2, 6]
+        - [3, 4, 5]
+  - name: g21
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3]
+        - [0, 4]
+        - [1, 5]
+        - [2, 5]
+        - [3, 4]
+  - name: g22
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 5]
+        - [0, 1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [1, 4]
+  - name: g23
+    in:
+      graph:
+        - [1, 2, 3]
+        - [0, 4, 5]
+        - [0, 5]
+        - [0, 6]
+        - [1, 6]
+        - [1, 2]
+        - [3, 4]
+  - name: g24
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 4]
+        - [1, 5]
+        - [1, 2, 5]
+        - [3, 4]
+  - name: g25
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 4]
+        - [1, 4, 5]
+        - [2, 3, 5]
+        - [3, 4]
+  - name: g26
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 4, 5]
+        - [1, 6]
+        - [1, 2, 6]
+        - [2, 6]
+        - [3, 4, 5]
+  - name: g27
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 5]
+        - [1, 5]
+        - [1, 2, 6]
+        - [2, 3, 6]
+        - [4, 5]
+  - name: g28
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 4]
+        - [0, 1, 3]
+        - [2, 4, 5]
+        - [1, 3, 5]
+        - [3, 4]
+  - name: g29
+    in:
+      graph:
+        - [1, 2, 3]
+        - [0, 4]
+        - [0, 4, 5]
+        - [0, 5, 6]
+        - [1, 2, 6]
+        - [2, 3]
+        - [3, 4]
+  - name: g30
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3]
+        - [0, 4]
+        - [1, 5]
+        - [2, 5]
+        - [3, 4, 6]
+        - [5]
+  - name: g31
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 4]
+        - [1, 4, 5]
+        - [2, 3, 5]
+        - [3, 4, 6]
+        - [5]
+  - name: g32
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 4, 5]
+        - [1, 6]
+        - [1, 2, 6]
+        - [2, 6]
+        - [3, 4, 5]
+  - name: g33
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 4, 5]
+        - [1, 5, 6]
+        - [1, 2, 6]
+        - [2, 3]
+        - [3, 4]
+  - name: g34
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 4]
+        - [1, 4, 5]
+        - [2, 3, 5]
+        - [3, 4, 6]
+        - [5]
+  - name: g35
+    in:
+      graph:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 4, 5]
+        - [1, 6]
+        - [1, 2, 6]
+        - [2, 6]
+        - [3, 4, 5]
+  - name: g36
+    in:
+      graph:
+        - [1, 2]
+        - [0, 2, 3]
+        - [0, 1, 4]
+        - [1, 4]
+        - [2, 3, 5]
+        - [4]

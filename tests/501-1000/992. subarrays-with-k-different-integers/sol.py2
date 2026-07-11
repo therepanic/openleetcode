@@ -1,0 +1,28 @@
+class Solution(object):
+    def subarraysWithKDistinct(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: int
+        """
+        def atMost(k):
+            freq = {}
+            count = 0
+            left = 0
+            n = len(nums)
+
+            for right in range(n):
+                freq[nums[right]] = freq.get(nums[right], 0) + 1
+
+                while len(freq) > k:
+                    if freq[nums[left]] > 1:
+                        freq[nums[left]] -= 1
+                    else:
+                        del freq[nums[left]]
+                    left += 1
+
+                count += (right - left + 1)
+            
+            return count
+
+        return atMost(k) - atMost(k - 1)

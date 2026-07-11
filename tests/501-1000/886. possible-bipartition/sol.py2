@@ -1,0 +1,35 @@
+class Solution(object):
+    def possibleBipartition(self, n, dislikes):
+        """
+        :type n: int
+        :type dislikes: List[List[int]]
+        :rtype: bool
+        """
+        graph = {}
+        for u, v in dislikes:
+            if u not in graph: graph[u] = []
+            if v not in graph: graph[v] = []
+            graph[u].append(v)
+            graph[v].append(u)
+        
+        color = [0] * (n + 1)
+        
+        for node in range(1, n + 1):
+            if color[node] != 0 or node not in graph:
+                continue
+            
+            queue = [node]
+            color[node] = 1
+            
+            while queue:
+                curr = queue.pop(0)
+                
+                for neighbor in graph[curr]:
+                    if color[neighbor] == color[curr]:
+                        return False
+                    
+                    if color[neighbor] == 0:
+                        color[neighbor] = -color[curr]
+                        queue.append(neighbor)
+                        
+        return True
