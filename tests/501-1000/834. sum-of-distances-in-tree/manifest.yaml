@@ -30,11 +30,35 @@ limits:
   memory_mb: 512
 oracle:
   python3:
-    call: "Checker().check({result})"
+    call: "Checker().check(n, edges, {result})"
     checker: |
+      from collections import deque
+
       class Checker:
-          def check(self, result):
-              return isinstance(result, list) and all(isinstance(value, int) for value in result)
+          def check(self, n, edges, result):
+              if not isinstance(result, list) or len(result) != n:
+                  return False
+              if any(type(value) is not int for value in result):
+                  return False
+
+              graph = [[] for _ in range(n)]
+              for left, right in edges:
+                  graph[left].append(right)
+                  graph[right].append(left)
+
+              expected = []
+              for start in range(n):
+                  distance = [-1] * n
+                  distance[start] = 0
+                  queue = deque([start])
+                  while queue:
+                      node = queue.popleft()
+                      for neighbor in graph[node]:
+                          if distance[neighbor] == -1:
+                              distance[neighbor] = distance[node] + 1
+                              queue.append(neighbor)
+                  expected.append(sum(distance))
+              return result == expected
 seed: 834
 tests:
   - name: n1

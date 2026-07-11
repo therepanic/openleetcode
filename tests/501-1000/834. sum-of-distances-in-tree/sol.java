@@ -1,4 +1,5 @@
 class Solution {
+    @SuppressWarnings("unchecked")
     public int[] sumOfDistancesInTree(int n, int[][] edges) {
         List<Integer>[] adj = new ArrayList[n];
         for (int i = 0; i < n; i++) adj[i] = new ArrayList<>();
