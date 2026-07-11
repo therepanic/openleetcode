@@ -226,6 +226,20 @@ private func encode(_ obj: Any?, _ seen: inout [ObjectIdentifier]) -> String {
     if let s = obj as? String { return quote(s) }
     if let d = obj as? Date { return quote(ISO8601DateFormatter().string(from: d)) }
 
+    if let trees = obj as? [TreeNode?] {
+        let encodedTrees = trees.map { root -> String in
+            guard let root = root else { return "null" }
+            let values = tree_node_to_array(root).map { value in
+                value.map(String.init) ?? "null"
+            }
+            return "[\(values.joined(separator: ","))]"
+        }
+        return "[\(encodedTrees.joined(separator: ","))]"
+    }
+    if let tree = obj as? TreeNode {
+        return encode(tree_node_to_array(tree), &seen)
+    }
+
     let ref = obj as AnyObject
     let oid = ObjectIdentifier(ref)
     guard !seen.contains(oid) else {
