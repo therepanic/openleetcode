@@ -1,0 +1,50 @@
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution(object):
+    def flipMatchVoyage(self, root, voyage):
+        """
+        :type root: Optional[TreeNode]
+        :type voyage: List[int]
+        :rtype: List[int]
+        """
+        flipped_nodes = []
+        idx = [0]
+        
+        def dfs(node):
+            if node is None:
+                return True
+            if node.val != voyage[idx[0]]:
+                return False
+            
+            idx[0] += 1
+            if node.left and node.right:
+                if voyage[idx[0]] == node.right.val:
+                    flipped_nodes.append(node.val)
+                    if not dfs(node.right):
+                        return False
+                    if not dfs(node.left):
+                        return False
+                elif voyage[idx[0]] == node.left.val:
+                    if not dfs(node.left):
+                        return False
+                    if not dfs(node.right):
+                        return False
+                else:
+                    return False
+            else:
+                if node.left:
+                    if not dfs(node.left):
+                        return False
+                elif node.right:
+                    if not dfs(node.right):
+                        return False
+            
+            return True
+        
+        if not dfs(root):
+            return [-1]
+        return flipped_nodes

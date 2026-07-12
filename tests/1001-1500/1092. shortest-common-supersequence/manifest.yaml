@@ -1,0 +1,331 @@
+entry:
+  id: 1092
+  title: shortest-common-supersequence
+  params:
+    str1:
+      type: string
+    str2:
+      type: string
+  call:
+    cpp: "Solution().shortestCommonSupersequence({str1}, {str2})"
+    rust: "Solution::shortest_common_supersequence({str1}, {str2})"
+    python3: "Solution().shortestCommonSupersequence({str1}, {str2})"
+    python2: "Solution().shortestCommonSupersequence({str1}, {str2})"
+    ruby: "shortest_common_supersequence({str1}, {str2})"
+    java: "new Solution().shortestCommonSupersequence({str1}, {str2})"
+    csharp: "new Solution().ShortestCommonSupersequence({str1}, {str2})"
+    kotlin: "Solution().shortestCommonSupersequence({str1}, {str2})"
+    go: "shortestCommonSupersequence({str1}, {str2})"
+    dart: "Solution().shortestCommonSupersequence({str1}, {str2})"
+    swift: "Solution().shortestCommonSupersequence({str1}, {str2})"
+    typescript: "Solution().shortestCommonSupersequence({str1}, {str2})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().shortestCommonSupersequence(str1, str2, {result})"
+    checker: |
+      class Checker:
+          def shortestCommonSupersequence(self, str1, str2, result):
+              if not isinstance(result, str):
+                  return False
+              def is_subseq(a, b):
+                  it = iter(b)
+                  return all(ch in it for ch in a)
+              if not is_subseq(str1, result) or not is_subseq(str2, result):
+                  return False
+              m, n = len(str1), len(str2)
+              dp = [[0] * (n + 1) for _ in range(m + 1)]
+              for i in range(1, m + 1):
+                  for j in range(1, n + 1):
+                      if str1[i - 1] == str2[j - 1]:
+                          dp[i][j] = dp[i - 1][j - 1] + 1
+                      else:
+                          dp[i][j] = dp[i - 1][j] if dp[i - 1][j] > dp[i][j - 1] else dp[i][j - 1]
+              expected_len = m + n - dp[m][n]
+              return len(result) == expected_len
+seed: 12345
+tests:
+  - name: "example-1"
+    in:
+      str1: "abac"
+      str2: "cab"
+    judge:
+      type: "exact"
+    seed: 17
+  - name: "example-2"
+    in:
+      str1: "aaaaaaaa"
+      str2: "aaaaaaaa"
+    judge:
+      type: "exact"
+    seed: 34
+  - name: "one-char-same"
+    in:
+      str1: "a"
+      str2: "a"
+    judge:
+      type: "exact"
+    seed: 51
+  - name: "one-char-diff"
+    in:
+      str1: "a"
+      str2: "b"
+    judge:
+      type: "exact"
+    seed: 68
+  - name: "subsequence-left"
+    in:
+      str1: "abc"
+      str2: "a"
+    judge:
+      type: "exact"
+    seed: 85
+  - name: "subsequence-right"
+    in:
+      str1: "a"
+      str2: "abc"
+    judge:
+      type: "exact"
+    seed: 102
+  - name: "disjoint-2"
+    in:
+      str1: "ab"
+      str2: "cd"
+    judge:
+      type: "exact"
+    seed: 119
+  - name: "overlap-1"
+    in:
+      str1: "abc"
+      str2: "bcd"
+    judge:
+      type: "exact"
+    seed: 136
+  - name: "overlap-2"
+    in:
+      str1: "geek"
+      str2: "eke"
+    judge:
+      type: "exact"
+    seed: 153
+  - name: "palindrome-ish"
+    in:
+      str1: "abca"
+      str2: "caba"
+    judge:
+      type: "exact"
+    seed: 170
+  - name: "repeated-pattern"
+    in:
+      str1: "abab"
+      str2: "baba"
+    judge:
+      type: "exact"
+    seed: 187
+  - name: "same-prefix"
+    in:
+      str1: "leetcode"
+      str2: "leet"
+    judge:
+      type: "exact"
+    seed: 204
+  - name: "same-suffix"
+    in:
+      str1: "coding"
+      str2: "ing"
+    judge:
+      type: "exact"
+    seed: 221
+  - name: "medium-1"
+    in:
+      str1: "abcde"
+      str2: "ace"
+    judge:
+      type: "exact"
+    seed: 238
+  - name: "medium-2"
+    in:
+      str1: "abc"
+      str2: "xyzabc"
+    judge:
+      type: "exact"
+    seed: 255
+  - name: "medium-3"
+    in:
+      str1: "abcxyz"
+      str2: "axbycz"
+    judge:
+      type: "exact"
+    seed: 272
+  - name: "medium-4"
+    in:
+      str1: "zzzz"
+      str2: "zzzzzz"
+    judge:
+      type: "exact"
+    seed: 289
+  - name: "long-a-b"
+    in:
+      str1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      str2: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    judge:
+      type: "exact"
+    seed: 306
+  - name: "long-overlap"
+    in:
+      str1: "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde"
+      str2: "cdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeab"
+    judge:
+      type: "exact"
+    seed: 323
+  - name: "long-mixed"
+    in:
+      str1: "abcdefghijklmnopqrstuvwxyz"
+      str2: "zyxwvutsrqponmlkjihgfedcba"
+    judge:
+      type: "exact"
+    seed: 340
+  - name: "generated-1"
+    in:
+      str1: "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab"
+      str2: "babababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababa"
+    judge:
+      type: "exact"
+    seed: 357
+  - name: "generated-2"
+    in:
+      str1: "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd"
+      str2: "bcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcda"
+    judge:
+      type: "exact"
+    seed: 374
+  - name: "generated-3"
+    in:
+      str1: "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+      str2: "cabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcab"
+    judge:
+      type: "exact"
+    seed: 391
+  - name: "generated-4"
+    in:
+      str1: "aabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbccaabbcc"
+      str2: "ccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaaccbbaa"
+    judge:
+      type: "exact"
+    seed: 408
+  - name: "generated-5"
+    in:
+      str1: "leetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcode"
+      str2: "codeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleet"
+    judge:
+      type: "exact"
+    seed: 425
+  - name: "generated-6"
+    in:
+      str1: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      str2: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    judge:
+      type: "exact"
+    seed: 442
+  - name: "generated-7"
+    in:
+      str1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      str2: "b"
+    judge:
+      type: "exact"
+    seed: 459
+  - name: "generated-8"
+    in:
+      str1: "qwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwerty"
+      str2: "ytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewqytrewq"
+    judge:
+      type: "exact"
+    seed: 476
+  - name: "generated-9"
+    in:
+      str1: "mnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqrmnopqr"
+      str2: "qrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuvqrstuv"
+    judge:
+      type: "exact"
+    seed: 493
+  - name: "generated-10"
+    in:
+      str1: "abcxyzabcxyz"
+      str2: "xyzabcxyzabc"
+    judge:
+      type: "exact"
+    seed: 510
+  - name: "generated-11"
+    in:
+      str1: "aaaaaaaaab"
+      str2: "baaaaaaaaa"
+    judge:
+      type: "exact"
+    seed: 527
+  - name: "generated-12"
+    in:
+      str1: "puzzle"
+      str2: "pizzazz"
+    judge:
+      type: "exact"
+    seed: 544
+  - name: "generated-13"
+    in:
+      str1: "dynamicprogramming"
+      str2: "programdynamic"
+    judge:
+      type: "exact"
+    seed: 561
+  - name: "generated-14"
+    in:
+      str1: "short"
+      str2: "ports"
+    judge:
+      type: "exact"
+    seed: 578
+  - name: "generated-15"
+    in:
+      str1: "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+      str2: "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+    judge:
+      type: "exact"
+    seed: 595
+  - name: "generated-16"
+    in:
+      str1: "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde"
+      str2: "edcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcba"
+    judge:
+      type: "exact"
+    seed: 612
+  - name: "generated-17"
+    in:
+      str1: "ababababab"
+      str2: "bababababa"
+    judge:
+      type: "exact"
+    seed: 629
+  - name: "generated-18"
+    in:
+      str1: "abcdxyz"
+      str2: "xyzabcd"
+    judge:
+      type: "exact"
+    seed: 646
+  - name: "generated-19"
+    in:
+      str1: "aaaabbbbcccc"
+      str2: "abcabcabcabc"
+    judge:
+      type: "exact"
+    seed: 663
+  - name: "generated-20"
+    in:
+      str1: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+      str2: "mnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl"
+    judge:
+      type: "exact"
+    seed: 680

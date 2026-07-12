@@ -1,0 +1,30 @@
+class Solution(object):
+    def countTriplets(self, nums):
+        import math
+        def transform(c, forward):
+            h = 1
+            sign = 1 if forward else -1
+            while h < len(c):
+                for s in range(0, len(c), 2*h):
+                    for i in range(s, s+h):
+                        c[i] += sign * c[i+h]
+                h *= 2
+
+        most = max(nums)
+        if most == 0:
+            return len(nums)**3
+
+        bits = int(math.ceil(math.log(most, 2))) + 1
+        N = 1 << bits
+        ALL = N - 1
+
+        c = [0] * N
+        for n in nums:
+            c[n] += 1
+
+        transform(c, True)
+        for i in range(N):
+            c[i] **= 3
+        transform(c, False)
+
+        return c[0]

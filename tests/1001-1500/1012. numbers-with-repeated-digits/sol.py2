@@ -1,0 +1,24 @@
+class Solution(object):
+    def numDupDigitsAtMostN(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        def perm(m, k):
+            res = 1
+            for i in xrange(k):
+                res *= m - i
+            return res
+
+        digits = list(map(int, str(n + 1)))
+        nl = len(digits)
+        res = sum(9 * perm(9, i) for i in range(nl - 1))
+        s = set()
+        for i, x in enumerate(digits):
+            for y in range(1 if i == 0 else 0, x):
+                if y not in s:
+                    res += perm(9 - i, nl - i - 1)
+            if x in s:
+                break
+            s.add(x)
+        return n - res

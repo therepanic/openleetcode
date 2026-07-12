@@ -1,0 +1,33 @@
+class Solution(object):
+    def ambiguousCoordinates(self, s):
+        """
+        :type s: str
+        :rtype: List[str]
+        """
+        s = s[1:-1]
+        
+        def get_valid_numbers(num_str):
+            res = []
+            for i in range(1, len(num_str) + 1):
+                left = num_str[:i]
+                right = num_str[i:]
+                
+                if (len(left) > 1 and left.startswith('0')) or right.endswith('0'):
+                    continue
+                
+                if not right:
+                    res.append(left)
+                else:
+                    res.append(left + '.' + right)
+            return res
+        
+        final_results = []
+        for i in range(1, len(s)):
+            x_options = get_valid_numbers(s[:i])
+            y_options = get_valid_numbers(s[i:])
+            
+            for x in x_options:
+                for y in y_options:
+                    final_results.append('(' + x + ', ' + y + ')')
+        
+        return final_results

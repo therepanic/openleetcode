@@ -1,0 +1,360 @@
+entry:
+  id: 807
+  title: max-increase-to-keep-city-skyline
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: Solution().maxIncreaseKeepingSkyline({grid})
+    rust: Solution::max_increase_keeping_skyline({grid})
+    python3: Solution().maxIncreaseKeepingSkyline({grid})
+    python2: Solution().maxIncreaseKeepingSkyline({grid})
+    ruby: max_increase_keeping_skyline({grid})
+    java: new Solution().maxIncreaseKeepingSkyline({grid})
+    csharp: new Solution().MaxIncreaseKeepingSkyline({grid})
+    kotlin: Solution().maxIncreaseKeepingSkyline({grid})
+    go: maxIncreaseKeepingSkyline({grid})
+    dart: Solution().maxIncreaseKeepingSkyline({grid})
+    swift: Solution().maxIncreaseKeepingSkyline({grid})
+    typescript: maxIncreaseKeepingSkyline({grid})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().maxIncreaseKeepingSkyline(grid, {result})
+    checker: |
+      class Checker:
+          def maxIncreaseKeepingSkyline(self, grid, result):
+              n = len(grid)
+              row_max = [max(row) for row in grid]
+              col_max = [max(grid[r][c] for r in range(n)) for c in range(n)]
+              expected = 0
+              for r in range(n):
+                  for c in range(n):
+                      expected += min(row_max[r], col_max[c]) - grid[r][c]
+              return result == expected
+seed: 807
+tests:
+  - name: example
+    in:
+      grid:
+        elemType: int
+        value:
+          - [3, 0, 8, 4]
+          - [2, 4, 5, 7]
+          - [9, 2, 6, 3]
+          - [0, 3, 1, 0]
+    out: 35
+  - name: all-zero
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 0]
+          - [0, 0, 0]
+          - [0, 0, 0]
+    out: 0
+  - name: single-zero
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0]
+    out: 0
+  - name: single-nine
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9]
+    out: 0
+  - name: two-flat
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1]
+          - [1, 1]
+    out: 0
+  - name: two-diagonal
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+    out: 1
+  - name: mixed-small
+    in:
+      grid:
+        elemType: int
+        value:
+          - [2, 4]
+          - [3, 1]
+  - name: symmetric
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2, 1]
+          - [2, 3, 2]
+          - [1, 2, 1]
+  - name: center-zero
+    in:
+      grid:
+        elemType: int
+        value:
+          - [5, 0, 5]
+          - [0, 0, 0]
+          - [5, 0, 5]
+  - name: ascending-rows
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2, 3, 4, 5]
+          - [1, 2, 3, 4, 5]
+          - [1, 2, 3, 4, 5]
+          - [1, 2, 3, 4, 5]
+          - [1, 2, 3, 4, 5]
+  - name: descending-rows
+    in:
+      grid:
+        elemType: int
+        value:
+          - [5, 4, 3, 2, 1]
+          - [5, 4, 3, 2, 1]
+          - [5, 4, 3, 2, 1]
+          - [5, 4, 3, 2, 1]
+          - [5, 4, 3, 2, 1]
+  - name: high-border
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 9, 9, 9, 9, 9]
+          - [9, 1, 1, 1, 1, 9]
+          - [9, 1, 1, 1, 1, 9]
+          - [9, 1, 1, 1, 1, 9]
+          - [9, 1, 1, 1, 1, 9]
+          - [9, 9, 9, 9, 9, 9]
+  - name: checkerboard-5
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 1, 0, 1, 0]
+          - [1, 0, 1, 0, 1]
+          - [0, 1, 0, 1, 0]
+          - [1, 0, 1, 0, 1]
+          - [0, 1, 0, 1, 0]
+  - name: flat-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [2, 2, 2]
+          - [2, 2, 2]
+          - [2, 2, 2]
+    out: 0
+  - name: three-ramp
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [2, 3, 1]
+          - [3, 1, 2]
+  - name: lopsided-row-max
+    in:
+      grid:
+        elemType: int
+        value:
+          - [4, 1, 4]
+          - [1, 1, 1]
+          - [4, 1, 4]
+    out: 0
+  - name: inner-valley
+    in:
+      grid:
+        elemType: int
+        value:
+          - [7, 6, 7, 6]
+          - [6, 1, 1, 6]
+          - [7, 1, 1, 7]
+          - [6, 6, 6, 6]
+  - name: border-dominates
+    in:
+      grid:
+        elemType: int
+        value:
+          - [8, 8, 8, 8]
+          - [8, 0, 0, 8]
+          - [8, 0, 0, 8]
+          - [8, 8, 8, 8]
+  - name: mixed-4x4
+    in:
+      grid:
+        elemType: int
+        value:
+          - [4, 2, 6, 3]
+          - [1, 5, 2, 4]
+          - [7, 1, 3, 2]
+          - [6, 4, 5, 1]
+  - name: descending-3x3
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 8, 7]
+          - [6, 5, 4]
+          - [3, 2, 1]
+    out: 6
+  - name: staircase
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 2, 4, 6]
+          - [1, 3, 5, 7]
+          - [2, 4, 6, 8]
+          - [3, 5, 7, 9]
+  - name: mixed-high-corners
+    in:
+      grid:
+        elemType: int
+        value:
+          - [6, 6, 1, 6]
+          - [6, 2, 2, 6]
+          - [1, 2, 2, 1]
+          - [6, 6, 1, 6]
+  - name: sparse-peaks
+    in:
+      grid:
+        elemType: int
+        value:
+          - [2, 0, 2, 0, 2]
+          - [0, 2, 0, 2, 0]
+          - [2, 0, 3, 0, 2]
+          - [0, 2, 0, 2, 0]
+          - [2, 0, 2, 0, 2]
+  - name: alternating-4x4
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 3, 1, 3]
+          - [3, 1, 3, 1]
+          - [1, 3, 1, 3]
+          - [3, 1, 3, 1]
+    out: 16
+  - name: maxed-row-and-col
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 1, 9]
+          - [1, 1, 1]
+          - [9, 1, 9]
+    out: 0
+  - name: two-by-two-slope
+    in:
+      grid:
+        elemType: int
+        value:
+          - [2, 4]
+          - [4, 2]
+    out: 4
+  - name: four-by-four-shifted
+    in:
+      grid:
+        elemType: int
+        value:
+          - [2, 4, 1, 3]
+          - [3, 1, 4, 2]
+          - [4, 2, 3, 1]
+          - [1, 3, 2, 4]
+  - name: low-center-high-edge
+    in:
+      grid:
+        elemType: int
+        value:
+          - [5, 5, 5, 5]
+          - [5, 1, 2, 5]
+          - [5, 2, 1, 5]
+          - [5, 5, 5, 5]
+  - name: row-peaks
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 1, 1, 1, 1]
+          - [1, 8, 1, 1, 1]
+          - [1, 1, 7, 1, 1]
+          - [1, 1, 1, 6, 1]
+          - [1, 1, 1, 1, 5]
+  - name: column-peaks
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 1, 1, 1, 1]
+          - [8, 1, 1, 1, 1]
+          - [7, 1, 1, 1, 1]
+          - [6, 1, 1, 1, 1]
+          - [5, 1, 1, 1, 1]
+  - name: center-plateau
+    in:
+      grid:
+        elemType: int
+        value:
+          - [4, 4, 4, 4, 4]
+          - [4, 7, 7, 7, 4]
+          - [4, 7, 1, 7, 4]
+          - [4, 7, 7, 7, 4]
+          - [4, 4, 4, 4, 4]
+  - name: valley-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [6, 6, 6, 6, 6]
+          - [6, 2, 2, 2, 6]
+          - [6, 2, 0, 2, 6]
+          - [6, 2, 2, 2, 6]
+          - [6, 6, 6, 6, 6]
+  - name: randomish-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [3, 7, 2, 5, 1]
+          - [6, 1, 4, 2, 8]
+          - [5, 3, 9, 1, 4]
+          - [2, 8, 6, 3, 7]
+          - [1, 4, 5, 7, 2]
+  - name: corners-only
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 0, 0, 9]
+          - [0, 0, 0, 0]
+          - [0, 0, 0, 0]
+          - [9, 0, 0, 9]
+  - name: anti-diagonal-heavy
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 9]
+          - [1, 1, 8, 1]
+          - [1, 7, 1, 1]
+          - [6, 1, 1, 1]

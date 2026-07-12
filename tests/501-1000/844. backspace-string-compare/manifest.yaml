@@ -1,0 +1,263 @@
+entry:
+  id: 844
+  title: backspace-string-compare
+  params:
+    s:
+      type: string
+    t:
+      type: string
+  call:
+    cpp: Solution().backspaceCompare({s}, {t})
+    rust: Solution::backspace_compare({s}, {t})
+    python3: Solution().backspaceCompare({s}, {t})
+    python2: Solution().backspaceCompare({s}, {t})
+    ruby: backspace_compare({s}, {t})
+    java: new Solution().backspaceCompare({s}, {t})
+    csharp: new Solution().BackspaceCompare({s}, {t})
+    kotlin: Solution().backspaceCompare({s}, {t})
+    go: backspaceCompare({s}, {t})
+    dart: Solution().backspaceCompare({s}, {t})
+    swift: Solution().backspaceCompare({s}, {t})
+    typescript: backspaceCompare({s}, {t})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().backspaceCompare(s, t, {result})
+    checker:
+      "class Checker:\n    def _reduce(self, text):\n        stack = []\n \
+      \       for ch in text:\n            if ch == '#':\n                if stack:\n\
+      \                    stack.pop()\n            else:\n                stack.append(ch)\n\
+      \        return ''.join(stack)\n\n    def backspaceCompare(self, s, t, result):\n\
+      \        if not isinstance(result, bool):\n            return False\n      \
+      \  return result == (self._reduce(s) == self._reduce(t))\n"
+seed: 844844
+tests:
+  - name: ex1
+    in:
+      s: ab#c
+      t: ad#c
+    out: true
+  - name: ex2
+    in:
+      s: ab##
+      t: c#d#
+    out: true
+  - name: ex3
+    in:
+      s: a#c
+      t: b
+    out: false
+  - name: both-empty
+    in:
+      s: "####"
+      t: "#"
+    out: true
+  - name: equal-after-many-backspaces
+    in:
+      s: xy#z##
+      t: x###
+    out: true
+  - name: mismatch-simple
+    in:
+      s: abc#d
+      t: abzz##d
+    out: true
+  - name: one-empty
+    in:
+      s: a##
+      t: ""
+    out: true
+  - name: long-alpha
+    in:
+      s: abcde####fgh#i
+      t: abfghi###
+    out: false
+  - name: leading-backspaces
+    in:
+      s: "###a"
+      t: a
+    out: true
+  - name: alternating
+    in:
+      s: a#b#c#d#e#
+      t: "#####"
+    out: true
+  - name: simple-false
+    in:
+      s: a
+      t: b
+    out: false
+  - name: simple-true
+    in:
+      s: a#b
+      t: b
+    out: true
+  - name: delete-to-empty
+    in:
+      s: abc###
+      t: d#
+    out: true
+  - name: no-backspaces
+    in:
+      s: abc
+      t: abc
+    out: true
+  - name: no-backspaces-false
+    in:
+      s: abc
+      t: abd
+    out: false
+  - name: backspace-overrun
+    in:
+      s: "######a"
+      t: a
+    out: true
+  - name: backspace-overrun-false
+    in:
+      s: "######a"
+      t: b
+    out: false
+  - name: chain-cancel
+    in:
+      s: ab###c
+      t: c
+    out: true
+  - name: chain-cancel-false
+    in:
+      s: ab###c
+      t: d
+    out: false
+  - name: same-final-length
+    in:
+      s: a#bc#d##
+      t: z##y#x###
+    out: true
+  - name: prefix-skip
+    in:
+      s: bxj##tw
+      t: bxo#j##tw
+    out: true
+  - name: prefix-skip-false
+    in:
+      s: bxj##tw
+      t: bxo#j##ty
+    out: false
+  - name: long-same
+    in:
+      s: aaaaaaaaaa##########
+      t: ""
+    out: true
+  - name: long-diff
+    in:
+      s: aaaaaaaaaa##########b
+      t: ""
+    out: false
+  - name: nested-backspaces
+    in:
+      s: ab##c#d
+      t: ad
+    out: false
+  - name: nested-backspaces-false
+    in:
+      s: ab##c#d
+      t: ac
+    out: false
+  - name: all-hash
+    in:
+      s: "##########"
+      t: "##########"
+    out: true
+  - name: gen-01
+    in:
+      s:
+        gen: str
+        len: 20
+        alphabet: abc#
+      t:
+        gen: str
+        len: 20
+        alphabet: abc#
+  - name: gen-02
+    in:
+      s:
+        gen: str
+        len: 50
+        alphabet: abc#
+      t:
+        gen: str
+        len: 50
+        alphabet: abc#
+  - name: gen-03
+    in:
+      s:
+        gen: str
+        len: 100
+        alphabet: abc#
+      t:
+        gen: str
+        len: 100
+        alphabet: abc#
+  - name: gen-04
+    in:
+      s:
+        gen: str
+        len: 150
+        alphabet: abc#
+      t:
+        gen: str
+        len: 150
+        alphabet: abc#
+  - name: gen-05
+    in:
+      s:
+        gen: str
+        len: 200
+        alphabet: abc#
+      t:
+        gen: str
+        len: 200
+        alphabet: abc#
+  - name: long-true-1
+    in:
+      s: abcdefghijklmnopqrstuvwxyz##########################
+      t: ""
+    out: true
+  - name: long-true-2
+    in:
+      s: a#b#c#d#e#f#g#h#i#j#k#l#m#n#o#p#q#r#s#t#u#v#w#x#y#z#
+      t: ""
+    out: true
+  - name: long-false-2
+    in:
+      s: abcdefghij####################k
+      t: ""
+    out: false
+  - name: cancel-different-final
+    in:
+      s: aa#b#c
+      t: c#d#e#f#g#
+    out: false
+  - name: equal-after-compaction
+    in:
+      s: ab#cd##e#f#g##
+      t: a#b#cdef######
+    out: true
+  - name: equal-empty-with-leads
+    in:
+      s: "#a#b#c#"
+      t: "###"
+    out: true
+  - name: final-char-match
+    in:
+      s: z#y#x#q
+      t: q
+    out: true
+  - name: final-char-mismatch
+    in:
+      s: z#y#x#q
+      t: r
+    out: false

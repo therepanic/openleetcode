@@ -1,0 +1,452 @@
+entry:
+  id: 890
+  title: find-and-replace-pattern
+  params:
+    words:
+      type: array
+      items:
+        type: string
+    pattern:
+      type: string
+  call:
+    cpp: Solution().findAndReplacePattern({words}, {pattern})
+    rust: Solution::find_and_replace_pattern({words}, {pattern})
+    python3: Solution().findAndReplacePattern({words}, {pattern})
+    python2: Solution().findAndReplacePattern({words}, {pattern})
+    ruby: find_and_replace_pattern({words}, {pattern})
+    java: new Solution().findAndReplacePattern({words}, {pattern})
+    csharp: new Solution().FindAndReplacePattern({words}, {pattern})
+    kotlin: Solution().findAndReplacePattern({words}, {pattern})
+    go: findAndReplacePattern({words}, {pattern})
+    dart: Solution().findAndReplacePattern({words}, {pattern})
+    swift: Solution().findAndReplacePattern({words}, {pattern})
+    typescript: findAndReplacePattern({words}, {pattern})
+
+judge:
+  type: ignore_order
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().check(words, pattern, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker(object):
+          def check(self, words, pattern, result):
+              if not isinstance(result, list):
+                  return False
+              expected = []
+              pattern_signature = [pattern.index(c) for c in pattern]
+              for word in words:
+                  if len(word) != len(pattern):
+                      return False
+                  if [word.index(c) for c in word] == pattern_signature:
+                      expected.append(word)
+              return Counter(result) == Counter(expected)
+
+seed: 890
+
+tests:
+  - name: ex1
+    in:
+      words:
+        - abc
+        - deq
+        - mee
+        - aqq
+        - dkd
+        - ccc
+      pattern: abb
+    out:
+      - mee
+      - aqq
+  - name: ex2
+    in:
+      words:
+        - a
+        - b
+        - c
+      pattern: a
+    out:
+      - a
+      - b
+      - c
+  - name: single_match
+    in:
+      words:
+        - aa
+        - ab
+        - ba
+      pattern: aa
+    out:
+      - aa
+  - name: two_letter_bijection
+    in:
+      words:
+        - ab
+        - cd
+        - ee
+        - fg
+      pattern: ab
+    out:
+      - ab
+      - cd
+      - fg
+  - name: all_same_pattern
+    in:
+      words:
+        - aaaa
+        - bbbb
+        - abcd
+        - zzzz
+      pattern: zzzz
+    out:
+      - aaaa
+      - bbbb
+      - zzzz
+  - name: repeated_first_last
+    in:
+      words:
+        - abca
+        - zbxz
+        - mnop
+        - zzzz
+      pattern: mama
+    out: []
+  - name: example_like_abb
+    in:
+      words:
+        - abc
+        - xyy
+        - yxx
+        - foo
+      pattern: abb
+    out:
+      - xyy
+      - yxx
+      - foo
+  - name: no_matches
+    in:
+      words:
+        - abcd
+        - efgh
+        - ijkl
+      pattern: aaaa
+    out: []
+  - name: length_five_mixed
+    in:
+      words:
+        - qwert
+        - tyuio
+        - asdfg
+        - zxcvb
+      pattern: abcde
+    out:
+      - qwert
+      - tyuio
+      - asdfg
+      - zxcvb
+  - name: length_five_single_pattern
+    in:
+      words:
+        - hello
+        - jelly
+        - civic
+        - radar
+      pattern: paper
+    out: []
+  - name: repeated_blocks
+    in:
+      words:
+        - abcabc
+        - deqdeq
+        - meemee
+        - aqqaqq
+      pattern: abcabc
+    out:
+      - abcabc
+      - deqdeq
+  - name: classic_noon
+    in:
+      words:
+        - abba
+        - baab
+        - cddc
+        - eeee
+      pattern: noon
+    out:
+      - abba
+      - baab
+      - cddc
+  - name: alternating
+    in:
+      words:
+        - xyxy
+        - zaza
+        - mnom
+        - abab
+      pattern: abab
+    out:
+      - xyxy
+      - zaza
+      - abab
+  - name: all_unique_len4
+    in:
+      words:
+        - pqrs
+        - qrst
+        - rstu
+        - stuv
+      pattern: abcd
+    out:
+      - pqrs
+      - qrst
+      - rstu
+      - stuv
+  - name: duplicates_in_words
+    in:
+      words:
+        - zz
+        - xy
+        - yx
+        - zz
+      pattern: ab
+    out:
+      - xy
+      - yx
+  - name: duplicates_output
+    in:
+      words:
+        - baba
+        - caca
+        - dada
+      pattern: noon
+    out: []
+  - name: single_char_many
+    in:
+      words:
+        - a
+        - z
+        - m
+        - q
+      pattern: b
+    out:
+      - a
+      - z
+      - m
+      - q
+  - name: pattern_three_unique
+    in:
+      words:
+        - abc
+        - bcd
+        - cde
+        - def
+      pattern: xyz
+    out:
+      - abc
+      - bcd
+      - cde
+      - def
+  - name: pattern_two_same_one_diff
+    in:
+      words:
+        - mom
+        - dad
+        - pop
+        - aaa
+      pattern: aba
+    out:
+      - mom
+      - dad
+      - pop
+  - name: pattern_two_same_one_diff_2
+    in:
+      words:
+        - kik
+        - foo
+        - bar
+        - paper
+      pattern: abb
+    out:
+      - foo
+  - name: length_six_partial
+    in:
+      words:
+        - xyzxyz
+        - ababab
+        - aaaaaa
+        - qwerty
+      pattern: aabbcc
+    out: []
+  - name: length_six_unique
+    in:
+      words:
+        - abcdef
+        - bcdefg
+        - cdefgh
+        - zyxwvu
+      pattern: abcdef
+    out:
+      - abcdef
+      - bcdefg
+      - cdefgh
+      - zyxwvu
+  - name: length_seven_reuse
+    in:
+      words:
+        - abcabca
+        - bcdbcde
+        - zzxzzxz
+        - mnopqrs
+      pattern: abcadab
+    out: []
+  - name: length_eight_exampleish
+    in:
+      words:
+        - leetcode
+        - codeleet
+        - helloell
+        - worldwid
+      pattern: abcaefgh
+    out: []
+  - name: long_unique_1
+    in:
+      words:
+        - abcdefghij
+        - klmnopqrst
+        - uvwxyzabcd
+        - zyxwvutsrq
+      pattern: abcdefghij
+    out:
+      - abcdefghij
+      - klmnopqrst
+      - uvwxyzabcd
+      - zyxwvutsrq
+  - name: long_unique_2
+    in:
+      words:
+        - abcdefghijkl
+        - mnopqrstuvwx
+        - yzabcdefghij
+      pattern: klmnopqrstuv
+    out:
+      - abcdefghijkl
+      - mnopqrstuvwx
+      - yzabcdefghij
+  - name: repeated_then_unique
+    in:
+      words:
+        - aab
+        - bbc
+        - ccd
+        - dde
+      pattern: abb
+    out: []
+  - name: mixed_case_of_pattern
+    in:
+      words:
+        - aba
+        - xyz
+        - xyx
+      pattern: aba
+    out:
+      - aba
+      - xyx
+  - name: all_match_short
+    in:
+      words:
+        - ab
+        - ba
+        - cd
+        - ef
+      pattern: ab
+    out:
+      - ab
+      - ba
+      - cd
+      - ef
+  - name: no_match_long
+    in:
+      words:
+        - abc
+        - aba
+        - aaa
+      pattern: xyz
+    out:
+      - abc
+  - name: repeated_letter_pattern
+    in:
+      words:
+        - ppp
+        - qqq
+        - rqr
+      pattern: aaa
+    out:
+      - ppp
+      - qqq
+  - name: weird_mix_1
+    in:
+      words:
+        - abcde
+        - fghij
+        - klmno
+        - pqrst
+      pattern: abcde
+    out:
+      - abcde
+      - fghij
+      - klmno
+      - pqrst
+  - name: weird_mix_2
+    in:
+      words:
+        - abca
+        - zbxz
+        - mnmm
+        - zzzz
+      pattern: mama
+    out: []
+  - name: pair_repeats
+    in:
+      words:
+        - xyxy
+        - yyyy
+        - xzxz
+      pattern: abab
+    out:
+      - xyxy
+      - xzxz
+  - name: single_word_match
+    in:
+      words:
+        - same
+      pattern: abcd
+    out:
+      - same
+  - name: single_word_no_match
+    in:
+      words:
+        - nooo
+      pattern: abcd
+    out: []
+  - name: two_words_same_shape
+    in:
+      words:
+        - abab
+        - baba
+      pattern: abba
+    out: []
+  - name: final_mixed
+    in:
+      words:
+        - paper
+        - title
+        - abaca
+        - xyxxy
+      pattern: aabcd
+    out: []

@@ -1,0 +1,28 @@
+class Solution(object):
+    def leastOpsExpressTarget(self, x, target):
+        """
+        :type x: int
+        :type target: int
+        :rtype: int
+        """
+        import math
+
+        memo = {}
+
+        def fn(val):
+            if val in memo:
+                return memo[val]
+            if val < x:
+                memo[val] = min(2 * val - 1, 2 * (x - val))
+                return memo[val]
+
+            k = int(math.log(val) / math.log(x))
+            base = x ** k
+            ans = k + fn(val - base)
+            next_base = base * x
+            if next_base < 2 * val:
+                ans = min(ans, k + 1 + fn(next_base - val))
+            memo[val] = ans
+            return ans
+
+        return fn(target)

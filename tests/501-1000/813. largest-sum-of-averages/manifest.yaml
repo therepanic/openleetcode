@@ -1,0 +1,409 @@
+entry:
+  id: 813
+  title: largest-sum-of-averages
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: Solution().largestSumOfAverages({nums}, {k})
+    rust: Solution::largest_sum_of_averages({nums}, {k})
+    python3: Solution().largestSumOfAverages({nums}, {k})
+    python2: Solution().largestSumOfAverages({nums}, {k})
+    ruby: largest_sum_of_averages({nums}, {k})
+    java: new Solution().largestSumOfAverages({nums}, {k})
+    csharp: new Solution().LargestSumOfAverages({nums}, {k})
+    kotlin: Solution().largestSumOfAverages({nums}, {k})
+    go: largestSumOfAverages({nums}, {k})
+    dart: Solution().largestSumOfAverages({nums}, {k})
+    swift: Solution().largestSumOfAverages({nums}, {k})
+    typescript: largestSumOfAverages({nums}, {k})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(nums, k, {result})
+    checker: |
+      class Checker:
+          def check(self, nums, k, result):
+              n = len(nums)
+              pref = [0.0]
+              for x in nums:
+                  pref.append(pref[-1] + x)
+              dp = [[0.0] * (k + 1) for _ in range(n + 1)]
+              for i in range(1, n + 1):
+                  dp[i][1] = pref[i] / i
+              for p in range(2, k + 1):
+                  for i in range(p, n + 1):
+                      best = 0.0
+                      for j in range(p - 1, i):
+                          cand = dp[j][p - 1] + (pref[i] - pref[j]) / (i - j)
+                          if cand > best:
+                              best = cand
+                      dp[i][p] = best
+              return abs(dp[n][k] - result) <= 1e-6
+seed: 813
+tests:
+  - name: example-1
+    in:
+      nums:
+        - 9
+        - 1
+        - 2
+        - 3
+        - 9
+      k: 3
+  - name: example-2
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+      k: 4
+  - name: single-group
+    in:
+      nums:
+        - 5
+        - 5
+        - 5
+      k: 1
+  - name: all-singletons
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+      k: 4
+  - name: two-elements-k2
+    in:
+      nums:
+        - 10
+        - 20
+      k: 2
+  - name: two-elements-k1
+    in:
+      nums:
+        - 10
+        - 20
+      k: 1
+  - name: increasing-five-k2
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      k: 2
+  - name: increasing-five-k3
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      k: 3
+  - name: descending-five-k3
+    in:
+      nums:
+        - 9
+        - 8
+        - 7
+        - 6
+        - 5
+      k: 3
+  - name: mixed-small
+    in:
+      nums:
+        - 3
+        - 1
+        - 4
+        - 1
+        - 5
+        - 9
+      k: 3
+  - name: mixed-two-groups
+    in:
+      nums:
+        - 8
+        - 1
+        - 7
+        - 3
+        - 9
+        - 2
+      k: 2
+  - name: mixed-four-groups
+    in:
+      nums:
+        - 8
+        - 1
+        - 7
+        - 3
+        - 9
+        - 2
+      k: 4
+  - name: repeated-values
+    in:
+      nums:
+        - 4
+        - 4
+        - 4
+        - 4
+        - 4
+        - 4
+      k: 3
+  - name: prime-ish
+    in:
+      nums:
+        - 2
+        - 3
+        - 5
+        - 7
+        - 11
+        - 13
+      k: 4
+  - name: large-values
+    in:
+      nums:
+        - 10000
+        - 9999
+        - 10000
+        - 9998
+        - 10000
+      k: 2
+  - name: zigzag-large-k3
+    in:
+      nums:
+        - 1
+        - 10000
+        - 1
+        - 10000
+        - 1
+      k: 3
+  - name: peak-middle-k2
+    in:
+      nums:
+        - 10000
+        - 1
+        - 1
+        - 1
+        - 10000
+      k: 2
+  - name: alternating-small-k4
+    in:
+      nums:
+        - 5
+        - 1
+        - 5
+        - 1
+        - 5
+        - 1
+        - 5
+      k: 4
+  - name: valley-middle-k3
+    in:
+      nums:
+        - 1
+        - 3
+        - 2
+        - 6
+        - 4
+        - 8
+        - 5
+      k: 3
+  - name: descending-six-k2
+    in:
+      nums:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 2
+        - 1
+      k: 2
+  - name: grouped-highs-k3
+    in:
+      nums:
+        - 2
+        - 2
+        - 2
+        - 9
+        - 9
+        - 9
+      k: 3
+  - name: long-alternating-k5
+    in:
+      nums:
+        - 7
+        - 1
+        - 7
+        - 1
+        - 7
+        - 1
+        - 7
+        - 1
+      k: 5
+  - name: pair-bumps-k2
+    in:
+      nums:
+        - 1
+        - 9
+        - 1
+        - 9
+        - 1
+        - 9
+      k: 2
+  - name: mixed-spikes-k4
+    in:
+      nums:
+        - 4
+        - 1
+        - 2
+        - 10
+        - 2
+        - 1
+        - 4
+      k: 4
+  - name: symmetric-peaks-k2
+    in:
+      nums:
+        - 100
+        - 100
+        - 1
+        - 1
+        - 100
+        - 100
+      k: 2
+  - name: spike-middle-k3
+    in:
+      nums:
+        - 1
+        - 2
+        - 100
+        - 2
+        - 1
+        - 100
+      k: 3
+  - name: descending-spike-k2
+    in:
+      nums:
+        - 8
+        - 6
+        - 7
+        - 5
+        - 3
+        - 0
+      k: 2
+  - name: flat-nine-k4
+    in:
+      nums:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+      k: 4
+  - name: increasing-five-k5
+    in:
+      nums:
+        - 10
+        - 20
+        - 30
+        - 40
+        - 50
+      k: 5
+  - name: increasing-five-k3b
+    in:
+      nums:
+        - 10
+        - 20
+        - 30
+        - 40
+        - 50
+      k: 3
+  - name: zigzag-nine-k4
+    in:
+      nums:
+        - 9
+        - 1
+        - 9
+        - 1
+        - 9
+        - 1
+        - 9
+        - 1
+        - 9
+      k: 4
+  - name: repeat-three-k2
+    in:
+      nums:
+        - 3
+        - 5
+        - 3
+        - 5
+        - 3
+        - 5
+        - 3
+      k: 2
+  - name: repeating-pairs-k4
+    in:
+      nums:
+        - 2
+        - 8
+        - 2
+        - 8
+        - 2
+        - 8
+        - 2
+        - 8
+      k: 4
+  - name: huge-alternating-k3
+    in:
+      nums:
+        - 10000
+        - 1
+        - 10000
+        - 1
+        - 10000
+        - 1
+        - 10000
+      k: 3
+  - name: spike-tail-k4
+    in:
+      nums:
+        - 1
+        - 2
+        - 3
+        - 10000
+        - 4
+        - 5
+        - 6
+      k: 4
+  - name: blocky-eight-k2
+    in:
+      nums:
+        - 7
+        - 7
+        - 7
+        - 7
+        - 1
+        - 1
+        - 1
+        - 1
+      k: 2

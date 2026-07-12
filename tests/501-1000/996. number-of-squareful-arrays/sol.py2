@@ -1,0 +1,35 @@
+class Solution(object):
+    def numSquarefulPerms(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = len(nums)
+        nums.sort()
+
+        def is_squareful(curr_nums, num):
+            if len(curr_nums) == 0:
+                return True
+            prev_num = curr_nums[-1]
+            pair_sum = prev_num + num
+            if pair_sum < 0:
+                return False
+            sqrt_n = int(math.sqrt(pair_sum))
+            return sqrt_n * sqrt_n == pair_sum
+
+        def backtrack(nums_mask, curr_nums):
+            if nums_mask != 0 and len(curr_nums) == n:
+                return 1
+            num_squareful_perms = 0
+            for idx in range(n):
+                num = nums[idx]
+                if idx > 0 and nums[idx] == nums[idx - 1] and (nums_mask & (1 << (idx - 1))) == 0:
+                    continue
+                if (nums_mask & (1 << idx)) == 0 and is_squareful(curr_nums, num):
+                    curr_nums.append(num)
+                    num_squareful_perms += backtrack(nums_mask | (1 << idx), curr_nums)
+                    curr_nums.pop()
+            return num_squareful_perms
+
+        import math
+        return backtrack(0, [])

@@ -1,0 +1,64 @@
+class Solution(object):
+    def hitBricks(self, grid, hits):
+        """
+        :type grid: List[List[int]]
+        :type hits: List[List[int]]
+        :rtype: List[int]
+        """
+        m, n = len(grid), len(grid[0])
+        
+        seen = set()
+        for i, j in hits:
+            if grid[i][j]:
+                seen.add((i, j))
+                grid[i][j] = 0
+        
+        parent = list(range(m * n + 1))
+        rank = [1] * (m * n + 1)
+        
+        def find(p):
+            if p != parent[p]:
+                parent[p] = find(parent[p])
+            return parent[p]
+        
+        def union(p, q):
+            root_p, root_q = find(p), find(q)
+            if root_p == root_q:
+                return False
+            if rank[root_p] > rank[root_q]:
+                root_p, root_q = root_q, root_p
+            parent[root_p] = root_q
+            rank[root_q] += rank[root_p]
+            return True
+        
+        for j in range(n):
+            if grid[0][j]:
+                union(j, m * n)
+        
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j]:
+                    if i - 1 >= 0 and grid[i-1][j]:
+                        union(i * n + j, (i-1) * n + j)
+                    if j - 1 >= 0 and grid[i][j-1]:
+                        union(i * n + j, i * n + j - 1)
+        
+        ans = []
+        prev_stable = rank[find(m * n)]
+        
+        for i, j in reversed(hits):
+            if (i, j) in seen:
+                grid[i][j] = 1
+                if i == 0:
+                    union(j, m * n)
+                for di, dj in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                    ii, jj = i + di, j + dj
+                    if 0 <= ii < m and 0 <= jj < n and grid[ii][jj]:
+                        union(i * n + j, ii * n + jj)
+                curr_stable = rank[find(m * n)]
+                ans.append(max(0, curr_stable - prev_stable - 1))
+                prev_stable = curr_stable
+            else:
+                ans.append(0)
+        
+        return ans[::-1]

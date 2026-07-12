@@ -1,0 +1,535 @@
+entry:
+  id: 815
+  title: bus-routes
+  params:
+    routes:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    source:
+      type: int
+    target:
+      type: int
+  call:
+    cpp: Solution().numBusesToDestination({routes}, {source}, {target})
+    rust: Solution::num_buses_to_destination({routes}, {source}, {target})
+    python3: Solution().numBusesToDestination({routes}, {source}, {target})
+    python2: Solution().numBusesToDestination({routes}, {source}, {target})
+    ruby: num_buses_to_destination({routes}, {source}, {target})
+    java: new Solution().numBusesToDestination({routes}, {source}, {target})
+    csharp: new Solution().NumBusesToDestination({routes}, {source}, {target})
+    kotlin: Solution().numBusesToDestination({routes}, {source}, {target})
+    go: numBusesToDestination({routes}, {source}, {target})
+    dart: Solution().numBusesToDestination({routes}, {source}, {target})
+    swift: Solution().numBusesToDestination({routes}, {source}, {target})
+    typescript: numBusesToDestination({routes}, {source}, {target})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(routes, source, target, {result})
+    checker: |
+      from collections import defaultdict, deque
+
+      class Checker:
+          def check(self, routes, source, target, result):
+              if source == target:
+                  return result == 0
+              adj = defaultdict(set)
+              for bus, locations in enumerate(routes):
+                  for location in locations:
+                      adj[location].add(bus)
+              queue = deque(adj[target])
+              visited = set()
+              cost = 0
+              while queue:
+                  cost += 1
+                  for _ in range(len(queue)):
+                      node = queue.popleft()
+                      if node in visited:
+                          continue
+                      visited.add(node)
+                      if source in routes[node]:
+                          return result == cost
+                      for location in routes[node]:
+                          for bus in adj[location]:
+                              if bus not in visited:
+                                  queue.append(bus)
+              return result == -1
+seed: 815
+tests:
+  - name: example-1
+    in:
+      routes:
+        - - 1
+          - 2
+          - 7
+        - - 3
+          - 6
+          - 7
+      source: 1
+      target: 6
+  - name: example-2
+    in:
+      routes:
+        - - 7
+          - 12
+        - - 4
+          - 5
+          - 15
+        - - 6
+        - - 15
+          - 19
+        - - 9
+          - 12
+          - 13
+      source: 15
+      target: 12
+  - name: same-source-target
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+      source: 2
+      target: 2
+  - name: direct-one-bus
+    in:
+      routes:
+        - - 1
+          - 5
+          - 7
+        - - 9
+          - 10
+      source: 1
+      target: 7
+  - name: two-buses-chain
+    in:
+      routes:
+        - - 1
+          - 2
+          - 7
+        - - 7
+          - 8
+          - 9
+        - - 9
+          - 10
+      source: 1
+      target: 10
+  - name: no-path-disconnected
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 4
+          - 5
+          - 6
+      source: 1
+      target: 6
+  - name: multiple-intersections
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+          - 4
+        - - 4
+          - 5
+          - 6
+        - - 6
+          - 7
+          - 8
+        - - 8
+          - 9
+          - 10
+      source: 1
+      target: 10
+  - name: source-on-later-bus
+    in:
+      routes:
+        - - 11
+          - 12
+          - 13
+        - - 1
+          - 2
+          - 11
+        - - 13
+          - 14
+          - 15
+      source: 1
+      target: 15
+  - name: target-unreachable-but-present
+    in:
+      routes:
+        - - 100
+          - 200
+        - - 300
+          - 400
+        - - 500
+          - 600
+      source: 100
+      target: 500
+  - name: hub-and-spokes
+    in:
+      routes:
+        - - 1
+          - 9
+        - - 2
+          - 9
+        - - 3
+          - 9
+        - - 4
+          - 9
+      source: 1
+      target: 4
+  - name: repeated-stop-on-many-routes
+    in:
+      routes:
+        - - 1
+          - 5
+          - 9
+        - - 9
+          - 13
+          - 17
+        - - 17
+          - 21
+          - 25
+        - - 25
+          - 29
+          - 33
+      source: 1
+      target: 33
+  - name: longer-chain
+    in:
+      routes:
+        - - 1
+          - 2
+        - - 2
+          - 3
+        - - 3
+          - 4
+        - - 4
+          - 5
+        - - 5
+          - 6
+      source: 1
+      target: 6
+  - name: one-bus-many-stops
+    in:
+      routes:
+        - - 1
+          - 3
+          - 5
+          - 7
+          - 9
+          - 11
+      source: 3
+      target: 11
+  - name: overlapping-with-detour
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 3
+          - 4
+          - 5
+        - - 5
+          - 6
+          - 7
+        - - 2
+          - 8
+          - 9
+      source: 1
+      target: 7
+  - name: source-only-route
+    in:
+      routes:
+        - - 1
+          - 4
+          - 7
+        - - 2
+          - 5
+          - 8
+      source: 4
+      target: 8
+  - name: target-on-source-route
+    in:
+      routes:
+        - - 10
+          - 20
+          - 30
+        - - 30
+          - 40
+      source: 10
+      target: 30
+  - name: two-hop-through-hub
+    in:
+      routes:
+        - - 1
+          - 2
+        - - 2
+          - 3
+        - - 3
+          - 4
+      source: 1
+      target: 4
+  - name: long-spoke-chain
+    in:
+      routes:
+        - - 5
+          - 6
+          - 7
+        - - 7
+          - 8
+          - 9
+        - - 9
+          - 10
+          - 11
+        - - 11
+          - 12
+          - 13
+      source: 5
+      target: 13
+  - name: sparse-disconnected-many
+    in:
+      routes:
+        - - 1
+          - 100
+        - - 200
+          - 300
+        - - 400
+          - 500
+        - - 600
+          - 700
+      source: 1
+      target: 700
+  - name: shared-stop-ladder
+    in:
+      routes:
+        - - 1
+          - 9
+        - - 9
+          - 10
+        - - 10
+          - 11
+        - - 11
+          - 12
+      source: 1
+      target: 12
+  - name: branching-via-middle
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 3
+          - 6
+          - 9
+        - - 9
+          - 12
+          - 15
+        - - 2
+          - 8
+          - 14
+      source: 1
+      target: 15
+  - name: cycle-like-overlap
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 3
+          - 4
+          - 5
+        - - 5
+          - 1
+          - 6
+      source: 2
+      target: 6
+  - name: route-with-target-as-source-hop
+    in:
+      routes:
+        - - 7
+          - 8
+          - 9
+        - - 9
+          - 10
+          - 11
+        - - 11
+          - 12
+          - 13
+      source: 7
+      target: 13
+  - name: isolated-source
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 4
+          - 5
+          - 6
+      source: 9
+      target: 6
+  - name: isolated-target
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 4
+          - 5
+          - 6
+      source: 1
+      target: 9
+  - name: zero-stop-values
+    in:
+      routes:
+        - - 0
+          - 1
+          - 2
+        - - 2
+          - 3
+          - 4
+      source: 0
+      target: 4
+  - name: many-small-routes
+    in:
+      routes:
+        - - 1
+          - 2
+        - - 2
+          - 3
+        - - 3
+          - 4
+        - - 4
+          - 5
+        - - 5
+          - 6
+        - - 6
+          - 7
+      source: 1
+      target: 7
+  - name: shared-target-hub
+    in:
+      routes:
+        - - 1
+          - 8
+        - - 2
+          - 8
+        - - 3
+          - 8
+        - - 4
+          - 8
+        - - 5
+          - 8
+      source: 1
+      target: 5
+  - name: source-and-target-appear-multiple-times
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+          - 4
+        - - 4
+          - 5
+          - 6
+          - 7
+        - - 7
+          - 8
+          - 9
+          - 1
+      source: 2
+      target: 9
+  - name: long-route-direct
+    in:
+      routes:
+        - - 1
+          - 3
+          - 5
+          - 7
+          - 9
+          - 11
+          - 13
+          - 15
+      source: 1
+      target: 15
+  - name: dense-overlap
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 2
+          - 3
+          - 4
+        - - 3
+          - 4
+          - 5
+        - - 5
+          - 6
+          - 7
+      source: 1
+      target: 7
+  - name: late-start-shortcut
+    in:
+      routes:
+        - - 10
+          - 20
+          - 30
+        - - 30
+          - 40
+          - 50
+        - - 50
+          - 60
+          - 70
+        - - 70
+          - 80
+          - 90
+      source: 20
+      target: 90
+  - name: three-hop-middle
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 3
+          - 6
+          - 9
+        - - 9
+          - 12
+          - 15
+      source: 1
+      target: 15
+  - name: unreachable-after-one-hop
+    in:
+      routes:
+        - - 1
+          - 5
+        - - 5
+          - 9
+        - - 20
+          - 30
+      source: 1
+      target: 30
+  - name: direct-via-shared-stop
+    in:
+      routes:
+        - - 1
+          - 2
+          - 3
+        - - 3
+          - 4
+          - 5
+      source: 1
+      target: 5

@@ -1,0 +1,822 @@
+entry:
+  id: 834
+  title: sum-of-distances-in-tree
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: Solution().sumOfDistancesInTree({n}, {edges})
+    rust: Solution::sum_of_distances_in_tree({n}, {edges})
+    python3: Solution().sumOfDistancesInTree({n}, {edges})
+    python2: Solution().sumOfDistancesInTree({n}, {edges})
+    ruby: sum_of_distances_in_tree({n}, {edges})
+    java: new Solution().sumOfDistancesInTree({n}, {edges})
+    csharp: new Solution().SumOfDistancesInTree({n}, {edges})
+    kotlin: Solution().sumOfDistancesInTree({n}, {edges})
+    go: sumOfDistancesInTree({n}, {edges})
+    dart: Solution().sumOfDistancesInTree({n}, {edges})
+    swift: Solution().sumOfDistancesInTree({n}, {edges})
+    typescript: sumOfDistancesInTree({n}, {edges})
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().check(n, edges, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def check(self, n, edges, result):
+              if not isinstance(result, list) or len(result) != n:
+                  return False
+              if any(type(value) is not int for value in result):
+                  return False
+
+              graph = [[] for _ in range(n)]
+              for left, right in edges:
+                  graph[left].append(right)
+                  graph[right].append(left)
+
+              expected = []
+              for start in range(n):
+                  distance = [-1] * n
+                  distance[start] = 0
+                  queue = deque([start])
+                  while queue:
+                      node = queue.popleft()
+                      for neighbor in graph[node]:
+                          if distance[neighbor] == -1:
+                              distance[neighbor] = distance[node] + 1
+                              queue.append(neighbor)
+                  expected.append(sum(distance))
+              return result == expected
+seed: 834
+tests:
+  - name: n1
+    in:
+      n: 1
+      edges:
+        elemType: int
+        value: []
+    out:
+      - 0
+  - name: n2
+    in:
+      n: 2
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+    out:
+      - 1
+      - 1
+  - name: path3
+    in:
+      n: 3
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+    out:
+      - 3
+      - 2
+      - 3
+  - name: path4
+    in:
+      n: 4
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+    out:
+      - 6
+      - 4
+      - 4
+      - 6
+  - name: star4
+    in:
+      n: 4
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+    out:
+      - 3
+      - 5
+      - 5
+      - 5
+  - name: path5
+    in:
+      n: 5
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+    out:
+      - 10
+      - 7
+      - 6
+      - 7
+      - 10
+  - name: star5
+    in:
+      n: 5
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [0, 4]
+    out:
+      - 4
+      - 7
+      - 7
+      - 7
+      - 7
+  - name: broom6
+    in:
+      n: 6
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [2, 3]
+          - [2, 4]
+          - [4, 5]
+    out:
+      - 9
+      - 13
+      - 7
+      - 11
+      - 9
+      - 13
+  - name: fork6
+    in:
+      n: 6
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [1, 3]
+          - [3, 4]
+          - [3, 5]
+    out:
+      - 11
+      - 7
+      - 11
+      - 7
+      - 11
+      - 11
+  - name: balanced7
+    in:
+      n: 7
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [1, 3]
+          - [1, 4]
+          - [2, 5]
+          - [2, 6]
+    out:
+      - 10
+      - 11
+      - 11
+      - 16
+      - 16
+      - 16
+      - 16
+  - name: path7
+    in:
+      n: 7
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+    out:
+      - 21
+      - 16
+      - 13
+      - 12
+      - 13
+      - 16
+      - 21
+  - name: path8
+    in:
+      n: 8
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+    out:
+      - 22
+      - 28
+      - 18
+      - 16
+      - 16
+      - 18
+      - 22
+      - 28
+  - name: fork8
+    in:
+      n: 8
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [0, 4]
+          - [4, 5]
+          - [4, 6]
+          - [6, 7]
+    out:
+      - 11
+      - 17
+      - 17
+      - 17
+      - 11
+      - 17
+      - 15
+      - 21
+  - name: split9
+    in:
+      n: 9
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [1, 3]
+          - [1, 4]
+          - [2, 5]
+          - [5, 6]
+          - [5, 7]
+          - [7, 8]
+    out:
+      - 18
+      - 21
+      - 17
+      - 28
+      - 28
+      - 18
+      - 25
+      - 23
+      - 30
+  - name: path9
+    in:
+      n: 9
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [1, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [7, 8]
+    out:
+      - 30
+      - 23
+      - 30
+      - 20
+      - 19
+      - 20
+      - 23
+      - 28
+      - 35
+  - name: mixed10a
+    in:
+      n: 10
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [2, 3]
+          - [2, 4]
+          - [4, 5]
+          - [5, 6]
+          - [1, 7]
+          - [7, 8]
+          - [8, 9]
+    out:
+      - 22
+      - 24
+      - 22
+      - 30
+      - 26
+      - 32
+      - 40
+      - 28
+      - 34
+      - 42
+  - name: mixed10b
+    in:
+      n: 10
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [0, 6]
+          - [6, 7]
+          - [6, 8]
+          - [8, 9]
+    out:
+      - 23
+      - 23
+      - 25
+      - 29
+      - 35
+      - 43
+      - 25
+      - 33
+      - 31
+      - 39
+  - name: tree11a
+    in:
+      n: 11
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [1, 4]
+          - [1, 5]
+          - [2, 6]
+          - [3, 7]
+          - [7, 8]
+          - [8, 9]
+          - [9, 10]
+    out:
+      - 23
+      - 28
+      - 30
+      - 24
+      - 37
+      - 37
+      - 39
+      - 27
+      - 32
+      - 39
+      - 48
+  - name: tree11b
+    in:
+      n: 11
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [2, 7]
+          - [7, 8]
+          - [8, 9]
+          - [9, 10]
+    out:
+      - 39
+      - 30
+      - 23
+      - 26
+      - 31
+      - 38
+      - 47
+      - 26
+      - 31
+      - 38
+      - 47
+  - name: tree12a
+    in:
+      n: 12
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [1, 3]
+          - [1, 4]
+          - [2, 5]
+          - [2, 6]
+          - [4, 7]
+          - [4, 8]
+          - [6, 9]
+          - [9, 10]
+          - [10, 11]
+    out:
+      - 28
+      - 30
+      - 28
+      - 40
+      - 36
+      - 38
+      - 32
+      - 46
+      - 46
+      - 38
+      - 46
+      - 56
+  - name: tree12b
+    in:
+      n: 12
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [1, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [0, 8]
+          - [8, 9]
+          - [9, 10]
+          - [10, 11]
+    out:
+      - 33
+      - 31
+      - 41
+      - 33
+      - 37
+      - 43
+      - 51
+      - 61
+      - 37
+      - 43
+      - 51
+      - 61
+  - name: tree13a
+    in:
+      n: 13
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [2, 7]
+          - [7, 8]
+          - [7, 9]
+          - [9, 10]
+          - [9, 11]
+          - [11, 12]
+    out:
+      - 37
+      - 48
+      - 28
+      - 33
+      - 40
+      - 49
+      - 60
+      - 29
+      - 40
+      - 34
+      - 45
+      - 43
+      - 54
+  - name: tree13b
+    in:
+      n: 13
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [1, 8]
+          - [8, 9]
+          - [9, 10]
+          - [10, 11]
+          - [11, 12]
+    out:
+      - 37
+      - 38
+      - 48
+      - 40
+      - 45
+      - 52
+      - 61
+      - 72
+      - 41
+      - 46
+      - 53
+      - 62
+      - 73
+  - name: tree14a
+    in:
+      n: 14
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [0, 8]
+          - [8, 9]
+          - [9, 10]
+          - [10, 11]
+          - [11, 12]
+          - [12, 13]
+    out:
+      - 49
+      - 49
+      - 51
+      - 55
+      - 61
+      - 69
+      - 79
+      - 91
+      - 51
+      - 55
+      - 61
+      - 69
+      - 79
+      - 91
+  - name: tree14b
+    in:
+      n: 14
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [1, 4]
+          - [1, 5]
+          - [2, 6]
+          - [2, 7]
+          - [3, 8]
+          - [3, 9]
+          - [9, 10]
+          - [10, 11]
+          - [11, 12]
+          - [12, 13]
+    out:
+      - 33
+      - 41
+      - 41
+      - 33
+      - 53
+      - 53
+      - 53
+      - 53
+      - 45
+      - 37
+      - 43
+      - 51
+      - 61
+      - 73
+  - name: tree15a
+    in:
+      n: 15
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [1, 3]
+          - [1, 4]
+          - [2, 5]
+          - [2, 6]
+          - [3, 7]
+          - [3, 8]
+          - [4, 9]
+          - [6, 10]
+          - [6, 11]
+          - [11, 12]
+          - [12, 13]
+          - [13, 14]
+    out:
+      - 40
+      - 43
+      - 39
+      - 52
+      - 54
+      - 52
+      - 42
+      - 65
+      - 65
+      - 67
+      - 55
+      - 49
+      - 58
+      - 69
+      - 82
+  - name: tree15b
+    in:
+      n: 15
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [7, 8]
+          - [8, 9]
+          - [9, 10]
+          - [10, 11]
+          - [11, 12]
+          - [12, 13]
+          - [13, 14]
+    out:
+      - 105
+      - 92
+      - 81
+      - 72
+      - 65
+      - 60
+      - 57
+      - 56
+      - 57
+      - 60
+      - 65
+      - 72
+      - 81
+      - 92
+      - 105
+  - name: tree16a
+    in:
+      n: 16
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [2, 3]
+          - [2, 4]
+          - [4, 5]
+          - [5, 6]
+          - [5, 7]
+          - [7, 8]
+          - [8, 9]
+          - [9, 10]
+          - [1, 11]
+          - [11, 12]
+          - [12, 13]
+          - [13, 14]
+          - [14, 15]
+    out:
+      - 55
+      - 59
+      - 53
+      - 67
+      - 55
+      - 59
+      - 73
+      - 67
+      - 77
+      - 89
+      - 103
+      - 65
+      - 73
+      - 83
+      - 95
+      - 109
+  - name: tree16b
+    in:
+      n: 16
+      edges:
+        elemType: int
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [7, 8]
+          - [8, 9]
+          - [2, 10]
+          - [10, 11]
+          - [11, 12]
+          - [12, 13]
+          - [13, 14]
+          - [14, 15]
+    out:
+      - 57
+      - 71
+      - 59
+      - 59
+      - 63
+      - 69
+      - 77
+      - 87
+      - 99
+      - 113
+      - 63
+      - 69
+      - 77
+      - 87
+      - 99
+      - 113
+  - name: star7
+    in:
+      n: 7
+      edges:
+        elemType: int
+        value: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]]
+    out: [6, 11, 11, 11, 11, 11, 11]
+  - name: comb7
+    in:
+      n: 7
+      edges:
+        elemType: int
+        value: [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [3, 6]]
+    out: [16, 11, 10, 11, 16, 16, 16]
+  - name: double-star8
+    in:
+      n: 8
+      edges:
+        elemType: int
+        value: [[0, 1], [0, 2], [0, 3], [0, 4], [1, 5], [1, 6], [1, 7]]
+    out: [10, 10, 16, 16, 16, 16, 16, 16]
+  - name: broom8b
+    in:
+      n: 8
+      edges:
+        elemType: int
+        value: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [2, 6], [2, 7]]
+    out: [21, 15, 11, 13, 17, 23, 17, 17]
+  - name: fork9b
+    in:
+      n: 9
+      edges:
+        elemType: int
+        value: [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [5, 7], [5, 8]]
+    out: [16, 19, 15, 26, 26, 18, 22, 25, 25]
+  - name: caterpillar10
+    in:
+      n: 10
+      edges:
+        elemType: int
+        value:
+          [
+            [0, 1],
+            [1, 2],
+            [2, 3],
+            [3, 4],
+            [4, 5],
+            [1, 6],
+            [2, 7],
+            [3, 8],
+            [4, 9],
+          ]
+    out: [29, 21, 17, 17, 21, 29, 29, 25, 25, 29]

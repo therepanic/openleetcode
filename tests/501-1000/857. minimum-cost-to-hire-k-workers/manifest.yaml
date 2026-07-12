@@ -1,0 +1,229 @@
+entry:
+  id: 857
+  title: minimum-cost-to-hire-k-workers
+  params:
+    quality:
+      type: array
+      items:
+        type: int
+    wage:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().mincostToHireWorkers({quality}, {wage}, {k})"
+    rust: "Solution::mincost_to_hire_workers({quality}, {wage}, {k})"
+    python3: "Solution().mincostToHireWorkers({quality}, {wage}, {k})"
+    python2: "Solution().mincostToHireWorkers({quality}, {wage}, {k})"
+    ruby: "mincost_to_hire_workers({quality}, {wage}, {k})"
+    java: "new Solution().mincostToHireWorkers({quality}, {wage}, {k})"
+    csharp: "new Solution().MincostToHireWorkers({quality}, {wage}, {k})"
+    kotlin: "Solution().mincostToHireWorkers({quality}, {wage}, {k})"
+    go: "mincostToHireWorkers({quality}, {wage}, {k})"
+    dart: "Solution().mincostToHireWorkers({quality}, {wage}, {k})"
+    swift: "Solution().mincostToHireWorkers({quality}, {wage}, {k})"
+    typescript: "mincostToHireWorkers({quality}, {wage}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().mincostToHireWorkers(quality, wage, k, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def mincostToHireWorkers(self, quality, wage, k, result):
+              workers = sorted((w / q, q) for w, q in zip(wage, quality))
+              total = 0
+              heap = []
+              best = float('inf')
+              for ratio, q in workers:
+                  total += q
+                  heapq.heappush(heap, -q)
+                  if len(heap) > k:
+                      total += heapq.heappop(heap)
+                  if len(heap) == k:
+                      best = min(best, ratio * total)
+              return abs(best - result) <= 1e-5
+seed: 857
+tests:
+  - name: ex1
+    in:
+      quality: [10, 20, 5]
+      wage: [70, 50, 30]
+      k: 2
+  - name: ex2
+    in:
+      quality: [3, 1, 10, 10, 1]
+      wage: [4, 8, 2, 2, 7]
+      k: 3
+  - name: single1
+    in:
+      quality: [5]
+      wage: [7]
+      k: 1
+  - name: single2
+    in:
+      quality: [10000]
+      wage: [10000]
+      k: 1
+  - name: pair1
+    in:
+      quality: [1, 2]
+      wage: [2, 4]
+      k: 1
+  - name: pair2
+    in:
+      quality: [1, 2]
+      wage: [2, 4]
+      k: 2
+  - name: pair3
+    in:
+      quality: [5, 5]
+      wage: [7, 8]
+      k: 2
+  - name: triple1
+    in:
+      quality: [4, 8, 2]
+      wage: [9, 16, 5]
+      k: 2
+  - name: triple2
+    in:
+      quality: [4, 8, 2]
+      wage: [9, 16, 5]
+      k: 3
+  - name: triple3
+    in:
+      quality: [2, 2, 2]
+      wage: [2, 3, 4]
+      k: 2
+  - name: t11
+    in:
+      quality: [1, 3, 5, 7]
+      wage: [3, 9, 15, 21]
+      k: 2
+  - name: t12
+    in:
+      quality: [1, 3, 5, 7]
+      wage: [3, 9, 15, 21]
+      k: 3
+  - name: t13
+    in:
+      quality: [10, 20, 30, 40]
+      wage: [40, 60, 90, 120]
+      k: 2
+  - name: t14
+    in:
+      quality: [10, 20, 30, 40]
+      wage: [40, 60, 90, 120]
+      k: 4
+  - name: t15
+    in:
+      quality: [2, 4, 6, 8, 10]
+      wage: [10, 20, 30, 40, 50]
+      k: 3
+  - name: t16
+    in:
+      quality: [2, 4, 6, 8, 10]
+      wage: [10, 20, 30, 40, 50]
+      k: 5
+  - name: t17
+    in:
+      quality: [9, 8, 7, 6, 5]
+      wage: [90, 80, 70, 60, 55]
+      k: 2
+  - name: t18
+    in:
+      quality: [9, 8, 7, 6, 5]
+      wage: [90, 80, 70, 60, 55]
+      k: 4
+  - name: t19
+    in:
+      quality: [1, 1, 1, 1, 1]
+      wage: [1, 2, 3, 4, 5]
+      k: 3
+  - name: t20
+    in:
+      quality: [100, 200, 300, 400, 500]
+      wage: [110, 220, 330, 440, 550]
+      k: 2
+  - name: t21
+    in:
+      quality: [100, 200, 300, 400, 500]
+      wage: [110, 220, 330, 440, 550]
+      k: 5
+  - name: t22
+    in:
+      quality: [6, 10, 3, 8, 7, 2]
+      wage: [30, 40, 15, 32, 28, 10]
+      k: 3
+  - name: t23
+    in:
+      quality: [6, 10, 3, 8, 7, 2]
+      wage: [30, 40, 15, 32, 28, 10]
+      k: 4
+  - name: t24
+    in:
+      quality: [4, 4, 4, 4, 4, 4]
+      wage: [8, 8, 8, 8, 8, 8]
+      k: 3
+  - name: t25
+    in:
+      quality: [4, 4, 4, 4, 4, 4]
+      wage: [8, 9, 10, 11, 12, 13]
+      k: 2
+  - name: t26
+    in:
+      quality: [1, 2, 3, 4, 5, 6, 7]
+      wage: [2, 4, 6, 8, 10, 12, 14]
+      k: 4
+  - name: t27
+    in:
+      quality: [1, 2, 3, 4, 5, 6, 7]
+      wage: [3, 5, 7, 9, 11, 13, 15]
+      k: 4
+  - name: t28
+    in:
+      quality: [11, 22, 33, 44, 55, 66, 77, 88]
+      wage: [11, 44, 99, 176, 275, 396, 539, 704]
+      k: 5
+  - name: t29
+    in:
+      quality: [11, 22, 33, 44, 55, 66, 77, 88]
+      wage: [12, 45, 100, 177, 276, 397, 540, 705]
+      k: 5
+  - name: t30
+    in:
+      quality: [5, 9, 13, 17, 21, 25, 29, 33]
+      wage: [15, 27, 39, 51, 63, 75, 87, 99]
+      k: 6
+  - name: t31
+    in:
+      quality: [5, 9, 13, 17, 21, 25, 29, 33]
+      wage: [16, 28, 40, 52, 64, 76, 88, 100]
+      k: 6
+  - name: t32
+    in:
+      quality: [10000, 9999, 9998, 9997]
+      wage: [10000, 20000, 30000, 40000]
+      k: 2
+  - name: t33
+    in:
+      quality: [10000, 9999, 9998, 9997]
+      wage: [10000, 20000, 30000, 40000]
+      k: 4
+  - name: t34
+    in:
+      quality: [8, 1, 6, 2, 7, 3, 5, 4]
+      wage: [16, 3, 12, 6, 14, 9, 10, 8]
+      k: 3
+  - name: t35
+    in:
+      quality: [8, 1, 6, 2, 7, 3, 5, 4]
+      wage: [16, 3, 12, 6, 14, 9, 10, 8]
+      k: 6

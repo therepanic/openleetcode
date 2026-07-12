@@ -1,0 +1,214 @@
+entry:
+  id: 916
+  title: word-subsets
+  params:
+    words1:
+      type: array
+      items:
+        type: string
+    words2:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().wordSubsets({words1}, {words2})"
+    rust: "Solution::word_subsets({words1}, {words2})"
+    python3: "Solution().wordSubsets({words1}, {words2})"
+    python2: "Solution().wordSubsets({words1}, {words2})"
+    ruby: "word_subsets({words1}, {words2})"
+    java: "new Solution().wordSubsets({words1}, {words2})"
+    csharp: "new Solution().WordSubsets({words1}, {words2})"
+    kotlin: "Solution().wordSubsets({words1}, {words2})"
+    go: "wordSubsets({words1}, {words2})"
+    dart: "Solution().wordSubsets({words1}, {words2})"
+    swift: "Solution().wordSubsets({words1}, {words2})"
+    typescript: "wordSubsets({words1}, {words2})"
+judge:
+  type: "ignore_order"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().wordSubsets(words1, words2, {result})"
+    checker: |
+      class Checker:
+          def wordSubsets(self, words1, words2, result):
+              need = [0] * 26
+              for w in words2:
+                  cnt = [0] * 26
+                  for ch in w:
+                      cnt[ord(ch) - 97] += 1
+                  for i in range(26):
+                      if cnt[i] > need[i]:
+                          need[i] = cnt[i]
+              got = []
+              for w in words1:
+                  cnt = [0] * 26
+                  for ch in w:
+                      cnt[ord(ch) - 97] += 1
+                  if all(cnt[i] >= need[i] for i in range(26)):
+                      got.append(w)
+              return sorted(got) == sorted(result)
+seed: 916
+tests:
+  - name: ex1
+    in:
+      words1: ["amazon", "apple", "facebook", "google", "leetcode"]
+      words2: ["e", "o"]
+  - name: ex2
+    in:
+      words1: ["amazon", "apple", "facebook", "google", "leetcode"]
+      words2: ["lc", "eo"]
+  - name: ex3
+    in:
+      words1: ["acaac", "cccbb", "aacbb", "caacc", "bcbbb"]
+      words2: ["c", "cc", "b"]
+  - name: empty_need
+    in:
+      words1: ["a", "b", "ab"]
+      words2: ["a"]
+  - name: repeated_need
+    in:
+      words1: ["aaa", "aaab", "aabb", "bbb"]
+      words2: ["aa", "ab"]
+  - name: single_letter
+    in:
+      words1: ["a", "aa", "aaa"]
+      words2: ["a", "a", "a"]
+  - name: impossible
+    in:
+      words1: ["abc", "def", "ghi"]
+      words2: ["zz"]
+  - name: many_universal
+    in:
+      words1: ["abca", "bcaa", "aabc", "zzzz", "caba"]
+      words2: ["aa", "bc"]
+  - name: short_words
+    in:
+      words1: ["x", "y", "z", "xy", "yz"]
+      words2: ["x"]
+  - name: random_1
+    in:
+      words1: ["abc", "abca", "bcae", "deed", "face", "cafe", "feed", "bead"]
+      words2: ["ab", "ce"]
+  - name: random_2
+    in:
+      words1: ["aaaa", "aaab", "aabb", "abbb", "bbbb", "abba", "baaa"]
+      words2: ["aa", "bb"]
+  - name: random_3
+    in:
+      words1: ["xyz", "xxyyzz", "xzz", "yyzz", "zzzz", "xyzz"]
+      words2: ["xz", "yz"]
+  - name: random_4
+    in:
+      words1: ["hello", "yellow", "mellow", "fellow", "bellow", "cello"]
+      words2: ["el", "lo"]
+  - name: random_5
+    in:
+      words1: ["ab", "abc", "abcd", "abcde", "abcdef"]
+      words2: ["a", "bc", "de"]
+  - name: random_6
+    in:
+      words1: ["aaaaa", "aaaab", "aaabb", "aabbb", "abbbb"]
+      words2: ["aaa", "bb"]
+  - name: random_7
+    in:
+      words1: ["qwerty", "qwe", "wert", "erty", "tyui", "uiop"]
+      words2: ["q", "w", "e"]
+  - name: random_8
+    in:
+      words1: ["moon", "noon", "soon", "moons", "swoon", "on"]
+      words2: ["oo", "n"]
+  - name: random_9
+    in:
+      words1: ["cat", "tac", "act", "tact", "at", "aaat"]
+      words2: ["a", "t"]
+  - name: random_10
+    in:
+      words1: ["piano", "pianos", "pioneer", "phone", "phoneme"]
+      words2: ["p", "o"]
+  - name: empty_result_simple
+    in:
+      words1: ["aa", "bb", "cc"]
+      words2: ["a", "b"]
+  - name: one_universal_exact
+    in:
+      words1: ["ab", "ba", "cab"]
+      words2: ["a", "b"]
+  - name: duplicate_need_counts
+    in:
+      words1: ["aabb", "ab", "bbaa", "abba"]
+      words2: ["aa", "bb", "ab"]
+  - name: repeated_letters_needed
+    in:
+      words1: ["cccc", "cccd", "dccc", "abcd"]
+      words2: ["ccc"]
+  - name: no_match_high_need
+    in:
+      words1: ["abc", "def", "ghi", "jkl"]
+      words2: ["zz", "yyy"]
+  - name: all_match_single_need
+    in:
+      words1: ["a", "ba", "ca", "da"]
+      words2: ["a"]
+  - name: all_match_multi_need
+    in:
+      words1: ["abcde", "bcdea", "cdeab"]
+      words2: ["ab", "cd", "e"]
+  - name: mixed_case_like_patterns
+    in:
+      words1: ["listen", "silent", "enlist", "google"]
+      words2: ["eil", "nst"]
+  - name: repeated_groups
+    in:
+      words1: ["aaabbb", "ab", "bbaaab", "bbbaaa"]
+      words2: ["aaa", "bbb"]
+  - name: boundary_letters
+    in:
+      words1: ["az", "za", "zzaa", "azz", "zaz"]
+      words2: ["a", "z", "z"]
+  - name: longer_words_1
+    in:
+      words1: ["abcdef", "abcxyz", "azbycx", "aabbcc", "zzzzzz"]
+      words2: ["ab", "ac"]
+  - name: longer_words_2
+    in:
+      words1: ["lorem", "ipsum", "dolor", "amet", "sit", "elit"]
+      words2: ["e", "t"]
+  - name: no_need_words2
+    in:
+      words1: ["alpha", "beta", "gamma"]
+      words2: ["a"]
+  - name: exact_multiset_need
+    in:
+      words1: ["aabbcc", "abcabc", "abccba", "aabccc"]
+      words2: ["abc", "abc"]
+  - name: universal_tail
+    in:
+      words1: ["tool", "cool", "pool", "fool", "school"]
+      words2: ["oo", "l"]
+  - name: various_lengths
+    in:
+      words1: ["a", "aa", "aaa", "aaaa", "aaaaa", "aaaaaa"]
+      words2: ["aa", "aaa"]
+  - name: prefix_overlap
+    in:
+      words1: ["abc", "abcc", "abccc", "abcccc"]
+      words2: ["bc", "cc"]
+  - name: overlapping_need
+    in:
+      words1: ["cab", "cabb", "ccab", "bacc", "abcabc"]
+      words2: ["c", "ab"]
+  - name: larger_mix_1
+    in:
+      words1: ["abcde", "bcdef", "cdefg", "defgh", "efghi", "fghij"]
+      words2: ["cd", "ef"]
+  - name: larger_mix_2
+    in:
+      words1: ["aaaaab", "aaaabb", "aaabbb", "aabbbb", "abbbbb"]
+      words2: ["aaa", "bb"]
+  - name: larger_mix_3
+    in:
+      words1: ["qwert", "werty", "ertyu", "rtyui", "tyuio"]
+      words2: ["q", "w", "e"]

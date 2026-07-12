@@ -1,0 +1,479 @@
+entry:
+  id: 1040
+  title: moving-stones-until-consecutive-ii
+  params:
+    stones:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: Solution().numMovesStonesII({stones})
+    rust: Solution::num_moves_stones_ii({stones})
+    python3: Solution().numMovesStonesII({stones})
+    python2: Solution().numMovesStonesII({stones})
+    ruby: num_moves_stones_ii({stones})
+    java: new Solution().numMovesStonesII({stones})
+    csharp: new Solution().NumMovesStonesII({stones})
+    kotlin: Solution().numMovesStonesII({stones})
+    go: numMovesStonesII({stones})
+    dart: Solution().numMovesStonesII({stones})
+    swift: Solution().numMovesStonesII({stones})
+    typescript: numMovesStonesII({stones})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().numMovesStonesII(stones, {result})
+    checker:
+      "class Checker:\n    def numMovesStonesII(self, stones, result):\n  \
+      \      if not isinstance(result, list) or len(result) != 2:\n            return\
+      \ False\n        if any((not isinstance(x, int)) for x in result):\n       \
+      \     return False\n        stones = sorted(stones)\n        n = len(stones)\n\
+      \        max_moves = max(stones[-1] - stones[1] - (n - 2), stones[-2] - stones[0]\
+      \ - (n - 2))\n        min_moves = n\n        left = 0\n        for right in\
+      \ range(n):\n            while stones[right] - stones[left] + 1 > n:\n     \
+      \           left += 1\n            current_window_size = right - left + 1\n\
+      \            if current_window_size == n - 1 and stones[right] - stones[left]\
+      \ + 1 == n - 1:\n                min_moves = min(min_moves, 2)\n           \
+      \ else:\n                min_moves = min(min_moves, n - current_window_size)\n\
+      \        return result == [min_moves, max_moves]\n"
+seed: 1040
+tests:
+  - name: example-1
+    in:
+      stones:
+        - 7
+        - 4
+        - 9
+    out:
+      - 1
+      - 2
+  - name: example-2
+    in:
+      stones:
+        - 6
+        - 5
+        - 4
+        - 3
+        - 10
+    out:
+      - 2
+      - 3
+  - name: consecutive-3
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+    out:
+      - 0
+      - 0
+  - name: consecutive-4
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 4
+    out:
+      - 0
+      - 0
+  - name: one-gap-left
+    in:
+      stones:
+        - 1
+        - 2
+        - 4
+    out:
+      - 1
+      - 1
+  - name: one-gap-right
+    in:
+      stones:
+        - 1
+        - 3
+        - 4
+    out:
+      - 1
+      - 1
+  - name: small-spread
+    in:
+      stones:
+        - 1
+        - 5
+        - 6
+    out:
+      - 2
+      - 3
+  - name: small-spread-2
+    in:
+      stones:
+        - 1
+        - 4
+        - 5
+    out:
+      - 2
+      - 2
+  - name: five-stones-1
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 6
+        - 7
+    out:
+      - 2
+      - 2
+  - name: five-stones-2
+    in:
+      stones:
+        - 10
+        - 11
+        - 12
+        - 20
+        - 21
+    out:
+      - 2
+      - 7
+  - name: five-stones-3
+    in:
+      stones:
+        - 3
+        - 7
+        - 8
+        - 9
+        - 10
+    out:
+      - 2
+      - 3
+  - name: five-stones-4
+    in:
+      stones:
+        - 1
+        - 2
+        - 10
+        - 11
+        - 12
+    out:
+      - 2
+      - 7
+  - name: five-stones-5
+    in:
+      stones:
+        - 4
+        - 5
+        - 6
+        - 20
+        - 21
+    out:
+      - 2
+      - 13
+  - name: six-stones-1
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 8
+        - 9
+        - 10
+    out:
+      - 3
+      - 4
+  - name: six-stones-2
+    in:
+      stones:
+        - 1
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+    out:
+      - 2
+      - 2
+  - name: six-stones-3
+    in:
+      stones:
+        - 2
+        - 3
+        - 4
+        - 5
+        - 9
+        - 10
+    out:
+      - 2
+      - 3
+  - name: six-stones-4
+    in:
+      stones:
+        - 10
+        - 11
+        - 12
+        - 13
+        - 20
+        - 30
+    out:
+      - 2
+      - 15
+  - name: six-stones-5
+    in:
+      stones:
+        - 1
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+    out:
+      - 2
+      - 8
+  - name: seven-stones-1
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 10
+        - 11
+        - 12
+    out:
+      - 3
+      - 5
+  - name: seven-stones-2
+    in:
+      stones:
+        - 5
+        - 6
+        - 7
+        - 8
+        - 20
+        - 21
+        - 22
+    out:
+      - 3
+      - 11
+  - name: seven-stones-3
+    in:
+      stones:
+        - 1
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+    out:
+      - 1
+      - 1
+  - name: seven-stones-4
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 14
+        - 15
+        - 16
+        - 17
+    out:
+      - 3
+      - 10
+  - name: seven-stones-5
+    in:
+      stones:
+        - 2
+        - 4
+        - 6
+        - 8
+        - 10
+        - 12
+        - 14
+    out:
+      - 3
+      - 5
+  - name: large-gap-1
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 100
+    out:
+      - 2
+      - 94
+  - name: large-gap-2
+    in:
+      stones:
+        - 1
+        - 50
+        - 51
+        - 52
+        - 53
+        - 54
+    out:
+      - 2
+      - 48
+  - name: large-gap-3
+    in:
+      stones:
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 1000
+    out:
+      - 2
+      - 985
+  - name: large-gap-4
+    in:
+      stones:
+        - 100
+        - 101
+        - 102
+        - 103
+        - 104
+        - 500
+    out:
+      - 2
+      - 395
+  - name: large-gap-5
+    in:
+      stones:
+        - 1
+        - 2
+        - 50
+        - 51
+        - 52
+        - 53
+    out:
+      - 2
+      - 47
+  - name: large-gap-6
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 100
+        - 101
+        - 102
+    out:
+      - 3
+      - 96
+  - name: large-gap-7
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 200
+        - 201
+    out:
+      - 2
+      - 195
+  - name: large-gap-8
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 200
+    out:
+      - 2
+      - 194
+  - name: large-gap-9
+    in:
+      stones:
+        - 1
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+    out:
+      - 2
+      - 8
+  - name: large-gap-10
+    in:
+      stones:
+        - 1
+        - 2
+        - 100
+        - 101
+        - 102
+        - 103
+    out:
+      - 2
+      - 97
+  - name: large-gap-11
+    in:
+      stones:
+        - 3
+        - 4
+        - 5
+        - 100
+        - 101
+        - 102
+    out:
+      - 3
+      - 94
+  - name: large-gap-12
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    out:
+      - 0
+      - 0
+  - name: large-gap-13
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 7
+        - 8
+    out:
+      - 2
+      - 2
+  - name: large-gap-14
+    in:
+      stones:
+        - 1
+        - 2
+        - 3
+        - 5
+        - 6
+        - 7
+    out:
+      - 1
+      - 1
+  - name: large-gap-15
+    in:
+      stones:
+        - 1
+        - 2
+        - 4
+        - 5
+        - 6
+        - 7
+    out:
+      - 1
+      - 1

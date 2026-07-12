@@ -1,0 +1,482 @@
+entry:
+  id: 797
+  title: all-paths-from-source-to-target
+  params:
+    graph:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().allPathsSourceTarget({graph})"
+    rust: "Solution::all_paths_source_target({graph})"
+    python3: "Solution().allPathsSourceTarget({graph})"
+    python2: "Solution().allPathsSourceTarget({graph})"
+    ruby: "all_paths_source_target({graph})"
+    java: "new Solution().allPathsSourceTarget({graph})"
+    csharp: "new Solution().AllPathsSourceTarget({graph})"
+    kotlin: "Solution().allPathsSourceTarget({graph})"
+    go: "allPathsSourceTarget({graph})"
+    dart: "Solution().allPathsSourceTarget({graph})"
+    swift: "Solution().allPathsSourceTarget({graph})"
+    typescript: "allPathsSourceTarget({graph})"
+judge:
+  type: ignore_order
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(graph, {result})"
+    checker: |
+      class Checker:
+          def check(self, graph, result):
+              target = len(graph) - 1
+              expected = []
+
+              def dfs(node, path):
+                  if node == target:
+                      expected.append(tuple(path))
+                      return
+                  for nxt in graph[node]:
+                      dfs(nxt, path + [nxt])
+
+              dfs(0, [0])
+
+              try:
+                  got = [tuple(path) for path in result]
+              except TypeError:
+                  return False
+
+              if len(got) != len(expected):
+                  return False
+              if len(set(got)) != len(got):
+                  return False
+              if set(got) != set(expected):
+                  return False
+              for path in got:
+                  if not path or path[0] != 0 or path[-1] != target:
+                      return False
+                  for a, b in zip(path, path[1:]):
+                      if b not in graph[a]:
+                          return False
+              return True
+seed: 797
+tests:
+  - name: ex1
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3]
+          - []
+  - name: ex2
+    in:
+      graph:
+        elemType: int
+        value:
+          - [4, 3, 1]
+          - [3, 2, 4]
+          - [3]
+          - [4]
+          - []
+  - name: two_nodes_one_edge
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - []
+  - name: two_nodes_no_path
+    in:
+      graph:
+        elemType: int
+        value:
+          - []
+          - []
+  - name: chain_3
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2]
+          - []
+  - name: diamond
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3]
+          - []
+  - name: fork_join
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4]
+          - [4]
+          - [4]
+          - []
+  - name: direct_only
+    in:
+      graph:
+        elemType: int
+        value:
+          - [4]
+          - [4]
+          - [4]
+          - [4]
+          - []
+  - name: branching_5
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [3, 4]
+          - [5]
+          - [5]
+          - []
+  - name: branching_6
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5]
+          - [4, 5]
+          - [5]
+          - [6]
+          - [6]
+          - []
+  - name: branching_7
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3, 4]
+          - [5]
+          - [5]
+          - []
+  - name: branching_8
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4]
+          - [4, 5]
+          - [5]
+          - [6]
+          - [6]
+          - []
+  - name: sparse_1
+    in:
+      graph:
+        elemType: int
+        value:
+          - [2]
+          - [3]
+          - [3]
+          - [4]
+          - []
+  - name: sparse_2
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 3]
+          - [2]
+          - [4]
+          - [4]
+          - []
+  - name: sparse_3
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2, 3]
+          - [4]
+          - [4]
+          - []
+  - name: sparse_4
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4]
+          - [4]
+          - [4]
+          - []
+  - name: sparse_5
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2]
+          - [3]
+          - [4]
+          - []
+  - name: sparse_6
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3]
+          - [4]
+          - []
+  - name: sparse_7
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [4]
+          - [4]
+          - [4]
+          - []
+  - name: sparse_8
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [3]
+          - [3]
+          - [4]
+          - []
+  - name: sparse_9
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [2, 3]
+          - [4]
+          - [4]
+          - []
+  - name: sparse_10
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5]
+          - [5]
+          - [5]
+          - [6]
+          - [6]
+          - []
+  - name: sparse_11
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [4]
+          - [4]
+          - [4]
+          - []
+  - name: sparse_12
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [4]
+          - [5]
+          - [5]
+          - []
+  - name: sparse_13
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2, 3, 4]
+          - [5]
+          - [5]
+          - [5]
+          - []
+  - name: sparse_14
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3]
+          - []
+  - name: sparse_15
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4]
+          - [4]
+          - [4]
+          - [5]
+          - []
+  - name: sparse_16
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2]
+          - [3]
+          - [4]
+          - [5]
+          - []
+  - name: sparse_17
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [4, 5]
+          - [5]
+          - [6]
+          - [6]
+          - []
+  - name: sparse_18
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4]
+          - [4]
+          - [4]
+          - [5]
+          - [6]
+          - []
+  - name: sparse_19
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2, 3]
+          - [4]
+          - [4]
+          - [5]
+          - []
+  - name: sparse_20
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3, 4]
+          - [5]
+          - [5]
+          - []
+  - name: sparse_21
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [4]
+          - [4, 5]
+          - [5]
+          - [6]
+          - [6]
+          - []
+  - name: sparse_22
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3]
+          - [4]
+          - [5]
+          - []
+  - name: sparse_23
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5]
+          - [5]
+          - [5]
+          - [6]
+          - [6]
+          - []
+  - name: sparse_24
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2]
+          - [4]
+          - [4]
+          - []
+  - name: sparse_25
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [4, 5]
+          - [6]
+          - [6]
+          - [6]
+          - []
+  - name: sparse_26
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3]
+          - [3, 4]
+          - [5]
+          - [5]
+          - []
+  - name: sparse_27
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4]
+          - [4]
+          - [4]
+          - [5]
+          - []
+  - name: sparse_28
+    in:
+      graph:
+        elemType: int
+        value:
+          - [1]
+          - [2, 3]
+          - [4]
+          - [4]
+          - []

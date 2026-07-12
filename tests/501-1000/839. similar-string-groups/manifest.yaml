@@ -1,0 +1,360 @@
+entry:
+  id: 839
+  title: similar-string-groups
+  params:
+    strs:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().numSimilarGroups({strs})"
+    rust: "Solution::num_similar_groups({strs})"
+    python3: "Solution().numSimilarGroups({strs})"
+    python2: "Solution().numSimilarGroups({strs})"
+    ruby: "num_similar_groups({strs})"
+    java: "new Solution().numSimilarGroups({strs})"
+    csharp: "new Solution().NumSimilarGroups({strs})"
+    kotlin: "Solution().numSimilarGroups({strs})"
+    go: "numSimilarGroups({strs})"
+    dart: "Solution().numSimilarGroups({strs})"
+    swift: "Solution().numSimilarGroups({strs})"
+    typescript: "numSimilarGroups({strs})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().numSimilarGroups(strs, {result})"
+    checker: |
+      class Checker:
+          def numSimilarGroups(self, strs, result):
+              if not isinstance(result, int):
+                  return False
+              n = len(strs)
+              parent = list(range(n))
+
+              def find(x):
+                  while parent[x] != x:
+                      parent[x] = parent[parent[x]]
+                      x = parent[x]
+                  return x
+
+              def union(a, b):
+                  ra, rb = find(a), find(b)
+                  if ra != rb:
+                      parent[rb] = ra
+
+              for i in range(n):
+                  for j in range(i + 1, n):
+                      diff = 0
+                      for a, b in zip(strs[i], strs[j]):
+                          if a != b:
+                              diff += 1
+                              if diff > 2:
+                                  break
+                      if diff == 0 or diff == 2:
+                          union(i, j)
+              expected = len({find(i) for i in range(n)})
+              return result == expected
+
+seed: 839
+
+tests:
+  - name: example-1
+    in:
+      strs:
+        - tars
+        - rats
+        - arts
+        - star
+    out: 2
+  - name: example-2
+    in:
+      strs:
+        - omv
+        - ovm
+    out: 1
+  - name: single-word
+    in:
+      strs:
+        - abc
+    out: 1
+  - name: two-identical
+    in:
+      strs:
+        - aaa
+        - aaa
+    out: 1
+  - name: one-swap
+    in:
+      strs:
+        - ab
+        - ba
+    out: 1
+  - name: no-similarity
+    in:
+      strs:
+        - abcd
+        - badc
+        - cdab
+    out: 3
+  - name: chain-of-three
+    in:
+      strs:
+        - abcd
+        - abdc
+        - acbd
+    out: 1
+  - name: two-groups
+    in:
+      strs:
+        - abc
+        - acb
+        - xyz
+        - xzy
+    out: 2
+  - name: duplicate-heavy
+    in:
+      strs:
+        - abc
+        - abc
+        - bac
+        - bca
+    out: 1
+  - name: same-letter
+    in:
+      strs:
+        - aaaa
+        - aaaa
+        - aaaa
+    out: 1
+  - name: four-cycle-1
+    in:
+      strs:
+        - tars
+        - star
+        - rats
+        - arts
+    out: 2
+  - name: four-cycle-2
+    in:
+      strs:
+        - abcd
+        - abdc
+        - acbd
+        - bacd
+    out: 1
+  - name: four-cycle-3
+    in:
+      strs:
+        - aabb
+        - abab
+        - abba
+        - baab
+    out: 1
+  - name: disconnected-pairs
+    in:
+      strs:
+        - abcd
+        - abdc
+        - wxyz
+        - wxzy
+    out: 2
+  - name: disconnected-triples
+    in:
+      strs:
+        - abcde
+        - abced
+        - edcba
+        - ecdba
+    out: 2
+  - name: long-letters-1
+    in:
+      strs:
+        - abcdefghij
+        - abcdfeghij
+        - abcfdeghij
+    out: 1
+  - name: long-letters-2
+    in:
+      strs:
+        - qwerty
+        - qwerty
+        - qewrty
+        - weqrty
+    out: 1
+  - name: long-letters-3
+    in:
+      strs:
+        - abcdef
+        - abcfed
+        - fedcba
+        - fedcab
+    out: 2
+  - name: long-letters-4
+    in:
+      strs:
+        - aabc
+        - abac
+        - baac
+        - baca
+    out: 1
+  - name: long-letters-5
+    in:
+      strs:
+        - nopqrs
+        - nopqsr
+        - npoqrs
+        - onpqrs
+    out: 1
+  - name: long-letters-6
+    in:
+      strs:
+        - abcdefghijkl
+        - abcdefghijlk
+        - abcdefghikjl
+        - abcdefghijkl
+    out: 1
+  - name: group-count-7
+    in:
+      strs:
+        - abc
+        - acb
+        - bac
+        - bca
+        - cab
+        - cba
+    out: 1
+  - name: group-count-8
+    in:
+      strs:
+        - abcd
+        - badc
+        - cdab
+        - dcba
+    out: 4
+  - name: group-count-9
+    in:
+      strs:
+        - abcd
+        - abdc
+        - bacd
+        - badc
+    out: 1
+  - name: group-count-10
+    in:
+      strs:
+        - abcdef
+        - abcfde
+        - abcdef
+        - abcfed
+    out: 1
+  - name: group-count-11
+    in:
+      strs:
+        - kites
+        - skite
+        - kites
+        - kiets
+    out: 2
+  - name: group-count-12
+    in:
+      strs:
+        - listen
+        - silent
+        - enlist
+        - inlets
+    out: 4
+  - name: group-count-13
+    in:
+      strs:
+        - aaabbb
+        - aababb
+        - abaabb
+        - baaabb
+    out: 1
+  - name: group-count-14
+    in:
+      strs:
+        - abcdefg
+        - abcdgfe
+        - agbcdef
+    out: 2
+  - name: group-count-15
+    in:
+      strs:
+        - xyzabc
+        - xyazbc
+        - xyyabc
+        - zxyabc
+    out: 1
+  - name: group-count-16
+    in:
+      strs:
+        - abcdefgh
+        - abcdefhg
+        - abcdegfh
+        - abcedfgh
+    out: 1
+  - name: group-count-17
+    in:
+      strs:
+        - aaaabbbb
+        - aaababbb
+        - abababab
+        - bbbbaaaa
+    out: 2
+  - name: group-count-18
+    in:
+      strs:
+        - zyxw
+        - zxyw
+        - yzxw
+        - yxzw
+    out: 1
+  - name: group-count-19
+    in:
+      strs:
+        - a
+        - a
+        - a
+        - a
+    out: 1
+  - name: group-count-20
+    in:
+      strs:
+        - ab
+        - ba
+        - ab
+        - ba
+    out: 1
+  - name: group-count-21
+    in:
+      strs:
+        - abcde
+        - acbde
+        - bacde
+        - bcade
+        - cabde
+    out: 1
+  - name: group-count-22
+    in:
+      strs:
+        - abcde
+        - abced
+        - abdce
+        - acbde
+    out: 1
+  - name: group-count-23
+    in:
+      strs:
+        - abcdefghij
+        - abcedfghij
+        - abcdefghji
+        - abcdefgihj
+    out: 1

@@ -1,0 +1,15 @@
+import re
+from collections import Counter
+
+
+class Solution(object):
+    def mostCommonWord(self, paragraph, banned):
+        """
+        :type paragraph: str
+        :type banned: List[str]
+        :rtype: str
+        """
+        banned_set = set(banned)
+        word = re.findall(r"[A-Za-z]+", paragraph)
+        counts = Counter(w.lower() for w in word if w.lower() not in banned_set)
+        return counts.most_common(1)[0][0]

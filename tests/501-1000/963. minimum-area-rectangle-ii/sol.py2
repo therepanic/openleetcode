@@ -1,0 +1,23 @@
+class Solution(object):
+    def minAreaFreeRect(self, points):
+        """
+        :type points: List[List[int]]
+        :rtype: float
+        """
+        ans = float('inf')
+        seen = {}
+        for i in range(len(points)):
+            x0, y0 = points[i]
+            for j in range(i + 1, len(points)):
+                x1, y1 = points[j]
+                cx = (x0 + x1) / 2.0
+                cy = (y0 + y1) / 2.0
+                d2 = (x0 - x1) ** 2 + (y0 - y1) ** 2
+                key = (cx, cy, d2)
+                if key in seen:
+                    for xx, yy in seen[key]:
+                        area = ((x0 - xx) ** 2 + (y0 - yy) ** 2) ** 0.5 * ((x1 - xx) ** 2 + (y1 - yy) ** 2) ** 0.5
+                        if area < ans:
+                            ans = area
+                seen.setdefault(key, []).append((x0, y0))
+        return ans if ans < float('inf') else 0.0

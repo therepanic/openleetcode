@@ -1,0 +1,41 @@
+from typing import List
+
+
+class Solution:
+    def shortestSuperstring(self, words: List[str]) -> str:
+        n = len(words)
+        overlap = [[0] * n for _ in range(n)]
+
+        def get_overlap(a, b):
+            max_olap = 0
+            for k in range(1, min(len(a), len(b)) + 1):
+                if a[-k:] == b[:k]:
+                    max_olap = max(max_olap, k)
+            return max_olap
+
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    overlap[i][j] = get_overlap(words[i], words[j])
+
+        dp = [[""] * n for i in range(1 << n)]
+        for i in range(n):
+            dp[1 << i][i] = words[i]
+
+        for mask in range(1 << n):
+            for u in range(n):
+                if not (mask & 1 << u):
+                    continue
+                for v in range(n):
+                    if mask & (1 << v):
+                        continue
+                    new_mask = mask | (1 << v)
+                    candidate = dp[mask][u] + words[v][overlap[u][v] :]
+                    if dp[new_mask][v] == "" or len(candidate) < len(dp[new_mask][v]):
+                        dp[new_mask][v] = candidate
+
+        short_string = ""
+        for candidate in dp[(1 << n) - 1]:
+            if short_string == "" or len(candidate) < len(short_string):
+                short_string = candidate
+        return short_string

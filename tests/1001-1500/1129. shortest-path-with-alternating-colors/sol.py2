@@ -1,0 +1,30 @@
+class Solution(object):
+    def shortestAlternatingPaths(self, n, redEdges, blueEdges):
+        """
+        :type n: int
+        :type redEdges: List[List[int]]
+        :type blueEdges: List[List[int]]
+        :rtype: List[int]
+        """
+        ans = [-1] * n
+        graph = [[] for _ in range(n)]
+        q = collections.deque([(0, 0)])  # (node, prevColor): 0-init, 1-red, 2-blue
+        
+        for u, v in redEdges:
+            graph[u].append((v, 1))
+        for u, v in blueEdges:
+            graph[u].append((v, 2))
+        
+        step = 0
+        while q:
+            for _ in range(len(q)):
+                u, prevColor = q.popleft()
+                if ans[u] == -1:
+                    ans[u] = step
+                for i, (v, edgeColor) in enumerate(graph[u]):
+                    if v == -1 or edgeColor == prevColor:
+                        continue
+                    q.append((v, edgeColor))
+                    graph[u][i] = (-1, edgeColor)
+            step += 1
+        return ans

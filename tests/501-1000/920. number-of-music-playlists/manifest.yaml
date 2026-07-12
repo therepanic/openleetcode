@@ -1,0 +1,293 @@
+entry:
+  id: 920
+  title: number-of-music-playlists
+  params:
+    n:
+      type: int
+    goal:
+      type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().numMusicPlaylists({n}, {goal}, {k})"
+    rust: "Solution::num_music_playlists({n}, {goal}, {k})"
+    python3: "Solution().numMusicPlaylists({n}, {goal}, {k})"
+    python2: "Solution().numMusicPlaylists({n}, {goal}, {k})"
+    ruby: "num_music_playlists({n}, {goal}, {k})"
+    java: "new Solution().numMusicPlaylists({n}, {goal}, {k})"
+    csharp: "new Solution().NumMusicPlaylists({n}, {goal}, {k})"
+    kotlin: "Solution().numMusicPlaylists({n}, {goal}, {k})"
+    go: "numMusicPlaylists({n}, {goal}, {k})"
+    dart: "Solution().numMusicPlaylists({n}, {goal}, {k})"
+    swift: "Solution().numMusicPlaylists({n}, {goal}, {k})"
+    typescript: "numMusicPlaylists({n}, {goal}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().numMusicPlaylists(n, goal, k, {result})"
+    checker: |
+      class Checker:
+          def numMusicPlaylists(self, n, goal, k, result):
+              if not isinstance(result, int):
+                  return False
+              MOD = 10**9 + 7
+              dp = [[0 for _ in range(n + 1)] for _ in range(2)]
+              dp[0][0] = 1
+              for i in range(1, goal + 1):
+                  dp[i % 2][0] = 0
+                  for j in range(1, min(i, n) + 1):
+                      dp[i % 2][j] = dp[(i - 1) % 2][j - 1] * (n - (j - 1)) % MOD
+                      if j > k:
+                          dp[i % 2][j] = (dp[i % 2][j] + dp[(i - 1) % 2][j] * (j - k)) % MOD
+              return result == dp[goal % 2][n]
+
+seed: 920
+
+tests:
+  - name: example-1
+    in:
+      n: 3
+      goal: 3
+      k: 1
+    out: 6
+  - name: example-2
+    in:
+      n: 2
+      goal: 3
+      k: 0
+    out: 6
+  - name: example-3
+    in:
+      n: 2
+      goal: 3
+      k: 1
+    out: 2
+  - name: n1-goal2-k0
+    in:
+      n: 1
+      goal: 2
+      k: 0
+    out: 1
+  - name: n2-goal2-k0
+    in:
+      n: 2
+      goal: 2
+      k: 0
+    out: 2
+  - name: n2-goal2-k1
+    in:
+      n: 2
+      goal: 2
+      k: 1
+    out: 2
+  - name: n2-goal4-k0
+    in:
+      n: 2
+      goal: 4
+      k: 0
+    out: 14
+  - name: n2-goal4-k1
+    in:
+      n: 2
+      goal: 4
+      k: 1
+    out: 2
+  - name: n3-goal3-k0
+    in:
+      n: 3
+      goal: 3
+      k: 0
+    out: 6
+  - name: n3-goal3-k2
+    in:
+      n: 3
+      goal: 3
+      k: 2
+    out: 6
+  - name: n3-goal4-k1
+    in:
+      n: 3
+      goal: 4
+      k: 1
+    out: 18
+  - name: n3-goal4-k2
+    in:
+      n: 3
+      goal: 4
+      k: 2
+    out: 6
+  - name: n3-goal5-k1
+    in:
+      n: 3
+      goal: 5
+      k: 1
+    out: 42
+  - name: n4-goal4-k1
+    in:
+      n: 4
+      goal: 4
+      k: 1
+    out: 24
+  - name: n4-goal5-k1
+    in:
+      n: 4
+      goal: 5
+      k: 1
+    out: 144
+  - name: n4-goal5-k2
+    in:
+      n: 4
+      goal: 5
+      k: 2
+    out: 72
+  - name: n4-goal6-k2
+    in:
+      n: 4
+      goal: 6
+      k: 2
+    out: 168
+  - name: n5-goal5-k0
+    in:
+      n: 5
+      goal: 5
+      k: 0
+    out: 120
+  - name: n5-goal6-k1
+    in:
+      n: 5
+      goal: 6
+      k: 1
+    out: 1200
+  - name: n5-goal6-k2
+    in:
+      n: 5
+      goal: 6
+      k: 2
+    out: 720
+  - name: n5-goal7-k2
+    in:
+      n: 5
+      goal: 7
+      k: 2
+    out: 3000
+  - name: n6-goal6-k0
+    in:
+      n: 6
+      goal: 6
+      k: 0
+    out: 720
+  - name: n6-goal7-k1
+    in:
+      n: 6
+      goal: 7
+      k: 1
+    out: 10800
+  - name: n6-goal7-k2
+    in:
+      n: 6
+      goal: 7
+      k: 2
+    out: 7200
+  - name: n7-goal7-k0
+    in:
+      n: 7
+      goal: 7
+      k: 0
+    out: 5040
+  - name: n7-goal8-k1
+    in:
+      n: 7
+      goal: 8
+      k: 1
+    out: 105840
+  - name: n8-goal8-k0
+    in:
+      n: 8
+      goal: 8
+      k: 0
+    out: 40320
+  - name: n8-goal9-k2
+    in:
+      n: 8
+      goal: 9
+      k: 2
+    out: 846720
+  - name: n10-goal10-k0
+    in:
+      n: 10
+      goal: 10
+      k: 0
+    out: 3628800
+  - name: n10-goal12-k3
+    in:
+      n: 10
+      goal: 12
+      k: 3
+    out: 676505593
+  - name: n10-goal20-k0
+    in:
+      n: 10
+      goal: 20
+      k: 0
+    out: 423938817
+  - name: n10-goal20-k5
+    in:
+      n: 10
+      goal: 20
+      k: 5
+    out: 993942190
+  - name: n20-goal20-k0
+    in:
+      n: 20
+      goal: 20
+      k: 0
+    out: 146326063
+  - name: n20-goal25-k3
+    in:
+      n: 20
+      goal: 25
+      k: 3
+    out: 192032929
+  - name: n25-goal25-k0
+    in:
+      n: 25
+      goal: 25
+      k: 0
+    out: 440732388
+  - name: n30-goal35-k4
+    in:
+      n: 30
+      goal: 35
+      k: 4
+    out: 418810183
+  - name: n50-goal50-k0
+    in:
+      n: 50
+      goal: 50
+      k: 0
+    out: 318608048
+  - name: n50-goal60-k10
+    in:
+      n: 50
+      goal: 60
+      k: 10
+    out: 145632432
+  - name: n100-goal100-k0
+    in:
+      n: 100
+      goal: 100
+      k: 0
+    out: 437918130
+  - name: n100-goal100-k99
+    in:
+      n: 100
+      goal: 100
+      k: 99
+    out: 437918130

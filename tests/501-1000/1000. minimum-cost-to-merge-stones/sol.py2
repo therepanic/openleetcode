@@ -1,0 +1,38 @@
+class Solution(object):
+    def mergeStones(self, stones, k):
+        """
+        :type stones: List[int]
+        :type k: int
+        :rtype: int
+        """
+        n = len(stones)
+        if (n - 1) % (k - 1) != 0:
+            return -1
+        
+        prefix = [0] * (n + 1)
+        for i in range(1, n + 1):
+            prefix[i] = prefix[i-1] + stones[i-1]
+
+        memo = {}
+
+        def optimize(i, j, p):
+            key = (i, j, p)
+            if key in memo:
+                return memo[key]
+            if i == j:
+                res = 0 if p == 1 else float('inf')
+                memo[key] = res
+                return res
+            if p == 1:
+                res = optimize(i, j, k) + (prefix[j+1] - prefix[i])
+                memo[key] = res
+                return res
+
+            res = float('inf')
+            for m in range(i, j, k - 1):
+                res = min(res, optimize(i, m, 1) + optimize(m+1, j, p-1))
+            memo[key] = res
+            return res
+        
+        ans = optimize(0, n-1, 1)
+        return int(ans) if ans != float('inf') else -1

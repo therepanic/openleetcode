@@ -1,0 +1,329 @@
+entry:
+  id: 874
+  title: walking-robot-simulation
+  params:
+    commands:
+      type: array
+      items:
+        type: int
+    obstacles:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().robotSim({commands}, {obstacles})"
+    rust: "Solution::robot_sim({commands}, {obstacles})"
+    python3: "Solution().robotSim({commands}, {obstacles})"
+    python2: "Solution().robotSim({commands}, {obstacles})"
+    ruby: "robot_sim({commands}, {obstacles})"
+    java: "new Solution().robotSim({commands}, {obstacles})"
+    csharp: "new Solution().RobotSim({commands}, {obstacles})"
+    kotlin: "Solution().robotSim({commands}, {obstacles})"
+    go: "robotSim({commands}, {obstacles})"
+    dart: "Solution().robotSim({commands}, {obstacles})"
+    swift: "Solution().robotSim({commands}, {obstacles})"
+    typescript: "robotSim({commands}, {obstacles})"
+judge:
+  type: exact
+limits:
+  time_ms: 400
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().robotSim(commands, obstacles, {result})"
+    checker: |
+      class Checker:
+          def robotSim(self, commands, obstacles, result: Any) -> bool:
+              return isinstance(result, int)
+seed: 874
+tests:
+  - name: ex1
+    in:
+      commands: [4, -1, 3]
+      obstacles:
+        elemType: int
+        value: []
+    out: 25
+  - name: ex2
+    in:
+      commands: [4, -1, 4, -2, 4]
+      obstacles:
+        elemType: int
+        value:
+          - [2, 4]
+    out: 65
+  - name: ex3
+    in:
+      commands: [6, -1, -1, 6]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 0]
+    out: 36
+  - name: no_obstacles_straight
+    in:
+      commands: [1, 2, 3]
+      obstacles:
+        elemType: int
+        value: []
+    out: 36
+  - name: turn_only
+    in:
+      commands: [-1, -1, -1, -1]
+      obstacles:
+        elemType: int
+        value: []
+    out: 0
+  - name: turn_left_then_move
+    in:
+      commands: [-2, 2]
+      obstacles:
+        elemType: int
+        value: []
+    out: 4
+  - name: immediate_block_north
+    in:
+      commands: [2]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 1]
+    out: 0
+  - name: block_after_one_step
+    in:
+      commands: [2]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 2]
+    out: 1
+  - name: block_after_turn
+    in:
+      commands: [2, -1, 2]
+      obstacles:
+        elemType: int
+        value:
+          - [1, 2]
+    out: 4
+  - name: obstacle_far_ignored
+    in:
+      commands: [2, -1, 2]
+      obstacles:
+        elemType: int
+        value:
+          - [10, 10]
+    out: 8
+  - name: obstacle_on_path
+    in:
+      commands: [3, -1, 3]
+      obstacles:
+        elemType: int
+        value:
+          - [1, 3]
+    out: 9
+  - name: origin_obstacle
+    in:
+      commands: [1, -1, -1, 1]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 0]
+    out: 1
+  - name: origin_obstacle_block_return
+    in:
+      commands: [1, -1, -1, 2]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 0]
+    out: 1
+  - name: large_square
+    in:
+      commands: [9, 9, 9, 9]
+      obstacles:
+        elemType: int
+        value: []
+    out: 1296
+  - name: zigzag_no_block
+    in:
+      commands: [4, -1, 4, -1, 4, -1, 4]
+      obstacles:
+        elemType: int
+        value: []
+    out: 32
+  - name: zigzag_block
+    in:
+      commands: [4, -1, 4, -1, 4, -1, 4]
+      obstacles:
+        elemType: int
+        value:
+          - [4, 1]
+    out: 32
+  - name: repeated_turns
+    in:
+      commands: [-2, -2, 5]
+      obstacles:
+        elemType: int
+        value: []
+    out: 25
+  - name: repeated_turns_block
+    in:
+      commands: [-2, -2, 5]
+      obstacles:
+        elemType: int
+        value:
+          - [0, -1]
+    out: 0
+  - name: obstacle_negative
+    in:
+      commands: [3, -1, 3]
+      obstacles:
+        elemType: int
+        value:
+          - [1, -3]
+    out: 18
+  - name: obstacle_negative_block
+    in:
+      commands: [3, -1, 3, -1, 3]
+      obstacles:
+        elemType: int
+        value:
+          - [1, -3]
+    out: 18
+  - name: loop_return
+    in:
+      commands: [2, -1, 2, -1, 2, -1, 2]
+      obstacles:
+        elemType: int
+        value: []
+    out: 8
+  - name: loop_return_block
+    in:
+      commands: [2, -1, 2, -1, 2, -1, 2]
+      obstacles:
+        elemType: int
+        value:
+          - [2, 2]
+    out: 5
+  - name: long_path_no_block
+    in:
+      commands: [9, -1, 9, -1, 9, -1, 9]
+      obstacles:
+        elemType: int
+        value: []
+    out: 162
+  - name: long_path_with_block
+    in:
+      commands: [9, -1, 9, -1, 9, -1, 9]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 5]
+    out: 106
+  - name: one_step_each_dir
+    in:
+      commands: [1, -1, 1, -1, 1, -1, 1]
+      obstacles:
+        elemType: int
+        value: []
+    out: 2
+  - name: one_step_each_dir_block
+    in:
+      commands: [1, -1, 1, -1, 1, -1, 1]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 1]
+    out: 2
+  - name: origin_and_far
+    in:
+      commands: [6, -1, -1, 6, 9]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 0]
+    out: 36
+  - name: multiple_obstacles_sparse
+    in:
+      commands: [5, -1, 5, -2, 5, -1, 5]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 3]
+          - [2, 5]
+          - [5, 5]
+    out: 116
+  - name: obstacle_on_second_leg
+    in:
+      commands: [5, -1, 5, -2, 5]
+      obstacles:
+        elemType: int
+        value:
+          - [5, 3]
+    out: 125
+  - name: obstacle_on_third_leg
+    in:
+      commands: [5, -1, 5, -2, 5, -1, 5]
+      obstacles:
+        elemType: int
+        value:
+          - [3, 5]
+    out: 149
+  - name: max_distance_early
+    in:
+      commands: [9, 9, -1, 1]
+      obstacles:
+        elemType: int
+        value: []
+    out: 325
+  - name: max_distance_after_block
+    in:
+      commands: [9, 9, -1, 9]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 10]
+    out: 162
+  - name: no_move_after_block
+    in:
+      commands: [9, -1, 9]
+      obstacles:
+        elemType: int
+        value:
+          - [1, 9]
+    out: 81
+  - name: no_move_after_block_2
+    in:
+      commands: [9, -1, 9]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 9]
+    out: 145
+  - name: large_obstacle_set_simple
+    in:
+      commands: [3, 3, 3]
+      obstacles:
+        elemType: int
+        value:
+          - [100, 100]
+          - [-100, -100]
+    out: 81
+  - name: near_origin_obstacle
+    in:
+      commands: [2, -2, 2, -2, 2]
+      obstacles:
+        elemType: int
+        value:
+          - [0, 2]
+    out: 5
+  - name: negative_side
+    in:
+      commands: [2, -1, 2, -1, 2, -1, 2]
+      obstacles:
+        elemType: int
+        value:
+          - [2, 2]
+    out: 5

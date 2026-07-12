@@ -1,0 +1,38 @@
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution(object):
+    def subtreeWithAllDeepest(self, root):
+        """
+        :type root: Optional[TreeNode]
+        :rtype: Optional[TreeNode]
+        """
+        if not root:
+            return None
+        
+        parent = {root: None}
+        from collections import deque
+        q = deque([root])
+        last_level = []
+        
+        while q:
+            size = len(q)
+            last_level = []
+            for _ in range(size):
+                node = q.popleft()
+                last_level.append(node)
+                if node.left:
+                    parent[node.left] = node
+                    q.append(node.left)
+                if node.right:
+                    parent[node.right] = node
+                    q.append(node.right)
+        
+        deepest = set(last_level)
+        while len(deepest) > 1:
+            deepest = {parent[node] for node in deepest}
+        
+        return deepest.pop()

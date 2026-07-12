@@ -1,0 +1,322 @@
+entry:
+  id: 802
+  title: "find-eventual-safe-states"
+  params:
+    graph:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: Solution().eventualSafeNodes({graph})
+    rust: Solution::eventual_safe_nodes({graph})
+    python3: Solution().eventualSafeNodes({graph})
+    python2: Solution().eventualSafeNodes({graph})
+    ruby: eventual_safe_nodes({graph})
+    java: new Solution().eventualSafeNodes({graph})
+    csharp: new Solution().EventualSafeNodes({graph})
+    kotlin: Solution().eventualSafeNodes({graph})
+    go: eventualSafeNodes({graph})
+    dart: Solution().eventualSafeNodes({graph})
+    swift: Solution().eventualSafeNodes({graph})
+    typescript: eventualSafeNodes({graph})
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(graph, {result})"
+    checker: |
+      class Checker:
+          def check(self, graph, result):
+              n = len(graph)
+              state = [0] * n
+
+              def dfs(node):
+                  if state[node] != 0:
+                      return state[node] == 2
+                  state[node] = 1
+                  for nxt in graph[node]:
+                      if state[nxt] == 1 or not dfs(nxt):
+                          return False
+                  state[node] = 2
+                  return True
+
+              expected = [i for i in range(n) if dfs(i)]
+              return result == expected
+
+seed: 802
+
+tests:
+  - name: case01
+    in:
+      graph:
+        - []
+  - name: case02
+    in:
+      graph:
+        - [1]
+        - []
+  - name: case03
+    in:
+      graph:
+        - [1]
+        - [2]
+        - []
+  - name: case04
+    in:
+      graph:
+        - [1]
+        - [0]
+  - name: case05
+    in:
+      graph:
+        - [1, 2]
+        - [2, 3]
+        - [5]
+        - [0]
+        - [5]
+        - []
+  - name: case06
+    in:
+      graph:
+        - [1]
+        - [2]
+        - [0]
+        - []
+  - name: case07
+    in:
+      graph:
+        - [1, 2]
+        - [2]
+        - [3]
+        - []
+  - name: case08
+    in:
+      graph:
+        - [1]
+        - [2]
+        - [3]
+        - [1]
+  - name: case09
+    in:
+      graph:
+        - [1, 2]
+        - [2, 3]
+        - [3]
+        - []
+  - name: case10
+    in:
+      graph:
+        - [1, 3]
+        - [2]
+        - [1]
+        - []
+  - name: case11
+    in:
+      graph:
+        - [1, 2]
+        - [3]
+        - [3]
+        - []
+  - name: case12
+    in:
+      graph:
+        - [1]
+        - [2, 3]
+        - [3]
+        - [4]
+        - []
+  - name: case13
+    in:
+      graph:
+        - [1]
+        - []
+        - [0, 3]
+        - []
+  - name: case14
+    in:
+      graph:
+        - [1, 2]
+        - [2]
+        - [0]
+        - [4]
+        - []
+  - name: case15
+    in:
+      graph:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - []
+  - name: case16
+    in:
+      graph:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4]
+        - []
+  - name: case17
+    in:
+      graph:
+        - [1]
+        - [0]
+        - [3]
+        - [2]
+        - []
+  - name: case18
+    in:
+      graph:
+        - [1, 2, 3]
+        - []
+        - [1]
+        - [4]
+        - []
+  - name: case19
+    in:
+      graph:
+        - [1]
+        - [2]
+        - [1, 3]
+        - []
+  - name: case20
+    in:
+      graph:
+        - [1, 2]
+        - [3]
+        - [3]
+        - [4]
+        - [2]
+  - name: case21
+    in:
+      graph:
+        - []
+        - [0]
+        - [1]
+        - [2]
+  - name: case22
+    in:
+      graph:
+        - [1]
+        - [2, 4]
+        - [3]
+        - []
+        - []
+  - name: case23
+    in:
+      graph:
+        - [1, 2]
+        - [3]
+        - [3, 4]
+        - [5]
+        - [5]
+        - []
+  - name: case24
+    in:
+      graph:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [2]
+  - name: case25
+    in:
+      graph:
+        - [1, 2]
+        - [3]
+        - [3]
+        - []
+        - [0]
+  - name: case26
+    in:
+      graph:
+        - [1]
+        - [2]
+        - []
+        - [1]
+        - [3]
+  - name: case27
+    in:
+      graph:
+        - [1, 2]
+        - [2]
+        - [0]
+        - [4, 5]
+        - [5]
+        - []
+  - name: case28
+    in:
+      graph:
+        - [1]
+        - []
+        - [3, 4]
+        - [4]
+        - []
+  - name: case29
+    in:
+      graph:
+        - [1, 2]
+        - [0]
+        - [3]
+        - [4]
+        - []
+  - name: case30
+    in:
+      graph:
+        - [1]
+        - [2]
+        - [0]
+        - [4]
+        - [3]
+  - name: case31
+    in:
+      graph:
+        - [1, 2]
+        - [2, 3]
+        - [4]
+        - [4]
+        - []
+  - name: case32
+    in:
+      graph:
+        - [1]
+        - [0]
+        - [3]
+        - []
+        - [2, 3]
+  - name: case33
+    in:
+      graph:
+        - [1, 2]
+        - [3]
+        - [3]
+        - [4]
+        - []
+        - [2]
+  - name: case34
+    in:
+      graph:
+        - [1]
+        - [2]
+        - [3]
+        - [1]
+        - [5]
+        - []
+  - name: case35
+    in:
+      graph:
+        - []
+        - [2]
+        - [3]
+        - [1]
+        - [5]
+        - [4]

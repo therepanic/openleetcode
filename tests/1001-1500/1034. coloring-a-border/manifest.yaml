@@ -1,0 +1,831 @@
+entry:
+  id: 1034
+  title: coloring-a-border
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    row:
+      type: int
+    col:
+      type: int
+    color:
+      type: int
+  call:
+    cpp: Solution().colorBorder({grid}, {row}, {col}, {color})
+    rust: Solution::color_border({grid}, {row}, {col}, {color})
+    python3: Solution().colorBorder({grid}, {row}, {col}, {color})
+    python2: Solution().colorBorder({grid}, {row}, {col}, {color})
+    ruby: color_border({grid}, {row}, {col}, {color})
+    java: new Solution().colorBorder({grid}, {row}, {col}, {color})
+    csharp: new Solution().ColorBorder({grid}, {row}, {col}, {color})
+    kotlin: Solution().colorBorder({grid}, {row}, {col}, {color})
+    go: colorBorder({grid}, {row}, {col}, {color})
+    dart: Solution().colorBorder({grid}, {row}, {col}, {color})
+    swift: Solution().colorBorder({grid}, {row}, {col}, {color})
+    typescript: colorBorder({grid}, {row}, {col}, {color})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(grid, row, col, color, {result})
+    checker:
+      "from collections import deque\n\nclass Checker:\n    def check(self,\
+      \ grid, row, col, color, result):\n        if not isinstance(result, list):\n\
+      \            return False\n        exp = [r[:] for r in grid]\n        rows,\
+      \ cols = len(grid), len(grid[0])\n        start = grid[row][col]\n        q\
+      \ = deque([(row, col)])\n        seen = {(row, col)}\n        border = []\n\
+      \        while q:\n            r, c = q.popleft()\n            is_border = False\n\
+      \            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n           \
+      \     nr, nc = r + dr, c + dc\n                if not (0 <= nr < rows and 0\
+      \ <= nc < cols):\n                    is_border = True\n                elif\
+      \ grid[nr][nc] != start:\n                    is_border = True\n           \
+      \     elif (nr, nc) not in seen:\n                    seen.add((nr, nc))\n \
+      \                   q.append((nr, nc))\n            if is_border:\n        \
+      \        border.append((r, c))\n        for r, c in border:\n            exp[r][c]\
+      \ = color\n        return result == exp\n"
+seed: 1034
+tests:
+  - name: example-1
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+          - - 1
+            - 2
+      row: 0
+      col: 0
+      color: 3
+  - name: example-2
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 2
+          - - 2
+            - 3
+            - 2
+      row: 0
+      col: 1
+      color: 3
+  - name: example-3
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+          - - 1
+            - 1
+            - 1
+          - - 1
+            - 1
+            - 1
+      row: 1
+      col: 1
+      color: 2
+  - name: same-color-noop
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 5
+            - 5
+          - - 5
+            - 5
+      row: 0
+      col: 0
+      color: 5
+  - name: single-cell
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 7
+      row: 0
+      col: 0
+      color: 9
+  - name: one-row
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 2
+            - 2
+      row: 0
+      col: 1
+      color: 4
+  - name: one-column
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+          - - 1
+          - - 2
+          - - 2
+      row: 1
+      col: 0
+      color: 6
+  - name: corner-component
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 3
+          - - 1
+            - 2
+            - 3
+          - - 3
+            - 3
+            - 3
+      row: 0
+      col: 0
+      color: 9
+  - name: edge-component
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 2
+            - 2
+            - 2
+            - 2
+          - - 2
+            - 1
+            - 1
+            - 2
+          - - 2
+            - 1
+            - 1
+            - 2
+      row: 1
+      col: 1
+      color: 8
+  - name: center-block
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+            - 1
+          - - 1
+            - 4
+            - 4
+            - 1
+          - - 1
+            - 4
+            - 4
+            - 1
+          - - 1
+            - 1
+            - 1
+            - 1
+      row: 1
+      col: 1
+      color: 7
+  - name: l-shape
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 2
+          - - 1
+            - 2
+            - 2
+          - - 1
+            - 2
+            - 3
+      row: 1
+      col: 1
+      color: 6
+  - name: checkerboard-small
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 1
+          - - 2
+            - 1
+            - 2
+          - - 1
+            - 2
+            - 1
+      row: 1
+      col: 1
+      color: 9
+  - name: rectangular-blob
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 3
+            - 3
+            - 3
+            - 4
+          - - 3
+            - 3
+            - 3
+            - 4
+          - - 3
+            - 3
+            - 3
+            - 4
+      row: 1
+      col: 1
+      color: 1
+  - name: border-touching
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 8
+            - 8
+            - 8
+            - 8
+            - 8
+          - - 8
+            - 7
+            - 7
+            - 7
+            - 8
+          - - 8
+            - 7
+            - 7
+            - 7
+            - 8
+          - - 8
+            - 8
+            - 8
+            - 8
+            - 8
+      row: 1
+      col: 1
+      color: 2
+  - name: isolated-center
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 3
+          - - 4
+            - 5
+            - 6
+          - - 7
+            - 8
+            - 9
+      row: 1
+      col: 1
+      color: 0
+  - name: big-square
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+            - 1
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 1
+            - 1
+            - 1
+            - 1
+      row: 2
+      col: 2
+      color: 9
+  - name: two-components
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 4
+            - 4
+            - 5
+            - 5
+          - - 4
+            - 4
+            - 5
+            - 5
+          - - 6
+            - 6
+            - 5
+            - 5
+      row: 0
+      col: 0
+      color: 3
+  - name: long-strip
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 2
+            - 1
+      row: 1
+      col: 2
+      color: 8
+  - name: small-blob
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 9
+            - 9
+            - 9
+          - - 9
+            - 9
+            - 9
+      row: 0
+      col: 1
+      color: 1
+  - name: asymmetric-blob
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 2
+            - 2
+            - 2
+            - 2
+          - - 2
+            - 1
+            - 1
+            - 2
+          - - 2
+            - 1
+            - 2
+            - 2
+          - - 2
+            - 2
+            - 2
+            - 2
+      row: 1
+      col: 1
+      color: 5
+  - name: border-color-repeat
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 1
+            - 1
+            - 1
+      row: 2
+      col: 2
+      color: 1
+  - name: bigger-square-1
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 6
+            - 6
+            - 6
+            - 6
+            - 6
+            - 6
+          - - 6
+            - 3
+            - 3
+            - 3
+            - 3
+            - 6
+          - - 6
+            - 3
+            - 3
+            - 3
+            - 3
+            - 6
+          - - 6
+            - 3
+            - 3
+            - 3
+            - 3
+            - 6
+          - - 6
+            - 3
+            - 3
+            - 3
+            - 3
+            - 6
+          - - 6
+            - 6
+            - 6
+            - 6
+            - 6
+            - 6
+      row: 2
+      col: 2
+      color: 8
+  - name: bigger-square-2
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 9
+            - 9
+            - 9
+            - 9
+            - 9
+          - - 9
+            - 4
+            - 4
+            - 4
+            - 9
+          - - 9
+            - 4
+            - 4
+            - 4
+            - 9
+          - - 9
+            - 4
+            - 4
+            - 4
+            - 9
+          - - 9
+            - 9
+            - 9
+            - 9
+            - 9
+      row: 0
+      col: 0
+      color: 2
+  - name: corner-plus
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 2
+            - 2
+          - - 1
+            - 1
+            - 2
+            - 2
+          - - 3
+            - 3
+            - 2
+            - 2
+          - - 3
+            - 3
+            - 2
+            - 2
+      row: 0
+      col: 0
+      color: 7
+  - name: corner-minus
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 2
+            - 2
+            - 2
+          - - 2
+            - 5
+            - 5
+          - - 2
+            - 5
+            - 5
+      row: 1
+      col: 1
+      color: 9
+  - name: stripe-1
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+            - 1
+            - 1
+          - - 2
+            - 2
+            - 2
+            - 2
+            - 2
+          - - 1
+            - 1
+            - 1
+            - 1
+            - 1
+      row: 1
+      col: 2
+      color: 4
+  - name: stripe-2
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 8
+            - 8
+            - 8
+            - 8
+          - - 8
+            - 1
+            - 1
+            - 8
+          - - 8
+            - 1
+            - 1
+            - 8
+          - - 8
+            - 1
+            - 1
+            - 8
+          - - 8
+            - 8
+            - 8
+            - 8
+      row: 2
+      col: 1
+      color: 0
+  - name: large-bloc-1
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+      row: 2
+      col: 2
+      color: 6
+  - name: large-bloc-2
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 3
+            - 3
+            - 3
+            - 3
+            - 3
+            - 3
+          - - 3
+            - 7
+            - 7
+            - 7
+            - 7
+            - 3
+          - - 3
+            - 7
+            - 7
+            - 7
+            - 7
+            - 3
+          - - 3
+            - 7
+            - 7
+            - 7
+            - 7
+            - 3
+      row: 1
+      col: 1
+      color: 5
+  - name: irregular-1
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 5
+            - 5
+            - 1
+            - 1
+            - 1
+          - - 5
+            - 5
+            - 1
+            - 2
+            - 2
+          - - 5
+            - 5
+            - 1
+            - 2
+            - 2
+          - - 5
+            - 5
+            - 1
+            - 1
+            - 1
+      row: 1
+      col: 3
+      color: 9
+  - name: irregular-2
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 4
+            - 4
+            - 4
+            - 4
+            - 4
+          - - 4
+            - 1
+            - 1
+            - 1
+            - 4
+          - - 4
+            - 1
+            - 2
+            - 1
+            - 4
+          - - 4
+            - 1
+            - 1
+            - 1
+            - 4
+          - - 4
+            - 4
+            - 4
+            - 4
+            - 4
+      row: 2
+      col: 2
+      color: 8
+  - name: irregular-3
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 7
+            - 7
+            - 7
+          - - 7
+            - 6
+            - 7
+          - - 7
+            - 7
+            - 7
+      row: 1
+      col: 1
+      color: 3
+  - name: irregular-4
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+            - 1
+          - - 1
+            - 9
+            - 9
+            - 1
+          - - 1
+            - 9
+            - 9
+            - 1
+          - - 1
+            - 1
+            - 1
+            - 1
+      row: 1
+      col: 1
+      color: 2
+  - name: irregular-5
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 7
+            - 7
+            - 7
+            - 7
+          - - 7
+            - 1
+            - 1
+            - 7
+          - - 7
+            - 1
+            - 1
+            - 7
+          - - 7
+            - 7
+            - 7
+            - 7
+      row: 2
+      col: 1
+      color: 4
+  - name: irregular-6
+    in:
+      grid:
+        elemType: int
+        value:
+          - - 1
+            - 1
+            - 1
+            - 1
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 3
+            - 2
+            - 1
+          - - 1
+            - 2
+            - 2
+            - 2
+            - 1
+          - - 1
+            - 1
+            - 1
+            - 1
+            - 1
+      row: 2
+      col: 2
+      color: 6

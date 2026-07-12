@@ -1,0 +1,37 @@
+class Solution(object):
+    def splitIntoFibonacci(self, num):
+        """
+        :type num: str
+        :rtype: List[int]
+        """
+        def invalid(x):
+            return (x[0] == '0' and len(x) > 1) or int(x) >= (1 << 31)
+        
+        def check(a0, a1, num):
+            i = 0
+            ret = [int(a0), int(a1)]
+            while i < len(num):
+                a0_int = int(a0)
+                a1_int = int(a1)
+                res = str(a0_int + a1_int)
+                j = 0
+                while i < len(num) and j < len(res) and res[j] == num[i]:
+                    j += 1
+                    i += 1
+                if j < len(res) or invalid(res):
+                    return []
+                a0, a1 = a1, res
+                ret.append(int(res))
+            return ret
+        
+        n = len(num)
+        for j in range(1, n-1):
+            for i in range(0, j):
+                a0 = num[:i+1]
+                a1 = num[i+1:j+1]
+                if invalid(a0) or invalid(a1):
+                    continue
+                ret = check(a0, a1, num[j+1:])
+                if ret:
+                    return ret
+        return []

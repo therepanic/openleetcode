@@ -1,0 +1,217 @@
+entry:
+  id: 819
+  title: "most-common-word"
+  params:
+    paragraph:
+      type: string
+    banned:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().mostCommonWord({paragraph}, {banned})"
+    rust: "Solution::most_common_word({paragraph}, {banned})"
+    python3: "Solution().mostCommonWord({paragraph}, {banned})"
+    python2: "Solution().mostCommonWord({paragraph}, {banned})"
+    ruby: "most_common_word({paragraph}, {banned})"
+    java: "new Solution().mostCommonWord({paragraph}, {banned})"
+    csharp: "new Solution().MostCommonWord({paragraph}, {banned})"
+    kotlin: "Solution().mostCommonWord({paragraph}, {banned})"
+    go: "mostCommonWord({paragraph}, {banned})"
+    dart: "Solution().mostCommonWord({paragraph}, {banned})"
+    swift: "Solution().mostCommonWord({paragraph}, {banned})"
+    typescript: "mostCommonWord({paragraph}, {banned})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 200
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check({result})"
+    checker: |
+      class Checker:
+          def check(self, result):
+              return isinstance(result, str)
+seed: 819
+tests:
+  - name: "example_one"
+    in:
+      paragraph: "Bob hit a ball, the hit BALL flew far after it was hit."
+      banned: ["hit"]
+    out: "ball"
+  - name: "example_two"
+    in:
+      paragraph: "a."
+      banned: []
+    out: "a"
+  - name: "single_word_unbanned"
+    in:
+      paragraph: "Hello"
+      banned: []
+    out: "hello"
+  - name: "single_word_banned_not_possible"
+    in:
+      paragraph: "a b a"
+      banned: ["b"]
+    out: "a"
+  - name: "punctuation_only_one_word"
+    in:
+      paragraph: "Word!"
+      banned: []
+    out: "word"
+  - name: "case_insensitive_basic"
+    in:
+      paragraph: "Aa aa AA"
+      banned: []
+    out: "aa"
+  - name: "banned_lowercase_only"
+    in:
+      paragraph: "Cat cat dog"
+      banned: ["dog"]
+    out: "cat"
+  - name: "multiple_punctuation"
+    in:
+      paragraph: "Wow! Wow? wow."
+      banned: []
+    out: "wow"
+  - name: "apostrophe_split"
+    in:
+      paragraph: "its time, its time its"
+      banned: ["time"]
+    out: "its"
+  - name: "comma_and_semicolon"
+    in:
+      paragraph: "red, blue; red!"
+      banned: ["blue"]
+    out: "red"
+  - name: "unique_answer_two_words"
+    in:
+      paragraph: "alpha beta alpha gamma beta alpha"
+      banned: ["gamma"]
+    out: "alpha"
+  - name: "all_but_one_banned"
+    in:
+      paragraph: "one two two three three three"
+      banned: ["one", "two"]
+    out: "three"
+  - name: "tie_broken_by_uniqueness_guarantee"
+    in:
+      paragraph: "x y x z y x"
+      banned: ["z"]
+    out: "x"
+  - name: "mixed_case_and_spaces"
+    in:
+      paragraph: "One two THREE two one THREE three"
+      banned: ["one"]
+    out: "three"
+  - name: "two_frequent_words_one_banned"
+    in:
+      paragraph: "apple banana apple banana banana"
+      banned: ["banana"]
+    out: "apple"
+  - name: "word_with_trailing_punct"
+    in:
+      paragraph: "end, end. start?"
+      banned: ["start"]
+    out: "end"
+  - name: "word_with_leading_punct"
+    in:
+      paragraph: "go! go? go."
+      banned: []
+    out: "go"
+  - name: "many_small_words"
+    in:
+      paragraph: "a b c a b c a b c a a d"
+      banned: ["d"]
+    out: "a"
+  - name: "two_candidates_one_more_common"
+    in:
+      paragraph: "sun moon sun star moon sun"
+      banned: ["star"]
+    out: "sun"
+  - name: "single_banned_word_repeated"
+    in:
+      paragraph: "cat cat cat dog dog"
+      banned: ["cat"]
+    out: "dog"
+  - name: "case_mixed_punctuation"
+    in:
+      paragraph: "BaLL, ball! BALL?"
+      banned: []
+    out: "ball"
+  - name: "short_sentence"
+    in:
+      paragraph: "I am fine I"
+      banned: ["am"]
+    out: "i"
+  - name: "sentence_with_quotes"
+    in:
+      paragraph: "say 'hello' say hello hello"
+      banned: []
+    out: "hello"
+  - name: "hyphen_absent_by_spec"
+    in:
+      paragraph: "well well, well"
+      banned: []
+    out: "well"
+  - name: "distinct_counts"
+    in:
+      paragraph: "a a a b b c"
+      banned: ["c"]
+    out: "a"
+  - name: "many_words_two_levels"
+    in:
+      paragraph: "red red blue blue blue green green green green"
+      banned: ["red"]
+    out: "green"
+  - name: "single_letter_banned_elsewhere"
+    in:
+      paragraph: "q q w e r t y q w w"
+      banned: ["q"]
+    out: "w"
+  - name: "repeated_pattern"
+    in:
+      paragraph: "one one two two three three three"
+      banned: ["one", "two"]
+    out: "three"
+  - name: "banned_empty_and_punct"
+    in:
+      paragraph: "alpha, beta! beta? alpha. beta"
+      banned: []
+    out: "beta"
+  - name: "capitalized_mixed"
+    in:
+      paragraph: "Dog dog DOG cat CAT"
+      banned: ["cat"]
+    out: "dog"
+  - name: "longer_word_wins"
+    in:
+      paragraph: "abc ab abc ab abc"
+      banned: ["ab"]
+    out: "abc"
+  - name: "two_words_one_banned_multiple_times"
+    in:
+      paragraph: "left right left right left center"
+      banned: ["center"]
+    out: "left"
+  - name: "simple_three_word"
+    in:
+      paragraph: "x y z x y z x"
+      banned: ["y"]
+    out: "x"
+  - name: "answer_at_end"
+    in:
+      paragraph: "a a a b"
+      banned: ["a"]
+    out: "b"
+  - name: "answer_at_start"
+    in:
+      paragraph: "b a a a"
+      banned: ["a"]
+    out: "b"
+  - name: "one_more_case"
+    in:
+      paragraph: "Foo bar foo BAR foo"
+      banned: ["bar"]
+    out: "foo"

@@ -1,0 +1,33 @@
+class Solution(object):
+    def tallestBillboard(self, rods):
+        """
+        :type rods: List[int]
+        :rtype: int
+        """
+        n = len(rods)
+        def gen(idx, end, a, b, vals):
+            if idx == end + 1:
+                vals.append((a - b, b))
+                return
+            gen(idx + 1, end, a, b, vals)
+            gen(idx + 1, end, a + rods[idx], b, vals)
+            gen(idx + 1, end, a, b + rods[idx], vals)
+        
+        left = []
+        right = []
+        mid = (n - 1) >> 1
+        gen(0, mid, 0, 0, left)
+        gen(mid + 1, n - 1, 0, 0, right)
+        
+        left.sort(key=lambda x: (x[0], -x[1]))
+        right.sort(key=lambda x: (x[0], -x[1]))
+        
+        import bisect
+        ans = 0
+        for i in range(len(left)):
+            d = left[i][0]
+            b = left[i][1]
+            idx = bisect.bisect_left(right, (-d, -1))
+            if idx < len(right) and right[idx][0] == -d:
+                ans = max(ans, b + right[idx][1])
+        return ans

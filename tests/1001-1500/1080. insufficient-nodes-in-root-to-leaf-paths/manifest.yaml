@@ -1,0 +1,239 @@
+entry:
+  id: 1080
+  title: insufficient-nodes-in-root-to-leaf-paths
+  params:
+    root:
+      type: tree_node
+    limit:
+      type: int
+  call:
+    cpp: "Solution().sufficientSubset({root}, {limit})"
+    rust: "Solution::sufficient_subset({root}, {limit})"
+    python3: "Solution().sufficientSubset({root}, {limit})"
+    python2: "Solution().sufficientSubset({root}, {limit})"
+    ruby: "sufficient_subset({root}, {limit})"
+    java: "new Solution().sufficientSubset({root}, {limit})"
+    csharp: "new Solution().SufficientSubset({root}, {limit})"
+    kotlin: "Solution().sufficientSubset({root}, {limit})"
+    go: "sufficientSubset({root}, {limit})"
+    dart: "Solution().sufficientSubset({root}, {limit})"
+    swift: "Solution().sufficientSubset({root}, {limit})"
+    typescript: "sufficientSubset({root}, {limit})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().sufficientSubset(root, limit, {result})"
+    checker: |
+      class Checker:
+          def sufficientSubset(self, root, limit, result):
+              def normalize(node):
+                  if node is None:
+                      return None
+                  if isinstance(node, list):
+                      if not node:
+                          return None
+                      nodes = [None if x is None else TreeNode(x) for x in node]
+                      kids = nodes[::-1]
+                      root = kids.pop()
+                      for item in nodes:
+                          if item is not None:
+                              if kids:
+                                  item.left = kids.pop()
+                              if kids:
+                                  item.right = kids.pop()
+                      return root
+                  if isinstance(node, dict):
+                      return TreeNode(
+                          node.get("val", node.get("value")),
+                          normalize(node.get("left")),
+                          normalize(node.get("right")),
+                      )
+                  return node
+
+              def serialize(node):
+                  if node is None:
+                      return None
+                  out = []
+                  queue = [node]
+                  while queue:
+                      cur = queue.pop(0)
+                      if cur is None:
+                          out.append(None)
+                      else:
+                          out.append(cur.val)
+                          queue.append(cur.left)
+                          queue.append(cur.right)
+                  while out and out[-1] is None:
+                      out.pop()
+                  return out
+
+              expected = normalize(root)
+              actual = normalize(result)
+
+              def dfs(node, path_sum):
+                  if not node:
+                      return False
+                  curr = path_sum + node.val
+                  if not node.left and not node.right:
+                      return curr >= limit
+                  left_good = dfs(node.left, curr)
+                  right_good = dfs(node.right, curr)
+                  if not left_good:
+                      node.left = None
+                  if not right_good:
+                      node.right = None
+                  return left_good or right_good
+
+              return serialize(expected if dfs(expected, 0) else None) == serialize(actual)
+seed: 1080
+tests:
+  - name: t01
+    in:
+      root: [1, 2, 3, 4, null, null, 7, 8, 9, null, null, 12, 13, null, 14]
+      limit: 1
+  - name: t02
+    in:
+      root: [5, 4, 8, 11, null, 17, 4, 7, 1, null, null, 5, 3]
+      limit: 22
+  - name: t03
+    in:
+      root: [1, 2, -3, -5, null, 4, null]
+      limit: -1
+  - name: t04
+    in:
+      root: [1]
+      limit: 2
+  - name: t05
+    in:
+      root: [1]
+      limit: 1
+  - name: t06
+    in:
+      root: [0]
+      limit: 0
+  - name: t07
+    in:
+      root: [0]
+      limit: 1
+  - name: t08
+    in:
+      root: [-5]
+      limit: -5
+  - name: t09
+    in:
+      root: [-5]
+      limit: -4
+  - name: t10
+    in:
+      root: [5, 4, 8]
+      limit: 10
+  - name: t11
+    in:
+      root: [5, 4, 8]
+      limit: 13
+  - name: t12
+    in:
+      root: [5, 4, 8, 1, 2, 3, 4]
+      limit: 10
+  - name: t13
+    in:
+      root: [5, 4, 8, 1, 2, 3, 4]
+      limit: 12
+  - name: t14
+    in:
+      root: [1, 2, 3, null, 4, null, 5]
+      limit: 8
+  - name: t15
+    in:
+      root: [1, 2, 3, null, 4, null, 5]
+      limit: 9
+  - name: t16
+    in:
+      root: [1, 2, 3, 4, null, 5, null]
+      limit: 7
+  - name: t17
+    in:
+      root: [1, 2, 3, 4, null, 5, null]
+      limit: 6
+  - name: t18
+    in:
+      root: [2, -1, -2]
+      limit: 0
+  - name: t19
+    in:
+      root: [2, -1, -2]
+      limit: 1
+  - name: t20
+    in:
+      root: [1, -2, -3, 1, 3, -2, null, -1]
+      limit: -1
+  - name: t21
+    in:
+      root: [1, -2, -3, 1, 3, -2, null, -1]
+      limit: 0
+  - name: t22
+    in:
+      root: [10, 5, 5, 4, 4, 4, 4]
+      limit: 19
+  - name: t23
+    in:
+      root: [10, 5, 5, 4, 4, 4, 4]
+      limit: 20
+  - name: t24
+    in:
+      root: [3, 1, 2, null, null, 1, 1]
+      limit: 5
+  - name: t25
+    in:
+      root: [3, 1, 2, null, null, 1, 1]
+      limit: 6
+  - name: t26
+    in:
+      root:
+        [7, 3, 4, 2, null, null, 5, 1, null, null, null, null, null, null, 6]
+      limit: 13
+  - name: t27
+    in:
+      root:
+        [7, 3, 4, 2, null, null, 5, 1, null, null, null, null, null, null, 6]
+      limit: 14
+  - name: t28
+    in:
+      root: [1, 1, 1, 1, 1, 1, 1]
+      limit: 4
+  - name: t29
+    in:
+      root: [1, 1, 1, 1, 1, 1, 1]
+      limit: 5
+  - name: t30
+    in:
+      root: [-1, -2, -3, -4, -5, -6, -7]
+      limit: -6
+  - name: t31
+    in:
+      root: [-1, -2, -3, -4, -5, -6, -7]
+      limit: -10
+  - name: t32
+    in:
+      root: [4, 9, 0, 5, 1, null, 6]
+      limit: 12
+  - name: t33
+    in:
+      root: [4, 9, 0, 5, 1, null, 6]
+      limit: 15
+  - name: t34
+    in:
+      root: [8, 4, 4, 4, null, null, 4]
+      limit: 16
+  - name: t35
+    in:
+      root: [8, 4, 4, 4, null, null, 4]
+      limit: 17
+  - name: t36
+    in:
+      root: [2, 2, 2, 2, 2, 2, 2]
+      limit: 6

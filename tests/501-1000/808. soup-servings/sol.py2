@@ -1,0 +1,31 @@
+class Solution(object):
+    def soupServings(self, n):
+        """
+        :type n: int
+        :rtype: float
+        """
+        if n > 5000:
+            return 1.0
+        import math
+        units = int(math.ceil(n / 25.0))
+        memo = {}
+        
+        def calc_prob(soupA, soupB):
+            if (soupA, soupB) in memo:
+                return memo[(soupA, soupB)]
+            if soupA <= 0 and soupB <= 0:
+                return 0.5
+            if soupA <= 0:
+                return 1.0
+            if soupB <= 0:
+                return 0.0
+            result = 0.25 * (
+                calc_prob(soupA - 4, soupB) +
+                calc_prob(soupA - 3, soupB - 1) +
+                calc_prob(soupA - 2, soupB - 2) +
+                calc_prob(soupA - 1, soupB - 3)
+            )
+            memo[(soupA, soupB)] = result
+            return result
+        
+        return calc_prob(units, units)

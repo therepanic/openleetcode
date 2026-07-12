@@ -1,0 +1,198 @@
+entry:
+  id: 1106
+  title: parsing-a-boolean-expression
+  params:
+    expression:
+      type: string
+  call:
+    cpp: Solution().parseBoolExpr({expression})
+    rust: Solution::parse_bool_expr({expression})
+    python3: Solution().parseBoolExpr({expression})
+    python2: Solution().parseBoolExpr({expression})
+    ruby: parse_bool_expr({expression})
+    java: new Solution().parseBoolExpr({expression})
+    csharp: new Solution().ParseBoolExpr({expression})
+    kotlin: Solution().parseBoolExpr({expression})
+    go: parseBoolExpr({expression})
+    dart: Solution().parseBoolExpr({expression})
+    swift: Solution().parseBoolExpr({expression})
+    typescript: parseBoolExpr({expression})
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 128
+oracle:
+  python3:
+    call: Checker().check(expression, {result})
+    checker:
+      "class Checker(object):\n    def check(self, expression, result):\n \
+      \       st = [[]]\n        for ch in expression:\n            if ch == '&':\n\
+      \                st.append([all])\n            elif ch == '|':\n           \
+      \     st.append([any])\n            elif ch == '!':\n                st.append([lambda\
+      \ q: not q[0]])\n            elif ch == 't':\n                st[-1].append(True)\n\
+      \            elif ch == 'f':\n                st[-1].append(False)\n       \
+      \     elif ch == ')':\n                operation, *args = st.pop()\n       \
+      \         st[-1].append(operation(args))\n        return st[0][0] == result\n"
+seed: 1106
+tests:
+  - name: example_1
+    in:
+      expression: "&(|(f))"
+    out: false
+  - name: example_2
+    in:
+      expression: "|(f,f,f,t)"
+    out: true
+  - name: example_3
+    in:
+      expression: "!(&(f,t))"
+    out: true
+  - name: single_true
+    in:
+      expression: t
+    out: true
+  - name: single_false
+    in:
+      expression: f
+    out: false
+  - name: not_true
+    in:
+      expression: "!(t)"
+    out: false
+  - name: not_false
+    in:
+      expression: "!(f)"
+    out: true
+  - name: and_two_true
+    in:
+      expression: "&(t,t)"
+    out: true
+  - name: and_with_false
+    in:
+      expression: "&(t,f)"
+    out: false
+  - name: or_two_false
+    in:
+      expression: "|(f,f)"
+    out: false
+  - name: or_with_true
+    in:
+      expression: "|(f,t)"
+    out: true
+  - name: nested_and_or
+    in:
+      expression: "&(|(t),!(f))"
+    out: true
+  - name: nested_or_and
+    in:
+      expression: "|(&(t,f),t)"
+    out: true
+  - name: nested_false_chain
+    in:
+      expression: "!(&(&(t,t),|(f,f)))"
+    out: true
+  - name: triple_and
+    in:
+      expression: "&(t,t,t)"
+    out: true
+  - name: triple_or
+    in:
+      expression: "|(f,f,t)"
+    out: true
+  - name: triple_or_false
+    in:
+      expression: "|(f,f,f)"
+    out: false
+  - name: complex_1
+    in:
+      expression: "!(&(|(f,t),&(t,t),!(f)))"
+    out: false
+  - name: complex_2
+    in:
+      expression: "&(|(f,f,t),!(f),&(t,|(f,t)))"
+    out: true
+  - name: complex_3
+    in:
+      expression: "|(&(t,!(f)),&(f,t),!(|(f)))"
+    out: true
+  - name: complex_4
+    in:
+      expression: "!(!(!(t)))"
+    out: false
+  - name: complex_5
+    in:
+      expression: "&(!(&(t,f)),|(f,!(f)))"
+    out: true
+  - name: complex_6
+    in:
+      expression: "|(!(&(t,t)),&(t,!(f)),f)"
+    out: true
+  - name: complex_7
+    in:
+      expression: "!(&(|(t,f),!(t),&(t,t)))"
+    out: true
+  - name: complex_8
+    in:
+      expression: "&(|(&(t,f),t),!(&(t,t)),|(f,t))"
+    out: false
+  - name: complex_9
+    in:
+      expression: "|(&(t,!(f),t),!(&(f,f)),&(t,t,t))"
+    out: true
+  - name: complex_10
+    in:
+      expression: "!(|(&(f,f),&(t,f),!(t)))"
+    out: true
+  - name: complex_11
+    in:
+      expression: "&(!(f),!(f),!(f))"
+    out: true
+  - name: complex_12
+    in:
+      expression: "|(!(t),!(f),&(t,t,t))"
+    out: true
+  - name: complex_13
+    in:
+      expression: "!(&(!(t),|(f,f),t))"
+    out: true
+  - name: complex_14
+    in:
+      expression: "&(|(&(t,t),f),!(&(f,t)),|(f,!(f),f))"
+    out: true
+  - name: complex_15
+    in:
+      expression: "|(&(!(f),!(f)),!(&(t,t)),&(t,|(f,t)))"
+    out: true
+  - name: complex_16
+    in:
+      expression: "!(&(|(&(t,f),&(t,t)),!(f),|(f,t)))"
+    out: false
+  - name: complex_17
+    in:
+      expression: "&(|(&(t,t),!(f)),!(&(t,f)),|(f,f,t))"
+    out: true
+  - name: complex_18
+    in:
+      expression: "|(!(&(|(f,f),t)),&(t,!(f),t),f)"
+    out: true
+  - name: complex_19
+    in:
+      expression: "!(!(t))"
+    out: true
+  - name: complex_20
+    in:
+      expression: "&(!(!(t)),|(!(f),f),!(|(f,f)))"
+    out: true
+  - name: complex_21
+    in:
+      expression: "|(&(t,|(f,!(f))),!(&(t,t,t)),&(t,t))"
+    out: true
+  - name: complex_22
+    in:
+      expression: "!(|(!(f),&(t,f),|(f,f,f)))"
+    out: false
+  - name: complex_23
+    in:
+      expression: "&(|(t,f),|(f,f,t),!(f),!(|(f)))"
+    out: true

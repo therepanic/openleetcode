@@ -1,0 +1,599 @@
+entry:
+  id: 1125
+  title: smallest-sufficient-team
+  params:
+    req_skills:
+      type: array
+      items:
+        type: string
+    people:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+  call:
+    cpp: "Solution().smallestSufficientTeam({req_skills}, {people})"
+    rust: "Solution::smallest_sufficient_team({req_skills}, {people})"
+    python3: "Solution().smallestSufficientTeam({req_skills}, {people})"
+    python2: "Solution().smallestSufficientTeam({req_skills}, {people})"
+    ruby: "smallest_sufficient_team({req_skills}, {people})"
+    java: "new Solution().smallestSufficientTeam({req_skills}, java.util.Arrays.stream({people}).map(row -> java.util.Arrays.asList(row)).collect(java.util.stream.Collectors.toList()))"
+    csharp: "new Solution().SmallestSufficientTeam({req_skills}, {people})"
+    kotlin: "Solution().smallestSufficientTeam({req_skills}, {people}.map { it.toList() })"
+    go: "smallestSufficientTeam({req_skills}, {people})"
+    dart: "Solution().smallestSufficientTeam({req_skills}, {people})"
+    swift: "Solution().smallestSufficientTeam({req_skills}, {people})"
+    typescript: "smallestSufficientTeam({req_skills}, {people})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().smallestSufficientTeam(req_skills, people, {result})"
+    checker: |
+      class Checker:
+          def smallestSufficientTeam(self, req_skills, people, result):
+              if not isinstance(result, list):
+                  return False
+              if any(type(index) is not int for index in result):
+                  return False
+              if len(set(result)) != len(result):
+                  return False
+              if any(index < 0 or index >= len(people) for index in result):
+                  return False
+
+              skill_index = {skill: i for i, skill in enumerate(req_skills)}
+              full = (1 << len(req_skills)) - 1
+
+              def person_mask(skills):
+                  mask = 0
+                  for skill in skills:
+                      if skill in skill_index:
+                          mask |= 1 << skill_index[skill]
+                  return mask
+
+              masks = [person_mask(skills) for skills in people]
+              covered = 0
+              for index in result:
+                  covered |= masks[index]
+              if covered != full:
+                  return False
+
+              best = {0: 0}
+              for mask in masks:
+                  next_best = dict(best)
+                  for covered_mask, size in best.items():
+                      combined = covered_mask | mask
+                      candidate = size + 1
+                      if candidate < next_best.get(combined, len(people) + 1):
+                          next_best[combined] = candidate
+                  best = next_best
+              return len(result) == best.get(full)
+seed: 1125
+tests:
+  - name: example-one
+    in:
+      req_skills: ["java", "nodejs", "reactjs"]
+      people:
+        elemType: "string"
+        value:
+          - ["java"]
+          - ["nodejs"]
+          - ["nodejs", "reactjs"]
+  - name: example-two
+    in:
+      req_skills: ["algorithms", "math", "java", "reactjs", "csharp", "aws"]
+      people:
+        elemType: "string"
+        value:
+          - ["algorithms", "math", "java"]
+          - ["algorithms", "math", "reactjs"]
+          - ["java", "csharp", "aws"]
+          - ["reactjs", "csharp"]
+          - ["csharp", "math"]
+          - ["aws", "java"]
+  - name: single-skill-single-person
+    in:
+      req_skills: ["a"]
+      people:
+        elemType: "string"
+        value:
+          - ["a"]
+  - name: single-skill-many-candidates
+    in:
+      req_skills: ["a"]
+      people:
+        elemType: "string"
+        value:
+          - []
+          - ["a"]
+          - ["a"]
+          - []
+  - name: one-person-covers-all
+    in:
+      req_skills: ["a", "b", "c", "d"]
+      people:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["b", "c"]
+          - ["a", "b", "c", "d"]
+          - ["d"]
+  - name: every-skill-separate
+    in:
+      req_skills: ["a", "b", "c", "d", "e"]
+      people:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["b"]
+          - ["c"]
+          - ["d"]
+          - ["e"]
+  - name: empty-people-between-useful
+    in:
+      req_skills: ["a", "b", "c"]
+      people:
+        elemType: "string"
+        value:
+          - []
+          - ["a", "b"]
+          - []
+          - ["c"]
+          - []
+  - name: two-equal-optima
+    in:
+      req_skills: ["a", "b"]
+      people:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["b"]
+          - ["a"]
+          - ["b"]
+  - name: dominated-people
+    in:
+      req_skills: ["a", "b", "c"]
+      people:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["a", "b"]
+          - ["a", "b", "c"]
+          - ["c"]
+  - name: pair-beats-three-singles
+    in:
+      req_skills: ["a", "b", "c", "d"]
+      people:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["b"]
+          - ["c", "d"]
+          - ["a", "b"]
+          - ["c"]
+  - name: overlapping-cycle-three
+    in:
+      req_skills: ["a", "b", "c"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["b", "c"]
+          - ["a", "c"]
+  - name: overlapping-cycle-four
+    in:
+      req_skills: ["a", "b", "c", "d"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["b", "c"]
+          - ["c", "d"]
+          - ["d", "a"]
+  - name: unique-complement
+    in:
+      req_skills: ["frontend", "backend", "database", "ops"]
+      people:
+        elemType: "string"
+        value:
+          - ["frontend", "backend"]
+          - ["database"]
+          - ["ops"]
+          - ["database", "ops"]
+          - ["frontend"]
+  - name: late-best-person
+    in:
+      req_skills: ["a", "b", "c", "d", "e"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["c"]
+          - ["d"]
+          - ["e"]
+          - ["a", "b", "c", "d", "e"]
+  - name: early-best-person
+    in:
+      req_skills: ["a", "b", "c", "d", "e"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d", "e"]
+          - ["a", "b"]
+          - ["c", "d"]
+          - ["e"]
+  - name: meaningful-skill-names
+    in:
+      req_skills: ["linux", "network", "storage", "security", "cloud"]
+      people:
+        elemType: "string"
+        value:
+          - ["linux", "network"]
+          - ["storage", "security"]
+          - ["cloud"]
+          - ["network", "cloud"]
+          - ["linux", "storage"]
+  - name: yaml-like-skill-strings
+    in:
+      req_skills: ["no", "off", "false", "yes"]
+      people:
+        elemType: "string"
+        value:
+          - ["no", "off"]
+          - ["false"]
+          - ["yes"]
+          - ["off", "false", "yes"]
+  - name: repeated-coverage
+    in:
+      req_skills: ["a", "b", "c", "d"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["a", "b"]
+          - ["c", "d"]
+          - ["c", "d"]
+          - ["a", "d"]
+  - name: six-skills-three-pairs
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["c", "d"]
+          - ["e", "f"]
+          - ["a", "c", "e"]
+          - ["b", "d", "f"]
+  - name: six-skills-complementary-triples
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "c", "e"]
+          - ["b", "d", "f"]
+          - ["a", "b"]
+          - ["c", "d"]
+          - ["e", "f"]
+  - name: seven-skills-mixed
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f", "g"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b", "c"]
+          - ["d", "e"]
+          - ["f", "g"]
+          - ["a", "d", "f"]
+          - ["b", "e", "g"]
+          - ["c"]
+  - name: eight-skills-balanced
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f", "g", "h"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d"]
+          - ["e", "f", "g", "h"]
+          - ["a", "e"]
+          - ["b", "f"]
+          - ["c", "g"]
+          - ["d", "h"]
+  - name: eight-skills-cross-cover
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f", "g", "h"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "c", "e", "g"]
+          - ["b", "d", "f", "h"]
+          - ["a", "b", "c"]
+          - ["d", "e", "f"]
+          - ["g", "h"]
+  - name: nine-skills-layered
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b", "c"]
+          - ["d", "e", "f"]
+          - ["g", "h", "i"]
+          - ["a", "d", "g"]
+          - ["b", "e", "h"]
+          - ["c", "f", "i"]
+  - name: ten-skills-two-halves
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d", "e"]
+          - ["f", "g", "h", "i", "j"]
+          - ["a", "f"]
+          - ["b", "g"]
+          - ["c", "h"]
+          - ["d", "i"]
+          - ["e", "j"]
+  - name: ten-skills-distractors
+    in:
+      req_skills: ["s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9"]
+      people:
+        elemType: "string"
+        value:
+          - []
+          - ["s0", "s1", "s2", "s3"]
+          - ["s4", "s5", "s6"]
+          - ["s7", "s8", "s9"]
+          - ["s0"]
+          - ["s1"]
+          - ["s2"]
+          - ["s3"]
+          - ["s4"]
+          - ["s5"]
+          - ["s6"]
+          - ["s7"]
+          - ["s8"]
+          - ["s9"]
+  - name: eleven-skills-overlap
+    in:
+      req_skills:
+        ["s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10"]
+      people:
+        elemType: "string"
+        value:
+          - ["s0", "s1", "s2", "s3"]
+          - ["s3", "s4", "s5", "s6"]
+          - ["s6", "s7", "s8"]
+          - ["s8", "s9", "s10"]
+          - ["s0", "s5", "s10"]
+  - name: twelve-skills-four-groups
+    in:
+      req_skills:
+        [
+          "s0",
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10",
+          "s11",
+        ]
+      people:
+        elemType: "string"
+        value:
+          - ["s0", "s1", "s2"]
+          - ["s3", "s4", "s5"]
+          - ["s6", "s7", "s8"]
+          - ["s9", "s10", "s11"]
+          - ["s0", "s3", "s6", "s9"]
+          - ["s1", "s4", "s7", "s10"]
+          - ["s2", "s5", "s8", "s11"]
+  - name: thirteen-skills-mixed
+    in:
+      req_skills:
+        [
+          "s0",
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10",
+          "s11",
+          "s12",
+        ]
+      people:
+        elemType: "string"
+        value:
+          - ["s0", "s1", "s2", "s3"]
+          - ["s4", "s5", "s6"]
+          - ["s7", "s8", "s9"]
+          - ["s10", "s11", "s12"]
+          - ["s0", "s4", "s7", "s10"]
+          - ["s1", "s5", "s8", "s11"]
+          - ["s2", "s6", "s9", "s12"]
+  - name: fourteen-skills-paired
+    in:
+      req_skills:
+        [
+          "s0",
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10",
+          "s11",
+          "s12",
+          "s13",
+        ]
+      people:
+        elemType: "string"
+        value:
+          - ["s0", "s1"]
+          - ["s2", "s3"]
+          - ["s4", "s5"]
+          - ["s6", "s7"]
+          - ["s8", "s9"]
+          - ["s10", "s11"]
+          - ["s12", "s13"]
+          - ["s0", "s2", "s4", "s6", "s8", "s10", "s12"]
+          - ["s1", "s3", "s5", "s7", "s9", "s11", "s13"]
+  - name: fifteen-skills-three-blocks
+    in:
+      req_skills:
+        [
+          "s0",
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10",
+          "s11",
+          "s12",
+          "s13",
+          "s14",
+        ]
+      people:
+        elemType: "string"
+        value:
+          - ["s0", "s1", "s2", "s3", "s4"]
+          - ["s5", "s6", "s7", "s8", "s9"]
+          - ["s10", "s11", "s12", "s13", "s14"]
+          - ["s0", "s5", "s10"]
+          - ["s1", "s6", "s11"]
+          - ["s2", "s7", "s12"]
+          - ["s3", "s8", "s13"]
+          - ["s4", "s9", "s14"]
+  - name: max-sixteen-skills-two-people
+    in:
+      req_skills:
+        [
+          "s0",
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10",
+          "s11",
+          "s12",
+          "s13",
+          "s14",
+          "s15",
+        ]
+      people:
+        elemType: "string"
+        value:
+          - ["s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7"]
+          - ["s8", "s9", "s10", "s11", "s12", "s13", "s14", "s15"]
+          - ["s0", "s8"]
+          - ["s1", "s9"]
+          - ["s2", "s10"]
+          - ["s3", "s11"]
+  - name: max-sixteen-skills-cross-halves
+    in:
+      req_skills:
+        [
+          "s0",
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10",
+          "s11",
+          "s12",
+          "s13",
+          "s14",
+          "s15",
+        ]
+      people:
+        elemType: "string"
+        value:
+          - ["s0", "s2", "s4", "s6", "s8", "s10", "s12", "s14"]
+          - ["s1", "s3", "s5", "s7", "s9", "s11", "s13", "s15"]
+          - ["s0", "s1", "s2", "s3"]
+          - ["s4", "s5", "s6", "s7"]
+          - ["s8", "s9", "s10", "s11"]
+          - ["s12", "s13", "s14", "s15"]
+  - name: many-empty-and-duplicate-people
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f"]
+      people:
+        elemType: "string"
+        value:
+          - []
+          - []
+          - ["a", "b"]
+          - ["a", "b"]
+          - []
+          - ["c", "d"]
+          - ["c", "d"]
+          - ["e", "f"]
+          - ["e", "f"]
+          - []
+  - name: choice-between-generalists
+    in:
+      req_skills: ["a", "b", "c", "d", "e", "f", "g", "h"]
+      people:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d"]
+          - ["e", "f", "g", "h"]
+          - ["a", "b", "e", "f"]
+          - ["c", "d", "g", "h"]
+          - ["a", "c", "e", "g"]
+          - ["b", "d", "f", "h"]
+  - name: rare-skill-at-last-index
+    in:
+      req_skills: ["common", "rare"]
+      people:
+        elemType: "string"
+        value:
+          - ["common"]
+          - ["common"]
+          - []
+          - ["rare"]
+  - name: rare-skill-with-generalist
+    in:
+      req_skills: ["a", "b", "rare"]
+      people:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["b"]
+          - ["rare"]
+          - ["a", "b", "rare"]

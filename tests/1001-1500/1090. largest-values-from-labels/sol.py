@@ -1,0 +1,17 @@
+class Solution:
+    def largestValsFromLabels(
+        self, values: List[int], labels: List[int], numWanted: int, useLimit: int
+    ) -> int:
+        n = len(values)
+        pairs = [(values[i], labels[i]) for i in range(n)]
+        pairs.sort(key=lambda x: x[0], reverse=True)
+        res = 0
+        freq = {}
+        for value, label in pairs:
+            if numWanted == 0:
+                break
+            if label not in freq or freq[label] < useLimit:
+                res += value
+                freq[label] = freq.get(label, 0) + 1
+                numWanted -= 1
+        return res

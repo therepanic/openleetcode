@@ -1,0 +1,54 @@
+class Solution(object):
+    def catMouseGame(self, graph):
+        """
+        :type graph: List[List[int]]
+        :rtype: int
+        """
+        MOUSE = 0
+        CAT = 1
+        MOUSE_WIN = 1
+        CAT_WIN = 2
+        DRAW = 0
+        
+        n = len(graph)
+        results = {}
+        for i in range(1, n):
+            results[(0, i, CAT)] = MOUSE_WIN
+            results[(0, i, MOUSE)] = MOUSE_WIN
+            results[(i, i, CAT)] = CAT_WIN
+            results[(i, i, MOUSE)] = CAT_WIN
+            
+        degree = {}
+        for mouse in range(1, n):
+            for cat in range(1, n):
+                degree[(mouse, cat, MOUSE)] = len(graph[mouse])
+                degree[(mouse, cat, CAT)] = len(graph[cat]) - (0 in graph[cat])
+                
+        from collections import deque
+        q = deque(list(results.keys()))
+        
+        while q:
+            mouse, cat, turn = q.popleft()
+            curResult = results[(mouse, cat, turn)]
+            
+            prevStates = []
+            if turn == MOUSE:
+                prevStates = [(mouse, prevCat, CAT) for prevCat in graph[cat]]
+            else:
+                prevStates = [(prevMouse, cat, MOUSE) for prevMouse in graph[mouse]]
+                
+            for prevState in prevStates:
+                if prevState in results:
+                    continue
+                prevMouse, prevCat, prevTurn = prevState
+                if prevCat == 0:
+                    continue
+                    
+                degree[prevState] -= 1
+                isMoverWinner = ((curResult == MOUSE_WIN and prevTurn == MOUSE) or
+                                 (curResult == CAT_WIN and prevTurn == CAT))
+                if isMoverWinner or degree[prevState] == 0:
+                    results[prevState] = curResult
+                    q.append(prevState)
+                    
+        return results.get((1, 2, MOUSE), DRAW)

@@ -1,0 +1,445 @@
+entry:
+  id: 814
+  title: binary-tree-pruning
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: treeNodeToArray(Solution().pruneTree({root}))
+    rust: TreeNode::tree_node_to_array(Solution::prune_tree({root}))
+    python3: tree_node_to_array(Solution().pruneTree({root}))
+    python2: tree_node_to_array(Solution().pruneTree({root}))
+    ruby: tree_node_to_array(prune_tree({root}))
+    java: TreeNode.treeNodeToArray(new Solution().pruneTree({root}))
+    csharp: TreeNode.TreeNodeToArray(new Solution().PruneTree({root}))
+    kotlin: treeNodeToArray(Solution().pruneTree({root}))
+    go: treeNodeToArray(pruneTree({root}))
+    dart: tree_node_to_array(Solution().pruneTree({root}))
+    swift: tree_node_to_array(Solution().pruneTree({root}))
+    typescript: treeNodeToArray(pruneTree({root}))
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: Checker().check(root, {result})
+    checker: |
+      class Checker:
+          def from_value(self, value):
+              if value is None:
+                  return None
+              if isinstance(value, dict):
+                  return {
+                      "val": value.get("val"),
+                      "left": self.from_value(value.get("left")),
+                      "right": self.from_value(value.get("right")),
+                  }
+              if isinstance(value, list):
+                  if not value:
+                      return None
+                  nodes = [None if v is None else {"val": v, "left": None, "right": None} for v in value]
+                  kids = nodes[1:]
+                  idx = 0
+                  for node in nodes:
+                      if node is not None:
+                          if idx < len(kids):
+                              node["left"] = kids[idx]
+                              idx += 1
+                          if idx < len(kids):
+                              node["right"] = kids[idx]
+                              idx += 1
+                  return nodes[0]
+              if hasattr(value, "val"):
+                  return {
+                      "val": value.val,
+                      "left": self.from_value(getattr(value, "left", None)),
+                      "right": self.from_value(getattr(value, "right", None)),
+                  }
+              return value
+
+          def prune(self, node):
+              if not node:
+                  return None
+              node["left"] = self.prune(node["left"])
+              node["right"] = self.prune(node["right"])
+              if node["val"] == 0 and node["left"] is None and node["right"] is None:
+                  return None
+              return node
+
+          def to_array(self, root):
+              if not root:
+                  return []
+              out = []
+              q = [root]
+              while q:
+                  node = q.pop(0)
+                  if node is None:
+                      out.append(None)
+                  else:
+                      out.append(node["val"])
+                      q.append(node["left"])
+                      q.append(node["right"])
+              while out and out[-1] is None:
+                  out.pop()
+              return out
+
+          def check(self, root, result):
+              return self.to_array(self.prune(self.from_value(root))) == self.to_array(self.from_value(result))
+seed: 814
+tests:
+  - name: example-1
+    in:
+      root:
+        - 1
+        - null
+        - 0
+        - 0
+        - 1
+  - name: example-2
+    in:
+      root:
+        - 1
+        - 0
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+  - name: example-3
+    in:
+      root:
+        - 1
+        - 1
+        - 0
+        - 1
+        - 1
+        - 0
+        - 1
+        - 0
+  - name: single-one
+    in:
+      root:
+        - 1
+  - name: single-zero
+    in:
+      root:
+        - 0
+  - name: left-zero-chain
+    in:
+      root:
+        - 0
+        - 0
+        - null
+        - 0
+  - name: right-zero-chain
+    in:
+      root:
+        - 0
+        - null
+        - 0
+        - null
+        - 0
+  - name: root-one-left-pruned
+    in:
+      root:
+        - 1
+        - 0
+        - null
+        - 0
+        - null
+        - 0
+  - name: root-one-right-pruned
+    in:
+      root:
+        - 1
+        - null
+        - 0
+        - null
+        - 0
+        - null
+        - 1
+  - name: balanced-all-ones
+    in:
+      root:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+  - name: balanced-all-zero
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+  - name: mixed-deep-left
+    in:
+      root:
+        - 0
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 1
+  - name: mixed-deep-right
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - 0
+        - 0
+        - null
+        - null
+        - null
+        - 1
+  - name: sparse-with-one-leaf
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - null
+        - null
+        - null
+        - 1
+  - name: deep-branched
+    in:
+      root:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+        - 0
+        - 0
+        - null
+        - null
+        - 1
+        - null
+        - null
+        - null
+        - 0
+        - 1
+  - name: all-zero-full-depth4
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+  - name: only-rightmost-one
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - null
+        - null
+        - null
+        - 0
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 1
+  - name: left-subtree-survives
+    in:
+      root:
+        - 1
+        - 0
+        - 0
+        - 1
+        - null
+        - 0
+        - 0
+  - name: right-subtree-survives
+    in:
+      root:
+        - 1
+        - 0
+        - 0
+        - null
+        - 1
+        - 0
+        - 0
+  - name: root-pruned-to-empty
+    in:
+      root:
+        - 0
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - 1
+  - name: zigzag-survival
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - 1
+        - null
+        - 1
+        - null
+        - 1
+  - name: top-one-with-zero-leaves
+    in:
+      root:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+  - name: single-right-path-one
+    in:
+      root:
+        - 1
+        - null
+        - 0
+        - null
+        - 1
+  - name: single-left-path-one
+    in:
+      root:
+        - 1
+        - 0
+        - null
+        - 1
+  - name: mixed-wide
+    in:
+      root:
+        - 0
+        - 1
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - null
+        - null
+        - null
+        - 1
+        - 0
+  - name: long-left-spine
+    in:
+      root:
+        - 1
+        - 0
+        - null
+        - 0
+        - null
+        - 1
+        - null
+        - 0
+  - name: right-heavy-survival
+    in:
+      root:
+        - 1
+        - null
+        - 1
+        - null
+        - 0
+        - null
+        - 1
+  - name: left-heavy-survival
+    in:
+      root:
+        - 1
+        - 1
+        - null
+        - 0
+        - null
+        - 1
+  - name: root-kept-one-leaf
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - null
+        - null
+        - null
+        - 1
+  - name: prune-both-sides
+    in:
+      root:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 0
+        - 1
+        - 0
+  - name: alternating-depth
+    in:
+      root:
+        - 0
+        - 1
+        - 0
+        - 0
+        - 1
+        - 0
+        - 1
+  - name: single-leaf-one-in-zero-tree
+    in:
+      root:
+        - 0
+        - 0
+        - 0
+        - null
+        - 1
+  - name: compact-survival
+    in:
+      root:
+        - 1
+        - 0
+        - 1
+        - 0
+        - 1
+  - name: zero-root-one-descendant
+    in:
+      root:
+        - 0
+        - null
+        - 1
+  - name: asymmetric-prune
+    in:
+      root:
+        - 1
+        - 0
+        - 1
+        - 0
+        - null
+        - 1
+        - null

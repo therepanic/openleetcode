@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<int> shortestAlternatingPaths(int n, vector<vector<int>>& redEdges, vector<vector<int>>& blueEdges) {
+        vector<int> ans(n, -1);
+        vector<vector<pair<int, int>>> graph(n); // (v, color): 1-red, 2-blue
+        queue<pair<int, int>> q; // (node, prevColor): 0-init, 1-red, 2-blue
+        q.push({0, 0});
+        
+        for (auto& edge : redEdges) {
+            graph[edge[0]].push_back({edge[1], 1});
+        }
+        for (auto& edge : blueEdges) {
+            graph[edge[0]].push_back({edge[1], 2});
+        }
+        
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto [u, prevColor] = q.front();
+                q.pop();
+                if (ans[u] == -1) {
+                    ans[u] = step;
+                }
+                for (auto& [v, edgeColor] : graph[u]) {
+                    if (v == -1 || edgeColor == prevColor) continue;
+                    q.push({v, edgeColor});
+                    v = -1;
+                }
+            }
+            step++;
+        }
+        return ans;
+    }
+};

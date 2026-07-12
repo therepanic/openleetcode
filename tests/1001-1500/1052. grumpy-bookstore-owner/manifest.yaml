@@ -1,0 +1,269 @@
+entry:
+  id: 1052
+  title: grumpy-bookstore-owner
+  params:
+    customers:
+      type: array
+      items:
+        type: int
+    grumpy:
+      type: array
+      items:
+        type: int
+    minutes:
+      type: int
+  call:
+    cpp: "Solution().maxSatisfied({customers}, {grumpy}, {minutes})"
+    rust: "Solution::max_satisfied({customers}, {grumpy}, {minutes})"
+    python3: "Solution().maxSatisfied({customers}, {grumpy}, {minutes})"
+    python2: "Solution().maxSatisfied({customers}, {grumpy}, {minutes})"
+    ruby: "max_satisfied({customers}, {grumpy}, {minutes})"
+    java: "new Solution().maxSatisfied({customers}, {grumpy}, {minutes})"
+    csharp: "new Solution().MaxSatisfied({customers}, {grumpy}, {minutes})"
+    kotlin: "Solution().maxSatisfied({customers}, {grumpy}, {minutes})"
+    go: "maxSatisfied({customers}, {grumpy}, {minutes})"
+    dart: "Solution().maxSatisfied({customers}, {grumpy}, {minutes})"
+    swift: "Solution().maxSatisfied({customers}, {grumpy}, {minutes})"
+    typescript: "maxSatisfied({customers}, {grumpy}, {minutes})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxSatisfied(customers, grumpy, minutes, {result})"
+    checker: |
+      class Checker:
+          def maxSatisfied(self, customers, grumpy, minutes, result):
+              base = sum(c for c, g in zip(customers, grumpy) if not g)
+              gain = sum(c for c, g in zip(customers[:minutes], grumpy[:minutes]) if g)
+              best = gain
+              cur = gain
+              n = len(customers)
+              for i in range(minutes, n):
+                  if grumpy[i]:
+                      cur += customers[i]
+                  if grumpy[i - minutes]:
+                      cur -= customers[i - minutes]
+                  if cur > best:
+                      best = cur
+              return result == base + best
+seed: 1052
+tests:
+  - name: ex1
+    in:
+      customers: [1, 0, 1, 2, 1, 1, 7, 5]
+      grumpy: [0, 1, 0, 1, 0, 1, 0, 1]
+      minutes: 3
+    out: 16
+  - name: ex2
+    in:
+      customers: [1]
+      grumpy: [0]
+      minutes: 1
+    out: 1
+  - name: all_satisfied
+    in:
+      customers: [2, 3, 4]
+      grumpy: [0, 0, 0]
+      minutes: 2
+    out: 9
+  - name: one_minute_gain
+    in:
+      customers: [4, 10, 10]
+      grumpy: [1, 0, 1]
+      minutes: 1
+    out: 20
+  - name: window_at_start
+    in:
+      customers: [5, 1, 3, 2]
+      grumpy: [1, 1, 0, 1]
+      minutes: 2
+    out: 9
+  - name: window_at_end
+    in:
+      customers: [3, 8, 2, 6]
+      grumpy: [0, 1, 1, 1]
+      minutes: 2
+    out: 13
+  - name: no_grumpy_gain
+    in:
+      customers: [9, 9, 9]
+      grumpy: [1, 1, 1]
+      minutes: 0
+    out: 0
+  - name: minutes_equals_n
+    in:
+      customers: [1, 2, 3, 4]
+      grumpy: [1, 1, 1, 1]
+      minutes: 4
+    out: 10
+  - name: alternating
+    in:
+      customers: [1, 2, 3, 4, 5, 6]
+      grumpy: [0, 1, 0, 1, 0, 1]
+      minutes: 2
+    out: 15
+  - name: all_grumpy_small_window
+    in:
+      customers: [3, 1, 4, 1, 5, 9]
+      grumpy: [1, 1, 1, 1, 1, 1]
+      minutes: 3
+    out: 15
+  - name: mixed_zeros
+    in:
+      customers: [0, 5, 0, 5, 0]
+      grumpy: [1, 0, 1, 0, 1]
+      minutes: 1
+    out: 10
+  - name: overlap_choice
+    in:
+      customers: [8, 2, 6, 4, 7]
+      grumpy: [1, 1, 0, 1, 1]
+      minutes: 2
+    out: 17
+  - name: single_grumpy
+    in:
+      customers: [7]
+      grumpy: [1]
+      minutes: 1
+    out: 7
+  - name: single_not_grumpy
+    in:
+      customers: [7]
+      grumpy: [0]
+      minutes: 1
+    out: 7
+  - name: short_window
+    in:
+      customers: [2, 2, 2, 2]
+      grumpy: [1, 0, 1, 0]
+      minutes: 1
+    out: 6
+  - name: long_window_middle
+    in:
+      customers: [10, 1, 10, 1, 10]
+      grumpy: [0, 1, 1, 1, 0]
+      minutes: 3
+    out: 32
+  - name: end_heavy
+    in:
+      customers: [1, 1, 1, 50, 50]
+      grumpy: [1, 1, 1, 1, 1]
+      minutes: 2
+    out: 100
+  - name: start_heavy
+    in:
+      customers: [50, 50, 1, 1, 1]
+      grumpy: [1, 1, 1, 1, 1]
+      minutes: 2
+    out: 100
+  - name: zero_customers
+    in:
+      customers: [0, 0, 0, 0]
+      grumpy: [1, 0, 1, 0]
+      minutes: 2
+    out: 0
+  - name: plateau
+    in:
+      customers: [4, 4, 4, 4, 4]
+      grumpy: [0, 1, 1, 1, 0]
+      minutes: 2
+    out: 16
+  - name: one_true_window
+    in:
+      customers: [6, 1, 6, 1, 6]
+      grumpy: [1, 0, 1, 0, 1]
+      minutes: 2
+    out: 8
+  - name: sparse_grumpy
+    in:
+      customers: [3, 2, 3, 2, 3, 2]
+      grumpy: [0, 1, 0, 1, 0, 1]
+      minutes: 3
+    out: 13
+  - name: window_one
+    in:
+      customers: [9, 1, 9, 1]
+      grumpy: [1, 1, 0, 1]
+      minutes: 1
+    out: 18
+  - name: all_grumpy_full_window
+    in:
+      customers: [1, 2, 3, 4, 5]
+      grumpy: [1, 1, 1, 1, 1]
+      minutes: 5
+    out: 15
+  - name: end_window_best
+    in:
+      customers: [1, 3, 5, 7, 9]
+      grumpy: [0, 1, 1, 1, 1]
+      minutes: 2
+    out: 17
+  - name: front_window_best
+    in:
+      customers: [9, 7, 5, 3, 1]
+      grumpy: [1, 1, 1, 1, 0]
+      minutes: 2
+    out: 17
+  - name: mixed_large_values
+    in:
+      customers: [100, 1, 100, 1, 100, 1]
+      grumpy: [0, 1, 1, 0, 1, 1]
+      minutes: 2
+    out: 202
+  - name: window_zero_grumpy
+    in:
+      customers: [2, 4, 6, 8]
+      grumpy: [0, 0, 0, 0]
+      minutes: 0
+    out: 20
+  - name: window_mid
+    in:
+      customers: [5, 4, 3, 2, 1]
+      grumpy: [1, 0, 1, 0, 1]
+      minutes: 2
+    out: 11
+  - name: alternating_dense
+    in:
+      customers: [1, 10, 1, 10, 1, 10, 1]
+      grumpy: [1, 0, 1, 0, 1, 0, 1]
+      minutes: 3
+    out: 32
+  - name: one_peak
+    in:
+      customers: [1, 1, 1, 100, 1, 1, 1]
+      grumpy: [1, 1, 1, 1, 1, 1, 1]
+      minutes: 2
+    out: 101
+  - name: two_peaks
+    in:
+      customers: [1, 50, 1, 50, 1]
+      grumpy: [1, 1, 1, 1, 1]
+      minutes: 2
+    out: 51
+  - name: longish
+    in:
+      customers: [3, 1, 4, 1, 5, 9, 2, 6]
+      grumpy: [0, 1, 0, 1, 0, 1, 0, 1]
+      minutes: 4
+    out: 29
+  - name: trailing_grumpy
+    in:
+      customers: [2, 2, 2, 2, 2, 2]
+      grumpy: [0, 0, 0, 1, 1, 1]
+      minutes: 3
+    out: 12
+  - name: leading_grumpy
+    in:
+      customers: [2, 2, 2, 2, 2, 2]
+      grumpy: [1, 1, 1, 0, 0, 0]
+      minutes: 3
+    out: 12
+  - name: mixed_case
+    in:
+      customers: [4, 1, 7, 1, 4, 1, 7, 1]
+      grumpy: [1, 0, 1, 0, 1, 0, 1, 0]
+      minutes: 2
+    out: 11

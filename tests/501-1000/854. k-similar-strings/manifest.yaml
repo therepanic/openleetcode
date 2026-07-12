@@ -1,0 +1,232 @@
+entry:
+  id: 854
+  title: k-similar-strings
+  params:
+    s1:
+      type: string
+    s2:
+      type: string
+  call:
+    cpp: Solution().kSimilarity({s1}, {s2})
+    rust: Solution::k_similarity({s1}, {s2})
+    python3: Solution().kSimilarity({s1}, {s2})
+    python2: Solution().kSimilarity({s1}, {s2})
+    ruby: k_similarity({s1}, {s2})
+    java: new Solution().kSimilarity({s1}, {s2})
+    csharp: new Solution().KSimilarity({s1}, {s2})
+    kotlin: Solution().kSimilarity({s1}, {s2})
+    go: kSimilarity({s1}, {s2})
+    dart: Solution().kSimilarity({s1}, {s2})
+    swift: Solution().kSimilarity({s1}, {s2})
+    typescript: kSimilarity({s1}, {s2})
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().kSimilarity(s1, s2, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def kSimilarity(self, s1, s2, result):
+              if not isinstance(result, int):
+                  return False
+              q = deque([s1])
+              seen = {s1}
+              ans = 0
+              while q:
+                  for _ in range(len(q)):
+                      s = q.popleft()
+                      if s == s2:
+                          return result == ans
+                      i = 0
+                      while s[i] == s2[i]:
+                          i += 1
+                      for j in range(i + 1, len(s)):
+                          if s[i] == s2[j] and s[j] != s2[j]:
+                              ns = s[:i] + s[j] + s[i + 1:j] + s[i] + s[j + 1:]
+                              if ns not in seen:
+                                  seen.add(ns)
+                                  q.append(ns)
+                  ans += 1
+              return False
+seed: 854
+tests:
+  - name: ex1
+    in:
+      s1: ab
+      s2: ba
+    out: 1
+  - name: ex2
+    in:
+      s1: abc
+      s2: bca
+    out: 2
+  - name: same_string
+    in:
+      s1: abcdef
+      s2: abcdef
+    out: 0
+  - name: swap_two
+    in:
+      s1: abac
+      s2: baca
+    out: 2
+  - name: swap_two_more
+    in:
+      s1: aabc
+      s2: abca
+    out: 2
+  - name: two_swaps_longer
+    in:
+      s1: abcdef
+      s2: abcfde
+    out: 2
+  - name: reverse_pairs
+    in:
+      s1: aabbcc
+      s2: ccbbaa
+    out: 2
+  - name: simple_two
+    in:
+      s1: abca
+      s2: caba
+    out: 2
+  - name: three_swaps
+    in:
+      s1: abcabc
+      s2: acbbca
+    out: 3
+  - name: double_pair
+    in:
+      s1: aabb
+      s2: bbaa
+    out: 2
+  - name: three_swaps_6
+    in:
+      s1: aaabbb
+      s2: bbbaaa
+    out: 3
+  - name: rotate_five
+    in:
+      s1: abcde
+      s2: eabcd
+    out: 4
+  - name: reverse_six
+    in:
+      s1: abcdef
+      s2: fedcba
+    out: 3
+  - name: four_swaps_6
+    in:
+      s1: abcfed
+      s2: defabc
+    out: 4
+  - name: three_swaps_repeat
+    in:
+      s1: aaabcc
+      s2: ccaaba
+    out: 3
+  - name: three_swaps_alt
+    in:
+      s1: abcdef
+      s2: badcfe
+    out: 3
+  - name: reverse_six_alt
+    in:
+      s1: abdcfe
+      s2: fedcba
+    out: 3
+  - name: four_swaps_8
+    in:
+      s1: aabbccdd
+      s2: ddccbbaa
+    out: 4
+  - name: pair_mix
+    in:
+      s1: abcdefab
+      s2: bacedfab
+    out: 2
+  - name: four_swaps_8_alt
+    in:
+      s1: abcddcba
+      s2: dcbaabcd
+    out: 4
+  - name: four_swaps_10
+    in:
+      s1: aabbccddee
+      s2: eeddccbbaa
+    out: 4
+  - name: two_swaps_6_alt
+    in:
+      s1: abccef
+      s2: fceabc
+    out: 4
+  - name: six_swaps_12
+    in:
+      s1: abcdeffedcba
+      s2: fedcbaabcdef
+    out: 6
+  - name: three_swaps_6_alt
+    in:
+      s1: aabbcc
+      s2: bcaabc
+    out: 3
+  - name: three_swaps_6_more
+    in:
+      s1: ababcc
+      s2: cabcab
+    out: 3
+  - name: one_swap_6
+    in:
+      s1: abccba
+      s2: abcabc
+    out: 1
+  - name: four_swaps_6_more
+    in:
+      s1: abccef
+      s2: fceabc
+    out: 4
+  - name: two_swaps_6_more
+    in:
+      s1: aabbcc
+      s2: abcabc
+    out: 2
+  - name: three_swaps_6_again
+    in:
+      s1: abcdef
+      s2: bcadfe
+    out: 3
+  - name: three_swaps_6_again2
+    in:
+      s1: aaabbbccc
+      s2: ccbbaabca
+    out: 4
+  - name: two_swaps_9
+    in:
+      s1: abcabcabc
+      s2: cbacbaabc
+    out: 2
+  - name: reverse_seven
+    in:
+      s1: abcdefg
+      s2: gfedcba
+    out: 3
+  - name: five_swaps_8
+    in:
+      s1: aabcdeff
+      s2: fefdcbaa
+    out: 5
+  - name: extra_two
+    in:
+      s1: abca
+      s2: baac
+    out: 2
+  - name: extra_three
+    in:
+      s1: aabbcc
+      s2: baccab
+    out: 3
