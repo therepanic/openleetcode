@@ -593,6 +593,8 @@ parseGeneratedRendered schema rendered =
       case Types.tpaItems schema of
         Just items@(Types.TestParams Types.TPTChar _) ->
           Array $ V.fromList $ map (parseGeneratedRendered items) (splitTopLevelItems rendered)
+        Just items@(Types.TestParams Types.TPTString _) ->
+          Array $ V.fromList $ map (parseGeneratedRendered items) (splitTopLevelItems rendered)
         Just items@(Types.TestParams Types.TPTArray _) ->
           Array $
             V.fromList $
