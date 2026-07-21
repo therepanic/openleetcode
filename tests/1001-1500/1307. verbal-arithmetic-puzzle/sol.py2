@@ -1,0 +1,57 @@
+class Solution(object):
+    def isSolvable(self, words, result):
+        """
+        :type words: List[str]
+        :type result: str
+        :rtype: bool
+        """
+        zeroes = set()
+        m = 0
+        for word in words:
+            if len(word) > 1:
+                zeroes.add(word[0])
+            m = max(m, len(word))
+        if m > len(result):
+            return False
+        d = {i: -1 for word in words + [result] for i in word}
+        words = [word[::-1] for word in words]
+        result = result[::-1]
+        R = len(result)
+        N = len(words)
+        visited = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+        def rec(wi, ri, rem):
+            if ri == R:
+                return rem == 0 and (len(result) == 1 or d[result[R-1]] != 0)
+            if wi == N:
+                if d[result[ri]] != -1:
+                    if d[result[ri]] != rem % 10:
+                        return False
+                    else:
+                        return rec(0, ri+1, rem//10)
+                elif rem % 10 in visited:
+                    val = rem % 10
+                    visited.remove(val)
+                    d[result[ri]] = val
+                    ret = rec(wi, ri, rem)
+                    d[result[ri]] = -1
+                    visited.add(val)
+                    if ret:
+                        return True
+                return False
+            if len(words[wi]) <= ri:
+                return rec(wi+1, ri, rem)
+            if d[words[wi][ri]] != -1:
+                return rec(wi+1, ri, rem + d[words[wi][ri]])
+            for val in range(10):
+                if val in visited and (val != 0 or words[wi][ri] not in zeroes):
+                    visited.remove(val)
+                    d[words[wi][ri]] = val
+                    ret = rec(wi+1, ri, rem + val)
+                    d[words[wi][ri]] = -1
+                    visited.add(val)
+                    if ret:
+                        return True
+            return False
+
+        return rec(0, 0, 0)

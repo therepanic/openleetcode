@@ -1,0 +1,250 @@
+entry:
+  id: 1423
+  title: "maximum-points-you-can-obtain-from-cards"
+  params:
+    cardPoints:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxScore({cardPoints}, {k})"
+    rust: "Solution::max_score({cardPoints}, {k})"
+    python3: "Solution().maxScore({cardPoints}, {k})"
+    python2: "Solution().maxScore({cardPoints}, {k})"
+    ruby: "max_score({cardPoints}, {k})"
+    java: "new Solution().maxScore({cardPoints}, {k})"
+    csharp: "new Solution().MaxScore({cardPoints}, {k})"
+    kotlin: "Solution().maxScore({cardPoints}, {k})"
+    go: "maxScore({cardPoints}, {k})"
+    dart: "Solution().maxScore({cardPoints}, {k})"
+    swift: "Solution().maxScore({cardPoints}, {k})"
+    typescript: "maxScore({cardPoints}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().maxScore(cardPoints, k, {result})"
+    checker: |
+      class Checker:
+          def maxScore(self, cards, k, result):
+              if not isinstance(cards, list) or not isinstance(k, int):
+                  return False
+              if not cards or not (1 <= k <= len(cards)):
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) or x < 1 or x > 10000 for x in cards):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              prefix = [0]
+              for value in cards:
+                  prefix.append(prefix[-1] + value)
+              n = len(cards)
+              best = 0
+              for left_count in range(k + 1):
+                  right_count = k - left_count
+                  left_sum = prefix[left_count]
+                  right_start = n - right_count
+                  right_sum = prefix[n] - prefix[right_start]
+                  best = max(best, left_sum + right_sum)
+              return result == best
+seed: 1423
+tests:
+  - name: ex1
+    in:
+      cardPoints: [1, 2, 3, 4, 5, 6, 1]
+      k: 3
+    out: 12
+  - name: ex2
+    in:
+      cardPoints: [2, 2, 2]
+      k: 2
+    out: 4
+  - name: ex3
+    in:
+      cardPoints: [9, 7, 7, 9, 7, 7, 9]
+      k: 7
+    out: 55
+  - name: one
+    in:
+      cardPoints: [5]
+      k: 1
+    out: 5
+  - name: take_all
+    in:
+      cardPoints: [1, 3, 5, 7]
+      k: 4
+  - name: take_left
+    in:
+      cardPoints: [10, 1, 1, 1]
+      k: 1
+    out: 10
+  - name: take_right
+    in:
+      cardPoints: [1, 1, 1, 10]
+      k: 1
+    out: 10
+  - name: equal
+    in:
+      cardPoints: [4, 4, 4, 4, 4]
+      k: 3
+  - name: alternating
+    in:
+      cardPoints: [1, 100, 1, 100, 1, 100]
+      k: 3
+  - name: increasing
+    in:
+      cardPoints: [1, 2, 3, 4, 5, 6]
+      k: 2
+  - name: decreasing
+    in:
+      cardPoints: [6, 5, 4, 3, 2, 1]
+      k: 2
+  - name: k_one
+    in:
+      cardPoints: [7, 2, 9, 1, 8]
+      k: 1
+  - name: k_two
+    in:
+      cardPoints: [7, 2, 9, 1, 8]
+      k: 2
+  - name: k_four
+    in:
+      cardPoints: [7, 2, 9, 1, 8]
+      k: 4
+  - name: zeros_not_allowed
+    in:
+      cardPoints: [1, 2, 1, 2, 1]
+      k: 3
+  - name: high_values
+    in:
+      cardPoints: [10000, 9999, 9998]
+      k: 2
+  - name: low_values
+    in:
+      cardPoints: [1, 1, 1, 1, 1, 1]
+      k: 4
+  - name: mixed_a
+    in:
+      cardPoints: [8, 1, 9, 2, 7, 3]
+      k: 3
+  - name: mixed_b
+    in:
+      cardPoints: [5, 10, 2, 8, 1, 9]
+      k: 2
+  - name: mixed_c
+    in:
+      cardPoints: [4, 4, 10, 1, 1, 10]
+      k: 4
+  - name: mixed_d
+    in:
+      cardPoints: [2, 20, 3, 19, 4, 18]
+      k: 3
+  - name: mixed_e
+    in:
+      cardPoints: [11, 2, 13, 4, 15, 6, 17]
+      k: 5
+  - name: seven_cards
+    in:
+      cardPoints: [3, 8, 2, 9, 4, 7, 1]
+      k: 4
+  - name: eight_cards
+    in:
+      cardPoints: [10, 1, 10, 1, 10, 1, 10, 1]
+      k: 5
+  - name: nine_cards
+    in:
+      cardPoints: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      k: 6
+  - name: ten_cards
+    in:
+      cardPoints: [9, 1, 8, 2, 7, 3, 6, 4, 5, 10]
+      k: 5
+  - name: eleven_cards
+    in:
+      cardPoints: [5, 5, 5, 1, 1, 1, 9, 9, 9, 2, 2]
+      k: 7
+  - name: twelve_cards
+    in:
+      cardPoints: [12, 1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6]
+      k: 6
+  - name: large_uniform
+    in:
+      cardPoints: [100, 100, 100, 100, 100, 100, 100, 100]
+      k: 3
+  - name: large_edges
+    in:
+      cardPoints: [1000, 1, 1, 1, 1, 1, 1000]
+      k: 2
+  - name: boundary_max
+    in:
+      cardPoints: [10000, 10000, 10000, 10000, 10000]
+      k: 5
+  - name: boundary_min
+    in:
+      cardPoints: [1, 2]
+      k: 1
+  - name: patterned_a
+    in:
+      cardPoints: [6, 4, 2, 8, 10, 1, 3, 5]
+      k: 4
+  - name: patterned_b
+    in:
+      cardPoints: [13, 1, 12, 2, 11, 3, 10, 4, 9]
+      k: 5
+  - name: patterned_c
+    in:
+      cardPoints: [20, 1, 19, 2, 18, 3, 17, 4, 16, 5]
+      k: 7
+  - name: final_case
+    in:
+      cardPoints: [14, 7, 21, 3, 18, 5, 12]
+      k: 3
+  - name: generated_small_boundary
+    in:
+      cardPoints:
+        gen: "array"
+        len: 17
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        elemType: "int"
+      k: 9
+  - name: generated_medium_window
+    in:
+      cardPoints:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        elemType: "int"
+      k: 1
+  - name: generated_max_take_all
+    in:
+      cardPoints:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        elemType: "int"
+      k: 100000
+  - name: generated_max_small_take
+    in:
+      cardPoints:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        elemType: "int"
+      k: 50000

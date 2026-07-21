@@ -1,0 +1,32 @@
+class Solution(object):
+    def dieSimulator(self, n, rollMax):
+        """
+        :type n: int
+        :type rollMax: List[int]
+        :rtype: int
+        """
+        MOD = 10**9 + 7
+        faces = 6
+
+        f = [[0] * faces for _ in range(n)]
+        s = [0] * n
+
+        for j in range(faces):
+            f[0][j] = 1
+        s[0] = faces
+
+        for i in range(1, n):
+            for j in range(faces):
+                max_repeat = rollMax[j]
+                res = s[i - 1]
+
+                if i > max_repeat:
+                    res -= s[i - max_repeat - 1] - f[i - max_repeat - 1][j]
+                elif i == max_repeat:
+                    res -= 1
+
+                f[i][j] = res % MOD
+
+            s[i] = sum(f[i]) % MOD
+
+        return s[n - 1]

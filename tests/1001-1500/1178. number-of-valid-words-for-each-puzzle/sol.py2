@@ -1,0 +1,27 @@
+class Solution(object):
+    def findNumOfValidWords(self, words, puzzles):
+        def get_mask(s):
+            mask = 0
+            for ch in s:
+                mask |= 1 << (ord(ch) - 97)
+            return mask
+        
+        word_count = {}
+        for w in words:
+            mask = get_mask(w)
+            word_count[mask] = word_count.get(mask, 0) + 1
+        
+        res = []
+        for p in puzzles:
+            first_mask = 1 << (ord(p[0]) - 97)
+            puzzle_mask = get_mask(p)
+            sub = puzzle_mask
+            count = 0
+            while True:
+                if sub & first_mask:
+                    count += word_count.get(sub, 0)
+                if sub == 0:
+                    break
+                sub = (sub - 1) & puzzle_mask
+            res.append(count)
+        return res

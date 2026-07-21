@@ -1,0 +1,297 @@
+entry:
+  id: 1335
+  title: "minimum-difficulty-of-a-job-schedule"
+  params:
+    jobDifficulty:
+      type: array
+      items:
+        type: int
+    d:
+      type: int
+  call:
+    cpp: "Solution().minDifficulty({jobDifficulty}, {d})"
+    rust: "Solution::min_difficulty({jobDifficulty}, {d})"
+    python3: "Solution().minDifficulty({jobDifficulty}, {d})"
+    python2: "Solution().minDifficulty({jobDifficulty}, {d})"
+    ruby: "min_difficulty({jobDifficulty}, {d})"
+    java: "new Solution().minDifficulty({jobDifficulty}, {d})"
+    csharp: "new Solution().MinDifficulty({jobDifficulty}, {d})"
+    kotlin: "Solution().minDifficulty({jobDifficulty}, {d})"
+    go: "minDifficulty({jobDifficulty}, {d})"
+    dart: "Solution().minDifficulty({jobDifficulty}, {d})"
+    swift: "Solution().minDifficulty({jobDifficulty}, {d})"
+    typescript: "minDifficulty({jobDifficulty}, {d})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 700
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().minDifficulty(jobDifficulty, d, {result})"
+    checker: |
+      class Checker:
+          def minDifficulty(self, jobs, days, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(jobs)
+              if days > n:
+                  return result == -1
+              previous = [10**9] * (n + 1)
+              previous[0] = 0
+              for day in range(1, days + 1):
+                  current = [10**9] * (n + 1)
+                  for end in range(day, n + 1):
+                      maximum = 0
+                      for start in range(end - 1, day - 2, -1):
+                          maximum = max(maximum, jobs[start])
+                          current[end] = min(current[end], previous[start] + maximum)
+                  previous = current
+              return result == previous[n]
+seed: 1335
+tests:
+  - name: "example_one_decreasing_two_days"
+    in:
+      jobDifficulty: [6, 5, 4, 3, 2, 1]
+      d: 2
+    out: 7
+  - name: "example_two_too_many_days"
+    in:
+      jobDifficulty: [9, 9, 9]
+      d: 4
+    out: -1
+  - name: "example_three_one_per_day"
+    in:
+      jobDifficulty: [1, 1, 1]
+      d: 3
+    out: 3
+  - name: "single_zero_job"
+    in:
+      jobDifficulty: [0]
+      d: 1
+    out: 0
+  - name: "one_day_uses_global_maximum"
+    in:
+      jobDifficulty: [6, 1, 8, 2, 5]
+      d: 1
+    out: 8
+  - name: "every_job_its_own_day"
+    in:
+      jobDifficulty: [6, 5, 4]
+      d: 3
+    out: 15
+  - name: "one_day_more_than_jobs"
+    in:
+      jobDifficulty: [6, 5, 4]
+      d: 4
+    out: -1
+  - name: "all_equal_split_three_days"
+    in:
+      jobDifficulty: [5, 5, 5, 5, 5]
+      d: 3
+    out: 15
+  - name: "increasing_two_days"
+    in:
+      jobDifficulty: [1, 2, 3, 4, 5]
+      d: 2
+    out: 6
+  - name: "decreasing_two_days"
+    in:
+      jobDifficulty: [5, 4, 3, 2, 1]
+      d: 2
+    out: 6
+  - name: "all_zero_two_days"
+    in:
+      jobDifficulty: [0, 0, 0, 0]
+      d: 2
+    out: 0
+  - name: "near_maximum_values"
+    in:
+      jobDifficulty: [1000, 999, 998, 997]
+      d: 2
+    out: 1997
+  - name: "alternating_highs"
+    in:
+      jobDifficulty: [1, 100, 2, 99, 3, 98]
+      d: 3
+    out: 199
+  - name: "separated_peaks"
+    in:
+      jobDifficulty: [10, 1, 10, 1, 10]
+      d: 3
+    out: 21
+  - name: "separated_valleys"
+    in:
+      jobDifficulty: [1, 10, 1, 10, 1]
+      d: 3
+    out: 12
+  - name: "four_jobs_two_days"
+    in:
+      jobDifficulty: [7, 1, 5, 2]
+      d: 2
+    out: 9
+  - name: "four_jobs_three_days"
+    in:
+      jobDifficulty: [7, 1, 5, 2]
+      d: 3
+    out: 13
+  - name: "five_jobs_four_days"
+    in:
+      jobDifficulty: [8, 2, 6, 1, 7]
+      d: 4
+    out: 22
+  - name: "late_large_job_two_days"
+    in:
+      jobDifficulty: [1, 1, 1, 100]
+      d: 2
+    out: 101
+  - name: "early_large_job_two_days"
+    in:
+      jobDifficulty: [100, 1, 1, 1]
+      d: 2
+    out: 101
+  - name: "late_large_job_three_days"
+    in:
+      jobDifficulty: [1, 1, 1, 100]
+      d: 3
+    out: 102
+  - name: "repeated_peak_boundaries"
+    in:
+      jobDifficulty: [2, 8, 2, 8, 2, 8]
+      d: 3
+    out: 18
+  - name: "mixed_partition_a"
+    in:
+      jobDifficulty: [3, 7, 2, 9, 4, 6, 1]
+      d: 3
+    out: 13
+  - name: "mixed_partition_b"
+    in:
+      jobDifficulty: [10, 2, 8, 4, 6, 1, 9]
+      d: 4
+    out: 26
+  - name: "mixed_partition_c"
+    in:
+      jobDifficulty: [4, 4, 10, 1, 6, 6]
+      d: 2
+    out: 14
+  - name: "mixed_partition_d"
+    in:
+      jobDifficulty: [1, 9, 3, 7, 5]
+      d: 4
+    out: 20
+  - name: "mixed_partition_e"
+    in:
+      jobDifficulty: [9, 1, 8, 2, 7, 3]
+      d: 2
+    out: 12
+  - name: "small_value_alternation"
+    in:
+      jobDifficulty: [1, 2, 1, 2, 1, 2, 1]
+      d: 3
+    out: 4
+  - name: "all_maximum_values"
+    in:
+      jobDifficulty: [1000, 1000, 1000, 1000]
+      d: 2
+    out: 2000
+  - name: "six_equal_jobs_five_days"
+    in:
+      jobDifficulty: [1, 1, 1, 1, 1, 1]
+      d: 5
+    out: 5
+  - name: "seven_jobs_two_days"
+    in:
+      jobDifficulty: [7, 3, 8, 2, 5, 1, 6]
+      d: 2
+    out: 14
+  - name: "eight_jobs_four_days"
+    in:
+      jobDifficulty: [2, 9, 1, 8, 3, 7, 4, 6]
+      d: 4
+    out: 20
+  - name: "nine_decreasing_jobs_five_days"
+    in:
+      jobDifficulty: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+      d: 5
+    out: 19
+  - name: "ten_job_zigzag_five_days"
+    in:
+      jobDifficulty: [1, 10, 2, 9, 3, 8, 4, 7, 5, 6]
+      d: 5
+    out: 28
+  - name: "ten_jobs_all_separate"
+    in:
+      jobDifficulty: [4, 1, 9, 2, 8, 3, 7, 5, 6, 10]
+      d: 10
+    out: 55
+  - name: "generated_max_length_one_day"
+    seed: 133501
+    in:
+      jobDifficulty:
+        gen: "array"
+        len: 300
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      d: 1
+  - name: "generated_max_length_two_days"
+    seed: 133502
+    in:
+      jobDifficulty:
+        gen: "array"
+        len: 300
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      d: 2
+  - name: "generated_max_length_five_days"
+    seed: 133503
+    in:
+      jobDifficulty:
+        gen: "array"
+        len: 300
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      d: 5
+  - name: "generated_max_length_nine_days"
+    seed: 133504
+    in:
+      jobDifficulty:
+        gen: "array"
+        len: 300
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      d: 9
+  - name: "generated_max_length_ten_days"
+    seed: 133505
+    in:
+      jobDifficulty:
+        gen: "array"
+        len: 300
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      d: 10

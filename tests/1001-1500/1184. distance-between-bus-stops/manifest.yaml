@@ -1,0 +1,355 @@
+entry:
+  id: 1184
+  title: "distance-between-bus-stops"
+  params:
+    distance:
+      type: array
+      items:
+        type: int
+    destination:
+      type: int
+    start_value:
+      type: int
+  call:
+    cpp: "Solution().distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    rust: "Solution::distance_between_bus_stops({distance}, {start_value}, {destination})"
+    python3: "Solution().distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    python2: "Solution().distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    ruby: "distance_between_bus_stops({distance}, {start_value}, {destination})"
+    java: "new Solution().distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    csharp: "new Solution().DistanceBetweenBusStops({distance}, {start_value}, {destination})"
+    kotlin: "Solution().distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    go: "distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    dart: "Solution().distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    swift: "Solution().distanceBetweenBusStops({distance}, {start_value}, {destination})"
+    typescript: "distanceBetweenBusStops({distance}, {start_value}, {destination})"
+judge:
+  type: exact
+limits:
+  time_ms: 300
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().distanceBetweenBusStops(distance, start_value, destination, {result})"
+    checker: |
+      class Checker:
+          def distanceBetweenBusStops(self, distance, start_value, destination, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              lo, hi = sorted((start_value, destination))
+              direct = sum(distance[lo:hi])
+              return result == min(direct, sum(distance) - direct)
+seed: 1184
+tests:
+  - name: example_adjacent
+    in:
+      distance: [1, 2, 3, 4]
+      start_value: 0
+      destination: 1
+    out: 1
+  - name: example_two_edges
+    in:
+      distance: [1, 2, 3, 4]
+      start_value: 0
+      destination: 2
+    out: 3
+  - name: example_wrap_shorter
+    in:
+      distance: [1, 2, 3, 4]
+      start_value: 0
+      destination: 3
+    out: 4
+  - name: minimum_two_stop_zero_edge
+    in:
+      distance: [0, 10000]
+      start_value: 0
+      destination: 1
+    out: 0
+  - name: short_direct_path_in_larger_ring
+    in:
+      distance: [3, 1, 4, 1, 5]
+      start_value: 1
+      destination: 3
+    out: 5
+  - name: all_zero_edges
+    in:
+      distance: [0, 0, 0, 0]
+      start_value: 1
+      destination: 3
+    out: 0
+  - name: zero_on_direct_path
+    in:
+      distance: [5, 0, 0, 9]
+      start_value: 1
+      destination: 3
+    out: 0
+  - name: zero_on_wrap_path
+    in:
+      distance: [0, 8, 7, 0]
+      start_value: 1
+      destination: 3
+    out: 0
+  - name: two_stops_first_direction
+    in:
+      distance: [7, 11]
+      start_value: 0
+      destination: 1
+    out: 7
+  - name: two_stops_reverse_order
+    in:
+      distance: [7, 11]
+      start_value: 1
+      destination: 0
+    out: 7
+  - name: two_stops_equal_routes
+    in:
+      distance: [9, 9]
+      start_value: 0
+      destination: 1
+    out: 9
+  - name: reverse_order_non_adjacent
+    in:
+      distance: [3, 1, 4, 1, 5, 9]
+      start_value: 5
+      destination: 1
+    out: 11
+  - name: forward_non_adjacent
+    in:
+      distance: [3, 1, 4, 1, 5, 9]
+      start_value: 1
+      destination: 5
+    out: 11
+  - name: adjacent_direct_is_longer
+    in:
+      distance: [100, 1, 1, 1]
+      start_value: 0
+      destination: 1
+    out: 3
+  - name: last_to_first_uses_wrap_edge
+    in:
+      distance: [6, 7, 8, 2]
+      start_value: 3
+      destination: 0
+    out: 2
+  - name: endpoint_pair_uses_wrap
+    in:
+      distance: [9, 8, 7, 6, 5, 4]
+      start_value: 0
+      destination: 5
+    out: 4
+  - name: equal_half_circle
+    in:
+      distance: [2, 2, 2, 2]
+      start_value: 0
+      destination: 2
+    out: 4
+  - name: odd_uniform_ring
+    in:
+      distance: [1, 1, 1, 1, 1, 1, 1]
+      start_value: 1
+      destination: 4
+    out: 3
+  - name: alternating_weights_direct
+    in:
+      distance: [1, 50, 2, 50, 3]
+      start_value: 1
+      destination: 4
+    out: 4
+  - name: alternating_weights_wrap
+    in:
+      distance: [1, 50, 2, 50, 3]
+      start_value: 0
+      destination: 3
+    out: 53
+  - name: high_values_direct
+    in:
+      distance: [10000, 10000, 1, 10000]
+      start_value: 0
+      destination: 2
+    out: 10001
+  - name: high_values_wrap
+    in:
+      distance: [10000, 1, 10000, 1, 10000]
+      start_value: 1
+      destination: 4
+    out: 10002
+  - name: direct_path_one_edge
+    in:
+      distance: [9, 8, 7, 6, 5, 4]
+      start_value: 2
+      destination: 3
+    out: 7
+  - name: direct_path_three_edges
+    in:
+      distance: [5, 10, 15, 20, 25, 30]
+      start_value: 1
+      destination: 4
+    out: 45
+  - name: wrap_path_three_edges
+    in:
+      distance: [5, 10, 15, 20, 25, 30]
+      start_value: 2
+      destination: 5
+    out: 45
+  - name: asymmetric_reverse_order
+    in:
+      distance: [7, 3, 8, 2, 6, 4, 5]
+      start_value: 6
+      destination: 2
+    out: 15
+  - name: asymmetric_forward_order
+    in:
+      distance: [7, 3, 8, 2, 6, 4, 5]
+      start_value: 2
+      destination: 6
+    out: 15
+  - name: shortest_route_contains_several_edges
+    in:
+      distance: [40, 1, 1, 1, 40, 40]
+      start_value: 1
+      destination: 4
+    out: 3
+  - name: direct_route_contains_several_edges
+    in:
+      distance: [40, 1, 1, 1, 40, 40]
+      start_value: 4
+      destination: 1
+    out: 3
+  - name: leading_and_trailing_zeroes
+    in:
+      distance: [0, 4, 6, 0, 10]
+      start_value: 4
+      destination: 2
+    out: 6
+  - name: maximum_sum_with_equal_routes
+    in:
+      distance: [10000, 10000, 10000, 10000]
+      start_value: 0
+      destination: 2
+    out: 20000
+  - name: minimum_nonzero_total
+    in:
+      distance: [1, 0, 0]
+      start_value: 0
+      destination: 2
+    out: 0
+  - name: start_after_destination_wrap_shorter
+    in:
+      distance: [4, 6, 8, 10, 12]
+      start_value: 4
+      destination: 1
+    out: 16
+  - name: start_after_destination_direct_shorter
+    in:
+      distance: [11, 2, 9, 4, 7, 3]
+      start_value: 4
+      destination: 0
+    out: 10
+  - name: generated_maximum_length_a
+    seed: 118401
+    in:
+      distance:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 10000
+      start_value:
+        gen: int
+        min: 0
+        max: 9999
+      destination:
+        gen: int
+        min: 0
+        max: 9999
+  - name: generated_maximum_length_b
+    seed: 118402
+    in:
+      distance:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 10000
+      start_value:
+        gen: int
+        min: 0
+        max: 9999
+      destination:
+        gen: int
+        min: 0
+        max: 9999
+  - name: generated_maximum_length_c
+    seed: 118403
+    in:
+      distance:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 10000
+      start_value:
+        gen: int
+        min: 0
+        max: 9999
+      destination:
+        gen: int
+        min: 0
+        max: 9999
+  - name: generated_maximum_length_d
+    seed: 118404
+    in:
+      distance:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 10000
+      start_value:
+        gen: int
+        min: 0
+        max: 9999
+      destination:
+        gen: int
+        min: 0
+        max: 9999
+  - name: generated_maximum_length_e
+    seed: 118405
+    in:
+      distance:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 10000
+      start_value:
+        gen: int
+        min: 0
+        max: 9999
+      destination:
+        gen: int
+        min: 0
+        max: 9999
+  - name: generated_maximum_length_f
+    seed: 118406
+    in:
+      distance:
+        gen: array
+        len: 10000
+        of:
+          gen: int
+          min: 0
+          max: 10000
+      start_value:
+        gen: int
+        min: 0
+        max: 9999
+      destination:
+        gen: int
+        min: 0
+        max: 9999

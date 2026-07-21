@@ -1,0 +1,535 @@
+entry:
+  id: 1463
+  title: cherry-pickup-ii
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().cherryPickup({grid})"
+    rust: "Solution::cherry_pickup({grid})"
+    python3: "Solution().cherryPickup({grid})"
+    python2: "Solution().cherryPickup({grid})"
+    ruby: "cherry_pickup({grid})"
+    java: "new Solution().cherryPickup({grid})"
+    csharp: "new Solution().CherryPickup({grid})"
+    kotlin: "Solution().cherryPickup({grid})"
+    go: "cherryPickup({grid})"
+    dart: "Solution().cherryPickup({grid})"
+    swift: "Solution().cherryPickup({grid})"
+    typescript: "cherryPickup({grid})"
+judge:
+  type: exact
+limits:
+  time_ms: 4000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().cherryPickup(grid, {result})"
+    checker: |
+      class Checker:
+          def cherryPickup(self, grid, result):
+              if type(result) is not int or not grid or not grid[0]:
+                  return False
+              rows, cols = len(grid), len(grid[0])
+              dp = {(0, cols - 1): grid[0][0] + grid[0][cols - 1]}
+              for row in range(1, rows):
+                  nxt = {}
+                  for (left, right), score in dp.items():
+                      for nl in (left - 1, left, left + 1):
+                          for nr in (right - 1, right, right + 1):
+                              if 0 <= nl < cols and 0 <= nr < cols:
+                                  gain = grid[row][nl]
+                                  if nr != nl:
+                                      gain += grid[row][nr]
+                                  key = (min(nl, nr), max(nl, nr))
+                                  nxt[key] = max(nxt.get(key, -1), score + gain)
+                  dp = nxt
+              return result == max(dp.values())
+seed: 1463
+tests:
+  - name: prompt-example-one
+    in:
+      grid:
+        elemType: int
+        value:
+          - [3, 1, 1]
+          - [2, 5, 1]
+          - [1, 5, 5]
+          - [2, 1, 1]
+    out: 24
+
+  - name: prompt-example-two
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 0, 0, 1]
+          - [2, 0, 0, 0, 0, 3, 0]
+          - [2, 0, 9, 0, 0, 0, 0]
+          - [0, 3, 0, 5, 4, 0, 0]
+          - [1, 0, 2, 3, 0, 0, 6]
+    out: 28
+
+  - name: minimum-two-by-two
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2]
+          - [3, 4]
+    out: 10
+
+  - name: minimum-all-zero
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0]
+          - [0, 0]
+    out: 0
+
+  - name: minimum-high-values
+    in:
+      grid:
+        elemType: int
+        value:
+          - [100, 99]
+          - [98, 97]
+    out: 394
+
+  - name: two-by-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [5, 1, 5]
+          - [1, 9, 1]
+    out: 20
+
+  - name: two-by-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2, 3, 4]
+          - [4, 3, 2, 1]
+    out: 11
+
+  - name: two-by-five-center
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 100, 0, 0]
+          - [0, 100, 0, 100, 0]
+    out: 200
+
+  - name: three-by-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+          - [7, 8, 9]
+    out: 32
+
+  - name: three-by-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 0, 0, 9]
+          - [0, 8, 8, 0]
+          - [7, 0, 0, 7]
+    out: 48
+
+  - name: three-by-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 1]
+          - [0, 50, 0, 50, 0]
+          - [1, 0, 100, 0, 1]
+    out: 203
+
+  - name: three-by-seven
+    in:
+      grid:
+        elemType: int
+        value:
+          - [3, 1, 4, 1, 5, 9, 2]
+          - [6, 5, 3, 5, 8, 9, 7]
+          - [9, 3, 2, 3, 8, 4, 6]
+    out: 37
+
+  - name: four-by-two
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+    out: 20
+
+  - name: four-by-four-diagonal
+    in:
+      grid:
+        elemType: int
+        value:
+          - [10, 0, 0, 10]
+          - [0, 20, 20, 0]
+          - [0, 30, 30, 0]
+          - [40, 0, 0, 40]
+    out: 200
+
+  - name: four-by-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [2, 7, 1, 8, 2]
+          - [8, 1, 8, 2, 8]
+          - [1, 8, 2, 8, 1]
+          - [8, 2, 8, 1, 8]
+    out: 52
+
+  - name: four-by-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 1, 0, 1, 0, 1]
+          - [1, 0, 1, 0, 1, 0]
+          - [0, 10, 0, 10, 0, 10]
+          - [10, 0, 10, 0, 10, 0]
+    out: 43
+
+  - name: five-by-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 1, 9]
+          - [1, 9, 1]
+          - [9, 1, 9]
+          - [1, 9, 1]
+          - [9, 1, 9]
+    out: 74
+
+  - name: five-by-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [4, 0, 0, 4]
+          - [0, 3, 3, 0]
+          - [0, 2, 2, 0]
+          - [0, 1, 1, 0]
+          - [5, 5, 5, 5]
+    out: 30
+
+  - name: five-by-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5]
+          - [9, 9, 0, 9, 9]
+          - [5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5]
+    out: 45
+
+  - name: five-by-seven
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [0, 2, 0, 2, 0, 2, 0]
+          - [3, 0, 3, 0, 3, 0, 3]
+          - [0, 4, 0, 4, 0, 4, 0]
+          - [5, 5, 5, 5, 5, 5, 5]
+    out: 30
+
+  - name: six-by-two
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2]
+          - [2, 1]
+          - [3, 4]
+          - [4, 3]
+          - [5, 6]
+          - [6, 5]
+    out: 42
+
+  - name: six-by-three-spikes
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 100]
+          - [0, 90, 0]
+          - [80, 0, 0]
+          - [0, 70, 0]
+          - [0, 0, 60]
+          - [50, 0, 0]
+    out: 450
+
+  - name: six-by-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [6, 0, 0, 6]
+          - [0, 5, 5, 0]
+          - [4, 0, 0, 4]
+          - [0, 3, 3, 0]
+          - [2, 0, 0, 2]
+          - [0, 1, 1, 0]
+    out: 42
+
+  - name: six-by-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2, 3, 4, 5, 6]
+          - [6, 5, 4, 3, 2, 1]
+          - [2, 4, 6, 8, 10, 12]
+          - [12, 10, 8, 6, 4, 2]
+          - [3, 6, 9, 12, 15, 18]
+          - [18, 15, 12, 9, 6, 3]
+    out: 95
+
+  - name: seven-by-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [10, 0, 10]
+          - [0, 20, 0]
+          - [10, 0, 10]
+          - [0, 30, 0]
+          - [10, 0, 10]
+          - [0, 40, 0]
+          - [10, 0, 10]
+    out: 170
+
+  - name: seven-by-seven-zeros
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+    out: 0
+
+  - name: seven-by-seven-high
+    in:
+      grid:
+        elemType: int
+        value:
+          - [100, 100, 100, 100, 100, 100, 100]
+          - [99, 99, 99, 99, 99, 99, 99]
+          - [98, 98, 98, 98, 98, 98, 98]
+          - [97, 97, 97, 97, 97, 97, 97]
+          - [96, 96, 96, 96, 96, 96, 96]
+          - [95, 95, 95, 95, 95, 95, 95]
+          - [94, 94, 94, 94, 94, 94, 94]
+    out: 1358
+
+  - name: eight-by-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 3, 5, 7]
+          - [2, 4, 6, 8]
+          - [9, 7, 5, 3]
+          - [8, 6, 4, 2]
+          - [1, 0, 1, 0]
+          - [0, 1, 0, 1]
+          - [10, 20, 30, 40]
+          - [40, 30, 20, 10]
+    out: 172
+
+  - name: eight-by-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 5, 0, 5, 0]
+          - [5, 0, 5, 0, 5]
+          - [10, 0, 0, 0, 10]
+          - [0, 20, 0, 20, 0]
+          - [30, 0, 30, 0, 30]
+          - [0, 40, 0, 40, 0]
+          - [50, 50, 50, 50, 50]
+          - [1, 2, 3, 4, 5]
+    out: 319
+
+  - name: nine-by-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [3, 1, 4, 1, 5, 9]
+          - [2, 6, 5, 3, 5, 8]
+          - [9, 7, 9, 3, 2, 3]
+          - [8, 4, 6, 2, 6, 4]
+          - [3, 3, 8, 3, 2, 7]
+          - [9, 5, 0, 5, 0, 5]
+          - [8, 9, 7, 9, 3, 2]
+          - [3, 8, 4, 6, 2, 6]
+          - [4, 3, 3, 8, 3, 2]
+    out: 118
+
+  - name: ten-by-three-alternating
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 1]
+          - [0, 2, 0]
+          - [3, 0, 3]
+          - [0, 4, 0]
+          - [5, 0, 5]
+          - [0, 6, 0]
+          - [7, 0, 7]
+          - [0, 8, 0]
+          - [9, 0, 9]
+          - [0, 10, 0]
+    out: 80
+
+  - name: ten-by-ten-pattern
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+          - [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+          - [20, 18, 16, 14, 12, 10, 8, 6, 4, 2]
+          - [3, 6, 9, 12, 15, 18, 21, 24, 27, 30]
+          - [30, 27, 24, 21, 18, 15, 12, 9, 6, 3]
+          - [4, 8, 12, 16, 20, 24, 28, 32, 36, 40]
+          - [40, 36, 32, 28, 24, 20, 16, 12, 8, 4]
+          - [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+          - [50, 45, 40, 35, 30, 25, 20, 15, 10, 5]
+    out: 359
+
+  - name: extra-two-by-three-low
+    in:
+      grid:
+        elemType: int
+        value:
+          - [2, 0, 4]
+          - [5, 1, 3]
+    out: 14
+
+  - name: extra-three-by-four-peak
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1]
+          - [0, 100, 100, 0]
+          - [1, 1, 1, 1]
+    out: 204
+
+  - name: extra-four-by-three-corners
+    in:
+      grid:
+        elemType: int
+        value:
+          - [9, 0, 9]
+          - [0, 8, 0]
+          - [7, 0, 7]
+          - [0, 6, 0]
+    out: 46
+
+  - name: stress-70x70-low
+    seed: 146301
+    in:
+      grid:
+        gen: array
+        len: 70
+        of:
+          gen: array
+          len: 70
+          of:
+            gen: int
+            min: 0
+            max: 1
+
+  - name: stress-70x70-mid
+    seed: 146302
+    in:
+      grid:
+        gen: array
+        len: 70
+        of:
+          gen: array
+          len: 70
+          of:
+            gen: int
+            min: 0
+            max: 100
+
+  - name: stress-70x70-high
+    seed: 146303
+    in:
+      grid:
+        gen: array
+        len: 70
+        of:
+          gen: array
+          len: 70
+          of:
+            gen: int
+            min: 99
+            max: 100
+
+  - name: stress-70x2-boundary
+    seed: 146304
+    in:
+      grid:
+        gen: array
+        len: 70
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 100
+
+  - name: stress-2x70-boundary
+    seed: 146305
+    in:
+      grid:
+        gen: array
+        len: 2
+        of:
+          gen: array
+          len: 70
+          of:
+            gen: int
+            min: 0
+            max: 100

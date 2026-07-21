@@ -1,0 +1,505 @@
+entry:
+  id: 1162
+  title: as-far-from-land-as-possible
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxDistance({grid})"
+    rust: "Solution::max_distance({grid})"
+    python3: "Solution().maxDistance({grid})"
+    python2: "Solution().maxDistance({grid})"
+    ruby: "max_distance({grid})"
+    java: "new Solution().maxDistance({grid})"
+    csharp: "new Solution().MaxDistance({grid})"
+    kotlin: "Solution().maxDistance({grid})"
+    go: "maxDistance({grid})"
+    dart: "Solution().maxDistance({grid})"
+    swift: "Solution().maxDistance({grid})"
+    typescript: "maxDistance({grid})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxDistance(grid, {result})"
+    checker: |
+      class Checker:
+          def maxDistance(self, grid, result):
+              if type(result) is not int or not isinstance(grid, list):
+                  return False
+              n = len(grid)
+              if n < 1 or any(not isinstance(row, list) or len(row) != n for row in grid):
+                  return False
+              if any(cell not in (0, 1) for row in grid for cell in row):
+                  return False
+              land_count = sum(cell for row in grid for cell in row)
+              if land_count == 0 or land_count == n * n:
+                  return result == -1
+              inf = 2 * n
+              dist = [[0 if grid[r][c] else inf for c in range(n)] for r in range(n)]
+              for r in range(n):
+                  for c in range(n):
+                      if r:
+                          dist[r][c] = min(dist[r][c], dist[r - 1][c] + 1)
+                      if c:
+                          dist[r][c] = min(dist[r][c], dist[r][c - 1] + 1)
+              for r in range(n - 1, -1, -1):
+                  for c in range(n - 1, -1, -1):
+                      if r + 1 < n:
+                          dist[r][c] = min(dist[r][c], dist[r + 1][c] + 1)
+                      if c + 1 < n:
+                          dist[r][c] = min(dist[r][c], dist[r][c + 1] + 1)
+              return result == max(dist[r][c] for r in range(n) for c in range(n) if grid[r][c] == 0)
+seed: 1162
+tests:
+  - name: example-corners
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 1]
+          - [0, 0, 0]
+          - [1, 0, 1]
+    out: 2
+  - name: example-single-corner
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0]
+          - [0, 0, 0]
+          - [0, 0, 0]
+    out: 4
+  - name: one-cell-land
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1]
+    out: -1
+  - name: one-cell-water
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0]
+    out: -1
+  - name: all-land-two
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1]
+          - [1, 1]
+    out: -1
+  - name: all-water-two
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0]
+          - [0, 0]
+    out: -1
+  - name: opposite-corners-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0]
+          - [0, 0, 0]
+          - [0, 0, 1]
+    out: 2
+  - name: center-land-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 0]
+          - [0, 1, 0]
+          - [0, 0, 0]
+    out: 2
+  - name: center-water-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1]
+          - [1, 0, 1]
+          - [1, 1, 1]
+    out: 1
+  - name: top-row-land-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1]
+          - [0, 0, 0, 0]
+          - [0, 0, 0, 0]
+          - [0, 0, 0, 0]
+    out: 3
+  - name: diagonal-land-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0]
+          - [0, 1, 0, 0]
+          - [0, 0, 1, 0]
+          - [0, 0, 0, 1]
+    out: 3
+  - name: border-land-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1, 1]
+          - [1, 0, 0, 0, 1]
+          - [1, 0, 0, 0, 1]
+          - [1, 0, 0, 0, 1]
+          - [1, 1, 1, 1, 1]
+    out: 2
+  - name: checkerboard-three
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 1]
+          - [0, 1, 0]
+          - [1, 0, 1]
+    out: 1
+  - name: left-column-four
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0]
+          - [1, 0, 0, 0]
+          - [1, 0, 0, 0]
+          - [1, 0, 0, 0]
+    out: 3
+  - name: isolated-center-and-corners
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 1]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 1, 0, 0]
+          - [0, 0, 0, 0, 0]
+          - [1, 0, 0, 0, 1]
+    out: 2
+  - name: water-diamond-pocket
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1, 1]
+          - [1, 1, 0, 1, 1]
+          - [1, 0, 0, 0, 1]
+          - [1, 1, 0, 1, 1]
+          - [1, 1, 1, 1, 1]
+    out: 2
+  - name: diagonal-corners-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 1]
+    out: 4
+  - name: four-corners-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 1]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0]
+          - [1, 0, 0, 0, 1]
+    out: 4
+  - name: central-block-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 1, 1, 0, 0]
+          - [0, 0, 1, 1, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+    out: 4
+  - name: one-corner-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+    out: 10
+  - name: opposite-corners-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 1]
+    out: 5
+  - name: horizontal-band-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [1, 1, 1, 1, 1, 1]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+    out: 3
+  - name: vertical-band-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+    out: 3
+  - name: cross-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+          - [1, 1, 1, 1, 1, 1]
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+          - [0, 0, 1, 0, 0, 0]
+    out: 3
+  - name: four-corners-six
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 0, 1]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0]
+          - [1, 0, 0, 0, 0, 1]
+    out: 4
+  - name: dense-triangular-pocket
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1, 1]
+          - [1, 1, 1, 0, 1]
+          - [1, 1, 0, 0, 1]
+          - [1, 0, 0, 0, 1]
+          - [1, 1, 1, 1, 1]
+    out: 1
+  - name: checkerboard-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 1, 0, 1]
+          - [0, 1, 0, 1, 0]
+          - [1, 0, 1, 0, 1]
+          - [0, 1, 0, 1, 0]
+          - [1, 0, 1, 0, 1]
+    out: 1
+  - name: ring-seven
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [1, 0, 0, 0, 0, 0, 1]
+          - [1, 0, 0, 0, 0, 0, 1]
+          - [1, 0, 0, 0, 0, 0, 1]
+          - [1, 0, 0, 0, 0, 0, 1]
+          - [1, 0, 0, 0, 0, 0, 1]
+          - [1, 1, 1, 1, 1, 1, 1]
+    out: 3
+  - name: one-corner-seven
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+    out: 12
+  - name: off-center-cluster-seven
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 1, 1, 0, 0, 0, 0]
+          - [0, 1, 1, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+    out: 8
+  - name: alternating-rows-seven
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [1, 1, 1, 1, 1, 1, 0]
+    out: 1
+  - name: offset-single-land-five
+    in:
+      grid:
+        elemType: int
+        value:
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 1, 0]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0]
+    out: 6
+  - name: four-corners-eight
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 0, 0, 0, 0, 0, 1]
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0]
+          - [1, 0, 0, 0, 0, 0, 0, 1]
+    out: 6
+  - name: checkerboard-eight
+    in:
+      grid:
+        elemType: int
+        value:
+          - [1, 0, 1, 0, 1, 0, 1, 0]
+          - [0, 1, 0, 1, 0, 1, 0, 1]
+          - [1, 0, 1, 0, 1, 0, 1, 0]
+          - [0, 1, 0, 1, 0, 1, 0, 1]
+          - [1, 0, 1, 0, 1, 0, 1, 0]
+          - [0, 1, 0, 1, 0, 1, 0, 1]
+          - [1, 0, 1, 0, 1, 0, 1, 0]
+          - [0, 1, 0, 1, 0, 1, 0, 1]
+    out: 1
+  - name: generated-100-seed-17
+    seed: 17
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 0
+            max: 1
+  - name: generated-100-seed-29
+    seed: 29
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 0
+            max: 1
+  - name: generated-100-seed-43
+    seed: 43
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 0
+            max: 1
+  - name: generated-100-seed-61
+    seed: 61
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 0
+            max: 1
+  - name: generated-100-seed-79
+    seed: 79
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 0
+            max: 1
+  - name: generated-100-seed-97
+    seed: 97
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 0
+            max: 1

@@ -1,0 +1,282 @@
+entry:
+  id: 1278
+  title: palindrome-partitioning-iii
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().palindromePartition({s}, {k})"
+    rust: "Solution::palindrome_partition({s}, {k})"
+    python3: "Solution().palindromePartition({s}, {k})"
+    python2: "Solution().palindromePartition({s}, {k})"
+    ruby: "palindrome_partition({s}, {k})"
+    java: "new Solution().palindromePartition({s}, {k})"
+    csharp: "new Solution().PalindromePartition({s}, {k})"
+    kotlin: "Solution().palindromePartition({s}, {k})"
+    go: "palindromePartition({s}, {k})"
+    dart: "Solution().palindromePartition({s}, {k})"
+    swift: "Solution().palindromePartition({s}, {k})"
+    typescript: "palindromePartition({s}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().palindromePartition(s, k, {result})"
+    checker: |
+      class Checker:
+          def palindromePartition(self, s, k, result):
+              n = len(s)
+              changes = [[0] * n for _ in range(n)]
+              for length in range(2, n + 1):
+                  for left in range(n - length + 1):
+                      right = left + length - 1
+                      changes[left][right] = changes[left + 1][right - 1] + (s[left] != s[right]) if length > 2 else (s[left] != s[right])
+              best = [[n + 1] * (n + 1) for _ in range(k + 1)]
+              best[0][0] = 0
+              for parts in range(1, k + 1):
+                  for end in range(parts, n + 1):
+                      best[parts][end] = min(best[parts - 1][split] + changes[split][end - 1] for split in range(parts - 1, end))
+              return result == best[k][n]
+seed: 1278
+tests:
+  - name: ex1
+    in:
+      s: abc
+      k: 2
+    out: 1
+  - name: ex2
+    in:
+      s: aabbc
+      k: 3
+    out: 0
+  - name: ex3
+    in:
+      s: leetcode
+      k: 8
+    out: 0
+  - name: one
+    in:
+      s: a
+      k: 1
+    out: 0
+  - name: ab_one
+    in:
+      s: ab
+      k: 1
+    out: 1
+  - name: ab_each
+    in:
+      s: ab
+      k: 2
+    out: 0
+  - name: aa
+    in:
+      s: aa
+      k: 1
+    out: 0
+  - name: abc_one
+    in:
+      s: abc
+      k: 1
+    out: 1
+  - name: abcd_one
+    in:
+      s: abcd
+      k: 1
+    out: 2
+  - name: abcd_two
+    in:
+      s: abcd
+      k: 2
+    out: 1
+  - name: abba_one
+    in:
+      s: abba
+      k: 1
+    out: 0
+  - name: abba_two
+    in:
+      s: abba
+      k: 2
+    out: 1
+  - name: abcba_one
+    in:
+      s: abcba
+      k: 1
+    out: 0
+  - name: abcba_two
+    in:
+      s: abcba
+      k: 2
+    out: 2
+  - name: uniform
+    in:
+      s: aaaaaa
+      k: 3
+    out: 0
+  - name: ready_pairs
+    in:
+      s: aabbaa
+      k: 3
+    out: 0
+  - name: mixed_parts
+    in:
+      s: aabccb
+      k: 3
+    out: 0
+  - name: racecar_two
+    in:
+      s: racecar
+      k: 2
+    out: 3
+  - name: racecar_three
+    in:
+      s: racecar
+      k: 3
+    out: 0
+  - name: three_palindromes
+    in:
+      s: noonabbad
+      k: 3
+    out: 0
+  - name: coding
+    in:
+      s: coding
+      k: 2
+    out: 2
+  - name: banana_one
+    in:
+      s: banana
+      k: 1
+    out: 3
+  - name: banana_two
+    in:
+      s: banana
+      k: 2
+    out: 0
+  - name: banana_three
+    in:
+      s: banana
+      k: 3
+    out: 1
+  - name: ten_distinct
+    in:
+      s: abcdefghij
+      k: 2
+    out: 4
+  - name: all_mismatch
+    in:
+      s: azbycxdwev
+      k: 1
+    out: 5
+  - name: repeated_abc
+    in:
+      s: abcabc
+      k: 2
+    out: 2
+  - name: cbbd
+    in:
+      s: cbbd
+      k: 2
+    out: 1
+  - name: known_hard
+    in:
+      s: aacabdkacaa
+      k: 3
+    out: 1
+  - name: leetcode_three
+    in:
+      s: leetcode
+      k: 3
+    out: 2
+  - name: overlap
+    in:
+      s: abcbaabc
+      k: 3
+    out: 0
+  - name: six_pairs
+    in:
+      s: aabbccddeeff
+      k: 6
+    out: 0
+  - name: alternating
+    in:
+      s: abababab
+      k: 3
+    out: 1
+  - name: generated_max_length_broad_k
+    seed: 127801
+    in:
+      s:
+        gen: str
+        len: 100
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      k:
+        gen: int
+        min: 1
+        max: 100
+  - name: generated_max_length_low_k
+    seed: 127802
+    in:
+      s:
+        gen: str
+        len: 100
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      k:
+        gen: int
+        min: 1
+        max: 10
+  - name: generated_max_length_high_k
+    seed: 127803
+    in:
+      s:
+        gen: str
+        len: 100
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      k:
+        gen: int
+        min: 90
+        max: 100
+  - name: generated_max_length_mid_k
+    seed: 127804
+    in:
+      s:
+        gen: str
+        len: 100
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      k:
+        gen: int
+        min: 40
+        max: 60
+  - name: generated_max_length_small_alphabet
+    seed: 127805
+    in:
+      s:
+        gen: str
+        len: 100
+        alphabet: "abc"
+      k:
+        gen: int
+        min: 2
+        max: 99
+  - name: large_palindrome
+    in:
+      s: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcba
+      k: 1
+    out: 0
+  - name: generated_max_length_binary
+    seed: 127806
+    in:
+      s:
+        gen: str
+        len: 100
+        alphabet: "ab"
+      k:
+        gen: int
+        min: 1
+        max: 100

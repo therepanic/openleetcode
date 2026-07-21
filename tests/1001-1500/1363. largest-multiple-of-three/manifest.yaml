@@ -1,0 +1,239 @@
+entry:
+  id: 1363
+  title: "largest-multiple-of-three"
+  params:
+    digits:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().largestMultipleOfThree({digits})"
+    rust: "Solution::largest_multiple_of_three({digits})"
+    python3: "Solution().largestMultipleOfThree({digits})"
+    python2: "Solution().largestMultipleOfThree({digits})"
+    ruby: "largest_multiple_of_three({digits})"
+    java: "new Solution().largestMultipleOfThree({digits})"
+    csharp: "new Solution().LargestMultipleOfThree({digits})"
+    kotlin: "Solution().largestMultipleOfThree({digits})"
+    go: "largestMultipleOfThree({digits})"
+    dart: "Solution().largestMultipleOfThree({digits})"
+    swift: "Solution().largestMultipleOfThree({digits})"
+    typescript: "largestMultipleOfThree({digits})"
+judge:
+  type: exact
+limits:
+  time_ms: 800
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().largestMultipleOfThree(digits, {result})"
+    checker: |
+      class Checker:
+          def largestMultipleOfThree(self, digits, result):
+              if not isinstance(result, str):
+                  return False
+              if result != '0' and result.startswith('0'):
+                  return False
+              if any(char < '0' or char > '9' for char in result):
+                  return False
+              available = [0] * 10
+              used = [0] * 10
+              for digit in digits:
+                  available[digit] += 1
+              for char in result:
+                  used[ord(char) - ord('0')] += 1
+              if any(used[digit] > available[digit] for digit in range(10)):
+                  return False
+              if sum(digit * used[digit] for digit in range(10)) % 3 != 0:
+                  return False
+
+              counts = available[:]
+              remainder = sum(digit * counts[digit] for digit in range(10)) % 3
+              def remove(group, amount):
+                  for digit in group:
+                      take = min(amount, counts[digit])
+                      counts[digit] -= take
+                      amount -= take
+                  return amount == 0
+              if remainder == 1:
+                  if not remove((1, 4, 7), 1):
+                      remove((2, 5, 8), 2)
+              elif remainder == 2:
+                  if not remove((2, 5, 8), 1):
+                      remove((1, 4, 7), 2)
+              expected = ''.join(str(digit) * counts[digit] for digit in range(9, -1, -1))
+              if expected.startswith('0'):
+                  expected = '0'
+              return result == expected
+seed: 1363
+tests:
+  - name: example_1
+    in:
+      digits: [8, 1, 9]
+  - name: example_2
+    in:
+      digits: [8, 6, 7, 1, 0]
+  - name: example_3
+    in:
+      digits: [1]
+  - name: single_zero
+    in:
+      digits: [0]
+  - name: all_zeros
+    in:
+      digits: [0, 0, 0, 0]
+  - name: single_divisible_digit
+    in:
+      digits: [9]
+  - name: single_remainder_two
+    in:
+      digits: [8]
+  - name: only_two_remainder_one_digits
+    in:
+      digits: [1, 4]
+  - name: only_three_remainder_one_digits
+    in:
+      digits: [1, 4, 7]
+  - name: only_three_remainder_two_digits
+    in:
+      digits: [2, 5, 8]
+  - name: remove_smallest_remainder_one
+    in:
+      digits: [9, 8, 4, 1]
+  - name: remove_smallest_remainder_two
+    in:
+      digits: [9, 7, 5, 2]
+  - name: remove_two_remainder_two_digits
+    in:
+      digits: [8, 5, 9]
+  - name: remove_two_remainder_one_digits
+    in:
+      digits: [7, 4, 9]
+  - name: preserve_zero_suffix
+    in:
+      digits: [0, 0, 1, 2, 8]
+  - name: zero_after_removal
+    in:
+      digits: [0, 1]
+  - name: high_digits_need_low_removal
+    in:
+      digits: [9, 9, 8, 8, 1]
+  - name: prefer_one_over_two_removals
+    in:
+      digits: [8, 5, 4, 1, 0]
+  - name: prefer_one_remainder_two_removal
+    in:
+      digits: [8, 7, 4, 2, 0]
+  - name: all_digit_kinds
+    in:
+      digits: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: descending_with_duplicate_high
+    in:
+      digits: [9, 9, 8, 8, 7, 7, 6, 5, 4, 3, 2, 1, 0]
+  - name: repeated_mixed_remainder
+    in:
+      digits: [1, 1, 1, 2, 2, 2, 4, 4, 5, 5, 8, 8]
+  - name: divisible_digits_only
+    in:
+      digits: [3, 6, 9, 0, 3, 6, 9, 0]
+  - name: remove_middle_remainder_one
+    in:
+      digits: [9, 8, 7, 6, 5, 4, 3]
+  - name: remove_middle_remainder_two
+    in:
+      digits: [8, 7, 6, 5, 4, 3, 2]
+  - name: many_low_digits
+    in:
+      digits: [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3]
+  - name: repeated_nines_and_ones
+    in:
+      digits: [9, 9, 9, 1, 1, 1, 1]
+  - name: repeated_eights_and_twos
+    in:
+      digits: [8, 8, 8, 2, 2, 2, 2]
+  - name: no_divisible_subset
+    in:
+      digits: [1, 1, 2]
+  - name: smallest_nonempty_after_removal
+    in:
+      digits: [2, 2]
+  - name: zero_and_two_remainder_classes
+    in:
+      digits: [0, 2, 2, 5]
+  - name: long_static_balanced
+    in:
+      digits: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  - name: long_static_remove_two
+    in:
+      digits: [9, 9, 8, 8, 8, 7, 7, 5, 5, 4, 4, 2, 2, 1, 0]
+  - name: only_zero_and_one
+    in:
+      digits: [0, 0, 1, 1]
+  - name: only_zero_and_two
+    in:
+      digits: [0, 0, 2, 2]
+  - name: generated_small
+    seed: 1364
+    in:
+      digits:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated_medium
+    seed: 1365
+    in:
+      digits:
+        gen: "array"
+        len: 250
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated_large_random
+    seed: 1366
+    in:
+      digits:
+        gen: "array"
+        len: 5000
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated_maximum_random
+    seed: 1367
+    in:
+      digits:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated_maximum_nonzero
+    seed: 1368
+    in:
+      digits:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: "int"

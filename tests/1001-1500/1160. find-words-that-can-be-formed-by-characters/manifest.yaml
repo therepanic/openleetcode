@@ -1,0 +1,320 @@
+entry:
+  id: 1160
+  title: "find-words-that-can-be-formed-by-characters"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+    chars:
+      type: string
+  call:
+    cpp: "Solution().countCharacters({words}, {chars})"
+    rust: "Solution::count_characters({words}, {chars})"
+    python3: "Solution().countCharacters({words}, {chars})"
+    python2: "Solution().countCharacters({words}, {chars})"
+    ruby: "count_characters({words}, {chars})"
+    java: "new Solution().countCharacters({words}, {chars})"
+    csharp: "new Solution().CountCharacters({words}, {chars})"
+    kotlin: "Solution().countCharacters({words}, {chars})"
+    go: "countCharacters({words}, {chars})"
+    dart: "Solution().countCharacters({words}, {chars})"
+    swift: "Solution().countCharacters({words}, {chars})"
+    typescript: "countCharacters({words}, {chars})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().countCharacters(words, chars, {result})"
+    checker: |
+      class Checker:
+          def countCharacters(self, words, chars, result):
+              available = {}
+              for c in chars:
+                  available[c] = available.get(c, 0) + 1
+              expected = 0
+              for word in words:
+                  needed = {}
+                  for c in word:
+                      needed[c] = needed.get(c, 0) + 1
+                  if all(needed[c] <= available.get(c, 0) for c in needed):
+                      expected += len(word)
+              return result == expected
+
+seed: 1160
+
+tests:
+  - name: "example-one"
+    in:
+      words:
+        - cat
+        - bt
+        - hat
+        - tree
+      chars: "atach"
+    out: 6
+  - name: "example-two"
+    in:
+      words: ["hello", "world", "leetcode"]
+      chars: "welldonehoneyr"
+    out: 10
+  - name: "one-letter-match"
+    in:
+      words: ["a"]
+      chars: "a"
+    out: 1
+  - name: "one-letter-miss"
+    in:
+      words: ["z"]
+      chars: "a"
+    out: 0
+  - name: "all-letters-available"
+    in:
+      words: ["abc", "cab", "bca"]
+      chars: "abc"
+    out: 9
+  - name: "repeated-letter-exact"
+    in:
+      words: ["aaa", "aa", "aaaa"]
+      chars: "aaa"
+    out: 5
+  - name: "repeated-letter-shortage"
+    in:
+      words: ["aaa", "aaaa", "a"]
+      chars: "aa"
+    out: 1
+  - name: "duplicates-independent"
+    in:
+      words: ["ab", "ab", "ab", "ba"]
+      chars: "ab"
+    out: 8
+  - name: "no-word-possible"
+    in:
+      words: ["x", "yy", "zzz"]
+      chars: "abcdefghijklmnopqrstuvw"
+    out: 0
+  - name: "every-word-impossible"
+    in:
+      words: ["dog", "cat", "bird"]
+      chars: "eeeeeeee"
+    out: 0
+  - name: "mixed-single-letters"
+    in:
+      words: ["a", "b", "c", "d", "e"]
+      chars: "ace"
+    out: 3
+  - name: "case-sensitive-lowercase"
+    in:
+      words: ["hello", "he", "ll", "o"]
+      chars: "hello"
+    out: 10
+  - name: "exact-long-word"
+    in:
+      words: ["abcdefghijklmnopqrst"]
+      chars: "abcdefghijklmnopqrst"
+    out: 20
+  - name: "long-word-one-short"
+    in:
+      words: ["abcdefghijklmnopqrst"]
+      chars: "abcdefghijklmnopqrsx"
+    out: 0
+  - name: "many-vowels"
+    in:
+      words: ["book", "cook", "look", "bookkeeper"]
+      chars: "ookbcl"
+    out: 12
+  - name: "interleaved-repeats"
+    in:
+      words: ["aabb", "abab", "baba", "aaab"]
+      chars: "aabb"
+    out: 12
+  - name: "word-order-irrelevant"
+    in:
+      words: ["zoo", "no", "one", "zero"]
+      chars: "zeroon"
+    out: 12
+  - name: "single-char-budget"
+    in:
+      words: ["aaaaa", "b", "aa"]
+      chars: "aab"
+    out: 3
+  - name: "alphabet-end"
+    in:
+      words: ["xyz", "zyx", "xxy"]
+      chars: "xyz"
+    out: 6
+  - name: "all-alphabet"
+    in:
+      words: ["abcdefghijklmnopqrstuvwxyz", "abc", "zzz"]
+      chars: "abcdefghijklmnopqrstuvwxyz"
+    out: 29
+  - name: "partial-alphabet"
+    in:
+      words: ["abc", "def", "gh", "ijkl"]
+      chars: "abcdefghi"
+    out: 8
+  - name: "overlapping-needs"
+    in:
+      words: ["apple", "pear", "grape", "papaya"]
+      chars: "applegr"
+    out: 14
+  - name: "long-repeated-a"
+    in:
+      words: ["aaaaaaaaaa", "aaaaaaaaa", "aaaaaaaaaaa"]
+      chars: "aaaaaaaaaa"
+    out: 19
+  - name: "mixed-lengths"
+    in:
+      words: ["a", "ab", "abc", "abcd", "abcde", "abcdef"]
+      chars: "abcde"
+    out: 15
+  - name: "palindromes"
+    in:
+      words: ["aba", "abba", "abcba", "aaaa"]
+      chars: "aabbaa"
+    out: 11
+  - name: "disjoint-words"
+    in:
+      words: ["abc", "def", "ghi", "jkl"]
+      chars: "abcdefghijkl"
+    out: 12
+  - name: "one-missing-repeat"
+    in:
+      words: ["letter", "tree", "tee", "rel"]
+      chars: "letter"
+    out: 16
+  - name: "large-character-budget"
+    in:
+      words: ["abcdefghij", "jihgfedcba", "aaaaabbbbb", "ccccccccccc"]
+      chars: "aabbccddeeffgghhiijj"
+    out: 20
+  - name: "many-identical-words"
+    in:
+      words: ["code", "code", "code", "code", "codec"]
+      chars: "code"
+    out: 16
+  - name: "rare-letter-failures"
+    in:
+      words: ["quick", "brown", "fox", "jumps", "lazy", "dog"]
+      chars: "thequickbrownfox"
+    out: 13
+  - name: "maximum-single-word-exact"
+    in:
+      words:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        ]
+      chars: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 100
+  - name: "maximum-single-word-one-missing"
+    in:
+      words:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+        ]
+      chars: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 0
+  - name: "character-budget-boundaries"
+    in:
+      words:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ]
+      chars: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: 200
+  - name: "independent-long-word-reuse"
+    in:
+      words:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ]
+      chars: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: 1000
+  - name: "per-letter-frequency-boundaries"
+    in:
+      words: ["aabbbc", "aabbc", "abbbc", "aabb", "cc"]
+      chars: "aabbbc"
+    out: 20
+  - name: "generated-single"
+    in:
+      words:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 100
+          alphabet: "a"
+      chars:
+        gen: "str"
+        len: 100
+        alphabet: "a"
+  - name: "generated-two-letter-maximum"
+    in:
+      words:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 100
+          alphabet: "ab"
+      chars:
+        gen: "str"
+        len: 100
+        alphabet: "ab"
+  - name: "generated-four-letter-near-maximum"
+    in:
+      words:
+        gen: "array"
+        len: 950
+        of:
+          gen: "str"
+          len: 99
+          alphabet: "abcd"
+      chars:
+        gen: "str"
+        len: 100
+        alphabet: "abcd"
+  - name: "generated-full-alphabet-maximum"
+    in:
+      words:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 100
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+      chars:
+        gen: "str"
+        len: 100
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated-five-letter-maximum"
+    in:
+      words:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 100
+          alphabet: "vwxyz"
+      chars:
+        gen: "str"
+        len: 100
+        alphabet: "vwxyz"

@@ -1,0 +1,293 @@
+entry:
+  id: 1420
+  title: "build-array-where-you-can-find-the-maximum-exactly-k-comparisons"
+  params:
+    n:
+      type: int
+    m:
+      type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().numOfArrays({n}, {m}, {k})"
+    rust: "Solution::num_of_arrays({n}, {m}, {k})"
+    python3: "Solution().numOfArrays({n}, {m}, {k})"
+    python2: "Solution().numOfArrays({n}, {m}, {k})"
+    ruby: "num_of_arrays({n}, {m}, {k})"
+    java: "new Solution().numOfArrays({n}, {m}, {k})"
+    csharp: "new Solution().NumOfArrays({n}, {m}, {k})"
+    kotlin: "Solution().numOfArrays({n}, {m}, {k})"
+    go: "numOfArrays({n}, {m}, {k})"
+    dart: "Solution().numOfArrays({n}, {m}, {k})"
+    swift: "Solution().numOfArrays({n}, {m}, {k})"
+    typescript: "numOfArrays({n}, {m}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 10000
+  memory_mb: 400
+oracle:
+  python3:
+    call: "Checker().numOfArrays(n, m, k, {result})"
+    checker: |
+      class Checker:
+          def numOfArrays(self, n, m, k, result):
+              if not isinstance(n, int) or not isinstance(m, int) or not isinstance(k, int):
+                  return False
+              if not (1 <= n <= 50 and 1 <= m <= 100 and 0 <= k <= n):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              states = {(0, 0): 1}
+              for _ in range(n):
+                  next_states = {}
+                  for (cost, maximum), ways in states.items():
+                      for value in range(1, m + 1):
+                          new_cost = cost + (value > maximum)
+                          if new_cost <= k:
+                              key = (new_cost, max(maximum, value))
+                              next_states[key] = (next_states.get(key, 0) + ways) % mod
+                  states = next_states
+              expected = sum(ways for (cost, _), ways in states.items() if cost == k) % mod
+              return result == expected
+seed: 1420
+tests:
+  - name: "one_one_one"
+    in:
+      n: 1
+      m: 1
+      k: 1
+  - name: "one_many"
+    in:
+      n: 1
+      m: 5
+      k: 1
+  - name: "one_invalid"
+    in:
+      n: 1
+      m: 5
+      k: 2
+    out: 0
+  - name: "constant_max"
+    in:
+      n: 3
+      m: 1
+      k: 1
+  - name: "two_cost_one"
+    in:
+      n: 2
+      m: 3
+      k: 1
+  - name: "two_cost_two"
+    in:
+      n: 2
+      m: 3
+      k: 2
+  - name: "two_invalid"
+    in:
+      n: 2
+      m: 3
+      k: 3
+    out: 0
+  - name: "example_small"
+    in:
+      n: 3
+      m: 2
+      k: 1
+  - name: "example_cost_two"
+    in:
+      n: 3
+      m: 3
+      k: 2
+  - name: "small_all_costs"
+    in:
+      n: 4
+      m: 3
+      k: 1
+  - name: "small_cost_two"
+    in:
+      n: 4
+      m: 3
+      k: 2
+  - name: "small_cost_three"
+    in:
+      n: 4
+      m: 3
+      k: 3
+  - name: "max_cost"
+    in:
+      n: 4
+      m: 4
+      k: 4
+  - name: "max_cost_invalid"
+    in:
+      n: 4
+      m: 2
+      k: 4
+    out: 0
+  - name: "balanced_a"
+    in:
+      n: 5
+      m: 3
+      k: 2
+  - name: "balanced_b"
+    in:
+      n: 5
+      m: 4
+      k: 3
+  - name: "balanced_c"
+    in:
+      n: 5
+      m: 5
+      k: 4
+  - name: "six_one"
+    in:
+      n: 6
+      m: 2
+      k: 1
+  - name: "six_two"
+    in:
+      n: 6
+      m: 2
+      k: 2
+  - name: "six_three"
+    in:
+      n: 6
+      m: 3
+      k: 3
+  - name: "seven_two"
+    in:
+      n: 7
+      m: 4
+      k: 2
+  - name: "seven_four"
+    in:
+      n: 7
+      m: 4
+      k: 4
+  - name: "eight_three"
+    in:
+      n: 8
+      m: 5
+      k: 3
+  - name: "eight_five"
+    in:
+      n: 8
+      m: 5
+      k: 5
+  - name: "nine_four"
+    in:
+      n: 9
+      m: 6
+      k: 4
+  - name: "ten_one"
+    in:
+      n: 10
+      m: 3
+      k: 1
+  - name: "ten_ten"
+    in:
+      n: 10
+      m: 10
+      k: 10
+  - name: "boundary_m"
+    in:
+      n: 6
+      m: 100
+      k: 1
+  - name: "boundary_k"
+    in:
+      n: 6
+      m: 100
+      k: 6
+  - name: "modulo_case"
+    in:
+      n: 15
+      m: 15
+      k: 7
+  - name: "single_max_m"
+    in:
+      n: 1
+      m: 100
+      k: 1
+  - name: "maximum_length_constant"
+    in:
+      n: 50
+      m: 1
+      k: 1
+  - name: "maximum_length_cost_one"
+    in:
+      n: 50
+      m: 100
+      k: 1
+  - name: "maximum_length_max_cost"
+    in:
+      n: 50
+      m: 100
+      k: 50
+  - name: "maximum_length_mid_cost"
+    in:
+      n: 50
+      m: 100
+      k: 25
+  - name: "generated_max_length_high_m_low_k"
+    seed: 142001
+    in:
+      n: 50
+      m:
+        gen: "int"
+        min: 80
+        max: 100
+      k:
+        gen: "int"
+        min: 1
+        max: 10
+  - name: "generated_max_length_high_m_mid_k"
+    seed: 142002
+    in:
+      n: 50
+      m:
+        gen: "int"
+        min: 80
+        max: 100
+      k:
+        gen: "int"
+        min: 11
+        max: 25
+  - name: "generated_max_length_high_m_high_k"
+    seed: 142003
+    in:
+      n: 50
+      m:
+        gen: "int"
+        min: 80
+        max: 100
+      k:
+        gen: "int"
+        min: 26
+        max: 50
+  - name: "generated_max_length_full_m_low_k"
+    seed: 142004
+    in:
+      n: 50
+      m:
+        gen: "int"
+        min: 1
+        max: 100
+      k:
+        gen: "int"
+        min: 1
+        max: 10
+  - name: "generated_max_length_full_m_mid_k"
+    seed: 142005
+    in:
+      n: 50
+      m:
+        gen: "int"
+        min: 1
+        max: 100
+      k:
+        gen: "int"
+        min: 11
+        max: 50

@@ -1,0 +1,307 @@
+entry:
+  id: 1185
+  title: day-of-the-week
+  params:
+    day:
+      type: int
+    month:
+      type: int
+    year:
+      type: int
+  call:
+    cpp: "Solution().dayOfTheWeek({day}, {month}, {year})"
+    rust: "Solution::day_of_the_week({day}, {month}, {year})"
+    python3: "Solution().dayOfTheWeek({day}, {month}, {year})"
+    python2: "Solution().dayOfTheWeek({day}, {month}, {year})"
+    ruby: "day_of_the_week({day}, {month}, {year})"
+    java: "new Solution().dayOfTheWeek({day}, {month}, {year})"
+    csharp: "new Solution().DayOfTheWeek({day}, {month}, {year})"
+    kotlin: "Solution().dayOfTheWeek({day}, {month}, {year})"
+    go: "dayOfTheWeek({day}, {month}, {year})"
+    dart: "Solution().dayOfTheWeek({day}, {month}, {year})"
+    swift: "Solution().dayOfTheWeek({day}, {month}, {year})"
+    typescript: "dayOfTheWeek({day}, {month}, {year})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().dayOfTheWeek(day, month, year, {result})"
+    checker: |
+      class Checker:
+          def dayOfTheWeek(self, day, month, year, result):
+              names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+              if not isinstance(result, str) or not (1971 <= year <= 2100):
+                  return False
+              month_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+              leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+              if leap:
+                  month_days[1] = 29
+              if not (1 <= month <= 12 and 1 <= day <= month_days[month - 1]):
+                  return False
+              days_since_epoch = day - 1 + sum(month_days[:month - 1])
+              for current_year in range(1971, year):
+                  if current_year % 4 == 0 and (current_year % 100 != 0 or current_year % 400 == 0):
+                      days_since_epoch += 366
+                  else:
+                      days_since_epoch += 365
+              return result == names[(4 + days_since_epoch) % 7]
+seed: 1185
+tests:
+  - name: prompt-example-one
+    in:
+      day: 31
+      month: 8
+      year: 2019
+    out: Saturday
+  - name: prompt-example-two
+    in:
+      day: 18
+      month: 7
+      year: 1999
+    out: Sunday
+  - name: prompt-example-three
+    in:
+      day: 15
+      month: 8
+      year: 1993
+    out: Sunday
+  - name: epoch-start
+    in:
+      day: 1
+      month: 1
+      year: 1971
+    out: Friday
+  - name: first-year-end
+    in:
+      day: 31
+      month: 12
+      year: 1971
+    out: Friday
+  - name: lower-year-midyear
+    in:
+      day: 4
+      month: 7
+      year: 1971
+    out: Sunday
+  - name: upper-year-start
+    in:
+      day: 1
+      month: 1
+      year: 2100
+    out: Friday
+  - name: upper-year-end
+    in:
+      day: 31
+      month: 12
+      year: 2100
+    out: Friday
+  - name: january-first
+    in:
+      day: 1
+      month: 1
+      year: 2000
+    out: Saturday
+  - name: generated-january-valid-years
+    in:
+      day: 15
+      month: 1
+      year:
+        gen: int
+        min: 1971
+        max: 2100
+    seed: 118501
+  - name: february-first
+    in:
+      day: 1
+      month: 2
+      year: 2019
+    out: Friday
+  - name: february-last-common
+    in:
+      day: 28
+      month: 2
+      year: 2019
+    out: Thursday
+  - name: february-leap-day
+    in:
+      day: 29
+      month: 2
+      year: 2020
+    out: Saturday
+  - name: february-after-leap
+    in:
+      day: 1
+      month: 3
+      year: 2020
+    out: Sunday
+  - name: february-after-common
+    in:
+      day: 1
+      month: 3
+      year: 2019
+    out: Friday
+  - name: generated-march-valid-years
+    in:
+      day: 31
+      month: 3
+      year:
+        gen: int
+        min: 1971
+        max: 2100
+    seed: 118502
+  - name: april-first
+    in:
+      day: 1
+      month: 4
+      year: 2004
+    out: Thursday
+  - name: generated-april-valid-years
+    in:
+      day: 30
+      month: 4
+      year:
+        gen: int
+        min: 1971
+        max: 2100
+    seed: 118503
+  - name: may-first
+    in:
+      day: 1
+      month: 5
+      year: 2012
+    out: Tuesday
+  - name: generated-june-valid-years
+    in:
+      day: 30
+      month: 6
+      year:
+        gen: int
+        min: 1971
+        max: 2100
+    seed: 118504
+  - name: july-first
+    in:
+      day: 1
+      month: 7
+      year: 2016
+    out: Friday
+  - name: august-end
+    in:
+      day: 31
+      month: 8
+      year: 2008
+    out: Sunday
+  - name: september-first
+    in:
+      day: 1
+      month: 9
+      year: 2008
+    out: Monday
+  - name: generated-september-valid-years
+    in:
+      day: 30
+      month: 9
+      year:
+        gen: int
+        min: 1971
+        max: 2100
+    seed: 118505
+  - name: october-first
+    in:
+      day: 1
+      month: 10
+      year: 2010
+    out: Friday
+  - name: october-end
+    in:
+      day: 31
+      month: 10
+      year: 1992
+    out: Saturday
+  - name: november-first
+    in:
+      day: 1
+      month: 11
+      year: 1992
+    out: Sunday
+  - name: november-end
+    in:
+      day: 30
+      month: 11
+      year: 2024
+    out: Saturday
+  - name: december-first
+    in:
+      day: 1
+      month: 12
+      year: 2024
+    out: Sunday
+  - name: leap-1996
+    in:
+      day: 29
+      month: 2
+      year: 1996
+    out: Thursday
+  - name: leap-2000-march
+    in:
+      day: 1
+      month: 3
+      year: 2000
+    out: Wednesday
+  - name: century-2100
+    in:
+      day: 28
+      month: 2
+      year: 2100
+    out: Sunday
+  - name: recent-leap
+    in:
+      day: 29
+      month: 2
+      year: 2016
+    out: Monday
+  - name: year-1980-end
+    in:
+      day: 31
+      month: 12
+      year: 1980
+    out: Wednesday
+  - name: year-2050-mid
+    in:
+      day: 15
+      month: 6
+      year: 2050
+    out: Wednesday
+  - name: first-leap-eve
+    in:
+      day: 28
+      month: 2
+      year: 1972
+    out: Monday
+  - name: first-leap-day
+    in:
+      day: 29
+      month: 2
+      year: 1972
+    out: Tuesday
+  - name: first-leap-march
+    in:
+      day: 1
+      month: 3
+      year: 1972
+    out: Wednesday
+  - name: penultimate-year-end
+    in:
+      day: 31
+      month: 12
+      year: 2099
+    out: Thursday
+  - name: century-march-first
+    in:
+      day: 1
+      month: 3
+      year: 2100
+    out: Monday

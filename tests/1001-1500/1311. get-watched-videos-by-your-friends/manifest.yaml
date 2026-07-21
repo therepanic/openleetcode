@@ -1,0 +1,983 @@
+entry:
+  id: 1311
+  title: get-watched-videos-by-your-friends
+  params:
+    watchedVideos:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+    friends:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    id:
+      type: int
+    level:
+      type: int
+  call:
+    cpp: "Solution().watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    rust: "Solution::watched_videos_by_friends({watchedVideos}, {friends}, {id}, {level})"
+    python3: "Solution().watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    python2: "Solution().watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    ruby: "watched_videos_by_friends({watchedVideos}, {friends}, {id}, {level})"
+    java: "new Solution().watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    csharp: "new Solution().WatchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    kotlin: "Solution().watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    go: "watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    dart: "Solution().watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    swift: "Solution().watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+    typescript: "watchedVideosByFriends({watchedVideos}, {friends}, {id}, {level})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().watchedVideosByFriends(watchedVideos, friends, id, level, {result})"
+    checker: |
+      class Checker:
+          def watchedVideosByFriends(self, watchedVideos, friends, ident, level, result):
+              from collections import Counter, deque
+              seen = {ident}
+              queue = deque([(ident, 0)])
+              people = []
+              while queue:
+                  person, distance = queue.popleft()
+                  if distance == level:
+                      people.append(person)
+                      continue
+                  for friend in friends[person]:
+                      if friend not in seen:
+                          seen.add(friend)
+                          queue.append((friend, distance + 1))
+              frequencies = Counter(
+                  video for person in people for video in watchedVideos[person]
+              )
+              return result == sorted(frequencies, key=lambda video: (frequencies[video], video))
+seed: 1311
+tests:
+  - name: example_level_one
+    in:
+      watchedVideos:
+        - ["A", "B"]
+        - ["C"]
+        - ["B", "C"]
+        - ["D"]
+      friends:
+        - [1, 2]
+        - [0, 3]
+        - [0, 3]
+        - [1, 2]
+      id: 0
+      level: 1
+    out: ["B", "C"]
+  - name: example_level_two
+    in:
+      watchedVideos:
+        - ["A", "B"]
+        - ["C"]
+        - ["B", "C"]
+        - ["D"]
+      friends:
+        - [1, 2]
+        - [0, 3]
+        - [0, 3]
+        - [1, 2]
+      id: 0
+      level: 2
+    out: ["D"]
+  - name: minimum_pair
+    in:
+      watchedVideos:
+        - ["self"]
+        - ["friend"]
+      friends:
+        - [1]
+        - [0]
+      id: 0
+      level: 1
+    out: ["friend"]
+  - name: pair_unreachable_level
+    in:
+      watchedVideos:
+        - ["self"]
+        - ["friend"]
+      friends:
+        - [1]
+        - [0]
+      id: 1
+      level: 2
+    out: []
+  - name: line_distance_three
+    in:
+      watchedVideos:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+      friends:
+        - [1]
+        - [0, 2]
+        - [1, 3]
+        - [2]
+      id: 0
+      level: 3
+    out: ["d"]
+  - name: line_middle_two_sides
+    in:
+      watchedVideos:
+        - ["z"]
+        - ["b"]
+        - ["m"]
+        - ["a"]
+        - ["q"]
+      friends:
+        - [1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3]
+      id: 2
+      level: 2
+    out: ["q", "z"]
+  - name: star_frequency_then_alpha
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["z", "a"]
+        - ["a", "m"]
+        - ["m", "m"]
+      friends:
+        - [1, 2, 3]
+        - [0]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["z", "a", "m"]
+  - name: duplicate_within_person
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["x", "x", "b"]
+        - ["b", "c"]
+      friends:
+        - [1, 2]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["c", "b", "x"]
+  - name: alphabetic_equal_frequencies
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["z"]
+        - ["aa"]
+        - ["m"]
+      friends:
+        - [1, 2, 3]
+        - [0]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["aa", "m", "z"]
+  - name: triangle_exact_shortest_path
+    in:
+      watchedVideos:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+      friends:
+        - [1, 2]
+        - [0, 2]
+        - [0, 1]
+      id: 0
+      level: 2
+    out: []
+  - name: diamond_shared_destination
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["b"]
+        - ["c"]
+        - ["goal", "goal"]
+      friends:
+        - [1, 2]
+        - [0, 3]
+        - [0, 3]
+        - [1, 2]
+      id: 0
+      level: 2
+    out: ["goal"]
+  - name: cycle_opposite_vertex
+    in:
+      watchedVideos:
+        - ["v0"]
+        - ["v1"]
+        - ["v2"]
+        - ["v3"]
+        - ["v4"]
+        - ["v5"]
+      friends:
+        - [1, 5]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 0]
+      id: 0
+      level: 3
+    out: ["v3"]
+  - name: disconnected_component
+    in:
+      watchedVideos:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+        - ["e"]
+      friends:
+        - [1]
+        - [0]
+        - [3, 4]
+        - [2, 4]
+        - [2, 3]
+      id: 0
+      level: 2
+    out: []
+  - name: disconnected_start_component
+    in:
+      watchedVideos:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+        - ["e"]
+      friends:
+        - [1]
+        - [0]
+        - [3, 4]
+        - [2, 4]
+        - [2, 3]
+      id: 2
+      level: 1
+    out: ["d", "e"]
+  - name: start_not_zero
+    in:
+      watchedVideos:
+        - ["a"]
+        - ["b", "b"]
+        - ["c"]
+        - ["d", "a"]
+      friends:
+        - [1]
+        - [0, 2]
+        - [1, 3]
+        - [2]
+      id: 3
+      level: 2
+    out: ["b"]
+  - name: two_layer_branch
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["p"]
+        - ["q"]
+        - ["z", "a"]
+        - ["a", "b"]
+        - ["b", "b"]
+      friends:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 5]
+        - [1]
+        - [1]
+        - [2]
+      id: 0
+      level: 2
+    out: ["z", "a", "b"]
+  - name: levels_stop_expansion
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["one"]
+        - ["two"]
+        - ["three"]
+      friends:
+        - [1]
+        - [0, 2]
+        - [1, 3]
+        - [2]
+      id: 0
+      level: 1
+    out: ["one"]
+  - name: complete_graph_level_one
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["d"]
+        - ["c"]
+        - ["b"]
+        - ["a"]
+      friends:
+        - [1, 2, 3, 4]
+        - [0, 2, 3, 4]
+        - [0, 1, 3, 4]
+        - [0, 1, 2, 4]
+        - [0, 1, 2, 3]
+      id: 0
+      level: 1
+    out: ["a", "b", "c", "d"]
+  - name: complete_graph_level_two_empty
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["d"]
+        - ["c"]
+        - ["b"]
+        - ["a"]
+      friends:
+        - [1, 2, 3, 4]
+        - [0, 2, 3, 4]
+        - [0, 1, 3, 4]
+        - [0, 1, 2, 4]
+        - [0, 1, 2, 3]
+      id: 4
+      level: 2
+    out: []
+  - name: eight_node_tree_level_three
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["one"]
+        - ["two"]
+        - ["aa"]
+        - ["zz"]
+        - ["m"]
+        - ["aa"]
+        - ["m"]
+      friends:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 5]
+        - [1, 6]
+        - [1]
+        - [2, 7]
+        - [3]
+        - [5]
+      id: 0
+      level: 3
+    out: ["aa", "m"]
+  - name: lexicographic_case_sensitive
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["a"]
+        - ["A"]
+        - ["Z"]
+      friends:
+        - [1, 2, 3]
+        - [0]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["A", "Z", "a"]
+  - name: max_name_length
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["abcdefgh"]
+        - ["abcdefgz"]
+      friends:
+        - [1, 2]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["abcdefgh", "abcdefgz"]
+  - name: repeated_across_people
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["x", "y"]
+        - ["x", "z"]
+        - ["x", "y"]
+      friends:
+        - [1, 2, 3]
+        - [0]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["z", "y", "x"]
+  - name: multiple_videos_each_target
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["p", "q", "r"]
+        - ["q", "s", "t"]
+      friends:
+        - [1, 2]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["p", "r", "s", "t", "q"]
+  - name: shortcut_changes_level
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["one"]
+        - ["two"]
+        - ["three"]
+        - ["four"]
+      friends:
+        - [1, 4]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [0, 3]
+      id: 0
+      level: 2
+    out: ["three", "two"]
+  - name: start_leaf_in_tree
+    in:
+      watchedVideos:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+        - ["e"]
+        - ["f"]
+      friends:
+        - [1]
+        - [0, 2, 3]
+        - [1]
+        - [1, 4, 5]
+        - [3]
+        - [3]
+      id: 4
+      level: 3
+    out: ["a", "c"]
+  - name: long_line_unreachable_depth
+    in:
+      watchedVideos:
+        - ["0"]
+        - ["1"]
+        - ["2"]
+        - ["3"]
+        - ["4"]
+        - ["5"]
+        - ["6"]
+      friends:
+        - [1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5]
+      id: 3
+      level: 4
+    out: []
+  - name: large_line_twenty_level_nineteen
+    in:
+      watchedVideos:
+        - ["n00"]
+        - ["n01"]
+        - ["n02"]
+        - ["n03"]
+        - ["n04"]
+        - ["n05"]
+        - ["n06"]
+        - ["n07"]
+        - ["n08"]
+        - ["n09"]
+        - ["n10"]
+        - ["n11"]
+        - ["n12"]
+        - ["n13"]
+        - ["n14"]
+        - ["n15"]
+        - ["n16"]
+        - ["n17"]
+        - ["n18"]
+        - ["target"]
+      friends:
+        - [1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+        - [7, 9]
+        - [8, 10]
+        - [9, 11]
+        - [10, 12]
+        - [11, 13]
+        - [12, 14]
+        - [13, 15]
+        - [14, 16]
+        - [15, 17]
+        - [16, 18]
+        - [17, 19]
+        - [18]
+      id: 0
+      level: 19
+    out: ["target"]
+  - name: large_star_twenty_four_frequency
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["b", "shared"]
+        - ["a", "shared"]
+        - ["c", "shared"]
+        - ["d", "shared"]
+        - ["e", "shared"]
+        - ["f", "shared"]
+        - ["g", "shared"]
+        - ["h", "shared"]
+        - ["i", "shared"]
+        - ["j", "shared"]
+        - ["k", "shared"]
+        - ["l", "shared"]
+        - ["m", "shared"]
+        - ["n", "shared"]
+        - ["o", "shared"]
+        - ["p", "shared"]
+        - ["q", "shared"]
+        - ["r", "shared"]
+        - ["s", "shared"]
+        - ["t", "shared"]
+        - ["u", "shared"]
+        - ["v", "shared"]
+        - ["w", "shared"]
+      friends:
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+          ]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out:
+      [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "shared",
+      ]
+  - name: large_binary_tree_level_four
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["x1"]
+        - ["x2"]
+        - ["x3"]
+        - ["x4"]
+        - ["x5"]
+        - ["x6"]
+        - ["x7"]
+        - ["x8"]
+        - ["x9"]
+        - ["x10"]
+        - ["x11"]
+        - ["x12"]
+        - ["x13"]
+        - ["x14"]
+        - ["z", "even"]
+        - ["a", "odd"]
+        - ["z", "even"]
+        - ["a", "odd"]
+        - ["z", "even"]
+        - ["a", "odd"]
+        - ["z", "even"]
+        - ["a", "odd"]
+        - ["z", "even"]
+        - ["a", "odd"]
+        - ["z", "even"]
+        - ["a", "odd"]
+        - ["z", "even"]
+        - ["a", "odd"]
+        - ["z", "even"]
+        - ["a", "odd"]
+      friends:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 5, 6]
+        - [1, 7, 8]
+        - [1, 9, 10]
+        - [2, 11, 12]
+        - [2, 13, 14]
+        - [3, 15, 16]
+        - [3, 17, 18]
+        - [4, 19, 20]
+        - [4, 21, 22]
+        - [5, 23, 24]
+        - [5, 25, 26]
+        - [6, 27, 28]
+        - [6, 29, 30]
+        - [7]
+        - [7]
+        - [8]
+        - [8]
+        - [9]
+        - [9]
+        - [10]
+        - [10]
+        - [11]
+        - [11]
+        - [12]
+        - [12]
+        - [13]
+        - [13]
+        - [14]
+        - [14]
+      id: 0
+      level: 4
+    out: ["a", "even", "odd", "z"]
+  - name: large_ladder_cross_edges
+    in:
+      watchedVideos:
+        - ["r0"]
+        - ["r1"]
+        - ["r2"]
+        - ["r3"]
+        - ["r4"]
+        - ["r5"]
+        - ["r6"]
+        - ["r7"]
+        - ["r8"]
+        - ["r9"]
+        - ["l0"]
+        - ["l1"]
+        - ["l2"]
+        - ["l3"]
+        - ["l4"]
+        - ["l5"]
+        - ["l6"]
+        - ["l7"]
+        - ["l8"]
+        - ["goal"]
+      friends:
+        - [1, 10]
+        - [0, 2, 11]
+        - [1, 3, 12]
+        - [2, 4, 13]
+        - [3, 5, 14]
+        - [4, 6, 15]
+        - [5, 7, 16]
+        - [6, 8, 17]
+        - [7, 9, 18]
+        - [8, 19]
+        - [0, 11]
+        - [10, 12, 1]
+        - [11, 13, 2]
+        - [12, 14, 3]
+        - [13, 15, 4]
+        - [14, 16, 5]
+        - [15, 17, 6]
+        - [16, 18, 7]
+        - [17, 19, 8]
+        - [18, 9]
+      id: 0
+      level: 10
+    out: ["goal"]
+  - name: large_three_components
+    in:
+      watchedVideos:
+        - ["a0"]
+        - ["a1"]
+        - ["a2"]
+        - ["a3"]
+        - ["a4"]
+        - ["a5"]
+        - ["a6"]
+        - ["a7"]
+        - ["b0"]
+        - ["b1"]
+        - ["b2"]
+        - ["b3"]
+        - ["b4"]
+        - ["b5"]
+        - ["b6"]
+        - ["b7"]
+        - ["c0"]
+        - ["c1"]
+        - ["c2"]
+        - ["c3"]
+        - ["c4"]
+        - ["c5"]
+        - ["c6"]
+        - ["c7"]
+      friends:
+        - [1, 7]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 0]
+        - [9, 15]
+        - [8, 10]
+        - [9, 11]
+        - [10, 12]
+        - [11, 13]
+        - [12, 14]
+        - [13, 15]
+        - [14, 8]
+        - [17, 23]
+        - [16, 18]
+        - [17, 19]
+        - [18, 20]
+        - [19, 21]
+        - [20, 22]
+        - [21, 23]
+        - [22, 16]
+      id: 8
+      level: 4
+    out: ["b4"]
+  - name: large_dense_bipartite_level_two
+    in:
+      watchedVideos:
+        - ["left0"]
+        - ["left1"]
+        - ["left2"]
+        - ["left3"]
+        - ["left4"]
+        - ["left5"]
+        - ["right0"]
+        - ["right1"]
+        - ["right2"]
+        - ["right3"]
+        - ["right4"]
+        - ["right5"]
+      friends:
+        - [6, 7, 8, 9, 10, 11]
+        - [6, 7, 8, 9, 10, 11]
+        - [6, 7, 8, 9, 10, 11]
+        - [6, 7, 8, 9, 10, 11]
+        - [6, 7, 8, 9, 10, 11]
+        - [6, 7, 8, 9, 10, 11]
+        - [0, 1, 2, 3, 4, 5]
+        - [0, 1, 2, 3, 4, 5]
+        - [0, 1, 2, 3, 4, 5]
+        - [0, 1, 2, 3, 4, 5]
+        - [0, 1, 2, 3, 4, 5]
+        - [0, 1, 2, 3, 4, 5]
+      id: 0
+      level: 2
+    out: ["left1", "left2", "left3", "left4", "left5"]
+  - name: ten_node_cycle_level_four
+    in:
+      watchedVideos:
+        - ["v0"]
+        - ["v1"]
+        - ["v2"]
+        - ["v3"]
+        - ["v4"]
+        - ["v5"]
+        - ["v6"]
+        - ["v7"]
+        - ["v8"]
+        - ["v9"]
+      friends:
+        - [1, 9]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+        - [7, 9]
+        - [8, 0]
+      id: 0
+      level: 4
+    out: ["v4", "v6"]
+  - name: nine_node_hub_spokes
+    in:
+      watchedVideos:
+        - ["hub"]
+        - ["x1"]
+        - ["x2"]
+        - ["x3"]
+        - ["x4"]
+        - ["x5"]
+        - ["x6"]
+        - ["x7"]
+        - ["x8"]
+      friends:
+        - [1, 2, 3, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+      id: 0
+      level: 2
+    out: ["x5", "x6", "x7", "x8"]
+  - name: levels_from_internal_cycle_vertex
+    in:
+      watchedVideos:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+        - ["e"]
+        - ["f"]
+        - ["g"]
+      friends:
+        - [1, 6]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 0]
+      id: 3
+      level: 3
+    out: ["a", "g"]
+  - name: four_way_frequency_ties
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["cc", "bb"]
+        - ["aa", "bb"]
+        - ["aa", "dd"]
+        - ["cc", "dd"]
+      friends:
+        - [1, 2, 3, 4]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+      id: 0
+      level: 1
+    out: ["aa", "bb", "cc", "dd"]
+  - name: target_people_have_overlapping_lists
+    in:
+      watchedVideos:
+        - ["root"]
+        - ["bridge"]
+        - ["bridge"]
+        - ["u", "v", "v"]
+        - ["u", "w"]
+        - ["v", "w"]
+      friends:
+        - [1, 2]
+        - [0, 3, 4]
+        - [0, 5]
+        - [1]
+        - [1]
+        - [2]
+      id: 0
+      level: 2
+    out: ["u", "w", "v"]
+  - name: exact_distance_with_back_edges
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+        - ["e"]
+      friends:
+        - [1]
+        - [0, 2, 3]
+        - [1, 4]
+        - [1, 4]
+        - [2, 3, 5]
+        - [4]
+      id: 0
+      level: 3
+    out: ["d"]
+  - name: single_target_many_distinct
+    in:
+      watchedVideos:
+        - ["r"]
+        - ["h", "g", "f", "e", "d", "c", "b", "a"]
+      friends:
+        - [1]
+        - [0]
+      id: 0
+      level: 1
+    out: ["a", "b", "c", "d", "e", "f", "g", "h"]

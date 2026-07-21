@@ -1,0 +1,206 @@
+entry:
+  id: 1190
+  title: reverse-substrings-between-each-pair-of-parentheses
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().reverseParentheses({s})"
+    rust: "Solution::reverse_parentheses({s})"
+    python3: "Solution().reverseParentheses({s})"
+    python2: "Solution().reverseParentheses({s})"
+    ruby: "reverse_parentheses({s})"
+    java: "new Solution().reverseParentheses({s})"
+    csharp: "new Solution().ReverseParentheses({s})"
+    kotlin: "Solution().reverseParentheses({s})"
+    go: "reverseParentheses({s})"
+    dart: "Solution().reverseParentheses({s})"
+    swift: "Solution().reverseParentheses({s})"
+    typescript: "reverseParentheses({s})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().reverseParentheses(s, {result})"
+    checker: |
+      class Checker:
+          def reverseParentheses(self, s, result):
+              parts = [[]]
+              for char in s:
+                  if char == '(':
+                      parts.append([])
+                  elif char == ')':
+                      if len(parts) == 1:
+                          return False
+                      parts[-1].reverse()
+                      parts[-2].extend(parts.pop())
+                  elif 'a' <= char <= 'z':
+                      parts[-1].append(char)
+                  else:
+                      return False
+              return len(parts) == 1 and result == ''.join(parts[0])
+seed: 1190
+tests:
+  - name: prompt-example-one
+    in:
+      s: "(abcd)"
+    out: "dcba"
+  - name: prompt-example-two
+    in:
+      s: "(u(love)i)"
+    out: "iloveu"
+  - name: prompt-example-three
+    in:
+      s: "(ed(et(oc))el)"
+    out: "leetcode"
+  - name: no-parentheses
+    in:
+      s: "abcdef"
+    out: "abcdef"
+  - name: single-plain-letter
+    in:
+      s: "a"
+    out: "a"
+  - name: empty-pair
+    in:
+      s: "()"
+    out: ""
+  - name: single-letter-pair
+    in:
+      s: "(a)"
+    out: "a"
+  - name: adjacent-pairs
+    in:
+      s: "(ab)(cd)"
+    out: "badc"
+  - name: outside-text
+    in:
+      s: "a(bc)d"
+    out: "acbd"
+  - name: pair-at-end
+    in:
+      s: "abc(def)"
+    out: "abcfed"
+  - name: pair-at-start
+    in:
+      s: "(abc)def"
+    out: "cbadef"
+  - name: only-nested-empty-pairs
+    in:
+      s: "((()))"
+    out: ""
+  - name: nested-two-levels
+    in:
+      s: "(a(bc)d)"
+    out: "dbca"
+  - name: triple-nested-word
+    in:
+      s: "(a(b(cde)f)g)"
+    out: "gbedcfa"
+  - name: nested-with-prefix-and-suffix
+    in:
+      s: "x(y(z)w)v"
+    out: "xwzyv"
+  - name: double-reversal-cancels
+    in:
+      s: "((abc))"
+    out: "abc"
+  - name: four-reversals-cancel
+    in:
+      s: "((((abcd))))"
+    out: "abcd"
+  - name: alternating-groups
+    in:
+      s: "a(b)c(d)e(f)g"
+    out: "abcdefg"
+  - name: repeated-letters
+    in:
+      s: "(aaaa)(bbbb)"
+    out: "aaaabbbb"
+  - name: palindrome-group
+    in:
+      s: "(abccba)"
+    out: "abccba"
+  - name: odd-palindrome-group
+    in:
+      s: "(abcba)"
+    out: "abcba"
+  - name: adjacent-nested-and-flat-pairs
+    in:
+      s: "(ab(cd)ef)(gh)"
+    out: "fecdbahg"
+  - name: sibling-nested-pairs
+    in:
+      s: "(a(b)c(d)e)"
+    out: "edcba"
+  - name: empty-pairs-between-text
+    in:
+      s: "x()y()z"
+    out: "xyz"
+  - name: full-alphabet-reversal
+    in:
+      s: "(abcdefghijklmnopqrstuvwxyz)"
+    out: "zyxwvutsrqponmlkjihgfedcba"
+  - name: long-outside-text
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz(abcd)zyxwvutsrqponmlkjihgfedcba"
+    out: "abcdefghijklmnopqrstuvwxyzdcbazyxwvutsrqponmlkjihgfedcba"
+  - name: deep-single-letters
+    in:
+      s: "(a(b(c(d(e)f)g)h)i)"
+    out: "ibgdefcha"
+  - name: deep-words
+    in:
+      s: "(one(two(three(four)five)six)seven)"
+    out: "nevestwoeviffoureerhtsixeno"
+  - name: nested-adjacent-pairs
+    in:
+      s: "((ab)(cd))"
+    out: "cdab"
+  - name: mixed-nesting-and-siblings
+    in:
+      s: "a(b(cd)e)f(g)h"
+    out: "aecdbfgh"
+  - name: many-adjacent-singletons
+    in:
+      s: "(a)(b)(c)(d)(e)(f)(g)(h)"
+    out: "abcdefgh"
+  - name: nested-empty-middle
+    in:
+      s: "(ab(()cd)ef)"
+    out: "fecdba"
+  - name: repeated-nesting
+    in:
+      s: "(a(a(a(a(a)))))"
+    out: "aaaaa"
+  - name: no-parentheses-longer-text
+    in:
+      s: "thequickbrownfoxjumpsoverthelazydog"
+    out: "thequickbrownfoxjumpsoverthelazydog"
+  - name: broad-nested-siblings
+    in:
+      s: "(alpha(beta(gamma)delta)epsilon(zeta))"
+    out: "zetanolispebetaammagdeltaahpla"
+  - name: empty-pairs-around-content
+    in:
+      s: "()(ab)()"
+    out: "ba"
+  - name: increasing-pair-widths
+    in:
+      s: "(a)(bc)(def)"
+    out: "acbfed"
+  - name: three-sibling-pairs-inside-parent
+    in:
+      s: "((a)(b)(c))"
+    out: "cba"
+  - name: nested-pairs-between-outer-text
+    in:
+      s: "a((bc)d(ef))g"
+    out: "aefdbcg"
+  - name: four-level-mixed-structure
+    in:
+      s: "((ab)c(de(fg)h)i)"
+    out: "idegfhcab"

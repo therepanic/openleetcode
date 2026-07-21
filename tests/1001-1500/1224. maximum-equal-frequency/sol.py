@@ -1,0 +1,31 @@
+from collections import defaultdict
+
+
+class Solution:
+    def maxEqualFreq(self, nums):
+        counts = defaultdict(int)
+        frequency_counts = defaultdict(int)
+        best = 0
+
+        for index, value in enumerate(nums, 1):
+            previous = counts[value]
+            if previous:
+                frequency_counts[previous] -= 1
+                if frequency_counts[previous] == 0:
+                    del frequency_counts[previous]
+            counts[value] = previous + 1
+            frequency = previous + 1
+            frequency_counts[frequency] += 1
+
+            if len(frequency_counts) == 1:
+                only_frequency, value_count = next(iter(frequency_counts.items()))
+                if only_frequency == 1 or value_count == 1:
+                    best = index
+            elif len(frequency_counts) == 2:
+                low, high = sorted(frequency_counts)
+                if (low == 1 and frequency_counts[low] == 1) or (
+                    high == low + 1 and frequency_counts[high] == 1
+                ):
+                    best = index
+
+        return best

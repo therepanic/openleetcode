@@ -1,0 +1,295 @@
+entry:
+  id: 1307
+  title: "verbal-arithmetic-puzzle"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+    result:
+      type: string
+  call:
+    cpp: "Solution().isSolvable({words}, {result})"
+    rust: "Solution::is_solvable({words}, {result})"
+    python3: "Solution().isSolvable({words}, {result})"
+    python2: "Solution().isSolvable({words}, {result})"
+    ruby: "is_solvable({words}, {result})"
+    java: "new Solution().isSolvable({words}, {result})"
+    csharp: "new Solution().IsSolvable({words}, {result})"
+    kotlin: "Solution().isSolvable({words}, {result})"
+    go: "isSolvable({words}, {result})"
+    dart: "Solution().isSolvable({words}, {result})"
+    swift: "Solution().isSolvable({words}, {result})"
+    typescript: "isSolvable({words}, {result})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().isSolvable(words, result, {result})"
+    checker: |
+      class Checker:
+          def isSolvable(self, words, result, answer):
+              if type(answer) is not bool:
+                  return False
+              letters = set(''.join(words) + result)
+              if len(letters) > 10:
+                  return False
+              if max(map(len, words)) > len(result):
+                  return answer is False
+              leading = {word[0] for word in words + [result] if len(word) > 1}
+              assigned = {}
+              used = set()
+              width = max(len(result), max(map(len, words)))
+
+              def solve_column(column, carry):
+                  if column == width:
+                      return carry == 0
+
+                  def add_word(index, total):
+                      if index == len(words):
+                          digit = total % 10
+                          next_carry = total // 10
+                          letter = result[-1 - column] if column < len(result) else None
+                          if letter is None:
+                              return digit == 0 and solve_column(column + 1, next_carry)
+                          if letter in assigned:
+                              return assigned[letter] == digit and solve_column(column + 1, next_carry)
+                          if digit in used or (digit == 0 and letter in leading):
+                              return False
+                          assigned[letter] = digit
+                          used.add(digit)
+                          found = solve_column(column + 1, next_carry)
+                          used.remove(digit)
+                          del assigned[letter]
+                          return found
+
+                      word = words[index]
+                      if column >= len(word):
+                          return add_word(index + 1, total)
+                      letter = word[-1 - column]
+                      if letter in assigned:
+                          return add_word(index + 1, total + assigned[letter])
+                      for digit in range(10):
+                          if digit in used or (digit == 0 and letter in leading):
+                              continue
+                          assigned[letter] = digit
+                          used.add(digit)
+                          if add_word(index + 1, total + digit):
+                              return True
+                          used.remove(digit)
+                          del assigned[letter]
+                      return False
+
+                  return add_word(0, carry)
+
+              return solve_column(0, 0) is answer
+
+seed: 1307
+
+tests:
+  - name: "example_send_more_money"
+    in:
+      words: ["SEND", "MORE"]
+      result: "MONEY"
+    out: true
+  - name: "example_six_seven_twenty"
+    in:
+      words: ["SIX", "SEVEN", "SEVEN"]
+      result: "TWENTY"
+    out: true
+  - name: "example_leet_code_point"
+    in:
+      words: ["LEET", "CODE"]
+      result: "POINT"
+    out: false
+  - name: "single_digit_double"
+    in:
+      words: ["A", "A"]
+      result: "B"
+    out: true
+  - name: "single_digit_distinct_sum"
+    in:
+      words: ["A", "B"]
+      result: "C"
+    out: true
+  - name: "single_digit_add_zero"
+    in:
+      words: ["A", "B"]
+      result: "A"
+    out: true
+  - name: "result_cannot_lead_zero"
+    in:
+      words: ["A", "B"]
+      result: "BA"
+    out: false
+  - name: "word_longer_than_result"
+    in:
+      words: ["AB", "C"]
+      result: "A"
+    out: false
+  - name: "two_digit_no_carry"
+    in:
+      words: ["AB", "C"]
+      result: "AD"
+    out: true
+  - name: "two_digit_distinct_addends"
+    in:
+      words: ["BC", "DE"]
+      result: "FG"
+    out: true
+  - name: "repeated_digit_words"
+    in:
+      words: ["AA", "BB"]
+      result: "CC"
+    out: true
+  - name: "mirrored_addition"
+    in:
+      words: ["AB", "BA"]
+      result: "CC"
+    out: true
+  - name: "mirrored_requires_equal_letters"
+    in:
+      words: ["AB", "BA"]
+      result: "CD"
+    out: false
+  - name: "doubled_two_digit_word"
+    in:
+      words: ["AB", "AB"]
+      result: "CD"
+    out: true
+  - name: "triple_single_digit"
+    in:
+      words: ["B", "B", "B"]
+      result: "D"
+    out: true
+  - name: "five_addends_single_digit"
+    in:
+      words: ["B", "B", "B", "B", "B"]
+      result: "E"
+    out: true
+  - name: "four_addends_with_carry"
+    in:
+      words: ["A", "A", "A", "A"]
+      result: "B"
+    out: true
+  - name: "all_zero_single_letter"
+    in:
+      words: ["A", "A", "A"]
+      result: "A"
+    out: true
+  - name: "two_leading_words_cannot_cancel"
+    in:
+      words: ["AA", "BB"]
+      result: "AA"
+    out: false
+  - name: "result_prefix_cannot_disappear"
+    in:
+      words: ["AA", "B"]
+      result: "AB"
+    out: false
+  - name: "nine_distinct_letters"
+    in:
+      words: ["BCD", "EFG"]
+      result: "FHI"
+    out: true
+  - name: "two_column_carry"
+    in:
+      words: ["BII", "BII"]
+      result: "DGH"
+    out: true
+  - name: "seven_digit_repeated_addends"
+    in:
+      words: ["BBBBBBB", "CCCCCCC"]
+      result: "EEEEEEE"
+    out: true
+  - name: "five_seven_digit_addends"
+    in:
+      words: ["BBBBBBB", "BBBBBBB", "BBBBBBB", "BBBBBBB", "BBBBBBB"]
+      result: "EEEEEEE"
+    out: true
+  - name: "seven_digit_full_carry"
+    in:
+      words: ["IIIIII", "BBBBBC"]
+      result: "JAAAAAA"
+    out: true
+  - name: "internal_zero"
+    in:
+      words: ["BAC", "BDB"]
+      result: "CED"
+    out: true
+  - name: "this_is_too_funny"
+    in:
+      words: ["THIS", "IS", "TOO"]
+      result: "FUNNY"
+    out: true
+  - name: "result_two_digits_too_long"
+    in:
+      words: ["ABC", "DEF"]
+      result: "GHIJK"
+    out: false
+  - name: "left_addend_must_be_zero"
+    in:
+      words: ["A", "B"]
+      result: "B"
+    out: true
+  - name: "single_zero_addend_with_long_word"
+    in:
+      words: ["AA", "B"]
+      result: "AA"
+    out: true
+  - name: "duplicated_three_digit_word"
+    in:
+      words: ["ABC", "ABC"]
+      result: "DEF"
+    out: true
+  - name: "three_digit_to_four_digit_carry"
+    in:
+      words: ["ABC", "ABC"]
+      result: "DDEF"
+    out: true
+  - name: "cyclic_two_digit_addends"
+    in:
+      words: ["AB", "BC", "CA"]
+      result: "DD"
+    out: true
+  - name: "four_distinct_single_addends"
+    in:
+      words: ["A", "B", "C", "D"]
+      result: "EA"
+    out: true
+  - name: "five_distinct_single_addends"
+    in:
+      words: ["A", "B", "C", "D", "E"]
+      result: "AE"
+    out: true
+  - name: "zero_in_trailing_position"
+    in:
+      words: ["BA", "BA"]
+      result: "CA"
+    out: true
+  - name: "seven_digit_zero_addend"
+    in:
+      words: ["AAAAAAA", "B"]
+      result: "AAAAAAA"
+    out: true
+  - name: "same_length_forces_leading_zero"
+    in:
+      words: ["A", "B"]
+      result: "AB"
+    out: false
+  - name: "five_addends_exceed_single_digit"
+    in:
+      words: ["A", "B", "C", "D", "E"]
+      result: "F"
+    out: false
+  - name: "result_shorter_than_longest_word"
+    in:
+      words: ["ABCDEFG", "H"]
+      result: "ABCDEF"
+    out: false

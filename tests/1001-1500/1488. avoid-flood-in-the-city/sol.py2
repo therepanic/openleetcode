@@ -1,0 +1,24 @@
+class Solution(object):
+    def avoidFlood(self, rains):
+        """
+        :type rains: List[int]
+        :rtype: List[int]
+        """
+        from sortedcontainers import SortedList
+        res = [-1] * len(rains)
+        full = {}
+        dry = SortedList()
+        for i, lake in enumerate(rains):
+            if lake == 0:
+                dry.add(i)
+                res[i] = 1
+            elif lake in full:
+                j = dry.bisect_right(full[lake])
+                if j == len(dry):
+                    return []
+                res[dry[j]] = lake
+                dry.pop(j)
+                full[lake] = i
+            else:
+                full[lake] = i
+        return res

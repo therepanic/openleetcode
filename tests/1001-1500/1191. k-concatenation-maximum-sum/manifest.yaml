@@ -1,0 +1,317 @@
+entry:
+  id: 1191
+  title: "k-concatenation-maximum-sum"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().kConcatenationMaxSum({arr}, {k})"
+    rust: "Solution::k_concatenation_max_sum({arr}, {k})"
+    python3: "Solution().kConcatenationMaxSum({arr}, {k})"
+    python2: "Solution().kConcatenationMaxSum({arr}, {k})"
+    ruby: "k_concatenation_max_sum({arr}, {k})"
+    java: "new Solution().kConcatenationMaxSum({arr}, {k})"
+    csharp: "new Solution().KConcatenationMaxSum({arr}, {k})"
+    kotlin: "Solution().kConcatenationMaxSum({arr}, {k})"
+    go: "kConcatenationMaxSum({arr}, {k})"
+    dart: "Solution().kConcatenationMaxSum({arr}, {k})"
+    swift: "Solution().kConcatenationMaxSum({arr}, {k})"
+    typescript: "kConcatenationMaxSum({arr}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().kConcatenationMaxSum(arr, k, {result})"
+    checker: |
+      class Checker:
+          def kConcatenationMaxSum(self, arr, k, result):
+              if not isinstance(result, int) or isinstance(result, bool) or not arr or k < 1:
+                  return False
+              def kadane(values):
+                  best = 0
+                  current = 0
+                  for value in values:
+                      current = max(0, current + value)
+                      best = max(best, current)
+                  return best
+              mod = 1000000007
+              if k <= 3:
+                  expected = kadane(arr * k) % mod
+              else:
+                  expected = max((max(0, sum(arr) * (k - 1)) % mod) + kadane(arr), kadane(arr * 2))
+              return result == expected
+
+seed: 119100
+
+tests:
+  - name: "example_one"
+    in:
+      arr: [1, 2]
+      k: 3
+    out: 9
+  - name: "example_two"
+    in:
+      arr: [1, -2, 1]
+      k: 5
+    out: 2
+  - name: "example_three"
+    in:
+      arr: [-1, -2]
+      k: 7
+    out: 0
+  - name: "single_positive"
+    in:
+      arr: [5]
+      k: 1
+    out: 5
+  - name: "single_negative_large_k"
+    in:
+      arr: [-5]
+      k: 100000
+    out: 0
+  - name: "single_zero"
+    in:
+      arr: [0]
+      k: 10
+    out: 0
+  - name: "k_one"
+    in:
+      arr: [1]
+      k: 1
+    out: 1
+  - name: "opposite_pair"
+    in:
+      arr: [-1, 1]
+      k: 2
+    out: 1
+  - name: "positive_then_negative"
+    in:
+      arr: [1, -1]
+      k: 100
+    out: 1
+  - name: "three_element_peak"
+    in:
+      arr: [2, -1, 2]
+      k: 3
+    out: 9
+  - name: "negative_prefix"
+    in:
+      arr: [-2, 3, -1]
+      k: 4
+    out: 3
+  - name: "two_copies"
+    in:
+      arr: [5, -10, 5]
+      k: 2
+    out: 10
+  - name: "positive_total"
+    in:
+      arr: [10, -1, -1]
+      k: 5
+    out: 42
+  - name: "negative_total"
+    in:
+      arr: [-10, 1, 1]
+      k: 5
+    out: 2
+  - name: "maximum_values"
+    in:
+      arr: [10000, 10000]
+      k: 100000
+    out: 999999993
+  - name: "mixed_boundary_values"
+    in:
+      arr: [-10000, 10000]
+      k: 100000
+    out: 10000
+  - name: "balanced_five"
+    in:
+      arr: [1, -2, 3, -2, 1]
+      k: 2
+    out: 4
+  - name: "k_one_mixed"
+    in:
+      arr: [3, -1, 3]
+      k: 1
+    out: 5
+  - name: "alternating_negative"
+    in:
+      arr: [-3, 1, -3, 1]
+      k: 4
+    out: 1
+  - name: "two_positive_pairs"
+    in:
+      arr: [2, 2, -10, 2]
+      k: 6
+    out: 6
+  - name: "equal_edges"
+    in:
+      arr: [4, -1, -1, 4]
+      k: 3
+    out: 18
+  - name: "small_positive_total"
+    in:
+      arr: [-1, 2, -1]
+      k: 10
+    out: 2
+  - name: "repeated_positive"
+    in:
+      arr: [1, 1, -1, 1]
+      k: 4
+    out: 8
+  - name: "isolated_peak"
+    in:
+      arr: [-2, -2, 5, -2]
+      k: 2
+    out: 5
+  - name: "three_element_mixed"
+    in:
+      arr: [7, -3, 4]
+      k: 3
+    out: 24
+  - name: "negative_edges"
+    in:
+      arr: [-5, 2, 2, -5]
+      k: 5
+    out: 4
+  - name: "alternating_zero_total"
+    in:
+      arr: [1, -1, 1, -1]
+      k: 7
+    out: 1
+  - name: "large_alternating"
+    in:
+      arr: [6, -5, 6, -5]
+      k: 2
+    out: 9
+  - name: "large_positive_modulo"
+    in:
+      arr: [10000, -10000, 10000]
+      k: 100000
+    out: 1000000000
+  - name: "large_negative_total"
+    in:
+      arr: [-10000, -9999]
+      k: 99999
+    out: 0
+  - name: "positive_sum_five"
+    in:
+      arr: [9, -8, 9]
+      k: 4
+    out: 40
+  - name: "positive_islands"
+    in:
+      arr: [1, 2, -10, 1, 2]
+      k: 5
+    out: 6
+  - name: "mostly_negative"
+    in:
+      arr: [-1, -1, 3, -1]
+      k: 3
+    out: 3
+  - name: "alternating_peaks"
+    in:
+      arr: [2, -5, 2, -5, 2]
+      k: 8
+    out: 4
+  - name: "maximum_edge_sum"
+    in:
+      arr: [10000, -1, -1, -1, 10000]
+      k: 100000
+    out: 999699993
+  - name: "generated_short"
+    seed: 119101
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 10
+  - name: "generated_medium"
+    seed: 119102
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50
+          max: 200
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 1000
+  - name: "generated_negative"
+    seed: 119103
+    in:
+      arr:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: -10000
+          max: -1
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_large"
+    seed: 119104
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_maximum"
+    seed: 119105
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 100000

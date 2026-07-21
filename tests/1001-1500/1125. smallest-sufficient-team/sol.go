@@ -1,99 +1,90 @@
 func smallestSufficientTeam(req_skills []string, people [][]string) []int {
-    n := len(req_skills)
-    m := len(people)
-    
-    skillIdx := make(map[string]int)
-    for i, skill := range req_skills {
-        skillIdx[skill] = i
-    }
-    
-    peopleMask := make([]int, m)
+    n := len(people)
+    peopleSets := make([]map[string]bool, n)
     for i, skills := range people {
-        mask := 0
-        for _, skill := range skills {
-            mask |= 1 << skillIdx[skill]
-        }
-        peopleMask[i] = mask
-    }
-    
-    for i := 0; i < m; i++ {
-        for j := 0; j < m; j++ {
-            if i != j && peopleMask[i] != 0 && (peopleMask[i] & peopleMask[j]) == peopleMask[i] {
-                peopleMask[i] = 0
-                break
-            }
+        peopleSets[i] = make(map[string]bool)
+        for _, s := range skills {
+            peopleSets[i][s] = true
         }
     }
-    
-    skillToPeople := make([][]int, n)
+
+    // Remove all skill sets that are subset of another skillset
     for i := 0; i < n; i++ {
-        skillToPeople[i] = []int{}
-    }
-    for i := 0; i < m; i++ {
-        if peopleMask[i] == 0 {
-            continue
-        }
-        for bit := 0; bit < n; bit++ {
-            if (peopleMask[i] & (1 << bit)) != 0 {
-                skillToPeople[bit] = append(skillToPeople[bit], i)
+        for j := 0; j < n; j++ {
+            if i != j {
+                subset := true
+                for s := range peopleSets[i] {
+                    if !peopleSets[j][s] {
+                        subset = false
+                        break
+                    }
+                }
+                if subset {
+                    peopleSets[i] = make(map[string]bool)
+                }
             }
         }
     }
-    
-    unmetSkills := make(map[string]bool)
-    for _, skill := range req_skills {
-        unmetSkills[skill] = true
+
+    // Build dictionary of skills to the people who can perform them
+    skillsToPeople := make(map[string]map[int]bool)
+    for i, skills := range peopleSets {
+        for s := range skills {
+            if skillsToPeople[s] == nil {
+                skillsToPeople[s] = make(map[int]bool)
+            }
+            skillsToPeople[s][i] = true
+        }
     }
-    
-    smallestLength := int(^uint(0) >> 1)
-    var currentTeam []int
-    var bestTeam []int
-    
-    var backtrack func(skill int)
-    backtrack = func(skill int) {
+
+    unmetSkills := make(map[string]bool)
+    for _, s := range req_skills {
+        unmetSkills[s] = true
+    }
+
+    smallestLength := int(^uint(0) >> 1) // max int
+    currentTeam := []int{}
+    bestTeam := []int{}
+
+    var meetSkill func(int)
+    meetSkill = func(skill int) {
         if len(unmetSkills) == 0 {
             if smallestLength > len(currentTeam) {
                 smallestLength = len(currentTeam)
-                bestTeam = append([]int{}, currentTeam...)
+                bestTeam = make([]int, len(currentTeam))
+                copy(bestTeam, currentTeam)
             }
             return
         }
-        
-        if skill >= n {
+
+        if skill >= len(req_skills) || !unmetSkills[req_skills[skill]] {
+            meetSkill(skill + 1)
             return
         }
-        
-        if !unmetSkills[req_skills[skill]] {
-            backtrack(skill + 1)
-            return
-        }
-        
-        for _, i := range skillToPeople[skill] {
-            mask := peopleMask[i]
-            skillsAdded := []string{}
-            for s := range unmetSkills {
-                if (mask & (1 << skillIdx[s])) != 0 {
-                    skillsAdded = append(skillsAdded, s)
+
+        candidates := skillsToPeople[req_skills[skill]]
+        for i := range candidates {
+            skillsAdded := make(map[string]bool)
+            for s := range peopleSets[i] {
+                if unmetSkills[s] {
+                    skillsAdded[s] = true
                 }
             }
-            if len(skillsAdded) == 0 {
-                continue
-            }
-            
-            for _, s := range skillsAdded {
+
+            for s := range skillsAdded {
                 delete(unmetSkills, s)
             }
             currentTeam = append(currentTeam, i)
-            
-            backtrack(skill + 1)
-            
+
+            meetSkill(skill + 1)
+
             currentTeam = currentTeam[:len(currentTeam)-1]
-            for _, s := range skillsAdded {
+            for s := range skillsAdded {
                 unmetSkills[s] = true
             }
         }
     }
-    
-    backtrack(0)
+
+    meetSkill(0)
     return bestTeam
 }

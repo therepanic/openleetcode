@@ -1,34 +1,64 @@
 class Solution {
+    private var unmetSkills: Set<String> = []
+    private var smallestLength = Int.max
+    private var currentTeam: [Int] = []
+    private var bestTeam: [Int] = []
+    private var reqSkills: [String] = []
+    private var peopleSets: [Set<String>] = []
+    private var skillsToPeople: [String: Set<Int>] = [:]
+
     func smallestSufficientTeam(_ req_skills: [String], _ people: [[String]]) -> [Int] {
-        let n = req_skills.count
-        let full = (1 << n) - 1
-        var idx: [String: Int] = [:]
-        for (i, skill) in req_skills.enumerated() { idx[skill] = i }
+        self.reqSkills = req_skills
+        let n = people.count
+        peopleSets = people.map { Set($0) }
 
-        let masks = people.map { skills -> Int in
-            var mask = 0
-            for skill in skills { mask |= 1 << idx[skill]! }
-            return mask
-        }
-
-        var dp = Array<[Int]?>(repeating: nil, count: 1 << n)
-        dp[0] = []
-
-        for (i, pmask) in masks.enumerated() {
-            if pmask == 0 { continue }
-            var next = dp
-            for mask in 0...full {
-                guard let team = dp[mask] else { continue }
-                let nmask = mask | pmask
-                var cand = team
-                cand.append(i)
-                if next[nmask] == nil || cand.count < next[nmask]!.count {
-                    next[nmask] = cand
+        // Remove all skill sets that are subset of another skillset
+        for i in 0..<n {
+            for j in 0..<n {
+                if i != j && peopleSets[i].isSubset(of: peopleSets[j]) {
+                    peopleSets[i] = []
                 }
             }
-            dp = next
         }
 
-        return dp[full] ?? []
+        // Build dictionary of skills to the people who can perform them
+        for i in 0..<n {
+            for skill in peopleSets[i] {
+                skillsToPeople[skill, default: []].insert(i)
+            }
+        }
+
+        unmetSkills = Set(req_skills)
+
+        func meetSkill(_ skill: Int = 0) {
+            if unmetSkills.isEmpty {
+                if smallestLength > currentTeam.count {
+                    smallestLength = currentTeam.count
+                    bestTeam = currentTeam
+                }
+                return
+            }
+
+            if skill >= reqSkills.count || !unmetSkills.contains(reqSkills[skill]) {
+                meetSkill(skill + 1)
+                return
+            }
+
+            guard let candidates = skillsToPeople[reqSkills[skill]] else { return }
+
+            for i in candidates {
+                let skillsAdded = peopleSets[i].intersection(unmetSkills)
+                unmetSkills.subtract(skillsAdded)
+                currentTeam.append(i)
+
+                meetSkill(skill + 1)
+
+                currentTeam.removeLast()
+                unmetSkills.formUnion(skillsAdded)
+            }
+        }
+
+        meetSkill()
+        return bestTeam
     }
 }

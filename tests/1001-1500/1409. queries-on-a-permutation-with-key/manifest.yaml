@@ -1,0 +1,263 @@
+entry:
+  id: 1409
+  title: "queries-on-a-permutation-with-key"
+  params:
+    queries:
+      type: array
+      items:
+        type: int
+    m:
+      type: int
+  call:
+    cpp: "Solution().processQueries({queries}, {m})"
+    rust: "Solution::process_queries({queries}, {m})"
+    python3: "Solution().processQueries({queries}, {m})"
+    python2: "Solution().processQueries({queries}, {m})"
+    ruby: "process_queries({queries}, {m})"
+    java: "new Solution().processQueries({queries}, {m})"
+    csharp: "new Solution().ProcessQueries({queries}, {m})"
+    kotlin: "Solution().processQueries({queries}, {m})"
+    go: "processQueries({queries}, {m})"
+    dart: "Solution().processQueries({queries}, {m})"
+    swift: "Solution().processQueries({queries}, {m})"
+    typescript: "processQueries({queries}, {m})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().processQueries(queries, m, {result})"
+    checker: |
+      class Checker:
+          def processQueries(self, queries, m, result):
+              if not isinstance(m, int) or not 1 <= m <= 1000:
+                  return False
+              if not isinstance(queries, list) or not 1 <= len(queries) <= m:
+                  return False
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              last_seen = {}
+              for index, (q, got) in enumerate(zip(queries, result)):
+                  if not isinstance(q, int) or not 1 <= q <= m:
+                      return False
+                  if not isinstance(got, int):
+                      return False
+                  if q in last_seen:
+                      newer = sum(1 for stamp in last_seen.values() if stamp > last_seen[q])
+                      expected = newer
+                  else:
+                      unqueried_less = (q - 1) - sum(1 for value in last_seen if value < q)
+                      expected = len(last_seen) + unqueried_less
+                  if got != expected or not 0 <= got < m:
+                      return False
+                  last_seen[q] = index
+              return True
+seed: 1409
+tests:
+  - name: "example_one"
+    in:
+      queries: [3, 1, 2, 1]
+      m: 5
+  - name: "example_two"
+    in:
+      queries: [4, 1, 2, 2]
+      m: 4
+  - name: "example_three"
+    in:
+      queries: [7, 5, 5, 8, 3]
+      m: 8
+  - name: "minimum_single"
+    in:
+      queries: [1]
+      m: 1
+  - name: "two_first_and_repeat"
+    in:
+      queries: [2, 1]
+      m: 2
+  - name: "two_alternating"
+    in:
+      queries: [1, 2]
+      m: 2
+  - name: "ascending_full"
+    in:
+      queries: [1, 2, 3, 4, 5]
+      m: 5
+  - name: "descending_full"
+    in:
+      queries: [5, 4, 3, 2, 1]
+      m: 5
+  - name: "ascending_twice"
+    in:
+      queries: [1, 2, 3, 4]
+      m: 4
+  - name: "descending_twice"
+    in:
+      queries: [4, 3, 2, 1]
+      m: 4
+  - name: "same_value"
+    in:
+      queries: [1, 1, 1, 1, 1]
+      m: 7
+  - name: "same_last_value"
+    in:
+      queries: [9, 9, 9, 9]
+      m: 9
+  - name: "front_back"
+    in:
+      queries: [1, 10, 1, 10, 1]
+      m: 10
+  - name: "middle_repeated"
+    in:
+      queries: [5, 5, 4, 5, 6, 5]
+      m: 8
+  - name: "all_high_values"
+    in:
+      queries: [8, 9, 10, 8, 10, 9, 8]
+      m: 10
+  - name: "all_low_values"
+    in:
+      queries: [1, 2, 3, 1, 3, 2, 1]
+      m: 10
+  - name: "three_value_cycle"
+    in:
+      queries: [1, 2, 3]
+      m: 3
+  - name: "interleaved_values"
+    in:
+      queries: [2, 5, 2, 5, 1, 4]
+      m: 6
+  - name: "new_values_then_revisit"
+    in:
+      queries: [6, 2, 9, 4, 6, 2, 9, 4]
+      m: 10
+  - name: "sparse_large_domain"
+    in:
+      queries: [250, 500, 250, 1, 500]
+      m: 500
+  - name: "extreme_domain"
+    in:
+      queries: [1000, 1, 500, 1000, 1, 999]
+      m: 1000
+  - name: "complete_small_permutation"
+    in:
+      queries: [3, 1, 4, 2]
+      m: 4
+  - name: "complete_large_permutation"
+    in:
+      queries: [10, 1, 8, 3, 6, 2, 9, 4, 7, 5]
+      m: 10
+  - name: "boundary_pair"
+    in:
+      queries: [1, 1000, 500, 1, 1000]
+      m: 1000
+  - name: "alternating_extremes"
+    in:
+      queries: [1, 1000, 1, 1000, 999, 2, 999, 2]
+      m: 1000
+  - name: "repeated_three_values"
+    in:
+      queries: [7, 2, 9, 2, 7, 9, 2, 7]
+      m: 10
+  - name: "nested_reordering"
+    in:
+      queries: [4, 3, 4, 2, 3, 4]
+      m: 6
+  - name: "queries_length_equals_m"
+    in:
+      queries: [8, 1, 8, 2, 7, 3, 6, 4]
+      m: 8
+  - name: "large_prefix"
+    in:
+      queries: [997, 998, 999, 1000, 997, 1, 500, 1000]
+      m: 1000
+  - name: "middle_band"
+    in:
+      queries: [40, 41, 42, 43, 42, 41, 40, 43]
+      m: 50
+  - name: "alternating_parity"
+    in:
+      queries: [2, 4, 6, 8, 2, 4, 6, 8]
+      m: 8
+  - name: "mixed_small"
+    in:
+      queries: [3, 8, 1, 8, 3, 1]
+      m: 8
+  - name: "mixed_medium"
+    in:
+      queries: [12, 1, 6, 12, 6, 1]
+      m: 12
+  - name: "long_cycle"
+    in:
+      queries: [1, 2, 3, 4, 5]
+      m: 5
+  - name: "long_high_pattern"
+    in:
+      queries: [9, 8, 7, 9, 8, 7, 9, 8, 7]
+      m: 9
+  - name: "generated_small"
+    seed: 1410
+    in:
+      queries:
+        gen: "array"
+        len: 7
+        of:
+          gen: "int"
+          min: 1
+          max: 12
+        distinct: false
+        elemType: "int"
+      m: 12
+  - name: "generated_medium"
+    seed: 1411
+    in:
+      queries:
+        gen: "array"
+        len: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 60
+        distinct: false
+        elemType: "int"
+      m: 60
+  - name: "generated_boundary"
+    seed: 1412
+    in:
+      queries:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+      m: 1000
+  - name: "generated_large_full"
+    seed: 1413
+    in:
+      queries:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+      m: 1000
+  - name: "generated_large_repeated_domain"
+    seed: 1414
+    in:
+      queries:
+        gen: "array"
+        len: 999
+        of:
+          gen: "int"
+          min: 1
+          max: 999
+        distinct: false
+        elemType: "int"
+      m: 999

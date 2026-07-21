@@ -1,0 +1,335 @@
+entry:
+  id: 1131
+  title: "maximum-of-absolute-value-expression"
+  params:
+    arr1:
+      type: array
+      items:
+        type: int
+    arr2:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxAbsValExpr({arr1}, {arr2})"
+    rust: "Solution::max_abs_val_expr({arr1}, {arr2})"
+    python3: "Solution().maxAbsValExpr({arr1}, {arr2})"
+    python2: "Solution().maxAbsValExpr({arr1}, {arr2})"
+    ruby: "max_abs_val_expr({arr1}, {arr2})"
+    java: "new Solution().maxAbsValExpr({arr1}, {arr2})"
+    csharp: "new Solution().MaxAbsValExpr({arr1}, {arr2})"
+    kotlin: "Solution().maxAbsValExpr({arr1}, {arr2})"
+    go: "maxAbsValExpr({arr1}, {arr2})"
+    dart: "Solution().maxAbsValExpr({arr1}, {arr2})"
+    swift: "Solution().maxAbsValExpr({arr1}, {arr2})"
+    typescript: "maxAbsValExpr({arr1}, {arr2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxAbsValExpr(arr1, arr2, {result})"
+    checker: |
+      class Checker:
+          def maxAbsValExpr(self, arr1, arr2, result):
+              if len(arr1) != len(arr2) or len(arr1) < 2:
+                  return False
+              best = 0
+              for sign1 in (1, -1):
+                  for sign2 in (1, -1):
+                      values = [sign1 * arr1[i] + sign2 * arr2[i] + i for i in range(len(arr1))]
+                      best = max(best, max(values) - min(values))
+              return result == best
+
+seed: 1131
+
+tests:
+  - name: "example-one"
+    in:
+      arr1: [1, 2, 3, 4]
+      arr2: [-1, 4, 5, 6]
+    out: 13
+  - name: "example-two"
+    in:
+      arr1: [1, -2, -5, 0, 10]
+      arr2: [0, -2, -1, -7, -4]
+    out: 20
+  - name: "minimum-length-equal"
+    in:
+      arr1: [0, 0]
+      arr2: [0, 0]
+    out: 1
+  - name: "index-dominates"
+    in:
+      arr1: [5, 5, 5, 5, 5]
+      arr2: [7, 7, 7, 7, 7]
+    out: 4
+  - name: "constant-opposite"
+    in:
+      arr1: [10, 10, 10]
+      arr2: [-10, -10, -10]
+    out: 2
+  - name: "two-positive-extremes"
+    in:
+      arr1: [1000000, -1000000]
+      arr2: [1000000, -1000000]
+    out: 4000001
+  - name: "two-crossed-extremes"
+    in:
+      arr1: [1000000, -1000000]
+      arr2: [-1000000, 1000000]
+    out: 4000001
+  - name: "two-element-one-axis-maximum"
+    in:
+      arr1: [1000000, -1000000]
+      arr2: [0, 0]
+    out: 2000001
+  - name: "single-coordinate-change"
+    in:
+      arr1: [0, 100, 0]
+      arr2: [0, 0, 0]
+    out: 101
+  - name: "negative-coordinate-change"
+    in:
+      arr1: [0, -100, 0]
+      arr2: [0, 0, 0]
+    out: 101
+  - name: "alternating-signs"
+    in:
+      arr1: [1, -1, 1, -1]
+      arr2: [-1, 1, -1, 1]
+    out: 7
+  - name: "opposing-trends"
+    in:
+      arr1: [-5, -2, 1, 4]
+      arr2: [8, 5, 2, -1]
+    out: 21
+  - name: "same-trends"
+    in:
+      arr1: [-5, -2, 1, 4]
+      arr2: [-8, -5, -2, 1]
+    out: 21
+  - name: "zeros-and-one"
+    in:
+      arr1: [0, 1]
+      arr2: [0, 1]
+    out: 3
+  - name: "large-negative"
+    in:
+      arr1: [-1000000, -999999, -1000000]
+      arr2: [1000000, 999999, 1000000]
+    out: 3
+  - name: "large-positive"
+    in:
+      arr1: [1000000, 999999, 1000000]
+      arr2: [1000000, 999999, 1000000]
+    out: 3
+  - name: "repeated-extreme"
+    in:
+      arr1: [1000000, 0, -1000000, 0]
+      arr2: [0, 1000000, 0, -1000000]
+    out: 2000003
+  - name: "mixed-small"
+    in:
+      arr1: [3, -4, 2, -1, 0, 7]
+      arr2: [-2, 5, -6, 4, 1, -3]
+    out: 23
+  - name: "mixed-duplicates"
+    in:
+      arr1: [2, 2, -2, -2, 2]
+      arr2: [1, -1, 1, -1, 1]
+    out: 9
+  - name: "monotone-arr1"
+    in:
+      arr1: [0, 1, 2, 3, 4, 5]
+      arr2: [5, 4, 3, 2, 1, 0]
+    out: 15
+  - name: "monotone-arr2"
+    in:
+      arr1: [5, 4, 3, 2, 1, 0]
+      arr2: [0, 1, 2, 3, 4, 5]
+    out: 15
+  - name: "uneven-small"
+    in:
+      arr1: [-3, 9, -8, 2, 6]
+      arr2: [4, -7, 5, 0, -2]
+    out: 30
+  - name: "cancellation"
+    in:
+      arr1: [100, -100, 50, -50]
+      arr2: [-100, 100, -50, 50]
+    out: 401
+  - name: "center-peak"
+    in:
+      arr1: [0, 0, 100, 0, 0]
+      arr2: [0, 0, -100, 0, 0]
+    out: 202
+  - name: "all-minimum"
+    in:
+      arr1: [-1000000, -1000000]
+      arr2: [-1000000, -1000000]
+    out: 1
+  - name: "alternating-large"
+    in:
+      arr1: [1000000, -1000000, 1000000, -1000000, 1000000]
+      arr2: [-1000000, 1000000, -1000000, 1000000, -1000000]
+    out: 4000003
+  - name: "short-three"
+    in:
+      arr1: [9, 0, -9]
+      arr2: [2, -4, 6]
+    out: 24
+  - name: "short-four"
+    in:
+      arr1: [-1, 8, 3, -6]
+      arr2: [7, -2, 5, 0]
+    out: 19
+  - name: "balanced-six"
+    in:
+      arr1: [-2, 4, -6, 8, -10, 12]
+      arr2: [3, -5, 7, -9, 11, -13]
+    out: 47
+  - name: "zeros-with-spike"
+    in:
+      arr1: [0, 0, 0, 0, 50, 0, 0]
+      arr2: [0, 0, 0, 0, 50, 0, 0]
+    out: 104
+  - name: "interior-opposite-extremes"
+    in:
+      arr1: [0, 1000000, 0, 0, -1000000, 0]
+      arr2: [0, -1000000, 0, 0, 1000000, 0]
+    out: 4000003
+  - name: "far-endpoints-mixed-signs"
+    in:
+      arr1: [-1000000, 4, -3, 2, 1000000]
+      arr2: [1000000, -5, 6, -7, -1000000]
+    out: 4000004
+  - name: "middle-pair-beats-endpoints"
+    in:
+      arr1: [0, -900000, 900000, 0, 0]
+      arr2: [0, 900000, -900000, 0, 0]
+    out: 3600001
+  - name: "plateaus-with-late-reversal"
+    in:
+      arr1: [12, 12, 12, -8, -8, -8, 12]
+      arr2: [-3, -3, -3, 9, 9, 9, -3]
+    out: 37
+  - name: "generated-wide-12k"
+    seed: 113101
+    in:
+      arr1:
+        gen: "array"
+        len: 12000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+      arr2:
+        gen: "array"
+        len: 12000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+  - name: "generated-wide-25k"
+    seed: 113102
+    in:
+      arr1:
+        gen: "array"
+        len: 25000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+      arr2:
+        gen: "array"
+        len: 25000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+  - name: "generated-large-max"
+    seed: 113103
+    in:
+      arr1:
+        gen: "array"
+        len: 40000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+      arr2:
+        gen: "array"
+        len: 40000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+  - name: "generated-large-narrow"
+    seed: 113104
+    in:
+      arr1:
+        gen: "array"
+        len: 39999
+        of:
+          gen: "int"
+          min: -3
+          max: 3
+        elemType: "int"
+      arr2:
+        gen: "array"
+        len: 39999
+        of:
+          gen: "int"
+          min: -3
+          max: 3
+        elemType: "int"
+  - name: "generated-large-wide-32k"
+    seed: 113105
+    in:
+      arr1:
+        gen: "array"
+        len: 32000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+      arr2:
+        gen: "array"
+        len: 32000
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        elemType: "int"
+  - name: "generated-large-midrange-36k"
+    seed: 113106
+    in:
+      arr1:
+        gen: "array"
+        len: 36000
+        of:
+          gen: "int"
+          min: -250000
+          max: 250000
+        elemType: "int"
+      arr2:
+        gen: "array"
+        len: 36000
+        of:
+          gen: "int"
+          min: -250000
+          max: 250000
+        elemType: "int"

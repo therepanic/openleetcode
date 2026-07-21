@@ -2,7 +2,7 @@ public class Solution {
     public int LongestWPI(int[] hours) {
         int score = 0;
         int longestInterval = 0;
-        var seenAt = new Dictionary<int, int>();
+        Dictionary<int, int> seenAt = new Dictionary<int, int>();
         seenAt[0] = -1;
         
         for (int i = 0; i < hours.Length; i++) {

@@ -1,0 +1,576 @@
+entry:
+  id: 1450
+  title: number-of-students-doing-homework-at-a-given-time
+  params:
+    startTime:
+      type: array
+      items:
+        type: int
+    endTime:
+      type: array
+      items:
+        type: int
+    queryTime:
+      type: int
+  call:
+    cpp: "Solution().busyStudent({startTime}, {endTime}, {queryTime})"
+    rust: "Solution::busy_student({startTime}, {endTime}, {queryTime})"
+    python3: "Solution().busyStudent({startTime}, {endTime}, {queryTime})"
+    python2: "Solution().busyStudent({startTime}, {endTime}, {queryTime})"
+    ruby: "busy_student({startTime}, {endTime}, {queryTime})"
+    java: "new Solution().busyStudent({startTime}, {endTime}, {queryTime})"
+    csharp: "new Solution().BusyStudent({startTime}, {endTime}, {queryTime})"
+    kotlin: "Solution().busyStudent({startTime}, {endTime}, {queryTime})"
+    go: "busyStudent({startTime}, {endTime}, {queryTime})"
+    dart: "Solution().busyStudent({startTime}, {endTime}, {queryTime})"
+    swift: "Solution().busyStudent({startTime}, {endTime}, {queryTime})"
+    typescript: "busyStudent({startTime}, {endTime}, {queryTime})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().busyStudent(startTime, endTime, queryTime, {result})"
+    checker: |
+      class Checker:
+          def busyStudent(self, startTime, endTime, queryTime, result):
+              expected = sum(start <= queryTime <= end for start, end in zip(startTime, endTime))
+              return type(result) is int and result == expected
+seed: 1450
+tests:
+  - name: example_one
+    in:
+      startTime: [1, 2, 3]
+      endTime: [3, 2, 7]
+      queryTime: 4
+    out: 1
+  - name: example_two
+    in:
+      startTime: [4]
+      endTime: [4]
+      queryTime: 4
+    out: 1
+  - name: single_inside
+    in:
+      startTime: [2]
+      endTime: [8]
+      queryTime: 5
+    out: 1
+  - name: single_before
+    in:
+      startTime: [3]
+      endTime: [5]
+      queryTime: 2
+    out: 0
+  - name: single_after
+    in:
+      startTime: [3]
+      endTime: [5]
+      queryTime: 6
+    out: 0
+  - name: start_boundary
+    in:
+      startTime: [2]
+      endTime: [5]
+      queryTime: 2
+    out: 1
+  - name: end_boundary
+    in:
+      startTime: [2]
+      endTime: [5]
+      queryTime: 5
+    out: 1
+  - name: one_point_interval_miss
+    in:
+      startTime: [7]
+      endTime: [7]
+      queryTime: 6
+    out: 0
+  - name: all_overlap
+    in:
+      startTime: [1, 1, 1, 1]
+      endTime: [10, 10, 10, 10]
+      queryTime: 5
+    out: 4
+  - name: no_overlap
+    in:
+      startTime: [1, 5, 9]
+      endTime: [2, 6, 10]
+      queryTime: 3
+    out: 0
+  - name: touching_intervals
+    in:
+      startTime: [1, 3, 5]
+      endTime: [2, 4, 6]
+      queryTime: 3
+    out: 1
+  - name: nested_intervals
+    in:
+      startTime: [1, 2, 3, 4]
+      endTime: [10, 9, 8, 7]
+      queryTime: 5
+    out: 4
+  - name: disjoint_query_middle
+    in:
+      startTime: [1, 10, 20]
+      endTime: [3, 12, 22]
+      queryTime: 11
+    out: 1
+  - name: earliest_query
+    in:
+      startTime: [1, 4, 7]
+      endTime: [2, 6, 9]
+      queryTime: 1
+    out: 1
+  - name: latest_query
+    in:
+      startTime: [990, 995, 1000]
+      endTime: [1000, 1000, 1000]
+      queryTime: 1000
+    out: 3
+  - name: repeated_intervals
+    in:
+      startTime: [2, 2, 2, 5, 5]
+      endTime: [6, 6, 6, 8, 8]
+      queryTime: 5
+    out: 5
+  - name: one_point_intervals
+    in:
+      startTime: [4, 5, 6, 7]
+      endTime: [4, 5, 6, 7]
+      queryTime: 5
+    out: 1
+  - name: unsorted_intervals
+    in:
+      startTime: [10, 1, 7, 3]
+      endTime: [12, 5, 8, 9]
+      queryTime: 7
+    out: 2
+  - name: all_end_at_query
+    in:
+      startTime: [1, 2, 3, 4]
+      endTime: [4, 4, 4, 4]
+      queryTime: 4
+    out: 4
+  - name: mixed_activity
+    in:
+      startTime: [1, 2, 4, 7]
+      endTime: [5, 3, 8, 9]
+      queryTime: 4
+    out: 2
+  - name: staggered_none
+    in:
+      startTime: [1, 4, 7, 10]
+      endTime: [2, 5, 8, 11]
+      queryTime: 6
+    out: 0
+  - name: five_students
+    in:
+      startTime: [1, 2, 3, 4, 5]
+      endTime: [5, 5, 5, 5, 5]
+      queryTime: 4
+    out: 4
+  - name: alternating_ranges
+    in:
+      startTime: [1, 5, 1, 5]
+      endTime: [3, 7, 7, 9]
+      queryTime: 6
+    out: 3
+  - name: broad_and_point
+    in:
+      startTime: [1, 4, 6]
+      endTime: [10, 4, 6]
+      queryTime: 4
+    out: 2
+  - name: query_at_first_start
+    in:
+      startTime: [100, 200, 300]
+      endTime: [150, 250, 350]
+      queryTime: 100
+    out: 1
+  - name: query_at_last_end
+    in:
+      startTime: [100, 200, 300]
+      endTime: [150, 250, 350]
+      queryTime: 350
+    out: 1
+  - name: all_times_minimum
+    in:
+      startTime: [1, 1, 1]
+      endTime: [1, 1, 1]
+      queryTime: 1
+    out: 3
+  - name: all_times_maximum
+    in:
+      startTime: [1000, 1000]
+      endTime: [1000, 1000]
+      queryTime: 1000
+    out: 2
+  - name: query_between_ranges
+    in:
+      startTime: [10, 20, 30, 40]
+      endTime: [19, 29, 39, 49]
+      queryTime: 25
+    out: 1
+  - name: varied_overlap
+    in:
+      startTime: [2, 8, 1, 12, 5]
+      endTime: [4, 10, 6, 15, 9]
+      queryTime: 8
+    out: 2
+  - name: broad_overlap
+    in:
+      startTime: [1, 100, 200]
+      endTime: [1000, 900, 800]
+      queryTime: 500
+    out: 3
+  - name: only_first_active
+    in:
+      startTime: [1, 20, 30]
+      endTime: [10, 25, 40]
+      queryTime: 5
+    out: 1
+  - name: only_last_active
+    in:
+      startTime: [1, 20, 30]
+      endTime: [10, 25, 40]
+      queryTime: 35
+    out: 1
+  - name: all_contain_query
+    in:
+      startTime: [1, 10, 20, 30]
+      endTime: [100, 90, 80, 70]
+      queryTime: 50
+    out: 4
+  - name: max_length_all_active
+    in:
+      startTime:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+      endTime:
+        [
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+        ]
+      queryTime: 500
+    out: 100
+  - name: generated_max_length_all_active
+    seed: 145001
+    in:
+      startTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 499
+        distinct: false
+        sorted: false
+        elemType: "int"
+      endTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 500
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      queryTime: 500
+  - name: generated_max_length_none_at_start
+    seed: 145002
+    in:
+      startTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 499
+        distinct: false
+        sorted: false
+        elemType: "int"
+      endTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 500
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      queryTime: 1
+  - name: generated_max_length_all_at_end
+    seed: 145003
+    in:
+      startTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 500
+        distinct: false
+        sorted: false
+        elemType: "int"
+      endTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 500
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      queryTime: 1000
+  - name: generated_max_length_midpoint
+    seed: 145004
+    in:
+      startTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+      endTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 100
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      queryTime: 50
+  - name: generated_max_length_late_intervals
+    seed: 145005
+    in:
+      startTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 500
+          max: 500
+        distinct: false
+        sorted: false
+        elemType: "int"
+      endTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 500
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      queryTime: 750

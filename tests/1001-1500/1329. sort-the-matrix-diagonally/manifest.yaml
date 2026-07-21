@@ -1,0 +1,505 @@
+entry:
+  id: 1329
+  title: sort-the-matrix-diagonally
+  params:
+    mat:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().diagonalSort({mat})"
+    rust: "Solution::diagonal_sort({mat})"
+    python3: "Solution().diagonalSort({mat})"
+    python2: "Solution().diagonalSort({mat})"
+    ruby: "diagonal_sort({mat})"
+    java: "new Solution().diagonalSort({mat})"
+    csharp: "new Solution().DiagonalSort({mat})"
+    kotlin: "Solution().diagonalSort({mat})"
+    go: "diagonalSort({mat})"
+    dart: "Solution().diagonalSort({mat})"
+    swift: "Solution().diagonalSort({mat})"
+    typescript: "diagonalSort({mat})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().diagonalSort(mat, {result})"
+    checker: |
+      class Checker:
+          def diagonalSort(self, mat, result):
+              if not isinstance(result, list) or len(result) != len(mat):
+                  return False
+              if any(not isinstance(row, list) or len(row) != len(mat[0]) for row in result):
+                  return False
+              for start_col in range(len(mat[0])):
+                  source = []
+                  candidate = []
+                  row = 0
+                  col = start_col
+                  while row < len(mat) and col < len(mat[0]):
+                      source.append(mat[row][col])
+                      candidate.append(result[row][col])
+                      row += 1
+                      col += 1
+                  if candidate != sorted(source):
+                      return False
+              for start_row in range(1, len(mat)):
+                  source = []
+                  candidate = []
+                  row = start_row
+                  col = 0
+                  while row < len(mat) and col < len(mat[0]):
+                      source.append(mat[row][col])
+                      candidate.append(result[row][col])
+                      row += 1
+                      col += 1
+                  if candidate != sorted(source):
+                      return False
+              return True
+seed: 1329
+tests:
+  - name: example_one
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [3, 3, 1, 1]
+          - [2, 2, 1, 2]
+          - [1, 1, 1, 2]
+    out:
+      - [1, 1, 1, 1]
+      - [1, 2, 2, 2]
+      - [1, 2, 3, 3]
+  - name: example_two
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [11, 25, 66, 1, 69, 7]
+          - [23, 55, 17, 45, 15, 52]
+          - [75, 31, 36, 44, 58, 8]
+          - [22, 27, 33, 25, 68, 4]
+          - [84, 28, 14, 11, 5, 50]
+    out:
+      - [5, 17, 4, 1, 52, 7]
+      - [11, 11, 25, 45, 8, 69]
+      - [14, 23, 25, 44, 58, 15]
+      - [22, 27, 31, 36, 50, 66]
+      - [84, 28, 75, 33, 55, 68]
+  - name: single_minimum
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1]
+  - name: single_maximum
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100]
+  - name: one_row_unsorted
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 1, 50, 2, 99, 3]
+  - name: one_column_unsorted
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100]
+          - [1]
+          - [50]
+          - [2]
+          - [99]
+          - [3]
+  - name: two_by_two_descending
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [4, 3]
+          - [2, 1]
+  - name: two_by_three_main_diagonal
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [9, 8, 7]
+          - [6, 1, 5]
+  - name: three_by_two_main_diagonal
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [9, 8]
+          - [7, 1]
+          - [6, 5]
+  - name: all_duplicates
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [7, 7, 7, 7]
+          - [7, 7, 7, 7]
+          - [7, 7, 7, 7]
+  - name: already_diagonally_sorted
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 8, 9, 10]
+          - [2, 3, 11, 12]
+          - [4, 5, 6, 13]
+          - [7, 14, 15, 16]
+  - name: four_by_four_descending
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [16, 15, 14, 13]
+          - [12, 11, 10, 9]
+          - [8, 7, 6, 5]
+          - [4, 3, 2, 1]
+  - name: repeated_main_diagonal
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [9, 1, 9]
+          - [2, 9, 2]
+          - [9, 3, 9]
+  - name: main_diagonal_extremes
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 20, 30, 40]
+          - [50, 1, 60, 70]
+          - [80, 90, 50, 10]
+          - [15, 25, 35, 25]
+  - name: upper_diagonal_requires_sorting
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 90, 5, 70, 3]
+          - [2, 4, 10, 6, 80]
+          - [7, 8, 9, 20, 30]
+  - name: lower_diagonal_requires_sorting
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [90, 4, 5]
+          - [6, 80, 7]
+          - [70, 8, 60]
+          - [9, 50, 40]
+  - name: five_by_seven_mixed
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [42, 5, 99, 1, 77, 12, 64]
+          - [8, 55, 3, 90, 17, 48, 26]
+          - [73, 14, 61, 2, 88, 35, 19]
+          - [6, 96, 29, 70, 11, 53, 81]
+          - [44, 21, 100, 38, 67, 4, 92]
+  - name: seven_by_five_mixed
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [42, 5, 99, 1, 77]
+          - [8, 55, 3, 90, 17]
+          - [73, 14, 61, 2, 88]
+          - [6, 96, 29, 70, 11]
+          - [44, 21, 100, 38, 67]
+          - [18, 83, 27, 59, 7]
+          - [95, 34, 72, 13, 46]
+  - name: checkerboard_extremes
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 100, 1, 100, 1]
+          - [100, 1, 100, 1, 100]
+          - [1, 100, 1, 100, 1]
+          - [100, 1, 100, 1, 100]
+  - name: diagonal_ties
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [5, 5, 4, 4, 3]
+          - [5, 4, 4, 3, 3]
+          - [4, 4, 3, 3, 2]
+          - [4, 3, 3, 2, 2]
+          - [3, 3, 2, 2, 1]
+  - name: three_by_eight_edges
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 99, 98, 97, 96, 95, 94, 93]
+          - [92, 91, 90, 89, 88, 87, 86, 85]
+          - [84, 83, 82, 81, 80, 79, 78, 77]
+  - name: eight_by_three_edges
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 99, 98]
+          - [97, 96, 95]
+          - [94, 93, 92]
+          - [91, 90, 89]
+          - [88, 87, 86]
+          - [85, 84, 83]
+          - [82, 81, 80]
+          - [79, 78, 77]
+  - name: six_by_six_permutation
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [36, 1, 35, 2, 34, 3]
+          - [4, 33, 5, 32, 6, 31]
+          - [30, 7, 29, 8, 28, 9]
+          - [10, 27, 11, 26, 12, 25]
+          - [24, 13, 23, 14, 22, 15]
+          - [16, 21, 17, 20, 18, 19]
+  - name: nonuniform_distribution
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 100, 100]
+          - [1, 1, 1, 100, 100, 100]
+          - [1, 1, 100, 100, 100, 100]
+          - [1, 100, 100, 100, 100, 100]
+  - name: nine_by_four_randomized
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [31, 62, 7, 88]
+          - [54, 19, 73, 2]
+          - [96, 41, 28, 65]
+          - [10, 84, 57, 33]
+          - [76, 5, 92, 14]
+          - [48, 69, 21, 100]
+          - [37, 80, 12, 59]
+          - [6, 45, 97, 24]
+          - [71, 16, 53, 39]
+  - name: four_by_nine_randomized
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [31, 62, 7, 88, 54, 19, 73, 2, 96]
+          - [41, 28, 65, 10, 84, 57, 33, 76, 5]
+          - [92, 14, 48, 69, 21, 100, 37, 80, 12]
+          - [59, 6, 45, 97, 24, 71, 16, 53, 39]
+  - name: ten_by_ten_descending
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 99, 98, 97, 96, 95, 94, 93, 92, 91]
+          - [90, 89, 88, 87, 86, 85, 84, 83, 82, 81]
+          - [80, 79, 78, 77, 76, 75, 74, 73, 72, 71]
+          - [70, 69, 68, 67, 66, 65, 64, 63, 62, 61]
+          - [60, 59, 58, 57, 56, 55, 54, 53, 52, 51]
+          - [50, 49, 48, 47, 46, 45, 44, 43, 42, 41]
+          - [40, 39, 38, 37, 36, 35, 34, 33, 32, 31]
+          - [30, 29, 28, 27, 26, 25, 24, 23, 22, 21]
+          - [20, 19, 18, 17, 16, 15, 14, 13, 12, 11]
+          - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: ten_by_ten_duplicate_bands
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  - name: two_by_ten_boundary_diagonals
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 2, 99, 4, 98, 6, 97, 8, 96, 10]
+          - [1, 95, 3, 94, 5, 93, 7, 92, 9, 91]
+  - name: ten_by_two_boundary_diagonals
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 2]
+          - [1, 99]
+          - [98, 4]
+          - [3, 97]
+          - [96, 6]
+          - [5, 95]
+          - [94, 8]
+          - [7, 93]
+          - [92, 10]
+          - [9, 91]
+  - name: five_by_five_corner_extremes
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 1, 1, 1, 1]
+          - [1, 99, 1, 1, 1]
+          - [1, 1, 98, 1, 1]
+          - [1, 1, 1, 97, 1]
+          - [1, 1, 1, 1, 96]
+  - name: six_by_four_many_equal_minima
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [100, 1, 100, 1]
+          - [1, 100, 1, 100]
+          - [100, 1, 100, 1]
+          - [1, 100, 1, 100]
+          - [100, 1, 100, 1]
+          - [1, 100, 1, 100]
+  - name: four_by_six_many_equal_maxima
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 100, 1, 100, 1, 100]
+          - [100, 1, 100, 1, 100, 1]
+          - [1, 100, 1, 100, 1, 100]
+          - [100, 1, 100, 1, 100, 1]
+  - name: five_by_five_spiral_values
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5]
+          - [16, 17, 18, 19, 6]
+          - [15, 24, 25, 20, 7]
+          - [14, 23, 22, 21, 8]
+          - [13, 12, 11, 10, 9]
+  - name: eight_by_eight_modular_pattern
+    in:
+      mat:
+        elemType: "int"
+        value:
+          - [8, 15, 22, 29, 36, 43, 50, 57]
+          - [64, 71, 78, 85, 92, 99, 6, 13]
+          - [20, 27, 34, 41, 48, 55, 62, 69]
+          - [76, 83, 90, 97, 4, 11, 18, 25]
+          - [32, 39, 46, 53, 60, 67, 74, 81]
+          - [88, 95, 2, 9, 16, 23, 30, 37]
+          - [44, 51, 58, 65, 72, 79, 86, 93]
+          - [100, 7, 14, 21, 28, 35, 42, 49]
+  - name: generated_three_by_four
+    seed: 13291
+    in:
+      mat:
+        gen: "array"
+        distinct: false
+        sorted: false
+        elemType: "int"
+        len: 3
+        of:
+          gen: "array"
+          distinct: false
+          sorted: false
+          len: 4
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+  - name: generated_eleven_by_seven
+    seed: 13292
+    in:
+      mat:
+        gen: "array"
+        distinct: false
+        sorted: false
+        elemType: "int"
+        len: 11
+        of:
+          gen: "array"
+          distinct: false
+          sorted: false
+          len: 7
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+  - name: generated_seven_by_eleven
+    seed: 13293
+    in:
+      mat:
+        gen: "array"
+        distinct: false
+        sorted: false
+        elemType: "int"
+        len: 7
+        of:
+          gen: "array"
+          distinct: false
+          sorted: false
+          len: 11
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+  - name: generated_maximum_square
+    seed: 13294
+    in:
+      mat:
+        gen: "array"
+        distinct: false
+        sorted: false
+        elemType: "int"
+        len: 100
+        of:
+          gen: "array"
+          distinct: false
+          sorted: false
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+  - name: generated_maximum_wide
+    seed: 13295
+    in:
+      mat:
+        gen: "array"
+        distinct: false
+        sorted: false
+        elemType: "int"
+        len: 100
+        of:
+          gen: "array"
+          distinct: false
+          sorted: false
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 100

@@ -1,0 +1,12 @@
+class Solution:
+    def freqAlphabets(self, s):
+        decoded = []
+        index = 0
+        while index < len(s):
+            if index + 2 < len(s) and s[index + 2] == "#":
+                decoded.append(chr(ord("a") + int(s[index : index + 2]) - 1))
+                index += 3
+            else:
+                decoded.append(chr(ord("a") + int(s[index]) - 1))
+                index += 1
+        return "".join(decoded)

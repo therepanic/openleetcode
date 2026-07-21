@@ -1,0 +1,39 @@
+class Solution(object):
+    def smallestStringWithSwaps(self, s, pairs):
+        """
+        :type s: str
+        :type pairs: List[List[int]]
+        :rtype: str
+        """
+        n = len(s)
+        parent = list(range(n))
+        
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(x, y):
+            rx, ry = find(x), find(y)
+            if rx != ry:
+                parent[rx] = ry
+        
+        for i, j in pairs:
+            union(i, j)
+        
+        groups = {}
+        for i in range(n):
+            root = find(i)
+            if root not in groups:
+                groups[root] = []
+            groups[root].append(i)
+        
+        res = [''] * n
+        for indices in groups.values():
+            chars = [s[i] for i in indices]
+            indices.sort()
+            chars.sort()
+            for idx, ch in zip(indices, chars):
+                res[idx] = ch
+        
+        return ''.join(res)

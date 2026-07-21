@@ -1,0 +1,844 @@
+entry:
+  id: 1462
+  title: "course-schedule-iv"
+  params:
+    numCourses:
+      type: int
+    prerequisites:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    rust: "Solution::check_if_prerequisite({numCourses}, {prerequisites}, {queries})"
+    python3: "Solution().checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    python2: "Solution().checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    ruby: "check_if_prerequisite({numCourses}, {prerequisites}, {queries})"
+    java: "new Solution().checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    csharp: "new Solution().CheckIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    kotlin: "Solution().checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    go: "checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    dart: "Solution().checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    swift: "Solution().checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+    typescript: "checkIfPrerequisite({numCourses}, {prerequisites}, {queries})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 900
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().checkIfPrerequisite(numCourses, prerequisites, queries, {result})"
+    checker: |
+      class Checker:
+          def checkIfPrerequisite(self, numCourses, prerequisites, queries, result):
+              graph = [[] for _ in range(numCourses)]
+              for source, target in prerequisites:
+                  graph[source].append(target)
+              answer = []
+              for source, target in queries:
+                  seen = [False] * numCourses
+                  stack = [source]
+                  while stack:
+                      node = stack.pop()
+                      if node == target:
+                          break
+                      if seen[node]:
+                          continue
+                      seen[node] = True
+                      stack.extend(graph[node])
+                  answer.append(seen[target])
+              return result == answer
+seed: 1462
+tests:
+  - name: "official-direct"
+    in:
+      numCourses: 2
+      prerequisites:
+        - [1, 0]
+      queries:
+        - [0, 1]
+        - [1, 0]
+    out: [false, true]
+  - name: "official-independent"
+    in:
+      numCourses: 2
+      prerequisites: []
+      queries:
+        - [1, 0]
+        - [0, 1]
+    out: [false, false]
+  - name: "official-chain"
+    in:
+      numCourses: 3
+      prerequisites:
+        - [1, 2]
+        - [1, 0]
+        - [2, 0]
+      queries:
+        - [1, 0]
+        - [1, 2]
+    out: [true, true]
+  - name: "two-course-reverse"
+    in:
+      numCourses: 2
+      prerequisites:
+        - [0, 1]
+      queries:
+        - [0, 1]
+        - [1, 0]
+    out: [true, false]
+  - name: "empty-graph"
+    in:
+      numCourses: 5
+      prerequisites: []
+      queries:
+        - [0, 1]
+        - [1, 2]
+        - [4, 0]
+        - [3, 2]
+    out: [false, false, false, false]
+  - name: "three-chain"
+    in:
+      numCourses: 4
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      queries:
+        - [0, 3]
+        - [0, 2]
+        - [3, 0]
+        - [1, 3]
+    out: [true, true, false, true]
+  - name: "diamond"
+    in:
+      numCourses: 4
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 3]
+      queries:
+        - [0, 3]
+        - [1, 2]
+        - [2, 3]
+        - [3, 0]
+    out: [true, false, true, false]
+  - name: "two-components"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [0, 1]
+        - [2, 3]
+        - [3, 4]
+      queries:
+        - [0, 1]
+        - [2, 4]
+        - [0, 4]
+        - [5, 0]
+    out: [true, true, false, false]
+  - name: "long-chain"
+    in:
+      numCourses: 7
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+      queries:
+        - [0, 6]
+        - [2, 5]
+        - [6, 0]
+        - [4, 6]
+    out: [true, true, false, true]
+  - name: "sink-queries"
+    in:
+      numCourses: 5
+      prerequisites:
+        - [0, 4]
+        - [1, 4]
+        - [2, 4]
+        - [3, 4]
+      queries:
+        - [0, 4]
+        - [4, 0]
+        - [1, 3]
+    out: [true, false, false]
+  - name: "source-queries"
+    in:
+      numCourses: 5
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+      queries:
+        - [0, 3]
+        - [3, 0]
+        - [1, 4]
+    out: [true, false, false]
+  - name: "nested-diamond"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+        - [3, 5]
+      queries:
+        - [0, 4]
+        - [0, 5]
+        - [1, 5]
+        - [4, 5]
+    out: [true, true, true, false]
+  - name: "interleaved-components"
+    in:
+      numCourses: 8
+      prerequisites:
+        - [0, 2]
+        - [2, 4]
+        - [1, 3]
+        - [3, 5]
+        - [6, 7]
+      queries:
+        - [0, 4]
+        - [1, 5]
+        - [0, 5]
+        - [6, 7]
+    out: [true, true, false, true]
+  - name: "direct-many"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+      queries:
+        - [0, 1]
+        - [0, 4]
+        - [0, 5]
+        - [3, 4]
+    out: [true, true, true, false]
+  - name: "isolated-middle"
+    in:
+      numCourses: 7
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [4, 5]
+      queries:
+        - [0, 2]
+        - [2, 0]
+        - [3, 6]
+        - [4, 5]
+    out: [true, false, false, true]
+  - name: "wide-layered"
+    in:
+      numCourses: 9
+      prerequisites:
+        - [0, 3]
+        - [0, 4]
+        - [1, 4]
+        - [1, 5]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [4, 7]
+        - [5, 8]
+        - [6, 8]
+      queries:
+        - [0, 7]
+        - [1, 8]
+        - [2, 7]
+        - [3, 8]
+    out: [true, true, false, false]
+  - name: "reverse-numbering"
+    in:
+      numCourses: 5
+      prerequisites:
+        - [4, 3]
+        - [3, 2]
+        - [2, 1]
+        - [1, 0]
+      queries:
+        - [4, 0]
+        - [0, 4]
+        - [3, 1]
+    out: [true, false, true]
+  - name: "sparse-high-index"
+    in:
+      numCourses: 10
+      prerequisites:
+        - [8, 9]
+        - [7, 8]
+        - [2, 7]
+      queries:
+        - [2, 9]
+        - [7, 9]
+        - [9, 2]
+        - [1, 9]
+    out: [true, true, false, false]
+  - name: "three-branches"
+    in:
+      numCourses: 7
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+      queries:
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [1, 5]
+    out: [true, true, true, false]
+  - name: "two-long-chains"
+    in:
+      numCourses: 10
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      queries:
+        - [0, 3]
+        - [4, 7]
+        - [0, 7]
+        - [7, 4]
+    out: [true, true, false, false]
+  - name: "converging-sources"
+    in:
+      numCourses: 7
+      prerequisites:
+        - [0, 6]
+        - [1, 6]
+        - [2, 6]
+        - [3, 6]
+        - [4, 5]
+        - [5, 6]
+      queries:
+        - [4, 6]
+        - [0, 6]
+        - [6, 0]
+        - [1, 5]
+    out: [true, true, false, false]
+  - name: "long-branch"
+    in:
+      numCourses: 8
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [2, 6]
+        - [6, 7]
+      queries:
+        - [0, 7]
+        - [1, 5]
+        - [6, 5]
+        - [2, 4]
+    out: [true, true, false, true]
+  - name: "ten-course-chain"
+    in:
+      numCourses: 10
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+      queries:
+        - [0, 9]
+        - [4, 9]
+        - [9, 0]
+    out: [true, true, false]
+  - name: "ten-course-no-edges"
+    in:
+      numCourses: 10
+      prerequisites: []
+      queries:
+        - [0, 9]
+        - [9, 0]
+        - [3, 7]
+    out: [false, false, false]
+  - name: "diamond-with-tail"
+    in:
+      numCourses: 8
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+      queries:
+        - [0, 6]
+        - [2, 5]
+        - [1, 2]
+        - [7, 6]
+    out: [true, true, false, false]
+  - name: "mixed-queries"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [0, 2]
+        - [2, 3]
+        - [1, 3]
+        - [3, 5]
+      queries:
+        - [0, 5]
+        - [1, 5]
+        - [2, 5]
+        - [4, 5]
+    out: [true, true, true, false]
+  - name: "low-to-high"
+    in:
+      numCourses: 8
+      prerequisites:
+        - [0, 7]
+        - [1, 6]
+        - [2, 5]
+        - [3, 4]
+      queries:
+        - [0, 7]
+        - [1, 7]
+        - [3, 4]
+        - [7, 0]
+    out: [true, false, true, false]
+  - name: "branching-depth"
+    in:
+      numCourses: 9
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [4, 8]
+      queries:
+        - [0, 7]
+        - [0, 8]
+        - [2, 8]
+        - [1, 6]
+    out: [true, true, false, false]
+  - name: "isolated-endpoints"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      queries:
+        - [1, 4]
+        - [0, 4]
+        - [4, 5]
+    out: [true, false, false]
+  - name: "dense-small-dag"
+    in:
+      numCourses: 5
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+      queries:
+        - [0, 4]
+        - [1, 4]
+        - [2, 4]
+        - [4, 0]
+    out: [true, true, true, false]
+  - name: "disjoint-pairs"
+    in:
+      numCourses: 8
+      prerequisites:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+      queries:
+        - [0, 1]
+        - [2, 3]
+        - [0, 3]
+        - [7, 6]
+    out: [true, true, false, false]
+  - name: "alternating-chain"
+    in:
+      numCourses: 9
+      prerequisites:
+        - [0, 2]
+        - [2, 4]
+        - [4, 6]
+        - [6, 8]
+        - [1, 3]
+        - [3, 5]
+        - [5, 7]
+      queries:
+        - [0, 8]
+        - [1, 7]
+        - [0, 7]
+        - [4, 8]
+    out: [true, true, false, true]
+  - name: "many-sinks"
+    in:
+      numCourses: 8
+      prerequisites:
+        - [0, 4]
+        - [0, 5]
+        - [1, 5]
+        - [1, 6]
+        - [2, 6]
+        - [2, 7]
+        - [3, 7]
+      queries:
+        - [0, 5]
+        - [1, 7]
+        - [2, 4]
+        - [3, 6]
+    out: [true, false, false, false]
+  - name: "single-branch-extra"
+    in:
+      numCourses: 5
+      prerequisites:
+        - [0, 1]
+        - [1, 4]
+        - [2, 3]
+      queries:
+        - [0, 4]
+        - [2, 4]
+        - [3, 2]
+    out: [true, false, false]
+  - name: "three-level-extra"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [0, 2]
+        - [0, 3]
+        - [2, 5]
+        - [3, 4]
+      queries:
+        - [0, 5]
+        - [0, 4]
+        - [2, 4]
+        - [5, 0]
+    out: [true, true, false, false]
+  - name: "maximum-course-chain"
+    in:
+      numCourses: 100
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+        - [24, 25]
+        - [25, 26]
+        - [26, 27]
+        - [27, 28]
+        - [28, 29]
+        - [29, 30]
+        - [30, 31]
+        - [31, 32]
+        - [32, 33]
+        - [33, 34]
+        - [34, 35]
+        - [35, 36]
+        - [36, 37]
+        - [37, 38]
+        - [38, 39]
+        - [39, 40]
+        - [40, 41]
+        - [41, 42]
+        - [42, 43]
+        - [43, 44]
+        - [44, 45]
+        - [45, 46]
+        - [46, 47]
+        - [47, 48]
+        - [48, 49]
+        - [49, 50]
+        - [50, 51]
+        - [51, 52]
+        - [52, 53]
+        - [53, 54]
+        - [54, 55]
+        - [55, 56]
+        - [56, 57]
+        - [57, 58]
+        - [58, 59]
+        - [59, 60]
+        - [60, 61]
+        - [61, 62]
+        - [62, 63]
+        - [63, 64]
+        - [64, 65]
+        - [65, 66]
+        - [66, 67]
+        - [67, 68]
+        - [68, 69]
+        - [69, 70]
+        - [70, 71]
+        - [71, 72]
+        - [72, 73]
+        - [73, 74]
+        - [74, 75]
+        - [75, 76]
+        - [76, 77]
+        - [77, 78]
+        - [78, 79]
+        - [79, 80]
+        - [80, 81]
+        - [81, 82]
+        - [82, 83]
+        - [83, 84]
+        - [84, 85]
+        - [85, 86]
+        - [86, 87]
+        - [87, 88]
+        - [88, 89]
+        - [89, 90]
+        - [90, 91]
+        - [91, 92]
+        - [92, 93]
+        - [93, 94]
+        - [94, 95]
+        - [95, 96]
+        - [96, 97]
+        - [97, 98]
+        - [98, 99]
+      queries:
+        - [0, 99]
+        - [49, 99]
+        - [99, 0]
+        - [0, 50]
+        - [50, 51]
+        - [51, 50]
+        - [98, 99]
+        - [1, 98]
+        - [97, 99]
+        - [10, 90]
+    out: [true, true, false, true, true, false, true, true, true, true]
+  - name: "maximum-course-fan"
+    in:
+      numCourses: 100
+      prerequisites:
+        - [0, 50]
+        - [1, 50]
+        - [2, 50]
+        - [3, 50]
+        - [4, 50]
+        - [5, 50]
+        - [6, 50]
+        - [7, 50]
+        - [8, 50]
+        - [9, 50]
+        - [10, 50]
+        - [11, 50]
+        - [12, 50]
+        - [13, 50]
+        - [14, 50]
+        - [15, 50]
+        - [16, 50]
+        - [17, 50]
+        - [18, 50]
+        - [19, 50]
+        - [20, 50]
+        - [21, 50]
+        - [22, 50]
+        - [23, 50]
+        - [24, 50]
+        - [25, 50]
+        - [26, 50]
+        - [27, 50]
+        - [28, 50]
+        - [29, 50]
+        - [30, 50]
+        - [31, 50]
+        - [32, 50]
+        - [33, 50]
+        - [34, 50]
+        - [35, 50]
+        - [36, 50]
+        - [37, 50]
+        - [38, 50]
+        - [39, 50]
+        - [40, 50]
+        - [41, 50]
+        - [42, 50]
+        - [43, 50]
+        - [44, 50]
+        - [45, 50]
+        - [46, 50]
+        - [47, 50]
+        - [48, 50]
+        - [49, 50]
+        - [50, 51]
+        - [50, 52]
+        - [50, 53]
+        - [50, 54]
+        - [50, 55]
+        - [50, 56]
+        - [50, 57]
+        - [50, 58]
+        - [50, 59]
+        - [50, 60]
+        - [50, 61]
+        - [50, 62]
+        - [50, 63]
+        - [50, 64]
+        - [50, 65]
+        - [50, 66]
+        - [50, 67]
+        - [50, 68]
+        - [50, 69]
+        - [50, 70]
+        - [50, 71]
+        - [50, 72]
+        - [50, 73]
+        - [50, 74]
+        - [50, 75]
+        - [50, 76]
+        - [50, 77]
+        - [50, 78]
+        - [50, 79]
+        - [50, 80]
+        - [50, 81]
+        - [50, 82]
+        - [50, 83]
+        - [50, 84]
+        - [50, 85]
+        - [50, 86]
+        - [50, 87]
+        - [50, 88]
+        - [50, 89]
+        - [50, 90]
+        - [50, 91]
+        - [50, 92]
+        - [50, 93]
+        - [50, 94]
+        - [50, 95]
+        - [50, 96]
+        - [50, 97]
+        - [50, 98]
+        - [50, 99]
+      queries:
+        - [0, 50]
+        - [49, 99]
+        - [0, 99]
+        - [50, 99]
+        - [99, 50]
+        - [1, 49]
+        - [51, 99]
+    out: [true, true, true, true, false, false, false]
+  - name: "duplicate-queries"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [0, 2]
+        - [2, 4]
+        - [1, 3]
+        - [3, 4]
+        - [4, 5]
+      queries:
+        - [0, 5]
+        - [0, 5]
+        - [4, 5]
+        - [5, 4]
+        - [1, 4]
+        - [1, 4]
+    out: [true, true, true, false, true, true]
+  - name: "isolated-and-components"
+    in:
+      numCourses: 12
+      prerequisites:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [6, 8]
+        - [7, 8]
+        - [8, 9]
+      queries:
+        - [0, 2]
+        - [3, 5]
+        - [6, 9]
+        - [7, 9]
+        - [0, 5]
+        - [10, 11]
+        - [11, 10]
+    out: [true, true, true, true, false, false, false]
+  - name: "dense-six-course-dag"
+    in:
+      numCourses: 6
+      prerequisites:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 4]
+        - [3, 5]
+        - [4, 5]
+      queries:
+        - [0, 5]
+        - [1, 4]
+        - [2, 5]
+        - [3, 5]
+        - [5, 0]
+        - [4, 2]
+    out: [true, true, true, true, false, false]

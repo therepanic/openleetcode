@@ -1,0 +1,26 @@
+class Solution(object):
+    def numSmallerByFrequency(self, queries, words):
+        """
+        :type queries: List[str]
+        :type words: List[str]
+        :rtype: List[int]
+        """
+        def f(s):
+            min_char = 'z'
+            count = 0
+            for char in s:
+                if char < min_char:
+                    min_char = char
+                    count = 1
+                elif char == min_char:
+                    count += 1
+            return count
+        
+        buckets = [0] * 12
+        for w in words:
+            buckets[f(w)] += 1
+        
+        for i in range(9, -1, -1):
+            buckets[i] += buckets[i+1]
+        
+        return [buckets[f(q) + 1] for q in queries]

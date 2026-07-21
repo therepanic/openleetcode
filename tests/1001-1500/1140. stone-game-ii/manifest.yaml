@@ -1,0 +1,261 @@
+entry:
+  id: 1140
+  title: "stone-game-ii"
+  params:
+    piles:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().stoneGameII({piles})"
+    rust: "Solution::stone_game_ii({piles})"
+    python3: "Solution().stoneGameII({piles})"
+    python2: "Solution().stoneGameII({piles})"
+    ruby: "stone_game_ii({piles})"
+    java: "new Solution().stoneGameII({piles})"
+    csharp: "new Solution().StoneGameII({piles})"
+    kotlin: "Solution().stoneGameII({piles})"
+    go: "stoneGameII({piles})"
+    dart: "Solution().stoneGameII({piles})"
+    swift: "Solution().stoneGameII({piles})"
+    typescript: "stoneGameII({piles})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().stoneGameII(piles, {result})"
+    checker: |
+      class Checker:
+          def stoneGameII(self, piles, result):
+              if isinstance(result, bool) or not isinstance(result, int):
+                  return False
+              total = sum(piles)
+              memo = {}
+
+              def advantage(index, m):
+                  if index == len(piles):
+                      return 0
+                  key = (index, m)
+                  if key not in memo:
+                      taken = 0
+                      best = -total
+                      for x in range(1, min(2 * m, len(piles) - index) + 1):
+                          taken += piles[index + x - 1]
+                          best = max(best, taken - advantage(index + x, max(m, x)))
+                      memo[key] = best
+                  return memo[key]
+
+              expected = (total + advantage(0, 1)) // 2
+              return result == expected
+
+seed: 1140
+
+tests:
+  - name: "example-one"
+    in:
+      piles: [2, 7, 9, 4, 4]
+    out: 10
+  - name: "example-two"
+    in:
+      piles: [1, 2, 3, 4, 5, 100]
+    out: 104
+  - name: "single-minimum"
+    in:
+      piles: [1]
+    out: 1
+  - name: "single-maximum"
+    in:
+      piles: [10000]
+    out: 10000
+  - name: "two-equal"
+    in:
+      piles: [5, 5]
+    out: 10
+  - name: "two-unequal"
+    in:
+      piles: [1, 100]
+    out: 101
+  - name: "three-front-loaded"
+    in:
+      piles: [100, 1, 1]
+    out: 101
+  - name: "three-back-loaded"
+    in:
+      piles: [1, 1, 100]
+    out: 2
+  - name: "three-balanced"
+    in:
+      piles: [2, 2, 2]
+    out: 4
+  - name: "three-middle-spike"
+    in:
+      piles: [1, 100, 1]
+    out: 101
+  - name: "four-increasing"
+    in:
+      piles: [1, 2, 3, 4]
+    out: 5
+  - name: "four-decreasing"
+    in:
+      piles: [4, 3, 2, 1]
+    out: 7
+  - name: "five-ones"
+    in:
+      piles: [1, 1, 1, 1, 1]
+    out: 3
+  - name: "five-all-maximum"
+    in:
+      piles: [10000, 10000, 10000, 10000, 10000]
+    out: 30000
+  - name: "six-alternating-small"
+    in:
+      piles: [1, 10, 1, 10, 1, 10]
+    out: 12
+  - name: "six-alternating-maximum"
+    in:
+      piles: [10000, 1, 10000, 1, 10000, 1]
+    out: 20001
+  - name: "six-increasing"
+    in:
+      piles: [1, 2, 3, 4, 5, 6]
+    out: 10
+  - name: "six-decreasing"
+    in:
+      piles: [6, 5, 4, 3, 2, 1]
+    out: 12
+  - name: "seven-equal"
+    in:
+      piles: [7, 7, 7, 7, 7, 7, 7]
+    out: 28
+  - name: "eight-separated-spikes"
+    in:
+      piles: [100, 1, 1, 1, 100, 1, 1, 1]
+    out: 104
+  - name: "nine-primes"
+    in:
+      piles: [2, 3, 5, 7, 11, 13, 17, 19, 23]
+    out: 53
+  - name: "ten-large-ends"
+    in:
+      piles: [1000, 1, 1, 1, 1, 1, 1, 1, 1, 1000]
+    out: 2002
+  - name: "mixed-eight"
+    in:
+      piles: [9, 2, 14, 3, 8, 1, 12, 4]
+    out: 33
+  - name: "mixed-ten"
+    in:
+      piles: [5, 20, 1, 15, 3, 9, 2, 18, 4, 11]
+    out: 55
+  - name: "late-maximum"
+    in:
+      piles: [1, 1, 1, 1, 1, 1, 1, 1, 1, 10000]
+    out: 10003
+  - name: "early-maximum"
+    in:
+      piles: [10000, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 10005
+  - name: "four-all-maximum"
+    in:
+      piles: [10000, 10000, 10000, 10000]
+    out: 20000
+  - name: "powers-of-two"
+    in:
+      piles: [1, 2, 4, 8, 16, 32, 64, 128]
+    out: 123
+  - name: "fifteen-ones"
+    in:
+      piles: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 8
+  - name: "pi-digits-pattern"
+    in:
+      piles: [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4]
+    out: 53
+  - name: "twelve-alternating-high-first"
+    in:
+      piles: [9999, 1, 9999, 1, 9999, 1, 9999, 1, 9999, 1, 9999, 1]
+    out: 30000
+  - name: "twelve-alternating-low-first"
+    in:
+      piles: [1, 9999, 1, 9999, 1, 9999, 1, 9999, 1, 9999, 1, 9999]
+    out: 30000
+  - name: "twenty-small-interior"
+    in:
+      piles: [8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8]
+    out: 21
+  - name: "ten-fibonacci"
+    in:
+      piles: [13, 21, 34, 55, 89, 144, 233, 377, 610, 987]
+    out: 1432
+  - name: "generated-maximum-uniform-range"
+    seed: 114001
+    in:
+      piles:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        elemType: "int"
+  - name: "generated-maximum-small-values"
+    seed: 114002
+    in:
+      piles:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+        elemType: "int"
+  - name: "generated-maximum-high-values"
+    seed: 114003
+    in:
+      piles:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 9990
+          max: 10000
+        elemType: "int"
+  - name: "generated-maximum-midrange"
+    seed: 114004
+    in:
+      piles:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 100
+          max: 9000
+        elemType: "int"
+  - name: "generated-maximum-low-to-mid"
+    seed: 114005
+    in:
+      piles:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: "generated-maximum-upper-range"
+    seed: 114006
+    in:
+      piles:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 5000
+          max: 10000
+        elemType: "int"

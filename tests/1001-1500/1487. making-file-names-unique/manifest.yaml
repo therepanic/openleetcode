@@ -1,0 +1,258 @@
+entry:
+  id: 1487
+  title: "making-file-names-unique"
+  params:
+    names:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().getFolderNames({names})"
+    rust: "Solution::get_folder_names({names})"
+    python3: "Solution().getFolderNames({names})"
+    python2: "Solution().getFolderNames({names})"
+    ruby: "get_folder_names({names})"
+    java: "new Solution().getFolderNames({names})"
+    csharp: "new Solution().GetFolderNames({names})"
+    kotlin: "Solution().getFolderNames({names})"
+    go: "getFolderNames({names})"
+    dart: "Solution().getFolderNames({names})"
+    swift: "Solution().getFolderNames({names})"
+    typescript: "getFolderNames({names})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().getFolderNames(names, {result})"
+    checker: |
+      class Checker:
+          def getFolderNames(self, names, result):
+              used = set()
+              next_suffix = {}
+              expected = []
+              for name in names:
+                  if name not in used:
+                      chosen = name
+                      next_suffix.setdefault(name, 1)
+                  else:
+                      suffix = next_suffix.get(name, 1)
+                      chosen = name + "(" + str(suffix) + ")"
+                      while chosen in used:
+                          suffix += 1
+                          chosen = name + "(" + str(suffix) + ")"
+                      next_suffix[name] = suffix + 1
+                      next_suffix.setdefault(chosen, 1)
+                  used.add(chosen)
+                  expected.append(chosen)
+              return result == expected
+
+seed: 1487
+
+tests:
+  - name: "example-one"
+    in:
+      names: ["pes", "fifa", "gta", "pes(2019)"]
+    out: ["pes", "fifa", "gta", "pes(2019)"]
+  - name: "example-two"
+    in:
+      names: ["gta", "gta(1)", "gta", "avalon"]
+    out: ["gta", "gta(1)", "gta(2)", "avalon"]
+  - name: "example-three"
+    in:
+      names:
+        ["onepiece", "onepiece(1)", "onepiece(2)", "onepiece(3)", "onepiece"]
+    out:
+      ["onepiece", "onepiece(1)", "onepiece(2)", "onepiece(3)", "onepiece(4)"]
+  - name: "single-name"
+    in:
+      names: ["file"]
+  - name: "single-suffixed-name"
+    in:
+      names: ["file(1)"]
+  - name: "two-duplicates"
+    in:
+      names: ["a", "a"]
+  - name: "three-duplicates"
+    in:
+      names: ["a", "a", "a"]
+  - name: "reserved-one"
+    in:
+      names: ["a", "a(1)", "a"]
+  - name: "reserved-gap"
+    in:
+      names: ["a", "a(2)", "a", "a"]
+  - name: "reserved-many"
+    in:
+      names: ["a", "a(1)", "a(2)", "a(3)", "a"]
+  - name: "interleaved-bases"
+    in:
+      names: ["a", "b", "a", "b", "a", "b"]
+  - name: "suffix-first"
+    in:
+      names: ["x(1)", "x", "x"]
+  - name: "suffix-collides-later"
+    in:
+      names: ["x", "x", "x(1)", "x"]
+  - name: "nested-looking"
+    in:
+      names: ["a", "a(1)", "a(1)", "a", "a(1)"]
+  - name: "different-parentheses"
+    in:
+      names: ["doc", "doc(1)", "doc(1)(1)", "doc", "doc(1)"]
+  - name: "spaces"
+    in:
+      names: ["my file", "my file", "my file(1)", "my file"]
+  - name: "hyphenated"
+    in:
+      names: ["my-file", "my-file", "my-file(2)", "my-file"]
+  - name: "case-sensitive"
+    in:
+      names: ["File", "file", "File", "file"]
+  - name: "numeric-text"
+    in:
+      names: ["123", "123", "123(1)", "123"]
+  - name: "long-base"
+    in:
+      names:
+        ["abcdefghijklmnopqrst", "abcdefghijklmnopqrst", "abcdefghijklmnopqrst"]
+  - name: "many-bases"
+    in:
+      names: ["a", "b", "c", "d", "e", "a", "b", "c", "d", "e"]
+  - name: "five-preassigned"
+    in:
+      names: ["p", "p(1)", "p(2)", "p(3)", "p(4)", "p"]
+  - name: "nonsequential-reservations"
+    in:
+      names: ["q", "q(5)", "q(3)", "q(1)", "q", "q", "q"]
+  - name: "suffix-chain"
+    in:
+      names: ["z", "z", "z(1)", "z(2)", "z(3)", "z", "z"]
+  - name: "two-level-collision"
+    in:
+      names: ["a", "a", "a(2)", "a(1)", "a", "a(2)"]
+  - name: "mixed-words"
+    in:
+      names: ["alpha", "beta", "alpha", "gamma", "beta", "alpha"]
+  - name: "underscore"
+    in:
+      names: ["x_y", "x_y", "x_y(1)", "x_y(3)", "x_y"]
+  - name: "dash-and-space"
+    in:
+      names: ["a-b c", "a-b c", "a-b c(1)", "a-b c(2)", "a-b c"]
+  - name: "ten-repeated"
+    in:
+      names:
+        [
+          "same",
+          "same",
+          "same",
+          "same",
+          "same",
+          "same",
+          "same",
+          "same",
+          "same",
+          "same",
+        ]
+  - name: "repeated-with-all-suffixes"
+    in:
+      names: ["r", "r(1)", "r(2)", "r(3)", "r(4)", "r(5)", "r", "r", "r"]
+  - name: "alternating-reserved"
+    in:
+      names: ["a", "b", "a(1)", "b(1)", "a", "b", "a(2)", "b(2)"]
+  - name: "mixed-suffix-bases"
+    in:
+      names: ["one", "one(1)", "two", "one", "two(1)", "two", "one"]
+  - name: "large-suffix-start"
+    in:
+      names: ["folder(999)", "folder", "folder", "folder(1000)", "folder"]
+  - name: "thirty-two-pattern"
+    in:
+      names:
+        [
+          "a",
+          "b",
+          "a",
+          "c",
+          "b",
+          "a",
+          "c",
+          "a",
+          "b",
+          "c",
+          "a",
+          "b",
+          "a",
+          "c",
+          "b",
+          "a",
+          "c",
+          "b",
+          "a",
+          "b",
+          "c",
+          "a",
+          "a",
+          "b",
+          "c",
+          "b",
+          "a",
+          "c",
+          "a",
+          "b",
+          "c",
+          "a",
+        ]
+  - name: "late-preassigned-suffix"
+    in:
+      names:
+        [
+          "project",
+          "project(1)",
+          "project(4)",
+          "project",
+          "project(2)",
+          "project",
+          "project",
+        ]
+  - name: "suffix-created-before-explicit-name"
+    in:
+      names: ["a", "a", "a(1)", "a", "a(2)", "a(1)", "a"]
+  - name: "parenthesized-base-collision"
+    in:
+      names: ["x(1)", "x(1)", "x", "x", "x(1)", "x"]
+  - name: "digits-and-parentheses"
+    in:
+      names: ["v9", "v9(1)", "v9", "v9(2)", "v9", "v9(1)", "v9(3)"]
+  - name: "maximum-repeated-name-stress"
+    seed: 1487001
+    in:
+      names:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 20
+          alphabet: "z"
+        distinct: false
+        sorted: false
+        elemType: "string"
+  - name: "maximum-generated-array-stress"
+    seed: 1487002
+    in:
+      names:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "abc12"
+        distinct: false
+        sorted: false
+        elemType: "string"

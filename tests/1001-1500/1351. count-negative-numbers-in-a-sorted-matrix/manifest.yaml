@@ -1,0 +1,540 @@
+entry:
+  id: 1351
+  title: count-negative-numbers-in-a-sorted-matrix
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().countNegatives({grid})"
+    rust: "Solution::count_negatives({grid})"
+    python3: "Solution().countNegatives({grid})"
+    python2: "Solution().countNegatives({grid})"
+    ruby: "count_negatives({grid})"
+    java: "new Solution().countNegatives({grid})"
+    csharp: "new Solution().CountNegatives({grid})"
+    kotlin: "Solution().countNegatives({grid})"
+    go: "countNegatives({grid})"
+    dart: "Solution().countNegatives({grid})"
+    swift: "Solution().countNegatives({grid})"
+    typescript: "countNegatives({grid})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().countNegatives(grid, {result})"
+    checker: |
+      class Checker:
+          def countNegatives(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(grid, list) or not 1 <= len(grid) <= 100:
+                  return False
+              if not all(isinstance(row, list) for row in grid):
+                  return False
+              cols = len(grid[0])
+              if not 1 <= cols <= 100 or any(len(row) != cols for row in grid):
+                  return False
+              if any(not isinstance(v, int) or isinstance(v, bool) or not -100 <= v <= 100 for row in grid for v in row):
+                  return False
+              if any(row[c] > row[c - 1] for row in grid for c in range(1, cols)):
+                  return False
+              if any(grid[r][c] > grid[r - 1][c] for r in range(1, len(grid)) for c in range(cols)):
+                  return False
+              return result == sum(v < 0 for row in grid for v in row)
+seed: 1351
+tests:
+  - name: example_one
+    in:
+      grid:
+        - [4, 3, 2, -1]
+        - [3, 2, 1, -1]
+        - [1, 1, -1, -2]
+        - [-1, -1, -2, -3]
+    out: 8
+  - name: example_two
+    in:
+      grid:
+        - [3, 2]
+        - [1, 0]
+    out: 0
+  - name: one_positive
+    in:
+      grid:
+        - [100]
+    out: 0
+  - name: one_zero
+    in:
+      grid:
+        - [0]
+    out: 0
+  - name: one_negative
+    in:
+      grid:
+        - [-100]
+    out: 1
+  - name: one_row_mixed
+    in:
+      grid:
+        - [100, 4, 0, -1, -99]
+    out: 2
+  - name: one_column_mixed
+    in:
+      grid:
+        - [100]
+        - [0]
+        - [-1]
+        - [-100]
+    out: 2
+  - name: all_positive
+    in:
+      grid:
+        - [5, 4, 3]
+        - [4, 3, 2]
+    out: 0
+  - name: all_zero
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 0, 0]
+    out: 0
+  - name: all_negative
+    in:
+      grid:
+        - [-1, -2, -3]
+        - [-2, -3, -4]
+    out: 6
+  - name: single_negative_bottom_right
+    in:
+      grid:
+        - [5, 4, 3]
+        - [4, 3, 2]
+        - [3, 2, -1]
+    out: 1
+  - name: negative_top_right_only
+    in:
+      grid:
+        - [2, -1]
+        - [-1, -2]
+    out: 3
+  - name: diagonal_boundary
+    in:
+      grid:
+        - [3, 2, 1]
+        - [2, 1, 0]
+        - [1, 0, -1]
+    out: 1
+  - name: zero_boundary
+    in:
+      grid:
+        - [2, 1, 0, 0, -1]
+        - [1, 0, 0, -1, -2]
+    out: 3
+  - name: repeated_rows
+    in:
+      grid:
+        - [2, 1, 0, -1]
+        - [2, 1, 0, -1]
+        - [2, 1, 0, -1]
+    out: 3
+  - name: repeated_columns
+    in:
+      grid:
+        - [3, 3, 3]
+        - [1, 1, 1]
+        - [-1, -1, -1]
+    out: 3
+  - name: duplicate_transition_values
+    in:
+      grid:
+        - [3, 3, 0, -1, -1]
+        - [3, 2, 0, -1, -2]
+        - [2, 1, -1, -2, -2]
+    out: 7
+  - name: two_by_four
+    in:
+      grid:
+        - [8, 4, 0, -4]
+        - [4, 0, -4, -8]
+    out: 3
+  - name: four_by_two
+    in:
+      grid:
+        - [5, -1]
+        - [4, -2]
+        - [3, -3]
+        - [2, -4]
+    out: 4
+  - name: wide_sparse_tail
+    in:
+      grid:
+        - [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+        - [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        - [8, 7, 6, 5, 4, 3, 2, 1, 0, -1]
+    out: 1
+  - name: tall_staircase
+    in:
+      grid:
+        - [5, 4, 3]
+        - [4, 3, 2]
+        - [3, 2, 1]
+        - [2, 1, 0]
+        - [1, 0, -1]
+        - [0, -1, -2]
+    out: 3
+  - name: broad_staircase
+    in:
+      grid:
+        - [7, 6, 5, 4, 3, 2, -1]
+        - [6, 5, 4, 3, 2, -1, -2]
+        - [5, 4, 3, 2, -1, -2, -3]
+        - [4, 3, 2, -1, -2, -3, -4]
+    out: 10
+  - name: first_row_all_negative
+    in:
+      grid:
+        - [-1, -2, -3, -4]
+        - [-2, -3, -4, -5]
+        - [-3, -4, -5, -6]
+    out: 12
+  - name: exact_minimum_values
+    in:
+      grid:
+        - [0, -100, -100]
+        - [-100, -100, -100]
+    out: 5
+  - name: exact_maximum_values
+    in:
+      grid:
+        - [100, 100, 99]
+        - [100, 99, 0]
+    out: 0
+  - name: two_negative_each_row
+    in:
+      grid:
+        - [5, 0, -1, -2]
+        - [4, -1, -2, -3]
+        - [3, -2, -3, -4]
+    out: 8
+  - name: varying_cutoffs
+    in:
+      grid:
+        - [8, 7, 6, 5, -1]
+        - [7, 6, 5, -1, -2]
+        - [6, 5, -1, -2, -3]
+        - [5, -1, -2, -3, -4]
+        - [-1, -2, -3, -4, -5]
+    out: 15
+  - name: zeroes_before_negative_column
+    in:
+      grid:
+        - [3, 0, 0, -1]
+        - [0, 0, -1, -2]
+        - [0, -1, -2, -3]
+    out: 6
+  - name: negative_count_fourteen
+    in:
+      grid:
+        - [5, 4, 3, 2, 1, -1]
+        - [4, 3, 2, 1, -1, -2]
+        - [3, 2, 1, -1, -2, -3]
+        - [2, 1, -1, -2, -3, -4]
+    out: 10
+  - name: mixed_extremes
+    in:
+      grid:
+        - [100, 50, 0, -50, -100]
+        - [50, 0, -50, -100, -100]
+        - [0, -50, -100, -100, -100]
+    out: 9
+  - name: narrow_dense_negative
+    in:
+      grid:
+        - [1, 0, -1, -2]
+        - [0, -1, -2, -3]
+        - [-1, -2, -3, -4]
+    out: 9
+  - name: isolated_zero_corner
+    in:
+      grid:
+        - [0, -1, -2]
+        - [-1, -2, -3]
+        - [-2, -3, -4]
+    out: 8
+  - name: five_square_positive
+    in:
+      grid:
+        - [9, 8, 7, 6, 5]
+        - [8, 7, 6, 5, 4]
+        - [7, 6, 5, 4, 3]
+        - [6, 5, 4, 3, 2]
+        - [5, 4, 3, 2, 1]
+    out: 0
+  - name: five_square_negative
+    in:
+      grid:
+        - [-1, -2, -3, -4, -5]
+        - [-2, -3, -4, -5, -6]
+        - [-3, -4, -5, -6, -7]
+        - [-4, -5, -6, -7, -8]
+        - [-5, -6, -7, -8, -9]
+    out: 25
+  - name: irregular_frontier
+    in:
+      grid:
+        - [9, 8, 7, 6, 5, 4]
+        - [8, 7, 6, 5, -1, -2]
+        - [7, 6, 5, -1, -2, -3]
+        - [6, -1, -2, -3, -4, -5]
+    out: 10
+  - name: max_rows_single_column
+    in:
+      grid:
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+        - [-1]
+    out: 50
+  - name: max_columns_single_row
+    in:
+      grid:
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+          ]
+    out: 50
+  - name: three_by_three_partial_frontier
+    in:
+      grid:
+        - [4, 0, -1]
+        - [0, -1, -2]
+        - [-1, -2, -3]
+    out: 6
+  - name: hundred_by_hundred_all_negative
+    in:
+      grid:
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+    out: 100
+  - name: ten_by_ten_zero_negative_frontier
+    in:
+      grid:
+        - [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        - [8, 7, 6, 5, 4, 3, 2, 1, 0, -1]
+        - [7, 6, 5, 4, 3, 2, 1, 0, -1, -2]
+        - [6, 5, 4, 3, 2, 1, 0, -1, -2, -3]
+        - [5, 4, 3, 2, 1, 0, -1, -2, -3, -4]
+        - [4, 3, 2, 1, 0, -1, -2, -3, -4, -5]
+        - [3, 2, 1, 0, -1, -2, -3, -4, -5, -6]
+        - [2, 1, 0, -1, -2, -3, -4, -5, -6, -7]
+        - [1, 0, -1, -2, -3, -4, -5, -6, -7, -8]
+        - [0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
+    out: 45

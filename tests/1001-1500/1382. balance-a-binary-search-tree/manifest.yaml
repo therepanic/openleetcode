@@ -1,0 +1,544 @@
+entry:
+  id: 1382
+  title: balance-a-binary-search-tree
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "treeNodeToArray(Solution().balanceBST({root}))"
+    rust: "TreeNode::tree_node_to_array(Solution::balance_bst({root}))"
+    python3: "tree_node_to_array(Solution().balanceBST({root}))"
+    python2: "tree_node_to_array(Solution().balanceBST({root}))"
+    ruby: "tree_node_to_array(balance_bst({root}))"
+    java: "TreeNode.treeNodeToArray(new Solution().balanceBST({root}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().BalanceBST({root}))"
+    kotlin: "treeNodeToArray(Solution().balanceBST({root}))"
+    go: "treeNodeToArray(balanceBST({root}))"
+    dart: "tree_node_to_array(Solution().balanceBST({root}))"
+    swift: "tree_node_to_array(Solution().balanceBST({root}))"
+    typescript: "treeNodeToArray(balanceBST({root}))"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().balanceBST(root, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def parse(self, values):
+              if not isinstance(values, list) or not values or values[0] is None:
+                  return None
+              root = [values[0], None, None]
+              queue = [root]
+              pos = 1
+              for node in queue:
+                  for side in (1, 2):
+                      if pos >= len(values):
+                          break
+                      value = values[pos]
+                      pos += 1
+                      if value is not None:
+                          if not isinstance(value, int):
+                              return None
+                          child = [value, None, None]
+                          node[side] = child
+                          queue.append(child)
+              if pos != len(values):
+                  return None
+              return root
+
+          def inspect(self, node, low, high, values):
+              if node is None:
+                  return 0
+              value = node[0]
+              if value <= low or value >= high:
+                  return -1
+              values.append(value)
+              left_height = self.inspect(node[1], low, value, values)
+              right_height = self.inspect(node[2], value, high, values)
+              if left_height < 0 or right_height < 0 or abs(left_height - right_height) > 1:
+                  return -1
+              return max(left_height, right_height) + 1
+
+          def collect(self, node, low, high, values):
+              if node is None:
+                  return True
+              value = node[0]
+              if value <= low or value >= high:
+                  return False
+              values.append(value)
+              return (self.collect(node[1], low, value, values)
+                      and self.collect(node[2], value, high, values))
+
+          def balanceBST(self, root, result):
+              source = self.parse(root)
+              candidate = self.parse(result)
+              if source is None or candidate is None:
+                  return False
+              source_values = []
+              candidate_values = []
+              if not self.collect(source, float("-inf"), float("inf"), source_values):
+                  return False
+              if self.inspect(candidate, float("-inf"), float("inf"), candidate_values) < 0:
+                  return False
+              return Counter(source_values) == Counter(candidate_values)
+
+seed: 1382
+
+tests:
+  - name: example_right_chain
+    in:
+      root: [1, null, 2, null, 3, null, 4, null, null]
+
+  - name: example_already_balanced
+    in:
+      root: [2, 1, 3]
+
+  - name: single_node_min
+    in:
+      root: [1]
+
+  - name: two_nodes
+    in:
+      root: [2, 1]
+
+  - name: two_nodes_right
+    in:
+      root: [1, null, 2]
+
+  - name: three_left_chain
+    in:
+      root: [3, 2, null, 1]
+
+  - name: four_left_chain
+    in:
+      root: [4, 3, null, 2, null, 1]
+
+  - name: five_right_chain
+    in:
+      root: [1, null, 2, null, 3, null, 4, null, 5]
+
+  - name: six_left_chain
+    in:
+      root: [6, 5, null, 4, null, 3, null, 2, null, 1]
+
+  - name: seven_perfect
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+
+  - name: seven_right_chain
+    in:
+      root: [1, null, 2, null, 3, null, 4, null, 5, null, 6, null, 7]
+
+  - name: seven_left_chain
+    in:
+      root: [7, 6, null, 5, null, 4, null, 3, null, 2, null, 1]
+
+  - name: seven_left_heavy
+    in:
+      root: [5, 3, 7, 2, 4, 6, null, 1]
+
+  - name: seven_right_heavy
+    in:
+      root: [3, 1, 6, null, 2, 4, 7, null, null, null, 5]
+
+  - name: eight_unbalanced
+    in:
+      root: [8, 4, null, 2, 6, 1, 3, 5, 7]
+
+  - name: eight_sparse
+    in:
+      root: [10, 5, 15, 2, 7, null, 20, 1, 3, 6, 8]
+
+  - name: nine_balanced
+    in:
+      root: [5, 3, 8, 2, 4, 7, 9, 1, null, null, null, 6]
+
+  - name: nine_right_heavy
+    in:
+      root: [4, 2, 8, 1, 3, 6, 9, null, null, null, null, 5, 7]
+
+  - name: ten_left_chain
+    in:
+      root:
+        [
+          10,
+          9,
+          null,
+          8,
+          null,
+          7,
+          null,
+          6,
+          null,
+          5,
+          null,
+          4,
+          null,
+          3,
+          null,
+          2,
+          null,
+          1,
+        ]
+
+  - name: ten_right_chain
+    in:
+      root:
+        [
+          1,
+          null,
+          2,
+          null,
+          3,
+          null,
+          4,
+          null,
+          5,
+          null,
+          6,
+          null,
+          7,
+          null,
+          8,
+          null,
+          9,
+          null,
+          10,
+        ]
+
+  - name: ten_sparse
+    in:
+      root: [6, 3, 9, 2, 4, 8, 10, 1, null, null, 5, 7]
+
+  - name: eleven_mixed_shape
+    in:
+      root: [10, 5, 15, 3, 7, 12, 18, 1, 4, 6, 8]
+
+  - name: eleven_sparse_right
+    in:
+      root: [20, 10, 30, null, 15, null, 40, null, 17]
+
+  - name: eleven_sparse_left
+    in:
+      root: [20, 10, 30, 5, null, 25, null, 2, 7]
+
+  - name: twelve_chain
+    in:
+      root:
+        [
+          12,
+          11,
+          null,
+          10,
+          null,
+          9,
+          null,
+          8,
+          null,
+          7,
+          null,
+          6,
+          null,
+          5,
+          null,
+          4,
+          null,
+          3,
+          null,
+          2,
+          null,
+          1,
+        ]
+
+  - name: thirteen_balanced
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13]
+
+  - name: thirteen_irregular
+    in:
+      root: [8, 3, 12, 1, 5, 10, 15, null, 2, 4, 7, 9, 11, 14]
+
+  - name: fourteen_left_heavy
+    in:
+      root: [10, 5, 13, 3, 8, 12, 14, 1, 4, 6, 9, 11]
+
+  - name: fifteen_perfect
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+
+  - name: fifteen_right_chain
+    in:
+      root:
+        [
+          1,
+          null,
+          2,
+          null,
+          3,
+          null,
+          4,
+          null,
+          5,
+          null,
+          6,
+          null,
+          7,
+          null,
+          8,
+          null,
+          9,
+          null,
+          10,
+          null,
+          11,
+          null,
+          12,
+          null,
+          13,
+          null,
+          14,
+          null,
+          15,
+        ]
+
+  - name: sixteen_sparse
+    in:
+      root: [9, 4, 13, 2, 6, 11, 15, 1, 3, 5, 7, 10, 12, 14, 16]
+
+  - name: seventeen_unbalanced
+    in:
+      root: [12, 6, 16, 3, 9, 14, 18, 1, 4, 7, 10, 13, 15, 17, 20]
+
+  - name: boundary_values
+    in:
+      root: [50000, 25000, 75000, 1, 30000, 60000, 100000]
+
+  - name: large_gap_values
+    in:
+      root: [50000, 100, 99999, 50, 1000, 75000, 100000, 1, 75]
+
+  - name: twenty_one_balanced
+    in:
+      root:
+        [
+          16,
+          8,
+          24,
+          4,
+          12,
+          20,
+          28,
+          2,
+          6,
+          10,
+          14,
+          18,
+          22,
+          26,
+          30,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+        ]
+
+  - name: twenty_three_left_chain
+    in:
+      root:
+        [
+          23,
+          22,
+          null,
+          21,
+          null,
+          20,
+          null,
+          19,
+          null,
+          18,
+          null,
+          17,
+          null,
+          16,
+          null,
+          15,
+          null,
+          14,
+          null,
+          13,
+          null,
+          12,
+          null,
+          11,
+          null,
+          10,
+          null,
+          9,
+          null,
+          8,
+          null,
+          7,
+          null,
+          6,
+          null,
+          5,
+          null,
+          4,
+          null,
+          3,
+          null,
+          2,
+          null,
+          1,
+        ]
+
+  - name: twenty_five_irregular
+    in:
+      root:
+        [
+          50,
+          25,
+          75,
+          10,
+          40,
+          60,
+          90,
+          5,
+          15,
+          35,
+          45,
+          55,
+          65,
+          80,
+          100,
+          1,
+          7,
+          12,
+          20,
+          30,
+          38,
+          42,
+          48,
+          52,
+          58,
+        ]
+
+  - name: thirty_one_perfect
+    in:
+      root:
+        [
+          16,
+          8,
+          24,
+          4,
+          12,
+          20,
+          28,
+          2,
+          6,
+          10,
+          14,
+          18,
+          22,
+          26,
+          30,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          19,
+          21,
+          23,
+          25,
+          27,
+          29,
+          31,
+        ]
+
+  - name: thirty_two_right_chain
+    in:
+      root:
+        [
+          1,
+          null,
+          2,
+          null,
+          3,
+          null,
+          4,
+          null,
+          5,
+          null,
+          6,
+          null,
+          7,
+          null,
+          8,
+          null,
+          9,
+          null,
+          10,
+          null,
+          11,
+          null,
+          12,
+          null,
+          13,
+          null,
+          14,
+          null,
+          15,
+          null,
+          16,
+          null,
+          17,
+          null,
+          18,
+          null,
+          19,
+          null,
+          20,
+          null,
+          21,
+          null,
+          22,
+          null,
+          23,
+          null,
+          24,
+          null,
+          25,
+          null,
+          26,
+          null,
+          27,
+          null,
+          28,
+          null,
+          29,
+          null,
+          30,
+          null,
+          31,
+          null,
+          32,
+        ]
+
+  - name: forty_mixed_values
+    in:
+      root: [25, 10, 40, 5, 15, 30, 50, 1, 7, 12, 20, 27, 35, 45, 60]

@@ -1,0 +1,286 @@
+entry:
+  id: 1269
+  title: "number-of-ways-to-stay-in-the-same-place-after-some-steps"
+  params:
+    steps:
+      type: int
+    arrLen:
+      type: int
+  call:
+    cpp: "Solution().numWays({steps}, {arrLen})"
+    rust: "Solution::num_ways({steps}, {arrLen})"
+    python3: "Solution().numWays({steps}, {arrLen})"
+    python2: "Solution().numWays({steps}, {arrLen})"
+    ruby: "num_ways({steps}, {arrLen})"
+    java: "new Solution().numWays({steps}, {arrLen})"
+    csharp: "new Solution().NumWays({steps}, {arrLen})"
+    kotlin: "Solution().numWays({steps}, {arrLen})"
+    go: "numWays({steps}, {arrLen})"
+    dart: "Solution().numWays({steps}, {arrLen})"
+    swift: "Solution().numWays({steps}, {arrLen})"
+    typescript: "numWays({steps}, {arrLen})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().numWays(steps, arrLen, {result})"
+    checker: |
+      from functools import lru_cache
+
+      class Checker:
+          def numWays(self, steps, arrLen, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not (1 <= steps <= 500 and 1 <= arrLen <= 1000000):
+                  return False
+              mod = 1000000007
+
+              @lru_cache(None)
+              def count(remaining, position):
+                  if remaining == 0:
+                      return int(position == 0)
+                  total = count(remaining - 1, position)
+                  if position > 0:
+                      total += count(remaining - 1, position - 1)
+                  if position + 1 < arrLen:
+                      total += count(remaining - 1, position + 1)
+                  return total % mod
+
+              return result == count(steps, 0)
+
+seed: 126900
+
+tests:
+  - name: "example_one"
+    in:
+      steps: 3
+      arrLen: 2
+    out: 4
+  - name: "example_two"
+    in:
+      steps: 2
+      arrLen: 4
+    out: 2
+  - name: "example_three"
+    in:
+      steps: 4
+      arrLen: 2
+    out: 8
+  - name: "one_step_one_cell"
+    in:
+      steps: 1
+      arrLen: 1
+    out: 1
+  - name: "one_step_maximum_array"
+    in:
+      steps: 1
+      arrLen: 1000000
+    out: 1
+  - name: "two_steps_one_cell"
+    in:
+      steps: 2
+      arrLen: 1
+    out: 1
+  - name: "two_steps_two_cells"
+    in:
+      steps: 2
+      arrLen: 2
+    out: 2
+  - name: "two_steps_maximum_array"
+    in:
+      steps: 2
+      arrLen: 1000000
+    out: 2
+  - name: "three_steps_one_cell"
+    in:
+      steps: 3
+      arrLen: 1
+    out: 1
+  - name: "three_steps_wide_enough"
+    in:
+      steps: 3
+      arrLen: 3
+    out: 4
+  - name: "four_steps_one_cell"
+    in:
+      steps: 4
+      arrLen: 1
+    out: 1
+  - name: "four_steps_two_cells"
+    in:
+      steps: 4
+      arrLen: 2
+    out: 8
+  - name: "four_steps_three_cells"
+    in:
+      steps: 4
+      arrLen: 3
+    out: 9
+  - name: "four_steps_maximum_array"
+    in:
+      steps: 4
+      arrLen: 1000000
+    out: 9
+  - name: "five_steps_two_cells"
+    in:
+      steps: 5
+      arrLen: 2
+    out: 16
+  - name: "five_steps_three_cells"
+    in:
+      steps: 5
+      arrLen: 3
+    out: 21
+  - name: "five_steps_large_array"
+    in:
+      steps: 5
+      arrLen: 100
+    out: 21
+  - name: "six_steps_two_cells"
+    in:
+      steps: 6
+      arrLen: 2
+    out: 32
+  - name: "six_steps_three_cells"
+    in:
+      steps: 6
+      arrLen: 3
+    out: 50
+  - name: "six_steps_four_cells"
+    in:
+      steps: 6
+      arrLen: 4
+    out: 51
+  - name: "eight_steps_one_cell"
+    in:
+      steps: 8
+      arrLen: 1
+    out: 1
+  - name: "eight_steps_two_cells"
+    in:
+      steps: 8
+      arrLen: 2
+    out: 128
+  - name: "eight_steps_four_cells"
+    in:
+      steps: 8
+      arrLen: 4
+    out: 322
+  - name: "ten_steps_two_cells"
+    in:
+      steps: 10
+      arrLen: 2
+    out: 512
+  - name: "ten_steps_three_cells"
+    in:
+      steps: 10
+      arrLen: 3
+    out: 1682
+  - name: "ten_steps_six_cells"
+    in:
+      steps: 10
+      arrLen: 6
+    out: 2188
+  - name: "twenty_steps_one_cell"
+    in:
+      steps: 20
+      arrLen: 1
+    out: 1
+  - name: "twenty_steps_three_cells"
+    in:
+      steps: 20
+      arrLen: 3
+    out: 11309769
+  - name: "fifty_steps_two_cells_modulo"
+    in:
+      steps: 50
+      arrLen: 2
+    out: 949480669
+  - name: "fifty_steps_width_boundary"
+    in:
+      steps: 50
+      arrLen: 25
+    out: 852867641
+  - name: "hundred_steps_two_cells_modulo"
+    in:
+      steps: 100
+      arrLen: 2
+    out: 988185646
+  - name: "hundred_steps_wide_enough"
+    in:
+      steps: 100
+      arrLen: 50
+    out: 345787717
+  - name: "maximum_steps_one_cell"
+    in:
+      steps: 500
+      arrLen: 1
+    out: 1
+  - name: "maximum_steps_two_cells"
+    in:
+      steps: 500
+      arrLen: 2
+    out: 695241507
+  - name: "generated_near_maximum_array"
+    seed: 126901
+    in:
+      steps: 500
+      arrLen:
+        gen: "int"
+        min: 999000
+        max: 1000000
+  - name: "generated_near_maximum_steps"
+    seed: 126902
+    in:
+      steps:
+        gen: "int"
+        min: 495
+        max: 500
+      arrLen: 1000000
+  - name: "generated_full_width_boundary"
+    seed: 126903
+    in:
+      steps:
+        gen: "int"
+        min: 450
+        max: 500
+      arrLen:
+        gen: "int"
+        min: 250
+        max: 500
+  - name: "generated_large_array_range"
+    seed: 126904
+    in:
+      steps:
+        gen: "int"
+        min: 450
+        max: 500
+      arrLen:
+        gen: "int"
+        min: 10000
+        max: 1000000
+  - name: "generated_high_steps_narrow_boundary"
+    seed: 126905
+    in:
+      steps: 500
+      arrLen:
+        gen: "int"
+        min: 2
+        max: 250
+  - name: "generated_maximum_width_range"
+    seed: 126906
+    in:
+      steps:
+        gen: "int"
+        min: 490
+        max: 500
+      arrLen:
+        gen: "int"
+        min: 251
+        max: 1000000

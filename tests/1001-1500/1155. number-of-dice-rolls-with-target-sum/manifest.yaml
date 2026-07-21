@@ -1,0 +1,331 @@
+entry:
+  id: 1155
+  title: number-of-dice-rolls-with-target-sum
+  params:
+    n:
+      type: int
+    k:
+      type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().numRollsToTarget({n}, {k}, {target})"
+    rust: "Solution::num_rolls_to_target({n}, {k}, {target})"
+    python3: "Solution().numRollsToTarget({n}, {k}, {target})"
+    python2: "Solution().numRollsToTarget({n}, {k}, {target})"
+    ruby: "num_rolls_to_target({n}, {k}, {target})"
+    java: "new Solution().numRollsToTarget({n}, {k}, {target})"
+    csharp: "new Solution().NumRollsToTarget({n}, {k}, {target})"
+    kotlin: "Solution().numRollsToTarget({n}, {k}, {target})"
+    go: "numRollsToTarget({n}, {k}, {target})"
+    dart: "Solution().numRollsToTarget({n}, {k}, {target})"
+    swift: "Solution().numRollsToTarget({n}, {k}, {target})"
+    typescript: "numRollsToTarget({n}, {k}, {target})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().numRollsToTarget(n, k, target, {result})"
+    checker: |
+      import math
+
+      class Checker:
+          def numRollsToTarget(self, n, k, target, result):
+              if any(isinstance(x, bool) or not isinstance(x, int) for x in (n, k, target, result)):
+                  return False
+              if not (1 <= n <= 30 and 1 <= k <= 30 and 1 <= target <= 1000):
+                  return False
+              mod = 1000000007
+              total = 0
+              for excluded in range((target - n) // k + 1):
+                  remaining = target - n - excluded * k
+                  if remaining < 0:
+                      break
+                  ways = (math.comb(n, excluded) *
+                          math.comb(remaining + n - 1, n - 1))
+                  total = (total - ways if excluded % 2 else total + ways) % mod
+              return result == total
+seed: 1155
+tests:
+  - name: example_one
+    in:
+      n: 1
+      k: 6
+      target: 3
+    out: 1
+  - name: example_two
+    in:
+      n: 2
+      k: 6
+      target: 7
+    out: 6
+  - name: example_three
+    in:
+      n: 30
+      k: 30
+      target: 500
+    out: 222616187
+  - name: single_face
+    in:
+      n: 1
+      k: 1
+      target: 1
+    out: 1
+  - name: one_die_max
+    in:
+      n: 1
+      k: 30
+      target: 30
+    out: 1
+  - name: one_die_min
+    in:
+      n: 1
+      k: 30
+      target: 1
+    out: 1
+  - name: one_die_above_max
+    in:
+      n: 1
+      k: 30
+      target: 31
+    out: 0
+  - name: unit_dice_exact
+    in:
+      n: 2
+      k: 1
+      target: 2
+    out: 1
+  - name: unit_dice_low
+    in:
+      n: 2
+      k: 1
+      target: 1
+    out: 0
+  - name: unit_dice_high
+    in:
+      n: 2
+      k: 1
+      target: 3
+    out: 0
+  - name: binary_low
+    in:
+      n: 2
+      k: 2
+      target: 2
+    out: 1
+  - name: binary_middle
+    in:
+      n: 2
+      k: 2
+      target: 3
+    out: 2
+  - name: binary_high
+    in:
+      n: 2
+      k: 2
+      target: 4
+    out: 1
+  - name: three_binary_low
+    in:
+      n: 3
+      k: 2
+      target: 3
+    out: 1
+  - name: three_binary_middle
+    in:
+      n: 3
+      k: 2
+      target: 4
+    out: 3
+  - name: three_binary_high
+    in:
+      n: 3
+      k: 2
+      target: 6
+    out: 1
+  - name: ternary_low
+    in:
+      n: 3
+      k: 3
+      target: 5
+    out: 6
+  - name: ternary_high
+    in:
+      n: 3
+      k: 3
+      target: 7
+    out: 6
+  - name: four_dice_low
+    in:
+      n: 4
+      k: 6
+      target: 4
+    out: 1
+  - name: four_dice_high
+    in:
+      n: 4
+      k: 6
+      target: 24
+    out: 1
+  - name: four_dice_center
+    in:
+      n: 4
+      k: 6
+      target: 10
+    out: 80
+  - name: five_unit_exact
+    in:
+      n: 5
+      k: 1
+      target: 5
+    out: 1
+  - name: five_binary
+    in:
+      n: 5
+      k: 2
+      target: 5
+    out: 1
+  - name: five_dice_center
+    in:
+      n: 5
+      k: 6
+      target: 15
+    out: 651
+  - name: six_dice_low
+    in:
+      n: 6
+      k: 6
+      target: 6
+    out: 1
+  - name: six_dice_high
+    in:
+      n: 6
+      k: 6
+      target: 36
+    out: 1
+  - name: ten_binary_center
+    in:
+      n: 10
+      k: 2
+      target: 10
+    out: 1
+  - name: ten_ternary
+    in:
+      n: 10
+      k: 3
+      target: 20
+    out: 8953
+  - name: ten_wide
+    in:
+      n: 10
+      k: 30
+      target: 100
+    out: 846369373
+  - name: fifteen_quaternary
+    in:
+      n: 15
+      k: 4
+      target: 30
+    out: 22597760
+  - name: twenty_quinary
+    in:
+      n: 20
+      k: 5
+      target: 50
+    out: 59004501
+  - name: twentyfive_wide
+    in:
+      n: 25
+      k: 10
+      target: 100
+    out: 511724717
+  - name: thirty_unit
+    in:
+      n: 30
+      k: 1
+      target: 30
+    out: 1
+  - name: thirty_wide_min
+    in:
+      n: 30
+      k: 30
+      target: 30
+    out: 1
+  - name: generated_large_feasible_center
+    in:
+      n:
+        gen: int
+        min: 25
+        max: 30
+      k:
+        gen: int
+        min: 25
+        max: 30
+      target:
+        gen: int
+        min: 350
+        max: 500
+  - name: generated_large_upper_feasible
+    in:
+      n:
+        gen: int
+        min: 25
+        max: 30
+      k:
+        gen: int
+        min: 25
+        max: 30
+      target: 600
+  - name: generated_max_dimension_high_sum
+    in:
+      n:
+        gen: int
+        min: 30
+        max: 30
+      k:
+        gen: int
+        min: 30
+        max: 30
+      target:
+        gen: int
+        min: 850
+        max: 900
+  - name: generated_large_target_limit
+    in:
+      n:
+        gen: int
+        min: 25
+        max: 30
+      k:
+        gen: int
+        min: 20
+        max: 30
+      target:
+        gen: int
+        min: 901
+        max: 1000
+  - name: generated_large_low_sum
+    in:
+      n:
+        gen: int
+        min: 25
+        max: 30
+      k:
+        gen: int
+        min: 25
+        max: 30
+      target: 30
+  - name: generated_maximum_target
+    in:
+      n:
+        gen: int
+        min: 25
+        max: 30
+      k:
+        gen: int
+        min: 25
+        max: 30
+      target: 1000

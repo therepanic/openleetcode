@@ -1,0 +1,392 @@
+entry:
+  id: 1376
+  title: time-needed-to-inform-all-employees
+  params:
+    n:
+      type: int
+    headID:
+      type: int
+    manager:
+      type: array
+      items:
+        type: int
+    informTime:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    rust: "Solution::num_of_minutes({n}, {headID}, {manager}, {informTime})"
+    python3: "Solution().numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    python2: "Solution().numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    ruby: "num_of_minutes({n}, {headID}, {manager}, {informTime})"
+    java: "new Solution().numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    csharp: "new Solution().NumOfMinutes({n}, {headID}, {manager}, {informTime})"
+    kotlin: "Solution().numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    go: "numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    dart: "Solution().numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    swift: "Solution().numOfMinutes({n}, {headID}, {manager}, {informTime})"
+    typescript: "numOfMinutes({n}, {headID}, {manager}, {informTime})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().numOfMinutes(n, headID, manager, informTime, {result})"
+    checker: |
+      class Checker:
+          def numOfMinutes(self, n, headID, manager, informTime, result):
+              if not isinstance(n, int) or not 1 <= n <= 100000 or not isinstance(headID, int) or not 0 <= headID < n:
+                  return False
+              if not isinstance(manager, list) or not isinstance(informTime, list) or len(manager) != n or len(informTime) != n:
+                  return False
+              if manager[headID] != -1 or any(not isinstance(value, int) or value < -1 or value >= n for value in manager):
+                  return False
+              if any(not isinstance(value, int) or value < 0 or value > 1000 for value in informTime):
+                  return False
+              if sum(value == -1 for value in manager) != 1:
+                  return False
+              children = [[] for _ in range(n)]
+              for employee, parent in enumerate(manager):
+                  if parent != -1:
+                      children[parent].append(employee)
+              if any(not children[employee] and informTime[employee] != 0 for employee in range(n)):
+                  return False
+              visited = set()
+              stack = [headID]
+              while stack:
+                  employee = stack.pop()
+                  if employee in visited:
+                      return False
+                  visited.add(employee)
+                  stack.extend(children[employee])
+              if len(visited) != n:
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              def time(employee):
+                  total = 0
+                  seen = set()
+                  while manager[employee] != -1:
+                      if employee in seen:
+                          return None
+                      seen.add(employee)
+                      total += informTime[manager[employee]]
+                      employee = manager[employee]
+                  return total
+              values = [time(employee) for employee in range(n)]
+              if any(value is None for value in values):
+                  return False
+              return result == max(values)
+seed: 1376
+tests:
+  - name: single_employee
+    in:
+      n: 1
+      headID: 0
+      manager: [-1]
+      informTime: [0]
+  - name: two_employee
+    in:
+      n: 2
+      headID: 0
+      manager: [-1, 0]
+      informTime: [5, 0]
+  - name: star_zero
+    in:
+      n: 5
+      headID: 0
+      manager: [-1, 0, 0, 0, 0]
+      informTime: [0, 0, 0, 0, 0]
+  - name: star_positive
+    in:
+      n: 5
+      headID: 0
+      manager: [-1, 0, 0, 0, 0]
+      informTime: [10, 0, 0, 0, 0]
+  - name: chain_three
+    in:
+      n: 3
+      headID: 0
+      manager: [-1, 0, 1]
+      informTime: [1, 2, 0]
+  - name: chain_four
+    in:
+      n: 4
+      headID: 0
+      manager: [-1, 0, 1, 2]
+      informTime: [2, 3, 4, 0]
+  - name: chain_reverse_ids
+    in:
+      n: 4
+      headID: 3
+      manager: [1, 2, 3, -1]
+      informTime: [0, 1, 2, 3]
+  - name: balanced_tree
+    in:
+      n: 7
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 2, 2]
+      informTime: [3, 2, 2, 0, 0, 0, 0]
+  - name: uneven_tree
+    in:
+      n: 7
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 4, 4]
+      informTime: [1, 5, 0, 0, 2, 0, 0]
+  - name: deep_branch
+    in:
+      n: 6
+      headID: 0
+      manager: [-1, 0, 1, 2, 3, 4]
+      informTime: [10, 10, 10, 10, 10, 0]
+  - name: shallow_branch_wins
+    in:
+      n: 6
+      headID: 0
+      manager: [-1, 0, 0, 0, 1, 1]
+      informTime: [1, 100, 0, 0, 0, 0]
+  - name: zero_internal_times
+    in:
+      n: 6
+      headID: 0
+      manager: [-1, 0, 1, 1, 2, 2]
+      informTime: [0, 0, 0, 0, 0, 0]
+  - name: large_internal_time
+    in:
+      n: 4
+      headID: 0
+      manager: [-1, 0, 1, 1]
+      informTime: [1000, 1000, 0, 0]
+  - name: head_middle_id
+    in:
+      n: 5
+      headID: 2
+      manager: [2, 2, -1, 2, 3]
+      informTime: [0, 0, 4, 5, 0]
+  - name: broad_then_deep
+    in:
+      n: 8
+      headID: 0
+      manager: [-1, 0, 0, 0, 1, 2, 3, 6]
+      informTime: [2, 3, 4, 5, 0, 0, 6, 0]
+  - name: two_level_groups
+    in:
+      n: 10
+      headID: 0
+      manager: [-1, 0, 0, 0, 1, 1, 2, 2, 3, 3]
+      informTime: [7, 1, 2, 3, 0, 0, 0, 0, 0, 0]
+  - name: leaf_order_irrelevant
+    in:
+      n: 5
+      headID: 4
+      manager: [4, 4, 4, 4, -1]
+      informTime: [0, 0, 0, 0, 9]
+  - name: long_chain_small_times
+    in:
+      n: 8
+      headID: 0
+      manager: [-1, 0, 1, 2, 3, 4, 5, 6]
+      informTime: [1, 1, 1, 1, 1, 1, 1, 0]
+  - name: long_chain_large_times
+    in:
+      n: 8
+      headID: 0
+      manager: [-1, 0, 1, 2, 3, 4, 5, 6]
+      informTime: [10, 20, 30, 40, 50, 60, 70, 0]
+  - name: asymmetric_tree
+    in:
+      n: 9
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 1, 2, 6, 6]
+      informTime: [4, 3, 2, 0, 0, 0, 8, 0, 0]
+  - name: all_managers_zero
+    in:
+      n: 9
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 2, 2, 3, 4]
+      informTime: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: max_root_delay
+    in:
+      n: 5
+      headID: 0
+      manager: [-1, 0, 0, 0, 0]
+      informTime: [1000, 0, 0, 0, 0]
+  - name: max_nested_delay
+    in:
+      n: 5
+      headID: 0
+      manager: [-1, 0, 1, 2, 3]
+      informTime: [1000, 1000, 1000, 1000, 0]
+  - name: root_last_in_array
+    in:
+      n: 6
+      headID: 5
+      manager: [1, 2, 3, 4, 5, -1]
+      informTime: [0, 0, 0, 0, 0, 1]
+  - name: many_leaves
+    in:
+      n: 12
+      headID: 0
+      manager: [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      informTime: [11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: nested_many_leaves
+    in:
+      n: 12
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+      informTime: [2, 4, 1, 3, 5, 0, 0, 0, 0, 0, 0, 0]
+  - name: alternating_delays
+    in:
+      n: 9
+      headID: 0
+      manager: [-1, 0, 1, 2, 3, 4, 5, 6, 7]
+      informTime: [1, 100, 1, 100, 1, 100, 1, 100, 0]
+  - name: two_branches
+    in:
+      n: 8
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 2, 2, 5]
+      informTime: [3, 4, 5, 0, 0, 6, 0, 0]
+  - name: four_depths
+    in:
+      n: 10
+      headID: 0
+      manager: [-1, 0, 0, 1, 2, 3, 4, 5, 6, 7]
+      informTime: [2, 3, 4, 5, 6, 7, 8, 9, 0, 0]
+  - name: manager_zero_ids
+    in:
+      n: 6
+      headID: 0
+      manager: [-1, 0, 0, 0, 0, 0]
+      informTime: [6, 0, 0, 0, 0, 0]
+  - name: head_two_branch
+    in:
+      n: 7
+      headID: 2
+      manager: [2, 2, -1, 2, 3, 4, 4]
+      informTime: [0, 0, 2, 3, 4, 0, 0]
+  - name: maximum_small_tree
+    in:
+      n: 15
+      headID: 0
+      manager: [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      informTime: [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: final_balanced
+    in:
+      n: 7
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 2, 2]
+      informTime: [10, 20, 30, 0, 0, 0, 0]
+  - name: short_branch_priority
+    in:
+      n: 6
+      headID: 0
+      manager: [-1, 0, 0, 1, 1, 2]
+      informTime: [5, 20, 1, 0, 0, 0]
+  - name: zero_head_delay
+    in:
+      n: 5
+      headID: 0
+      manager: [-1, 0, 0, 1, 2]
+      informTime: [0, 4, 6, 0, 0]
+  - name: head_nonzero_with_deep_chain
+    in:
+      n: 10
+      headID: 7
+      manager: [1, 2, 7, 0, 3, 4, 5, -1, 7, 8]
+      informTime: [2, 3, 4, 5, 6, 7, 0, 1, 8, 0]
+  - name: wide_zero_then_weighted_subtree
+    in:
+      n: 13
+      headID: 0
+      manager: [-1, 0, 0, 0, 0, 1, 1, 2, 2, 3, 4, 10, 10]
+      informTime: [0, 9, 2, 7, 1, 0, 0, 0, 0, 0, 4, 0, 0]
+  - name: irregular_high_delays
+    in:
+      n: 14
+      headID: 9
+      manager: [9, 9, 0, 0, 1, 1, 4, 2, 7, -1, 9, 10, 11, 11]
+      informTime: [1000, 1, 999, 0, 500, 0, 0, 250, 0, 1000, 750, 1000, 0, 0]
+  - name: long_mixed_chain
+    in:
+      n: 20
+      headID: 19
+      manager:
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, -1]
+      informTime:
+        [0, 2, 0, 3, 0, 5, 0, 7, 0, 11, 0, 13, 0, 17, 0, 19, 0, 23, 0, 29]
+  - name: dense_multi_level_company
+    in:
+      n: 31
+      headID: 15
+      manager:
+        [
+          15,
+          15,
+          15,
+          15,
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          3,
+          3,
+          4,
+          4,
+          4,
+          -1,
+          15,
+          16,
+          16,
+          17,
+          17,
+          18,
+          18,
+          19,
+          19,
+          20,
+          20,
+          21,
+          21,
+          22,
+          22,
+        ]
+      informTime:
+        [
+          3,
+          5,
+          7,
+          11,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          19,
+          23,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]

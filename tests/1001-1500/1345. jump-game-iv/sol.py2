@@ -1,0 +1,35 @@
+class Solution(object):
+    def minJumps(self, arr):
+        n = len(arr)
+        if n == 1:
+            return 0
+        
+        mp = {}
+        for i in range(n):
+            v = arr[i]
+            if v not in mp:
+                mp[v] = []
+            mp[v].append(i)
+        
+        q = [(0, 0)]
+        vis = [0] * n
+        vis[0] = 1
+        
+        head = 0
+        while head < len(q):
+            node, dist = q[head]
+            head += 1
+            if node == n - 1:
+                return dist
+            if node - 1 >= 0 and not vis[node - 1]:
+                vis[node - 1] = 1
+                q.append((node - 1, dist + 1))
+            if node + 1 < n and not vis[node + 1]:
+                vis[node + 1] = 1
+                q.append((node + 1, dist + 1))
+            for nxt in mp.get(arr[node], []):
+                if not vis[nxt]:
+                    vis[nxt] = 1
+                    q.append((nxt, dist + 1))
+            mp[arr[node]] = []
+        return -1

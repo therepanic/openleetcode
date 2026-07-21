@@ -1,0 +1,459 @@
+entry:
+  id: 1139
+  title: "largest-1-bordered-square"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().largest1BorderedSquare({grid})"
+    rust: "Solution::largest1_bordered_square({grid})"
+    python3: "Solution().largest1BorderedSquare({grid})"
+    python2: "Solution().largest1BorderedSquare({grid})"
+    ruby: "largest1_bordered_square({grid})"
+    java: "new Solution().largest1BorderedSquare({grid})"
+    csharp: "new Solution().Largest1BorderedSquare({grid})"
+    kotlin: "Solution().largest1BorderedSquare({grid})"
+    go: "largest1BorderedSquare({grid})"
+    dart: "Solution().largest1BorderedSquare({grid})"
+    swift: "Solution().largest1BorderedSquare({grid})"
+    typescript: "largest1BorderedSquare({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().largest1BorderedSquare(grid, {result})"
+    checker: |
+      class Checker:
+          def largest1BorderedSquare(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(grid, list) or not grid or not isinstance(grid[0], list) or not grid[0]:
+                  return False
+              rows, cols = len(grid), len(grid[0])
+              if rows > 100 or cols > 100 or any(len(row) != cols for row in grid):
+                  return False
+              if any(cell not in (0, 1) for row in grid for cell in row):
+                  return False
+              horizontal = [[0] * cols for _ in range(rows)]
+              vertical = [[0] * cols for _ in range(rows)]
+              for r in range(rows):
+                  for c in range(cols):
+                      if grid[r][c] == 1:
+                          horizontal[r][c] = 1 + (horizontal[r][c - 1] if c else 0)
+                          vertical[r][c] = 1 + (vertical[r - 1][c] if r else 0)
+              for size in range(min(rows, cols), 0, -1):
+                  for bottom in range(size - 1, rows):
+                      for right in range(size - 1, cols):
+                          top = bottom - size + 1
+                          left = right - size + 1
+                          if (horizontal[bottom][right] >= size and
+                                  horizontal[top][right] >= size and
+                                  vertical[bottom][right] >= size and
+                                  vertical[bottom][left] >= size):
+                              return result == size * size
+              return result == 0
+
+seed: 113900
+
+tests:
+  - name: "single_one"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1]
+    out: 1
+  - name: "single_zero"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0]
+    out: 0
+  - name: "example_full_border"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 0, 1]
+          - [1, 1, 1]
+    out: 9
+  - name: "example_single_row"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 0, 0]
+    out: 1
+  - name: "full_two_by_two"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+    out: 4
+  - name: "diagonal_only"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 1]
+    out: 1
+  - name: "all_zero_rectangle"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+          - [0, 0, 0]
+    out: 0
+  - name: "checkerboard_three"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 1]
+          - [0, 1, 0]
+          - [1, 0, 1]
+    out: 1
+  - name: "one_row_all_one"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1]
+    out: 1
+  - name: "one_column_all_one"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1]
+          - [1]
+          - [1]
+          - [1]
+    out: 1
+  - name: "three_by_three_missing_corner"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [0, 0, 1]
+          - [1, 1, 1]
+    out: 1
+  - name: "two_by_three_full_rows"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+    out: 4
+  - name: "embedded_two_square"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 1, 1]
+          - [1, 0, 1, 1]
+          - [1, 1, 1, 1]
+    out: 4
+  - name: "partial_corner_square"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 0]
+          - [1, 0, 0]
+          - [1, 1, 1]
+    out: 1
+  - name: "full_four_border"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1]
+          - [1, 0, 0, 1]
+          - [1, 0, 0, 1]
+          - [1, 1, 1, 1]
+    out: 16
+  - name: "three_by_four_full"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1]
+          - [1, 1, 1, 1]
+          - [1, 1, 1, 1]
+    out: 9
+  - name: "vertical_strip_in_rectangle"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 1, 1]
+          - [0, 1, 1]
+    out: 4
+  - name: "left_l_shape"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 0]
+          - [1, 1, 1]
+          - [1, 0, 1]
+    out: 1
+  - name: "offset_four_square"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 0, 1]
+          - [1, 1, 1, 1]
+          - [0, 1, 1, 1]
+    out: 4
+  - name: "bottom_right_square"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0, 1, 1]
+          - [1, 1, 1, 1]
+          - [1, 1, 1, 1]
+    out: 4
+  - name: "square_with_zero_bottom_row"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 0, 1]
+          - [1, 1, 1]
+          - [0, 0, 0]
+    out: 9
+  - name: "square_at_top"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [0, 0, 0]
+          - [1, 1, 1]
+    out: 4
+  - name: "alternating_columns"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 1, 0, 1]
+          - [1, 1, 1, 1, 1]
+          - [1, 0, 1, 0, 1]
+    out: 1
+  - name: "three_square_left"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 0, 0]
+          - [1, 0, 1, 0, 0]
+          - [1, 1, 1, 0, 0]
+    out: 9
+  - name: "two_by_two_stacked"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+    out: 4
+  - name: "repeated_two_squares"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 1]
+          - [1, 1, 1]
+          - [1, 0, 1]
+          - [1, 1, 1]
+    out: 9
+  - name: "noisy_four_by_four"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 1, 1, 1]
+          - [1, 1, 0, 1]
+          - [1, 1, 1, 1]
+          - [1, 0, 1, 1]
+    out: 9
+  - name: "hollow_five_border"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1]
+          - [1, 0, 0, 0, 1]
+          - [1, 0, 1, 0, 1]
+          - [1, 0, 0, 0, 1]
+          - [1, 1, 1, 1, 1]
+    out: 25
+  - name: "separate_two_blocks"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 0, 0]
+          - [1, 1, 0, 0]
+          - [0, 0, 1, 1]
+          - [0, 0, 1, 1]
+    out: 4
+  - name: "center_hole_three"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [0, 1, 0]
+          - [1, 1, 1]
+    out: 1
+  - name: "top_right_four_border"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1]
+          - [0, 0, 0, 0, 1]
+          - [1, 1, 1, 1, 1]
+    out: 1
+  - name: "noisy_five"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 1, 1, 1]
+          - [1, 1, 1, 0, 1]
+          - [1, 1, 1, 1, 1]
+          - [1, 0, 0, 0, 1]
+    out: 9
+  - name: "bottom_pattern"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0, 0, 1]
+          - [1, 1, 1, 1]
+          - [1, 0, 0, 1]
+          - [1, 1, 1, 1]
+    out: 1
+  - name: "outer_border_gap_leaves_four_square"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 0, 1, 1]
+          - [1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1]
+    out: 16
+  - name: "generated_small"
+    seed: 113901
+    in:
+      grid:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 8
+        of:
+          gen: "array"
+          len: 8
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_medium"
+    seed: 113902
+    in:
+      grid:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 10
+          max: 25
+        of:
+          gen: "array"
+          len: 20
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_wide"
+    seed: 113903
+    in:
+      grid:
+        gen: "array"
+        len: 20
+        of:
+          gen: "array"
+          len: 30
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_maximum_square_a"
+    seed: 113904
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_maximum_square_b"
+    seed: 113905
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_near_maximum_rectangle"
+    seed: 113906
+    in:
+      grid:
+        gen: "array"
+        len: 99
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 0
+            max: 1

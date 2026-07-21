@@ -1,0 +1,1061 @@
+entry:
+  id: 1434
+  title: number-of-ways-to-wear-different-hats-to-each-other
+  params:
+    hats:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().numberWays({hats})"
+    rust: "Solution::number_ways({hats})"
+    python3: "Solution().numberWays({hats})"
+    python2: "Solution().numberWays({hats})"
+    ruby: "number_ways({hats})"
+    java: "new Solution().numberWays({hats})"
+    csharp: "new Solution().NumberWays({hats})"
+    kotlin: "Solution().numberWays({hats})"
+    go: "numberWays({hats})"
+    dart: "Solution().numberWays({hats})"
+    swift: "Solution().numberWays({hats})"
+    typescript: "numberWays({hats})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().numberWays(hats, {result})"
+    checker: |
+      class Checker:
+          def numberWays(self, hats, result):
+              if type(result) is not int:
+                  return False
+              n = len(hats)
+              if not 1 <= n <= 10:
+                  return False
+              for choices in hats:
+                  if not 1 <= len(choices) <= 40 or len(set(choices)) != len(choices):
+                      return False
+                  if any(hat < 1 or hat > 40 for hat in choices):
+                      return False
+              mod = 1000000007
+              liked_by_hat = [[] for _ in range(41)]
+              for person, choices in enumerate(hats):
+                  for hat in choices:
+                      liked_by_hat[hat].append(person)
+              dp = [0] * (1 << n)
+              dp[0] = 1
+              for hat in range(1, 41):
+                  updated = dp[:]
+                  for mask, count in enumerate(dp):
+                      if count:
+                          for person in liked_by_hat[hat]:
+                              bit = 1 << person
+                              if not mask & bit:
+                                  updated[mask | bit] = (updated[mask | bit] + count) % mod
+                  dp = updated
+              expected = dp[(1 << n) - 1]
+              return 0 <= result < mod and result == expected
+seed: 1434
+tests:
+  - name: example-one
+    in:
+      hats:
+        - [3, 4]
+        - [4, 5]
+        - [5]
+  - name: example-two
+    in:
+      hats:
+        - [3, 5, 1]
+        - [3, 5]
+  - name: example-three
+    in:
+      hats:
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+  - name: one-person-low
+    in:
+      hats:
+        - [1]
+  - name: one-person-high
+    in:
+      hats:
+        - [40]
+  - name: two-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+  - name: two-impossible
+    in:
+      hats:
+        - [7]
+        - [7]
+  - name: two-all-pairs
+    in:
+      hats:
+        - [1, 2]
+        - [1, 2]
+  - name: two-separated
+    in:
+      hats:
+        - [2, 20, 40]
+        - [1, 20, 39]
+  - name: three-forced
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+  - name: three-no-solution
+    in:
+      hats:
+        - [1]
+        - [1, 2]
+        - [1, 2]
+  - name: three-chain
+    in:
+      hats:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+  - name: three-high-chain
+    in:
+      hats:
+        - [38, 39]
+        - [39, 40]
+        - [37, 40]
+  - name: three-wide
+    seed: 143402
+    in:
+      hats:
+        gen: "array"
+        len: 10
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 30
+            max: 40
+          of:
+            gen: "int"
+            min: 1
+            max: 40
+          distinct: true
+  - name: three-overlap
+    in:
+      hats:
+        - [1, 4, 7]
+        - [2, 4, 8]
+        - [3, 7, 8]
+  - name: four-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+  - name: four-permutations
+    in:
+      hats:
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+  - name: four-staggered
+    in:
+      hats:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+  - name: four-sparse
+    seed: 143401
+    in:
+      hats:
+        gen: "array"
+        len: 10
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 30
+            max: 40
+          of:
+            gen: "int"
+            min: 1
+            max: 40
+          distinct: true
+  - name: four-forced-choice
+    in:
+      hats:
+        - [40]
+        - [39, 40]
+        - [38, 39]
+        - [37, 38]
+  - name: five-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+  - name: five-permutations
+    in:
+      hats:
+        - [1, 2, 3, 4, 5]
+        - [1, 2, 3, 4, 5]
+        - [1, 2, 3, 4, 5]
+        - [1, 2, 3, 4, 5]
+        - [1, 2, 3, 4, 5]
+  - name: five-chain
+    in:
+      hats:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+  - name: five-alternating
+    in:
+      hats:
+        - [1, 3, 5, 7]
+        - [2, 4, 6, 8]
+        - [1, 2, 5, 6]
+        - [3, 4, 7, 8]
+        - [1, 4, 8, 9]
+  - name: five-high
+    seed: 143403
+    in:
+      hats:
+        gen: "array"
+        len: 10
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 30
+            max: 40
+          of:
+            gen: "int"
+            min: 1
+            max: 40
+          distinct: true
+  - name: six-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+  - name: six-pairs
+    in:
+      hats:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+  - name: six-wide
+    seed: 143404
+    in:
+      hats:
+        gen: "array"
+        len: 10
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 30
+            max: 40
+          of:
+            gen: "int"
+            min: 1
+            max: 40
+          distinct: true
+  - name: seven-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+  - name: seven-overlap
+    seed: 143405
+    in:
+      hats:
+        gen: "array"
+        len: 10
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 30
+            max: 40
+          of:
+            gen: "int"
+            min: 1
+            max: 40
+          distinct: true
+  - name: eight-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+  - name: eight-blocks
+    in:
+      hats:
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+        - [5, 6, 7, 8]
+        - [5, 6, 7, 8]
+        - [9, 10, 11, 12]
+        - [9, 10, 11, 12]
+        - [13, 14, 15, 16]
+        - [13, 14, 15, 16]
+  - name: eight-sparse
+    seed: 143406
+    in:
+      hats:
+        gen: "array"
+        len: 10
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 30
+            max: 40
+          of:
+            gen: "int"
+            min: 1
+            max: 40
+          distinct: true
+  - name: nine-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+        - [9]
+  - name: nine-overlapping
+    in:
+      hats:
+        - [1, 2, 10]
+        - [2, 3, 11]
+        - [3, 4, 12]
+        - [4, 5, 13]
+        - [5, 6, 14]
+        - [6, 7, 15]
+        - [7, 8, 16]
+        - [8, 9, 17]
+        - [9, 10, 18]
+  - name: ten-disjoint
+    in:
+      hats:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+        - [9]
+        - [10]
+  - name: ten-permutations
+    in:
+      hats:
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  - name: ten-wide-20
+    in:
+      hats:
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+  - name: ten-wide-40
+    in:
+      hats:
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+          ]
+  - name: ten-shifted-boundary
+    in:
+      hats:
+        - [1, 11, 21, 31, 40]
+        - [2, 12, 22, 32, 40]
+        - [3, 13, 23, 33, 39]
+        - [4, 14, 24, 34, 39]
+        - [5, 15, 25, 35, 38]
+        - [6, 16, 26, 36, 38]
+        - [7, 17, 27, 37, 40]
+        - [8, 18, 28, 38, 39]
+        - [9, 19, 29, 39, 40]
+        - [10, 20, 30, 40]

@@ -1,0 +1,21 @@
+class Solution(object):
+    def numOfMinutes(self, n, headID, manager, informTime):
+        """
+        :type n: int
+        :type headID: int
+        :type manager: List[int]
+        :type informTime: List[int]
+        :rtype: int
+        """
+        children = [[] for _ in range(n)]
+        for employee, parent in enumerate(manager):
+            if parent != -1:
+                children[parent].append(employee)
+        stack = [(headID, 0)]
+        answer = 0
+        while stack:
+            employee, elapsed = stack.pop()
+            answer = max(answer, elapsed)
+            for child in children[employee]:
+                stack.append((child, elapsed + informTime[employee]))
+        return answer

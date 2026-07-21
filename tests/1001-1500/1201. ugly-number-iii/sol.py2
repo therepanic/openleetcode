@@ -1,0 +1,44 @@
+class Solution(object):
+    def nthUglyNumber(self, n, a, b, c):
+        """
+        :type n: int
+        :type a: int
+        :type b: int
+        :type c: int
+        :rtype: int
+        """
+        def gcd(x, y):
+            while y:
+                x, y = y, x % y
+            return x
+        
+        def lcm(x, y):
+            return x * y // gcd(x, y)
+        
+        ab = lcm(a, b)
+        ac = lcm(a, c)
+        bc = lcm(b, c)
+        abc = lcm(ab, c)
+        
+        def count(x):
+            return (
+                x // a +
+                x // b +
+                x // c -
+                x // ab -
+                x // ac -
+                x // bc +
+                x // abc
+            )
+        
+        left = 1
+        right = 2 * 10**9
+        
+        while left < right:
+            mid = (left + right) // 2
+            if count(mid) >= n:
+                right = mid
+            else:
+                left = mid + 1
+        
+        return left

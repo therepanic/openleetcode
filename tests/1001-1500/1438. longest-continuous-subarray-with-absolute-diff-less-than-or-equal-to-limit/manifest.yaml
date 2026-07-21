@@ -1,0 +1,287 @@
+entry:
+  id: 1438
+  title: "longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    limit:
+      type: int
+  call:
+    cpp: "Solution().longestSubarray({nums}, {limit})"
+    rust: "Solution::longest_subarray({nums}, {limit})"
+    python3: "Solution().longestSubarray({nums}, {limit})"
+    python2: "Solution().longestSubarray({nums}, {limit})"
+    ruby: "longest_subarray({nums}, {limit})"
+    java: "new Solution().longestSubarray({nums}, {limit})"
+    csharp: "new Solution().LongestSubarray({nums}, {limit})"
+    kotlin: "Solution().longestSubarray({nums}, {limit})"
+    go: "longestSubarray({nums}, {limit})"
+    dart: "Solution().longestSubarray({nums}, {limit})"
+    swift: "Solution().longestSubarray({nums}, {limit})"
+    typescript: "longestSubarray({nums}, {limit})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().longestSubarray(nums, limit, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def longestSubarray(self, nums, limit, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              min_heap = []
+              max_heap = []
+              left = 0
+              best = 0
+              for right, value in enumerate(nums):
+                  heapq.heappush(min_heap, (value, right))
+                  heapq.heappush(max_heap, (-value, right))
+                  while -max_heap[0][0] - min_heap[0][0] > limit:
+                      left += 1
+                      while min_heap[0][1] < left:
+                          heapq.heappop(min_heap)
+                      while max_heap[0][1] < left:
+                          heapq.heappop(max_heap)
+                  best = max(best, right - left + 1)
+              return result == best
+seed: 1438
+tests:
+  - name: ex1
+    in:
+      nums: [8, 2, 4, 7]
+      limit: 4
+    out: 2
+  - name: ex2
+    in:
+      nums: [10, 1, 2, 4, 7, 2]
+      limit: 5
+    out: 4
+  - name: ex3
+    in:
+      nums: [4, 2, 2, 2, 4, 4, 2, 2]
+      limit: 0
+    out: 3
+  - name: one
+    in:
+      nums: [5]
+      limit: 0
+    out: 1
+  - name: all_equal
+    in:
+      nums: [7, 7, 7, 7]
+      limit: 0
+    out: 4
+  - name: strict
+    in:
+      nums: [1, 2, 3, 4]
+      limit: 0
+  - name: unlimited
+    in:
+      nums: [1, 100, 3, 50]
+      limit: 1000000000
+    out: 4
+  - name: adjacent
+    in:
+      nums: [1, 10, 1, 10]
+      limit: 0
+  - name: alternating
+    in:
+      nums: [1, 3, 1, 3, 1]
+      limit: 2
+  - name: increasing
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      limit: 2
+  - name: decreasing
+    in:
+      nums: [6, 5, 4, 3, 2, 1]
+      limit: 2
+  - name: narrow_peak
+    in:
+      nums: [1, 2, 10, 2, 1]
+      limit: 1
+  - name: narrow_valley
+    in:
+      nums: [10, 2, 1, 2, 10]
+      limit: 1
+  - name: repeated_blocks
+    in:
+      nums: [4, 4, 5, 5, 6, 6]
+      limit: 1
+  - name: high_values
+    in:
+      nums: [1000000000, 999999999, 1000000000]
+      limit: 1
+  - name: low_limit
+    in:
+      nums: [2, 5, 2, 5, 2]
+      limit: 0
+  - name: varied_a
+    in:
+      nums: [3, 8, 2, 7, 4, 6, 5]
+      limit: 3
+  - name: varied_b
+    in:
+      nums: [10, 20, 15, 18, 12, 14]
+      limit: 5
+  - name: varied_c
+    in:
+      nums: [1, 9, 2, 8, 3, 7, 4]
+      limit: 4
+  - name: varied_d
+    in:
+      nums: [5, 1, 4, 2, 3, 9]
+      limit: 3
+  - name: varied_e
+    in:
+      nums: [20, 18, 19, 17, 16, 15]
+      limit: 3
+  - name: length_eight
+    in:
+      nums: [1, 5, 2, 4, 3, 7, 6, 8]
+      limit: 2
+  - name: length_nine
+    in:
+      nums: [9, 1, 8, 2, 7, 3, 6, 4, 5]
+      limit: 3
+  - name: length_ten
+    in:
+      nums: [1, 1, 5, 2, 2, 6, 3, 3, 7, 4]
+      limit: 1
+  - name: length_eleven
+    in:
+      nums: [4, 6, 5, 7, 4, 6, 5, 7, 4, 6, 5]
+      limit: 2
+  - name: length_twelve
+    in:
+      nums: [1, 4, 2, 5, 3, 6, 4, 7, 5, 8, 6, 9]
+      limit: 3
+  - name: cluster_a
+    in:
+      nums: [1, 2, 1, 2, 10, 10, 10]
+      limit: 1
+  - name: cluster_b
+    in:
+      nums: [10, 10, 1, 2, 1, 2, 10]
+      limit: 1
+  - name: cluster_c
+    in:
+      nums: [5, 5, 5, 1, 1, 1, 5, 5]
+      limit: 0
+  - name: boundary_a
+    in:
+      nums: [1, 100]
+      limit: 99
+  - name: boundary_b
+    in:
+      nums: [1, 100]
+      limit: 98
+  - name: boundary_c
+    in:
+      nums: [1000000000, 1, 1000000000]
+      limit: 999999999
+  - name: final_a
+    in:
+      nums: [12, 3, 15, 6, 9, 18, 21]
+      limit: 6
+  - name: final_b
+    in:
+      nums: [2, 8, 4, 6, 10, 12, 1]
+      limit: 4
+  - name: final_c
+    in:
+      nums: [11, 2, 9, 4, 8, 3, 7, 5]
+      limit: 5
+  - name: generated_small_random
+    seed: 143801
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+      limit:
+        gen: "int"
+        min: 0
+        max: 100
+  - name: generated_medium_random
+    seed: 143802
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 200
+          max: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+      limit:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: generated_zero_limit
+    seed: 143803
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 3000
+        of:
+          gen: "int"
+          min: 1
+          max: 5
+        distinct: false
+        sorted: false
+      limit: 0
+  - name: generated_large_random
+    seed: 143804
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+      limit:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: generated_large_tight_limit
+    seed: 143805
+    in:
+      nums:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+      limit:
+        gen: "int"
+        min: 0
+        max: 10

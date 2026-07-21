@@ -1,0 +1,327 @@
+entry:
+  id: 1208
+  title: "get-equal-substrings-within-budget"
+  params:
+    s:
+      type: string
+    t:
+      type: string
+    maxCost:
+      type: int
+  call:
+    cpp: "Solution().equalSubstring({s}, {t}, {maxCost})"
+    rust: "Solution::equal_substring({s}, {t}, {maxCost})"
+    python3: "Solution().equalSubstring({s}, {t}, {maxCost})"
+    python2: "Solution().equalSubstring({s}, {t}, {maxCost})"
+    ruby: "equal_substring({s}, {t}, {maxCost})"
+    java: "new Solution().equalSubstring({s}, {t}, {maxCost})"
+    csharp: "new Solution().EqualSubstring({s}, {t}, {maxCost})"
+    kotlin: "Solution().equalSubstring({s}, {t}, {maxCost})"
+    go: "equalSubstring({s}, {t}, {maxCost})"
+    dart: "Solution().equalSubstring({s}, {t}, {maxCost})"
+    swift: "Solution().equalSubstring({s}, {t}, {maxCost})"
+    typescript: "equalSubstring({s}, {t}, {maxCost})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().equalSubstring(s, t, maxCost, {result})"
+    checker: |
+      class Checker:
+          def equalSubstring(self, s, t, maxCost, result):
+              left = 0
+              cost = 0
+              best = 0
+              for right in range(len(s)):
+                  cost += abs(ord(s[right]) - ord(t[right]))
+                  while cost > maxCost:
+                      cost -= abs(ord(s[left]) - ord(t[left]))
+                      left += 1
+                  best = max(best, right - left + 1)
+              return result == best
+
+seed: 1208
+
+tests:
+  - name: "example-one"
+    in:
+      s: "abcd"
+      t: "bcdf"
+      maxCost: 3
+    out: 3
+  - name: "example-two"
+    in:
+      s: "abcd"
+      t: "cdef"
+      maxCost: 3
+    out: 1
+  - name: "example-three"
+    in:
+      s: "abcd"
+      t: "acde"
+      maxCost: 0
+    out: 1
+  - name: "single-equal"
+    in:
+      s: "a"
+      t: "a"
+      maxCost: 0
+    out: 1
+  - name: "single-change-free"
+    in:
+      s: "a"
+      t: "z"
+      maxCost: 25
+    out: 1
+  - name: "single-change-too-costly"
+    in:
+      s: "a"
+      t: "z"
+      maxCost: 24
+    out: 0
+  - name: "all-equal-zero-budget"
+    in:
+      s: "aaaaaa"
+      t: "aaaaaa"
+      maxCost: 0
+    out: 6
+  - name: "all-different-zero-budget"
+    in:
+      s: "abcdef"
+      t: "bcdefg"
+      maxCost: 0
+    out: 0
+  - name: "full-budget"
+    in:
+      s: "abcde"
+      t: "zyxwv"
+      maxCost: 200
+    out: 5
+  - name: "just-enough"
+    in:
+      s: "abcd"
+      t: "bcde"
+      maxCost: 4
+    out: 4
+  - name: "one-over-budget"
+    in:
+      s: "abcd"
+      t: "bcde"
+      maxCost: 3
+    out: 3
+  - name: "cheap-prefix-before-expensive-change"
+    in:
+      s: "azbzcz"
+      t: "azczzz"
+      maxCost: 1
+    out: 4
+  - name: "expensive-middle-splits-run"
+    in:
+      s: "aaaaaa"
+      t: "aazaaa"
+      maxCost: 5
+    out: 3
+  - name: "alternating-max-cost"
+    in:
+      s: "azazaz"
+      t: "zazaza"
+      maxCost: 50
+    out: 2
+  - name: "zero-budget-match-runs"
+    in:
+      s: "abccdeff"
+      t: "abzzdeff"
+      maxCost: 0
+    out: 4
+  - name: "one-cheap-change"
+    in:
+      s: "abcabc"
+      t: "abdabc"
+      maxCost: 1
+    out: 6
+  - name: "cost-at-window-start"
+    in:
+      s: "zaaa"
+      t: "aaaa"
+      maxCost: 1
+    out: 3
+  - name: "cost-at-window-end"
+    in:
+      s: "aaaz"
+      t: "aaaa"
+      maxCost: 1
+    out: 3
+  - name: "two-separated-costly-runs"
+    in:
+      s: "azzzza"
+      t: "aaaaaa"
+      maxCost: 50
+    out: 3
+  - name: "repeated-small-cost"
+    in:
+      s: "bbbbbbbb"
+      t: "cccccccc"
+      maxCost: 3
+    out: 3
+  - name: "repeated-large-cost"
+    in:
+      s: "aaaaaaaa"
+      t: "zzzzzzzz"
+      maxCost: 75
+    out: 3
+  - name: "uniform-unit-cost"
+    in:
+      s: "azbycxdw"
+      t: "bycxdwex"
+      maxCost: 10
+    out: 8
+  - name: "symmetric-cost-valley"
+    in:
+      s: "abcdefghi"
+      t: "jihgfedcb"
+      maxCost: 20
+    out: 6
+  - name: "symmetric-cost-valley-larger-budget"
+    in:
+      s: "qrstuvwxy"
+      t: "yxwvutsrq"
+      maxCost: 30
+    out: 7
+  - name: "multiple-shrinks-zero-budget"
+    in:
+      s: "ba"
+      t: "az"
+      maxCost: 0
+    out: 0
+  - name: "long-uniform-shift"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaa"
+      t: "bbbbbbbbbbbbbbbbbbbb"
+      maxCost: 10
+    out: 10
+  - name: "long-boundary-budget"
+    in:
+      s: "abcdefghijklmnopqrst"
+      t: "bcdefghijklmnopqrstu"
+      maxCost: 10
+    out: 10
+  - name: "multiple-shrinks-after-partial-budget"
+    in:
+      s: "bba"
+      t: "aaz"
+      maxCost: 1
+    out: 1
+  - name: "long-alternating-unit-cost"
+    in:
+      s: "abababababababababab"
+      t: "babababababababababa"
+      maxCost: 9
+    out: 9
+  - name: "maximum-budget-long"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+      t: "zyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcba"
+      maxCost: 1000000
+    out: 52
+  - name: "single-peak-zero-budget"
+    in:
+      s: "aaaaabaaaa"
+      t: "aaaaaaaaaa"
+      maxCost: 0
+    out: 5
+  - name: "single-peak-included"
+    in:
+      s: "aaaaabaaaa"
+      t: "aaaaaaaaaa"
+      maxCost: 1
+    out: 10
+  - name: "alternating-small-costs"
+    in:
+      s: "abcdeabcde"
+      t: "bbcddbbcdd"
+      maxCost: 2
+    out: 8
+  - name: "long-repeated-expensive"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      t: "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+      maxCost: 100
+    out: 4
+  - name: "stress-all-equal-zero-budget"
+    seed: 120801
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+      maxCost: 0
+  - name: "stress-max-cost-zero-budget"
+    seed: 120802
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "z"
+      maxCost: 0
+  - name: "stress-max-cost-exact-budget"
+    seed: 120803
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "z"
+      maxCost: 1000000
+  - name: "stress-max-cost-one-below-budget"
+    seed: 120804
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "z"
+      maxCost: 999999
+  - name: "stress-unit-cost-full-length"
+    seed: 120805
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "b"
+      maxCost: 100000
+  - name: "stress-unit-cost-one-short"
+    seed: 120806
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "b"
+      maxCost: 99999

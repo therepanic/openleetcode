@@ -1,0 +1,280 @@
+entry:
+  id: 1425
+  title: constrained-subsequence-sum
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().constrainedSubsetSum({nums}, {k})"
+    rust: "Solution::constrained_subset_sum({nums}, {k})"
+    python3: "Solution().constrainedSubsetSum({nums}, {k})"
+    python2: "Solution().constrainedSubsetSum({nums}, {k})"
+    ruby: "constrained_subset_sum({nums}, {k})"
+    java: "new Solution().constrainedSubsetSum({nums}, {k})"
+    csharp: "new Solution().ConstrainedSubsetSum({nums}, {k})"
+    kotlin: "Solution().constrainedSubsetSum({nums}, {k})"
+    go: "constrainedSubsetSum({nums}, {k})"
+    dart: "Solution().constrainedSubsetSum({nums}, {k})"
+    swift: "Solution().constrainedSubsetSum({nums}, {k})"
+    typescript: "constrainedSubsetSum({nums}, {k})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().constrainedSubsetSum(nums, k, {result})"
+    checker: |
+      class Checker:
+          def constrainedSubsetSum(self, nums, k, result):
+              if type(result) is not int or not nums or not (1 <= k <= len(nums)):
+                  return False
+              n = len(nums)
+              size = 1
+              while size < n:
+                  size <<= 1
+              tree = [-10**18] * (2 * size)
+              answer = -10**18
+              for i, value in enumerate(nums):
+                  left = max(0, i - k)
+                  right = i
+                  best = 0
+                  l = left + size
+                  r = right + size
+                  while l < r:
+                      if l & 1:
+                          best = max(best, tree[l])
+                          l += 1
+                      if r & 1:
+                          r -= 1
+                          best = max(best, tree[r])
+                      l >>= 1
+                      r >>= 1
+                  current = value + max(0, best)
+                  answer = max(answer, current)
+                  p = i + size
+                  tree[p] = current
+                  p >>= 1
+                  while p:
+                      tree[p] = max(tree[2 * p], tree[2 * p + 1])
+                      p >>= 1
+              return result == answer
+
+seed: 1425
+
+tests:
+  - name: single_positive
+    in:
+      nums: [5]
+      k: 1
+  - name: single_minimum
+    in:
+      nums: [-10000]
+      k: 1
+  - name: single_zero
+    in:
+      nums: [0]
+      k: 1
+  - name: examples_one
+    in:
+      nums: [10, 2, -10, 5, 20]
+      k: 2
+  - name: examples_two
+    in:
+      nums: [-1, -2, -3]
+      k: 1
+  - name: examples_three
+    in:
+      nums: [10, -2, -10, -5, 20]
+      k: 2
+  - name: all_negative
+    in:
+      nums: [-1, -2, -3, -4, -5]
+      k: 5
+  - name: all_positive_k_one
+    in:
+      nums: [1, 2, 3, 4, 5]
+      k: 1
+  - name: all_positive_wide
+    in:
+      nums: [10000, 9999, 9998, 9997]
+      k: 4
+  - name: skip_harmful_values
+    in:
+      nums: [5, -10000, 5]
+      k: 2
+  - name: forced_adjacent
+    in:
+      nums: [5, -10000, 6]
+      k: 1
+  - name: bridge_negative
+    in:
+      nums: [10, -2, -2, 10]
+      k: 3
+  - name: exact_window_boundary
+    in:
+      nums: [8, -100, -100, 8]
+      k: 3
+  - name: beyond_window_boundary
+    in:
+      nums: [8, -100, -100, 8]
+      k: 2
+  - name: alternating
+    in:
+      nums: [5, -1, 5, -1, 5, -1, 5]
+      k: 2
+  - name: zeros
+    in:
+      nums: [0, 0, 0, 0, 0]
+      k: 2
+  - name: zero_and_gain
+    in:
+      nums: [5, 0, -5, 10]
+      k: 2
+  - name: duplicate_peaks
+    in:
+      nums: [2, -1, 2, -1, 2, -1, 2]
+      k: 2
+  - name: descending_mixed
+    in:
+      nums: [9, 7, 5, 3, 1, -1, -3]
+      k: 3
+  - name: ascending_with_drop
+    in:
+      nums: [-5, 1, 2, 3, -10000, 4, 5]
+      k: 3
+  - name: negative_start
+    in:
+      nums: [-10, 20, -10, 20, -10]
+      k: 3
+  - name: maximum_values
+    in:
+      nums: [10000, 10000, 10000, 10000, 10000]
+      k: 1
+  - name: minimum_values
+    in:
+      nums: [-10000, -10000, -10000, -10000]
+      k: 1
+  - name: max_min_mix
+    in:
+      nums: [10000, -10000, 10000, -10000, 10000]
+      k: 2
+  - name: late_best
+    in:
+      nums: [-10000, -9999, -9998, 9999, -10000]
+      k: 2
+  - name: k_equals_length
+    in:
+      nums: [-8, 3, -2, 9, -7, 4, 1]
+      k: 7
+  - name: k_equals_one
+    in:
+      nums: [1, -2, 3, 4, -1, 6]
+      k: 1
+  - name: k_two
+    in:
+      nums: [4, -3, 5, -2, 6, -10, 7]
+      k: 2
+  - name: k_three
+    in:
+      nums: [4, -3, -3, 5, -2, 6, -20, 7]
+      k: 3
+  - name: dense_small_values
+    in:
+      nums: [-2, 1, -1, 2, -2, 3, -3, 2, 1, -1]
+      k: 4
+  - name: repeated_zero_gaps
+    in:
+      nums: [7, -7, 0, -7, 7, -7, 0, 7]
+      k: 3
+  - name: generated_single
+    seed: 101
+    in:
+      nums:
+        gen: array
+        len: 1
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+      k: 1
+  - name: generated_small
+    seed: 102
+    in:
+      nums:
+        gen: array
+        len: 12
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+      k: 5
+  - name: generated_medium
+    seed: 103
+    in:
+      nums:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+      k: 17
+  - name: generated_large
+    seed: 104
+    in:
+      nums:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+      k: 257
+  - name: generated_maximum
+    seed: 105
+    in:
+      nums:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: -10000
+          max: 10000
+      k: 100000
+  - name: long_constant_positive
+    in:
+      nums:
+        gen: array
+        len: 64
+        of:
+          gen: int
+          min: 37
+          max: 37
+      k: 8
+  - name: long_constant_negative
+    in:
+      nums:
+        gen: array
+        len: 64
+        of:
+          gen: int
+          min: -37
+          max: -37
+      k: 8
+  - name: end_window_shift
+    in:
+      nums: [9, -8, -8, 1, -8, -8, 10]
+      k: 3
+  - name: mixed_extremes
+    in:
+      nums: [-10000, 9999, -10000, 9998, -10000, 9997, -10000]
+      k: 2

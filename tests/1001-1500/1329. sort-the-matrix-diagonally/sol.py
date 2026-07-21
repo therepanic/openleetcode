@@ -1,0 +1,28 @@
+from collections import defaultdict
+from typing import List
+
+
+class Solution(object):
+    def diagonalSort(self, mat):
+        """
+        :type mat: List[List[int]]
+        :rtype: List[List[int]]
+        """
+        m, n = len(mat), len(mat[0])
+        diagonals = defaultdict(list)
+
+        # Step 1: Group all elements by their diagonals
+        for i in range(m):
+            for j in range(n):
+                diagonals[i - j].append(mat[i][j])
+
+        # Step 2: Sort each diagonal in reverse so we can pop smallest later
+        for key in diagonals:
+            diagonals[key].sort(reverse=True)
+
+        # Step 3: Fill back the sorted values
+        for i in range(m):
+            for j in range(n):
+                mat[i][j] = diagonals[i - j].pop()
+
+        return mat

@@ -1,0 +1,343 @@
+entry:
+  id: 1291
+  title: "sequential-digits"
+  params:
+    low:
+      type: int
+    high:
+      type: int
+  call:
+    cpp: "Solution().sequentialDigits({low}, {high})"
+    rust: "Solution::sequential_digits({low}, {high})"
+    python3: "Solution().sequentialDigits({low}, {high})"
+    python2: "Solution().sequentialDigits({low}, {high})"
+    ruby: "sequential_digits({low}, {high})"
+    java: "new Solution().sequentialDigits({low}, {high})"
+    csharp: "new Solution().SequentialDigits({low}, {high})"
+    kotlin: "Solution().sequentialDigits({low}, {high})"
+    go: "sequentialDigits({low}, {high})"
+    dart: "Solution().sequentialDigits({low}, {high})"
+    swift: "Solution().sequentialDigits({low}, {high})"
+    typescript: "sequentialDigits({low}, {high})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 300
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().sequentialDigits(low, high, {result})"
+    checker: |
+      class Checker:
+          def sequentialDigits(self, low, high, result):
+              if not isinstance(result, list) or result != sorted(result):
+                  return False
+              for value in result:
+                  if not isinstance(value, int) or not low <= value <= high:
+                      return False
+                  digits = str(value)
+                  if any(int(digits[i + 1]) != int(digits[i]) + 1 for i in range(len(digits) - 1)):
+                      return False
+              expected_count = 0
+              for length in range(2, 10):
+                  for start in range(1, 11 - length):
+                      value = int("".join(str(digit) for digit in range(start, start + length)))
+                      if low <= value <= high:
+                          expected_count += 1
+              return len(result) == expected_count
+
+seed: 1291
+
+tests:
+  - name: "example_100_to_300"
+    in:
+      low: 100
+      high: 300
+    out: [123, 234]
+  - name: "example_1000_to_13000"
+    in:
+      low: 1000
+      high: 13000
+    out: [1234, 2345, 3456, 4567, 5678, 6789, 12345]
+  - name: "minimum_single_value_no_match"
+    in:
+      low: 10
+      high: 10
+    out: []
+  - name: "first_two_digit_value"
+    in:
+      low: 12
+      high: 12
+    out: [12]
+  - name: "between_first_two_digit_values"
+    in:
+      low: 13
+      high: 22
+    out: []
+  - name: "all_two_digit_values"
+    in:
+      low: 10
+      high: 99
+    out: [12, 23, 34, 45, 56, 67, 78, 89]
+  - name: "last_two_digit_value"
+    in:
+      low: 89
+      high: 89
+    out: [89]
+  - name: "two_to_three_digit_transition"
+    in:
+      low: 90
+      high: 123
+    out: [123]
+  - name: "three_digit_lower_boundary"
+    in:
+      low: 100
+      high: 123
+    out: [123]
+  - name: "all_three_digit_values"
+    in:
+      low: 100
+      high: 999
+    out: [123, 234, 345, 456, 567, 678, 789]
+  - name: "three_digit_internal_gap"
+    in:
+      low: 124
+      high: 233
+    out: []
+  - name: "three_digit_middle_window"
+    in:
+      low: 300
+      high: 700
+    out: [345, 456, 567, 678]
+  - name: "last_three_digit_to_four_digit_transition"
+    in:
+      low: 790
+      high: 1234
+    out: [1234]
+  - name: "generated_low_small_high_nine_digit"
+    seed: 129101
+    in:
+      low:
+        gen: "int"
+        min: 10
+        max: 99999999
+      high:
+        gen: "int"
+        min: 100000000
+        max: 1000000000
+  - name: "all_four_digit_values"
+    in:
+      low: 1000
+      high: 9999
+    out: [1234, 2345, 3456, 4567, 5678, 6789]
+  - name: "four_digit_partial_window"
+    in:
+      low: 2000
+      high: 6000
+    out: [2345, 3456, 4567, 5678]
+  - name: "four_to_five_digit_transition"
+    in:
+      low: 6790
+      high: 12345
+    out: [12345]
+  - name: "generated_midrange_low_high_max_tail"
+    seed: 129102
+    in:
+      low:
+        gen: "int"
+        min: 100000000
+        max: 500000000
+      high:
+        gen: "int"
+        min: 900000000
+        max: 1000000000
+  - name: "all_five_digit_values"
+    in:
+      low: 10000
+      high: 99999
+    out: [12345, 23456, 34567, 45678, 56789]
+  - name: "five_digit_upper_window"
+    in:
+      low: 45000
+      high: 60000
+    out: [45678, 56789]
+  - name: "five_to_six_digit_transition"
+    in:
+      low: 56790
+      high: 123456
+    out: [123456]
+  - name: "all_six_digit_values"
+    in:
+      low: 100000
+      high: 999999
+    out: [123456, 234567, 345678, 456789]
+  - name: "six_digit_internal_window"
+    in:
+      low: 200000
+      high: 400000
+    out: [234567, 345678]
+  - name: "six_to_seven_digit_transition"
+    in:
+      low: 456790
+      high: 1234567
+    out: [1234567]
+  - name: "all_seven_digit_values"
+    in:
+      low: 1000000
+      high: 9999999
+    out: [1234567, 2345678, 3456789]
+  - name: "generated_near_nine_digit_boundary"
+    seed: 129103
+    in:
+      low:
+        gen: "int"
+        min: 123456000
+        max: 123456789
+      high:
+        gen: "int"
+        min: 123456790
+        max: 1000000000
+  - name: "seven_to_eight_digit_transition"
+    in:
+      low: 3456790
+      high: 12345678
+    out: [12345678]
+  - name: "all_eight_digit_values"
+    in:
+      low: 10000000
+      high: 99999999
+    out: [12345678, 23456789]
+  - name: "eight_digit_internal_gap"
+    in:
+      low: 12345679
+      high: 23456788
+    out: []
+  - name: "eight_to_nine_digit_transition"
+    in:
+      low: 23456790
+      high: 123456789
+    out: [123456789]
+  - name: "only_nine_digit_value"
+    in:
+      low: 100000000
+      high: 999999999
+    out: [123456789]
+  - name: "generated_above_all_sequential_values"
+    seed: 129104
+    in:
+      low:
+        gen: "int"
+        min: 900000000
+        max: 999999999
+      high:
+        gen: "int"
+        min: 1000000000
+        max: 1000000000
+  - name: "above_largest_sequential_value"
+    in:
+      low: 123456790
+      high: 1000000000
+    out: []
+  - name: "maximum_single_value_no_match"
+    in:
+      low: 1000000000
+      high: 1000000000
+    out: []
+  - name: "crosses_multiple_digit_lengths"
+    in:
+      low: 500
+      high: 50000
+    out:
+      [
+        567,
+        678,
+        789,
+        1234,
+        2345,
+        3456,
+        4567,
+        5678,
+        6789,
+        12345,
+        23456,
+        34567,
+        45678,
+      ]
+  - name: "lower_cutoff_inclusive"
+    in:
+      low: 2345
+      high: 6789
+    out: [2345, 3456, 4567, 5678, 6789]
+  - name: "upper_cutoff_inclusive"
+    in:
+      low: 123
+      high: 456
+    out: [123, 234, 345, 456]
+  - name: "wide_stress_full_constraint_range"
+    in:
+      low: 10
+      high: 1000000000
+    out:
+      [
+        12,
+        23,
+        34,
+        45,
+        56,
+        67,
+        78,
+        89,
+        123,
+        234,
+        345,
+        456,
+        567,
+        678,
+        789,
+        1234,
+        2345,
+        3456,
+        4567,
+        5678,
+        6789,
+        12345,
+        23456,
+        34567,
+        45678,
+        56789,
+        123456,
+        234567,
+        345678,
+        456789,
+        1234567,
+        2345678,
+        3456789,
+        12345678,
+        23456789,
+        123456789,
+      ]
+  - name: "generated_wide_lower_bound"
+    seed: 129105
+    in:
+      low:
+        gen: "int"
+        min: 10
+        max: 1000
+      high:
+        gen: "int"
+        min: 999999999
+        max: 1000000000
+  - name: "generated_eight_digit_low_maximum_high"
+    seed: 129106
+    in:
+      low:
+        gen: "int"
+        min: 12345678
+        max: 23456789
+      high:
+        gen: "int"
+        min: 900000000
+        max: 1000000000

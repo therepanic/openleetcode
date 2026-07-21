@@ -1,0 +1,633 @@
+entry:
+  id: 1353
+  title: "maximum-number-of-events-that-can-be-attended"
+  params:
+    events:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxEvents({events})"
+    rust: "Solution::max_events({events})"
+    python3: "Solution().maxEvents({events})"
+    python2: "Solution().maxEvents({events})"
+    ruby: "max_events({events})"
+    java: "new Solution().maxEvents({events})"
+    csharp: "new Solution().MaxEvents({events})"
+    kotlin: "Solution().maxEvents({events})"
+    go: "maxEvents({events})"
+    dart: "Solution().maxEvents({events})"
+    swift: "Solution().maxEvents({events})"
+    typescript: "maxEvents({events})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxEvents(events, {result})"
+    checker: |
+      class Checker:
+          def maxEvents(self, events, result):
+              if isinstance(result, bool) or not isinstance(result, int):
+                  return False
+              parent = {}
+
+              def find(day):
+                  trail = []
+                  while day in parent:
+                      trail.append(day)
+                      day = parent[day]
+                  for seen in trail:
+                      parent[seen] = day
+                  return day
+
+              attended = 0
+              for start, end in sorted(events, key=lambda event: event[1]):
+                  day = find(start)
+                  if day <= end:
+                      attended += 1
+                      parent[day] = find(day + 1)
+              return result == attended
+seed: 1353
+tests:
+  - name: "example_chain"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+    out: 3
+  - name: "example_duplicate_window"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [1, 2]
+    out: 4
+  - name: "single_one_day_event"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 1]
+    out: 1
+  - name: "many_events_one_day"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [42, 42]
+          - [42, 42]
+          - [42, 42]
+          - [42, 42]
+          - [42, 42]
+          - [42, 42]
+    out: 1
+  - name: "all_share_wide_window"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 100000]
+          - [1, 100000]
+          - [1, 100000]
+          - [1, 100000]
+          - [1, 100000]
+          - [1, 100000]
+          - [1, 100000]
+    out: 7
+  - name: "fully_disjoint_gaps"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [3, 3]
+          - [100, 100]
+          - [99999, 99999]
+          - [100000, 100000]
+    out: 5
+  - name: "nested_windows"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 10]
+          - [2, 9]
+          - [3, 8]
+          - [4, 7]
+          - [5, 6]
+    out: 5
+  - name: "touching_boundaries"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+    out: 5
+  - name: "unsorted_complete_schedule"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [5, 5]
+          - [1, 2]
+          - [2, 2]
+          - [1, 1]
+          - [3, 4]
+          - [4, 4]
+    out: 5
+  - name: "earliest_expiry_priority"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 2]
+          - [1, 3]
+          - [2, 2]
+          - [2, 3]
+          - [3, 3]
+    out: 3
+  - name: "separated_clusters"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [1, 2]
+          - [10, 11]
+          - [10, 11]
+          - [50, 51]
+          - [50, 51]
+    out: 6
+  - name: "identical_three_day_window"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [10, 12]
+          - [10, 12]
+          - [10, 12]
+          - [10, 12]
+          - [10, 12]
+    out: 3
+  - name: "same_start_varying_end"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 2]
+          - [1, 3]
+          - [1, 4]
+          - [1, 5]
+          - [1, 5]
+    out: 5
+  - name: "same_end_varying_start"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 5]
+          - [2, 5]
+          - [3, 5]
+          - [4, 5]
+          - [5, 5]
+    out: 5
+  - name: "upper_day_boundary"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [99997, 99998]
+          - [99998, 99999]
+          - [99999, 100000]
+          - [100000, 100000]
+    out: 4
+  - name: "paired_fixed_days_with_flexible_events"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 4]
+          - [1, 4]
+          - [2, 2]
+          - [2, 2]
+          - [3, 3]
+          - [3, 3]
+          - [4, 4]
+          - [4, 4]
+    out: 4
+  - name: "wide_event_fills_missing_day"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [2, 2]
+          - [4, 4]
+          - [5, 5]
+          - [1, 5]
+    out: 5
+  - name: "late_start_dense"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [99995, 100000]
+          - [99995, 100000]
+          - [99996, 99996]
+          - [99997, 99997]
+          - [99998, 99998]
+          - [99999, 99999]
+          - [100000, 100000]
+    out: 6
+  - name: "long_event_with_singletons"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 100000]
+          - [100, 100]
+          - [200, 200]
+          - [300, 300]
+          - [400, 400]
+          - [500, 500]
+    out: 6
+  - name: "overlapping_staircase"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 3]
+          - [1, 3]
+          - [2, 4]
+          - [2, 4]
+          - [3, 5]
+          - [3, 5]
+          - [4, 6]
+          - [4, 6]
+    out: 6
+  - name: "sparse_large_calendar"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 100000]
+          - [1000, 1000]
+          - [10000, 10000]
+          - [20000, 20000]
+          - [40000, 40000]
+          - [60000, 60000]
+          - [80000, 80000]
+    out: 7
+  - name: "ten_days_many_duplicates"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+          - [1, 10]
+    out: 10
+  - name: "five_days_repeated_singletons"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+          - [2, 2]
+          - [2, 2]
+          - [3, 3]
+          - [3, 3]
+          - [4, 4]
+          - [4, 4]
+          - [5, 5]
+          - [5, 5]
+    out: 5
+  - name: "flexibility_preserves_all"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 5]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+    out: 5
+  - name: "two_independent_windows"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 3]
+          - [1, 3]
+          - [1, 3]
+          - [10, 12]
+          - [10, 12]
+          - [10, 12]
+          - [10, 12]
+    out: 6
+  - name: "oracle_mixed_expirations"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [4, 6]
+          - [1, 4]
+          - [2, 2]
+          - [2, 5]
+          - [3, 3]
+          - [5, 7]
+          - [6, 6]
+          - [1, 1]
+  - name: "oracle_crossing_intervals"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [8, 10]
+          - [1, 8]
+          - [4, 4]
+          - [2, 6]
+          - [3, 5]
+          - [7, 9]
+          - [5, 8]
+          - [6, 7]
+          - [9, 9]
+  - name: "oracle_duplicate_and_gaps"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [20, 22]
+          - [20, 20]
+          - [20, 20]
+          - [21, 21]
+          - [22, 22]
+          - [30, 31]
+          - [30, 31]
+          - [32, 35]
+          - [34, 34]
+  - name: "oracle_reverse_ordered_ranges"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [90, 100]
+          - [80, 89]
+          - [70, 79]
+          - [60, 69]
+          - [50, 59]
+          - [40, 49]
+          - [30, 39]
+          - [20, 29]
+          - [10, 19]
+          - [1, 9]
+  - name: "oracle_competing_deadlines"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [1, 2]
+          - [1, 3]
+          - [2, 3]
+          - [2, 4]
+          - [3, 4]
+          - [3, 5]
+          - [4, 5]
+          - [4, 6]
+          - [5, 6]
+  - name: "oracle_far_boundary_mix"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 100000]
+          - [1, 1]
+          - [99999, 100000]
+          - [100000, 100000]
+          - [50000, 50000]
+          - [49999, 50001]
+          - [2, 3]
+          - [3, 3]
+  - name: "oracle_dense_twelve_days"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 12]
+          - [1, 3]
+          - [2, 6]
+          - [2, 2]
+          - [3, 9]
+          - [4, 4]
+          - [5, 8]
+          - [6, 6]
+          - [7, 12]
+          - [8, 10]
+          - [9, 9]
+          - [10, 12]
+          - [11, 11]
+          - [12, 12]
+  - name: "oracle_many_same_end"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 8]
+          - [2, 8]
+          - [3, 8]
+          - [4, 8]
+          - [5, 8]
+          - [6, 8]
+          - [7, 8]
+          - [8, 8]
+          - [1, 4]
+          - [2, 5]
+          - [3, 6]
+  - name: "oracle_many_same_start"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [25, 25]
+          - [25, 26]
+          - [25, 27]
+          - [25, 28]
+          - [25, 29]
+          - [25, 30]
+          - [25, 31]
+          - [26, 26]
+          - [27, 27]
+          - [28, 28]
+          - [29, 29]
+          - [30, 30]
+  - name: "oracle_large_dense_range"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [1, 30]
+          - [5, 5]
+          - [10, 10]
+          - [15, 15]
+          - [20, 20]
+          - [25, 25]
+          - [30, 30]
+  - name: "oracle_large_sparse_range"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 100000]
+          - [10000, 90000]
+          - [20000, 80000]
+          - [30000, 70000]
+          - [40000, 60000]
+          - [1, 1]
+          - [10000, 10000]
+          - [20000, 20000]
+          - [30000, 30000]
+          - [40000, 40000]
+          - [50000, 50000]
+          - [60000, 60000]
+          - [70000, 70000]
+          - [80000, 80000]
+          - [90000, 90000]
+          - [100000, 100000]
+  - name: "oracle_interleaved_components"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [10, 13]
+          - [2, 4]
+          - [11, 11]
+          - [3, 3]
+          - [12, 14]
+          - [4, 5]
+          - [13, 13]
+          - [5, 6]
+          - [14, 15]
+          - [6, 6]
+          - [15, 15]
+  - name: "oracle_long_nested_descending"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 50]
+          - [2, 49]
+          - [3, 48]
+          - [4, 47]
+          - [5, 46]
+          - [6, 45]
+          - [7, 44]
+          - [8, 43]
+          - [9, 42]
+          - [10, 41]
+          - [11, 40]
+          - [12, 39]
+          - [13, 38]
+          - [14, 37]
+          - [15, 36]
+          - [16, 35]
+          - [17, 34]
+          - [18, 33]
+          - [19, 32]
+          - [20, 31]
+  - name: "oracle_alternating_fixed_and_flexible"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 8]
+          - [1, 1]
+          - [2, 8]
+          - [2, 2]
+          - [3, 8]
+          - [3, 3]
+          - [4, 8]
+          - [4, 4]
+          - [5, 8]
+          - [5, 5]
+          - [6, 8]
+          - [6, 6]
+          - [7, 8]
+          - [7, 7]
+          - [8, 8]
+  - name: "oracle_short_windows_around_gaps"
+    in:
+      events:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [1, 4]
+          - [2, 2]
+          - [4, 5]
+          - [4, 7]
+          - [5, 5]
+          - [7, 8]
+          - [7, 10]
+          - [8, 8]
+          - [10, 11]
+          - [10, 12]
+          - [11, 11]

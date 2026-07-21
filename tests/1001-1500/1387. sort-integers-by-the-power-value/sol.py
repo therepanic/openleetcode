@@ -1,0 +1,22 @@
+class Solution:
+    def getKth(self, lo, hi, k):
+
+        vc = []
+
+        for i in range(lo, hi + 1):
+            num = i
+            count = 0
+
+            while num != 1:
+                if num % 2 == 0:
+                    num //= 2
+                else:
+                    num = 3 * num + 1
+
+                count += 1
+
+            vc.append((i, count))
+
+        vc.sort(key=lambda x: (x[1], x[0]))
+
+        return vc[k - 1][0]

@@ -1,0 +1,473 @@
+entry:
+  id: 1275
+  title: find-winner-on-a-tic-tac-toe-game
+  params:
+    moves:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    python3: "Solution().tictactoe({moves})"
+    python2: "Solution().tictactoe({moves})"
+    ruby: "tictactoe({moves})"
+    java: "new Solution().tictactoe({moves})"
+    csharp: "new Solution().Tictactoe({moves})"
+    kotlin: "Solution().tictactoe({moves})"
+    go: "tictactoe({moves})"
+    dart: "Solution().tictactoe({moves})"
+    swift: "Solution().tictactoe({moves})"
+    typescript: "tictactoe({moves})"
+    rust: "Solution::tictactoe({moves})"
+    cpp: "Solution().tictactoe({moves})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().tictactoe(moves, {result})"
+    checker: |
+      class Checker:
+          def tictactoe(self, moves, result):
+              if not isinstance(result, str) or not (1 <= len(moves) <= 9):
+                  return False
+
+              board = [[None] * 3 for _ in range(3)]
+              lines = [
+                  ((0, 0), (0, 1), (0, 2)),
+                  ((1, 0), (1, 1), (1, 2)),
+                  ((2, 0), (2, 1), (2, 2)),
+                  ((0, 0), (1, 0), (2, 0)),
+                  ((0, 1), (1, 1), (2, 1)),
+                  ((0, 2), (1, 2), (2, 2)),
+                  ((0, 0), (1, 1), (2, 2)),
+                  ((0, 2), (1, 1), (2, 0)),
+              ]
+
+              for turn, move in enumerate(moves):
+                  if not isinstance(move, list) or len(move) != 2:
+                      return False
+                  row, col = move
+                  if not isinstance(row, int) or not isinstance(col, int):
+                      return False
+                  if not (0 <= row < 3 and 0 <= col < 3) or board[row][col] is not None:
+                      return False
+                  player = "A" if turn % 2 == 0 else "B"
+                  board[row][col] = player
+                  for line in lines:
+                      if all(board[r][c] == player for r, c in line):
+                          return turn == len(moves) - 1 and result == player
+
+              return result == ("Draw" if len(moves) == 9 else "Pending")
+seed: 1275
+tests:
+  - name: pending-one
+    in:
+      moves:
+        - [0, 0]
+    out: "Pending"
+  - name: pending-two
+    in:
+      moves:
+        - [0, 0]
+        - [1, 1]
+    out: "Pending"
+  - name: pending-four
+    in:
+      moves:
+        - [0, 0]
+        - [1, 1]
+        - [0, 1]
+        - [2, 2]
+    out: "Pending"
+  - name: a-top-row-at-seven
+    in:
+      moves:
+        - [0, 0]
+        - [1, 1]
+        - [0, 1]
+        - [2, 2]
+        - [1, 0]
+        - [2, 0]
+        - [0, 2]
+    out: "A"
+  - name: b-middle-column-at-six
+    in:
+      moves:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [0, 1]
+        - [1, 0]
+        - [2, 1]
+    out: "B"
+  - name: a-top-row
+    in:
+      moves:
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+        - [1, 1]
+        - [0, 2]
+    out: "A"
+  - name: a-middle-row
+    in:
+      moves:
+        - [1, 0]
+        - [0, 0]
+        - [1, 1]
+        - [0, 1]
+        - [1, 2]
+    out: "A"
+  - name: a-bottom-row
+    in:
+      moves:
+        - [2, 0]
+        - [0, 0]
+        - [2, 1]
+        - [0, 1]
+        - [2, 2]
+    out: "A"
+  - name: a-left-column
+    in:
+      moves:
+        - [0, 0]
+        - [0, 1]
+        - [1, 0]
+        - [1, 1]
+        - [2, 0]
+    out: "A"
+  - name: a-middle-column
+    in:
+      moves:
+        - [0, 1]
+        - [0, 0]
+        - [1, 1]
+        - [0, 2]
+        - [2, 1]
+    out: "A"
+  - name: a-right-column
+    in:
+      moves:
+        - [0, 2]
+        - [0, 0]
+        - [1, 2]
+        - [0, 1]
+        - [2, 2]
+    out: "A"
+  - name: a-main-diagonal
+    in:
+      moves:
+        - [0, 0]
+        - [0, 1]
+        - [1, 1]
+        - [0, 2]
+        - [2, 2]
+    out: "A"
+  - name: a-anti-diagonal
+    in:
+      moves:
+        - [0, 2]
+        - [0, 0]
+        - [1, 1]
+        - [0, 1]
+        - [2, 0]
+    out: "A"
+  - name: b-top-row
+    in:
+      moves:
+        - [1, 0]
+        - [0, 0]
+        - [2, 2]
+        - [0, 1]
+        - [1, 1]
+        - [0, 2]
+    out: "B"
+  - name: b-middle-row
+    in:
+      moves:
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+        - [1, 1]
+        - [2, 2]
+        - [1, 2]
+    out: "B"
+  - name: b-bottom-row
+    in:
+      moves:
+        - [0, 0]
+        - [2, 0]
+        - [0, 1]
+        - [2, 1]
+        - [1, 2]
+        - [2, 2]
+    out: "B"
+  - name: b-left-column
+    in:
+      moves:
+        - [0, 2]
+        - [0, 0]
+        - [1, 1]
+        - [1, 0]
+        - [1, 2]
+        - [2, 0]
+    out: "B"
+  - name: b-middle-column
+    in:
+      moves:
+        - [0, 0]
+        - [0, 1]
+        - [1, 0]
+        - [1, 1]
+        - [2, 2]
+        - [2, 1]
+    out: "B"
+  - name: b-right-column
+    in:
+      moves:
+        - [0, 0]
+        - [0, 2]
+        - [1, 0]
+        - [1, 2]
+        - [2, 1]
+        - [2, 2]
+    out: "B"
+  - name: b-main-diagonal
+    in:
+      moves:
+        - [0, 1]
+        - [0, 0]
+        - [0, 2]
+        - [1, 1]
+        - [1, 2]
+        - [2, 2]
+    out: "B"
+  - name: b-anti-diagonal
+    in:
+      moves:
+        - [0, 0]
+        - [0, 2]
+        - [0, 1]
+        - [1, 1]
+        - [1, 2]
+        - [2, 0]
+    out: "B"
+  - name: draw-example
+    in:
+      moves:
+        - [0, 0]
+        - [1, 1]
+        - [2, 0]
+        - [1, 0]
+        - [1, 2]
+        - [2, 1]
+        - [0, 1]
+        - [0, 2]
+        - [2, 2]
+    out: "Draw"
+  - name: a-middle-row-on-final-move
+    in:
+      moves:
+        - [1, 1]
+        - [0, 0]
+        - [2, 2]
+        - [0, 2]
+        - [0, 1]
+        - [2, 1]
+        - [1, 0]
+        - [2, 0]
+        - [1, 2]
+    out: "A"
+  - name: draw-corners
+    in:
+      moves:
+        - [0, 0]
+        - [1, 0]
+        - [1, 1]
+        - [2, 1]
+        - [1, 2]
+        - [2, 2]
+        - [0, 1]
+        - [0, 2]
+        - [2, 0]
+    out: "Draw"
+  - name: a-right-column-on-final-move
+    in:
+      moves:
+        - [0, 1]
+        - [1, 1]
+        - [1, 0]
+        - [0, 0]
+        - [1, 2]
+        - [2, 0]
+        - [2, 2]
+        - [2, 1]
+        - [0, 2]
+    out: "A"
+  - name: draw-asymmetric
+    in:
+      moves:
+        - [0, 1]
+        - [2, 0]
+        - [2, 1]
+        - [1, 1]
+        - [1, 0]
+        - [0, 0]
+        - [0, 2]
+        - [1, 2]
+        - [2, 2]
+    out: "Draw"
+  - name: draw-alternate
+    in:
+      moves:
+        - [1, 0]
+        - [0, 0]
+        - [0, 2]
+        - [2, 0]
+        - [2, 1]
+        - [1, 1]
+        - [0, 1]
+        - [1, 2]
+        - [2, 2]
+    out: "Draw"
+  - name: pending-corner-center
+    in:
+      moves:
+        - [2, 2]
+        - [1, 1]
+    out: "Pending"
+  - name: pending-five
+    in:
+      moves:
+        - [0, 2]
+        - [1, 1]
+        - [2, 0]
+        - [0, 0]
+        - [1, 0]
+    out: "Pending"
+  - name: pending-seven
+    in:
+      moves:
+        - [0, 0]
+        - [1, 0]
+        - [1, 1]
+        - [2, 1]
+        - [1, 2]
+        - [2, 2]
+        - [0, 1]
+    out: "Pending"
+  - name: b-main-diagonal-at-eight
+    in:
+      moves:
+        - [0, 1]
+        - [2, 2]
+        - [1, 0]
+        - [0, 0]
+        - [1, 2]
+        - [2, 0]
+        - [2, 1]
+        - [1, 1]
+    out: "B"
+  - name: b-left-column-at-eight
+    in:
+      moves:
+        - [2, 1]
+        - [0, 0]
+        - [1, 1]
+        - [1, 0]
+        - [2, 2]
+        - [0, 2]
+        - [1, 2]
+        - [2, 0]
+    out: "B"
+  - name: a-row-with-center
+    in:
+      moves:
+        - [0, 1]
+        - [2, 2]
+        - [1, 1]
+        - [2, 0]
+        - [0, 0]
+        - [1, 0]
+        - [0, 2]
+    out: "A"
+  - name: pending-seven-mixed
+    in:
+      moves:
+        - [2, 1]
+        - [0, 0]
+        - [0, 1]
+        - [1, 1]
+        - [1, 0]
+        - [2, 0]
+        - [2, 2]
+    out: "Pending"
+  - name: a-diagonal-late
+    in:
+      moves:
+        - [0, 0]
+        - [1, 0]
+        - [2, 2]
+        - [0, 1]
+        - [1, 1]
+    out: "A"
+  - name: b-win-after-six
+    in:
+      moves:
+        - [2, 1]
+        - [0, 0]
+        - [0, 1]
+        - [1, 0]
+        - [2, 2]
+        - [2, 0]
+    out: "B"
+  - name: b-diagonal-with-center
+    in:
+      moves:
+        - [0, 1]
+        - [0, 2]
+        - [1, 0]
+        - [1, 1]
+        - [2, 1]
+        - [2, 0]
+    out: "B"
+  - name: b-column-varied
+    in:
+      moves:
+        - [1, 1]
+        - [0, 2]
+        - [0, 0]
+        - [1, 2]
+        - [2, 1]
+        - [2, 2]
+    out: "B"
+  - name: draw-last-move-center
+    in:
+      moves:
+        - [1, 1]
+        - [1, 2]
+        - [2, 1]
+        - [2, 0]
+        - [2, 2]
+        - [0, 0]
+        - [0, 2]
+        - [0, 1]
+        - [1, 0]
+    out: "Draw"
+  - name: draw-last-move-corner
+    in:
+      moves:
+        - [1, 2]
+        - [2, 2]
+        - [2, 1]
+        - [1, 0]
+        - [1, 1]
+        - [0, 1]
+        - [0, 2]
+        - [2, 0]
+        - [0, 0]
+    out: "Draw"

@@ -1,0 +1,279 @@
+entry:
+  id: 1276
+  title: number-of-burgers-with-no-waste-of-ingredients
+  params:
+    tomatoSlices:
+      type: int
+    cheeseSlices:
+      type: int
+  call:
+    cpp: "Solution().numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    rust: "Solution::num_of_burgers({tomatoSlices}, {cheeseSlices})"
+    python3: "Solution().numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    python2: "Solution().numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    ruby: "num_of_burgers({tomatoSlices}, {cheeseSlices})"
+    java: "new Solution().numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    csharp: "new Solution().NumOfBurgers({tomatoSlices}, {cheeseSlices})"
+    kotlin: "Solution().numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    go: "numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    dart: "Solution().numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    swift: "Solution().numOfBurgers({tomatoSlices}, {cheeseSlices})"
+    typescript: "numOfBurgers({tomatoSlices}, {cheeseSlices})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().numOfBurgers(tomatoSlices, cheeseSlices, {result})"
+    checker: |
+      class Checker:
+          def numOfBurgers(self, tomatoSlices, cheeseSlices, result):
+              if not isinstance(result, list):
+                  return False
+              feasible = (
+                  tomatoSlices % 2 == 0
+                  and 2 * cheeseSlices <= tomatoSlices <= 4 * cheeseSlices
+              )
+              if not feasible:
+                  return result == []
+              if len(result) != 2 or not all(isinstance(x, int) and x >= 0 for x in result):
+                  return False
+              jumbo, small = result
+              return (
+                  jumbo + small == cheeseSlices
+                  and 4 * jumbo + 2 * small == tomatoSlices
+              )
+seed: 1276
+tests:
+  - name: zero-ingredients
+    in:
+      tomatoSlices: 0
+      cheeseSlices: 0
+    out: [0, 0]
+  - name: example-mixed
+    in:
+      tomatoSlices: 16
+      cheeseSlices: 7
+    out: [1, 6]
+  - name: example-odd-tomato
+    in:
+      tomatoSlices: 17
+      cheeseSlices: 4
+    out: []
+  - name: example-too-little-tomato
+    in:
+      tomatoSlices: 4
+      cheeseSlices: 17
+    out: []
+  - name: one-small
+    in:
+      tomatoSlices: 2
+      cheeseSlices: 1
+    out: [0, 1]
+  - name: one-jumbo
+    in:
+      tomatoSlices: 4
+      cheeseSlices: 1
+    out: [1, 0]
+  - name: one-of-each
+    in:
+      tomatoSlices: 6
+      cheeseSlices: 2
+    out: [1, 1]
+  - name: generated-large-full-range
+    seed: 127601
+    in:
+      tomatoSlices:
+        gen: "int"
+        min: 0
+        max: 10000000
+      cheeseSlices:
+        gen: "int"
+        min: 0
+        max: 10000000
+  - name: generated-large-high-tomato
+    seed: 127602
+    in:
+      tomatoSlices:
+        gen: "int"
+        min: 9000000
+        max: 10000000
+      cheeseSlices:
+        gen: "int"
+        min: 2250000
+        max: 5000000
+  - name: generated-large-low-cheese
+    seed: 127603
+    in:
+      tomatoSlices:
+        gen: "int"
+        min: 8000000
+        max: 10000000
+      cheeseSlices:
+        gen: "int"
+        min: 0
+        max: 3000000
+  - name: generated-large-high-cheese
+    seed: 127604
+    in:
+      tomatoSlices:
+        gen: "int"
+        min: 0
+        max: 10000000
+      cheeseSlices:
+        gen: "int"
+        min: 4000000
+        max: 5000000
+  - name: generated-large-boundary-band
+    seed: 127605
+    in:
+      tomatoSlices:
+        gen: "int"
+        min: 9999990
+        max: 10000000
+      cheeseSlices:
+        gen: "int"
+        min: 2499990
+        max: 5000000
+  - name: equal-mix
+    in:
+      tomatoSlices: 30
+      cheeseSlices: 10
+    out: [5, 5]
+  - name: three-jumbo-two-small
+    in:
+      tomatoSlices: 16
+      cheeseSlices: 5
+    out: [3, 2]
+  - name: two-jumbo-five-small
+    in:
+      tomatoSlices: 18
+      cheeseSlices: 7
+    out: [2, 5]
+  - name: odd-minimum-range
+    in:
+      tomatoSlices: 3
+      cheeseSlices: 1
+    out: []
+  - name: odd-maximum-range
+    in:
+      tomatoSlices: 19
+      cheeseSlices: 5
+    out: []
+  - name: odd-outside-low
+    in:
+      tomatoSlices: 1
+      cheeseSlices: 3
+    out: []
+  - name: odd-outside-high
+    in:
+      tomatoSlices: 21
+      cheeseSlices: 5
+    out: []
+  - name: zero-tomato-positive-cheese
+    in:
+      tomatoSlices: 0
+      cheeseSlices: 1
+    out: []
+  - name: positive-tomato-zero-cheese
+    in:
+      tomatoSlices: 2
+      cheeseSlices: 0
+    out: []
+  - name: below-two-per-cheese
+    in:
+      tomatoSlices: 18
+      cheeseSlices: 10
+    out: []
+  - name: above-four-per-cheese
+    in:
+      tomatoSlices: 42
+      cheeseSlices: 10
+    out: []
+  - name: just-below-minimum
+    in:
+      tomatoSlices: 198
+      cheeseSlices: 100
+    out: []
+  - name: just-above-maximum
+    in:
+      tomatoSlices: 402
+      cheeseSlices: 100
+    out: []
+  - name: medium-all-small
+    in:
+      tomatoSlices: 200
+      cheeseSlices: 100
+    out: [0, 100]
+  - name: medium-all-jumbo
+    in:
+      tomatoSlices: 400
+      cheeseSlices: 100
+    out: [100, 0]
+  - name: medium-asymmetric
+    in:
+      tomatoSlices: 246
+      cheeseSlices: 100
+    out: [23, 77]
+  - name: medium-near-jumbo
+    in:
+      tomatoSlices: 394
+      cheeseSlices: 100
+    out: [97, 3]
+  - name: large-all-small-limit
+    in:
+      tomatoSlices: 10000000
+      cheeseSlices: 5000000
+    out: [0, 5000000]
+  - name: large-all-jumbo-limit
+    in:
+      tomatoSlices: 10000000
+      cheeseSlices: 2500000
+    out: [2500000, 0]
+  - name: large-near-upper-limit
+    in:
+      tomatoSlices: 9999998
+      cheeseSlices: 2500000
+    out: [2499999, 1]
+  - name: large-near-lower-limit
+    in:
+      tomatoSlices: 9999998
+      cheeseSlices: 4999999
+    out: [0, 4999999]
+  - name: large-balanced
+    in:
+      tomatoSlices: 6000000
+      cheeseSlices: 2000000
+    out: [1000000, 1000000]
+  - name: large-asymmetric
+    in:
+      tomatoSlices: 7654322
+      cheeseSlices: 2500000
+    out: [1327161, 1172839]
+  - name: maximum-odd-tomato
+    in:
+      tomatoSlices: 9999999
+      cheeseSlices: 2500000
+    out: []
+  - name: maximum-even-too-few-cheese
+    in:
+      tomatoSlices: 10000000
+      cheeseSlices: 2499999
+    out: []
+  - name: maximum-even-too-many-cheese
+    in:
+      tomatoSlices: 10000000
+      cheeseSlices: 5000001
+    out: []
+  - name: small-even-below-range
+    in:
+      tomatoSlices: 12
+      cheeseSlices: 7
+    out: []
+  - name: small-even-above-range
+    in:
+      tomatoSlices: 30
+      cheeseSlices: 7
+    out: []

@@ -1,0 +1,534 @@
+entry:
+  id: 1314
+  title: "matrix-block-sum"
+  params:
+    mat:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().matrixBlockSum({mat}, {k})"
+    rust: "Solution::matrix_block_sum({mat}, {k})"
+    python3: "Solution().matrixBlockSum({mat}, {k})"
+    python2: "Solution().matrixBlockSum({mat}, {k})"
+    ruby: "matrix_block_sum({mat}, {k})"
+    java: "new Solution().matrixBlockSum({mat}, {k})"
+    csharp: "new Solution().MatrixBlockSum({mat}, {k})"
+    kotlin: "Solution().matrixBlockSum({mat}, {k})"
+    go: "matrixBlockSum({mat}, {k})"
+    dart: "Solution().matrixBlockSum({mat}, {k})"
+    swift: "Solution().matrixBlockSum({mat}, {k})"
+    typescript: "matrixBlockSum({mat}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().matrixBlockSum(mat, k, {result})"
+    checker: |
+      class Checker:
+          def matrixBlockSum(self, mat, k, result):
+              rows, cols = len(mat), len(mat[0])
+              if not isinstance(result, list) or len(result) != rows:
+                  return False
+              if any(not isinstance(row, list) or len(row) != cols for row in result):
+                  return False
+              prefix = [[0] * (cols + 1) for _ in range(rows + 1)]
+              for i in range(rows):
+                  for j in range(cols):
+                      prefix[i + 1][j + 1] = mat[i][j] + prefix[i][j + 1] + prefix[i + 1][j] - prefix[i][j]
+              for i in range(rows):
+                  for j in range(cols):
+                      top, left = max(0, i - k), max(0, j - k)
+                      bottom, right = min(rows, i + k + 1), min(cols, j + k + 1)
+                      expected = prefix[bottom][right] - prefix[top][right] - prefix[bottom][left] + prefix[top][left]
+                      if result[i][j] != expected:
+                          return False
+              return True
+seed: 131400
+tests:
+  - name: "example_one"
+    in:
+      mat:
+        - [1, 2, 3]
+        - [4, 5, 6]
+        - [7, 8, 9]
+      k: 1
+    out:
+      - [12, 21, 16]
+      - [27, 45, 33]
+      - [24, 39, 28]
+  - name: "example_two"
+    in:
+      mat:
+        - [1, 2, 3]
+        - [4, 5, 6]
+        - [7, 8, 9]
+      k: 2
+    out:
+      - [45, 45, 45]
+      - [45, 45, 45]
+      - [45, 45, 45]
+  - name: "single_cell_minimum_value"
+    in:
+      mat:
+        - [1]
+      k: 1
+    out:
+      - [1]
+  - name: "single_cell_maximum_value_and_k"
+    in:
+      mat:
+        - [100]
+      k: 100
+    out:
+      - [100]
+  - name: "single_row_local_window"
+    in:
+      mat:
+        - [1, 2, 3, 4, 5]
+      k: 1
+    out:
+      - [3, 6, 9, 12, 9]
+  - name: "single_row_window_exceeds_width"
+    in:
+      mat:
+        - [1, 2, 3, 4, 5]
+      k: 5
+    out:
+      - [15, 15, 15, 15, 15]
+  - name: "single_column_local_window"
+    in:
+      mat:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+      k: 1
+    out:
+      - [3]
+      - [6]
+      - [9]
+      - [7]
+  - name: "single_column_window_exceeds_height"
+    in:
+      mat:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+      k: 4
+    out:
+      - [10]
+      - [10]
+      - [10]
+      - [10]
+  - name: "two_by_two_full_neighborhood"
+    in:
+      mat:
+        - [1, 2]
+        - [3, 4]
+      k: 1
+    out:
+      - [10, 10]
+      - [10, 10]
+  - name: "two_by_three_rectangular"
+    in:
+      mat:
+        - [1, 2, 3]
+        - [4, 5, 6]
+      k: 1
+    out:
+      - [12, 21, 16]
+      - [12, 21, 16]
+  - name: "three_by_two_rectangular"
+    in:
+      mat:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+      k: 1
+    out:
+      - [10, 10]
+      - [21, 21]
+      - [18, 18]
+  - name: "uniform_three_by_three"
+    in:
+      mat:
+        - [3, 3, 3]
+        - [3, 3, 3]
+        - [3, 3, 3]
+      k: 1
+    out:
+      - [12, 18, 12]
+      - [18, 27, 18]
+      - [12, 18, 12]
+  - name: "uniform_small_matrix_large_k"
+    in:
+      mat:
+        - [2, 2, 2]
+        - [2, 2, 2]
+      k: 10
+    out:
+      - [12, 12, 12]
+      - [12, 12, 12]
+  - name: "wide_matrix_k_two"
+    in:
+      mat:
+        - [1, 2, 3, 4, 5, 6]
+        - [7, 8, 9, 10, 11, 12]
+      k: 2
+    out:
+      - [30, 44, 60, 70, 60, 48]
+      - [30, 44, 60, 70, 60, 48]
+  - name: "tall_matrix_k_two"
+    in:
+      mat:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [7, 8]
+        - [9, 10]
+      k: 2
+    out:
+      - [21, 21]
+      - [36, 36]
+      - [55, 55]
+      - [52, 52]
+      - [45, 45]
+  - name: "heavy_opposite_corners"
+    in:
+      mat:
+        - [100, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 100]
+      k: 1
+    out:
+      - [103, 105, 4]
+      - [105, 207, 105]
+      - [4, 105, 103]
+  - name: "alternating_values"
+    in:
+      mat:
+        - [1, 10, 1, 10]
+        - [10, 1, 10, 1]
+        - [1, 10, 1, 10]
+      k: 1
+    out:
+      - [22, 33, 33, 22]
+      - [33, 45, 54, 33]
+      - [22, 33, 33, 22]
+  - name: "four_by_four_k_one"
+    in:
+      mat:
+        - [1, 2, 3, 4]
+        - [5, 6, 7, 8]
+        - [9, 10, 11, 12]
+        - [13, 14, 15, 16]
+      k: 1
+    out:
+      - [14, 24, 30, 22]
+      - [33, 54, 63, 45]
+      - [57, 90, 99, 69]
+      - [46, 72, 78, 54]
+  - name: "four_by_four_nearly_global_window"
+    in:
+      mat:
+        - [1, 2, 3, 4]
+        - [5, 6, 7, 8]
+        - [9, 10, 11, 12]
+        - [13, 14, 15, 16]
+      k: 3
+    out:
+      - [136, 136, 136, 136]
+      - [136, 136, 136, 136]
+      - [136, 136, 136, 136]
+      - [136, 136, 136, 136]
+  - name: "single_high_center"
+    in:
+      mat:
+        - [1, 1, 1]
+        - [1, 100, 1]
+        - [1, 1, 1]
+      k: 1
+    out:
+      - [103, 105, 103]
+      - [105, 108, 105]
+      - [103, 105, 103]
+  - name: "two_by_four_different_row_patterns"
+    in:
+      mat:
+        - [2, 4, 6, 8]
+        - [1, 3, 5, 7]
+      k: 1
+    out:
+      - [10, 21, 33, 26]
+      - [10, 21, 33, 26]
+  - name: "four_by_two_k_two"
+    in:
+      mat:
+        - [2, 1]
+        - [4, 3]
+        - [6, 5]
+        - [8, 7]
+      k: 2
+    out:
+      - [21, 21]
+      - [36, 36]
+      - [36, 36]
+      - [33, 33]
+  - name: "five_by_five_edge_and_center"
+    in:
+      mat:
+        - [1, 1, 1, 1, 1]
+        - [1, 2, 2, 2, 1]
+        - [1, 2, 9, 2, 1]
+        - [1, 2, 2, 2, 1]
+        - [1, 1, 1, 1, 1]
+      k: 1
+    out:
+      - [5, 8, 9, 8, 5]
+      - [8, 20, 22, 20, 8]
+      - [9, 22, 25, 22, 9]
+      - [8, 20, 22, 20, 8]
+      - [5, 8, 9, 8, 5]
+  - name: "five_by_five_global_window"
+    in:
+      mat:
+        - [1, 2, 3, 4, 5]
+        - [6, 7, 8, 9, 10]
+        - [11, 12, 13, 14, 15]
+        - [16, 17, 18, 19, 20]
+        - [21, 22, 23, 24, 25]
+      k: 5
+    out:
+      - [325, 325, 325, 325, 325]
+      - [325, 325, 325, 325, 325]
+      - [325, 325, 325, 325, 325]
+      - [325, 325, 325, 325, 325]
+      - [325, 325, 325, 325, 325]
+  - name: "six_by_three_horizontal_invariance"
+    in:
+      mat:
+        - [1, 1, 1]
+        - [2, 2, 2]
+        - [3, 3, 3]
+        - [4, 4, 4]
+        - [5, 5, 5]
+        - [6, 6, 6]
+      k: 2
+    out:
+      - [18, 18, 18]
+      - [30, 30, 30]
+      - [45, 45, 45]
+      - [60, 60, 60]
+      - [54, 54, 54]
+      - [45, 45, 45]
+  - name: "diagonal_maximum_values"
+    in:
+      mat:
+        - [1, 100]
+        - [100, 1]
+      k: 1
+    out:
+      - [202, 202]
+      - [202, 202]
+  - name: "seven_by_one_k_three"
+    in:
+      mat:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+      k: 3
+    out:
+      - [10]
+      - [15]
+      - [21]
+      - [28]
+      - [27]
+      - [25]
+      - [22]
+  - name: "one_by_seven_k_three"
+    in:
+      mat:
+        - [1, 2, 3, 4, 5, 6, 7]
+      k: 3
+    out:
+      - [10, 15, 21, 28, 27, 25, 22]
+  - name: "all_maximum_entries"
+    in:
+      mat:
+        - [100, 100, 100]
+        - [100, 100, 100]
+        - [100, 100, 100]
+      k: 1
+    out:
+      - [400, 600, 400]
+      - [600, 900, 600]
+      - [400, 600, 400]
+  - name: "three_by_four_k_two"
+    in:
+      mat:
+        - [1, 2, 3, 4]
+        - [5, 6, 7, 8]
+        - [9, 10, 11, 12]
+      k: 2
+    out:
+      - [54, 78, 78, 63]
+      - [54, 78, 78, 63]
+      - [54, 78, 78, 63]
+  - name: "four_by_three_k_two"
+    in:
+      mat:
+        - [1, 2, 3]
+        - [4, 5, 6]
+        - [7, 8, 9]
+        - [10, 11, 12]
+      k: 2
+    out:
+      - [45, 45, 45]
+      - [78, 78, 78]
+      - [78, 78, 78]
+      - [72, 72, 72]
+  - name: "large_k_nonuniform_rows"
+    in:
+      mat:
+        - [100, 1, 100, 1]
+        - [100, 1, 100, 1]
+        - [100, 1, 100, 1]
+      k: 100
+    out:
+      - [606, 606, 606, 606]
+      - [606, 606, 606, 606]
+      - [606, 606, 606, 606]
+  - name: "corner_outlier_with_k_two"
+    in:
+      mat:
+        - [100, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+      k: 2
+    out:
+      - [108, 111, 111, 9]
+      - [111, 115, 115, 12]
+      - [111, 115, 115, 12]
+      - [9, 12, 12, 9]
+  - name: "column_endpoints_are_maximum"
+    in:
+      mat:
+        - [100]
+        - [1]
+        - [1]
+        - [1]
+        - [100]
+      k: 1
+    out:
+      - [101]
+      - [102]
+      - [3]
+      - [102]
+      - [101]
+  - name: "generated_twenty_by_twenty"
+    seed: 131401
+    in:
+      mat:
+        gen: "array"
+        len: 20
+        of:
+          gen: "array"
+          len: 20
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+      k:
+        gen: "int"
+        min: 1
+        max: 100
+  - name: "generated_wide_thirty_five_by_seventy"
+    seed: 131402
+    in:
+      mat:
+        gen: "array"
+        len: 35
+        of:
+          gen: "array"
+          len: 70
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+      k:
+        gen: "int"
+        min: 1
+        max: 100
+  - name: "generated_tall_seventy_by_thirty_five"
+    seed: 131403
+    in:
+      mat:
+        gen: "array"
+        len: 70
+        of:
+          gen: "array"
+          len: 35
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+      k:
+        gen: "int"
+        min: 1
+        max: 100
+  - name: "generated_maximum_k_one"
+    seed: 131404
+    in:
+      mat:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+      k: 1
+  - name: "generated_maximum_midrange_k"
+    seed: 131405
+    in:
+      mat:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+      k: 50
+  - name: "generated_maximum_global_k"
+    seed: 131406
+    in:
+      mat:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+      k: 100

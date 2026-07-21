@@ -1,0 +1,41 @@
+from collections import deque
+
+
+class Solution(object):
+    def minFlips(self, mat):
+        m = len(mat)
+        n = len(mat[0])
+        masks = []
+
+        for r in range(m):
+            for c in range(n):
+                mask = 0
+                for dr, dc in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+                    nr = r + dr
+                    nc = c + dc
+                    if 0 <= nr < m and 0 <= nc < n:
+                        mask |= 1 << (nr * n + nc)
+                masks.append(mask)
+
+        start = 0
+        for r in range(m):
+            for c in range(n):
+                if mat[r][c]:
+                    start |= 1 << (r * n + c)
+
+        dist = [-1] * (1 << (m * n))
+        dist[start] = 0
+        q = deque([start])
+
+        while q:
+            state = q.popleft()
+            steps = dist[state]
+            if state == 0:
+                return steps
+            for mask in masks:
+                nxt = state ^ mask
+                if dist[nxt] == -1:
+                    dist[nxt] = steps + 1
+                    q.append(nxt)
+
+        return -1

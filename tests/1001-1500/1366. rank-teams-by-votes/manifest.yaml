@@ -1,0 +1,234 @@
+entry:
+  id: 1366
+  title: "rank-teams-by-votes"
+  params:
+    votes:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().rankTeams({votes})"
+    rust: "Solution::rank_teams({votes})"
+    python3: "Solution().rankTeams({votes})"
+    python2: "Solution().rankTeams({votes})"
+    ruby: "rank_teams({votes})"
+    java: "new Solution().rankTeams({votes})"
+    csharp: "new Solution().RankTeams({votes})"
+    kotlin: "Solution().rankTeams({votes})"
+    go: "rankTeams({votes})"
+    dart: "Solution().rankTeams({votes})"
+    swift: "Solution().rankTeams({votes})"
+    typescript: "rankTeams({votes})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().rankTeams(votes, {result})"
+    checker: |
+      class Checker:
+          def rankTeams(self, votes, result):
+              if not isinstance(result, str):
+                  return False
+              teams = list(votes[0])
+              if len(result) != len(teams) or set(result) != set(teams):
+                  return False
+              counts = {team: [0] * len(teams) for team in teams}
+              for vote in votes:
+                  for place, team in enumerate(vote):
+                      counts[team][place] += 1
+              expected = ''.join(sorted(
+                  teams,
+                  key=lambda team: tuple([-count for count in counts[team]]) + (team,),
+              ))
+              return result == expected
+
+seed: 1366
+
+tests:
+  - name: "example-one"
+    in:
+      votes: ["ABC", "ACB", "ABC", "ACB", "ACB"]
+  - name: "example-two"
+    in:
+      votes: ["WXYZ", "XYZW"]
+  - name: "example-three"
+    in:
+      votes: ["ZMNAGUEDSJYLBOPHRQICWFXTVK"]
+  - name: "single-team"
+    in:
+      votes: ["A"]
+  - name: "two-teams-alphabetical-tie"
+    in:
+      votes: ["AB", "BA"]
+  - name: "two-teams-clear-winner"
+    in:
+      votes: ["BA", "BA", "AB"]
+  - name: "three-teams-perfect-tie"
+    in:
+      votes: ["ABC", "BCA", "CAB"]
+  - name: "three-teams-second-place-break"
+    in:
+      votes: ["ABC", "ACB"]
+  - name: "three-teams-third-place-break"
+    in:
+      votes: ["ABC", "BAC", "CBA", "BCA"]
+  - name: "four-teams-alphabetical-tie"
+    in:
+      votes: ["ABCD", "DCBA"]
+  - name: "four-teams-first-place-split"
+    in:
+      votes: ["ABCD", "ACBD", "BACD", "BCAD"]
+  - name: "four-teams-deep-tie"
+    in:
+      votes: ["ABCD", "BADC", "CDAB", "DCBA"]
+  - name: "five-teams-one-voter"
+    in:
+      votes: ["EDCBA"]
+  - name: "five-teams-repeated-winner"
+    in:
+      votes: ["ABCDE", "ABCDE", "ABCDE", "BACDE", "CBADE"]
+  - name: "five-teams-last-place-tie"
+    in:
+      votes: ["ABCDE", "ABDEC", "ABDCE", "ABEDC"]
+  - name: "six-teams-cyclic"
+    in:
+      votes: ["ABCDEF", "BCDEFA", "CDEFAB", "DEFABC", "EFABCD", "FABCDE"]
+  - name: "six-teams-reversed-pairs"
+    in:
+      votes: ["ABCDEF", "FEDCBA", "ABCDEF", "FEDCBA", "BADCFE"]
+  - name: "six-teams-late-resolution"
+    in:
+      votes: ["ABCDEF", "BACDEF", "ACBDEF", "CABDEF", "DABCEF"]
+  - name: "seven-teams-openings"
+    in:
+      votes: ["ABCDEFG", "GFEDCBA", "BCADEFG", "CBADEFG", "ABCDEFG"]
+  - name: "seven-teams-balanced"
+    in:
+      votes:
+        [
+          "ABCDEFG",
+          "BCDEFGA",
+          "CDEFGAB",
+          "DEFGABC",
+          "EFGABCD",
+          "FGABCDE",
+          "GABCDEF",
+        ]
+  - name: "eight-teams-alternating"
+    in:
+      votes: ["ABCDEFGH", "HGFEDCBA", "ABCDEFGH", "HGFEDCBA", "BADCFEHG"]
+  - name: "eight-teams-shifted"
+    in:
+      votes: ["ABCDEFGH", "BCDEFGHA", "CDEFGHAB", "DEFGHABC"]
+  - name: "nine-teams-tied-leaders"
+    in:
+      votes: ["ABCDEFGHI", "BACDEFGHI", "CBADEFGHI", "ACBDEFGHI", "BCADEFGHI"]
+  - name: "ten-teams-single-voter"
+    in:
+      votes: ["JIHGFEDCBA"]
+  - name: "ten-teams-repeated-prefix"
+    in:
+      votes:
+        ["ABCDEFGHIJ", "ABCDJIHGFE", "ABCDJIHGFE", "BACDJIHGFE", "CABDJIHGFE"]
+  - name: "ten-teams-reversed"
+    in:
+      votes: ["ABCDEFGHIJ", "JIHGFEDCBA", "JIHGFEDCBA", "ABCDEFGHIJ"]
+  - name: "twelve-teams-cyclic"
+    in:
+      votes:
+        [
+          "ABCDEFGHIJKL",
+          "BCDEFGHIJKLA",
+          "CDEFGHIJKLAB",
+          "DEFGHIJKLABC",
+          "EFGHIJKLABCD",
+        ]
+  - name: "twelve-teams-deep-tie"
+    in:
+      votes: ["ABCDEFGHIJKL", "BACDEFGHIJKL", "ABCDIJKLEFGH"]
+  - name: "thirteen-teams-one-voter"
+    in:
+      votes: ["MNABCDEFGHIJK"]
+  - name: "fourteen-teams-mixed"
+    in:
+      votes:
+        ["ABCDEFGHIJKLMN", "NMLKJIHGFEDCBA", "BACDEFGHIJKLMN", "CBADEFGHIJKLMN"]
+  - name: "sixteen-teams-balanced"
+    in:
+      votes:
+        [
+          "ABCDEFGHIJKLMNOP",
+          "PONMLKJIHGFEDCBA",
+          "BADCFEHGJILKNMPO",
+          "ABCDEFGHIJKLMNOP",
+        ]
+  - name: "eighteen-teams-one-voter"
+    in:
+      votes: ["SRQPONMLKJIHGFEDCBA"]
+  - name: "twenty-teams-shifted"
+    in:
+      votes:
+        ["ABCDEFGHIJKLMNOPQRST", "BCDEFGHIJKLMNOPQRSTA", "CDEFGHIJKLMNOPQRSTAB"]
+  - name: "twenty-six-teams-one-voter"
+    in:
+      votes: ["ZYXWVUTSRQPONMLKJIHGFEDCBA"]
+  - name: "twenty-six-teams-reversed-pair"
+    in:
+      votes: ["ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ZYXWVUTSRQPONMLKJIHGFEDCBA"]
+  - name: "five-teams-ten-voters-distributed"
+    in:
+      votes:
+        [
+          "ABCDE",
+          "BACDE",
+          "CABDE",
+          "DABCE",
+          "EABCD",
+          "ABCDE",
+          "BACDE",
+          "CABDE",
+          "DABCE",
+          "EABCD",
+        ]
+  - name: "eight-teams-middle-position-resolution"
+    in:
+      votes:
+        ["ABCDEFGH", "BACDEFGH", "ABDCFEGH", "BADCEFHG", "CDEFGHAB", "CDEFGHBA"]
+  - name: "fourteen-teams-repeated-front-tie"
+    in:
+      votes:
+        [
+          "ABCDEFGHIJKLMN",
+          "BACDEFGHIJKLMN",
+          "ABCDEFGHIJKLMN",
+          "BACDEFGHIJKLMN",
+          "CDEFGHIJKLMNAB",
+          "CDEFGHIJKLMNBA",
+        ]
+  - name: "twenty-one-teams-mixed-rotations"
+    in:
+      votes:
+        [
+          "ABCDEFGHIJKLMNOPQRSTU",
+          "BCDEFGHIJKLMNOPQRSTUA",
+          "CDEFGHIJKLMNOPQRSTUAB",
+          "UTSRQPONMLKJIHGFEDCBA",
+          "KLMNOPQRSTUABCDEFGHIJ",
+        ]
+  - name: "twenty-six-teams-many-position-ties"
+    in:
+      votes:
+        [
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          "BCDEFGHIJKLMNOPQRSTUVWXYZA",
+          "CDEFGHIJKLMNOPQRSTUVWXYZAB",
+          "ZYXWVUTSRQPONMLKJIHGFEDCBA",
+          "YXWVUTSRQPONMLKJIHGFEDCBAZ",
+          "XWVUTSRQPONMLKJIHGFEDCBAZY",
+        ]

@@ -1,6 +1,6 @@
 class Solution {
     func numEquivDominoPairs(_ dominoes: [[Int]]) -> Int {
-        var mpp = Array(repeating: 0, count: 100)
+        var mpp = [Int](repeating: 0, count: 100)
         var count = 0
         for d in dominoes {
             let a = d[0], b = d[1]

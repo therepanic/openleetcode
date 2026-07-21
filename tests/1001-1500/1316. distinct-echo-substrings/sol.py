@@ -1,0 +1,24 @@
+class Solution:
+    def distinctEchoSubstrings(self, text: str) -> int:
+        def get(l, r):
+            return (h1[r] - h1[l] * p1[r - l]) % m1, (h2[r] - h2[l] * p2[r - l]) % m2
+
+        n = len(text)
+        b1, b2 = 911382323, 972663749
+        m1, m2 = 10**9 + 7, 10**9 + 9
+        p1, p2 = [1] * (n + 1), [1] * (n + 1)
+        h1, h2 = [0] * (n + 1), [0] * (n + 1)
+        a = ord("a")
+        for i, ch in enumerate(text, 1):
+            v = ord(ch) - a
+            p1[i] = (p1[i - 1] * b1) % m1
+            p2[i] = (p2[i - 1] * b2) % m2
+            h1[i] = (h1[i - 1] * b1 + v) % m1
+            h2[i] = (h2[i - 1] * b2 + v) % m2
+        st = set()
+        for i in range(n):
+            m = (n - i) // 2
+            for L in range(1, m + 1):
+                if get(i, i + L) == get(i + L, i + 2 * L):
+                    st.add((2 * L, get(i, i + 2 * L)))
+        return len(st)

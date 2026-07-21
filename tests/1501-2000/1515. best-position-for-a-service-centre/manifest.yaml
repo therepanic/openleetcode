@@ -1,0 +1,652 @@
+entry:
+  id: 1515
+  title: "best-position-for-a-service-centre"
+  params:
+    positions:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().getMinDistSum({positions})"
+    rust: "Solution::get_min_dist_sum({positions})"
+    python3: "Solution().getMinDistSum({positions})"
+    python2: "Solution().getMinDistSum({positions})"
+    ruby: "get_min_dist_sum({positions})"
+    java: "new Solution().getMinDistSum({positions})"
+    csharp: "new Solution().GetMinDistSum({positions})"
+    kotlin: "Solution().getMinDistSum({positions})"
+    go: "getMinDistSum({positions})"
+    dart: "Solution().getMinDistSum({positions})"
+    swift: "Solution().getMinDistSum({positions})"
+    typescript: "getMinDistSum({positions})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().getMinDistSum(positions, {result})"
+    checker: |
+      import math
+      class Checker:
+          def getMinDistSum(self, positions, result):
+              x = sum(p[0] for p in positions) / len(positions)
+              y = sum(p[1] for p in positions) / len(positions)
+              for _ in range(10000):
+                  weights = []
+                  coincident = False
+                  for px, py in positions:
+                      distance = math.hypot(x - px, y - py)
+                      if distance < 1e-12:
+                          coincident = True
+                          break
+                      weights.append((px, py, 1.0 / distance))
+                  if coincident:
+                      break
+                  total_weight = sum(w for _, _, w in weights)
+                  nx = sum(px * w for px, _, w in weights) / total_weight
+                  ny = sum(py * w for _, py, w in weights) / total_weight
+                  if math.hypot(nx - x, ny - y) < 1e-10:
+                      x, y = nx, ny
+                      break
+                  x, y = nx, ny
+              best = sum(math.hypot(x - px, y - py) for px, py in positions)
+              return math.isfinite(result) and abs(result - best) <= 2e-5
+seed: 1515
+tests:
+  - name: "single customer"
+    in:
+      positions:
+        - [0, 0]
+  - name: "single corner"
+    in:
+      positions:
+        - [100, 100]
+  - name: "example diamond"
+    in:
+      positions:
+        - [0, 1]
+        - [1, 0]
+        - [1, 2]
+        - [2, 1]
+  - name: "example pair"
+    in:
+      positions:
+        - [1, 1]
+        - [3, 3]
+  - name: "two horizontal"
+    in:
+      positions:
+        - [0, 0]
+        - [10, 0]
+  - name: "two vertical"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 10]
+  - name: "two diagonal bounds"
+    in:
+      positions:
+        - [0, 100]
+        - [100, 0]
+  - name: "all identical"
+    in:
+      positions:
+        - [7, 9]
+        - [7, 9]
+        - [7, 9]
+        - [7, 9]
+  - name: "square"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 10]
+        - [10, 0]
+        - [10, 10]
+  - name: "rectangle"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 4]
+        - [20, 0]
+        - [20, 4]
+  - name: "triangle"
+    in:
+      positions:
+        - [0, 0]
+        - [6, 0]
+        - [3, 4]
+  - name: "collinear three"
+    in:
+      positions:
+        - [0, 0]
+        - [5, 0]
+        - [10, 0]
+  - name: "collinear uneven"
+    in:
+      positions:
+        - [0, 0]
+        - [1, 0]
+        - [20, 0]
+  - name: "center duplicate weight"
+    in:
+      positions:
+        - [0, 0]
+        - [10, 0]
+        - [5, 0]
+        - [5, 0]
+  - name: "axis cross"
+    in:
+      positions:
+        - [0, 5]
+        - [5, 0]
+        - [10, 5]
+        - [5, 10]
+  - name: "lower boundary cluster"
+    in:
+      positions:
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+        - [1, 1]
+        - [2, 2]
+  - name: "upper boundary cluster"
+    in:
+      positions:
+        - [100, 100]
+        - [99, 100]
+        - [100, 99]
+        - [99, 99]
+        - [98, 98]
+  - name: "far outlier"
+    in:
+      positions:
+        - [50, 50]
+        - [50, 50]
+        - [50, 50]
+        - [100, 100]
+  - name: "corner quartet"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 100]
+        - [100, 0]
+        - [100, 100]
+  - name: "asymmetric corners"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 100]
+        - [100, 0]
+        - [20, 20]
+        - [20, 20]
+  - name: "six symmetric"
+    in:
+      positions:
+        - [10, 50]
+        - [20, 40]
+        - [30, 30]
+        - [40, 20]
+        - [50, 10]
+        - [30, 30]
+  - name: "repeated endpoints"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 0]
+        - [100, 100]
+        - [100, 100]
+  - name: "near diagonal"
+    in:
+      positions:
+        - [11, 12]
+        - [21, 22]
+        - [31, 32]
+        - [41, 42]
+        - [51, 52]
+  - name: "compact irregular"
+    in:
+      positions:
+        - [49, 49]
+        - [50, 49]
+        - [49, 50]
+        - [51, 50]
+        - [50, 51]
+        - [52, 52]
+  - name: "eight spread"
+    in:
+      positions:
+        - [0, 50]
+        - [14, 71]
+        - [29, 3]
+        - [43, 88]
+        - [57, 17]
+        - [72, 64]
+        - [86, 26]
+        - [100, 100]
+  - name: "grid corners and center"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 50]
+        - [0, 100]
+        - [50, 0]
+        - [50, 50]
+        - [50, 100]
+        - [100, 0]
+        - [100, 50]
+        - [100, 100]
+  - name: "nine varied"
+    in:
+      positions:
+        - [4, 77]
+        - [18, 2]
+        - [27, 44]
+        - [39, 91]
+        - [51, 13]
+        - [63, 68]
+        - [74, 35]
+        - [88, 6]
+        - [96, 82]
+  - name: "ten diagonal bands"
+    in:
+      positions:
+        - [0, 0]
+        - [10, 10]
+        - [20, 20]
+        - [30, 30]
+        - [40, 40]
+        - [60, 60]
+        - [70, 70]
+        - [80, 80]
+        - [90, 90]
+        - [100, 100]
+  - name: "ten two clusters"
+    in:
+      positions:
+        - [5, 5]
+        - [6, 4]
+        - [4, 6]
+        - [7, 5]
+        - [5, 7]
+        - [93, 95]
+        - [94, 94]
+        - [95, 93]
+        - [92, 95]
+        - [95, 92]
+  - name: "maximum boundary sample"
+    in:
+      positions:
+        - [0, 100]
+        - [10, 90]
+        - [20, 80]
+        - [30, 70]
+        - [40, 60]
+        - [60, 40]
+        - [70, 30]
+        - [80, 20]
+        - [90, 10]
+        - [100, 0]
+  - name: "fifty alternating boundary points"
+    in:
+      positions:
+        - [0, 0]
+        - [100, 100]
+        - [0, 2]
+        - [100, 98]
+        - [0, 4]
+        - [100, 96]
+        - [0, 6]
+        - [100, 94]
+        - [0, 8]
+        - [100, 92]
+        - [0, 10]
+        - [100, 90]
+        - [0, 12]
+        - [100, 88]
+        - [0, 14]
+        - [100, 86]
+        - [0, 16]
+        - [100, 84]
+        - [0, 18]
+        - [100, 82]
+        - [0, 20]
+        - [100, 80]
+        - [0, 22]
+        - [100, 78]
+        - [0, 24]
+        - [100, 76]
+        - [0, 26]
+        - [100, 74]
+        - [0, 28]
+        - [100, 72]
+        - [0, 30]
+        - [100, 70]
+        - [0, 32]
+        - [100, 68]
+        - [0, 34]
+        - [100, 66]
+        - [0, 36]
+        - [100, 64]
+        - [0, 38]
+        - [100, 62]
+        - [0, 40]
+        - [100, 60]
+        - [0, 42]
+        - [100, 58]
+        - [0, 44]
+        - [100, 56]
+        - [0, 46]
+        - [100, 54]
+        - [0, 48]
+        - [100, 52]
+  - name: "fifty diagonal line"
+    in:
+      positions:
+        - [0, 0]
+        - [2, 2]
+        - [4, 4]
+        - [6, 6]
+        - [8, 8]
+        - [10, 10]
+        - [12, 12]
+        - [14, 14]
+        - [16, 16]
+        - [18, 18]
+        - [20, 20]
+        - [22, 22]
+        - [24, 24]
+        - [26, 26]
+        - [28, 28]
+        - [30, 30]
+        - [32, 32]
+        - [34, 34]
+        - [36, 36]
+        - [38, 38]
+        - [40, 40]
+        - [42, 42]
+        - [44, 44]
+        - [46, 46]
+        - [48, 48]
+        - [50, 50]
+        - [52, 52]
+        - [54, 54]
+        - [56, 56]
+        - [58, 58]
+        - [60, 60]
+        - [62, 62]
+        - [64, 64]
+        - [66, 66]
+        - [68, 68]
+        - [70, 70]
+        - [72, 72]
+        - [74, 74]
+        - [76, 76]
+        - [78, 78]
+        - [80, 80]
+        - [82, 82]
+        - [84, 84]
+        - [86, 86]
+        - [88, 88]
+        - [90, 90]
+        - [92, 92]
+        - [94, 94]
+        - [96, 96]
+        - [98, 98]
+  - name: "fifty central grid"
+    in:
+      positions:
+        - [45, 45]
+        - [50, 45]
+        - [55, 45]
+        - [45, 50]
+        - [55, 50]
+        - [45, 55]
+        - [50, 55]
+        - [55, 55]
+        - [46, 46]
+        - [50, 46]
+        - [54, 46]
+        - [46, 50]
+        - [54, 50]
+        - [46, 54]
+        - [50, 54]
+        - [54, 54]
+        - [47, 47]
+        - [50, 47]
+        - [53, 47]
+        - [47, 50]
+        - [53, 50]
+        - [47, 53]
+        - [50, 53]
+        - [53, 53]
+        - [48, 48]
+        - [50, 48]
+        - [52, 48]
+        - [48, 50]
+        - [52, 50]
+        - [48, 52]
+        - [50, 52]
+        - [52, 52]
+        - [49, 49]
+        - [50, 49]
+        - [51, 49]
+        - [49, 50]
+        - [51, 50]
+        - [49, 51]
+        - [50, 51]
+        - [51, 51]
+        - [0, 50]
+        - [100, 50]
+        - [50, 0]
+        - [50, 100]
+        - [25, 50]
+        - [75, 50]
+        - [50, 25]
+        - [50, 75]
+        - [10, 10]
+        - [90, 90]
+  - name: "fifty asymmetric spread"
+    in:
+      positions:
+        - [0, 100]
+        - [3, 7]
+        - [6, 94]
+        - [9, 21]
+        - [12, 83]
+        - [15, 35]
+        - [18, 72]
+        - [21, 4]
+        - [24, 61]
+        - [27, 98]
+        - [30, 18]
+        - [33, 47]
+        - [36, 89]
+        - [39, 29]
+        - [42, 66]
+        - [45, 12]
+        - [48, 54]
+        - [51, 77]
+        - [54, 3]
+        - [57, 42]
+        - [60, 95]
+        - [63, 24]
+        - [66, 68]
+        - [69, 8]
+        - [72, 51]
+        - [75, 87]
+        - [78, 31]
+        - [81, 63]
+        - [84, 16]
+        - [87, 92]
+        - [90, 38]
+        - [93, 74]
+        - [96, 5]
+        - [99, 57]
+        - [2, 33]
+        - [5, 80]
+        - [8, 14]
+        - [11, 69]
+        - [14, 26]
+        - [17, 91]
+        - [20, 44]
+        - [23, 6]
+        - [26, 58]
+        - [29, 76]
+        - [32, 11]
+        - [35, 52]
+        - [38, 86]
+        - [41, 37]
+        - [44, 64]
+        - [47, 19]
+  - name: "fifty duplicate-heavy extremes"
+    in:
+      positions:
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+        - [100, 100]
+        - [100, 100]
+        - [100, 100]
+        - [100, 100]
+        - [100, 100]
+        - [0, 100]
+        - [0, 100]
+        - [0, 100]
+        - [0, 100]
+        - [0, 100]
+        - [100, 0]
+        - [100, 0]
+        - [100, 0]
+        - [100, 0]
+        - [100, 0]
+        - [25, 25]
+        - [25, 25]
+        - [25, 25]
+        - [25, 25]
+        - [25, 25]
+        - [75, 75]
+        - [75, 75]
+        - [75, 75]
+        - [75, 75]
+        - [75, 75]
+        - [25, 75]
+        - [25, 75]
+        - [25, 75]
+        - [25, 75]
+        - [25, 75]
+        - [75, 25]
+        - [75, 25]
+        - [75, 25]
+        - [75, 25]
+        - [75, 25]
+        - [50, 50]
+        - [50, 50]
+        - [50, 50]
+        - [50, 50]
+        - [1, 1]
+        - [1, 1]
+        - [99, 99]
+        - [99, 99]
+        - [1, 99]
+        - [99, 1]
+  - name: "generated large full range"
+    seed: 151501
+    in:
+      positions:
+        gen: array
+        len:
+          gen: int
+          min: 45
+          max: 50
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 100
+          elemType: int
+        distinct: false
+        sorted: false
+  - name: "generated large lower cluster"
+    seed: 151502
+    in:
+      positions:
+        gen: array
+        len:
+          gen: int
+          min: 45
+          max: 50
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 10
+          elemType: int
+        distinct: false
+        sorted: false
+  - name: "generated large upper cluster"
+    seed: 151503
+    in:
+      positions:
+        gen: array
+        len:
+          gen: int
+          min: 45
+          max: 50
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 90
+            max: 100
+          elemType: int
+        distinct: false
+        sorted: false
+  - name: "generated large central cluster"
+    seed: 151504
+    in:
+      positions:
+        gen: array
+        len:
+          gen: int
+          min: 45
+          max: 50
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 40
+            max: 60
+          elemType: int
+        distinct: false
+        sorted: false
+  - name: "generated large broad range"
+    seed: 151505
+    in:
+      positions:
+        gen: array
+        len:
+          gen: int
+          min: 48
+          max: 50
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 20
+            max: 80
+          elemType: int
+        distinct: false
+        sorted: false

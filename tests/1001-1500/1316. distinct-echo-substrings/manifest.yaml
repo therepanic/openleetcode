@@ -1,0 +1,280 @@
+entry:
+  id: 1316
+  title: "distinct-echo-substrings"
+  params:
+    text:
+      type: string
+  call:
+    cpp: "Solution().distinctEchoSubstrings({text})"
+    rust: "Solution::distinct_echo_substrings({text})"
+    python3: "Solution().distinctEchoSubstrings({text})"
+    python2: "Solution().distinctEchoSubstrings({text})"
+    ruby: "distinct_echo_substrings({text})"
+    java: "new Solution().distinctEchoSubstrings({text})"
+    csharp: "new Solution().DistinctEchoSubstrings({text})"
+    kotlin: "Solution().distinctEchoSubstrings({text})"
+    go: "distinctEchoSubstrings({text})"
+    dart: "Solution().distinctEchoSubstrings({text})"
+    swift: "Solution().distinctEchoSubstrings({text})"
+    typescript: "distinctEchoSubstrings({text})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 10000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().distinctEchoSubstrings(text, {result})"
+    checker: |
+      class Checker:
+          def distinctEchoSubstrings(self, text, result):
+              if type(result) is not int:
+                  return False
+              n = len(text)
+              suffixes = list(range(n))
+              ranks = [ord(char) for char in text]
+              width = 1
+              while width < n:
+                  suffixes.sort(key=lambda index: (ranks[index], ranks[index + width] if index + width < n else -1))
+                  next_ranks = [0] * n
+                  for position in range(1, n):
+                      previous, current = suffixes[position - 1], suffixes[position]
+                      previous_key = (ranks[previous], ranks[previous + width] if previous + width < n else -1)
+                      current_key = (ranks[current], ranks[current + width] if current + width < n else -1)
+                      next_ranks[current] = next_ranks[previous] + (current_key != previous_key)
+                  ranks = next_ranks
+                  if ranks[suffixes[-1]] == n - 1:
+                      break
+                  width *= 2
+              positions = [0] * n
+              for position, start in enumerate(suffixes):
+                  positions[start] = position
+              lcp = [0] * n
+              common = 0
+              for start in range(n):
+                  position = positions[start]
+                  if position == 0:
+                      common = 0
+                      continue
+                  previous = suffixes[position - 1]
+                  while start + common < n and previous + common < n and text[start + common] == text[previous + common]:
+                      common += 1
+                  lcp[position] = common
+                  if common:
+                      common -= 1
+              logs = [0] * (n + 1)
+              for length in range(2, n + 1):
+                  logs[length] = logs[length // 2] + 1
+              minimums = [lcp]
+              size = 1
+              while size * 2 <= n:
+                  previous = minimums[-1]
+                  minimums.append([min(previous[index], previous[index + size]) for index in range(n - size * 2 + 1)])
+                  size *= 2
+              def common_prefix(first, second):
+                  if first == second:
+                      return n - first
+                  left, right = positions[first], positions[second]
+                  if left > right:
+                      left, right = right, left
+                  left += 1
+                  level = logs[right - left + 1]
+                  return min(minimums[level][left], minimums[level][right - (1 << level) + 1])
+              echoes = set()
+              for half in range(1, n // 2 + 1):
+                  full = 2 * half
+                  components = [0] * n
+                  component = 0
+                  for position in range(1, n):
+                      if lcp[position] < full:
+                          component += 1
+                      components[position] = component
+                  for start in range(n - full + 1):
+                      if common_prefix(start, start + half) >= half:
+                          echoes.add((full, components[positions[start]]))
+              return result == len(echoes)
+
+seed: 1316
+
+tests:
+  - name: "example_abcabcabc"
+    in:
+      text: "abcabcabc"
+    out: 3
+  - name: "example_leetcode"
+    in:
+      text: "leetcodeleetcode"
+    out: 2
+  - name: "minimum_single_character"
+    in:
+      text: "a"
+    out: 0
+  - name: "two_equal_characters"
+    in:
+      text: "aa"
+    out: 1
+  - name: "two_distinct_characters"
+    in:
+      text: "ab"
+    out: 0
+  - name: "three_uniform_characters"
+    in:
+      text: "aaa"
+    out: 1
+  - name: "four_uniform_characters"
+    in:
+      text: "aaaa"
+    out: 2
+  - name: "all_distinct"
+    in:
+      text: "abcdef"
+    out: 0
+  - name: "alternating_pair"
+    in:
+      text: "abab"
+    out: 1
+  - name: "overlapping_alternation"
+    in:
+      text: "ababa"
+    out: 2
+  - name: "single_triplet_repeat"
+    in:
+      text: "abcabc"
+    out: 1
+  - name: "short_nonuniform_repeat"
+    in:
+      text: "aabaaa"
+    out: 1
+  - name: "two_separate_blocks"
+    in:
+      text: "abcabcxyzxyz"
+    out: 2
+  - name: "uniform_eight"
+    in:
+      text: "zzzzzzzz"
+    out: 4
+  - name: "palindrome_without_echo"
+    in:
+      text: "racecar"
+    out: 0
+  - name: "repeated_vowel_block"
+    in:
+      text: "aeiouaeiou"
+    out: 1
+  - name: "repeated_consonant_block"
+    in:
+      text: "bcdbcd"
+    out: 1
+  - name: "two_repeated_words"
+    in:
+      text: "thethequickquick"
+    out: 2
+  - name: "echo_at_end"
+    in:
+      text: "xabcabc"
+    out: 1
+  - name: "echo_at_start"
+    in:
+      text: "abcabcy"
+    out: 1
+  - name: "uniform_seven"
+    in:
+      text: "aaaaaaa"
+    out: 3
+  - name: "alternating_odd_length"
+    in:
+      text: "abababa"
+    out: 2
+  - name: "three_triplet_copies"
+    in:
+      text: "xyzxyzxyz"
+    out: 3
+  - name: "separated_equal_blocks"
+    in:
+      text: "abcxabc"
+    out: 0
+  - name: "long_unique_period"
+    in:
+      text: "abcdefghabcdefgh"
+    out: 1
+  - name: "near_period_with_mismatch"
+    in:
+      text: "abcdefghabcxefgh"
+    out: 0
+  - name: "repeated_sentence"
+    in:
+      text: "thequickbrownfoxthequickbrownfox"
+    out: 1
+  - name: "paired_runs_and_full_repeat"
+    in:
+      text: "aabbaabb"
+    out: 3
+  - name: "four_triplet_copies"
+    in:
+      text: "abcabcabcabc"
+    out: 4
+  - name: "periodic_prefix_with_break"
+    in:
+      text: "abababac"
+    out: 2
+  - name: "uniform_sixteen"
+    in:
+      text: "aaaaaaaaaaaaaaaa"
+    out: 8
+  - name: "alternating_sixteen"
+    in:
+      text: "abababababababab"
+    out: 7
+  - name: "repeated_asymmetric_word"
+    in:
+      text: "mississimississi"
+    out: 4
+  - name: "nonperiodic_with_inner_unique_letters"
+    in:
+      text: "abcdefghijklabcxefgh"
+    out: 0
+  - name: "stress_uniform_max"
+    seed: 131601
+    in:
+      text:
+        gen: "str"
+        len: 2000
+        alphabet: "a"
+  - name: "stress_binary_max"
+    seed: 131602
+    in:
+      text:
+        gen: "str"
+        len: 2000
+        alphabet: "ab"
+  - name: "stress_ternary_max"
+    seed: 131603
+    in:
+      text:
+        gen: "str"
+        len: 2000
+        alphabet: "abc"
+  - name: "stress_quaternary_max"
+    seed: 131604
+    in:
+      text:
+        gen: "str"
+        len: 2000
+        alphabet: "abcd"
+  - name: "stress_half_alphabet_max"
+    seed: 131605
+    in:
+      text:
+        gen: "str"
+        len: 2000
+        alphabet: "abcdefghijklm"
+  - name: "stress_full_alphabet_max"
+    seed: 131606
+    in:
+      text:
+        gen: "str"
+        len: 2000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

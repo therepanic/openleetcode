@@ -1,6 +1,6 @@
 class Solution {
   int numEquivDominoPairs(List<List<int>> dominoes) {
-    var mpp = List.filled(100, 0);
+    List<int> mpp = List.filled(100, 0);
     int count = 0;
     for (var d in dominoes) {
       int a = d[0], b = d[1];

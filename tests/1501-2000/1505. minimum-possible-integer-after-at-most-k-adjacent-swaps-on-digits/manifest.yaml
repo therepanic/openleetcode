@@ -1,0 +1,299 @@
+entry:
+  id: 1505
+  title: "minimum-possible-integer-after-at-most-k-adjacent-swaps-on-digits"
+  params:
+    num:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().minInteger({num}, {k})"
+    rust: "Solution::min_integer({num}, {k})"
+    python3: "Solution().minInteger({num}, {k})"
+    python2: "Solution().minInteger({num}, {k})"
+    ruby: "min_integer({num}, {k})"
+    java: "new Solution().minInteger({num}, {k})"
+    csharp: "new Solution().MinInteger({num}, {k})"
+    kotlin: "Solution().minInteger({num}, {k})"
+    go: "minInteger({num}, {k})"
+    dart: "Solution().minInteger({num}, {k})"
+    swift: "Solution().minInteger({num}, {k})"
+    typescript: "minInteger({num}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minInteger(num, k, {result})"
+    checker: |
+      class Checker:
+          def minInteger(self, num, k, result):
+              if not isinstance(result, str) or len(result) != len(num):
+                  return False
+              positions = [[] for _ in range(10)]
+              for i, ch in enumerate(num):
+                  positions[ord(ch) - 48].append(i)
+              bit = [0] * (len(num) + 1)
+              for i in range(1, len(num) + 1):
+                  bit[i] += 1
+                  j = i + (i & -i)
+                  if j <= len(num):
+                      bit[j] += bit[i]
+              def prefix(i):
+                  total = 0
+                  while i:
+                      total += bit[i]
+                      i -= i & -i
+                  return total
+              def remove(i):
+                  while i <= len(num):
+                      bit[i] -= 1
+                      i += i & -i
+              expected = []
+              for _ in num:
+                  for digit in range(10):
+                      if positions[digit]:
+                          pos = positions[digit][0]
+                          cost = prefix(pos)
+                          if cost <= k:
+                              k -= cost
+                              positions[digit].pop(0)
+                              remove(pos + 1)
+                              expected.append(str(digit))
+                              break
+              return result == ''.join(expected)
+
+seed: 1505
+
+tests:
+  - name: example_reverse_four
+    in:
+      num: "4321"
+      k: 4
+  - name: example_leading_zero_after_swap
+    in:
+      num: "100"
+      k: 1
+  - name: example_large_budget
+    in:
+      num: "36789"
+      k: 1000
+  - name: single_digit
+    in:
+      num: "7"
+      k: 1
+  - name: no_effective_swap
+    in:
+      num: "123456789"
+      k: 1
+  - name: smallest_digit_moves_one
+    in:
+      num: "21"
+      k: 1
+  - name: smallest_digit_blocked
+    in:
+      num: "9876543210"
+      k: 1
+  - name: exact_distance
+    in:
+      num: "9081726354"
+      k: 9
+  - name: zero_already_front
+    in:
+      num: "1020304050"
+      k: 2
+  - name: repeated_digits
+    in:
+      num: "1111100000"
+      k: 5
+  - name: repeated_zeroes
+    in:
+      num: "900000001"
+      k: 8
+  - name: tie_preserves_order
+    in:
+      num: "3141592653589793"
+      k: 10
+  - name: alternating_digits
+    in:
+      num: "9090909090"
+      k: 6
+  - name: all_equal
+    in:
+      num: "5555555555"
+      k: 999
+  - name: one_move_from_end
+    in:
+      num: "8123456709"
+      k: 1
+  - name: budget_stops_mid_selection
+    in:
+      num: "76543210"
+      k: 7
+  - name: two_zero_choices
+    in:
+      num: "505001"
+      k: 3
+  - name: descending_short
+    in:
+      num: "654321"
+      k: 10
+  - name: near_max_budget_small
+    in:
+      num: "9876543210123456789"
+      k: 1000000000
+  - name: digit_order_boundary
+    in:
+      num: "1098765432"
+      k: 2
+  - name: all_digits_once
+    in:
+      num: "1029384756"
+      k: 12
+  - name: clustered_low_digits
+    in:
+      num: "8642000013579"
+      k: 7
+  - name: long_static_pattern
+    in:
+      num: "9182736455463728190"
+      k: 25
+  - name: generated_random_digits_1
+    in:
+      num:
+        gen: str
+        len: 31
+        alphabet: "123456789"
+      k:
+        gen: int
+        min: 1
+        max: 465
+  - name: generated_random_digits_2
+    in:
+      num:
+        gen: str
+        len: 73
+        alphabet: "123456789"
+      k:
+        gen: int
+        min: 1
+        max: 2628
+  - name: generated_binary_digits
+    in:
+      num:
+        gen: str
+        len: 128
+        alphabet: "12"
+      k:
+        gen: int
+        min: 1
+        max: 8128
+  - name: generated_large_digits
+    in:
+      num:
+        gen: str
+        len: 1000
+        alphabet: "123456789"
+      k:
+        gen: int
+        min: 1
+        max: 1000000
+  - name: generated_maximum_length
+    in:
+      num:
+        gen: str
+        len: 30000
+        alphabet: "123456789"
+      k:
+        gen: int
+        min: 1
+        max: 1000000000
+  - name: generated_maximum_length_small_budget
+    in:
+      num:
+        gen: str
+        len: 30000
+        alphabet: "123456789"
+      k:
+        gen: int
+        min: 1
+        max: 3
+  - name: generated_many_duplicates
+    in:
+      num:
+        gen: str
+        len: 256
+        alphabet: "11229"
+      k:
+        gen: int
+        min: 1
+        max: 32640
+  - name: generated_small
+    in:
+      num:
+        gen: str
+        len: 2
+        alphabet: "1289"
+      k:
+        gen: int
+        min: 1
+        max: 1
+  - name: generated_medium_budget
+    in:
+      num:
+        gen: str
+        len: 512
+        alphabet: "369"
+      k:
+        gen: int
+        min: 1
+        max: 100000
+  - name: generated_long_binary
+    in:
+      num:
+        gen: str
+        len: 4096
+        alphabet: "112"
+      k:
+        gen: int
+        min: 1
+        max: 8388608
+  - name: generated_large_already_sorted
+    in:
+      num: "12345678901234567890123456789012345678901234567890"
+      k:
+        gen: int
+        min: 1
+        max: 1000000000
+  - name: generated_large_reverse_static
+    in:
+      num: "98765432109876543210987654321098765432109876543210"
+      k:
+        gen: int
+        min: 1
+        max: 1000000000
+  - name: zero_at_last_position
+    in:
+      num: "1111111110"
+      k: 9
+  - name: zero_requires_budget
+    in:
+      num: "5000000000"
+      k: 4
+  - name: low_digit_not_worth_cost
+    in:
+      num: "9870123456"
+      k: 2
+  - name: final_exact_reordering
+    in:
+      num: "321000"
+      k: 6
+  - name: maximum_budget_two_digits
+    in:
+      num: "90"
+      k: 1000000000

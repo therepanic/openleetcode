@@ -1,0 +1,296 @@
+entry:
+  id: 1283
+  title: "find-the-smallest-divisor-given-a-threshold"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    threshold:
+      type: int
+  call:
+    cpp: "Solution().smallestDivisor({nums}, {threshold})"
+    rust: "Solution::smallest_divisor({nums}, {threshold})"
+    python3: "Solution().smallestDivisor({nums}, {threshold})"
+    python2: "Solution().smallestDivisor({nums}, {threshold})"
+    ruby: "smallest_divisor({nums}, {threshold})"
+    java: "new Solution().smallestDivisor({nums}, {threshold})"
+    csharp: "new Solution().SmallestDivisor({nums}, {threshold})"
+    kotlin: "Solution().smallestDivisor({nums}, {threshold})"
+    go: "smallestDivisor({nums}, {threshold})"
+    dart: "Solution().smallestDivisor({nums}, {threshold})"
+    swift: "Solution().smallestDivisor({nums}, {threshold})"
+    typescript: "smallestDivisor({nums}, {threshold})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().smallestDivisor(nums, threshold, {result})"
+    checker: |
+      class Checker:
+          def smallestDivisor(self, nums, threshold, result):
+              if isinstance(result, bool) or not isinstance(result, int):
+                  return False
+              if result < 1 or result > max(nums):
+                  return False
+              total = sum((value + result - 1) // result for value in nums)
+              if total > threshold:
+                  return False
+              if result == 1:
+                  return True
+              previous_total = sum(
+                  (value + result - 2) // (result - 1) for value in nums
+              )
+              return previous_total > threshold
+
+seed: 1283
+
+tests:
+  - name: "example-one"
+    in:
+      nums: [1, 2, 5, 9]
+      threshold: 6
+    out: 5
+  - name: "example-two"
+    in:
+      nums: [44, 22, 33, 11, 1]
+      threshold: 5
+    out: 44
+  - name: "single-exact"
+    in:
+      nums: [10]
+      threshold: 1
+    out: 10
+  - name: "single-loose"
+    in:
+      nums: [10]
+      threshold: 10
+    out: 1
+  - name: "all-ones"
+    in:
+      nums: [1, 1, 1, 1]
+      threshold: 4
+    out: 1
+  - name: "threshold-length"
+    in:
+      nums: [10, 20, 30, 40]
+      threshold: 4
+    out: 40
+  - name: "threshold-large"
+    in:
+      nums: [10, 20, 30, 40]
+      threshold: 40
+    out: 3
+  - name: "ceil-boundary"
+    in:
+      nums: [7, 10]
+      threshold: 6
+    out: 4
+  - name: "equal-values"
+    in:
+      nums: [100, 100, 100]
+      threshold: 6
+    out: 50
+  - name: "large-single"
+    in:
+      nums: [1000000]
+      threshold: 1
+    out: 1000000
+  - name: "large-four"
+    in:
+      nums: [1000000, 999999, 500000, 1]
+      threshold: 4
+    out: 1000000
+  - name: "mixed-small"
+    in:
+      nums: [2, 3, 5, 7, 11]
+      threshold: 10
+    out: 4
+  - name: "tight-threshold"
+    in:
+      nums: [9, 9, 9]
+      threshold: 4
+    out: 9
+  - name: "moderate-threshold"
+    in:
+      nums: [9, 9, 9]
+      threshold: 9
+    out: 3
+  - name: "powers"
+    in:
+      nums: [1, 2, 4, 8, 16, 32]
+      threshold: 12
+    out: 8
+  - name: "duplicates-and-one"
+    in:
+      nums: [100, 100, 100, 1]
+      threshold: 7
+    out: 50
+  - name: "divisor-one"
+    in:
+      nums: [1, 2, 3, 4, 5]
+      threshold: 15
+    out: 1
+  - name: "divisor-maximum"
+    in:
+      nums: [6, 6, 6]
+      threshold: 3
+    out: 6
+  - name: "odd-ceilings"
+    in:
+      nums: [5, 6, 7, 8]
+      threshold: 8
+    out: 4
+  - name: "even-ceilings"
+    in:
+      nums: [10, 12, 14, 16]
+      threshold: 8
+    out: 8
+  - name: "wide-range"
+    in:
+      nums: [1, 100, 1000, 10000]
+      threshold: 10
+    out: 1429
+  - name: "many-small"
+    in:
+      nums: [2, 2, 2, 3, 3, 3, 4, 4]
+      threshold: 12
+    out: 3
+  - name: "near-max-values"
+    in:
+      nums: [999990, 999991, 999999, 1000000]
+      threshold: 10
+    out: 499996
+  - name: "threshold-just-feasible"
+    in:
+      nums: [8, 8, 8, 8]
+      threshold: 5
+    out: 8
+  - name: "single-two"
+    in:
+      nums: [2]
+      threshold: 1
+    out: 2
+  - name: "single-prime"
+    in:
+      nums: [997]
+      threshold: 1
+    out: 997
+  - name: "balanced"
+    in:
+      nums: [25, 25, 25, 25, 25]
+      threshold: 10
+    out: 13
+  - name: "ascending"
+    in:
+      nums: [3, 8, 15, 24, 35]
+      threshold: 12
+    out: 8
+  - name: "descending"
+    in:
+      nums: [100, 81, 64, 49, 36]
+      threshold: 15
+    out: 25
+  - name: "large-threshold"
+    in:
+      nums: [100, 200, 300, 400, 500]
+      threshold: 1000
+    out: 2
+  - name: "one-large-many-ones"
+    in:
+      nums: [19, 1, 1, 1]
+      threshold: 7
+    out: 5
+  - name: "multiple-ceiling-transitions"
+    in:
+      nums: [12, 13, 24]
+      threshold: 7
+    out: 8
+  - name: "skewed-near-multiple"
+    in:
+      nums: [1, 1, 1, 999999]
+      threshold: 10
+    out: 142857
+  - name: "large-prime-with-small-values"
+    in:
+      nums: [999983, 2, 2]
+      threshold: 5
+    out: 333328
+  - name: "stress-full-range-tight"
+    seed: 128301
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+      threshold: 50000
+  - name: "stress-full-range-moderate"
+    seed: 128302
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+      threshold: 100000
+  - name: "stress-high-values-tight"
+    seed: 128303
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 900000
+          max: 1000000
+        elemType: "int"
+      threshold: 75000
+  - name: "stress-small-values-loose"
+    seed: 128304
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+        elemType: "int"
+      threshold: 250000
+  - name: "stress-upper-band"
+    seed: 128305
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 999001
+          max: 1000000
+        elemType: "int"
+      threshold: 150000
+  - name: "stress-full-range-loose"
+    seed: 128306
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+      threshold: 1000000

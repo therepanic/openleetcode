@@ -1,0 +1,230 @@
+entry:
+  id: 1507
+  title: "reformat-date"
+  params:
+    date:
+      type: string
+  call:
+    cpp: "Solution().reformatDate({date})"
+    rust: "Solution::reformat_date({date})"
+    python3: "Solution().reformatDate({date})"
+    python2: "Solution().reformatDate({date})"
+    ruby: "reformat_date({date})"
+    java: "new Solution().reformatDate({date})"
+    csharp: "new Solution().ReformatDate({date})"
+    kotlin: "Solution().reformatDate({date})"
+    go: "reformatDate({date})"
+    dart: "Solution().reformatDate({date})"
+    swift: "Solution().reformatDate({date})"
+    typescript: "reformatDate({date})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().reformatDate(date, {result})"
+    checker: |
+      class Checker:
+          def reformatDate(self, date, result):
+              parts = date.split()
+              if len(parts) != 3 or not isinstance(result, str):
+                  return False
+              day, month, year = parts
+              months = dict(
+                  Jan='01', Feb='02', Mar='03', Apr='04',
+                  May='05', Jun='06', Jul='07', Aug='08',
+                  Sep='09', Oct='10', Nov='11', Dec='12',
+              )
+              if month not in months or len(year) != 4 or not year.isdigit():
+                  return False
+              if not 1900 <= int(year) <= 2100:
+                  return False
+              if len(day) < 3 or day[-2:] not in ('st', 'nd', 'rd', 'th'):
+                  return False
+              digits = day[:-2]
+              if not digits.isdigit() or not 1 <= int(digits) <= 31:
+                  return False
+              number = int(digits)
+              if 10 < number % 100 < 14:
+                  suffix = 'th'
+              elif number % 10 == 1:
+                  suffix = 'st'
+              elif number % 10 == 2:
+                  suffix = 'nd'
+              elif number % 10 == 3:
+                  suffix = 'rd'
+              else:
+                  suffix = 'th'
+              if day[-2:] != suffix:
+                  return False
+              expected = year + '-' + months[month] + '-' + digits.zfill(2)
+              return result == expected and len(result) == 10 and result[4] == '-' and result[7] == '-'
+
+seed: 1507
+
+tests:
+  - name: "example twentieth october"
+    in:
+      date: "20th Oct 2052"
+    out: "2052-10-20"
+  - name: "example sixth june"
+    in:
+      date: "6th Jun 1933"
+    out: "1933-06-06"
+  - name: "example twenty sixth may"
+    in:
+      date: "26th May 1960"
+    out: "1960-05-26"
+  - name: "first january minimum year"
+    in:
+      date: "1st Jan 1900"
+    out: "1900-01-01"
+  - name: "second february"
+    in:
+      date: "2nd Feb 1901"
+    out: "1901-02-02"
+  - name: "third march"
+    in:
+      date: "3rd Mar 1902"
+    out: "1902-03-03"
+  - name: "fourth april"
+    in:
+      date: "4th Apr 1903"
+    out: "1903-04-04"
+  - name: "fifth may"
+    in:
+      date: "5th May 1904"
+    out: "1904-05-05"
+  - name: "seventh july"
+    in:
+      date: "7th Jul 1905"
+    out: "1905-07-07"
+  - name: "eighth august"
+    in:
+      date: "8th Aug 1906"
+    out: "1906-08-08"
+  - name: "ninth september"
+    in:
+      date: "9th Sep 1907"
+    out: "1907-09-09"
+  - name: "tenth october"
+    in:
+      date: "10th Oct 1908"
+    out: "1908-10-10"
+  - name: "eleventh november"
+    in:
+      date: "11th Nov 1909"
+    out: "1909-11-11"
+  - name: "twelfth december"
+    in:
+      date: "12th Dec 1910"
+    out: "1910-12-12"
+  - name: "thirteenth january"
+    in:
+      date: "13th Jan 1911"
+    out: "1911-01-13"
+  - name: "fourteenth february"
+    in:
+      date: "14th Feb 1912"
+    out: "1912-02-14"
+  - name: "fifteenth march"
+    in:
+      date: "15th Mar 1913"
+    out: "1913-03-15"
+  - name: "sixteenth april"
+    in:
+      date: "16th Apr 1914"
+    out: "1914-04-16"
+  - name: "seventeenth may"
+    in:
+      date: "17th May 1915"
+    out: "1915-05-17"
+  - name: "eighteenth june"
+    in:
+      date: "18th Jun 1916"
+    out: "1916-06-18"
+  - name: "nineteenth july"
+    in:
+      date: "19th Jul 1917"
+    out: "1917-07-19"
+  - name: "twenty first august"
+    in:
+      date: "21st Aug 1918"
+    out: "1918-08-21"
+  - name: "twenty second september"
+    in:
+      date: "22nd Sep 1919"
+    out: "1919-09-22"
+  - name: "twenty third october"
+    in:
+      date: "23rd Oct 1920"
+    out: "1920-10-23"
+  - name: "twenty fourth november"
+    in:
+      date: "24th Nov 1921"
+    out: "1921-11-24"
+  - name: "twenty fifth december"
+    in:
+      date: "25th Dec 1922"
+    out: "1922-12-25"
+  - name: "twenty sixth february"
+    in:
+      date: "26th Feb 1933"
+    out: "1933-02-26"
+  - name: "twenty seventh march"
+    in:
+      date: "27th Mar 1960"
+    out: "1960-03-27"
+  - name: "twenty eighth april"
+    in:
+      date: "28th Apr 1999"
+    out: "1999-04-28"
+  - name: "twenty ninth may"
+    in:
+      date: "29th May 2000"
+    out: "2000-05-29"
+  - name: "thirtieth june"
+    in:
+      date: "30th Jun 2001"
+    out: "2001-06-30"
+  - name: "thirty first january"
+    in:
+      date: "31st Jan 2024"
+    out: "2024-01-31"
+  - name: "thirty first march"
+    in:
+      date: "31st Mar 2052"
+    out: "2052-03-31"
+  - name: "thirty first august"
+    in:
+      date: "31st Aug 2099"
+    out: "2099-08-31"
+  - name: "thirty first december maximum year"
+    in:
+      date: "31st Dec 2100"
+    out: "2100-12-31"
+  - name: "single digit leap year"
+    in:
+      date: "6th Feb 2000"
+    out: "2000-02-06"
+  - name: "ordinal eleventh boundary"
+    in:
+      date: "11th Nov 2100"
+    out: "2100-11-11"
+  - name: "thirtieth september minimum year"
+    in:
+      date: "30th Sep 1900"
+    out: "1900-09-30"
+  - name: "second july midrange year"
+    in:
+      date: "2nd Jul 1950"
+    out: "1950-07-02"
+  - name: "first december maximum year"
+    in:
+      date: "1st Dec 2100"
+    out: "2100-12-01"

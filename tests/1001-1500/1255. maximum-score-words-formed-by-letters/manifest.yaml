@@ -1,0 +1,1589 @@
+entry:
+  id: 1255
+  title: maximum-score-words-formed-by-letters
+  params:
+    words:
+      type: array
+      items:
+        type: string
+    letters:
+      type: array
+      items:
+        type: char
+    score:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxScoreWords({words}, {letters}, {score})"
+    rust: "Solution::max_score_words({words}, {letters}, {score})"
+    python3: "Solution().maxScoreWords({words}, {letters}, {score})"
+    python2: "Solution().maxScoreWords({words}, {letters}, {score})"
+    ruby: "max_score_words({words}, {letters}, {score})"
+    java: "new Solution().maxScoreWords({words}, {letters}, {score})"
+    csharp: "new Solution().MaxScoreWords({words}, {letters}, {score})"
+    kotlin: "Solution().maxScoreWords({words}, {letters}, {score})"
+    go: "maxScoreWords({words}, {letters}, {score})"
+    dart: "Solution().maxScoreWords({words}, {letters}, {score})"
+    swift: "Solution().maxScoreWords({words}, {letters}, {score})"
+    typescript: "maxScoreWords({words}, {letters}, {score})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxScoreWords(words, letters, score, {result})"
+    checker: |
+      class Checker:
+          def maxScoreWords(self, words, letters, score, result):
+              available = [0] * 26
+              for letter in letters:
+                  available[ord(letter) - ord('a')] += 1
+
+              word_counts = []
+              word_scores = []
+              for word in words:
+                  counts = [0] * 26
+                  total = 0
+                  for letter in word:
+                      index = ord(letter) - ord('a')
+                      counts[index] += 1
+                      total += score[index]
+                  word_counts.append(counts)
+                  word_scores.append(total)
+
+              def search(index, remaining):
+                  if index == len(words):
+                      return 0
+                  best = search(index + 1, remaining)
+                  counts = word_counts[index]
+                  if all(counts[i] <= remaining[i] for i in range(26)):
+                      next_remaining = [remaining[i] - counts[i] for i in range(26)]
+                      best = max(best, word_scores[index] + search(index + 1, next_remaining))
+                  return best
+
+              return type(result) is int and result == search(0, available)
+
+seed: 1255
+
+tests:
+  - name: example_one
+    in:
+      words: ["dog", "cat", "dad", "good"]
+      letters: ["a", "a", "c", "d", "d", "d", "g", "o", "o"]
+      score:
+        [
+          1,
+          0,
+          9,
+          5,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 23
+  - name: example_two
+    in:
+      words: ["xxxz", "ax", "bx", "cx"]
+      letters: ["z", "a", "b", "c", "x", "x", "x"]
+      score:
+        [
+          4,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          5,
+          0,
+          10,
+        ]
+    out: 27
+  - name: example_three_missing_repeat
+    in:
+      words: ["leetcode"]
+      letters: ["l", "e", "t", "c", "o", "d"]
+      score:
+        [
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 0
+  - name: single_feasible_word
+    in:
+      words: ["dog"]
+      letters: ["d", "o", "g"]
+      score:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 3
+  - name: single_unavailable_word
+    in:
+      words: ["dog"]
+      letters: ["d", "o"]
+      score:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 0
+  - name: duplicate_word_instances
+    in:
+      words: ["aa", "aa", "aa"]
+      letters: ["a", "a", "a", "a"]
+      score:
+        [
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 20
+  - name: repeated_letter_tradeoff
+    in:
+      words: ["aa", "ab"]
+      letters: ["a", "a", "b"]
+      score:
+        [
+          2,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 4
+  - name: disjoint_words_all_selected
+    in:
+      words: ["ab", "cd", "ef", "gh"]
+      letters: ["a", "b", "c", "d", "e", "f", "g", "h"]
+      score:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 8
+  - name: all_scores_zero
+    in:
+      words: ["abc", "ab"]
+      letters: ["a", "b", "c"]
+      score:
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 0
+  - name: only_short_word_is_possible
+    in:
+      words: ["aaa", "bbb", "ab"]
+      letters: ["a", "a", "b", "b"]
+      score:
+        [
+          3,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 5
+  - name: high_value_z
+    in:
+      words: ["z", "zz"]
+      letters: ["z", "z"]
+      score:
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+        ]
+    out: 20
+  - name: prefer_complementary_short_words
+    in:
+      words: ["a", "bc", "abc"]
+      letters: ["a", "b", "c"]
+      score:
+        [
+          10,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 12
+  - name: overlap_pairing_optimum
+    in:
+      words: ["ab", "bc", "cd", "de"]
+      letters: ["a", "b", "c", "d", "e"]
+      score:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 14
+  - name: duplicate_alternatives
+    in:
+      words: ["aa", "aa", "ab", "ba"]
+      letters: ["a", "a", "b"]
+      score:
+        [
+          3,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 6
+  - name: no_word_uses_available_letters
+    in:
+      words: ["abc", "def"]
+      letters: ["x", "y", "z"]
+      score:
+        [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+        ]
+    out: 0
+  - name: all_available_letters_consumed
+    in:
+      words: ["c", "d"]
+      letters: ["c", "d"]
+      score:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 2
+  - name: equal_long_and_short_partitions
+    in:
+      words: ["abc", "ab", "c"]
+      letters: ["a", "b", "c"]
+      score:
+        [
+          5,
+          4,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 12
+  - name: unavailable_long_word_with_feasible_subword
+    in:
+      words: ["apple", "pear", "ape"]
+      letters: ["a", "p", "p", "l", "e"]
+      score:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 5
+  - name: expensive_long_word
+    in:
+      words: ["zoo", "zoom", "oo"]
+      letters: ["z", "o", "o", "m"]
+      score:
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          7,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+        ]
+    out: 21
+  - name: four_independent_multiplicities
+    in:
+      words: ["a", "bb", "ccc", "dddd"]
+      letters: ["a", "b", "b", "c", "c", "c", "d", "d", "d", "d"]
+      score:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 10
+  - name: fourteen_distinct_single_letter_words
+    in:
+      words:
+        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]
+      letters:
+        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]
+      score:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 65
+  - name: fourteen_competing_word_lengths
+    in:
+      words:
+        [
+          "a",
+          "aa",
+          "aaa",
+          "aaaa",
+          "aaaaa",
+          "aaaaaa",
+          "aaaaaaa",
+          "aaaaaaaa",
+          "aaaaaaaaa",
+          "aaaaaaaaaa",
+          "aaaaaaaaaaa",
+          "aaaaaaaaaaaa",
+          "aaaaaaaaaaaaa",
+          "aaaaaaaaaaaaaa",
+        ]
+      letters:
+        ["a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a"]
+      score:
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 14
+  - name: maximum_word_length_feasible
+    in:
+      words: ["aaaaaaaaaaaaaaa"]
+      letters:
+        [
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+        ]
+      score:
+        [
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 150
+  - name: maximum_word_length_one_letter_short
+    in:
+      words: ["aaaaaaaaaaaaaaa"]
+      letters:
+        ["a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a"]
+      score:
+        [
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 0
+  - name: maximum_letters_with_fourteen_words
+    in:
+      words:
+        [
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+          "aaaaaaa",
+        ]
+      letters:
+        [
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+        ]
+      score:
+        [
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 980
+  - name: score_zero_letters_do_not_reduce_optimum
+    in:
+      words: ["a", "ab", "b"]
+      letters: ["a", "b"]
+      score:
+        [
+          0,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 5
+  - name: high_value_disjoint_letters
+    in:
+      words: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+      letters: ["a", "b", "c", "d", "e"]
+      score:
+        [
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 40
+  - name: four_triples_share_four_letters
+    in:
+      words: ["abc", "abd", "acd", "bcd"]
+      letters: ["a", "b", "c", "d"]
+      score:
+        [
+          4,
+          3,
+          2,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 9
+  - name: choose_two_of_three_resource_pairs
+    in:
+      words: ["ab", "ac", "bc"]
+      letters: ["a", "b", "c", "c"]
+      score:
+        [
+          9,
+          4,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 15
+  - name: repeated_low_value_letter_blocks_expensive_word
+    in:
+      words: ["aab", "ab", "b"]
+      letters: ["a", "b"]
+      score:
+        [
+          10,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 11
+  - name: anagram_words_compete_for_same_letters
+    in:
+      words: ["abc", "bca", "cab"]
+      letters: ["a", "b", "c", "a", "b", "c"]
+      score:
+        [
+          2,
+          3,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 20
+  - name: unused_letters_are_allowed
+    in:
+      words: ["a", "bb"]
+      letters: ["a", "b", "b", "z", "z"]
+      score:
+        [
+          3,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          9,
+        ]
+    out: 7
+  - name: zero_value_feasible_word_with_positive_alternative
+    in:
+      words: ["x", "xy", "y"]
+      letters: ["x", "y"]
+      score:
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          7,
+          0,
+        ]
+    out: 7
+  - name: overlapping_long_words
+    in:
+      words: ["hello", "world", "low"]
+      letters: ["h", "e", "l", "l", "o", "w", "o", "r", "l", "d"]
+      score:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 10
+  - name: one_letter_remainder_prevents_second_word
+    in:
+      words: ["abcd", "cde", "ef"]
+      letters: ["a", "b", "c", "d", "e", "f"]
+      score:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 21
+  - name: repeated_character_with_competing_combinations
+    in:
+      words: ["aab", "abb", "ab", "ab"]
+      letters: ["a", "a", "b", "b"]
+      score:
+        [
+          4,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 14
+  - name: words_with_nonpositive_available_score
+    in:
+      words: ["q", "qq", "r"]
+      letters: ["q", "q", "r"]
+      score:
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 1
+  - name: partition_beats_single_available_word
+    in:
+      words: ["abcd", "ab", "cd", "ad"]
+      letters: ["a", "b", "c", "d"]
+      score:
+        [
+          8,
+          1,
+          1,
+          8,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 18
+  - name: subset_selection_under_large_alphabet
+    in:
+      words: ["az", "by", "cx", "dw"]
+      letters: ["a", "z", "b", "y", "c", "x", "d"]
+      score:
+        [
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          7,
+          8,
+          9,
+        ]
+    out: 30
+  - name: maximum_score_per_character
+    in:
+      words: ["jjj", "j", "aa"]
+      letters: ["j", "j", "j", "a", "a"]
+      score:
+        [
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+    out: 50

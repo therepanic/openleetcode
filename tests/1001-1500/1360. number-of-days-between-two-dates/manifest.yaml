@@ -1,0 +1,205 @@
+entry:
+  id: 1360
+  title: "number-of-days-between-two-dates"
+  params:
+    date1:
+      type: string
+    date2:
+      type: string
+  call:
+    python3: "Solution().daysBetweenDates({date1}, {date2})"
+    python2: "Solution().daysBetweenDates({date1}, {date2})"
+    cpp: "Solution().daysBetweenDates({date1}, {date2})"
+    rust: "Solution::days_between_dates({date1}, {date2})"
+    ruby: "days_between_dates({date1}, {date2})"
+    java: "new Solution().daysBetweenDates({date1}, {date2})"
+    csharp: "new Solution().DaysBetweenDates({date1}, {date2})"
+    kotlin: "Solution().daysBetweenDates({date1}, {date2})"
+    go: "daysBetweenDates({date1}, {date2})"
+    dart: "Solution().daysBetweenDates({date1}, {date2})"
+    swift: "Solution().daysBetweenDates({date1}, {date2})"
+    typescript: "daysBetweenDates({date1}, {date2})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 300
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().daysBetweenDates(date1, date2, {result})"
+    checker: |
+      class Checker:
+          def _ordinal(self, date):
+              year, month, day = map(int, date.split('-'))
+              years_before = year - 1
+              total = 365 * years_before + years_before // 4 - years_before // 100 + years_before // 400
+              month_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+              total += sum(month_days[:month - 1]) + day
+              if month > 2 and (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)):
+                  total += 1
+              return total
+
+          def daysBetweenDates(self, date1, date2, result):
+              return isinstance(result, int) and not isinstance(result, bool) and result == abs(self._ordinal(date1) - self._ordinal(date2))
+seed: 1360
+tests:
+  - name: "example_one_adjacent_days"
+    in:
+      date1: "2019-06-29"
+      date2: "2019-06-30"
+  - name: "example_two_reverse_across_year"
+    in:
+      date1: "2020-01-15"
+      date2: "2019-12-31"
+  - name: "same_minimum_date"
+    in:
+      date1: "1971-01-01"
+      date2: "1971-01-01"
+  - name: "same_maximum_date"
+    in:
+      date1: "2100-12-31"
+      date2: "2100-12-31"
+  - name: "minimum_year_full_span"
+    in:
+      date1: "1971-01-01"
+      date2: "1971-12-31"
+  - name: "maximum_year_full_span"
+    in:
+      date1: "2100-01-01"
+      date2: "2100-12-31"
+  - name: "entire_allowed_range"
+    in:
+      date1: "1971-01-01"
+      date2: "2100-12-31"
+  - name: "entire_allowed_range_reverse"
+    in:
+      date1: "2100-12-31"
+      date2: "1971-01-01"
+  - name: "non_leap_february_transition"
+    in:
+      date1: "2019-02-28"
+      date2: "2019-03-01"
+  - name: "leap_february_two_day_transition"
+    in:
+      date1: "2020-02-28"
+      date2: "2020-03-01"
+  - name: "leap_day_to_march"
+    in:
+      date1: "2024-02-29"
+      date2: "2024-03-01"
+  - name: "leap_day_same_date"
+    in:
+      date1: "2000-02-29"
+      date2: "2000-02-29"
+  - name: "divisible_by_400_leap_year"
+    in:
+      date1: "2000-02-28"
+      date2: "2000-03-01"
+  - name: "non_leap_century_2100"
+    in:
+      date1: "2100-02-28"
+      date2: "2100-03-01"
+  - name: "year_end_adjacent"
+    in:
+      date1: "2019-12-31"
+      date2: "2020-01-01"
+  - name: "leap_year_end_adjacent"
+    in:
+      date1: "2020-12-31"
+      date2: "2021-01-01"
+  - name: "january_length"
+    in:
+      date1: "2021-01-01"
+      date2: "2021-02-01"
+  - name: "april_length"
+    in:
+      date1: "2021-04-01"
+      date2: "2021-05-01"
+  - name: "august_to_september"
+    in:
+      date1: "2022-08-31"
+      date2: "2022-09-01"
+  - name: "september_to_october"
+    in:
+      date1: "2022-09-30"
+      date2: "2022-10-01"
+  - name: "one_week"
+    in:
+      date1: "2022-05-01"
+      date2: "2022-05-08"
+  - name: "two_weeks_reverse"
+    in:
+      date1: "2022-05-15"
+      date2: "2022-05-01"
+  - name: "same_month_span"
+    in:
+      date1: "2021-08-10"
+      date2: "2021-08-25"
+  - name: "same_year_reverse"
+    in:
+      date1: "2021-11-30"
+      date2: "2021-03-15"
+  - name: "quarter_span"
+    in:
+      date1: "2023-01-01"
+      date2: "2023-04-01"
+  - name: "half_year_span"
+    in:
+      date1: "2022-01-01"
+      date2: "2022-07-01"
+  - name: "seasonal_span"
+    in:
+      date1: "2023-03-20"
+      date2: "2023-06-20"
+  - name: "summer_to_winter"
+    in:
+      date1: "2022-06-21"
+      date2: "2022-12-21"
+  - name: "leap_year_before_february"
+    in:
+      date1: "2020-01-31"
+      date2: "2020-02-29"
+  - name: "leap_year_after_february"
+    in:
+      date1: "2020-03-01"
+      date2: "2021-03-01"
+  - name: "four_year_interval_including_leap"
+    in:
+      date1: "2016-01-01"
+      date2: "2020-01-01"
+  - name: "leap_day_anniversary"
+    in:
+      date1: "2020-02-29"
+      date2: "2024-02-29"
+  - name: "multiple_leap_years"
+    in:
+      date1: "1996-06-15"
+      date2: "2004-06-15"
+  - name: "early_range_cross_month"
+    in:
+      date1: "1971-02-01"
+      date2: "1971-03-01"
+  - name: "late_range_cross_year"
+    in:
+      date1: "2099-12-30"
+      date2: "2100-01-02"
+  - name: "millennium_boundary"
+    in:
+      date1: "1999-12-31"
+      date2: "2000-01-01"
+  - name: "century_boundary_reverse"
+    in:
+      date1: "2001-01-01"
+      date2: "2000-12-31"
+  - name: "ordinary_february_month_span"
+    in:
+      date1: "2023-02-01"
+      date2: "2023-03-01"
+  - name: "leap_february_month_span"
+    in:
+      date1: "2024-02-01"
+      date2: "2024-03-01"
+  - name: "long_irregular_span"
+    in:
+      date1: "1987-07-14"
+      date2: "2053-11-26"

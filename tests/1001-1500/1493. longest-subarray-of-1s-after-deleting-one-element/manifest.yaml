@@ -1,0 +1,269 @@
+entry:
+  id: 1493
+  title: "longest-subarray-of-1s-after-deleting-one-element"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().longestSubarray({nums})"
+    rust: "Solution::longest_subarray({nums})"
+    python3: "Solution().longestSubarray({nums})"
+    python2: "Solution().longestSubarray({nums})"
+    ruby: "longest_subarray({nums})"
+    java: "new Solution().longestSubarray({nums})"
+    csharp: "new Solution().LongestSubarray({nums})"
+    kotlin: "Solution().longestSubarray({nums})"
+    go: "longestSubarray({nums})"
+    dart: "Solution().longestSubarray({nums})"
+    swift: "Solution().longestSubarray({nums})"
+    typescript: "longestSubarray({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().longestSubarray(nums, {result})"
+    checker: |
+      class Checker:
+          def longestSubarray(self, nums, result):
+              runs = []
+              index = 0
+              while index < len(nums):
+                  if nums[index] == 1:
+                      start = index
+                      while index < len(nums) and nums[index] == 1:
+                          index += 1
+                      runs.append((start, index - start))
+                  else:
+                      index += 1
+
+              if not runs:
+                  expected = 0
+              elif len(runs) == 1 and runs[0][0] == 0 and runs[0][1] == len(nums):
+                  expected = len(nums) - 1
+              else:
+                  expected = max(length for _, length in runs)
+                  for (left_start, left_length), (right_start, right_length) in zip(runs, runs[1:]):
+                      if right_start == left_start + left_length + 1:
+                          expected = max(expected, left_length + right_length)
+              return result == expected
+
+seed: 1493
+
+tests:
+  - name: "example-one"
+    in:
+      nums: [1, 1, 0, 1]
+    out: 3
+  - name: "example-two"
+    in:
+      nums: [0, 1, 1, 1, 0, 1, 1, 0, 1]
+    out: 5
+  - name: "example-three"
+    in:
+      nums: [1, 1, 1]
+    out: 2
+  - name: "single-one"
+    in:
+      nums: [1]
+  - name: "single-zero"
+    in:
+      nums: [0]
+  - name: "two-ones"
+    in:
+      nums: [1, 1]
+  - name: "two-zeros"
+    in:
+      nums: [0, 0]
+  - name: "one-one-one-zero"
+    in:
+      nums: [1, 1, 1, 0]
+  - name: "zero-one-one-one"
+    in:
+      nums: [0, 1, 1, 1]
+  - name: "zero-between-runs"
+    in:
+      nums: [1, 1, 0, 1, 1]
+  - name: "two-zeros-between"
+    in:
+      nums: [1, 1, 0, 0, 1, 1]
+  - name: "all-zeros"
+    in:
+      nums: [0, 0, 0, 0, 0]
+  - name: "all-ones-five"
+    in:
+      nums: [1, 1, 1, 1, 1]
+  - name: "alternating-six"
+    in:
+      nums: [1, 0, 1, 0, 1, 0]
+  - name: "alternating-start-zero"
+    in:
+      nums: [0, 1, 0, 1, 0, 1, 0]
+  - name: "long-left-run"
+    in:
+      nums: [1, 1, 1, 1, 0, 1]
+  - name: "long-right-run"
+    in:
+      nums: [1, 0, 1, 1, 1, 1]
+  - name: "middle-run-wins"
+    in:
+      nums: [0, 1, 1, 0, 1, 1, 1, 0]
+  - name: "equal-runs"
+    in:
+      nums: [1, 1, 0, 1, 1, 0, 1, 1]
+  - name: "single-zero-long"
+    in:
+      nums: [1, 1, 1, 1, 1, 0, 1, 1, 1]
+  - name: "zeros-at-ends"
+    in:
+      nums: [0, 1, 1, 1, 1, 0]
+  - name: "short-runs"
+    in:
+      nums: [1, 0, 1, 1, 0, 1, 1, 1, 0, 1]
+  - name: "mostly-ones"
+    in:
+      nums: [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1]
+  - name: "mostly-zeros"
+    in:
+      nums: [0, 0, 1, 0, 0, 1, 0, 0, 0]
+  - name: "nine-alternating"
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1, 0, 1]
+  - name: "ten-ones-then-zero"
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+  - name: "zero-then-ten-ones"
+    in:
+      nums: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: "two-long-runs"
+    in:
+      nums: [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0]
+  - name: "late-single-zero"
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 0]
+  - name: "early-single-zero"
+    in:
+      nums: [0, 1, 1, 1, 1, 1, 1, 1]
+  - name: "twenty-pattern"
+    in:
+      nums: [1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1]
+  - name: "thirty-pattern"
+    in:
+      nums:
+        [
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+        ]
+  - name: "large-generated-binary"
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "large-generated-unary"
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "single-zero-in-balanced-runs"
+    in:
+      nums: [1, 1, 1, 0, 1, 1, 1, 1]
+  - name: "two-zero-gap-with-long-runs"
+    in:
+      nums: [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1]
+  - name: "isolated-one-among-zeros"
+    in:
+      nums: [0, 0, 0, 1, 0, 0, 0]
+  - name: "generated-small-binary"
+    seed: 14931
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated-medium-binary"
+    seed: 14932
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 500
+          max: 2000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated-one-heavy-binary"
+    seed: 14933
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"

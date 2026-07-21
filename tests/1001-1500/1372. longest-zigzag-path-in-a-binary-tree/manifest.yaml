@@ -1,0 +1,298 @@
+entry:
+  id: 1372
+  title: "longest-zigzag-path-in-a-binary-tree"
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().longestZigZag({root})"
+    rust: "Solution::longest_zig_zag({root})"
+    python3: "Solution().longestZigZag({root})"
+    python2: "Solution().longestZigZag({root})"
+    ruby: "longest_zig_zag({root})"
+    java: "new Solution().longestZigZag({root})"
+    csharp: "new Solution().LongestZigZag({root})"
+    kotlin: "Solution().longestZigZag({root})"
+    go: "longestZigZag({root})"
+    dart: "Solution().longestZigZag({root})"
+    swift: "Solution().longestZigZag({root})"
+    typescript: "longestZigZag({root})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 400
+
+oracle:
+  python3:
+    call: "Checker().longestZigZag(root, {result})"
+    checker: |
+      class Checker:
+          def longestZigZag(self, root, result):
+              if not isinstance(result, int) or isinstance(result, bool) or result < 0:
+                  return False
+              if isinstance(root, list):
+                  class Node:
+                      def __init__(self):
+                          self.left = None
+                          self.right = None
+                  if not root or root[0] is None:
+                      return result == 0
+                  root_node = Node()
+                  queue = [root_node]
+                  index = 1
+                  for node in queue:
+                      if index < len(root) and root[index] is not None:
+                          node.left = Node()
+                          queue.append(node.left)
+                      index += 1
+                      if index < len(root) and root[index] is not None:
+                          node.right = Node()
+                          queue.append(node.right)
+                      index += 1
+                  root = root_node
+              if root is None:
+                  return result == 0
+              # For every node, compute the best path that starts with each direction.
+              order = []
+              stack = [root]
+              while stack:
+                  node = stack.pop()
+                  order.append(node)
+                  if node.left is not None:
+                      stack.append(node.left)
+                  if node.right is not None:
+                      stack.append(node.right)
+              starts_left = {}
+              starts_right = {}
+              answer = 0
+              for node in reversed(order):
+                  left = 1 + starts_right[node.left] if node.left is not None else 0
+                  right = 1 + starts_left[node.right] if node.right is not None else 0
+                  starts_left[node] = left
+                  starts_right[node] = right
+                  answer = max(answer, left, right)
+              return result == answer
+
+seed: 1372001
+
+tests:
+  - name: "example_1"
+    in:
+      root: [1, null, 1, 1, 1, null, null, 1, 1, null, 1, null, null, null, 1]
+  - name: "example_2"
+    in:
+      root: [1, 1, 1, null, 1, null, null, 1, 1, null, 1]
+  - name: "single_node"
+    in:
+      root: [1]
+  - name: "left_child_only"
+    in:
+      root: [7, 6]
+  - name: "right_child_only"
+    in:
+      root: [7, null, 6]
+  - name: "two_children"
+    in:
+      root: [1, 2, 3]
+  - name: "left_right_chain"
+    in:
+      root: [1, 2, null, null, 3]
+  - name: "right_left_chain"
+    in:
+      root: [1, null, 2, 3]
+  - name: "alternating_left_right"
+    in:
+      root: [1, 2, null, null, 3, 4]
+  - name: "alternating_right_left"
+    in:
+      root: [1, null, 2, 3, null, null, 4]
+  - name: "straight_left_chain"
+    in:
+      root: [1, 2, null, 3, null, 4, null, 5]
+  - name: "straight_right_chain"
+    in:
+      root: [1, null, 2, null, 3, null, 4, null, 5]
+  - name: "long_zigzag_left_start"
+    in:
+      root: [1, 2, null, null, 3, 4, null, null, 5, 6]
+  - name: "long_zigzag_right_start"
+    in:
+      root: [1, null, 2, 3, null, null, 4, 5]
+  - name: "balanced_three_levels"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+  - name: "balanced_four_levels"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+  - name: "left_branch_with_right_spur"
+    in:
+      root: [9, 8, null, 7, null, null, 6]
+  - name: "right_branch_with_left_spur"
+    in:
+      root: [9, null, 8, null, 7, 6]
+  - name: "competing_branches"
+    in:
+      root: [1, 2, 3, 4, null, null, 5, null, 6, 7]
+  - name: "deep_left_subtree"
+    in:
+      root: [1, 2, 3, 4, null, null, 5, 6, null, null, 7, null, 8]
+  - name: "deep_right_subtree"
+    in:
+      root: [1, 2, 3, null, 4, null, 5, null, 6, 7]
+  - name: "all_equal_values"
+    in:
+      root: [42, 42, 42, null, 42, 42, null, 42]
+  - name: "value_boundaries"
+    in:
+      root: [100, 1, 100, 1, null, null, 100, null, 1]
+  - name: "single_leaf_on_each_side"
+    in:
+      root: [5, 4, 6, null, 8, 7, null]
+  - name: "zigzag_with_reset"
+    in:
+      root: [1, 2, 3, null, 4, 5, null, null, 6, null, 7]
+  - name: "wide_sparse_tree"
+    in:
+      root: [1, 2, 3, 4, null, null, 5, null, 6, null, null, 7]
+  - name: "right_heavy_sparse"
+    in:
+      root: [1, null, 2, 3, 4, null, null, null, 5]
+  - name: "short_alternation"
+    in:
+      root: [1, 2, null, null, 3]
+  - name: "two_level_complete"
+    in:
+      root: [8, 9, 10, 11, 12, 13, 14]
+  - name: "three_level_sparse_left"
+    in:
+      root: [1, 2, null, 3, null, 4, null, 5, null, 6]
+  - name: "three_level_sparse_right"
+    in:
+      root: [1, null, 2, null, 3, null, 4, null, 5]
+  - name: "generated_small_complete"
+    seed: 137201
+    in:
+      root:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 31
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_medium_complete"
+    seed: 137202
+    in:
+      root:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 32
+          max: 127
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_large_complete"
+    seed: 137203
+    in:
+      root:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 450
+          max: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_large_values"
+    seed: 137204
+    in:
+      root:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 1500
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_maximum_depth"
+    seed: 137205
+    in:
+      root:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 4000
+          max: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_near_limit_complete"
+    seed: 137206
+    in:
+      root:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_near_limit_value_bounds"
+    seed: 137207
+    in:
+      root:
+        gen: "array"
+        len: 49999
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "complete_tree_with_mixed_extremes"
+    in:
+      root:
+        [
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+          100,
+          1,
+        ]
+  - name: "long_alternating_core_with_side_leaves"
+    in:
+      root: [50, 40, 60, null, 41, 61, null, 42, 39, null, 62, null, 43, 38]

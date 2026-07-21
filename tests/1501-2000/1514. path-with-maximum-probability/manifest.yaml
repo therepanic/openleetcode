@@ -1,0 +1,600 @@
+entry:
+  id: 1514
+  title: "path-with-maximum-probability"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    succProb:
+      type: array
+      items:
+        type: double
+    start_node:
+      type: int
+    end_node:
+      type: int
+  call:
+    cpp: "Solution().maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    rust: "Solution::max_probability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    python3: "Solution().maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    python2: "Solution().maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    ruby: "max_probability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    java: "new Solution().maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    csharp: "new Solution().MaxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    kotlin: "Solution().maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    go: "maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    dart: "Solution().maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    swift: "Solution().maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+    typescript: "maxProbability({n}, {edges}, {succProb}, {start_node}, {end_node})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maxProbability(n, edges, succProb, start_node, end_node, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def maxProbability(self, n, edges, probs, start, end, result):
+              if not isinstance(result, (int, float)):
+                  return False
+              graph = [[] for _ in range(n)]
+              for (u, v), p in zip(edges, probs):
+                  graph[u].append((v, p))
+                  graph[v].append((u, p))
+              best = [0.0] * n
+              best[start] = 1.0
+              queue = [(-1.0, start)]
+              while queue:
+                  neg_prob, node = heapq.heappop(queue)
+                  probability = -neg_prob
+                  if probability < best[node]:
+                      continue
+                  if node == end:
+                      break
+                  for neighbor, edge_prob in graph[node]:
+                      candidate = probability * edge_prob
+                      if candidate > best[neighbor]:
+                          best[neighbor] = candidate
+                          heapq.heappush(queue, (-candidate, neighbor))
+              return abs(float(result) - best[end]) <= 1e-5
+
+seed: 1514
+
+tests:
+  - name: "example indirect beats direct"
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [0, 2]
+      succProb: [0.5, 0.5, 0.2]
+      start_node: 0
+      end_node: 2
+  - name: "example direct wins"
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [0, 2]
+      succProb: [0.5, 0.5, 0.3]
+      start_node: 0
+      end_node: 2
+  - name: "example disconnected"
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+      succProb: [0.5]
+      start_node: 0
+      end_node: 2
+  - name: "single edge"
+    in:
+      n: 2
+      edges:
+        - [0, 1]
+      succProb: [0.73]
+      start_node: 0
+      end_node: 1
+  - name: "reverse single edge"
+    in:
+      n: 2
+      edges:
+        - [0, 1]
+      succProb: [0.91]
+      start_node: 1
+      end_node: 0
+  - name: "certain edge"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      succProb: [1.0, 1.0, 1.0]
+      start_node: 0
+      end_node: 3
+  - name: "zero edge blocks route"
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+      succProb: [0.0, 0.8]
+      start_node: 0
+      end_node: 2
+  - name: "zero direct avoided"
+    in:
+      n: 4
+      edges:
+        - [0, 3]
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      succProb: [0.0, 0.9, 0.9, 0.9]
+      start_node: 0
+      end_node: 3
+  - name: "three hop product"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      succProb: [0.8, 0.7, 0.6]
+      start_node: 0
+      end_node: 3
+  - name: "longer path beats shortcut"
+    in:
+      n: 5
+      edges:
+        - [0, 4]
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      succProb: [0.1, 0.95, 0.95, 0.95, 0.95]
+      start_node: 0
+      end_node: 4
+  - name: "cycle with improving route"
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [3, 4]
+      succProb: [0.6, 0.9, 0.8, 0.7, 0.9]
+      start_node: 0
+      end_node: 4
+  - name: "isolated target"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+      succProb: [0.9, 0.8, 1.0]
+      start_node: 0
+      end_node: 5
+  - name: "multiple branches"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 5]
+        - [0, 2]
+        - [2, 3]
+        - [3, 5]
+        - [0, 4]
+        - [4, 5]
+      succProb: [0.8, 0.8, 0.95, 0.95, 0.95, 0.5, 0.99]
+      start_node: 0
+      end_node: 5
+  - name: "tiny probabilities"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      succProb: [0.0001, 0.0002, 0.0003]
+      start_node: 0
+      end_node: 3
+  - name: "dense four nodes"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+      succProb: [0.4, 0.8, 0.2, 0.9, 0.6, 0.7]
+      start_node: 0
+      end_node: 3
+  - name: "reverse dense traversal"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [0, 3]
+      succProb: [0.7, 0.8, 0.9, 0.1]
+      start_node: 3
+      end_node: 0
+  - name: "equal competing paths"
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 4]
+        - [0, 2]
+        - [2, 4]
+        - [0, 3]
+        - [3, 4]
+      succProb: [0.8, 0.8, 0.8, 0.8, 0.5, 0.9]
+      start_node: 0
+      end_node: 4
+  - name: "zero probability isolated component"
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      succProb: [0.0, 0.0, 0.0, 0.0]
+      start_node: 0
+      end_node: 4
+  - name: "six hop chain"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+      succProb: [0.99, 0.98, 0.97, 0.96, 0.95, 0.94]
+      start_node: 0
+      end_node: 6
+  - name: "shortcut among chain"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [0, 6]
+      succProb: [0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.5]
+      start_node: 0
+      end_node: 6
+  - name: "start at high index"
+    in:
+      n: 8
+      edges:
+        - [7, 0]
+        - [0, 3]
+        - [3, 6]
+        - [7, 5]
+        - [5, 6]
+      succProb: [0.6, 0.8, 0.9, 0.9, 0.9]
+      start_node: 7
+      end_node: 6
+  - name: "unreachable with many edges"
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      succProb: [0.8, 0.8, 0.8, 0.9, 0.9, 0.9]
+      start_node: 0
+      end_node: 7
+  - name: "direct probability one"
+    in:
+      n: 5
+      edges:
+        - [0, 4]
+        - [0, 1]
+        - [1, 4]
+      succProb: [1.0, 0.9, 0.9]
+      start_node: 0
+      end_node: 4
+  - name: "fractional branch"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 5]
+        - [0, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      succProb: [0.73, 0.64, 0.99, 0.99, 0.99, 0.99]
+      start_node: 0
+      end_node: 5
+  - name: "late edge order"
+    in:
+      n: 6
+      edges:
+        - [4, 5]
+        - [3, 4]
+        - [2, 3]
+        - [1, 2]
+        - [0, 1]
+      succProb: [0.9, 0.9, 0.9, 0.9, 0.9]
+      start_node: 0
+      end_node: 5
+  - name: "mixed zero and direct"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 5]
+        - [0, 2]
+        - [2, 3]
+        - [3, 5]
+        - [0, 5]
+      succProb: [0.0, 0.9, 0.8, 0.8, 0.8, 0.01]
+      start_node: 0
+      end_node: 5
+  - name: "nine node ladder"
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [0, 4]
+        - [4, 8]
+      succProb: [0.95, 0.95, 0.95, 0.95, 0.95, 0.95, 0.95, 0.95, 0.8, 0.8]
+      start_node: 0
+      end_node: 8
+  - name: "near underflow chain"
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      succProb: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
+      start_node: 0
+      end_node: 7
+  - name: "ten node alternative"
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 9]
+        - [0, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+      succProb: [0.8, 0.8, 0.8, 0.8, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99]
+      start_node: 0
+      end_node: 9
+  - name: "parallel zero branch"
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 4]
+        - [0, 2]
+        - [2, 4]
+        - [0, 3]
+        - [3, 4]
+      succProb: [0.0, 0.0, 0.5, 0.5, 0.7, 0.7]
+      start_node: 0
+      end_node: 4
+  - name: "reverse chain"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      succProb: [0.91, 0.82, 0.73, 0.64, 0.55]
+      start_node: 5
+      end_node: 0
+  - name: "dense six node"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [2, 4]
+        - [3, 5]
+        - [4, 5]
+        - [1, 5]
+        - [2, 3]
+      succProb: [0.4, 0.7, 0.6, 0.9, 0.8, 0.9, 0.9, 0.5, 0.95]
+      start_node: 0
+      end_node: 5
+  - name: "all weak edges"
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [0, 4]
+      succProb: [0.2, 0.2, 0.2, 0.2, 0.19]
+      start_node: 0
+      end_node: 4
+  - name: "large sparse chain"
+    in:
+      n: 20
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+      succProb:
+        [
+          0.99,
+          0.98,
+          0.97,
+          0.96,
+          0.95,
+          0.94,
+          0.93,
+          0.92,
+          0.91,
+          0.9,
+          0.89,
+          0.88,
+          0.87,
+          0.86,
+          0.85,
+          0.84,
+          0.83,
+          0.82,
+          0.81,
+        ]
+      start_node: 0
+      end_node: 19
+  - name: "large graph disconnected tail"
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [0, 5]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+      succProb: [0.91, 0.91, 0.91, 0.91, 0.91, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0]
+      start_node: 0
+      end_node: 5
+  - name: "no edges"
+    in:
+      n: 5
+      edges: []
+      succProb: []
+      start_node: 1
+      end_node: 4
+  - name: "reverse branch selection"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [1, 6]
+        - [0, 2]
+        - [2, 3]
+        - [3, 6]
+        - [0, 4]
+        - [4, 5]
+        - [5, 6]
+      succProb: [0.61, 0.61, 0.95, 0.95, 0.95, 0.95, 0.95, 0.95]
+      start_node: 6
+      end_node: 0
+  - name: "many zero edges before valid route"
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 7]
+        - [0, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      succProb: [0.0, 0.0, 0.0, 0.88, 0.88, 0.88, 0.88, 0.88]
+      start_node: 0
+      end_node: 7
+  - name: "high precision competing routes"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 5]
+        - [0, 2]
+        - [2, 3]
+        - [3, 5]
+        - [0, 4]
+        - [4, 5]
+      succProb: [0.99999, 0.99998, 0.999999, 0.999999, 0.999999, 0.9999, 0.9999]
+      start_node: 0
+      end_node: 5
+  - name: "dense seven node late optimum"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 6]
+        - [1, 5]
+        - [2, 3]
+        - [0, 6]
+      succProb: [0.7, 0.8, 0.6, 0.8, 0.95, 0.95, 0.95, 0.9, 0.9, 0.9, 0.1]
+      start_node: 0
+      end_node: 6

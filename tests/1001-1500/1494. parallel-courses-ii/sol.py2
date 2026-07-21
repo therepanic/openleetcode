@@ -1,0 +1,41 @@
+class Solution(object):
+    def minNumberOfSemesters(self, n, relations, k):
+        """
+        :type n: int
+        :type relations: List[List[int]]
+        :type k: int
+        :rtype: int
+        """
+        from collections import defaultdict
+        from itertools import combinations
+        
+        self.n = n
+        self.k = k
+        in_degrees = [0] * n
+        self.graph = defaultdict(list)
+        for prev_course, next_course in relations:
+            in_degrees[next_course - 1] += 1
+            self.graph[prev_course - 1].append(next_course - 1)
+        
+        memo = {}
+        def recurse(mask, in_deg_tuple):
+            if mask == 0:
+                return 0
+            key = (mask, in_deg_tuple)
+            if key in memo:
+                return memo[key]
+            in_deg_list = list(in_deg_tuple)
+            nodes = [i for i in range(n) if mask & (1 << i) and in_deg_list[i] == 0]
+            ans = float('inf')
+            for k_nodes in combinations(nodes, min(k, len(nodes))):
+                new_mask = mask
+                new_in_deg = list(in_deg_list)
+                for node in k_nodes:
+                    new_mask ^= 1 << node
+                    for child in self.graph[node]:
+                        new_in_deg[child] -= 1
+                ans = min(ans, 1 + recurse(new_mask, tuple(new_in_deg)))
+            memo[key] = ans
+            return ans
+        
+        return recurse((1 << n) - 1, tuple(in_degrees))

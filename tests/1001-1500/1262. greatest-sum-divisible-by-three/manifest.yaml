@@ -1,0 +1,269 @@
+entry:
+  id: 1262
+  title: "greatest-sum-divisible-by-three"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxSumDivThree({nums})"
+    rust: "Solution::max_sum_div_three({nums})"
+    python3: "Solution().maxSumDivThree({nums})"
+    python2: "Solution().maxSumDivThree({nums})"
+    ruby: "max_sum_div_three({nums})"
+    java: "new Solution().maxSumDivThree({nums})"
+    csharp: "new Solution().MaxSumDivThree({nums})"
+    kotlin: "Solution().maxSumDivThree({nums})"
+    go: "maxSumDivThree({nums})"
+    dart: "Solution().maxSumDivThree({nums})"
+    swift: "Solution().maxSumDivThree({nums})"
+    typescript: "maxSumDivThree({nums})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().maxSumDivThree(nums, {result})"
+    checker: |
+      class Checker:
+          def maxSumDivThree(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              total = sum(nums)
+              remainder_one = sorted(x for x in nums if x % 3 == 1)
+              remainder_two = sorted(x for x in nums if x % 3 == 2)
+              remove = 0
+              if total % 3 == 1:
+                  choices = []
+                  if remainder_one:
+                      choices.append(remainder_one[0])
+                  if len(remainder_two) >= 2:
+                      choices.append(remainder_two[0] + remainder_two[1])
+                  remove = min(choices) if choices else total
+              elif total % 3 == 2:
+                  choices = []
+                  if remainder_two:
+                      choices.append(remainder_two[0])
+                  if len(remainder_one) >= 2:
+                      choices.append(remainder_one[0] + remainder_one[1])
+                  remove = min(choices) if choices else total
+              return result == total - remove
+seed: 1262
+tests:
+  - name: "example_one"
+    in:
+      nums: [3, 6, 5, 1, 8]
+    out: 18
+  - name: "example_two"
+    in:
+      nums: [4]
+    out: 0
+  - name: "example_three"
+    in:
+      nums: [1, 2, 3, 4, 4]
+    out: 12
+  - name: "single_divisible"
+    in:
+      nums: [3]
+    out: 3
+  - name: "single_remainder_one"
+    in:
+      nums: [1]
+    out: 0
+  - name: "single_remainder_two"
+    in:
+      nums: [2]
+    out: 0
+  - name: "all_remainder_one_divisible_total"
+    in:
+      nums: [1, 4, 7]
+    out: 12
+  - name: "all_remainder_two_divisible_total"
+    in:
+      nums: [2, 5, 8]
+    out: 15
+  - name: "two_complementary_remainders"
+    in:
+      nums: [1, 2]
+    out: 3
+  - name: "remove_one_remainder_one"
+    in:
+      nums: [3, 6, 4]
+    out: 9
+  - name: "remove_two_remainder_two"
+    in:
+      nums: [3, 2, 5]
+    out: 3
+  - name: "remove_one_remainder_two"
+    in:
+      nums: [6, 8]
+    out: 6
+  - name: "remove_two_remainder_one"
+    in:
+      nums: [6, 1, 4]
+    out: 6
+  - name: "choose_cheaper_single_removal"
+    in:
+      nums: [10000, 1, 2]
+    out: 10002
+  - name: "all_elements_already_optimal"
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 21
+  - name: "maximum_value_triplet"
+    in:
+      nums: [10000, 10000, 10000]
+    out: 30000
+  - name: "maximum_value_with_divisible_anchor"
+    in:
+      nums: [9999, 10000]
+    out: 9999
+  - name: "maximum_value_mixed_remainders"
+    in:
+      nums: [9998, 9998, 10000]
+    out: 19998
+  - name: "near_maximum_remove_smallest_remainder_one"
+    in:
+      nums: [9997, 9998, 9999, 10000]
+    out: 29997
+  - name: "prefer_two_small_remainder_ones"
+    in:
+      nums: [8, 1, 1, 1]
+    out: 9
+  - name: "only_single_remainder_two_available"
+    in:
+      nums: [2, 2, 1]
+    out: 3
+  - name: "prefer_single_remainder_one"
+    in:
+      nums: [2, 2, 2, 1]
+    out: 6
+  - name: "balanced_duplicate_pairs"
+    in:
+      nums: [4, 4, 2, 2]
+    out: 12
+  - name: "five_remainder_ones"
+    in:
+      nums: [7, 10, 13, 16, 19]
+    out: 48
+  - name: "four_remainder_twos"
+    in:
+      nums: [5, 8, 11, 14]
+    out: 33
+  - name: "all_multiples_of_three"
+    in:
+      nums: [3, 6, 9, 12, 15]
+    out: 45
+  - name: "equal_remainder_groups"
+    in:
+      nums: [1, 1, 1, 2, 2, 2]
+    out: 9
+  - name: "near_maximum_consecutive_values"
+    in:
+      nums: [9991, 9992, 9993, 9994, 9995, 9996]
+    out: 59961
+  - name: "extreme_mixed_values"
+    in:
+      nums: [1, 10000, 9999, 9998, 2]
+    out: 30000
+  - name: "ascending_first_ten"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: 54
+  - name: "descending_first_ten"
+    in:
+      nums: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: 54
+  - name: "mixed_choice_with_all_remainders"
+    in:
+      nums: [4, 1, 7, 2, 8]
+    out: 21
+  - name: "large_divisible_sequence"
+    in:
+      nums: [100, 200, 300, 400, 500, 600]
+    out: 2100
+  - name: "large_values_with_unit_removal"
+    in:
+      nums: [9999, 1, 1, 1, 9998, 2]
+    out: 20001
+  - name: "stress_uniform_full_length"
+    seed: 126201
+    in:
+      nums:
+        gen: "array"
+        len: 40000
+        distinct: false
+        sorted: false
+        elemType: "int"
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+  - name: "stress_small_values_full_length"
+    seed: 126202
+    in:
+      nums:
+        gen: "array"
+        len: 40000
+        distinct: false
+        sorted: false
+        elemType: "int"
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+  - name: "stress_high_values_full_length"
+    seed: 126203
+    in:
+      nums:
+        gen: "array"
+        len: 40000
+        distinct: false
+        sorted: false
+        elemType: "int"
+        of:
+          gen: "int"
+          min: 9991
+          max: 10000
+  - name: "stress_midrange_full_length"
+    seed: 126204
+    in:
+      nums:
+        gen: "array"
+        len: 40000
+        distinct: false
+        sorted: false
+        elemType: "int"
+        of:
+          gen: "int"
+          min: 3333
+          max: 6666
+  - name: "stress_odd_span_full_length"
+    seed: 126205
+    in:
+      nums:
+        gen: "array"
+        len: 40000
+        distinct: false
+        sorted: false
+        elemType: "int"
+        of:
+          gen: "int"
+          min: 17
+          max: 9973
+  - name: "stress_broad_full_length"
+    seed: 126206
+    in:
+      nums:
+        gen: "array"
+        len: 40000
+        distinct: false
+        sorted: false
+        elemType: "int"
+        of:
+          gen: "int"
+          min: 2
+          max: 9999

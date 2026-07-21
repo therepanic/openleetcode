@@ -1,0 +1,471 @@
+entry:
+  id: 1389
+  title: "create-target-array-in-the-given-order"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    index:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().createTargetArray({nums}, {index})"
+    rust: "Solution::create_target_array({nums}, {index})"
+    python3: "Solution().createTargetArray({nums}, {index})"
+    python2: "Solution().createTargetArray({nums}, {index})"
+    ruby: "create_target_array({nums}, {index})"
+    java: "new Solution().createTargetArray({nums}, {index})"
+    csharp: "new Solution().CreateTargetArray({nums}, {index})"
+    kotlin: "Solution().createTargetArray({nums}, {index})"
+    go: "createTargetArray({nums}, {index})"
+    dart: "Solution().createTargetArray({nums}, {index})"
+    swift: "Solution().createTargetArray({nums}, {index})"
+    typescript: "createTargetArray({nums}, {index})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().createTargetArray(nums, index, {result})"
+    checker: |
+      class Checker:
+          def createTargetArray(self, nums, index, result):
+              if not isinstance(nums, list) or not isinstance(index, list):
+                  return False
+              if not 1 <= len(nums) <= 100 or len(nums) != len(index):
+                  return False
+              for i, (value, position) in enumerate(zip(nums, index)):
+                  if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 100:
+                      return False
+                  if isinstance(position, bool) or not isinstance(position, int) or not 0 <= position <= i:
+                      return False
+              if not isinstance(result, list) or len(result) != len(nums):
+                  return False
+              if any(isinstance(value, bool) or not isinstance(value, int) for value in result):
+                  return False
+              remaining = list(result)
+              for i in range(len(nums) - 1, -1, -1):
+                  position = index[i]
+                  if position >= len(remaining) or remaining[position] != nums[i]:
+                      return False
+                  remaining.pop(position)
+              return not remaining
+seed: 1389
+tests:
+  - name: "example_one"
+    in:
+      nums: [0, 1, 2, 3, 4]
+      index: [0, 1, 2, 2, 1]
+  - name: "example_two"
+    in:
+      nums: [1, 2, 3, 4, 0]
+      index: [0, 1, 2, 3, 0]
+  - name: "single_element"
+    in:
+      nums: [1]
+      index: [0]
+  - name: "single_zero"
+    in:
+      nums: [0]
+      index: [0]
+  - name: "two_front"
+    in:
+      nums: [1, 2]
+      index: [0, 0]
+  - name: "two_back"
+    in:
+      nums: [1, 2]
+      index: [0, 1]
+  - name: "three_front"
+    in:
+      nums: [1, 2, 3]
+      index: [0, 0, 0]
+  - name: "three_back"
+    in:
+      nums: [1, 2, 3]
+      index: [0, 1, 2]
+  - name: "three_middle"
+    in:
+      nums: [9, 4, 7]
+      index: [0, 1, 1]
+  - name: "duplicate_values"
+    in:
+      nums: [5, 5, 5, 5, 5]
+      index: [0, 1, 0, 2, 1]
+  - name: "all_zero_values"
+    in:
+      nums: [0, 0, 0, 0, 0]
+      index: [0, 0, 0, 0, 0]
+  - name: "maximum_values"
+    in:
+      nums: [100, 99, 98, 97]
+      index: [0, 1, 0, 2]
+  - name: "alternating_extremes"
+    in:
+      nums: [0, 100, 0, 100, 0, 100]
+      index: [0, 0, 2, 1, 3, 0]
+  - name: "front_inserts"
+    in:
+      nums: [4, 3, 2, 1, 0]
+      index: [0, 0, 0, 0, 0]
+  - name: "back_inserts"
+    in:
+      nums: [0, 1, 2, 3, 4, 5]
+      index: [0, 1, 2, 3, 4, 5]
+  - name: "mixed_six"
+    in:
+      nums: [10, 20, 30, 40, 50, 60]
+      index: [0, 1, 1, 3, 2, 4]
+  - name: "repeated_positions"
+    in:
+      nums: [5, 6, 7, 8, 9, 10]
+      index: [0, 0, 1, 1, 2, 2]
+  - name: "alternating_positions"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7]
+      index: [0, 1, 0, 1, 0, 1, 0]
+  - name: "nested_middle"
+    in:
+      nums: [11, 22, 33, 44, 55, 66, 77]
+      index: [0, 1, 1, 2, 2, 3, 3]
+  - name: "reverse_values_mixed"
+    in:
+      nums: [7, 6, 5, 4, 3, 2, 1]
+      index: [0, 1, 0, 2, 1, 3, 2]
+  - name: "eight_front"
+    in:
+      nums: [8, 7, 6, 5, 4, 3, 2, 1]
+      index: [0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "eight_back"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8]
+      index: [0, 1, 2, 3, 4, 5, 6, 7]
+  - name: "eight_balanced"
+    in:
+      nums: [80, 10, 70, 20, 60, 30, 50, 40]
+      index: [0, 1, 0, 2, 1, 3, 2, 4]
+  - name: "nine_duplicates"
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 4, 5]
+      index: [0, 1, 0, 2, 1, 3, 2, 4, 3]
+  - name: "ten_pattern"
+    in:
+      nums: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      index: [0, 1, 0, 2, 1, 3, 2, 4, 3, 5]
+  - name: "ten_maximum"
+    in:
+      nums: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+      index: [0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
+  - name: "eleven_staircase"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      index: [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5]
+  - name: "twelve_back"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      index: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+  - name: "twelve_front"
+    in:
+      nums: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      index: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "thirteen_varied"
+    in:
+      nums: [13, 1, 12, 2, 11, 3, 10, 4, 9, 5, 8, 6, 7]
+      index: [0, 1, 1, 2, 0, 3, 2, 4, 3, 5, 4, 6, 5]
+  - name: "fifteen_mixed"
+    in:
+      nums: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      index: [0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6]
+  - name: "twenty_boundary_values"
+    in:
+      nums:
+        [0, 100, 1, 99, 2, 98, 3, 97, 4, 96, 5, 95, 6, 94, 7, 93, 8, 92, 9, 91]
+      index: [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9]
+  - name: "twenty_five_front_loaded"
+    in:
+      nums:
+        [
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+        ]
+      index:
+        [
+          0,
+          0,
+          1,
+          0,
+          2,
+          1,
+          3,
+          2,
+          4,
+          3,
+          5,
+          4,
+          6,
+          5,
+          7,
+          6,
+          8,
+          7,
+          9,
+          8,
+          10,
+          9,
+          11,
+          10,
+          12,
+        ]
+  - name: "thirty_all_same"
+    in:
+      nums:
+        [
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+        ]
+      index:
+        [
+          0,
+          1,
+          0,
+          2,
+          1,
+          3,
+          2,
+          4,
+          3,
+          5,
+          4,
+          6,
+          5,
+          7,
+          6,
+          8,
+          7,
+          9,
+          8,
+          10,
+          9,
+          11,
+          10,
+          12,
+          11,
+          13,
+          12,
+          14,
+          13,
+          15,
+        ]
+  - name: "thirty_five_mixed"
+    in:
+      nums:
+        [
+          0,
+          100,
+          50,
+          25,
+          75,
+          1,
+          99,
+          49,
+          51,
+          2,
+          98,
+          48,
+          52,
+          3,
+          97,
+          47,
+          53,
+          4,
+          96,
+          46,
+          54,
+          5,
+          95,
+          45,
+          55,
+          6,
+          94,
+          44,
+          56,
+          7,
+          93,
+          43,
+          57,
+          8,
+          92,
+        ]
+      index:
+        [
+          0,
+          0,
+          1,
+          1,
+          2,
+          0,
+          3,
+          2,
+          4,
+          1,
+          5,
+          3,
+          6,
+          2,
+          7,
+          4,
+          8,
+          3,
+          9,
+          5,
+          10,
+          4,
+          11,
+          6,
+          12,
+          5,
+          13,
+          7,
+          14,
+          6,
+          15,
+          8,
+          16,
+          7,
+          17,
+        ]
+  - name: "generated_length_one"
+    in:
+      nums:
+        gen: "array"
+        len: 1
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      index:
+        gen: "array"
+        len: 1
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+  - name: "generated_small_front"
+    in:
+      nums:
+        gen: "array"
+        len: 7
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      index:
+        gen: "array"
+        len: 7
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+  - name: "generated_medium_front"
+    in:
+      nums:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      index:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+  - name: "generated_large_front"
+    in:
+      nums:
+        gen: "array"
+        len: 75
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      index:
+        gen: "array"
+        len: 75
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+  - name: "generated_maximum_front"
+    in:
+      nums:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      index:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 0

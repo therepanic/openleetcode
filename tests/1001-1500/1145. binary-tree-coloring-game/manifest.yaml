@@ -1,0 +1,966 @@
+entry:
+  id: 1145
+  title: "binary-tree-coloring-game"
+  params:
+    root:
+      type: tree_node
+    n:
+      type: int
+    x:
+      type: int
+  call:
+    cpp: "Solution().btreeGameWinningMove({root}, {n}, {x})"
+    rust: "Solution::btree_game_winning_move({root}, {n}, {x})"
+    python3: "Solution().btreeGameWinningMove({root}, {n}, {x})"
+    python2: "Solution().btreeGameWinningMove({root}, {n}, {x})"
+    ruby: "btree_game_winning_move({root}, {n}, {x})"
+    java: "new Solution().btreeGameWinningMove({root}, {n}, {x})"
+    csharp: "new Solution().BtreeGameWinningMove({root}, {n}, {x})"
+    kotlin: "Solution().btreeGameWinningMove({root}, {n}, {x})"
+    go: "btreeGameWinningMove({root}, {n}, {x})"
+    dart: "Solution().btreeGameWinningMove({root}, {n}, {x})"
+    swift: "Solution().btreeGameWinningMove({root}, {n}, {x})"
+    typescript: "btreeGameWinningMove({root}, {n}, {x})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().btreeGameWinningMove(root, n, x, {result})"
+    checker: |
+      class Checker:
+          def btreeGameWinningMove(self, root, n, x, result):
+              if type(result) is not bool or not root or root[0] is None:
+                  return False
+              children = {}
+              queue = [root[0]]
+              index = 1
+              while queue:
+                  value = queue.pop(0)
+                  children[value] = []
+                  for _ in range(2):
+                      if index >= len(root):
+                          break
+                      child = root[index]
+                      index += 1
+                      if child is not None:
+                          children[value].append(child)
+                          queue.append(child)
+              if x not in children or len(children) != n:
+                  return False
+              def count(value):
+                  return 1 + sum(count(child) for child in children[value])
+              child_sizes = [count(child) for child in children[x]]
+              parent_size = n - 1 - sum(child_sizes)
+              expected = max(child_sizes + [parent_size]) > n // 2
+              return result is expected
+seed: 1145
+tests:
+  - name: official_second_player_takes_larger_side
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      n: 11
+      x: 3
+    out: true
+  - name: official_three_node_root
+    in:
+      root: [1, 2, 3]
+      n: 3
+      x: 1
+    out: false
+  - name: singleton_has_no_second_choice
+    in:
+      root: [1]
+      n: 1
+      x: 1
+    out: false
+  - name: three_node_left_chain_root
+    in:
+      root: [1, 2, null]
+      n: 3
+      x: 1
+    out: false
+  - name: three_node_left_chain_leaf
+    in:
+      root: [1, 2, null]
+      n: 3
+      x: 2
+    out: true
+  - name: three_node_right_chain_root
+    in:
+      root: [1, null, 2]
+      n: 3
+      x: 1
+    out: false
+  - name: three_node_right_chain_leaf
+    in:
+      root: [1, null, 2]
+      n: 3
+      x: 2
+    out: true
+  - name: five_node_left_chain_root
+    in:
+      root: [1, 2, null, 3, null, 4, null, 5]
+      n: 5
+      x: 1
+    out: true
+  - name: five_node_left_chain_center_split
+    in:
+      root: [1, 2, null, 3, null, 4, null, 5]
+      n: 5
+      x: 3
+    out: false
+  - name: five_node_left_chain_near_leaf
+    in:
+      root: [1, 2, null, 3, null, 4, null, 5]
+      n: 5
+      x: 4
+    out: true
+  - name: seven_node_perfect_root_tie
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      n: 7
+      x: 1
+    out: false
+  - name: seven_node_perfect_internal_parent_region
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      n: 7
+      x: 2
+    out: true
+  - name: five_node_left_heavy_root
+    in:
+      root: [1, 2, 3, 4, 5]
+      n: 5
+      x: 1
+    out: true
+  - name: five_node_left_heavy_balanced_cut
+    in:
+      root: [1, 2, 3, 4, 5]
+      n: 5
+      x: 2
+    out: false
+  - name: five_node_left_heavy_right_leaf
+    in:
+      root: [1, 2, 3, 4, 5]
+      n: 5
+      x: 3
+    out: true
+  - name: sparse_five_node_internal_with_parent_majority
+    in:
+      root: [1, 2, 3, null, 4, null, 5]
+      n: 5
+      x: 2
+    out: true
+  - name: sparse_five_node_deep_leaf
+    in:
+      root: [1, 2, 3, null, 4, null, 5]
+      n: 5
+      x: 4
+    out: true
+  - name: nine_node_unbalanced_root
+    in:
+      root: [1, 2, 3, 4, 5, 6, null, 7, 8, 9]
+      n: 9
+      x: 1
+    out: true
+  - name: nine_node_unbalanced_internal_tie
+    in:
+      root: [1, 2, 3, 4, 5, 6, null, 7, 8, 9]
+      n: 9
+      x: 2
+    out: false
+  - name: nine_node_unbalanced_grandchild
+    in:
+      root: [1, 2, 3, 4, 5, 6, null, 7, 8, 9]
+      n: 9
+      x: 4
+    out: true
+  - name: eleven_node_split_at_root
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      n: 11
+      x: 1
+    out: true
+  - name: eleven_node_internal_left_majority
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      n: 11
+      x: 2
+    out: false
+  - name: eleven_node_last_level_leaf
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      n: 11
+      x: 11
+    out: true
+  - name: fifteen_node_perfect_root
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      n: 15
+      x: 1
+    out: false
+  - name: fifteen_node_perfect_level_one
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      n: 15
+      x: 2
+    out: true
+  - name: fifteen_node_perfect_level_two
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      n: 15
+      x: 4
+    out: true
+  - name: fifteen_node_perfect_leaf
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      n: 15
+      x: 15
+    out: true
+  - name: fifteen_node_sparse_root
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          null,
+          5,
+          6,
+          7,
+          null,
+          null,
+          8,
+          9,
+          10,
+          null,
+          null,
+          11,
+          12,
+          13,
+          14,
+          15,
+        ]
+      n: 15
+      x: 1
+    out: true
+  - name: fifteen_node_sparse_middle
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          null,
+          5,
+          6,
+          7,
+          null,
+          null,
+          8,
+          9,
+          10,
+          null,
+          null,
+          11,
+          12,
+          13,
+          14,
+          15,
+        ]
+      n: 15
+      x: 3
+    out: false
+  - name: fifteen_node_sparse_deep_node
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          null,
+          5,
+          6,
+          7,
+          null,
+          null,
+          8,
+          9,
+          10,
+          null,
+          null,
+          11,
+          12,
+          13,
+          14,
+          15,
+        ]
+      n: 15
+      x: 8
+    out: true
+  - name: twenty_one_node_left_subtree_equals_half
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+        ]
+      n: 21
+      x: 1
+    out: true
+  - name: twenty_one_node_internal_parent_majority
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+        ]
+      n: 21
+      x: 5
+    out: true
+  - name: thirty_one_node_perfect_root
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+        ]
+      n: 31
+      x: 1
+    out: false
+  - name: thirty_one_node_perfect_internal
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+        ]
+      n: 31
+      x: 7
+    out: true
+  - name: large_51_internal_three_way_tie
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+        ]
+      n: 51
+      x: 2
+    out: false
+  - name: large_63_perfect_root_tie
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+        ]
+      n: 63
+      x: 1
+    out: false
+  - name: large_75_root_left_majority
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+        ]
+      n: 75
+      x: 1
+    out: true
+  - name: large_91_root_left_majority
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+        ]
+      n: 91
+      x: 1
+    out: true
+  - name: large_97_root_left_majority
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+        ]
+      n: 97
+      x: 1
+    out: true
+  - name: large_99_root_left_majority
+    in:
+      root:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+        ]
+      n: 99
+      x: 1
+    out: true

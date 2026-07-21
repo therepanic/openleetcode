@@ -1,0 +1,36 @@
+class Solution(object):
+    def numPoints(self, darts, r):
+        """
+        :type darts: List[List[int]]
+        :type r: int
+        :rtype: int
+        """
+        from math import acos, atan2, sqrt
+        ans = 1
+        radius = float(r)
+        radius_sq = radius * radius
+        for i in range(len(darts)):
+            x1, y1 = darts[i]
+            for j in range(i + 1, len(darts)):
+                x2, y2 = darts[j]
+                dx = x2 - x1
+                dy = y2 - y1
+                distance_sq = dx * dx + dy * dy
+                if distance_sq > 4 * radius_sq:
+                    continue
+                distance = sqrt(distance_sq)
+                midpoint_x = (x1 + x2) / 2.0
+                midpoint_y = (y1 + y2) / 2.0
+                offset = sqrt(max(0.0, radius_sq - distance_sq / 4.0))
+                normal_x = -dy / distance
+                normal_y = dx / distance
+                for sign in (-1.0, 1.0):
+                    center_x = midpoint_x + sign * offset * normal_x
+                    center_y = midpoint_y + sign * offset * normal_y
+                    count = 0
+                    for x, y in darts:
+                        if ((x - center_x) ** 2 + (y - center_y) ** 2
+                                <= radius_sq + 1e-9):
+                            count += 1
+                    ans = max(ans, count)
+        return ans

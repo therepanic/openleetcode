@@ -1,0 +1,53 @@
+class Solution(object):
+    def shiftGrid(self, grid, k):
+        """
+        :type grid: List[List[int]]
+        :type k: int
+        :rtype: List[List[int]]
+        """
+        m = len(grid) - 1
+        n = len(grid[0]) - 1
+        total = (m + 1) * (n + 1)
+        k %= total
+        if k == 0:
+            return grid
+        
+        last_k_elements = []
+        i = m
+        x = n
+        count = 0
+        
+        while count != k:
+            last_k_elements.append(grid[i][x])
+            if x >= 1:
+                x -= 1
+            else:
+                i -= 1
+                x = n
+            count += 1
+        
+        j = m
+        y = n
+        
+        while i != 0 or x != -1:
+            if x == -1:
+                i -= 1
+                x = n
+            if y == -1:
+                j -= 1
+                y = n
+            grid[j][y] = grid[i][x]
+            x -= 1
+            y -= 1
+        
+        idx = 0
+        while k:
+            if y == -1:
+                j -= 1
+                y = n
+            grid[j][y] = last_k_elements[idx]
+            y -= 1
+            k -= 1
+            idx += 1
+        
+        return grid

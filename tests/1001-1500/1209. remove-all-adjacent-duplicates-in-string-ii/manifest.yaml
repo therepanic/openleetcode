@@ -1,0 +1,283 @@
+entry:
+  id: 1209
+  title: remove-all-adjacent-duplicates-in-string-ii
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().removeDuplicates({s}, {k})"
+    rust: "Solution::remove_duplicates({s}, {k})"
+    python3: "Solution().removeDuplicates({s}, {k})"
+    python2: "Solution().removeDuplicates({s}, {k})"
+    ruby: "remove_duplicates({s}, {k})"
+    java: "new Solution().removeDuplicates({s}, {k})"
+    csharp: "new Solution().RemoveDuplicates({s}, {k})"
+    kotlin: "Solution().removeDuplicates({s}, {k})"
+    go: "removeDuplicates({s}, {k})"
+    dart: "Solution().removeDuplicates({s}, {k})"
+    swift: "Solution().removeDuplicates({s}, {k})"
+    typescript: "removeDuplicates({s}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().removeDuplicates(s, k, {result})"
+    checker: |
+      class Checker:
+          def removeDuplicates(self, s, k, result):
+              if (
+                  not isinstance(s, str)
+                  or not isinstance(k, int)
+                  or not isinstance(result, str)
+                  or not 1 <= len(s) <= 100000
+                  or not 2 <= k <= 10000
+                  or any(ch < 'a' or ch > 'z' for ch in s)
+              ):
+                  return False
+              runs = []
+              for ch in s:
+                  if runs and runs[-1][0] == ch:
+                      runs[-1][1] += 1
+                  else:
+                      runs.append([ch, 1])
+                  if runs[-1][1] == k:
+                      runs.pop()
+              expected = ''.join(ch * count for ch, count in runs)
+              return result == expected
+seed: 1209
+tests:
+  - name: prompt-example-one
+    in:
+      s: "abcd"
+      k: 2
+    out: "abcd"
+  - name: prompt-example-two
+    in:
+      s: "deeedbbcccbdaa"
+      k: 3
+    out: "aa"
+  - name: prompt-example-three
+    in:
+      s: "pbbcggttciiippooaais"
+      k: 2
+    out: "ps"
+  - name: k-two-pair
+    in:
+      s: "aa"
+      k: 2
+    out: ""
+  - name: k-two-no-removal
+    in:
+      s: "abc"
+      k: 2
+    out: "abc"
+  - name: k-two-cascade
+    in:
+      s: "abbba"
+      k: 2
+    out: "aba"
+  - name: k-three-exact
+    in:
+      s: "aaa"
+      k: 3
+    out: ""
+  - name: k-three-remainder
+    in:
+      s: "aaaa"
+      k: 3
+    out: "a"
+  - name: k-four-run
+    in:
+      s: "aaaab"
+      k: 4
+    out: "b"
+  - name: k-equals-length
+    in:
+      s: "abcde"
+      k: 5
+    out: "abcde"
+  - name: repeated-pairs
+    in:
+      s: "aabbccddeeff"
+      k: 2
+    out: ""
+  - name: nested-cascade
+    in:
+      s: "abbbaacccaa"
+      k: 3
+    out: "aa"
+  - name: alternating
+    in:
+      s: "abababab"
+      k: 2
+    out: "abababab"
+  - name: long-run-remainder
+    in:
+      s: "aaaaaaaaa"
+      k: 4
+    out: "a"
+  - name: complete-boundary-merge
+    in:
+      s: "azzzza"
+      k: 2
+    out: ""
+  - name: all-same-nonmultiple
+    in:
+      s: "bbbbbbbbbb"
+      k: 3
+    out: "b"
+  - name: singleton-runs
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+      k: 2
+    out: "abcdefghijklmnopqrstuvwxyz"
+  - name: boundary-merge
+    in:
+      s: "abbba"
+      k: 3
+    out: "aa"
+  - name: separated-runs
+    in:
+      s: "aaabaaa"
+      k: 3
+    out: "b"
+  - name: four-letter-runs
+    in:
+      s: "aaaabbbbcccc"
+      k: 4
+    out: ""
+  - name: five-letter-runs
+    in:
+      s: "aaaaabbbbb"
+      k: 5
+    out: ""
+  - name: multi-stage-pairs
+    in:
+      s: "aabccbbccaa"
+      k: 2
+    out: "b"
+  - name: no-complete-run
+    in:
+      s: "aabbcc"
+      k: 4
+    out: "aabbcc"
+  - name: complete-then-remainder
+    in:
+      s: "aaabbbcccc"
+      k: 3
+    out: "c"
+  - name: no-adjacent-duplicates
+    in:
+      s: "thequickbrownfoxjumpsoverthelazydog"
+      k: 2
+    out: "thequickbrownfoxjumpsoverthelazydog"
+  - name: repeated-triples
+    in:
+      s: "aaabbbcccaaabbbccc"
+      k: 3
+    out: ""
+  - name: cascading-pair-removals
+    in:
+      s: "abbcccddddcba"
+      k: 2
+    out: "aba"
+  - name: removals-on-both-sides
+    in:
+      s: "aaaaabaaaaa"
+      k: 5
+    out: "b"
+  - name: maximum-k-short-string
+    in:
+      s: "aabbccddeeff"
+      k: 10000
+    out: "aabbccddeeff"
+  - name: repeated-nested-pair-cascade
+    in:
+      s: "abcddcbaabcddcba"
+      k: 2
+    out: ""
+  - name: cascading-merge-leaves-remainder
+    in:
+      s: "aabbbaa"
+      k: 3
+    out: "a"
+  - name: separated-triples-merge
+    in:
+      s: "baaabcccb"
+      k: 3
+    out: ""
+  - name: repeated-modulo-run
+    in:
+      s: "aaaaaaaaaa"
+      k: 3
+    out: "a"
+  - name: triple-boundary-merge
+    in:
+      s: "aabbbaabb"
+      k: 3
+    out: "abb"
+  - name: stress-binary-maximum
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "ab"
+      k:
+        gen: "int"
+        min: 2
+        max: 2
+  - name: stress-unary-large-k
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "a"
+      k:
+        gen: "int"
+        min: 10000
+        max: 10000
+  - name: stress-alphabet-maximum
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      k:
+        gen: "int"
+        min: 2
+        max: 2
+  - name: stress-small-alphabet-triples
+    in:
+      s:
+        gen: "str"
+        len: 75000
+        alphabet: "abc"
+      k:
+        gen: "int"
+        min: 3
+        max: 3
+  - name: stress-large-k-mixed
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "abc"
+      k:
+        gen: "int"
+        min: 10000
+        max: 10000
+  - name: stress-low-k-mixed
+    in:
+      s:
+        gen: "str"
+        len: 60000
+        alphabet: "ab"
+      k:
+        gen: "int"
+        min: 2
+        max: 7

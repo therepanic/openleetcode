@@ -1,0 +1,501 @@
+entry:
+  id: 1219
+  title: path-with-maximum-gold
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().getMaximumGold({grid})"
+    rust: "Solution::get_maximum_gold({grid})"
+    python3: "Solution().getMaximumGold({grid})"
+    python2: "Solution().getMaximumGold({grid})"
+    ruby: "get_maximum_gold({grid})"
+    java: "new Solution().getMaximumGold({grid})"
+    csharp: "new Solution().GetMaximumGold({grid})"
+    kotlin: "Solution().getMaximumGold({grid})"
+    go: "getMaximumGold({grid})"
+    dart: "Solution().getMaximumGold({grid})"
+    swift: "Solution().getMaximumGold({grid})"
+    typescript: "getMaximumGold({grid})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().getMaximumGold(grid, {result})"
+    checker: |
+      class Checker:
+          def getMaximumGold(self, grid, result):
+              if type(result) is not int or not grid or not grid[0]:
+                  return False
+              rows = len(grid)
+              cols = len(grid[0])
+              if any(len(row) != cols for row in grid):
+                  return False
+              best = 0
+              def dfs(r, c, seen, total):
+                  nonlocal best
+                  if total > best:
+                      best = total
+                  for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                      nr, nc = r + dr, c + dc
+                      if (0 <= nr < rows and 0 <= nc < cols and
+                              grid[nr][nc] > 0 and (nr, nc) not in seen):
+                          dfs(nr, nc, seen | {(nr, nc)}, total + grid[nr][nc])
+              for r in range(rows):
+                  for c in range(cols):
+                      if grid[r][c] > 0:
+                          dfs(r, c, {(r, c)}, grid[r][c])
+              return result == best
+seed: 1219
+tests:
+  - name: single-empty
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0]
+    out: 0
+  - name: single-gold
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5]
+    out: 5
+  - name: empty-square
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 0]
+    out: 0
+  - name: diagonal-islands
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+    out: 2
+  - name: horizontal-line
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2]
+    out: 3
+  - name: vertical-line
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1]
+          - [2]
+    out: 3
+  - name: full-two-by-two
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 4]
+    out: 10
+  - name: separated-corners
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 2]
+          - [0, 0, 0]
+          - [3, 0, 4]
+    out: 4
+  - name: example-one
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 6, 0]
+          - [5, 8, 7]
+          - [0, 9, 0]
+    out: 24
+  - name: example-two
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 7]
+          - [2, 0, 6]
+          - [3, 4, 5]
+          - [0, 3, 0]
+          - [9, 0, 20]
+    out: 28
+  - name: weighted-corner-route
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [10, 0, 0]
+          - [20, 30, 0]
+          - [0, 40, 50]
+    out: 150
+  - name: max-two-by-two
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100, 100]
+          - [100, 100]
+    out: 400
+  - name: alternating-islands
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 1, 0, 1]
+    out: 1
+  - name: separated-horizontal
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 0, 3, 4]
+    out: 7
+  - name: offset-rectangle
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 1, 2, 0]
+          - [0, 3, 4, 5]
+    out: 15
+  - name: central-branch
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [0, 4, 0]
+          - [5, 6, 7]
+    out: 22
+  - name: bridge-row
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 0, 0, 2]
+          - [2, 3, 4, 5, 6]
+    out: 23
+  - name: descending-square
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [9, 8, 7]
+          - [6, 0, 5]
+          - [4, 3, 2]
+    out: 44
+  - name: narrow-zigzag
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5, 0, 0]
+          - [4, 3, 2]
+          - [0, 1, 0]
+    out: 14
+  - name: forked-three
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 0]
+          - [3, 4, 5]
+          - [0, 6, 7]
+    out: 28
+  - name: diamond-route
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 1, 0]
+          - [2, 3, 4]
+          - [0, 5, 0]
+    out: 12
+  - name: wide-bridge
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [8, 0, 7, 0, 6]
+          - [9, 10, 11, 12, 13]
+    out: 69
+  - name: three-row-chain
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4]
+          - [0, 5, 6, 0]
+          - [7, 8, 9, 10]
+    out: 50
+  - name: vertical-wall
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 0, 2]
+          - [2, 2, 2]
+          - [2, 0, 2]
+    out: 10
+  - name: high-diamond
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 50, 0]
+          - [40, 60, 70]
+          - [0, 80, 0]
+    out: 210
+  - name: mixed-two-row
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 0, 2, 0]
+          - [3, 4, 5, 6]
+    out: 19
+  - name: serpentine-three
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [7, 6, 5, 4]
+          - [0, 3, 0, 2]
+          - [1, 2, 3, 4]
+    out: 36
+  - name: max-corridor
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+            ]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    out: 2500
+  - name: five-column-branch
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 0, 4]
+          - [0, 5, 6, 7, 8]
+          - [9, 0, 10, 11, 12]
+    out: 64
+  - name: four-by-four
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 0, 3]
+          - [4, 5, 6, 7]
+          - [8, 0, 9, 10]
+          - [11, 12, 13, 14]
+    out: 105
+  - name: large-horizontal-corridor
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    out: 120
+  - name: large-vertical-corridor
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0]
+    out: 120
+  - name: large-dense-corner
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100, 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [100, 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [100, 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [100, 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [100, 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    out: 2500
+  - name: large-separated-rich-component
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    out: 1000
+  - name: generated-horizontal-full-range
+    seed: 121901
+    in:
+      grid:
+        gen: "array"
+        len: 1
+        of:
+          gen: "array"
+          len: 15
+          of:
+            gen: "int"
+            min: 0
+            max: 100
+  - name: generated-horizontal-positive-range
+    seed: 121902
+    in:
+      grid:
+        gen: "array"
+        len: 1
+        of:
+          gen: "array"
+          len: 15
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+  - name: generated-horizontal-maximum-values
+    seed: 121903
+    in:
+      grid:
+        gen: "array"
+        len: 1
+        of:
+          gen: "array"
+          len: 15
+          of:
+            gen: "int"
+            min: 99
+            max: 100
+  - name: generated-vertical-full-range
+    seed: 121904
+    in:
+      grid:
+        gen: "array"
+        len: 15
+        of:
+          gen: "array"
+          len: 1
+          of:
+            gen: "int"
+            min: 0
+            max: 100
+  - name: generated-vertical-positive-range
+    seed: 121905
+    in:
+      grid:
+        gen: "array"
+        len: 15
+        of:
+          gen: "array"
+          len: 1
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+  - name: generated-vertical-binary-gold
+    seed: 121906
+    in:
+      grid:
+        gen: "array"
+        len: 15
+        of:
+          gen: "array"
+          len: 1
+          of:
+            gen: "int"
+            min: 0
+            max: 1

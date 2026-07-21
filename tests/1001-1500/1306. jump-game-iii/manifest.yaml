@@ -1,0 +1,316 @@
+entry:
+  id: 1306
+  title: "jump-game-iii"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    start_value:
+      type: int
+  call:
+    cpp: "Solution().canReach({arr}, {start_value})"
+    rust: "Solution::can_reach({arr}, {start_value})"
+    python3: "Solution().canReach({arr}, {start_value})"
+    python2: "Solution().canReach({arr}, {start_value})"
+    ruby: "can_reach({arr}, {start_value})"
+    java: "new Solution().canReach({arr}, {start_value})"
+    csharp: "new Solution().CanReach({arr}, {start_value})"
+    kotlin: "Solution().canReach({arr}, {start_value})"
+    go: "canReach({arr}, {start_value})"
+    dart: "Solution().canReach({arr}, {start_value})"
+    swift: "Solution().canReach({arr}, {start_value})"
+    typescript: "canReach({arr}, {start_value})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().canReach(arr, start_value, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def canReach(self, arr, start_value, result):
+              if not isinstance(result, bool):
+                  return False
+              queue = deque([start_value])
+              seen = {start_value}
+              while queue:
+                  index = queue.popleft()
+                  if arr[index] == 0:
+                      return result is True
+                  for next_index in (index + arr[index], index - arr[index]):
+                      if 0 <= next_index < len(arr) and next_index not in seen:
+                          seen.add(next_index)
+                          queue.append(next_index)
+              return result is False
+
+seed: 1306
+
+tests:
+  - name: "example-one"
+    in:
+      arr: [4, 2, 3, 0, 3, 1, 2]
+      start_value: 5
+    out: true
+  - name: "example-two"
+    in:
+      arr: [4, 2, 3, 0, 3, 1, 2]
+      start_value: 0
+    out: true
+  - name: "example-three"
+    in:
+      arr: [3, 0, 2, 1, 2]
+      start_value: 2
+    out: false
+  - name: "singleton-zero"
+    in:
+      arr: [0]
+      start_value: 0
+    out: true
+  - name: "start-already-zero"
+    in:
+      arr: [0, 2, 2]
+      start_value: 0
+    out: true
+  - name: "direct-forward-jump"
+    in:
+      arr: [3, 1, 1, 0]
+      start_value: 0
+    out: true
+  - name: "direct-backward-jump"
+    in:
+      arr: [0, 1, 1, 3]
+      start_value: 3
+    out: true
+  - name: "three-node-cycle-without-zero"
+    in:
+      arr: [1, 1, 1]
+      start_value: 0
+    out: false
+  - name: "two-node-bounce-without-zero"
+    in:
+      arr: [1, 1]
+      start_value: 0
+    out: false
+  - name: "cycle-with-an-exit"
+    in:
+      arr: [2, 1, 1, 0]
+      start_value: 1
+    out: true
+  - name: "backward-chain-to-zero"
+    in:
+      arr: [0, 1, 1, 1, 4]
+      start_value: 4
+    out: true
+  - name: "parity-component-cannot-reach-zero"
+    in:
+      arr: [2, 2, 0, 2, 2, 2]
+      start_value: 3
+    out: false
+  - name: "parity-component-reaches-zero"
+    in:
+      arr: [1, 1, 1, 0, 1, 1]
+      start_value: 5
+    out: true
+  - name: "long-boundary-jump-to-zero"
+    in:
+      arr: [5, 1, 1, 1, 1, 0]
+      start_value: 0
+    out: true
+  - name: "long-boundary-jump-without-zero"
+    in:
+      arr: [5, 1, 1, 1, 1, 1]
+      start_value: 0
+    out: false
+  - name: "multiple-zeros"
+    in:
+      arr: [0, 2, 0, 1, 2]
+      start_value: 4
+    out: true
+  - name: "start-near-right-boundary"
+    in:
+      arr: [2, 2, 2, 0, 1, 1, 1]
+      start_value: 6
+    out: true
+  - name: "endpoint-cycle-without-zero"
+    in:
+      arr: [6, 1, 1, 1, 1, 1, 1]
+      start_value: 0
+    out: false
+  - name: "forced-negative-direction-route"
+    in:
+      arr: [0, 1, 1, 2, 1, 4]
+      start_value: 5
+    out: true
+  - name: "out-of-bounds-branches-only"
+    in:
+      arr: [2, 2, 2, 0]
+      start_value: 0
+    out: false
+  - name: "branching-route-to-zero"
+    in:
+      arr: [3, 1, 2, 2, 0, 1]
+      start_value: 0
+    out: true
+  - name: "unreachable-zero-in-other-component"
+    in:
+      arr: [2, 2, 0, 2, 2, 2, 2]
+      start_value: 5
+    out: false
+  - name: "maximum-legal-first-jump"
+    in:
+      arr: [5, 4, 3, 2, 1, 0]
+      start_value: 0
+    out: true
+  - name: "large-jump-cycle-misses-zero"
+    in:
+      arr: [4, 1, 1, 1, 4, 0]
+      start_value: 0
+    out: false
+  - name: "mixed-jump-route-from-end"
+    in:
+      arr: [2, 3, 1, 2, 0, 3, 1]
+      start_value: 6
+    out: true
+  - name: "mixed-jump-dead-component"
+    in:
+      arr: [3, 2, 1, 2, 0, 2, 4]
+      start_value: 6
+    out: false
+  - name: "backward-zero-after-long-jump"
+    in:
+      arr: [1, 2, 1, 2, 0, 4, 1, 3]
+      start_value: 7
+    out: true
+  - name: "cycle-blocks-nearby-zero"
+    in:
+      arr: [1, 2, 1, 2, 0, 4, 1, 3]
+      start_value: 1
+    out: false
+  - name: "jump-over-intermediate-values"
+    in:
+      arr: [2, 1, 3, 1, 2, 0, 2, 1]
+      start_value: 2
+    out: true
+  - name: "right-edge-route-to-zero"
+    in:
+      arr: [2, 1, 3, 1, 2, 0, 2, 1]
+      start_value: 7
+    out: true
+  - name: "two-element-zero-reached-forward"
+    in:
+      arr: [1, 0]
+      start_value: 0
+    out: true
+  - name: "middle-start-reaches-right-zero"
+    in:
+      arr: [2, 1, 0]
+      start_value: 1
+    out: true
+  - name: "left-start-skips-to-zero"
+    in:
+      arr: [2, 1, 0]
+      start_value: 0
+    out: true
+  - name: "odd-cycle-misses-terminal-zero"
+    in:
+      arr: [2, 2, 1, 2, 0]
+      start_value: 1
+    out: false
+  - name: "generated-small-valid-domain"
+    seed: 13061
+    in:
+      arr:
+        gen: "array"
+        len: 64
+        of:
+          gen: "int"
+          min: 0
+          max: 63
+        elemType: "int"
+      start_value:
+        gen: "int"
+        min: 0
+        max: 63
+  - name: "generated-medium-valid-domain"
+    seed: 13062
+    in:
+      arr:
+        gen: "array"
+        len: 512
+        of:
+          gen: "int"
+          min: 0
+          max: 511
+        elemType: "int"
+      start_value:
+        gen: "int"
+        min: 0
+        max: 511
+  - name: "generated-large-random-reachability"
+    seed: 13063
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 0
+          max: 9999
+        elemType: "int"
+      start_value:
+        gen: "int"
+        min: 0
+        max: 9999
+  - name: "generated-near-maximum-random"
+    seed: 13064
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 49999
+        elemType: "int"
+      start_value:
+        gen: "int"
+        min: 0
+        max: 49999
+  - name: "generated-near-maximum-without-zero"
+    seed: 13065
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 49999
+        elemType: "int"
+      start_value:
+        gen: "int"
+        min: 0
+        max: 49999
+  - name: "generated-large-zero-heavy"
+    seed: 13066
+    in:
+      arr:
+        gen: "array"
+        len: 25000
+        of:
+          gen: "int"
+          min: 0
+          max: 3
+        elemType: "int"
+      start_value:
+        gen: "int"
+        min: 0
+        max: 24999

@@ -1,0 +1,49 @@
+from collections import defaultdict
+
+class Solution(object):
+    def criticalConnections(self, n, connections):
+        """
+        :type n: int
+        :type connections: List[List[int]]
+        :rtype: List[List[int]]
+        """
+        graph = defaultdict(list)
+        for u, v in connections:
+            graph[u].append(v)
+            graph[v].append(u)
+        
+        disc = [-1] * n
+        low = [0] * n
+        timer = [0]
+        bridges = []
+        
+        for start in range(n):
+            if disc[start] != -1:
+                continue
+            
+            stack = [(start, -1, iter(graph[start]))]
+            disc[start] = low[start] = timer[0]
+            timer[0] += 1
+            
+            while stack:
+                node, parent, nbrs = stack[-1]
+                try:
+                    nb = next(nbrs)
+                    if nb == parent:
+                        continue
+                    
+                    if disc[nb] == -1:
+                        disc[nb] = low[nb] = timer[0]
+                        timer[0] += 1
+                        stack.append((nb, node, iter(graph[nb])))
+                    else:
+                        low[node] = min(low[node], disc[nb])
+                except StopIteration:
+                    stack.pop()
+                    if stack:
+                        par = stack[-1][0]
+                        low[par] = min(low[par], low[node])
+                        if low[node] > disc[par]:
+                            bridges.append([par, node])
+        
+        return bridges

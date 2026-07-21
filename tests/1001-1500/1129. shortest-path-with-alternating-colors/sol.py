@@ -1,5 +1,4 @@
 import collections
-from typing import List
 
 from enum import Enum
 

@@ -1,0 +1,409 @@
+entry:
+  id: 1170
+  title: "compare-strings-by-frequency-of-the-smallest-character"
+  params:
+    queries:
+      type: array
+      items:
+        type: string
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().numSmallerByFrequency({queries}, {words})"
+    rust: "Solution::num_smaller_by_frequency({queries}, {words})"
+    python3: "Solution().numSmallerByFrequency({queries}, {words})"
+    python2: "Solution().numSmallerByFrequency({queries}, {words})"
+    ruby: "num_smaller_by_frequency({queries}, {words})"
+    java: "new Solution().numSmallerByFrequency({queries}, {words})"
+    csharp: "new Solution().NumSmallerByFrequency({queries}, {words})"
+    kotlin: "Solution().numSmallerByFrequency({queries}, {words})"
+    go: "numSmallerByFrequency({queries}, {words})"
+    dart: "Solution().numSmallerByFrequency({queries}, {words})"
+    swift: "Solution().numSmallerByFrequency({queries}, {words})"
+    typescript: "numSmallerByFrequency({queries}, {words})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().numSmallerByFrequency(queries, words, {result})"
+    checker: |
+      class Checker:
+          def numSmallerByFrequency(self, queries, words, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              def frequency(s):
+                  smallest = min(s)
+                  return sum(char == smallest for char in s)
+              counts = [0] * 11
+              for word in words:
+                  counts[frequency(word)] += 1
+              greater_than = [0] * 11
+              running = 0
+              for value in range(10, -1, -1):
+                  greater_than[value] = running
+                  running += counts[value]
+              expected = [greater_than[frequency(query)] for query in queries]
+              return result == expected
+
+seed: 1170
+
+tests:
+  - name: "example_1"
+    in:
+      queries:
+        - cbd
+      words:
+        - zaaaz
+    out: [1]
+  - name: "example_2"
+    in:
+      queries: ["bbb", "cc"]
+      words: ["a", "aa", "aaa", "aaaa"]
+    out: [1, 2]
+  - name: "single_equal_frequency"
+    in:
+      queries: ["a"]
+      words: ["b"]
+    out: [0]
+  - name: "single_strictly_smaller"
+    in:
+      queries: ["z"]
+      words: ["a", "bb", "ccc"]
+    out: [2]
+  - name: "maximum_frequency_query"
+    in:
+      queries: ["aaaaaaaaaa", "zzzzzzzzzz"]
+      words: ["b", "cc", "ddd", "eeeeeeeeee"]
+    out: [0, 0]
+  - name: "all_words_maximum_frequency"
+    in:
+      queries: ["a", "bb", "ccccccccc"]
+      words: ["aaaaaaaaaa", "bbbbbbbbbb", "cccccccccc"]
+    out: [3, 3, 3]
+  - name: "strict_thresholds_one_through_five"
+    in:
+      queries: ["x", "xx", "xxx", "xxxx", "xxxxx"]
+      words: ["a", "bb", "ccc", "dddd", "eeeee"]
+    out: [4, 3, 2, 1, 0]
+  - name: "duplicate_words_at_thresholds"
+    in:
+      queries: ["z", "zz", "zzz", "zzzz"]
+      words: ["a", "a", "bb", "bb", "bb", "ccc", "dddd"]
+    out: [5, 2, 1, 0]
+  - name: "duplicate_queries"
+    in:
+      queries: ["az", "az", "aaaa", "az"]
+      words: ["b", "cc", "ddd", "eeee"]
+    out: [3, 3, 0, 3]
+  - name: "minimum_character_not_first"
+    in:
+      queries: ["dcce", "edc", "bba"]
+      words: ["zaaaz", "zzzz", "abcabc", "ccccc"]
+    out: [3, 4, 4]
+  - name: "minimum_character_not_last"
+    in:
+      queries: ["abca", "babc", "zz"]
+      words: ["aa", "baab", "cabc", "deed", "fgh"]
+    out: [0, 3, 0]
+  - name: "late_minimum_with_mixed_counts"
+    in:
+      queries: ["xxa", "yyyb", "zzzzc"]
+      words: ["mama", "nono", "opopo", "qrrrr", "ststst"]
+    out: [4, 4, 4]
+  - name: "lexicographic_extremes"
+    in:
+      queries: ["zazaz", "yzyzy", "azaza", "zzzzz"]
+      words: ["z", "zz", "az", "aaz", "aaaaa", "yyyyy"]
+    out: [2, 2, 2, 0]
+  - name: "minimum_changes_inside_string"
+    in:
+      queries: ["caa", "bcc", "ddd"]
+      words: ["baa", "abbb", "caccc", "zzzz", "xy"]
+    out: [1, 2, 1]
+  - name: "same_frequency_does_not_count"
+    in:
+      queries: ["a", "aa", "aaa"]
+      words: ["a", "aa", "aaa"]
+    out: [2, 1, 0]
+  - name: "all_word_frequencies_one"
+    in:
+      queries: ["aa", "bbb", "cccc"]
+      words: ["abc", "bcd", "cde", "def", "efg"]
+    out: [0, 0, 0]
+  - name: "all_query_frequencies_one"
+    in:
+      queries: ["bcdef", "azbyc", "zyxwv"]
+      words: ["a", "bb", "ccc", "dddd", "eeeee", "ffffff"]
+    out: [5, 5, 5]
+  - name: "length_ten_boundaries"
+    in:
+      queries: ["z", "zzzzz", "abcdefghij", "aaaaaaaaaa"]
+      words: ["a", "bbbbbbbbbb", "cccccccccc", "dddd", "eeeeee"]
+    out: [4, 3, 4, 0]
+  - name: "mixed_frequencies_and_lengths"
+    in:
+      queries: ["aa", "ba", "zzz", "ccca"]
+      words: ["a", "bb", "ccc", "dddd", "eeeee"]
+    out: [3, 4, 2, 4]
+  - name: "nonminimum_repetitions_ignored"
+    in:
+      queries: ["qxxq", "rqrqr", "zzzz"]
+      words: ["aaa", "baaa", "ccccc", "dddddd", "xyzxyz"]
+    out: [4, 4, 2]
+  - name: "all_single_characters"
+    in:
+      queries: ["a", "b", "c", "z"]
+      words: ["a", "b", "c", "z"]
+    out: [0, 0, 0, 0]
+  - name: "two_word_boundaries"
+    in:
+      queries: ["a", "bb", "ccc", "dddd"]
+      words: ["x", "yyyy"]
+    out: [1, 1, 1, 0]
+  - name: "frequency_distribution_with_gaps"
+    in:
+      queries: ["a", "bb", "ccc", "dddd"]
+      words: ["x", "yy", "zzz", "wwww", "vvvvv", "uuuuuu", "ttttttt"]
+    out: [6, 5, 4, 3]
+  - name: "minimum_ties_across_letters"
+    in:
+      queries: ["ba", "cba", "dcba", "edcba"]
+      words: ["aa", "baa", "caa", "daaa", "eaaaa"]
+    out: [5, 5, 5, 5]
+  - name: "same_minimum_different_lengths"
+    in:
+      queries: ["mnop", "nmn", "opopop", "zzzzzz"]
+      words: ["m", "mm", "nmn", "oooo", "ppppp", "qqqqqq"]
+    out: [4, 4, 3, 0]
+  - name: "minimum_is_z"
+    in:
+      queries: ["z", "zz", "zzz", "zzzzzzzzzz"]
+      words: ["z", "zz", "zzz", "zzzz", "zzzzzzzzzz"]
+    out: [4, 3, 2, 0]
+  - name: "interior_alphabet_minimum"
+    in:
+      queries: ["mnop", "nnnn", "opq", "rrrrr"]
+      words: ["m", "mm", "nmn", "oooo", "ppppp", "qqqqqq"]
+    out: [4, 2, 4, 1]
+  - name: "repeated_minimum_after_larger_prefix"
+    in:
+      queries: ["baaa", "caba", "ddad"]
+      words: ["aaaa", "baaa", "ccac", "dddd", "edede"]
+    out: [2, 3, 4]
+  - name: "ten_distinct_frequency_levels"
+    in:
+      queries:
+        [
+          "a",
+          "bb",
+          "ccc",
+          "dddd",
+          "eeeee",
+          "ffffff",
+          "ggggggg",
+          "hhhhhhhh",
+          "iiiiiiiii",
+          "jjjjjjjjjj",
+        ]
+      words:
+        [
+          "a",
+          "bb",
+          "ccc",
+          "dddd",
+          "eeeee",
+          "ffffff",
+          "ggggggg",
+          "hhhhhhhh",
+          "iiiiiiiii",
+          "jjjjjjjjjj",
+        ]
+    out: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  - name: "duplicate_frequency_buckets"
+    in:
+      queries:
+        [
+          "z",
+          "zz",
+          "zzz",
+          "zzzz",
+          "zzzzz",
+          "zzzzzz",
+          "zzzzzzz",
+          "zzzzzzzz",
+          "zzzzzzzzz",
+          "zzzzzzzzzz",
+        ]
+      words:
+        [
+          "a",
+          "aa",
+          "aa",
+          "aaa",
+          "aaa",
+          "aaa",
+          "bbbb",
+          "bbbb",
+          "ccccc",
+          "dddddd",
+          "eeeeeee",
+          "ffffffff",
+          "ggggggggg",
+          "hhhhhhhhhh",
+        ]
+    out: [13, 11, 8, 6, 5, 4, 3, 2, 1, 0]
+  - name: "minimum_frequency_one_among_long_strings"
+    in:
+      queries: ["abcdefghi", "jihgfedcba", "zxywvutsrq"]
+      words: ["zzzzzzzzzz", "yyyyyyyyyy", "xxxxxxxxxx", "wvvvvvvvvv"]
+    out: [4, 4, 4]
+  - name: "word_minimum_counts_with_noise"
+    in:
+      queries: ["k", "kk", "kkk", "kkkk"]
+      words:
+        ["azazazazaz", "baaaaaaaac", "cbbbbbdddd", "dccccccccc", "eeeeeeeeee"]
+    out: [5, 5, 5, 5]
+  - name: "strict_comparison_on_frequency_five"
+    in:
+      queries: ["aaaaa", "zzzzz"]
+      words: ["aaaaaaaaaa", "baaaaaaaac", "caaaaddddd", "dddddddddd"]
+    out: [3, 3]
+  - name: "different_smallest_characters_same_frequency"
+    in:
+      queries: ["abc", "bcd", "cde", "def"]
+      words: ["za", "yb", "xc", "wd", "veee"]
+    out: [1, 1, 1, 1]
+  - name: "stress_full_alphabet"
+    seed: 117001
+    in:
+      queries:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        distinct: false
+        sorted: false
+      words:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        distinct: false
+        sorted: false
+  - name: "stress_low_alphabet"
+    seed: 117002
+    in:
+      queries:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "abc"
+        distinct: false
+        sorted: false
+      words:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "abc"
+        distinct: false
+        sorted: false
+  - name: "stress_high_alphabet"
+    seed: 117003
+    in:
+      queries:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "xyz"
+        distinct: false
+        sorted: false
+      words:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "xyz"
+        distinct: false
+        sorted: false
+  - name: "stress_vowels_and_consonants"
+    seed: 117004
+    in:
+      queries:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "aeiouz"
+        distinct: false
+        sorted: false
+      words:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "aeiouz"
+        distinct: false
+        sorted: false
+  - name: "stress_middle_alphabet"
+    seed: 117005
+    in:
+      queries:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "jklmnop"
+        distinct: false
+        sorted: false
+      words:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "jklmnop"
+        distinct: false
+        sorted: false
+  - name: "stress_skewed_endpoints"
+    seed: 117006
+    in:
+      queries:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "aaabz"
+        distinct: false
+        sorted: false
+      words:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "aaabz"
+        distinct: false
+        sorted: false

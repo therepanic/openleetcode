@@ -1,0 +1,205 @@
+entry:
+  id: 1358
+  title: "number-of-substrings-containing-all-three-characters"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().numberOfSubstrings({s})"
+    rust: "Solution::number_of_substrings({s})"
+    python3: "Solution().numberOfSubstrings({s})"
+    python2: "Solution().numberOfSubstrings({s})"
+    ruby: "number_of_substrings({s})"
+    java: "new Solution().numberOfSubstrings({s})"
+    csharp: "new Solution().NumberOfSubstrings({s})"
+    kotlin: "Solution().numberOfSubstrings({s})"
+    go: "numberOfSubstrings({s})"
+    dart: "Solution().numberOfSubstrings({s})"
+    swift: "Solution().numberOfSubstrings({s})"
+    typescript: "numberOfSubstrings({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().numberOfSubstrings(s, {result})"
+    checker: |
+      class Checker:
+          def numberOfSubstrings(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              counts = [0, 0, 0]
+              left = 0
+              expected = 0
+              for right, ch in enumerate(s):
+                  counts[ord(ch) - ord('a')] += 1
+                  while counts[0] and counts[1] and counts[2]:
+                      expected += len(s) - right
+                      counts[ord(s[left]) - ord('a')] -= 1
+                      left += 1
+              return result == expected
+
+seed: 1358
+
+tests:
+  - name: "example_abcabc"
+    in:
+      s: "abcabc"
+  - name: "example_aaacb"
+    in:
+      s: "aaacb"
+  - name: "example_minimum"
+    in:
+      s: "abc"
+  - name: "minimum_reverse_order"
+    in:
+      s: "cba"
+  - name: "minimum_permuted_order"
+    in:
+      s: "bac"
+  - name: "all_a_missing_b_c"
+    in:
+      s: "aaa"
+  - name: "missing_c"
+    in:
+      s: "aabbab"
+  - name: "missing_b"
+    in:
+      s: "acacaa"
+  - name: "missing_a"
+    in:
+      s: "cbcbcc"
+  - name: "valid_only_at_end"
+    in:
+      s: "aaaaabbbbbc"
+  - name: "valid_only_at_start"
+    in:
+      s: "caaaaabbbbb"
+  - name: "repeated_a_prefix"
+    in:
+      s: "aaaaabc"
+  - name: "repeated_b_middle"
+    in:
+      s: "abbbbbc"
+  - name: "repeated_c_suffix"
+    in:
+      s: "abccccc"
+  - name: "four_char_boundary"
+    in:
+      s: "abca"
+  - name: "five_char_overlap"
+    in:
+      s: "cabac"
+  - name: "three_complete_cycles"
+    in:
+      s: "abcabcabc"
+  - name: "reverse_cycles"
+    in:
+      s: "cbacba"
+  - name: "palindromic_mix"
+    in:
+      s: "abccba"
+  - name: "alternating_windows"
+    in:
+      s: "abacbc"
+  - name: "clustered_letters"
+    in:
+      s: "aaabbbccc"
+  - name: "blocks_reverse"
+    in:
+      s: "cccbbbaaa"
+  - name: "first_c_late"
+    in:
+      s: "aababbabbc"
+  - name: "first_a_late"
+    in:
+      s: "cbcbcbcbca"
+  - name: "dense_mixed"
+    in:
+      s: "cbacbbacacba"
+  - name: "overlapping_long_windows"
+    in:
+      s: "abcaaabbbccc"
+  - name: "all_blocks_then_cycle"
+    in:
+      s: "aaacccbbbabc"
+  - name: "frequent_left_shrinks"
+    in:
+      s: "abcabcabcabc"
+  - name: "sparse_restarts"
+    in:
+      s: "aaccbbaac"
+  - name: "single_each_separated"
+    in:
+      s: "abbbbbbbbbc"
+  - name: "duplicate_first_and_last"
+    in:
+      s: "aabcbca"
+  - name: "large_a_b_c_blocks"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbcccccccccccccccccccc"
+  - name: "large_periodic_static"
+    in:
+      s: "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+  - name: "generated_short_uniform"
+    seed: 101
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 3
+          max: 30
+        alphabet: "abc"
+  - name: "generated_medium_uniform"
+    seed: 202
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 500
+          max: 1000
+        alphabet: "abc"
+  - name: "generated_a_heavy"
+    seed: 303
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1000
+          max: 3000
+        alphabet: "aaaabc"
+  - name: "generated_c_heavy"
+    seed: 404
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1000
+          max: 3000
+        alphabet: "abcccc"
+  - name: "generated_max_uniform"
+    seed: 505
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "abc"
+  - name: "generated_max_biased"
+    seed: 606
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "aaaabc"
+  - name: "long_prefix_then_dense_tail"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcabccabccabccabccabccabccabcc"

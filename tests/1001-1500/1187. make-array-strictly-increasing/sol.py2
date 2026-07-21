@@ -1,0 +1,32 @@
+class Solution(object):
+    def makeArrayIncreasing(self, arr1, arr2):
+        """
+        :type arr1: List[int]
+        :type arr2: List[int]
+        :rtype: int
+        """
+        import bisect
+        arr2.sort()
+        max_int = float('inf')
+        memo = {}
+        
+        def dp(i, prev_max):
+            if i == len(arr1):
+                return 0
+            key = (i, prev_max)
+            if key in memo:
+                return memo[key]
+            
+            j = bisect.bisect_right(arr2, prev_max)
+            
+            ans = max_int
+            if arr1[i] > prev_max:
+                ans = min(ans, dp(i + 1, arr1[i]))
+            if j < len(arr2):
+                ans = min(ans, dp(i + 1, arr2[j]) + 1)
+            
+            memo[key] = ans
+            return ans
+        
+        ops = dp(0, -max_int)
+        return ops if ops != max_int else -1

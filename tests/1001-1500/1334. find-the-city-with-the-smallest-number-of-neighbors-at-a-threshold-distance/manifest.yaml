@@ -1,0 +1,583 @@
+entry:
+  id: 1334
+  title: "find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    distanceThreshold:
+      type: int
+  call:
+    cpp: "Solution().findTheCity({n}, {edges}, {distanceThreshold})"
+    rust: "Solution::find_the_city({n}, {edges}, {distanceThreshold})"
+    python3: "Solution().findTheCity({n}, {edges}, {distanceThreshold})"
+    python2: "Solution().findTheCity({n}, {edges}, {distanceThreshold})"
+    ruby: "find_the_city({n}, {edges}, {distanceThreshold})"
+    java: "new Solution().findTheCity({n}, {edges}, {distanceThreshold})"
+    csharp: "new Solution().FindTheCity({n}, {edges}, {distanceThreshold})"
+    kotlin: "Solution().findTheCity({n}, {edges}, {distanceThreshold})"
+    go: "findTheCity({n}, {edges}, {distanceThreshold})"
+    dart: "Solution().findTheCity({n}, {edges}, {distanceThreshold})"
+    swift: "Solution().findTheCity({n}, {edges}, {distanceThreshold})"
+    typescript: "findTheCity({n}, {edges}, {distanceThreshold})"
+judge:
+  type: exact
+limits:
+  time_ms: 800
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().findTheCity(n, edges, distanceThreshold, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def findTheCity(self, n, edges, threshold, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              graph = [[] for _ in range(n)]
+              for source, target, weight in edges:
+                  graph[source].append((target, weight))
+                  graph[target].append((source, weight))
+              fewest = n
+              answer = -1
+              for city in range(n):
+                  distance = [float("inf")] * n
+                  distance[city] = 0
+                  queue = [(0, city)]
+                  while queue:
+                      current_distance, node = heapq.heappop(queue)
+                      if current_distance != distance[node]:
+                          continue
+                      for neighbor, weight in graph[node]:
+                          candidate = current_distance + weight
+                          if candidate <= threshold and candidate < distance[neighbor]:
+                              distance[neighbor] = candidate
+                              heapq.heappush(queue, (candidate, neighbor))
+                  reachable = sum(value <= threshold for value in distance) - 1
+                  if reachable <= fewest:
+                      fewest = reachable
+                      answer = city
+              return result == answer
+seed: 1334
+tests:
+  - name: two_near
+    in:
+      n: 2
+      edges:
+        - [0, 1, 3]
+      distanceThreshold: 3
+  - name: two_far
+    in:
+      n: 2
+      edges:
+        - [0, 1, 3]
+      distanceThreshold: 2
+  - name: path_three
+    in:
+      n: 3
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+      distanceThreshold: 2
+  - name: triangle
+    in:
+      n: 3
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [0, 2, 1]
+      distanceThreshold: 1
+  - name: weighted_triangle
+    in:
+      n: 3
+      edges:
+        - [0, 1, 5]
+        - [1, 2, 2]
+        - [0, 2, 10]
+      distanceThreshold: 6
+  - name: four_path
+    in:
+      n: 4
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+      distanceThreshold: 1
+  - name: four_dense
+    in:
+      n: 4
+      edges:
+        - [0, 1, 4]
+        - [0, 2, 2]
+        - [0, 3, 7]
+        - [1, 2, 1]
+        - [1, 3, 3]
+        - [2, 3, 5]
+      distanceThreshold: 5
+  - name: disconnected
+    in:
+      n: 5
+      edges:
+        - [0, 1, 1]
+        - [2, 3, 1]
+      distanceThreshold: 2
+  - name: star
+    in:
+      n: 6
+      edges:
+        - [0, 1, 2]
+        - [0, 2, 2]
+        - [0, 3, 2]
+        - [0, 4, 2]
+        - [0, 5, 2]
+      distanceThreshold: 2
+  - name: chain_six
+    in:
+      n: 6
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 2]
+        - [2, 3, 3]
+        - [3, 4, 4]
+        - [4, 5, 5]
+      distanceThreshold: 5
+  - name: shortcut
+    in:
+      n: 5
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+        - [0, 4, 1]
+      distanceThreshold: 5
+  - name: equal_counts
+    in:
+      n: 4
+      edges:
+        - [0, 1, 100]
+        - [2, 3, 100]
+      distanceThreshold: 1
+  - name: complete_five
+    in:
+      n: 5
+      edges:
+        - [0, 1, 1]
+        - [0, 2, 2]
+        - [0, 3, 3]
+        - [0, 4, 4]
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [1, 4, 3]
+        - [2, 3, 1]
+        - [2, 4, 2]
+        - [3, 4, 1]
+      distanceThreshold: 3
+  - name: isolated_last
+    in:
+      n: 6
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+      distanceThreshold: 2
+  - name: threshold_one
+    in:
+      n: 7
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+      distanceThreshold: 1
+  - name: threshold_large
+    in:
+      n: 7
+      edges:
+        - [0, 1, 100]
+        - [1, 2, 100]
+        - [2, 3, 100]
+        - [3, 4, 100]
+        - [4, 5, 100]
+        - [5, 6, 100]
+      distanceThreshold: 10000
+  - name: alternate_weights
+    in:
+      n: 8
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 9]
+        - [2, 3, 1]
+        - [3, 4, 9]
+        - [4, 5, 1]
+        - [5, 6, 9]
+        - [6, 7, 1]
+      distanceThreshold: 10
+  - name: bridge
+    in:
+      n: 8
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [4, 5, 2]
+        - [5, 6, 2]
+        - [6, 7, 2]
+        - [3, 4, 20]
+      distanceThreshold: 6
+  - name: cycle_six
+    in:
+      n: 6
+      edges:
+        - [0, 1, 3]
+        - [1, 2, 3]
+        - [2, 3, 3]
+        - [3, 4, 3]
+        - [4, 5, 3]
+        - [5, 0, 3]
+      distanceThreshold: 6
+  - name: long_path
+    in:
+      n: 9
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+        - [4, 5, 2]
+        - [5, 6, 2]
+        - [6, 7, 2]
+        - [7, 8, 2]
+      distanceThreshold: 8
+  - name: dense_six
+    in:
+      n: 6
+      edges:
+        - [0, 1, 4]
+        - [0, 2, 8]
+        - [0, 3, 15]
+        - [0, 4, 7]
+        - [0, 5, 20]
+        - [1, 2, 3]
+        - [1, 3, 10]
+        - [1, 4, 5]
+        - [1, 5, 12]
+        - [2, 3, 4]
+        - [2, 4, 6]
+        - [2, 5, 9]
+        - [3, 4, 2]
+        - [3, 5, 5]
+        - [4, 5, 3]
+      distanceThreshold: 10
+  - name: ten_city_unit_path_radius_three
+    in:
+      n: 10
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+      distanceThreshold: 3
+  - name: five_disjoint_weighted_pairs
+    in:
+      n: 10
+      edges:
+        - [0, 1, 2]
+        - [2, 3, 4]
+        - [4, 5, 6]
+        - [6, 7, 8]
+        - [8, 9, 10]
+      distanceThreshold: 7
+  - name: costly_direct_edge_loses_to_two_hop_route
+    in:
+      n: 5
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [0, 4, 10]
+      distanceThreshold: 2
+  - name: cycle_with_cheap_wraparound
+    in:
+      n: 6
+      edges:
+        - [0, 1, 7]
+        - [1, 2, 7]
+        - [2, 3, 7]
+        - [3, 4, 7]
+        - [4, 5, 7]
+        - [0, 5, 1]
+      distanceThreshold: 7
+  - name: path_with_unusable_endpoint_shortcut
+    in:
+      n: 7
+      edges:
+        - [0, 1, 2]
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+        - [4, 5, 2]
+        - [5, 6, 2]
+        - [0, 6, 20]
+      distanceThreshold: 4
+  - name: uneven_components_with_expensive_bridge
+    in:
+      n: 8
+      edges:
+        - [0, 1, 5]
+        - [1, 2, 5]
+        - [2, 3, 5]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [3, 4, 50]
+      distanceThreshold: 3
+  - name: nine_city_cycle_radius_two
+    in:
+      n: 9
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [0, 8, 1]
+      distanceThreshold: 2
+  - name: direct_edge_outside_threshold
+    in:
+      n: 4
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 20]
+        - [2, 3, 30]
+        - [0, 3, 5]
+        - [0, 2, 15]
+      distanceThreshold: 14
+  - name: fan_with_chain_shortcuts
+    in:
+      n: 5
+      edges:
+        - [0, 1, 2]
+        - [0, 2, 4]
+        - [0, 3, 6]
+        - [0, 4, 8]
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+      distanceThreshold: 5
+  - name: alternating_cycle_weights
+    in:
+      n: 6
+      edges:
+        - [0, 1, 1]
+        - [1, 2, 10]
+        - [2, 3, 1]
+        - [3, 4, 10]
+        - [4, 5, 1]
+        - [0, 5, 10]
+      distanceThreshold: 11
+  - name: increasing_weight_path
+    in:
+      n: 7
+      edges:
+        - [0, 1, 3]
+        - [1, 2, 4]
+        - [2, 3, 5]
+        - [3, 4, 6]
+        - [4, 5, 7]
+        - [5, 6, 8]
+      distanceThreshold: 9
+  - name: weighted_star_threshold_boundary
+    in:
+      n: 8
+      edges:
+        - [0, 1, 2]
+        - [0, 2, 3]
+        - [0, 3, 4]
+        - [0, 4, 5]
+        - [0, 5, 6]
+        - [0, 6, 7]
+        - [0, 7, 8]
+      distanceThreshold: 5
+  - name: ten_city_cycle_with_cheap_closing_edge
+    in:
+      n: 10
+      edges:
+        - [0, 1, 3]
+        - [1, 2, 3]
+        - [2, 3, 3]
+        - [3, 4, 3]
+        - [4, 5, 3]
+        - [5, 6, 3]
+        - [6, 7, 3]
+        - [7, 8, 3]
+        - [8, 9, 3]
+        - [0, 9, 1]
+      distanceThreshold: 6
+  - name: cheap_outer_edge_bypasses_heavy_interior
+    in:
+      n: 5
+      edges:
+        - [0, 1, 9]
+        - [1, 2, 1]
+        - [2, 3, 9]
+        - [3, 4, 1]
+        - [0, 4, 2]
+      distanceThreshold: 3
+  - name: example_one_tie_uses_largest_city
+    in:
+      n: 4
+      edges:
+        - [0, 1, 3]
+        - [1, 2, 1]
+        - [1, 3, 4]
+        - [2, 3, 1]
+      distanceThreshold: 4
+  - name: example_two_unique_minimum
+    in:
+      n: 5
+      edges:
+        - [0, 1, 2]
+        - [0, 4, 8]
+        - [1, 2, 3]
+        - [1, 4, 2]
+        - [2, 3, 1]
+        - [3, 4, 1]
+      distanceThreshold: 2
+  - name: two_hop_distance_exactly_on_threshold
+    in:
+      n: 4
+      edges:
+        - [0, 1, 4]
+        - [1, 2, 6]
+        - [2, 3, 4]
+      distanceThreshold: 10
+  - name: hundred_city_mostly_isolated_graph
+    in:
+      n: 100
+      edges:
+        - [0, 1, 1]
+        - [98, 99, 10000]
+      distanceThreshold: 1
+  - name: hundred_city_star_with_limited_leaf_reach
+    in:
+      n: 100
+      edges:
+        - [0, 1, 1]
+        - [0, 2, 1]
+        - [0, 3, 1]
+        - [0, 4, 1]
+        - [0, 5, 1]
+        - [0, 6, 1]
+        - [0, 7, 1]
+        - [0, 8, 1]
+        - [0, 9, 1]
+        - [0, 10, 1]
+        - [0, 11, 1]
+        - [0, 12, 1]
+        - [0, 13, 1]
+        - [0, 14, 1]
+        - [0, 15, 1]
+        - [0, 16, 1]
+        - [0, 17, 1]
+        - [0, 18, 1]
+        - [0, 19, 1]
+        - [0, 20, 1]
+        - [0, 21, 1]
+        - [0, 22, 1]
+        - [0, 23, 1]
+        - [0, 24, 1]
+        - [0, 25, 1]
+        - [0, 26, 1]
+        - [0, 27, 1]
+        - [0, 28, 1]
+        - [0, 29, 1]
+        - [0, 30, 1]
+        - [0, 31, 1]
+        - [0, 32, 1]
+        - [0, 33, 1]
+        - [0, 34, 1]
+        - [0, 35, 1]
+        - [0, 36, 1]
+        - [0, 37, 1]
+        - [0, 38, 1]
+        - [0, 39, 1]
+        - [0, 40, 1]
+        - [0, 41, 1]
+        - [0, 42, 1]
+        - [0, 43, 1]
+        - [0, 44, 1]
+        - [0, 45, 1]
+        - [0, 46, 1]
+        - [0, 47, 1]
+        - [0, 48, 1]
+        - [0, 49, 1]
+        - [0, 50, 1]
+        - [0, 51, 1]
+        - [0, 52, 1]
+        - [0, 53, 1]
+        - [0, 54, 1]
+        - [0, 55, 1]
+        - [0, 56, 1]
+        - [0, 57, 1]
+        - [0, 58, 1]
+        - [0, 59, 1]
+        - [0, 60, 1]
+        - [0, 61, 1]
+        - [0, 62, 1]
+        - [0, 63, 1]
+        - [0, 64, 1]
+        - [0, 65, 1]
+        - [0, 66, 1]
+        - [0, 67, 1]
+        - [0, 68, 1]
+        - [0, 69, 1]
+        - [0, 70, 1]
+        - [0, 71, 1]
+        - [0, 72, 1]
+        - [0, 73, 1]
+        - [0, 74, 1]
+        - [0, 75, 1]
+        - [0, 76, 1]
+        - [0, 77, 1]
+        - [0, 78, 1]
+        - [0, 79, 1]
+        - [0, 80, 1]
+        - [0, 81, 1]
+        - [0, 82, 1]
+        - [0, 83, 1]
+        - [0, 84, 1]
+        - [0, 85, 1]
+        - [0, 86, 1]
+        - [0, 87, 1]
+        - [0, 88, 1]
+        - [0, 89, 1]
+        - [0, 90, 1]
+        - [0, 91, 1]
+        - [0, 92, 1]
+        - [0, 93, 1]
+        - [0, 94, 1]
+        - [0, 95, 1]
+        - [0, 96, 1]
+        - [0, 97, 1]
+        - [0, 98, 1]
+        - [0, 99, 1]
+      distanceThreshold: 1

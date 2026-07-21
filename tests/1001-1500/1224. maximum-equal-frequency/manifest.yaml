@@ -1,0 +1,276 @@
+entry:
+  id: 1224
+  title: "maximum-equal-frequency"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxEqualFreq({nums})"
+    rust: "Solution::max_equal_freq({nums})"
+    python3: "Solution().maxEqualFreq({nums})"
+    python2: "Solution().maxEqualFreq({nums})"
+    ruby: "max_equal_freq({nums})"
+    java: "new Solution().maxEqualFreq({nums})"
+    csharp: "new Solution().MaxEqualFreq({nums})"
+    kotlin: "Solution().maxEqualFreq({nums})"
+    go: "maxEqualFreq({nums})"
+    dart: "Solution().maxEqualFreq({nums})"
+    swift: "Solution().maxEqualFreq({nums})"
+    typescript: "maxEqualFreq({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maxEqualFreq(nums, {result})"
+    checker: |
+      from collections import defaultdict
+
+      class Checker:
+          def maxEqualFreq(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+
+              counts = defaultdict(int)
+              frequency_counts = defaultdict(int)
+              best = 0
+              for length, value in enumerate(nums, 1):
+                  old = counts[value]
+                  if old:
+                      frequency_counts[old] -= 1
+                      if frequency_counts[old] == 0:
+                          del frequency_counts[old]
+                  counts[value] = old + 1
+                  current = old + 1
+                  frequency_counts[current] += 1
+
+                  if len(frequency_counts) == 1:
+                      only_frequency, value_count = next(iter(frequency_counts.items()))
+                      if only_frequency == 1 or value_count == 1:
+                          best = length
+                  elif len(frequency_counts) == 2:
+                      low, high = sorted(frequency_counts)
+                      if (low == 1 and frequency_counts[low] == 1) or (
+                          high == low + 1 and frequency_counts[high] == 1
+                      ):
+                          best = length
+              return result == best
+
+seed: 122400
+
+tests:
+  - name: "example_one"
+    in:
+      nums: [2, 2, 1, 1, 5, 3, 3, 5]
+    out: 7
+  - name: "example_two"
+    in:
+      nums: [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5]
+    out: 13
+  - name: "two_distinct"
+    in:
+      nums: [1, 100000]
+    out: 2
+  - name: "two_equal"
+    in:
+      nums: [100000, 100000]
+    out: 2
+  - name: "three_distinct"
+    in:
+      nums: [1, 50000, 100000]
+    out: 3
+  - name: "pair_then_new_value"
+    in:
+      nums: [1, 1, 2]
+    out: 3
+  - name: "new_value_then_pair"
+    in:
+      nums: [1, 2, 2]
+    out: 3
+  - name: "three_equal"
+    in:
+      nums: [7, 7, 7]
+    out: 3
+  - name: "triple_and_single"
+    in:
+      nums: [1, 1, 1, 2]
+    out: 4
+  - name: "two_complete_pairs"
+    in:
+      nums: [1, 1, 2, 2]
+    out: 3
+  - name: "interleaved_pairs"
+    in:
+      nums: [1, 2, 1, 2]
+    out: 3
+  - name: "one_double_among_singletons"
+    in:
+      nums: [1, 2, 3, 1]
+    out: 4
+  - name: "three_equal_groups_plus_single"
+    in:
+      nums: [2, 2, 2, 1, 1, 1, 3]
+    out: 7
+  - name: "three_pairs_plus_single"
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4]
+    out: 7
+  - name: "permuted_three_pairs"
+    in:
+      nums: [1, 2, 3, 2, 1, 3]
+    out: 5
+  - name: "descending_pairs_plus_single"
+    in:
+      nums: [5, 5, 4, 4, 3, 3, 2]
+    out: 7
+  - name: "four_pairs_plus_single"
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 4, 5]
+    out: 9
+  - name: "increasing_frequency_staircase"
+    in:
+      nums: [1, 2, 2, 3, 3, 3]
+    out: 5
+  - name: "four_and_three"
+    in:
+      nums: [1, 1, 1, 1, 2, 2, 2]
+    out: 7
+  - name: "four_balanced_pairs"
+    in:
+      nums: [1, 2, 3, 4, 1, 2, 3, 4]
+    out: 7
+  - name: "three_two_one_distribution"
+    in:
+      nums: [7, 7, 7, 8, 8, 9]
+    out: 5
+  - name: "three_two_one_low_values"
+    in:
+      nums: [1, 1, 1, 2, 2, 3]
+    out: 5
+  - name: "majority_interleaved"
+    in:
+      nums: [1, 2, 1, 2, 1, 3]
+    out: 5
+  - name: "four_pairs_with_two_singletons"
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 5]
+    out: 7
+  - name: "five_balanced_pairs"
+    in:
+      nums: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
+    out: 9
+  - name: "four_pairs_no_removable_final"
+    in:
+      nums: [2, 2, 1, 1, 3, 3, 4, 4]
+    out: 7
+  - name: "three_balanced_triples"
+    in:
+      nums: [1, 2, 3, 1, 2, 3, 1, 2, 3]
+    out: 7
+  - name: "five_and_four"
+    in:
+      nums: [1, 1, 1, 1, 1, 2, 2, 2, 2]
+    out: 9
+  - name: "four_three_two_one"
+    in:
+      nums: [1, 2, 2, 2, 3, 3, 3, 4, 4]
+    out: 7
+  - name: "mixed_triples"
+    in:
+      nums: [1, 1, 2, 3, 3, 4, 4, 4]
+    out: 7
+  - name: "late_new_value"
+    in:
+      nums: [1, 1, 2, 3, 3, 4, 4, 4, 5]
+    out: 7
+  - name: "all_distinct_eight"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8]
+    out: 8
+  - name: "one_frequency_outlier_at_end"
+    in:
+      nums: [9, 9, 8, 8, 7, 7, 6, 6, 6]
+    out: 9
+  - name: "high_frequency_outlier_at_end"
+    in:
+      nums: [1, 2, 3, 4, 1, 2, 3, 4, 1]
+    out: 9
+  - name: "generated_dense_50k"
+    seed: 122401
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 25
+        distinct: false
+        sorted: false
+  - name: "generated_wide_65k"
+    seed: 122402
+    in:
+      nums:
+        gen: "array"
+        len: 65000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+  - name: "generated_medium_alphabet_80k"
+    seed: 122403
+    in:
+      nums:
+        gen: "array"
+        len: 80000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+  - name: "generated_near_max_90k"
+    seed: 122404
+    in:
+      nums:
+        gen: "array"
+        len: 90000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+  - name: "generated_near_max_99999"
+    seed: 122405
+    in:
+      nums:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+  - name: "generated_maximum_100k"
+    seed: 122406
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false

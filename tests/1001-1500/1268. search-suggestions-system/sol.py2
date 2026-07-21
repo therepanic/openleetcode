@@ -1,0 +1,32 @@
+class Solution(object):
+    def suggestedProducts(self, products, searchWord):
+        """
+        :type products: List[str]
+        :type searchWord: str
+        :rtype: List[List[str]]
+        """
+        products.sort()
+        root = {}
+        
+        # Insert each product into the Trie and store top 3 suggestions
+        for product in products:
+            node = root
+            for ch in product:
+                if ch not in node:
+                    node[ch] = [{}, []]
+                if len(node[ch][1]) < 3:
+                    node[ch][1].append(product)
+                node = node[ch][0]
+        
+        # Search each character of searchWord in the Trie
+        result = []
+        node = root
+        for ch in searchWord:
+            if node and ch in node:
+                result.append(node[ch][1])
+                node = node[ch][0]
+            else:
+                node = None
+                result.append([])
+        
+        return result

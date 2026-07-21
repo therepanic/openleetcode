@@ -1,0 +1,552 @@
+entry:
+  id: 1192
+  title: "critical-connections-in-a-network"
+  params:
+    n:
+      type: int
+    connections:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().criticalConnections({n}, {connections})"
+    rust: "Solution::critical_connections({n}, {connections})"
+    python3: "Solution().criticalConnections({n}, {connections})"
+    python2: "Solution().criticalConnections({n}, {connections})"
+    ruby: "critical_connections({n}, {connections})"
+    java: "new Solution().criticalConnections({n}, {connections})"
+    csharp: "new Solution().CriticalConnections({n}, {connections})"
+    kotlin: "Solution().criticalConnections({n}, {connections})"
+    go: "criticalConnections({n}, {connections})"
+    dart: "Solution().criticalConnections({n}, {connections})"
+    swift: "Solution().criticalConnections({n}, {connections})"
+    typescript: "criticalConnections({n}, {connections})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 1000
+  memory_mb: 400
+
+oracle:
+  python3:
+    call: "Checker().criticalConnections(n, connections, {result})"
+    checker: |
+      class Checker:
+          def criticalConnections(self, n, connections, result):
+              if not isinstance(result, list):
+                  return False
+              actual = set()
+              for edge in result:
+                  if (not isinstance(edge, list) or len(edge) != 2 or
+                          not all(isinstance(node, int) and not isinstance(node, bool)
+                                  for node in edge)):
+                      return False
+                  u, v = edge
+                  if not (0 <= u < n and 0 <= v < n and u != v):
+                      return False
+                  normalized = tuple(sorted((u, v)))
+                  if normalized in actual:
+                      return False
+                  actual.add(normalized)
+              original = {tuple(sorted((u, v))) for u, v in connections}
+              if not actual.issubset(original):
+                  return False
+              graph = [[] for _ in range(n)]
+              for u, v in connections:
+                  graph[u].append(v)
+                  graph[v].append(u)
+              bridges = set()
+              for edge in original:
+                  start, target = edge
+                  seen = {start}
+                  stack = [start]
+                  while stack:
+                      node = stack.pop()
+                      for neighbor in graph[node]:
+                          if tuple(sorted((node, neighbor))) == edge or neighbor in seen:
+                              continue
+                          seen.add(neighbor)
+                          stack.append(neighbor)
+                  if target not in seen:
+                      bridges.add(edge)
+              return actual == bridges
+
+seed: 1192
+
+tests:
+  - name: "example_one"
+    in:
+      n: 4
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [1, 3]
+  - name: "example_two"
+    in:
+      n: 2
+      connections:
+        - [0, 1]
+  - name: "triangle"
+    in:
+      n: 3
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+  - name: "path_three"
+    in:
+      n: 3
+      connections:
+        - [0, 1]
+        - [1, 2]
+  - name: "path_four"
+    in:
+      n: 4
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+  - name: "square_cycle"
+    in:
+      n: 4
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 0]
+  - name: "cycle_with_tail"
+    in:
+      n: 5
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [3, 4]
+  - name: "two_cycles_shared_vertex"
+    in:
+      n: 5
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [0, 3]
+        - [3, 4]
+        - [4, 0]
+  - name: "diamond"
+    in:
+      n: 4
+      connections:
+        - [0, 1]
+        - [1, 3]
+        - [3, 2]
+        - [2, 0]
+        - [0, 3]
+  - name: "complete_four"
+    in:
+      n: 4
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+  - name: "triangle_tail_two"
+    in:
+      n: 5
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [2, 4]
+  - name: "star_four"
+    in:
+      n: 5
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+  - name: "star_with_leaf_cycle"
+    in:
+      n: 5
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [1, 2]
+  - name: "long_path_with_chord"
+    in:
+      n: 6
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [1, 4]
+  - name: "two_chords"
+    in:
+      n: 7
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [0, 3]
+        - [2, 5]
+  - name: "cycle_and_tail_chain"
+    in:
+      n: 8
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 0]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+  - name: "large_cycle"
+    in:
+      n: 8
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 0]
+  - name: "nested_cycles"
+    in:
+      n: 7
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 3]
+        - [5, 6]
+  - name: "dense_five"
+    in:
+      n: 5
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 3]
+        - [2, 4]
+        - [3, 4]
+  - name: "path_with_end_cycle"
+    in:
+      n: 7
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [4, 6]
+  - name: "cycle_tail_branch"
+    in:
+      n: 9
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 0]
+        - [1, 4]
+        - [4, 5]
+        - [4, 6]
+        - [6, 7]
+        - [6, 8]
+  - name: "hub_with_two_triangles"
+    in:
+      n: 7
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [0, 3]
+        - [3, 4]
+        - [4, 0]
+        - [0, 5]
+        - [5, 6]
+  - name: "five_edge_path"
+    in:
+      n: 6
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+  - name: "cycle_with_two_bridges"
+    in:
+      n: 6
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 3]
+  - name: "complete_six"
+    in:
+      n: 6
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 4]
+        - [3, 5]
+        - [4, 5]
+  - name: "ladder_six"
+    in:
+      n: 6
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+  - name: "ladder_with_tail"
+    in:
+      n: 8
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+        - [5, 6]
+        - [6, 7]
+  - name: "cycle_with_parallel_routes"
+    in:
+      n: 8
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 0]
+        - [0, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 4]
+        - [2, 5]
+  - name: "deep_path_with_back_edge"
+    in:
+      n: 10
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [2, 8]
+  - name: "dense_with_tail"
+    in:
+      n: 7
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [0, 3]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+  - name: "longer_ring_with_tail"
+    in:
+      n: 10
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 0]
+        - [4, 8]
+        - [2, 6]
+  - name: "hub_spokes_and_cycle"
+    in:
+      n: 9
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 3]
+        - [0, 6]
+        - [6, 7]
+        - [7, 8]
+  - name: "wide_tree"
+    in:
+      n: 10
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 8]
+        - [3, 9]
+  - name: "tree_with_three_cycles"
+    in:
+      n: 10
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 3]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 6]
+  - name: "large_hand_authored_chain"
+    in:
+      n: 12
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [2, 9]
+        - [4, 7]
+  - name: "two_complete_components_one_bridge"
+    in:
+      n: 8
+      connections:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [5, 6]
+        - [5, 7]
+        - [6, 7]
+        - [3, 4]
+  - name: "reversed_edges_cycle_with_two_leaves"
+    in:
+      n: 7
+      connections:
+        - [1, 0]
+        - [2, 1]
+        - [0, 2]
+        - [3, 2]
+        - [4, 3]
+        - [5, 3]
+        - [6, 5]
+  - name: "three_cycles_connected_by_bridges"
+    in:
+      n: 11
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 3]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 7]
+  - name: "three_by_three_grid"
+    in:
+      n: 9
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [6, 7]
+        - [7, 8]
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+        - [4, 7]
+        - [5, 8]
+  - name: "long_cycle_spine_with_branch_cycle"
+    in:
+      n: 14
+      connections:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 0]
+        - [3, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 6]
+        - [8, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]

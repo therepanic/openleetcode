@@ -1,0 +1,299 @@
+entry:
+  id: 1223
+  title: "dice-roll-simulation"
+  params:
+    n:
+      type: int
+    rollMax:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().dieSimulator({n}, {rollMax})"
+    rust: "Solution::die_simulator({n}, {rollMax})"
+    python3: "Solution().dieSimulator({n}, {rollMax})"
+    python2: "Solution().dieSimulator({n}, {rollMax})"
+    ruby: "die_simulator({n}, {rollMax})"
+    java: "new Solution().dieSimulator({n}, {rollMax})"
+    csharp: "new Solution().DieSimulator({n}, {rollMax})"
+    kotlin: "Solution().dieSimulator({n}, {rollMax})"
+    go: "dieSimulator({n}, {rollMax})"
+    dart: "Solution().dieSimulator({n}, {rollMax})"
+    swift: "Solution().dieSimulator({n}, {rollMax})"
+    typescript: "dieSimulator({n}, {rollMax})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().dieSimulator(n, rollMax, {result})"
+    checker: |
+      class Checker:
+          def dieSimulator(self, n, rollMax, result):
+              if not isinstance(n, int) or isinstance(n, bool) or n < 1 or n > 5000:
+                  return False
+              if not isinstance(rollMax, list) or len(rollMax) != 6:
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) or x < 1 or x > 15 for x in rollMax):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              last = [[0] * (limit + 1) for limit in rollMax]
+              for face, limit in enumerate(rollMax):
+                  last[face][1] = 1
+              for _ in range(1, n):
+                  total = sum(sum(row) for row in last) % mod
+                  nxt = [[0] * (limit + 1) for limit in rollMax]
+                  for face, limit in enumerate(rollMax):
+                      other = (total - sum(last[face])) % mod
+                      nxt[face][1] = other
+                      for run in range(2, limit + 1):
+                          nxt[face][run] = last[face][run - 1]
+                  last = nxt
+              expected = sum(sum(row) for row in last) % mod
+              return result == expected
+
+seed: 1223
+
+tests:
+  - name: "minimum n all minimum limits"
+    in:
+      n: 1
+      rollMax: [1, 1, 1, 1, 1, 1]
+    out: 6
+  - name: "minimum n all maximum limits"
+    in:
+      n: 1
+      rollMax: [15, 15, 15, 15, 15, 15]
+    out: 6
+  - name: "example one"
+    in:
+      n: 2
+      rollMax: [1, 1, 2, 2, 2, 3]
+    out: 34
+  - name: "example two"
+    in:
+      n: 2
+      rollMax: [1, 1, 1, 1, 1, 1]
+    out: 30
+  - name: "example three"
+    in:
+      n: 3
+      rollMax: [1, 1, 1, 2, 2, 3]
+    out: 181
+  - name: "large random limits"
+    seed: 122301
+    in:
+      n:
+        gen: "int"
+        min: 4000
+        max: 4500
+      rollMax:
+        gen: "array"
+        len: 6
+        of:
+          gen: "int"
+          min: 1
+          max: 15
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "three rolls pairs allowed"
+    in:
+      n: 3
+      rollMax: [2, 2, 2, 2, 2, 2]
+    out: 210
+  - name: "near maximum random limits"
+    seed: 122302
+    in:
+      n:
+        gen: "int"
+        min: 4900
+        max: 5000
+      rollMax:
+        gen: "array"
+        len: 6
+        of:
+          gen: "int"
+          min: 1
+          max: 15
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "four rolls pairs allowed"
+    in:
+      n: 4
+      rollMax: [2, 2, 2, 2, 2, 2]
+    out: 1230
+  - name: "increasing limits short"
+    in:
+      n: 5
+      rollMax: [1, 2, 3, 4, 5, 6]
+    out: 6919
+  - name: "one permissive face"
+    in:
+      n: 6
+      rollMax: [1, 1, 1, 1, 1, 15]
+    out: 22541
+  - name: "increasing limits seven"
+    in:
+      n: 7
+      rollMax: [2, 3, 4, 5, 6, 7]
+    out: 273463
+  - name: "alternating strict limits"
+    in:
+      n: 8
+      rollMax: [1, 2, 1, 2, 1, 2]
+    out: 866886
+  - name: "large strict limits"
+    seed: 122303
+    in:
+      n:
+        gen: "int"
+        min: 4000
+        max: 5000
+      rollMax: [1, 1, 1, 1, 1, 1]
+  - name: "increasing limits twelve"
+    in:
+      n: 12
+      rollMax: [1, 2, 3, 4, 5, 6]
+    out: 572213028
+  - name: "uniform pairs fifteen"
+    in:
+      n: 15
+      rollMax: [2, 2, 2, 2, 2, 2]
+    out: 360778870
+  - name: "mixed strict limits twenty"
+    in:
+      n: 20
+      rollMax: [1, 1, 2, 2, 3, 3]
+    out: 386639626
+  - name: "moderate increasing limits"
+    in:
+      n: 25
+      rollMax: [3, 4, 5, 6, 7, 8]
+    out: 227445080
+  - name: "increasing limits thirty"
+    in:
+      n: 30
+      rollMax: [1, 2, 3, 4, 5, 6]
+    out: 509437858
+  - name: "example limits forty"
+    in:
+      n: 40
+      rollMax: [1, 1, 1, 2, 2, 3]
+    out: 974034519
+  - name: "alternating permissive limits"
+    in:
+      n: 50
+      rollMax: [15, 1, 15, 1, 15, 1]
+    out: 608766176
+  - name: "prime-like limits"
+    in:
+      n: 75
+      rollMax: [2, 3, 5, 7, 11, 13]
+    out: 262141686
+  - name: "large permissive limits"
+    seed: 122304
+    in:
+      n:
+        gen: "int"
+        min: 4500
+        max: 5000
+      rollMax: [15, 15, 15, 15, 15, 15]
+  - name: "large asymmetric limits"
+    seed: 122305
+    in:
+      n:
+        gen: "int"
+        min: 4500
+        max: 5000
+      rollMax: [1, 2, 3, 4, 5, 15]
+  - name: "maximum n mixed limits"
+    seed: 122306
+    in:
+      n:
+        gen: "int"
+        min: 5000
+        max: 5000
+      rollMax:
+        gen: "array"
+        len: 6
+        of:
+          gen: "int"
+          min: 1
+          max: 15
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "hundred unconstrained"
+    in:
+      n: 100
+      rollMax: [15, 15, 15, 15, 15, 15]
+    out: 302110769
+  - name: "two hundred fifty mixed"
+    in:
+      n: 250
+      rollMax: [1, 2, 3, 4, 5, 6]
+    out: 977171803
+  - name: "five hundred mixed strict"
+    in:
+      n: 500
+      rollMax: [1, 1, 2, 2, 3, 3]
+    out: 101616524
+  - name: "thousand no repeats"
+    in:
+      n: 1000
+      rollMax: [1, 1, 1, 1, 1, 1]
+    out: 203456550
+  - name: "fifteen hundred increasing"
+    in:
+      n: 1500
+      rollMax: [2, 3, 4, 5, 6, 7]
+    out: 123669470
+  - name: "two thousand unconstrained limits"
+    in:
+      n: 2000
+      rollMax: [15, 15, 15, 15, 15, 15]
+    out: 947231106
+  - name: "three thousand increasing"
+    in:
+      n: 3000
+      rollMax: [1, 2, 3, 4, 5, 6]
+    out: 581026725
+  - name: "four thousand one permissive"
+    in:
+      n: 4000
+      rollMax: [1, 1, 1, 1, 1, 15]
+    out: 386000099
+  - name: "maximum n mixed strict"
+    in:
+      n: 5000
+      rollMax: [1, 1, 2, 2, 3, 3]
+    out: 225223927
+  - name: "maximum n asymmetric"
+    in:
+      n: 5000
+      rollMax: [15, 1, 2, 3, 4, 5]
+    out: 241209934
+  - name: "alternating extremes"
+    in:
+      n: 17
+      rollMax: [1, 15, 2, 14, 3, 13]
+    out: 152293170
+  - name: "uniform fours"
+    in:
+      n: 64
+      rollMax: [4, 4, 4, 4, 4, 4]
+    out: 193787109
+  - name: "reversed limits"
+    in:
+      n: 321
+      rollMax: [6, 5, 4, 3, 2, 1]
+    out: 895489651

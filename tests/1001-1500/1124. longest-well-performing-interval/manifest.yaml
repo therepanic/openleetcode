@@ -7,18 +7,18 @@ entry:
       items:
         type: int
   call:
-    python3: Solution().longestWPI({hours})
-    python2: Solution().longestWPI({hours})
-    cpp: Solution().longestWPI({hours})
-    rust: Solution::longest_wpi({hours})
-    ruby: longest_wpi({hours})
-    java: new Solution().longestWPI({hours})
-    csharp: new Solution().LongestWPI({hours})
-    kotlin: Solution().longestWPI({hours})
-    go: longestWPI({hours})
-    dart: Solution().longestWPI({hours})
-    swift: Solution().longestWPI({hours})
-    typescript: longestWPI({hours})
+    cpp: "Solution().longestWPI({hours})"
+    rust: "Solution::longest_wpi({hours})"
+    python3: "Solution().longestWPI({hours})"
+    python2: "Solution().longestWPI({hours})"
+    ruby: "longest_wpi({hours})"
+    java: "new Solution().longestWPI({hours})"
+    csharp: "new Solution().LongestWPI({hours})"
+    kotlin: "Solution().longestWPI({hours})"
+    go: "longestWPI({hours})"
+    dart: "Solution().longestWPI({hours})"
+    swift: "Solution().longestWPI({hours})"
+    typescript: "longestWPI({hours})"
 judge:
   type: exact
 limits:
@@ -26,375 +26,247 @@ limits:
   memory_mb: 256
 oracle:
   python3:
-    call: Checker().longestWPI(hours, {result})
-    checker:
-      "class Checker:\n    def longestWPI(self, hours, result):\n        if\
-      \ not isinstance(hours, list):\n            return False\n        if not isinstance(result,\
-      \ int):\n            return False\n        score = 0\n        best = 0\n   \
-      \     seen_at = {0: -1}\n        for i, h in enumerate(hours):\n           \
-      \ if not isinstance(h, int) or h < 0 or h > 16:\n                return False\n\
-      \            score += 1 if h > 8 else -1\n            if score > 0:\n      \
-      \          best = i + 1\n            elif score - 1 in seen_at:\n          \
-      \      best = max(best, i - seen_at[score - 1])\n            if score not in\
-      \ seen_at:\n                seen_at[score] = i\n        return result == best\n"
+    call: "Checker().longestWPI(hours, {result})"
+    checker: |
+      class Checker:
+          def longestWPI(self, hours, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(hours, list) or not 1 <= len(hours) <= 10000:
+                  return False
+              if any(not isinstance(h, int) or isinstance(h, bool) or not 0 <= h <= 16 for h in hours):
+                  return False
+              prefix = [0]
+              for hour in hours:
+                  prefix.append(prefix[-1] + (1 if hour > 8 else -1))
+              decreasing = []
+              for index, value in enumerate(prefix):
+                  if not decreasing or value < prefix[decreasing[-1]]:
+                      decreasing.append(index)
+              best = 0
+              for right in range(len(prefix) - 1, -1, -1):
+                  while decreasing and prefix[right] > prefix[decreasing[-1]]:
+                      best = max(best, right - decreasing.pop())
+              return result == best
 seed: 1124
 tests:
-  - name: single_tiring
-    in:
-      hours:
-        - 9
-  - name: single_non_tiring
-    in:
-      hours:
-        - 6
-  - name: single_boundary
-    in:
-      hours:
-        - 8
-  - name: single_high
-    in:
-      hours:
-        - 10
-  - name: single_zero
-    in:
-      hours:
-        - 0
-  - name: single_max_value
-    in:
-      hours:
-        - 16
-  - name: two_all_tiring
-    in:
-      hours:
-        - 9
-        - 9
-  - name: two_all_non_tiring
-    in:
-      hours:
-        - 6
-        - 6
-  - name: tiring_then_non_tiring
-    in:
-      hours:
-        - 9
-        - 6
-  - name: non_tiring_then_tiring
-    in:
-      hours:
-        - 6
-        - 9
   - name: example_one
     in:
-      hours:
-        - 9
-        - 9
-        - 6
-        - 0
-        - 6
-        - 6
-        - 9
+      hours: [9, 9, 6, 0, 6, 6, 9]
+    out: 3
   - name: example_two
     in:
-      hours:
-        - 6
-        - 6
-        - 6
-  - name: all_prefix_positive
+      hours: [6, 6, 6]
+    out: 0
+  - name: one_tiring
+    in:
+      hours: [9]
+    out: 1
+  - name: one_non_tiring
+    in:
+      hours: [8]
+    out: 0
+  - name: minimum_value
+    in:
+      hours: [0]
+    out: 0
+  - name: maximum_value
+    in:
+      hours: [16]
+    out: 1
+  - name: threshold_values
+    in:
+      hours: [8, 9, 8, 9, 8]
+    out: 3
+  - name: all_tiring
+    in:
+      hours: [9, 10, 11, 12, 13, 14, 15, 16]
+    out: 8
+  - name: all_non_tiring
+    in:
+      hours: [0, 1, 7, 8, 8, 2]
+    out: 0
+  - name: tiring_then_rest
+    in:
+      hours: [9, 8]
+    out: 1
+  - name: rest_then_tiring
+    in:
+      hours: [8, 9]
+    out: 1
+  - name: balanced_pair
+    in:
+      hours: [9, 8, 8, 9]
+    out: 1
+  - name: late_positive
+    in:
+      hours: [8, 8, 9]
+    out: 1
+  - name: early_positive
+    in:
+      hours: [9, 8, 8]
+    out: 1
+  - name: buried_interval
+    in:
+      hours: [8, 8, 9, 9, 8, 8, 9]
+    out: 5
+  - name: alternating_tiring_start
+    in:
+      hours: [9, 8, 9, 8, 9, 8, 9, 8]
+    out: 7
+  - name: alternating_rest_start
+    in:
+      hours: [8, 9, 8, 9, 8, 9, 8, 9]
+    out: 7
+  - name: negative_prefix_recovery
+    in:
+      hours: [8, 8, 8, 9, 9, 9, 9]
+    out: 7
+  - name: positive_prefix_decay
+    in:
+      hours: [9, 9, 9, 8, 8, 8, 9]
+    out: 7
+  - name: isolated_tiring
+    in:
+      hours: [8, 8, 9, 8, 8]
+    out: 1
+  - name: two_islands
+    in:
+      hours: [9, 9, 8, 8, 8, 9, 9, 9]
+    out: 8
+  - name: values_do_not_matter
+    in:
+      hours: [0, 16, 1, 15, 8, 9]
+    out: 5
+  - name: long_balanced
+    in:
+      hours: [9, 9, 9, 8, 8, 8, 9, 8, 8, 9]
+    out: 7
+  - name: all_boundary
+    in:
+      hours: [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+    out: 0
+  - name: recovery_after_deep_loss
+    in:
+      hours: [8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9]
+    out: 13
+  - name: maximum_even_balance
+    in:
+      hours: [9, 8, 9, 8, 8, 9, 8, 9, 8, 9, 8, 9]
+    out: 7
+  - name: mixed_extremes
+    in:
+      hours: [16, 0, 16, 0, 0, 16, 8, 9, 1, 15]
+    out: 5
+  - name: repeated_runs
+    in:
+      hours: [9, 9, 8, 8, 9, 9, 8, 8, 9, 9, 9, 8]
+    out: 12
+  - name: short_final_gain
+    in:
+      hours: [8, 8, 8, 8, 9, 9, 9, 9, 9]
+    out: 9
+  - name: one_tiring_among_low
+    in:
+      hours: [0, 8, 9, 8, 0, 8]
+    out: 1
+  - name: three_tiring_window
+    in:
+      hours: [0, 9, 10, 8, 0, 0]
+    out: 3
+  - name: long_prefix_wins
+    in:
+      hours: [9, 16, 8, 0, 9, 8, 9, 0, 8, 9, 9]
+    out: 11
+  - name: single_late_tiring
+    in:
+      hours: [0, 0, 0, 0, 16]
+    out: 1
+  - name: equal_runs
+    in:
+      hours: [9, 9, 9, 8, 8, 8]
+    out: 5
+  - name: generated_small_mixed
+    seed: 11
     in:
       hours:
-        - 9
-        - 6
-        - 9
-  - name: alternating_small
-    in:
-      hours:
-        - 6
-        - 9
-        - 6
-  - name: long_first_block
-    in:
-      hours:
-        - 9
-        - 9
-        - 9
-        - 6
-        - 6
-  - name: long_last_block
-    in:
-      hours:
-        - 6
-        - 6
-        - 9
-        - 9
-        - 9
-  - name: boundary_alternation
-    in:
-      hours:
-        - 8
-        - 9
-        - 8
-        - 9
-        - 8
-  - name: mixed_with_prefix_gain
-    in:
-      hours:
-        - 9
-        - 8
-        - 8
-        - 9
-        - 9
-        - 8
-  - name: all_nontiring_small
-    in:
-      hours:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-  - name: all_tiring_small
-    in:
-      hours:
-        - 9
-        - 10
-        - 11
-        - 12
-        - 13
-  - name: late_long_interval
-    in:
-      hours:
-        - 9
-        - 6
-        - 6
-        - 9
-        - 6
-        - 9
-        - 9
-  - name: early_long_interval
-    in:
-      hours:
-        - 6
-        - 9
-        - 9
-        - 6
-        - 9
-        - 6
-        - 6
-        - 9
-  - name: one_tiring_in_four
-    in:
-      hours:
-        - 8
-        - 8
-        - 8
-        - 9
-  - name: tiring_then_three_boundaries
-    in:
-      hours:
-        - 9
-        - 8
-        - 8
-        - 8
-  - name: repeated_short_waves
-    in:
-      hours:
-        - 8
-        - 9
-        - 8
-        - 8
-        - 9
-        - 8
-        - 8
-        - 9
-  - name: strong_middle_run
-    in:
-      hours:
-        - 9
-        - 9
-        - 8
-        - 8
-        - 8
-        - 9
-        - 9
-        - 9
-  - name: mixed_tail
-    in:
-      hours:
-        - 6
-        - 6
-        - 6
-        - 9
-        - 9
-        - 9
-        - 6
-        - 6
-        - 9
-  - name: alternating_start_tiring
-    in:
-      hours:
-        - 9
-        - 6
-        - 9
-        - 6
-        - 9
-        - 6
-        - 9
-        - 6
-  - name: alternating_start_non_tiring
-    in:
-      hours:
-        - 6
-        - 9
-        - 6
-        - 9
-        - 6
-        - 9
-        - 6
-        - 9
-  - name: mixed_block_one
-    in:
-      hours:
-        - 9
-        - 9
-        - 6
-        - 9
-        - 6
-        - 6
-        - 9
-        - 9
-        - 6
-        - 6
-        - 9
-  - name: mixed_block_two
-    in:
-      hours:
-        - 6
-        - 6
-        - 9
-        - 6
-        - 9
-        - 9
-        - 6
-        - 6
-        - 9
-        - 9
-        - 9
-  - name: all_tiring_large
-    in:
-      hours:
-        gen: array
-        len: 10000
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
         of:
-          gen: int
-          min: 9
+          gen: "int"
+          min: 0
           max: 16
         distinct: false
         sorted: false
-        elemType: int
-  - name: all_non_tiring_large
+        elemType: "int"
+  - name: generated_medium_boundary
+    seed: 22
     in:
       hours:
-        gen: array
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 500
+        of:
+          gen: "int"
+          min: 7
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated_large_all_non_tiring
+    seed: 33
+    in:
+      hours:
+        gen: "array"
         len: 10000
         of:
-          gen: int
+          gen: "int"
           min: 0
           max: 8
         distinct: false
         sorted: false
-        elemType: int
-  - name: all_boundary_large
+        elemType: "int"
+  - name: generated_large_all_tiring
+    seed: 44
     in:
       hours:
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-        - 8
-  - name: tiring_then_non_tiring_blocks
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 9
+          max: 16
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated_large_threshold_mix
+    seed: 55
     in:
       hours:
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 6
-        - 6
-        - 6
-        - 6
-        - 6
-        - 6
-        - 6
-        - 6
-        - 6
-        - 6
-  - name: non_tiring_then_tiring_blocks
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 7
+          max: 9
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated_large_full_range
+    seed: 66
     in:
       hours:
-        - 6
-        - 6
-        - 6
-        - 6
-        - 6
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-        - 9
-  - name: mixed_low_high
-    in:
-      hours:
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-        - 8
-        - 7
-        - 9
-        - 9
-        - 6
-  - name: positive_prefix_then_noise
-    in:
-      hours:
-        - 9
-        - 9
-        - 6
-        - 6
-        - 6
-        - 6
-        - 9
-        - 6
-        - 6
-        - 6
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 0
+          max: 16
+        distinct: false
+        sorted: false
+        elemType: "int"

@@ -1,0 +1,397 @@
+entry:
+  id: 1201
+  title: "ugly-number-iii"
+  params:
+    n:
+      type: int
+    a:
+      type: int
+    b:
+      type: int
+    c:
+      type: int
+  call:
+    cpp: "Solution().nthUglyNumber({n}, {a}, {b}, {c})"
+    rust: "Solution::nth_ugly_number({n}, {a}, {b}, {c})"
+    python3: "Solution().nthUglyNumber({n}, {a}, {b}, {c})"
+    python2: "Solution().nthUglyNumber({n}, {a}, {b}, {c})"
+    ruby: "nth_ugly_number({n}, {a}, {b}, {c})"
+    java: "new Solution().nthUglyNumber({n}, {a}, {b}, {c})"
+    csharp: "new Solution().NthUglyNumber({n}, {a}, {b}, {c})"
+    kotlin: "Solution().nthUglyNumber({n}, {a}, {b}, {c})"
+    go: "nthUglyNumber({n}, {a}, {b}, {c})"
+    dart: "Solution().nthUglyNumber({n}, {a}, {b}, {c})"
+    swift: "Solution().nthUglyNumber({n}, {a}, {b}, {c})"
+    typescript: "nthUglyNumber({n}, {a}, {b}, {c})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().nthUglyNumber(n, a, b, c, {result})"
+    checker: |
+      from math import gcd
+
+      class Checker:
+          def nthUglyNumber(self, n, a, b, c, result):
+              if any(not isinstance(value, int) or isinstance(value, bool) for value in (n, a, b, c, result)):
+                  return False
+              if not (1 <= n <= 1000000000 and 1 <= a <= 1000000000 and 1 <= b <= 1000000000 and 1 <= c <= 1000000000):
+                  return False
+              if a * b * c > 1000000000000000000 or not (1 <= result <= 2000000000):
+                  return False
+              def lcm(x, y):
+                  return x // gcd(x, y) * y
+              ab, ac, bc = lcm(a, b), lcm(a, c), lcm(b, c)
+              abc = lcm(ab, c)
+              def count(limit):
+                  return limit // a + limit // b + limit // c - limit // ab - limit // ac - limit // bc + limit // abc
+              is_ugly = result % a == 0 or result % b == 0 or result % c == 0
+              return is_ugly and count(result - 1) < n <= count(result)
+seed: 1201
+tests:
+  - name: example_one
+    in:
+      n: 3
+      a: 2
+      b: 3
+      c: 5
+    out: 4
+  - name: example_two
+    in:
+      n: 4
+      a: 2
+      b: 3
+      c: 4
+    out: 6
+  - name: example_three
+    in:
+      n: 5
+      a: 2
+      b: 11
+      c: 13
+    out: 10
+  - name: first_of_distinct_divisors
+    in:
+      n: 1
+      a: 7
+      b: 11
+      c: 13
+    out: 7
+  - name: all_divisors_equal
+    in:
+      n: 100
+      a: 6
+      b: 6
+      c: 6
+    out: 600
+  - name: two_divisors_equal
+    in:
+      n: 17
+      a: 4
+      b: 4
+      c: 9
+    out: 52
+  - name: divisibility_chain
+    in:
+      n: 25
+      a: 2
+      b: 4
+      c: 8
+    out: 50
+  - name: pairwise_coprime
+    in:
+      n: 20
+      a: 3
+      b: 5
+      c: 7
+    out: 36
+  - name: three_way_overlap
+    in:
+      n: 50
+      a: 6
+      b: 10
+      c: 15
+    out: 190
+  - name: large_divisors_second_value
+    in:
+      n: 2
+      a: 999999937
+      b: 999999929
+      c: 999999893
+    out: 999999929
+  - name: maximum_n_with_unit_divisor
+    in:
+      n: 1000000000
+      a: 1
+      b: 999999999
+      c: 1000000000
+    out: 1000000000
+  - name: maximum_n_dense_union
+    in:
+      n: 1000000000
+      a: 2
+      b: 3
+      c: 5
+    out: 1363636364
+  - name: maximum_input_divisor
+    in:
+      n: 1
+      a: 1000000000
+      b: 1000000000
+      c: 1
+    out: 1
+  - name: lcm_intersections
+    in:
+      n: 31
+      a: 12
+      b: 18
+      c: 25
+    out: 204
+  - name: nested_overlap
+    in:
+      n: 12
+      a: 4
+      b: 6
+      c: 8
+    out: 36
+  - name: single_effective_divisor
+    in:
+      n: 50
+      a: 5
+      b: 10
+      c: 20
+    out: 250
+  - name: common_factor_chain
+    in:
+      n: 400
+      a: 7
+      b: 14
+      c: 21
+    out: 2800
+  - name: prime_divisors
+    in:
+      n: 10
+      a: 17
+      b: 19
+      c: 23
+    out: 69
+  - name: mixed_multiples
+    in:
+      n: 10
+      a: 9
+      b: 12
+      c: 25
+    out: 50
+  - name: dense_shared_factors
+    in:
+      n: 20
+      a: 24
+      b: 36
+      c: 60
+    out: 324
+  - name: sparse_prime_divisors
+    in:
+      n: 2
+      a: 997
+      b: 991
+      c: 983
+    out: 991
+  - name: overlapping_even_and_seven
+    in:
+      n: 20
+      a: 2
+      b: 4
+      c: 7
+    out: 35
+  - name: two_effective_divisors
+    in:
+      n: 20
+      a: 3
+      b: 6
+      c: 10
+    out: 50
+  - name: close_primes
+    in:
+      n: 15
+      a: 11
+      b: 13
+      c: 17
+    out: 68
+  - name: non_overlapping_small_rank
+    in:
+      n: 6
+      a: 29
+      b: 31
+      c: 37
+    out: 74
+  - name: unit_a_position
+    in:
+      n: 999999937
+      a: 1
+      b: 999999937
+      c: 999999929
+    out: 999999937
+  - name: unit_b_position
+    in:
+      n: 1000000000
+      a: 999999937
+      b: 1
+      c: 999999929
+    out: 1000000000
+  - name: unit_c_position
+    in:
+      n: 2
+      a: 999999937
+      b: 999999929
+      c: 1
+    out: 2
+  - name: one_large_and_two_small
+    in:
+      n: 100
+      a: 1000000000
+      b: 2
+      c: 4
+    out: 200
+  - name: large_lcm_without_overlap_in_range
+    in:
+      n: 3
+      a: 500000000
+      b: 600000000
+      c: 700000000
+    out: 700000000
+  - name: exact_pairwise_lcm_boundary
+    in:
+      n: 8
+      a: 6
+      b: 10
+      c: 15
+    out: 30
+  - name: result_at_two_billion
+    in:
+      n: 1000000000
+      a: 2
+      b: 4
+      c: 8
+    out: 2000000000
+  - name: high_rank_with_single_divisor
+    in:
+      n: 1000000000
+      a: 1000000000
+      b: 1
+      c: 1
+    out: 1000000000
+  - name: equal_large_divisors
+    in:
+      n: 2
+      a: 1000000
+      b: 1000000
+      c: 1000000
+    out: 2000000
+  - name: generated_large_rank_unit_a
+    seed: 101
+    in:
+      n:
+        gen: int
+        min: 900000000
+        max: 1000000000
+      a: 1
+      b:
+        gen: int
+        min: 1
+        max: 1000000000
+      c:
+        gen: int
+        min: 1
+        max: 1000000000
+  - name: generated_large_rank_unit_b
+    seed: 202
+    in:
+      n:
+        gen: int
+        min: 900000000
+        max: 1000000000
+      a:
+        gen: int
+        min: 1
+        max: 1000000000
+      b: 1
+      c:
+        gen: int
+        min: 1
+        max: 1000000000
+  - name: generated_large_rank_unit_c
+    seed: 303
+    in:
+      n:
+        gen: int
+        min: 900000000
+        max: 1000000000
+      a:
+        gen: int
+        min: 1
+        max: 1000000000
+      b:
+        gen: int
+        min: 1
+        max: 1000000000
+      c: 1
+  - name: generated_sparse_large_divisors
+    seed: 404
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 1000
+      a:
+        gen: int
+        min: 100000
+        max: 1000000
+      b:
+        gen: int
+        min: 100000
+        max: 1000000
+      c:
+        gen: int
+        min: 100000
+        max: 1000000
+  - name: generated_medium_dense
+    seed: 505
+    in:
+      n:
+        gen: int
+        min: 1
+        max: 100000
+      a:
+        gen: int
+        min: 1
+        max: 10000
+      b:
+        gen: int
+        min: 1
+        max: 10000
+      c:
+        gen: int
+        min: 1
+        max: 10000
+  - name: generated_high_rank_small_divisors
+    seed: 606
+    in:
+      n:
+        gen: int
+        min: 900000000
+        max: 1000000000
+      a:
+        gen: int
+        min: 1
+        max: 2
+      b:
+        gen: int
+        min: 3
+        max: 4
+      c:
+        gen: int
+        min: 5
+        max: 6

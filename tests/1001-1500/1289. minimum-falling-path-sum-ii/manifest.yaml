@@ -1,0 +1,514 @@
+entry:
+  id: 1289
+  title: "minimum-falling-path-sum-ii"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minFallingPathSum({grid})"
+    rust: "Solution::min_falling_path_sum({grid})"
+    python3: "Solution().minFallingPathSum({grid})"
+    python2: "Solution().minFallingPathSum({grid})"
+    ruby: "min_falling_path_sum({grid})"
+    java: "new Solution().minFallingPathSum({grid})"
+    csharp: "new Solution().MinFallingPathSum({grid})"
+    kotlin: "Solution().minFallingPathSum({grid})"
+    go: "minFallingPathSum({grid})"
+    dart: "Solution().minFallingPathSum({grid})"
+    swift: "Solution().minFallingPathSum({grid})"
+    typescript: "minFallingPathSum({grid})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().minFallingPathSum(grid, {result})"
+    checker: |
+      class Checker:
+          def minFallingPathSum(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              previous = grid[0][:]
+              for row in grid[1:]:
+                  current = []
+                  for col, value in enumerate(row):
+                      best = min(previous[other] for other in range(len(row)) if other != col)
+                      current.append(value + best)
+                  previous = current
+              return result == min(previous)
+seed: 1289
+tests:
+  - name: "example_three_by_three"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+          - [7, 8, 9]
+    out: 13
+  - name: "example_single_cell"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [7]
+    out: 7
+  - name: "single_minimum"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-99]
+    out: -99
+  - name: "two_by_two_negative_tie"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-1, -2]
+          - [-3, -4]
+    out: -5
+  - name: "two_by_two_alternating_extremes"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [99, -99]
+          - [-99, 99]
+    out: -198
+  - name: "two_by_two_reverse_extremes"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-99, 99]
+          - [99, -99]
+    out: -198
+  - name: "three_by_three_all_negative"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-99, -99, -99]
+          - [-99, -99, -99]
+          - [-99, -99, -99]
+    out: -297
+  - name: "reuse_column_after_one_row"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 99, 99]
+          - [99, 1, 99]
+          - [1, 99, 99]
+    out: 3
+  - name: "forced_expensive_shift"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 1, 2]
+          - [0, 99, 99]
+          - [0, 1, 2]
+    out: 2
+  - name: "three_by_three_mixed_signs"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [7, -3, 8]
+          - [6, 1, -5]
+          - [-2, 4, 9]
+    out: -10
+  - name: "three_by_three_repeated_minimum"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5, 0, 0]
+          - [0, 5, 5]
+          - [5, 0, 0]
+    out: 0
+  - name: "three_by_three_diagonal_trap"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-8, 5, 5]
+          - [5, -8, 5]
+          - [5, 5, -8]
+    out: -24
+  - name: "four_by_four_example_like"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 9, 4, 5]
+          - [1, 0, 8, 3]
+          - [7, 6, 2, 4]
+          - [3, 5, 1, 9]
+    out: 7
+  - name: "four_by_four_negative_corridor"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-9, 4, 4, 4]
+          - [4, -9, 4, 4]
+          - [4, 4, -9, 4]
+          - [4, 4, 4, -9]
+    out: -36
+  - name: "four_by_four_column_zero_trap"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-10, 1, 2, 3]
+          - [-10, 20, 20, 20]
+          - [-10, 1, 2, 3]
+          - [-10, 20, 20, 20]
+    out: -18
+  - name: "four_by_four_boundary_values"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [99, -99, 99, -99]
+          - [-99, 99, -99, 99]
+          - [99, -99, 99, -99]
+          - [-99, 99, -99, 99]
+    out: -396
+  - name: "four_by_four_multiple_equal_paths"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0, 5, 5]
+          - [0, 0, 5, 5]
+          - [5, 5, 0, 0]
+          - [0, 0, 5, 5]
+    out: 0
+  - name: "five_by_five_descending_rows"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [9, 8, 7, 6, 5]
+          - [5, 6, 7, 8, 9]
+          - [9, 1, 9, 9, 9]
+          - [9, 9, 1, 9, 9]
+          - [9, 9, 9, 1, 9]
+    out: 13
+  - name: "five_by_five_alternating_zero_columns"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 9, 9, 9, 9]
+          - [9, 0, 9, 9, 9]
+          - [0, 9, 9, 9, 9]
+          - [9, 0, 9, 9, 9]
+          - [0, 9, 9, 9, 9]
+    out: 0
+  - name: "five_by_five_global_vs_greedy"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 4, 4, 4, 4]
+          - [0, 50, 50, 50, 50]
+          - [0, 1, 1, 1, 1]
+          - [0, 50, 50, 50, 50]
+          - [0, 1, 1, 1, 1]
+    out: 6
+  - name: "five_by_five_dense_mixed"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [3, -4, 2, 8, 1]
+          - [6, 5, -7, 4, 0]
+          - [-2, 9, 3, -5, 7]
+          - [8, -6, 1, 2, -3]
+          - [4, 0, -8, 6, 5]
+    out: -30
+  - name: "six_by_six_shifted_diagonal"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-6, 8, 8, 8, 8, 8]
+          - [8, -6, 8, 8, 8, 8]
+          - [8, 8, -6, 8, 8, 8]
+          - [8, 8, 8, -6, 8, 8]
+          - [8, 8, 8, 8, -6, 8]
+          - [8, 8, 8, 8, 8, -6]
+    out: -36
+  - name: "six_by_six_opposite_corners"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-9, 9, 9, 9, 9, 9]
+          - [9, 9, 9, 9, 9, -9]
+          - [-9, 9, 9, 9, 9, 9]
+          - [9, 9, 9, 9, 9, -9]
+          - [-9, 9, 9, 9, 9, 9]
+          - [9, 9, 9, 9, 9, -9]
+    out: -54
+  - name: "six_by_six_sparse_negative"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 4, -5, 4, 4, 4]
+          - [4, -5, 4, 4, 4, 4]
+          - [4, 4, -5, 4, 4, 4]
+          - [4, -5, 4, 4, 4, 4]
+          - [4, 4, -5, 4, 4, 4]
+          - [4, -5, 4, 4, 4, 4]
+    out: -30
+  - name: "six_by_six_tie_for_second_best"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [0, 0, 4, 4, 4, 4]
+          - [0, 0, 4, 4, 4, 4]
+          - [4, 4, 0, 0, 4, 4]
+          - [4, 4, 0, 0, 4, 4]
+          - [0, 0, 4, 4, 4, 4]
+          - [0, 0, 4, 4, 4, 4]
+    out: 0
+  - name: "seven_by_seven_alternating_extremes"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-99, 99, 99, 99, 99, 99, 99]
+          - [99, -99, 99, 99, 99, 99, 99]
+          - [-99, 99, 99, 99, 99, 99, 99]
+          - [99, -99, 99, 99, 99, 99, 99]
+          - [-99, 99, 99, 99, 99, 99, 99]
+          - [99, -99, 99, 99, 99, 99, 99]
+          - [-99, 99, 99, 99, 99, 99, 99]
+    out: -693
+  - name: "seven_by_seven_center_avoidance"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [7, 7, 7, -8, 7, 7, 7]
+          - [7, 7, 7, -8, 7, 7, 7]
+          - [7, 7, -8, 7, -8, 7, 7]
+          - [7, -8, 7, 7, 7, -8, 7]
+          - [-8, 7, 7, 7, 7, 7, -8]
+          - [7, -8, 7, 7, 7, -8, 7]
+          - [7, 7, -8, 7, -8, 7, 7]
+    out: -41
+  - name: "seven_by_seven_row_minimum_collision"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-10, 2, 2, 2, 2, 2, 2]
+          - [-10, 2, 2, 2, 2, 2, 2]
+          - [2, -10, 2, 2, 2, 2, 2]
+          - [2, -10, 2, 2, 2, 2, 2]
+          - [2, 2, -10, 2, 2, 2, 2]
+          - [2, 2, -10, 2, 2, 2, 2]
+          - [-10, 2, 2, 2, 2, 2, 2]
+    out: -34
+  - name: "eight_by_eight_checkerboard"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-3, 6, -3, 6, -3, 6, -3, 6]
+          - [6, -3, 6, -3, 6, -3, 6, -3]
+          - [-3, 6, -3, 6, -3, 6, -3, 6]
+          - [6, -3, 6, -3, 6, -3, 6, -3]
+          - [-3, 6, -3, 6, -3, 6, -3, 6]
+          - [6, -3, 6, -3, 6, -3, 6, -3]
+          - [-3, 6, -3, 6, -3, 6, -3, 6]
+          - [6, -3, 6, -3, 6, -3, 6, -3]
+    out: -24
+  - name: "eight_by_eight_wide_choice"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [8, 7, 6, 5, 4, 3, 2, 1]
+          - [1, 2, 3, 4, 5, 6, 7, 8]
+          - [8, 1, 8, 8, 8, 8, 8, 8]
+          - [8, 8, 1, 8, 8, 8, 8, 8]
+          - [8, 8, 8, 1, 8, 8, 8, 8]
+          - [8, 8, 8, 8, 1, 8, 8, 8]
+          - [8, 8, 8, 8, 8, 1, 8, 8]
+          - [8, 8, 8, 8, 8, 8, 1, 8]
+    out: 8
+  - name: "nine_by_nine_negative_zigzag"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-4, 3, 3, 3, 3, 3, 3, 3, 3]
+          - [3, -4, 3, 3, 3, 3, 3, 3, 3]
+          - [-4, 3, 3, 3, 3, 3, 3, 3, 3]
+          - [3, -4, 3, 3, 3, 3, 3, 3, 3]
+          - [-4, 3, 3, 3, 3, 3, 3, 3, 3]
+          - [3, -4, 3, 3, 3, 3, 3, 3, 3]
+          - [-4, 3, 3, 3, 3, 3, 3, 3, 3]
+          - [3, -4, 3, 3, 3, 3, 3, 3, 3]
+          - [-4, 3, 3, 3, 3, 3, 3, 3, 3]
+    out: -36
+  - name: "nine_by_nine_mixed_layers"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, -1, 4, 0, 3, -2, 5, 1, 6]
+          - [3, 5, -4, 2, 1, 6, -1, 4, 0]
+          - [-3, 2, 1, 5, -5, 3, 4, 0, 2]
+          - [4, -6, 3, 1, 2, -2, 5, 0, 6]
+          - [1, 4, -7, 3, 0, 2, -1, 5, 6]
+          - [5, 0, 2, -8, 4, 1, 3, -2, 6]
+          - [-4, 3, 1, 2, -3, 5, 0, 4, 6]
+          - [2, -5, 4, 0, 3, 1, -6, 5, 7]
+          - [1, 3, -2, 4, 0, -4, 2, 5, 6]
+    out: -46
+  - name: "ten_by_ten_alternating_columns"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-2, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [5, -2, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [-2, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [5, -2, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [-2, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [5, -2, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [-2, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [5, -2, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [-2, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+          - [5, -2, 5, 5, 5, 5, 5, 5, 5, 5]
+    out: -20
+  - name: "ten_by_ten_broad_negative_choices"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-1, -1, 9, 9, 9, 9, 9, 9, 9, 9]
+          - [-1, -1, 9, 9, 9, 9, 9, 9, 9, 9]
+          - [9, 9, -1, -1, 9, 9, 9, 9, 9, 9]
+          - [9, 9, -1, -1, 9, 9, 9, 9, 9, 9]
+          - [9, 9, 9, 9, -1, -1, 9, 9, 9, 9]
+          - [9, 9, 9, 9, -1, -1, 9, 9, 9, 9]
+          - [9, 9, 9, 9, 9, 9, -1, -1, 9, 9]
+          - [9, 9, 9, 9, 9, 9, -1, -1, 9, 9]
+          - [9, 9, 9, 9, 9, 9, 9, 9, -1, -1]
+          - [9, 9, 9, 9, 9, 9, 9, 9, -1, -1]
+    out: -10
+  - name: "eleven_by_eleven_alternating_endpoints"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [-3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+          - [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -3]
+          - [-3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+          - [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -3]
+          - [-3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+          - [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -3]
+          - [-3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+          - [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -3]
+          - [-3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+          - [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -3]
+          - [-3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+    out: -33
+  - name: "generated_max_square_uniform_range_a"
+    seed: 128901
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 200
+          elemType: "int"
+          of:
+            gen: "int"
+            min: -99
+            max: 99
+
+  - name: "generated_max_square_uniform_range_b"
+    seed: 128902
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 200
+          elemType: "int"
+          of:
+            gen: "int"
+            min: -99
+            max: 99
+
+  - name: "generated_max_square_nonnegative"
+    seed: 128903
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 200
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 99
+
+  - name: "generated_max_square_nonpositive"
+    seed: 128904
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 200
+          elemType: "int"
+          of:
+            gen: "int"
+            min: -99
+            max: 0
+
+  - name: "generated_max_square_boundary_values"
+    seed: 128905
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 200
+          elemType: "int"
+          of:
+            gen: "int"
+            min: -99
+            max: 99

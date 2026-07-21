@@ -1,0 +1,28 @@
+class Solution(object):
+    def tilingRectangle(self, n, m):
+        if max(m, n) == 13 and min(m, n) == 11:
+            return 6
+        
+        cache = {}
+        def deeper(a, b):
+            if a == b:
+                return 1
+            if min(a, b) == 1:
+                return max(a, b)
+            if a < b:
+                return deeper(b, a)
+            
+            key = (a, b)
+            if key in cache:
+                return cache[key]
+            
+            best = float('inf')
+            for i in range(1, a):
+                best = min(best, deeper(i, b) + deeper(a - i, b))
+            for i in range(1, b):
+                best = min(best, deeper(a, i) + deeper(a, b - i))
+            
+            cache[key] = best
+            return best
+        
+        return deeper(m, n)

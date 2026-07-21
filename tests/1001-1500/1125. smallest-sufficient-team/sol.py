@@ -1,6 +1,6 @@
-from typing import List
 import collections
 import math
+from typing import List
 
 
 class Solution:

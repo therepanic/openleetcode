@@ -1,0 +1,643 @@
+entry:
+  id: 1453
+  title: "maximum-number-of-darts-inside-of-a-circular-dartboard"
+  params:
+    darts:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    r:
+      type: int
+  call:
+    cpp: "Solution().numPoints({darts}, {r})"
+    rust: "Solution::num_points({darts}, {r})"
+    python3: "Solution().numPoints({darts}, {r})"
+    python2: "Solution().numPoints({darts}, {r})"
+    ruby: "num_points({darts}, {r})"
+    java: "new Solution().numPoints({darts}, {r})"
+    csharp: "new Solution().NumPoints({darts}, {r})"
+    kotlin: "Solution().numPoints({darts}, {r})"
+    go: "numPoints({darts}, {r})"
+    dart: "Solution().numPoints({darts}, {r})"
+    swift: "Solution().numPoints({darts}, {r})"
+    typescript: "numPoints({darts}, {r})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1200
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().numPoints(darts, r, {result})"
+    checker: |
+      class Checker:
+          def numPoints(self, darts, r, result):
+              from math import hypot, sqrt
+              centers = [(float(x), float(y)) for x, y in darts]
+              for i, (x1, y1) in enumerate(darts):
+                  for x2, y2 in darts[i + 1:]:
+                      dx = x2 - x1
+                      dy = y2 - y1
+                      distance = hypot(dx, dy)
+                      if distance > 2 * r:
+                          continue
+                      mx = (x1 + x2) / 2.0
+                      my = (y1 + y2) / 2.0
+                      h = sqrt(max(0.0, r * r - distance * distance / 4.0))
+                      centers.append((mx - dy / distance * h, my + dx / distance * h))
+                      centers.append((mx + dy / distance * h, my - dx / distance * h))
+              expected = max(
+                  sum((x - cx) ** 2 + (y - cy) ** 2 <= r * r + 1e-7 for x, y in darts)
+                  for cx, cy in centers
+              )
+              return result == expected
+seed: 1453
+tests:
+  - name: "official-cross"
+    in:
+      darts:
+        - [-2, 0]
+        - [2, 0]
+        - [0, 2]
+        - [0, -2]
+      r: 2
+    out: 4
+  - name: "official-wide-cloud"
+    in:
+      darts:
+        - [-3, 0]
+        - [3, 0]
+        - [2, 6]
+        - [5, 4]
+        - [0, 9]
+        - [7, 8]
+      r: 5
+    out: 5
+  - name: "single-point"
+    in:
+      darts:
+        - [0, 0]
+      r: 1
+    out: 1
+  - name: "two-close-points"
+    in:
+      darts:
+        - [0, 0]
+        - [2, 0]
+      r: 1
+    out: 2
+  - name: "two-far-points"
+    in:
+      darts:
+        - [0, 0]
+        - [3, 0]
+      r: 1
+    out: 1
+  - name: "three-collinear-close"
+    in:
+      darts:
+        - [-2, 0]
+        - [0, 0]
+        - [2, 0]
+      r: 2
+    out: 3
+  - name: "three-collinear-wide"
+    in:
+      darts:
+        - [-4, 0]
+        - [0, 0]
+        - [4, 0]
+      r: 2
+    out: 2
+  - name: "unit-square"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+        - [1, 1]
+      r: 1
+    out: 4
+  - name: "diamond-radius-three"
+    in:
+      darts:
+        - [-3, 0]
+        - [3, 0]
+        - [0, -3]
+        - [0, 3]
+      r: 3
+    out: 4
+  - name: "diamond-too-small"
+    in:
+      darts:
+        - [-3, 0]
+        - [3, 0]
+        - [0, -3]
+        - [0, 3]
+      r: 2
+    out: 1
+  - name: "vertical-cluster"
+    in:
+      darts:
+        - [4, 1]
+        - [4, 2]
+        - [4, 3]
+        - [4, 4]
+        - [4, 5]
+      r: 2
+    out: 5
+  - name: "horizontal-cluster"
+    in:
+      darts:
+        - [-4, 7]
+        - [-3, 7]
+        - [-2, 7]
+        - [-1, 7]
+        - [0, 7]
+      r: 2
+    out: 5
+  - name: "two-clusters"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+        - [10, 10]
+        - [11, 10]
+        - [10, 11]
+      r: 2
+    out: 3
+  - name: "negative-quadrant"
+    in:
+      darts:
+        - [-5, -5]
+        - [-4, -5]
+        - [-5, -4]
+        - [-4, -4]
+      r: 1
+    out: 4
+  - name: "large-coordinates-close"
+    in:
+      darts:
+        - [10000, 10000]
+        - [9999, 10000]
+        - [10000, 9999]
+        - [9999, 9999]
+      r: 1
+    out: 4
+  - name: "boundary-coordinate-mix"
+    in:
+      darts:
+        - [-10000, -10000]
+        - [-9999, -10000]
+        - [10000, 10000]
+      r: 1
+    out: 2
+  - name: "rectangle-corners"
+    in:
+      darts:
+        - [0, 0]
+        - [4, 0]
+        - [0, 3]
+        - [4, 3]
+      r: 2
+    out: 2
+  - name: "rectangle-large-radius"
+    in:
+      darts:
+        - [0, 0]
+        - [4, 0]
+        - [0, 3]
+        - [4, 3]
+      r: 3
+    out: 4
+  - name: "pentagon-small"
+    in:
+      darts:
+        - [0, 2]
+        - [2, 1]
+        - [1, -2]
+        - [-1, -2]
+        - [-2, 1]
+      r: 2
+    out: 3
+  - name: "star-shape"
+    in:
+      darts:
+        - [0, 0]
+        - [2, 0]
+        - [-2, 0]
+        - [0, 2]
+        - [0, -2]
+        - [1, 1]
+        - [-1, -1]
+      r: 2
+    out: 7
+  - name: "diagonal-line"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+      r: 2
+    out: 3
+  - name: "diagonal-line-short-radius"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+      r: 1
+    out: 2
+  - name: "irregular-positive"
+    in:
+      darts:
+        - [1, 4]
+        - [3, 5]
+        - [5, 2]
+        - [7, 6]
+        - [8, 1]
+      r: 3
+    out: 3
+  - name: "irregular-negative"
+    in:
+      darts:
+        - [-8, -1]
+        - [-7, -5]
+        - [-4, -2]
+        - [-2, -6]
+        - [0, -3]
+      r: 3
+    out: 3
+  - name: "dense-grid"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [2, 0]
+        - [0, 1]
+        - [1, 1]
+        - [2, 1]
+        - [0, 2]
+        - [1, 2]
+        - [2, 2]
+      r: 2
+    out: 9
+  - name: "grid-corners-only"
+    in:
+      darts:
+        - [0, 0]
+        - [2, 0]
+        - [0, 2]
+        - [2, 2]
+        - [1, 1]
+      r: 1
+    out: 3
+  - name: "one-outlier"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+        - [1, 1]
+        - [20, 20]
+      r: 1
+    out: 4
+  - name: "two-outliers"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+        - [20, 20]
+        - [-20, -20]
+      r: 1
+    out: 3
+  - name: "radius-one-chain"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [2, 0]
+        - [3, 0]
+        - [4, 0]
+        - [5, 0]
+      r: 1
+    out: 3
+  - name: "radius-five-chain"
+    in:
+      darts:
+        - [0, 0]
+        - [2, 0]
+        - [4, 0]
+        - [6, 0]
+        - [8, 0]
+        - [10, 0]
+      r: 5
+    out: 6
+  - name: "mixed-boundary"
+    in:
+      darts:
+        - [-10000, 0]
+        - [-9998, 0]
+        - [9998, 0]
+        - [10000, 0]
+      r: 2
+    out: 2
+  - name: "near-tangent-pair"
+    in:
+      darts:
+        - [0, 0]
+        - [6, 8]
+        - [3, 4]
+      r: 5
+    out: 3
+  - name: "off-axis-triangle"
+    in:
+      darts:
+        - [0, 0]
+        - [4, 0]
+        - [2, 3]
+        - [8, 8]
+      r: 3
+    out: 3
+  - name: "many-close-points"
+    in:
+      darts:
+        - [-1, -1]
+        - [0, -1]
+        - [1, -1]
+        - [-1, 0]
+        - [0, 0]
+        - [1, 0]
+        - [-1, 1]
+        - [0, 1]
+        - [1, 1]
+      r: 2
+    out: 9
+  - name: "offset-square"
+    in:
+      darts:
+        - [10, 10]
+        - [12, 10]
+        - [10, 12]
+        - [12, 12]
+        - [11, 11]
+      r: 2
+    out: 5
+  - name: "ten-by-ten-unit-grid"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [2, 0]
+        - [3, 0]
+        - [4, 0]
+        - [5, 0]
+        - [6, 0]
+        - [7, 0]
+        - [8, 0]
+        - [9, 0]
+        - [0, 1]
+        - [1, 1]
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [5, 1]
+        - [6, 1]
+        - [7, 1]
+        - [8, 1]
+        - [9, 1]
+        - [0, 2]
+        - [1, 2]
+        - [2, 2]
+        - [3, 2]
+        - [4, 2]
+        - [5, 2]
+        - [6, 2]
+        - [7, 2]
+        - [8, 2]
+        - [9, 2]
+        - [0, 3]
+        - [1, 3]
+        - [2, 3]
+        - [3, 3]
+        - [4, 3]
+        - [5, 3]
+        - [6, 3]
+        - [7, 3]
+        - [8, 3]
+        - [9, 3]
+        - [0, 4]
+        - [1, 4]
+        - [2, 4]
+        - [3, 4]
+        - [4, 4]
+        - [5, 4]
+        - [6, 4]
+        - [7, 4]
+        - [8, 4]
+        - [9, 4]
+        - [0, 5]
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+        - [5, 5]
+        - [6, 5]
+        - [7, 5]
+        - [8, 5]
+        - [9, 5]
+        - [0, 6]
+        - [1, 6]
+        - [2, 6]
+        - [3, 6]
+        - [4, 6]
+        - [5, 6]
+        - [6, 6]
+        - [7, 6]
+        - [8, 6]
+        - [9, 6]
+        - [0, 7]
+        - [1, 7]
+        - [2, 7]
+        - [3, 7]
+        - [4, 7]
+        - [5, 7]
+        - [6, 7]
+        - [7, 7]
+        - [8, 7]
+        - [9, 7]
+        - [0, 8]
+        - [1, 8]
+        - [2, 8]
+        - [3, 8]
+        - [4, 8]
+        - [5, 8]
+        - [6, 8]
+        - [7, 8]
+        - [8, 8]
+        - [9, 8]
+        - [0, 9]
+        - [1, 9]
+        - [2, 9]
+        - [3, 9]
+        - [4, 9]
+        - [5, 9]
+        - [6, 9]
+        - [7, 9]
+        - [8, 9]
+        - [9, 9]
+      r: 3
+    out: 32
+  - name: "ten-by-ten-max-radius-grid"
+    in:
+      darts:
+        - [0, 0]
+        - [1, 0]
+        - [2, 0]
+        - [3, 0]
+        - [4, 0]
+        - [5, 0]
+        - [6, 0]
+        - [7, 0]
+        - [8, 0]
+        - [9, 0]
+        - [0, 1]
+        - [1, 1]
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [5, 1]
+        - [6, 1]
+        - [7, 1]
+        - [8, 1]
+        - [9, 1]
+        - [0, 2]
+        - [1, 2]
+        - [2, 2]
+        - [3, 2]
+        - [4, 2]
+        - [5, 2]
+        - [6, 2]
+        - [7, 2]
+        - [8, 2]
+        - [9, 2]
+        - [0, 3]
+        - [1, 3]
+        - [2, 3]
+        - [3, 3]
+        - [4, 3]
+        - [5, 3]
+        - [6, 3]
+        - [7, 3]
+        - [8, 3]
+        - [9, 3]
+        - [0, 4]
+        - [1, 4]
+        - [2, 4]
+        - [3, 4]
+        - [4, 4]
+        - [5, 4]
+        - [6, 4]
+        - [7, 4]
+        - [8, 4]
+        - [9, 4]
+        - [0, 5]
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+        - [5, 5]
+        - [6, 5]
+        - [7, 5]
+        - [8, 5]
+        - [9, 5]
+        - [0, 6]
+        - [1, 6]
+        - [2, 6]
+        - [3, 6]
+        - [4, 6]
+        - [5, 6]
+        - [6, 6]
+        - [7, 6]
+        - [8, 6]
+        - [9, 6]
+        - [0, 7]
+        - [1, 7]
+        - [2, 7]
+        - [3, 7]
+        - [4, 7]
+        - [5, 7]
+        - [6, 7]
+        - [7, 7]
+        - [8, 7]
+        - [9, 7]
+        - [0, 8]
+        - [1, 8]
+        - [2, 8]
+        - [3, 8]
+        - [4, 8]
+        - [5, 8]
+        - [6, 8]
+        - [7, 8]
+        - [8, 8]
+        - [9, 8]
+        - [0, 9]
+        - [1, 9]
+        - [2, 9]
+        - [3, 9]
+        - [4, 9]
+        - [5, 9]
+        - [6, 9]
+        - [7, 9]
+        - [8, 9]
+        - [9, 9]
+      r: 5000
+    out: 100
+  - name: "axis-cross-with-far-corners"
+    in:
+      darts:
+        - [-5, 0]
+        - [-3, 0]
+        - [-1, 0]
+        - [1, 0]
+        - [3, 0]
+        - [5, 0]
+        - [0, 4]
+        - [0, -4]
+        - [20, 20]
+        - [-20, -20]
+      r: 5
+    out: 8
+  - name: "four-corner-boundary"
+    in:
+      darts:
+        - [-4, -3]
+        - [-4, 3]
+        - [4, -3]
+        - [4, 3]
+        - [0, 0]
+        - [0, 5]
+        - [0, -5]
+      r: 5
+    out: 7
+  - name: "separated-pairs"
+    in:
+      darts:
+        - [-10000, 10000]
+        - [-9999, 10000]
+        - [9999, -10000]
+        - [10000, -10000]
+        - [0, 0]
+        - [2, 0]
+        - [0, 2]
+        - [2, 2]
+      r: 1
+    out: 2

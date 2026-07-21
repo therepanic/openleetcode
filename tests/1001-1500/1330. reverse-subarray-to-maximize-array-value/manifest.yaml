@@ -1,0 +1,209 @@
+entry:
+  id: 1330
+  title: "reverse-subarray-to-maximize-array-value"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxValueAfterReverse({nums})"
+    rust: "Solution::max_value_after_reverse({nums})"
+    python3: "Solution().maxValueAfterReverse({nums})"
+    python2: "Solution().maxValueAfterReverse({nums})"
+    ruby: "max_value_after_reverse({nums})"
+    java: "new Solution().maxValueAfterReverse({nums})"
+    csharp: "new Solution().MaxValueAfterReverse({nums})"
+    kotlin: "Solution().maxValueAfterReverse({nums})"
+    go: "maxValueAfterReverse({nums})"
+    dart: "Solution().maxValueAfterReverse({nums})"
+    swift: "Solution().maxValueAfterReverse({nums})"
+    typescript: "maxValueAfterReverse({nums})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxValueAfterReverse(nums, {result})"
+    checker: |
+      class Checker:
+          def maxValueAfterReverse(self, nums, result):
+              if not isinstance(result, int) or len(nums) < 2:
+                  return False
+              base = 0
+              endpoint_gain = 0
+              largest_lower = -10**18
+              smallest_upper = 10**18
+              for left, right in zip(nums, nums[1:]):
+                  edge = abs(left - right)
+                  base += edge
+                  endpoint_gain = max(
+                      endpoint_gain,
+                      abs(nums[-1] - left) - edge,
+                      abs(nums[0] - right) - edge,
+                  )
+                  largest_lower = max(largest_lower, min(left, right))
+                  smallest_upper = min(smallest_upper, max(left, right))
+              interior_gain = 2 * (largest_lower - smallest_upper)
+              return result == base + max(0, endpoint_gain, interior_gain)
+seed: 1330
+tests:
+  - name: "example_one"
+    in:
+      nums: [2, 3, 1, 5, 4]
+    out: 10
+  - name: "example_two"
+    in:
+      nums: [2, 4, 9, 24, 2, 1, 10]
+    out: 68
+  - name: "two_equal"
+    in:
+      nums: [7, 7]
+  - name: "two_min_to_max"
+    in:
+      nums: [-100000, 100000]
+  - name: "two_max_to_min"
+    in:
+      nums: [100000, -100000]
+  - name: "all_equal"
+    in:
+      nums: [42, 42, 42, 42, 42]
+  - name: "strictly_increasing"
+    in:
+      nums: [-9, -4, 0, 3, 11]
+  - name: "strictly_decreasing"
+    in:
+      nums: [11, 3, 0, -4, -9]
+  - name: "three_element_peak"
+    in:
+      nums: [1, 10, 2]
+  - name: "three_element_valley"
+    in:
+      nums: [10, 1, 9]
+  - name: "alternating_small"
+    in:
+      nums: [0, 9, 1, 8, 2, 7]
+  - name: "alternating_extremes"
+    in:
+      nums: [-100000, 100000, -100000, 100000, -100000]
+  - name: "duplicate_plateaus"
+    in:
+      nums: [1, 1, 9, 9, 1, 1]
+  - name: "negative_only"
+    in:
+      nums: [-8, -1, -6, -2, -10, -3]
+  - name: "crosses_zero"
+    in:
+      nums: [-5, 0, 7, -2, 4]
+  - name: "endpoint_left_gain"
+    in:
+      nums: [20, 1, 2, 3, 19]
+  - name: "endpoint_right_gain"
+    in:
+      nums: [19, 3, 2, 1, 20]
+  - name: "interior_gain"
+    in:
+      nums: [8, 3, 12, 4, 6]
+  - name: "equal_edges"
+    in:
+      nums: [5, 1, 5, 1, 5]
+  - name: "long_flat_prefix"
+    in:
+      nums: [4, 4, 4, 10, 0, 4]
+  - name: "long_flat_suffix"
+    in:
+      nums: [4, 0, 10, 4, 4, 4]
+  - name: "repeated_low_high"
+    in:
+      nums: [2, 9, 2, 9, 2, 9, 2]
+  - name: "zigzag_with_duplicates"
+    in:
+      nums: [3, 8, 3, 8, 5, 5, 1]
+  - name: "large_positive_values"
+    in:
+      nums: [99999, 1, 99998, 2, 100000]
+  - name: "large_negative_values"
+    in:
+      nums: [-99999, -1, -99998, -2, -100000]
+  - name: "symmetric_walk"
+    in:
+      nums: [0, 6, 2, 8, 2, 6, 0]
+  - name: "mixed_seven"
+    in:
+      nums: [7, -2, 9, -1, 8, -3, 6]
+  - name: "small_steps_with_outlier"
+    in:
+      nums: [1, 2, 3, 100, 4, 5, 6]
+  - name: "outlier_at_start"
+    in:
+      nums: [100, 1, 2, 3, 4, 5]
+  - name: "outlier_at_end"
+    in:
+      nums: [5, 4, 3, 2, 1, 100]
+  - name: "two_runs"
+    in:
+      nums: [1, 2, 8, 9, 3, 4]
+  - name: "many_adjacent_duplicates"
+    in:
+      nums: [-3, -3, 4, 4, 4, -3, -3, 4]
+  - name: "near_boundary_values"
+    in:
+      nums: [-100000, -99999, 99999, 100000, -100000]
+  - name: "nontrivial_nine"
+    in:
+      nums: [13, -7, 4, 4, -12, 9, 0, 15, -3]
+  - name: "wide_range_ten"
+    in:
+      nums: [-50, 40, -30, 20, -10, 0, 10, -20, 30, -40]
+  - name: "generated_minimum_length"
+    seed: 101
+    in:
+      nums:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+  - name: "generated_short_random"
+    seed: 202
+    in:
+      nums:
+        gen: "array"
+        len: 37
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+  - name: "generated_duplicate_dense"
+    seed: 303
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: -3
+          max: 3
+  - name: "generated_maximum_length_full_range"
+    seed: 404
+    in:
+      nums:
+        gen: "array"
+        len: 30000
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+  - name: "generated_near_maximum_length"
+    seed: 505
+    in:
+      nums:
+        gen: "array"
+        len: 29999
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000

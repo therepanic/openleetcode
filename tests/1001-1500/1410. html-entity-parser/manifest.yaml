@@ -1,0 +1,201 @@
+entry:
+  id: 1410
+  title: html-entity-parser
+  params:
+    text:
+      type: string
+  call:
+    cpp: "Solution().entityParser({text})"
+    rust: "Solution::entity_parser({text})"
+    python3: "Solution().entityParser({text})"
+    python2: "Solution().entityParser({text})"
+    ruby: "entity_parser({text})"
+    java: "new Solution().entityParser({text})"
+    csharp: "new Solution().EntityParser({text})"
+    kotlin: "Solution().entityParser({text})"
+    go: "entityParser({text})"
+    dart: "Solution().entityParser({text})"
+    swift: "Solution().entityParser({text})"
+    typescript: "entityParser({text})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().entityParser(text, {result})"
+    checker: |
+      class Checker:
+          def entityParser(self, text, result):
+              replacements = {
+                  "&quot;": '"',
+                  "&apos;": "'",
+                  "&amp;": "&",
+                  "&gt;": ">",
+                  "&lt;": "<",
+                  "&frasl;": "/",
+              }
+              expected = []
+              i = 0
+              while i < len(text):
+                  if text[i] != "&":
+                      expected.append(text[i])
+                      i += 1
+                      continue
+                  end = i + 1
+                  while end < len(text) and text[end] not in ";&" and not text[end].isspace():
+                      end += 1
+                  if end < len(text) and text[end] == ";":
+                      token = text[i:end + 1]
+                      expected.append(replacements.get(token, token))
+                      i = end + 1
+                  else:
+                      expected.append("&")
+                      i += 1
+              return result == "".join(expected)
+
+seed: 1410
+
+tests:
+  - name: example_ampersand
+    in:
+      text: "&amp; is an HTML entity but &ambassador; is not."
+  - name: example_quotes
+    in:
+      text: "and I quote: &quot;...&quot;"
+  - name: single_character_entity
+    in:
+      text: "&amp;"
+  - name: all_supported_entities
+    in:
+      text: "&quot;&apos;&amp;&gt;&lt;&frasl;"
+  - name: adjacent_entities
+    in:
+      text: "&lt;&gt;&amp;&quot;&apos;&frasl;"
+  - name: entity_between_words
+    in:
+      text: "left&amp;right"
+  - name: html_fragment
+    in:
+      text: "&lt;p&gt;Tom&amp;Jerry&lt;/p&gt;"
+  - name: quoted_attribute
+    in:
+      text: "&lt;div title=&quot;a&amp;b&quot;&gt;ok&lt;/div&gt;"
+  - name: slash_path
+    in:
+      text: "https:&amp;frasl;&amp;frasl;example.com&amp;frasl;a"
+  - name: repeated_ampersands
+    in:
+      text: "&amp;&amp;&amp;&amp;&amp;"
+  - name: repeated_quotes
+    in:
+      text: "&quot;a&quot;&quot;b&quot;&quot;c&quot;"
+  - name: repeated_apostrophes
+    in:
+      text: "&apos;one&apos; &apos;two&apos;"
+  - name: comparison_expression
+    in:
+      text: "a &lt; b &amp;&amp; b &gt; a"
+  - name: whitespace_preserved
+    in:
+      text: "  &lt;  x  &gt;  "
+  - name: newline_preserved
+    in:
+      text: "line1&amp;line2\\nline3"
+  - name: ordinary_ampersand
+    in:
+      text: "rock & roll"
+  - name: malformed_without_semicolon
+    in:
+      text: "keep &amp and &lt unchanged"
+  - name: malformed_with_space
+    in:
+      text: "&amp value; &lt other;"
+  - name: unknown_entities
+    in:
+      text: "&copy; &unknown; &ampersand;"
+  - name: partial_entity_names
+    in:
+      text: "&am; &quo; &fr;"
+  - name: case_sensitive_names
+    in:
+      text: "&AMP; &Lt; &GT; &lt;"
+  - name: double_encoded
+    in:
+      text: "&amp;amp; &amp;lt; &amp;quot;"
+  - name: entity_after_entity
+    in:
+      text: "&amp;&lt;&amp;&gt;"
+  - name: ampersand_before_entity
+    in:
+      text: "&&amp; &amp;"
+  - name: ampersand_inside_candidate
+    in:
+      text: "&foo&amp; &amp;bar;"
+  - name: semicolon_without_ampersand
+    in:
+      text: "a;b;c;;;"
+  - name: punctuation_and_entities
+    in:
+      text: "(&quot;hello&quot;), [&apos;world&apos;]!"
+  - name: unicode_untouched
+    in:
+      text: "cafe eclair &amp; tea"
+  - name: ascii_punctuation
+    in:
+      text: "!#$%()*+,-./:<?@[\\]^_`{|}~ &lt;"
+  - name: entity_at_end
+    in:
+      text: "ends with &frasl;"
+  - name: entity_at_start
+    in:
+      text: "&gt; starts here"
+  - name: long_static_pattern
+    in:
+      text: "prefix &amp; middle &quot;quoted&quot; &lt;tag&gt; suffix &apos;x&apos;"
+  - name: entity_with_punctuation
+    in:
+      text: "&lt;=&gt; &amp; &quot;,&quot; &apos;!&apos;"
+  - name: semicolon_and_ampersand_edges
+    in:
+      text: "; &amp;; &&lt; &gt;;"
+  - name: generated_safe_mix
+    in:
+      text:
+        gen: str
+        len: 250
+        alphabet: "ab&; x"
+  - name: generated_entity_mix
+    in:
+      text:
+        gen: str
+        len: 1000
+        alphabet: "&;quotamplt z"
+  - name: generated_ascii_subset
+    in:
+      text:
+        gen: str
+        len: 4096
+        alphabet: "AZ09&;<> \\t"
+  - name: generated_large_mixed
+    in:
+      text:
+        gen: str
+        len: 90000
+        alphabet: "aeiou&; -_"
+  - name: generated_maximum_length
+    in:
+      text:
+        gen: str
+        len: 100000
+        alphabet: "x&;quot "
+  - name: generated_entity_focused
+    in:
+      text:
+        gen: str
+        len: 12000
+        alphabet: "&;ampltgrefsqu o"

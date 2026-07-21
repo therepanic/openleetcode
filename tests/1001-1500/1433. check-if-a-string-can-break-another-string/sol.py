@@ -1,0 +1,38 @@
+class Solution:
+    def checkIfCanBreak(self, s1, s2):
+
+        freq = [0] * 26
+        n = len(s1)
+
+        for ch in s1:
+            freq[ord(ch) - ord("a")] += 1
+
+        temp1 = []
+
+        for i in range(25, -1, -1):
+            while freq[i] > 0:
+                temp1.append(chr(ord("a") + i))
+                freq[i] -= 1
+
+        freq = [0] * 26
+
+        for ch in s2:
+            freq[ord(ch) - ord("a")] += 1
+
+        temp2 = []
+
+        for i in range(25, -1, -1):
+            while freq[i] > 0:
+                temp2.append(chr(ord("a") + i))
+                freq[i] -= 1
+
+        s1 = "".join(temp1)
+        s2 = "".join(temp2)
+
+        if all(s1[i] >= s2[i] for i in range(n)):
+            return True
+
+        if all(s2[i] >= s1[i] for i in range(n)):
+            return True
+
+        return False

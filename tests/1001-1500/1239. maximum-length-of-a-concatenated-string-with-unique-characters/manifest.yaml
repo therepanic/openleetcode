@@ -1,0 +1,344 @@
+entry:
+  id: 1239
+  title: "maximum-length-of-a-concatenated-string-with-unique-characters"
+  params:
+    arr:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().maxLength({arr})"
+    rust: "Solution::max_length({arr})"
+    python3: "Solution().maxLength({arr})"
+    python2: "Solution().maxLength({arr})"
+    ruby: "max_length({arr})"
+    java: "new Solution().maxLength({arr})"
+    csharp: "new Solution().MaxLength({arr})"
+    kotlin: "Solution().maxLength({arr})"
+    go: "maxLength({arr})"
+    dart: "Solution().maxLength({arr})"
+    swift: "Solution().maxLength({arr})"
+    typescript: "maxLength({arr})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxLength(arr, {result})"
+    checker: |
+      class Checker:
+          def maxLength(self, arr, result):
+              masks = []
+              for word in arr:
+                  mask = 0
+                  for ch in word:
+                      bit = 1 << (ord(ch) - 97)
+                      if mask & bit:
+                          break
+                      mask |= bit
+                  else:
+                      masks.append(mask)
+              best = 0
+              def dfs(i, used, length):
+                  nonlocal best
+                  best = max(best, length)
+                  for j in range(i, len(masks)):
+                      if not used & masks[j]:
+                          dfs(j + 1, used | masks[j], length + masks[j].bit_count())
+              dfs(0, 0, 0)
+              return result == best
+
+seed: 1239
+
+tests:
+  - name: "example-un-iq-ue"
+    in:
+      arr: ["un", "iq", "ue"]
+    out: 4
+  - name: "example-cha-r-act-ers"
+    in:
+      arr: ["cha", "r", "act", "ers"]
+    out: 6
+  - name: "example-alphabet"
+    in:
+      arr: ["abcdefghijklmnopqrstuvwxyz"]
+    out: 26
+  - name: "single-letter"
+    in:
+      arr: ["a"]
+    out: 1
+  - name: "single-duplicate-word"
+    in:
+      arr: ["aa"]
+    out: 0
+  - name: "single-max-word"
+    in:
+      arr: ["abcdefghijklmnopqrstuvwxy"]
+    out: 25
+  - name: "all-duplicate-items"
+    in:
+      arr: ["a", "a", "a"]
+    out: 1
+  - name: "disjoint-pair"
+    in:
+      arr: ["abc", "def"]
+    out: 6
+  - name: "overlap-forces-choice"
+    in:
+      arr: ["abc", "cde", "fgh"]
+    out: 6
+  - name: "later-best-subsequence"
+    in:
+      arr: ["ab", "bc", "def", "gh"]
+    out: 7
+  - name: "invalid-between-valid"
+    in:
+      arr: ["ab", "cc", "de"]
+    out: 4
+  - name: "invalid-longer-than-valid"
+    in:
+      arr: ["abcdefghijkl", "mmmmmmmmmm", "nopqrstuvw"]
+    out: 22
+  - name: "one-character-chain"
+    in:
+      arr: ["a", "b", "c", "d", "e"]
+    out: 5
+  - name: "reverse-overlap-chain"
+    in:
+      arr: ["ab", "cd", "bc", "ef"]
+    out: 6
+  - name: "nested-words"
+    in:
+      arr: ["a", "ab", "abc", "def"]
+    out: 6
+  - name: "same-character-blocks"
+    in:
+      arr:
+        [
+          "ab",
+          "cd",
+          "ef",
+          "gh",
+          "ij",
+          "kl",
+          "mn",
+          "op",
+          "qr",
+          "st",
+          "uv",
+          "wx",
+          "yz",
+        ]
+    out: 26
+  - name: "alternating-overlaps"
+    in:
+      arr: ["ab", "bc", "cd", "de", "ef", "fg"]
+    out: 6
+  - name: "three-way-optimum"
+    in:
+      arr: ["abc", "def", "adg", "hij", "klm"]
+    out: 12
+  - name: "shorter-compatible-after-long"
+    in:
+      arr: ["abcd", "ef", "ghij", "a", "kl"]
+    out: 12
+  - name: "empty-effective-set"
+    in:
+      arr: ["aa", "bb", "cc", "dd"]
+    out: 0
+  - name: "case-lowercase-boundary"
+    in:
+      arr:
+        [
+          "az",
+          "by",
+          "cx",
+          "dw",
+          "ev",
+          "fu",
+          "gt",
+          "hs",
+          "ir",
+          "jq",
+          "kp",
+          "lo",
+          "mn",
+        ]
+    out: 26
+  - name: "best-skips-first"
+    in:
+      arr: ["abcdef", "abc", "ghijkl", "mnop"]
+    out: 16
+  - name: "best-skips-middle"
+    in:
+      arr: ["ab", "bcdef", "gh", "c", "ijk"]
+    out: 10
+  - name: "best-skips-last"
+    in:
+      arr: ["abc", "def", "ghi", "abcdefghi"]
+    out: 9
+  - name: "duplicate-inside-late-word"
+    in:
+      arr: ["ab", "cdef", "gg", "hijk"]
+    out: 10
+  - name: "four-compatible-groups"
+    in:
+      arr: ["ab", "cd", "ef", "gh", "ai", "jk"]
+    out: 10
+  - name: "long-overlap-options"
+    in:
+      arr: ["abcdefgh", "ijklmnop", "abcdefgq", "rstuvwxy"]
+    out: 24
+  - name: "sixteen-singletons"
+    in:
+      arr:
+        [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "k",
+          "l",
+          "m",
+          "n",
+          "o",
+          "p",
+        ]
+    out: 16
+  - name: "sixteen-mixed-overlaps"
+    in:
+      arr:
+        [
+          "ab",
+          "cd",
+          "ef",
+          "gh",
+          "ij",
+          "kl",
+          "mn",
+          "op",
+          "aq",
+          "cr",
+          "es",
+          "gt",
+          "iu",
+          "kv",
+          "mw",
+          "nx",
+        ]
+    out: 18
+  - name: "long-valid-plus-singletons"
+    in:
+      arr:
+        [
+          "abcdefghijkl",
+          "m",
+          "n",
+          "o",
+          "p",
+          "q",
+          "r",
+          "s",
+          "t",
+          "u",
+          "v",
+          "w",
+          "x",
+          "y",
+          "z",
+          "aa",
+        ]
+    out: 26
+  - name: "partitioned-alphabet"
+    in:
+      arr: ["abc", "defg", "hijkl", "mnopq", "rstuv", "wxyz"]
+    out: 26
+  - name: "competing-partitions"
+    in:
+      arr:
+        [
+          "abcd",
+          "efgh",
+          "ijkl",
+          "mnop",
+          "qrst",
+          "uvwx",
+          "aceg",
+          "bdfh",
+          "ikmo",
+          "jlnp",
+        ]
+    out: 24
+  - name: "many-invalid-words"
+    in:
+      arr: ["zz", "yy", "xx", "ww", "ab", "cc", "de", "ff", "gh"]
+    out: 6
+  - name: "single-best-combination"
+    in:
+      arr: ["abcde", "fghij", "klmno", "pqrst", "uvwxy", "az"]
+    out: 25
+  - name: "full-alphabet-two-halves"
+    in:
+      arr: ["abcdefghijklm", "nopqrstuvwxyz"]
+    out: 26
+  - name: "generated-max-full-alphabet-1"
+    seed: 1240
+    in:
+      arr:
+        gen: "array"
+        len: 16
+        of:
+          gen: "str"
+          len: 26
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated-max-full-alphabet-2"
+    seed: 1241
+    in:
+      arr:
+        gen: "array"
+        len: 16
+        of:
+          gen: "str"
+          len: 26
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated-max-dense-small-alphabet"
+    seed: 1242
+    in:
+      arr:
+        gen: "array"
+        len: 16
+        of:
+          gen: "str"
+          len: 26
+          alphabet: "abcd"
+  - name: "generated-max-half-alphabet"
+    seed: 1243
+    in:
+      arr:
+        gen: "array"
+        len: 16
+        of:
+          gen: "str"
+          len: 26
+          alphabet: "abcdefghijklm"
+  - name: "generated-max-sparse-alphabet"
+    seed: 1244
+    in:
+      arr:
+        gen: "array"
+        len: 16
+        of:
+          gen: "str"
+          len: 26
+          alphabet: "acegikmoqsuwy"

@@ -1,0 +1,347 @@
+entry:
+  id: 1325
+  title: delete-leaves-with-a-given-value
+  params:
+    root:
+      type: tree_node
+    target:
+      type: int
+  call:
+    cpp: "treeNodeToArray(Solution().removeLeafNodes({root}, {target}))"
+    rust: "TreeNode::tree_node_to_array(Solution::remove_leaf_nodes({root}, {target}))"
+    python3: "tree_node_to_array(Solution().removeLeafNodes({root}, {target}))"
+    python2: "tree_node_to_array(Solution().removeLeafNodes({root}, {target}))"
+    ruby: "tree_node_to_array(remove_leaf_nodes({root}, {target}))"
+    java: "TreeNode.treeNodeToArray(new Solution().removeLeafNodes({root}, {target}))"
+    csharp: "TreeNode.TreeNodeToArray(new Solution().RemoveLeafNodes({root}, {target}))"
+    kotlin: "treeNodeToArray(Solution().removeLeafNodes({root}, {target}))"
+    go: "treeNodeToArray(removeLeafNodes({root}, {target}))"
+    dart: "tree_node_to_array(Solution().removeLeafNodes({root}, {target}))"
+    swift: "tree_node_to_array(Solution().removeLeafNodes({root}, {target}))"
+    typescript: "treeNodeToArray(removeLeafNodes({root}, {target}))"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().removeLeafNodes(root, target, {result})"
+    checker: |
+      class Checker:
+          def removeLeafNodes(self, root, target, result):
+              if not isinstance(root, list) or not root or root[0] is None:
+                  return False
+              if not isinstance(result, list):
+                  return False
+
+              class Node:
+                  def __init__(self, val):
+                      self.val = val
+                      self.left = None
+                      self.right = None
+
+              tree_root = Node(root[0])
+              queue = [tree_root]
+              read = 1
+              for node in queue:
+                  if read < len(root) and root[read] is not None:
+                      node.left = Node(root[read])
+                      queue.append(node.left)
+                  read += 1
+                  if read < len(root) and root[read] is not None:
+                      node.right = Node(root[read])
+                      queue.append(node.right)
+                  read += 1
+
+              def prune(node):
+                  if node is None:
+                      return None
+                  node.left = prune(node.left)
+                  node.right = prune(node.right)
+                  if node.left is None and node.right is None and node.val == target:
+                      return None
+                  return node
+
+              tree_root = prune(tree_root)
+              if tree_root is None:
+                  return result == []
+              expected = []
+              queue = [tree_root]
+              while queue:
+                  node = queue.pop(0)
+                  if node is None:
+                      expected.append(None)
+                  else:
+                      expected.append(node.val)
+                      queue.append(node.left)
+                      queue.append(node.right)
+              while expected and expected[-1] is None:
+                  expected.pop()
+              return result == expected
+seed: 1325
+tests:
+  - name: example_one
+    in:
+      root: [1, 2, 3, 2, null, 2, 4]
+      target: 2
+  - name: example_two
+    in:
+      root: [1, 3, 3, 3, 2]
+      target: 3
+  - name: example_three
+    in:
+      root: [1, 2, null, 2, null, 2]
+      target: 2
+  - name: single_target
+    in:
+      root: [5]
+      target: 5
+  - name: single_non_target
+    in:
+      root: [5]
+      target: 1
+  - name: target_root_with_children
+    in:
+      root: [2, 1, 1]
+      target: 2
+  - name: root_becomes_target_leaf
+    in:
+      root: [2, 2, 2]
+      target: 2
+  - name: one_target_leaf
+    in:
+      root: [1, 2, 3]
+      target: 2
+  - name: no_matching_value
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      target: 8
+  - name: left_cascade
+    in:
+      root: [1, 2, 3, 2]
+      target: 2
+  - name: right_cascade
+    in:
+      root: [1, 3, 2, null, null, 2]
+      target: 2
+  - name: long_left_spine
+    in:
+      root: [1, 2, null, 2, null, 2, null, 2, null, 2, null, 2]
+      target: 2
+  - name: long_right_spine
+    in:
+      root: [1, null, 2, null, 2, null, 2, null, 2, null, 2]
+      target: 2
+  - name: independent_cascades
+    in:
+      root: [9, 2, 2, 2, null, 3, 2]
+      target: 2
+  - name: cascade_preserves_sibling
+    in:
+      root: [5, 2, 8, 2, 2, 1, 2]
+      target: 2
+  - name: target_internal_nodes_survive
+    in:
+      root: [2, 1, 2, 2, 3, 2, 4]
+      target: 2
+  - name: minimum_value_target
+    in:
+      root: [1, 1, 2, 1, 1, 1, 2]
+      target: 1
+  - name: maximum_value_target
+    in:
+      root: [1000, 1000, 2, 1000, 3, 4, 1000]
+      target: 1000
+  - name: all_nodes_target
+    in:
+      root: [7, 7, 7, 7, 7, 7, 7]
+      target: 7
+  - name: full_tree_target_leaves_only
+    in:
+      root: [4, 2, 6, 2, 3, 2, 2]
+      target: 2
+  - name: non_target_leaf_blocks_parent
+    in:
+      root: [3, 3, 4, 3, 3, 4, 4]
+      target: 3
+  - name: sparse_left_then_right
+    in:
+      root: [1, 2, null, null, 3, null, 2]
+      target: 2
+  - name: sparse_right_then_left
+    in:
+      root: [1, null, 2, 3, null, 2]
+      target: 2
+  - name: mixed_branch_depths
+    in:
+      root: [4, 2, 4, 2, 2, 4, 2, 2, null, null, 2]
+      target: 2
+  - name: target_parent_with_one_kept_child
+    in:
+      root: [6, 1, 2, null, null, 2, 3]
+      target: 2
+  - name: target_parent_with_left_kept_child
+    in:
+      root: [6, 2, 1, 3, 2]
+      target: 2
+  - name: repeated_values_across_levels
+    in:
+      root: [9, 4, 4, 4, 5, 5, 4, 4, null, null, 4]
+      target: 4
+  - name: target_on_one_complete_subtree
+    in:
+      root: [8, 5, 5, 5, 5, 6, 6, 5, 5, 5, 5, 6, 6, 6, 6]
+      target: 5
+  - name: target_leaves_under_non_target_chain
+    in:
+      root: [10, 9, 8, 7, null, null, 6, 5, null, null, 5]
+      target: 5
+  - name: asymmetric_pruning
+    in:
+      root: [1, 2, 2, 2, 1, 1, 2, 2, null, null, 2, 2, null, null, 2]
+      target: 2
+  - name: target_at_multiple_frontiers
+    in:
+      root: [11, 4, 4, 4, 7, 7, 4, 4, 4, null, null, null, 4, 4, 4]
+      target: 4
+  - name: near_complete_with_gaps
+    in:
+      root: [12, 3, 3, 3, null, 4, 3, 3, 3, null, null, 3, 5]
+      target: 3
+  - name: all_same_deep_spine
+    in:
+      root:
+        [
+          13,
+          13,
+          null,
+          13,
+          null,
+          13,
+          null,
+          13,
+          null,
+          13,
+          null,
+          13,
+          null,
+          13,
+          null,
+          13,
+        ]
+      target: 13
+  - name: alternating_spine
+    in:
+      root: [14, null, 2, null, 14, null, 2, null, 14, null, 2, null, 14]
+      target: 14
+  - name: complete_three_levels_no_prune
+    in:
+      root: [15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+      target: 1000
+  - name: complete_four_levels_partial_prune
+    in:
+      root:
+        [
+          16,
+          2,
+          3,
+          2,
+          4,
+          5,
+          2,
+          2,
+          2,
+          4,
+          2,
+          2,
+          5,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          4,
+          5,
+          5,
+          2,
+          2,
+          3,
+          3,
+          4,
+          4,
+          5,
+          5,
+        ]
+      target: 2
+  - name: high_value_non_target_structure
+    in:
+      root: [999, 1000, 998, 1000, 997, 996, 1000]
+      target: 1000
+  - name: maximum_complete_tree_no_match
+    in:
+      root:
+        gen: "array"
+        len: 3000
+        of:
+          gen: "int"
+          min: 2
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target: 1
+    seed: 132501
+  - name: maximum_complete_tree_all_match
+    in:
+      root:
+        gen: "array"
+        len: 3000
+        of:
+          gen: "int"
+          min: 1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target: 1000
+    seed: 132502
+  - name: broad_tree_cascading_inner_targets
+    in:
+      root:
+        [
+          17,
+          2,
+          2,
+          2,
+          2,
+          8,
+          2,
+          2,
+          2,
+          2,
+          2,
+          8,
+          8,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          8,
+          8,
+          8,
+          8,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+        ]
+      target: 2

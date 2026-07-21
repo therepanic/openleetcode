@@ -1,0 +1,255 @@
+entry:
+  id: 1461
+  title: "check-if-a-string-contains-all-binary-codes-of-size-k"
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().hasAllCodes({s}, {k})"
+    rust: "Solution::has_all_codes({s}, {k})"
+    python3: "Solution().hasAllCodes({s}, {k})"
+    python2: "Solution().hasAllCodes({s}, {k})"
+    ruby: "has_all_codes({s}, {k})"
+    java: "new Solution().hasAllCodes({s}, {k})"
+    csharp: "new Solution().HasAllCodes({s}, {k})"
+    kotlin: "Solution().hasAllCodes({s}, {k})"
+    go: "hasAllCodes({s}, {k})"
+    dart: "Solution().hasAllCodes({s}, {k})"
+    swift: "Solution().hasAllCodes({s}, {k})"
+    typescript: "hasAllCodes({s}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().hasAllCodes(s, k, {result})"
+    checker: |
+      class Checker:
+          def hasAllCodes(self, s, k, result):
+              required = {format(value, '0{}b'.format(k)) for value in range(1 << k)}
+              present = {s[index:index + k] for index in range(len(s) - k + 1)}
+              return result == required.issubset(present)
+
+seed: 1461
+
+tests:
+  - name: "example-one"
+    in:
+      s: "00110110"
+      k: 2
+    out: true
+  - name: "example-two"
+    in:
+      s: "0110"
+      k: 1
+    out: true
+  - name: "example-three"
+    in:
+      s: "0110"
+      k: 2
+    out: false
+  - name: "single-zero-k1"
+    in:
+      s: "0"
+      k: 1
+    out: false
+  - name: "single-one-k1"
+    in:
+      s: "1"
+      k: 1
+    out: false
+  - name: "both-bits"
+    in:
+      s: "01"
+      k: 1
+    out: true
+  - name: "repeated-zero"
+    in:
+      s: "00000"
+      k: 1
+    out: false
+  - name: "repeated-one"
+    in:
+      s: "11111"
+      k: 1
+    out: false
+  - name: "all-four-codes"
+    in:
+      s: "0011"
+      k: 2
+    out: false
+  - name: "four-codes-cyclic"
+    in:
+      s: "00011011"
+      k: 2
+    out: true
+  - name: "missing-zero-zero"
+    in:
+      s: "010101"
+      k: 2
+    out: false
+  - name: "missing-one-one"
+    in:
+      s: "101010"
+      k: 2
+    out: false
+  - name: "three-bit-debruijn"
+    in:
+      s: "00010111"
+      k: 3
+    out: false
+  - name: "three-bit-too-short"
+    in:
+      s: "0101010"
+      k: 3
+    out: false
+  - name: "three-bit-single-pattern"
+    in:
+      s: "11111111"
+      k: 3
+    out: false
+  - name: "four-bit-all-codes"
+    in:
+      s: "0000100110101111"
+      k: 4
+    out: false
+  - name: "four-bit-short"
+    in:
+      s: "000011110000"
+      k: 4
+    out: false
+  - name: "five-bit-debruijn-like"
+    in:
+      s: "00000100011001010011101011011111"
+      k: 5
+    out: false
+  - name: "five-bit-too-short"
+    in:
+      s: "010101010101010"
+      k: 5
+    out: false
+  - name: "six-bit-pattern"
+    in:
+      s: "00000010000110001010001110010010100110101011101111011111"
+      k: 6
+    out: false
+  - name: "six-bit-zeros"
+    in:
+      s: "000000000000000000"
+      k: 6
+    out: false
+  - name: "seven-bit-alternating"
+    in:
+      s: "010101010101010101010101"
+      k: 7
+    out: false
+  - name: "eight-bit-single-window"
+    in:
+      s: "01010101"
+      k: 8
+    out: false
+  - name: "eight-bit-repeated"
+    in:
+      s: "111111111111111111"
+      k: 8
+    out: false
+  - name: "nine-bit-random"
+    in:
+      s: "001011010110100101101001011010"
+      k: 9
+    out: false
+  - name: "ten-bit-too-short"
+    in:
+      s: "0101010101010101010"
+      k: 10
+    out: false
+  - name: "ten-bit-mixed"
+    in:
+      s: "000001111100000111110000011111"
+      k: 10
+    out: false
+  - name: "twelve-bit-zeros-ones"
+    in:
+      s: "000000000000111111111111"
+      k: 12
+    out: false
+  - name: "thirteen-bit-alternating"
+    in:
+      s: "0101010101010101010101010101"
+      k: 13
+    out: false
+  - name: "fifteen-bit-pattern"
+    in:
+      s: "00110011001100110011001100110011"
+      k: 15
+    out: false
+  - name: "twenty-bit-short"
+    in:
+      s: "0101010101010101010101010101010101010101"
+      k: 20
+    out: false
+  - name: "boundary-length-one"
+    in:
+      s: "0"
+      k: 20
+    out: false
+  - name: "large-generated-binary"
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "01"
+      k: 1
+  - name: "large-generated-unary"
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "0"
+      k: 20
+  - name: "two-bit-all-codes-minimal"
+    in:
+      s: "00110"
+      k: 2
+    out: true
+  - name: "large-generated-random-k10"
+    seed: 21461
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "01"
+      k: 10
+  - name: "large-generated-random-k19"
+    seed: 31461
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "01"
+      k: 19
+  - name: "large-generated-alternating-k20"
+    seed: 41461
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "01"
+      k: 20
+  - name: "three-bit-debruijn-linear"
+    in:
+      s: "0001011100"
+      k: 3
+    out: true
+  - name: "four-bit-debruijn-linear"
+    in:
+      s: "0000100110101111000"
+      k: 4
+    out: true

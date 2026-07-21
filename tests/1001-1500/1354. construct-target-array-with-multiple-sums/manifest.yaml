@@ -1,0 +1,262 @@
+entry:
+  id: 1354
+  title: "construct-target-array-with-multiple-sums"
+  params:
+    target:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().isPossible({target})"
+    rust: "Solution::is_possible({target})"
+    python3: "Solution().isPossible({target})"
+    python2: "Solution().isPossible({target})"
+    ruby: "is_possible({target})"
+    java: "new Solution().isPossible({target})"
+    csharp: "new Solution().IsPossible({target})"
+    kotlin: "Solution().isPossible({target})"
+    go: "isPossible({target})"
+    dart: "Solution().isPossible({target})"
+    swift: "Solution().isPossible({target})"
+    typescript: "isPossible({target})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().isPossible(target, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def isPossible(self, target, result):
+              if type(result) is not bool:
+                  return False
+              total = sum(target)
+              heap = [-value for value in target]
+              heapq.heapify(heap)
+
+              while True:
+                  largest = -heapq.heappop(heap)
+                  rest = total - largest
+                  if largest == 1 or rest == 1:
+                      return result is True
+                  if rest == 0 or rest >= largest:
+                      return result is False
+
+                  previous = largest % rest
+                  if previous == 0:
+                      return result is False
+                  total = rest + previous
+                  heapq.heappush(heap, -previous)
+seed: 1354
+tests:
+  - name: example_three_elements
+    in:
+      target: [9, 3, 5]
+    out: true
+  - name: example_impossible_four_elements
+    in:
+      target: [1, 1, 1, 2]
+    out: false
+  - name: example_two_elements
+    in:
+      target: [8, 5]
+    out: true
+  - name: singleton_starting_value
+    in:
+      target: [1]
+    out: true
+  - name: singleton_non_starting_value
+    in:
+      target: [1000000000]
+    out: false
+  - name: all_ones_three
+    in:
+      target: [1, 1, 1]
+  - name: all_ones_seven
+    in:
+      target: [1, 1, 1, 1, 1, 1, 1]
+  - name: pair_first_operation
+    in:
+      target: [1, 2]
+  - name: pair_large_repeated_updates
+    in:
+      target: [1, 999999999]
+  - name: pair_coprime_chain
+    in:
+      target: [55, 89]
+  - name: pair_non_coprime
+    in:
+      target: [1000000000, 999999998]
+  - name: pair_equal_values
+    in:
+      target: [2, 2]
+  - name: pair_valid_nontrivial
+    in:
+      target: [2, 3]
+  - name: triple_single_operation
+    in:
+      target: [3, 1, 1]
+  - name: triple_forward_chain
+    in:
+      target: [9, 5, 1]
+  - name: triple_permuted_chain
+    in:
+      target: [5, 1, 9]
+  - name: triple_equal_largest
+    in:
+      target: [3, 3, 1]
+  - name: triple_sum_equals_largest
+    in:
+      target: [1, 2, 3]
+  - name: triple_zero_remainder
+    in:
+      target: [1, 1, 4]
+  - name: triple_remainder_progression
+    in:
+      target: [1, 1, 1000000000]
+  - name: four_element_single_operation
+    in:
+      target: [4, 1, 1, 1]
+  - name: four_element_chain
+    in:
+      target: [4, 7, 13, 1]
+  - name: four_element_long_chain
+    in:
+      target: [25, 7, 13, 1]
+  - name: four_element_invalid_remainder
+    in:
+      target: [1, 1, 1, 6]
+  - name: four_element_valid_remainder_one
+    in:
+      target: [1, 1, 1, 9]
+  - name: four_element_equal_maximums
+    in:
+      target: [1, 1, 4, 4]
+  - name: five_element_single_operation
+    in:
+      target: [1, 1, 1, 1, 5]
+  - name: five_element_invalid_second_step
+    in:
+      target: [1, 1, 1, 1, 10]
+  - name: five_element_forward_chain
+    in:
+      target: [9, 5, 15, 1, 1]
+  - name: five_element_permuted_chain
+    in:
+      target: [1, 15, 9, 1, 5]
+  - name: six_element_single_operation
+    in:
+      target: [1, 1, 1, 1, 1, 6]
+  - name: six_element_impossible_increment
+    in:
+      target: [1, 1, 1, 1, 1, 7]
+  - name: maximum_value_with_rest_one
+    in:
+      target: [1000000000, 1]
+  - name: generated_small_values
+    seed: 135401
+    in:
+      target:
+        gen: array
+        len:
+          gen: int
+          min: 2
+          max: 12
+        of:
+          gen: int
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_medium_values
+    seed: 135402
+    in:
+      target:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 500
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_duplicate_heavy
+    seed: 135403
+    in:
+      target:
+        gen: array
+        len:
+          gen: int
+          min: 20
+          max: 100
+        of:
+          gen: int
+          min: 1
+          max: 4
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_large_random
+    seed: 135404
+    in:
+      target:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_large_ones
+    seed: 135405
+    in:
+      target:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_large_low_range
+    seed: 135406
+    in:
+      target:
+        gen: array
+        len: 40000
+        of:
+          gen: int
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_near_maximum_values
+    seed: 135407
+    in:
+      target:
+        gen: array
+        len:
+          gen: int
+          min: 50
+          max: 200
+        of:
+          gen: int
+          min: 999999000
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,0 +1,728 @@
+entry:
+  id: 1519
+  title: "number-of-nodes-in-the-sub-tree-with-the-same-label"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    labels:
+      type: string
+  call:
+    cpp: "Solution().countSubTrees({n}, {edges}, {labels})"
+    rust: "Solution::count_sub_trees({n}, {edges}, {labels})"
+    python3: "Solution().countSubTrees({n}, {edges}, {labels})"
+    python2: "Solution().countSubTrees({n}, {edges}, {labels})"
+    ruby: "count_sub_trees({n}, {edges}, {labels})"
+    java: "new Solution().countSubTrees({n}, {edges}, {labels})"
+    csharp: "new Solution().CountSubTrees({n}, {edges}, {labels})"
+    kotlin: "Solution().countSubTrees({n}, {edges}, {labels})"
+    go: "countSubTrees({n}, {edges}, {labels})"
+    dart: "Solution().countSubTrees({n}, {edges}, {labels})"
+    swift: "Solution().countSubTrees({n}, {edges}, {labels})"
+    typescript: "countSubTrees({n}, {edges}, {labels})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 4000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().countSubTrees(n, edges, labels, {result})"
+    checker: |
+      class Checker:
+          def countSubTrees(self, n, edges, labels, result):
+              graph = [[] for _ in range(n)]
+              for a, b in edges:
+                  graph[a].append(b)
+                  graph[b].append(a)
+              expected = [0] * n
+              def dfs(node, parent):
+                  counts = [0] * 26
+                  counts[ord(labels[node]) - 97] = 1
+                  for child in graph[node]:
+                      if child != parent:
+                          child_counts = dfs(child, node)
+                          for i in range(26):
+                              counts[i] += child_counts[i]
+                  expected[node] = counts[ord(labels[node]) - 97]
+                  return counts
+              dfs(0, -1)
+              return result == expected
+
+seed: 1519
+
+tests:
+  - name: "example_one"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 6]
+      labels: "abaedcd"
+    out: [2, 1, 1, 1, 1, 1, 1]
+  - name: "example_two"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [0, 3]
+      labels: "bbbb"
+    out: [4, 2, 1, 1]
+  - name: "example_three"
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [0, 4]
+      labels: "aabab"
+    out: [3, 2, 1, 1, 1]
+  - name: "singleton"
+    in:
+      n: 1
+      edges: []
+      labels: "z"
+  - name: "two_same"
+    in:
+      n: 2
+      edges:
+        - [0, 1]
+      labels: "aa"
+  - name: "two_different"
+    in:
+      n: 2
+      edges:
+        - [0, 1]
+      labels: "ab"
+  - name: "chain_three_same"
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+      labels: "aaa"
+  - name: "chain_three_distinct"
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+      labels: "abc"
+  - name: "star_four_same"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+      labels: "aaaa"
+  - name: "star_four_unique"
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+      labels: "abcd"
+  - name: "chain_five_alternating"
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      labels: "ababa"
+  - name: "chain_six_blocks"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      labels: "aabbaa"
+  - name: "balanced_seven_same"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+      labels: "aaaaaaa"
+  - name: "balanced_seven_unique"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+      labels: "abcdefg"
+  - name: "balanced_seven_repeated"
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+      labels: "abacaba"
+  - name: "star_eight_center_match"
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+      labels: "abacadae"
+  - name: "star_eight_all_same"
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+      labels: "aaaaaaaa"
+  - name: "chain_ten_periodic"
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+      labels: "abcabcabca"
+  - name: "chain_twelve_two_labels"
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+      labels: "abababababab"
+  - name: "branching_ten"
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 8]
+        - [8, 9]
+      labels: "aabbacacaa"
+  - name: "mixed_twelve"
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [5, 7]
+        - [5, 8]
+        - [6, 9]
+        - [9, 10]
+        - [9, 11]
+      labels: "abacabadabca"
+  - name: "chain_twenty_same"
+    in:
+      n: 20
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+      labels: "aaaaaaaaaaaaaaaaaaaa"
+  - name: "chain_twenty_unique_cycle"
+    in:
+      n: 20
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+      labels: "abcdefghijklmnopqrst"
+  - name: "binary_fifteen_repeated"
+    in:
+      n: 15
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [3, 8]
+        - [4, 9]
+        - [4, 10]
+        - [5, 11]
+        - [5, 12]
+        - [6, 13]
+        - [6, 14]
+      labels: "abbacabbaacabab"
+  - name: "wide_fifteen"
+    in:
+      n: 15
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+        - [0, 9]
+        - [0, 10]
+        - [0, 11]
+        - [0, 12]
+        - [0, 13]
+        - [0, 14]
+      labels: "aabbccddeeffggg"
+  - name: "deep_twenty_five"
+    in:
+      n: 25
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+      labels: "abcdefghijklmnopqrstuvwxy"
+  - name: "large_chain_thirty"
+    in:
+      n: 30
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+        - [24, 25]
+        - [25, 26]
+        - [26, 27]
+        - [27, 28]
+        - [28, 29]
+      labels: "abcdefghijklmnopqrstuvwxyzabcd"
+  - name: "large_star_thirty"
+    in:
+      n: 30
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+        - [0, 9]
+        - [0, 10]
+        - [0, 11]
+        - [0, 12]
+        - [0, 13]
+        - [0, 14]
+        - [0, 15]
+        - [0, 16]
+        - [0, 17]
+        - [0, 18]
+        - [0, 19]
+        - [0, 20]
+        - [0, 21]
+        - [0, 22]
+        - [0, 23]
+        - [0, 24]
+        - [0, 25]
+        - [0, 26]
+        - [0, 27]
+        - [0, 28]
+        - [0, 29]
+      labels: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  - name: "forked_six"
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+      labels: "aabaca"
+  - name: "two_level_eight"
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 6]
+        - [3, 7]
+      labels: "abacbcaa"
+  - name: "chain_eleven_three_labels"
+    in:
+      n: 11
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+      labels: "abcabcabcab"
+  - name: "balanced_fifteen_same_leaves"
+    in:
+      n: 15
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [3, 8]
+        - [4, 9]
+        - [4, 10]
+        - [5, 11]
+        - [5, 12]
+        - [6, 13]
+        - [6, 14]
+      labels: "abcdefghijklmno"
+  - name: "long_branch_twenty_four"
+    in:
+      n: 24
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [2, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [2, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+      labels: "abcdefghijklmnopqrstuvwx"
+  - name: "star_twelve_two_groups"
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+        - [0, 9]
+        - [0, 10]
+        - [0, 11]
+      labels: "abababababab"
+  - name: "asymmetric_nine"
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [3, 4]
+        - [2, 5]
+        - [5, 6]
+        - [6, 7]
+        - [2, 8]
+      labels: "aabbacaba"
+  - name: "balanced_thirty_one_mixed"
+    in:
+      n: 31
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [3, 8]
+        - [4, 9]
+        - [4, 10]
+        - [5, 11]
+        - [5, 12]
+        - [6, 13]
+        - [6, 14]
+        - [7, 15]
+        - [7, 16]
+        - [8, 17]
+        - [8, 18]
+        - [9, 19]
+        - [9, 20]
+        - [10, 21]
+        - [10, 22]
+        - [11, 23]
+        - [11, 24]
+        - [12, 25]
+        - [12, 26]
+        - [13, 27]
+        - [13, 28]
+        - [14, 29]
+        - [14, 30]
+      labels: "abacabadabacabaeabacabadabacaba"
+  - name: "wide_twenty_six_alphabet"
+    in:
+      n: 26
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+        - [0, 9]
+        - [0, 10]
+        - [0, 11]
+        - [0, 12]
+        - [0, 13]
+        - [0, 14]
+        - [0, 15]
+        - [0, 16]
+        - [0, 17]
+        - [0, 18]
+        - [0, 19]
+        - [0, 20]
+        - [0, 21]
+        - [0, 22]
+        - [0, 23]
+        - [0, 24]
+        - [0, 25]
+      labels: "abcdefghijklmnopqrstuvwxyz"
+  - name: "three_arms_twenty_one"
+    in:
+      n: 21
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [4, 5]
+        - [5, 6]
+        - [2, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [3, 11]
+        - [3, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+      labels: "aabacabaacabaabbacaba"
+  - name: "two_branch_forty"
+    in:
+      n: 40
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+        - [7, 9]
+        - [8, 10]
+        - [9, 11]
+        - [10, 12]
+        - [11, 13]
+        - [12, 14]
+        - [13, 15]
+        - [14, 16]
+        - [15, 17]
+        - [16, 18]
+        - [17, 19]
+        - [18, 20]
+        - [19, 21]
+        - [20, 22]
+        - [21, 23]
+        - [22, 24]
+        - [23, 25]
+        - [24, 26]
+        - [25, 27]
+        - [26, 28]
+        - [27, 29]
+        - [28, 30]
+        - [29, 31]
+        - [30, 32]
+        - [31, 33]
+        - [32, 34]
+        - [33, 35]
+        - [34, 36]
+        - [35, 37]
+        - [36, 38]
+        - [37, 39]
+      labels: "abcdefghijklmnopqrstuvwxyzabcdefghijklmn"
+  - name: "root_and_subtree_label_runs"
+    in:
+      n: 18
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [3, 8]
+        - [4, 9]
+        - [4, 10]
+        - [5, 11]
+        - [5, 12]
+        - [6, 13]
+        - [6, 14]
+        - [7, 15]
+        - [8, 16]
+        - [9, 17]
+      labels: "aabbbacccabbbacaca"

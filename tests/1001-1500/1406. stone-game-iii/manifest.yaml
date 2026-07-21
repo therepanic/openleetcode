@@ -1,0 +1,276 @@
+entry:
+  id: 1406
+  title: stone-game-iii
+  params:
+    stoneValue:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().stoneGameIII({stoneValue})"
+    rust: "Solution::stone_game_iii({stoneValue})"
+    python3: "Solution().stoneGameIII({stoneValue})"
+    python2: "Solution().stoneGameIII({stoneValue})"
+    ruby: "stone_game_iii({stoneValue})"
+    java: "new Solution().stoneGameIII({stoneValue})"
+    csharp: "new Solution().StoneGameIII({stoneValue})"
+    kotlin: "Solution().stoneGameIII({stoneValue})"
+    go: "stoneGameIII({stoneValue})"
+    dart: "Solution().stoneGameIII({stoneValue})"
+    swift: "Solution().stoneGameIII({stoneValue})"
+    typescript: "stoneGameIII({stoneValue})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().stoneGameIII(stoneValue, {result})"
+    checker: |
+      class Checker:
+          def stoneGameIII(self, values, result):
+              if not isinstance(values, list) or not 1 <= len(values) <= 50000:
+                  return False
+              if any(not isinstance(value, int) or isinstance(value, bool) or value < -1000 or value > 1000 for value in values):
+                  return False
+              if result not in ('Alice', 'Bob', 'Tie'):
+                  return False
+              dp = [0] * (len(values) + 3)
+              for index in range(len(values) - 1, -1, -1):
+                  total = 0
+                  best = -10**18
+                  for take in range(1, 4):
+                      if index + take > len(values):
+                          break
+                      total += values[index + take - 1]
+                      best = max(best, total - dp[index + take])
+                  dp[index] = best
+              expected = 'Alice' if dp[0] > 0 else 'Bob' if dp[0] < 0 else 'Tie'
+              return result == expected
+seed: 1406
+tests:
+  - name: single_positive
+    in:
+      stoneValue: [1]
+  - name: single_negative
+    in:
+      stoneValue: [-1]
+  - name: single_zero
+    in:
+      stoneValue: [0]
+  - name: two_positive
+    in:
+      stoneValue: [1, 2]
+  - name: two_negative
+    in:
+      stoneValue: [-1, -2]
+  - name: two_cancel
+    in:
+      stoneValue: [1, -1]
+  - name: three_positive
+    in:
+      stoneValue: [1, 2, 3]
+  - name: three_negative
+    in:
+      stoneValue: [-1, -2, -3]
+  - name: three_tie
+    in:
+      stoneValue: [1, -1, 0]
+  - name: example_like_one
+    in:
+      stoneValue: [1, 2, 3, 7]
+  - name: example_like_two
+    in:
+      stoneValue: [1, 2, 3, -9]
+  - name: alternating
+    in:
+      stoneValue: [1, -1, 1, -1, 1, -1]
+  - name: all_zero
+    in:
+      stoneValue: [0, 0, 0, 0, 0]
+  - name: all_positive
+    in:
+      stoneValue: [5, 5, 5, 5, 5, 5]
+  - name: all_negative
+    in:
+      stoneValue: [-5, -5, -5, -5, -5, -5]
+  - name: large_first
+    in:
+      stoneValue: [1000, -1, -1, -1]
+  - name: large_last
+    in:
+      stoneValue: [-1, -1, -1, 1000]
+  - name: negative_first
+    in:
+      stoneValue: [-1000, 1, 1, 1]
+  - name: positive_negative_mix
+    in:
+      stoneValue: [4, -2, 7, -5, 3]
+  - name: forced_three_choice
+    in:
+      stoneValue: [-10, 1, 1, 1, 1]
+  - name: take_two_best
+    in:
+      stoneValue: [8, 8, -20, 1]
+  - name: take_three_best
+    in:
+      stoneValue: [4, 4, 4, -100]
+  - name: tie_balanced
+    in:
+      stoneValue: [2, -1, -1]
+  - name: repeated_pattern
+    in:
+      stoneValue: [3, -2, 3, -2, 3, -2, 3, -2]
+  - name: increasing
+    in:
+      stoneValue: [1, 2, 3, 4, 5, 6, 7, 8]
+  - name: decreasing
+    in:
+      stoneValue: [8, 7, 6, 5, 4, 3, 2, 1]
+  - name: boundary_values
+    in:
+      stoneValue: [1000, -1000, 1000, -1000, 1000, -1000]
+  - name: long_positive_tail
+    in:
+      stoneValue: [-20, -20, 1, 1, 1, 1, 1, 1, 1]
+  - name: long_negative_tail
+    in:
+      stoneValue: [20, 20, -1, -1, -1, -1, -1, -1, -1]
+  - name: twelve_mixed
+    in:
+      stoneValue: [5, -4, 3, -2, 1, -6, 7, -8, 9, -10, 11, -12]
+  - name: fifteen_equal
+    in:
+      stoneValue: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+  - name: twenty_pattern
+    in:
+      stoneValue:
+        [
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+          10,
+          -5,
+        ]
+  - name: generated_small
+    seed: 101
+    in:
+      stoneValue:
+        gen: array
+        len:
+          gen: int
+          min: 1
+          max: 20
+        of:
+          gen: int
+          min: -20
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_medium
+    seed: 202
+    in:
+      stoneValue:
+        gen: array
+        len:
+          gen: int
+          min: 50
+          max: 150
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_positive
+    seed: 303
+    in:
+      stoneValue:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 300
+        of:
+          gen: int
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: generated_negative
+    seed: 404
+    in:
+      stoneValue:
+        gen: array
+        len:
+          gen: int
+          min: 100
+          max: 300
+        of:
+          gen: int
+          min: -1000
+          max: -1
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: stress_maximum
+    seed: 505
+    in:
+      stoneValue:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: boundary_zero_negative_choice
+    in:
+      stoneValue: [0, -1, 0, 1, -1, 1, 0]
+  - name: stress_maximum_positive
+    seed: 606
+    in:
+      stoneValue:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: stress_near_maximum_negative
+    seed: 707
+    in:
+      stoneValue:
+        gen: array
+        len: 49999
+        of:
+          gen: int
+          min: -1000
+          max: -1
+        distinct: false
+        sorted: false
+        elemType: int

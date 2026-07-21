@@ -1,0 +1,38 @@
+class Solution(object):
+    def getProbability(self, balls):
+        """
+        :type balls: List[int]
+        :rtype: float
+        """
+        total = sum(balls)
+        half = total // 2
+
+        # Binomial weights count which distinct balls of a color enter box 0.
+        choose = [[0] * (total + 1) for _ in xrange(total + 1)]
+        for i in xrange(total + 1):
+            choose[i][0] = 1
+            choose[i][i] = 1
+            for j in xrange(1, i):
+                choose[i][j] = choose[i - 1][j - 1] + choose[i - 1][j]
+
+        states = {(0, 0, 0): 1}
+        for count in balls:
+            next_states = {}
+            for (used, distinct0, distinct1), ways in states.iteritems():
+                for take in xrange(count + 1):
+                    new_used = used + take
+                    if new_used > half:
+                        break
+                    key = (new_used,
+                           distinct0 + (take > 0),
+                           distinct1 + (take < count))
+                    next_states[key] = (next_states.get(key, 0) +
+                                        ways * choose[count][take])
+            states = next_states
+
+        favorable = 0
+        for (used, distinct0, distinct1), ways in states.iteritems():
+            if used == half and distinct0 == distinct1:
+                favorable += ways
+
+        return float(favorable) / choose[total][half]

@@ -1,0 +1,185 @@
+entry:
+  id: 1169
+  title: "invalid-transactions"
+  params:
+    transactions:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().invalidTransactions({transactions})"
+    rust: "Solution::invalid_transactions({transactions})"
+    python3: "Solution().invalidTransactions({transactions})"
+    python2: "Solution().invalidTransactions({transactions})"
+    ruby: "invalid_transactions({transactions})"
+    java: "new Solution().invalidTransactions({transactions})"
+    csharp: "new Solution().InvalidTransactions({transactions})"
+    kotlin: "Solution().invalidTransactions({transactions})"
+    go: "invalidTransactions({transactions})"
+    dart: "Solution().invalidTransactions({transactions})"
+    swift: "Solution().invalidTransactions({transactions})"
+    typescript: "invalidTransactions({transactions})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().invalidTransactions(transactions, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def invalidTransactions(self, transactions, result):
+              if not isinstance(result, list) or any(not isinstance(x, str) for x in result):
+                  return False
+              parsed = []
+              for raw in transactions:
+                  parts = raw.split(',')
+                  if len(parts) != 4:
+                      return False
+                  name, time, amount, city = parts
+                  parsed.append((name, int(time), int(amount), city, raw))
+              expected = []
+              for i, (name, time, amount, city, raw) in enumerate(parsed):
+                  bad = amount > 1000
+                  if not bad:
+                      for j, (name2, time2, amount2, city2, raw2) in enumerate(parsed):
+                          if i != j and name == name2 and city != city2 and abs(time - time2) <= 60:
+                              bad = True
+                              break
+                  if bad:
+                      expected.append(raw)
+              return Counter(result) == Counter(expected)
+
+seed: 116900
+
+tests:
+  - name: "example_cross_city"
+    in:
+      transactions: ["alice,20,800,mtv", "alice,50,100,beijing"]
+  - name: "example_high_amount_same_city"
+    in:
+      transactions: ["alice,20,800,mtv", "alice,50,1200,mtv"]
+  - name: "example_different_names"
+    in:
+      transactions: ["alice,20,800,mtv", "bob,50,1200,mtv"]
+  - name: "single_valid"
+    in:
+      transactions: ["bob,0,1,x"]
+  - name: "single_over_limit"
+    in:
+      transactions: ["bob,0,1001,x"]
+  - name: "amount_boundary_valid"
+    in:
+      transactions: ["a,10,1000,one"]
+  - name: "amount_boundary_invalid"
+    in:
+      transactions: ["a,10,1001,one"]
+  - name: "same_city_window"
+    in:
+      transactions: ["a,10,900,x", "a,70,900,x"]
+  - name: "different_city_outside_window"
+    in:
+      transactions: ["a,10,900,x", "a,71,900,y"]
+  - name: "different_city_at_sixty"
+    in:
+      transactions: ["a,10,900,x", "a,70,900,y"]
+  - name: "different_city_sixty_one"
+    in:
+      transactions: ["a,10,900,x", "a,71,900,y"]
+  - name: "three_cities_chain"
+    in:
+      transactions: ["a,0,10,x", "a,30,20,y", "a,90,30,z"]
+  - name: "same_name_multiple_same_city"
+    in:
+      transactions: ["a,0,10,x", "a,20,20,x", "a,40,30,x"]
+  - name: "mixed_users"
+    in:
+      transactions: ["a,0,10,x", "b,0,2000,y", "a,10,20,y"]
+  - name: "high_amount_and_window"
+    in:
+      transactions: ["a,100,1500,x", "a,140,5,y"]
+  - name: "high_amount_old_transaction"
+    in:
+      transactions: ["a,0,1500,x", "a,61,5,y"]
+  - name: "duplicate_records"
+    in:
+      transactions: ["a,5,10,x", "a,5,10,x", "a,5,10,y"]
+  - name: "same_time_different_city"
+    in:
+      transactions: ["a,500,1,x", "a,500,2,y"]
+  - name: "zero_time_zero_amount"
+    in:
+      transactions: ["a,0,0,x", "a,0,0,y"]
+  - name: "maximum_time"
+    in:
+      transactions: ["a,1000,1000,x", "a,940,1000,y"]
+  - name: "maximum_time_outside"
+    in:
+      transactions: ["a,1000,1000,x", "a,939,1000,y"]
+  - name: "unsorted_input"
+    in:
+      transactions: ["a,100,1,y", "a,0,1,x", "a,50,1,z"]
+  - name: "only_one_side_high"
+    in:
+      transactions: ["a,0,1500,x", "a,100,1,y", "b,0,3,z"]
+  - name: "four_transactions_window"
+    in:
+      transactions: ["a,0,1,x", "a,10,1,y", "a,20,1,z", "a,80,1,x"]
+  - name: "window_expiry_keeps_later"
+    in:
+      transactions: ["a,0,1,x", "a,61,1,y", "a,121,1,x"]
+  - name: "different_names_same_city"
+    in:
+      transactions: ["a,10,1,x", "b,20,1,y", "c,30,1,z"]
+  - name: "many_high_amounts"
+    in:
+      transactions: ["a,1,1001,x", "b,2,2000,y", "c,3,1500,z"]
+  - name: "high_amount_duplicate_text"
+    in:
+      transactions: ["a,1,1200,x", "a,1,1200,x", "a,1,1200,y"]
+  - name: "cross_city_far_apart"
+    in:
+      transactions: ["a,100,500,x", "a,200,500,y", "a,300,500,z"]
+  - name: "two_pairs"
+    in:
+      transactions: ["a,10,10,x", "a,20,10,y", "b,10,10,x", "b,20,10,y"]
+  - name: "boundary_amount_cross_city"
+    in:
+      transactions: ["a,400,1000,x", "a,460,1000,y"]
+  - name: "near_boundary_amount_cross_city"
+    in:
+      transactions: ["a,400,1000,x", "a,461,1000,y"]
+  - name: "large_same_name_group"
+    in:
+      transactions: ["a,0,1,a", "a,15,1,b", "a,30,1,c", "a,45,1,d", "a,60,1,e"]
+  - name: "large_group_with_expensive"
+    in:
+      transactions:
+        ["a,0,1,a", "a,30,1001,b", "a,60,1,c", "a,90,1,a", "a,150,1,b"]
+  - name: "mixed_valid_invalid_group"
+    in:
+      transactions:
+        ["a,0,1,x", "a,61,1,y", "a,62,1002,z", "b,0,1,q", "b,61,1,q"]
+  - name: "all_same_city_high_times"
+    in:
+      transactions: ["a,0,1,x", "a,60,1,x", "a,120,1,x", "a,180,1001,x"]
+  - name: "repeated_cross_city_and_high"
+    in:
+      transactions:
+        ["a,10,1,x", "a,70,1,y", "a,130,1,x", "a,190,1001,y", "b,10,1,z"]
+  - name: "selective_invalidation_after_window_boundary"
+    in:
+      transactions: ["a,0,1,x", "a,60,1,y", "a,120,1,y"]
+  - name: "sparse_cross_city_pair_among_same_city_records"
+    in:
+      transactions:
+        ["a,0,1,x", "a,20,1,x", "a,40,1,y", "a,100,1,y", "a,160,1,y"]
+  - name: "duplicate_text_with_one_separate_valid_record"
+    in:
+      transactions: ["a,10,1001,x", "a,10,1001,x", "a,80,1,x", "b,20,1,y"]

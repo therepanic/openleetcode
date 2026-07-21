@@ -1,0 +1,355 @@
+entry:
+  id: 1297
+  title: maximum-number-of-occurrences-of-a-substring
+  params:
+    s:
+      type: string
+    maxLetters:
+      type: int
+    minSize:
+      type: int
+    maxSize:
+      type: int
+  call:
+    cpp: "Solution().maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    rust: "Solution::max_freq({s}, {maxLetters}, {minSize}, {maxSize})"
+    python3: "Solution().maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    python2: "Solution().maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    ruby: "max_freq({s}, {maxLetters}, {minSize}, {maxSize})"
+    java: "new Solution().maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    csharp: "new Solution().MaxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    kotlin: "Solution().maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    go: "maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    dart: "Solution().maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    swift: "Solution().maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+    typescript: "maxFreq({s}, {maxLetters}, {minSize}, {maxSize})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxFreq(s, maxLetters, minSize, maxSize, {result})"
+    checker: |
+      class Checker:
+          def maxFreq(self, s, maxLetters, minSize, maxSize, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not (1 <= len(s) <= 100000 and 1 <= maxLetters <= 26):
+                  return False
+              if not (1 <= minSize <= maxSize <= min(26, len(s))):
+                  return False
+              if any(char < 'a' or char > 'z' for char in s):
+                  return False
+              counts = {}
+              for start in range(len(s) - minSize + 1):
+                  piece = s[start:start + minSize]
+                  if len(set(piece)) <= maxLetters:
+                      counts[piece] = counts.get(piece, 0) + 1
+              return result == max(counts.values(), default=0)
+
+seed: 1297
+
+tests:
+  - name: example_one
+    in:
+      s: aababcaab
+      maxLetters: 2
+      minSize: 3
+      maxSize: 4
+    out: 2
+  - name: example_two
+    in:
+      s: aaaa
+      maxLetters: 1
+      minSize: 3
+      maxSize: 3
+    out: 2
+  - name: single_character
+    in:
+      s: z
+      maxLetters: 1
+      minSize: 1
+      maxSize: 1
+    out: 1
+  - name: uniform_run
+    in:
+      s: aaaaaaaa
+      maxLetters: 1
+      minSize: 3
+      maxSize: 8
+    out: 6
+  - name: pair_filter_rejects_all
+    in:
+      s: abcdef
+      maxLetters: 1
+      minSize: 2
+      maxSize: 4
+    out: 0
+  - name: triple_filter_rejects_all
+    in:
+      s: abcdef
+      maxLetters: 1
+      minSize: 3
+      maxSize: 3
+    out: 0
+  - name: alternating_pair
+    in:
+      s: abababab
+      maxLetters: 2
+      minSize: 2
+      maxSize: 5
+    out: 4
+  - name: periodic_triple
+    in:
+      s: abcabcabc
+      maxLetters: 3
+      minSize: 3
+      maxSize: 6
+    out: 3
+  - name: overlapping_uniform_windows
+    in:
+      s: aaaaaab
+      maxLetters: 1
+      minSize: 2
+      maxSize: 3
+    out: 5
+  - name: separated_uniform_pairs
+    in:
+      s: aabbaaacaa
+      maxLetters: 1
+      minSize: 2
+      maxSize: 4
+    out: 4
+  - name: all_distinct_but_allowed
+    in:
+      s: abcdefgh
+      maxLetters: 8
+      minSize: 2
+      maxSize: 8
+    out: 1
+  - name: single_size_character_frequency
+    in:
+      s: zyxxyzz
+      maxLetters: 1
+      minSize: 1
+      maxSize: 5
+    out: 3
+  - name: repeated_four_character_windows
+    in:
+      s: abacabadabacaba
+      maxLetters: 3
+      minSize: 4
+      maxSize: 4
+    out: 2
+  - name: repeated_aab
+    in:
+      s: aabcaabdaabca
+      maxLetters: 3
+      minSize: 3
+      maxSize: 7
+    out: 3
+  - name: three_cycle_under_two_letter_bound
+    in:
+      s: abcabcabcabc
+      maxLetters: 2
+      minSize: 2
+      maxSize: 5
+    out: 4
+  - name: repeated_unique_pairs
+    in:
+      s: qwertyqwerty
+      maxLetters: 2
+      minSize: 2
+      maxSize: 6
+    out: 2
+  - name: repeated_xyz
+    in:
+      s: xyzxyzxyza
+      maxLetters: 3
+      minSize: 3
+      maxSize: 5
+    out: 3
+  - name: suffix_uniform_run
+    in:
+      s: abczzzzzz
+      maxLetters: 1
+      minSize: 2
+      maxSize: 6
+    out: 5
+  - name: repeated_abcd
+    in:
+      s: abcdabceabcd
+      maxLetters: 4
+      minSize: 4
+      maxSize: 8
+    out: 2
+  - name: constrained_two_letter_windows
+    in:
+      s: aabacabaabbac
+      maxLetters: 2
+      minSize: 3
+      maxSize: 5
+    out: 2
+  - name: repeated_six_character_pattern
+    in:
+      s: abcdefabcdefabcdef
+      maxLetters: 6
+      minSize: 6
+      maxSize: 10
+    out: 3
+  - name: leading_uniform_run
+    in:
+      s: aaaaaabcde
+      maxLetters: 1
+      minSize: 4
+      maxSize: 6
+    out: 3
+  - name: whole_string_window
+    in:
+      s: abcde
+      maxLetters: 5
+      minSize: 5
+      maxSize: 5
+    out: 1
+  - name: min_size_one
+    in:
+      s: ababababa
+      maxLetters: 2
+      minSize: 1
+      maxSize: 2
+    out: 5
+  - name: repeating_four_window
+    in:
+      s: aabacaaabacaa
+      maxLetters: 3
+      minSize: 4
+      maxSize: 9
+    out: 2
+  - name: long_three_cycle
+    in:
+      s: abcabcabcabcabcabcabcabc
+      maxLetters: 3
+      minSize: 3
+      maxSize: 12
+    out: 8
+  - name: strict_two_letter_filter
+    in:
+      s: abcadeabcab
+      maxLetters: 2
+      minSize: 3
+      maxSize: 6
+    out: 0
+  - name: largest_uniform_block_wins
+    in:
+      s: aaaaaabaaaaac
+      maxLetters: 1
+      minSize: 3
+      maxSize: 7
+    out: 7
+  - name: repeated_five_letter_prefix
+    in:
+      s: abcdefabcdeffedcba
+      maxLetters: 5
+      minSize: 5
+      maxSize: 10
+    out: 2
+  - name: three_separated_abcd_windows
+    in:
+      s: abcdxabcdyabcd
+      maxLetters: 4
+      minSize: 4
+      maxSize: 8
+    out: 3
+  - name: alphabet_boundary_window
+    in:
+      s: abcdefghijklmnopqrstuvwxyz
+      maxLetters: 26
+      minSize: 26
+      maxSize: 26
+    out: 1
+  - name: banana_overlaps
+    in:
+      s: banana
+      maxLetters: 2
+      minSize: 3
+      maxSize: 3
+    out: 2
+  - name: repeating_four_characters
+    in:
+      s: zzxyzzxyzz
+      maxLetters: 3
+      minSize: 4
+      maxSize: 6
+    out: 2
+  - name: internal_uniform_run
+    in:
+      s: abbbbbba
+      maxLetters: 1
+      minSize: 5
+      maxSize: 7
+    out: 2
+  - name: generated_binary_20000
+    seed: 201
+    in:
+      s:
+        gen: "str"
+        len: 20000
+        alphabet: ab
+      maxLetters: 1
+      minSize: 10
+      maxSize: 26
+  - name: generated_ternary_35000
+    seed: 202
+    in:
+      s:
+        gen: "str"
+        len: 35000
+        alphabet: abc
+      maxLetters: 3
+      minSize: 26
+      maxSize: 26
+  - name: generated_full_alphabet_50000
+    seed: 203
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      maxLetters: 26
+      minSize: 26
+      maxSize: 26
+  - name: generated_four_letter_75000
+    seed: 204
+    in:
+      s:
+        gen: "str"
+        len: 75000
+        alphabet: abcd
+      maxLetters: 2
+      minSize: 20
+      maxSize: 26
+  - name: generated_ten_letter_filter_99999
+    seed: 205
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      maxLetters: 10
+      minSize: 5
+      maxSize: 26
+  - name: generated_binary_maximum_100000
+    seed: 206
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: ab
+      maxLetters: 2
+      minSize: 26
+      maxSize: 26

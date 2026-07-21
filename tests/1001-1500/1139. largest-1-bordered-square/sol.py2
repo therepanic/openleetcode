@@ -1,0 +1,23 @@
+class Solution(object):
+    def largest1BorderedSquare(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        m, n = len(grid), len(grid[0])
+        h = [[0] * n for _ in range(m)]
+        v = [[0] * n for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j]:
+                    h[i][j] = (h[i][j-1] + 1) if j else 1
+                    v[i][j] = (v[i-1][j] + 1) if i else 1
+        ans = 0
+        for i in range(m):
+            for j in range(n):
+                sz = min(h[i][j], v[i][j])
+                for k in range(sz, 0, -1):
+                    if h[i-k+1][j] >= k and v[i][j-k+1] >= k:
+                        ans = max(ans, k)
+                        break
+        return ans * ans

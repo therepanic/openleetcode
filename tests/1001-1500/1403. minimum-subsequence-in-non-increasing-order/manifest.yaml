@@ -1,0 +1,261 @@
+entry:
+  id: 1403
+  title: "minimum-subsequence-in-non-increasing-order"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minSubsequence({nums})"
+    rust: "Solution::min_subsequence({nums})"
+    python3: "Solution().minSubsequence({nums})"
+    python2: "Solution().minSubsequence({nums})"
+    ruby: "min_subsequence({nums})"
+    java: "new Solution().minSubsequence({nums})"
+    csharp: "new Solution().MinSubsequence({nums})"
+    kotlin: "Solution().minSubsequence({nums})"
+    go: "minSubsequence({nums})"
+    dart: "Solution().minSubsequence({nums})"
+    swift: "Solution().minSubsequence({nums})"
+    typescript: "minSubsequence({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minSubsequence(nums, {result})"
+    checker: |
+      class Checker:
+          def minSubsequence(self, nums, result):
+              if not isinstance(result, list) or not result:
+                  return False
+              if any(not isinstance(value, int) for value in result):
+                  return False
+              if result != sorted(result, reverse=True):
+                  return False
+              available = list(nums)
+              for value in result:
+                  if value not in available:
+                      return False
+                  available.remove(value)
+              chosen_sum = sum(result)
+              if chosen_sum <= sum(available):
+                  return False
+              ordered = sorted(nums, reverse=True)
+              minimum_size = None
+              for size in range(1, len(ordered) + 1):
+                  if sum(ordered[:size]) > sum(ordered[size:]):
+                      minimum_size = size
+                      break
+              if len(result) != minimum_size:
+                  return False
+              return chosen_sum == sum(ordered[:minimum_size])
+
+seed: 1403
+
+tests:
+  - name: "example-one"
+    in:
+      nums: [4, 3, 10, 9, 8]
+  - name: "example-two"
+    in:
+      nums: [4, 4, 7, 6, 7]
+  - name: "single-one"
+    in:
+      nums: [1]
+  - name: "single-hundred"
+    in:
+      nums: [100]
+  - name: "two-equal"
+    in:
+      nums: [5, 5]
+  - name: "two-unequal"
+    in:
+      nums: [9, 1]
+  - name: "all-ones-three"
+    in:
+      nums: [1, 1, 1]
+  - name: "all-ones-four"
+    in:
+      nums: [1, 1, 1, 1]
+  - name: "strictly-increasing"
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+  - name: "strictly-decreasing"
+    in:
+      nums: [10, 9, 8, 7, 6, 5]
+  - name: "already-sorted"
+    in:
+      nums: [100, 90, 80, 70, 60]
+  - name: "reverse-sorted"
+    in:
+      nums: [2, 9, 1, 8, 3, 7]
+  - name: "dominant-maximum"
+    in:
+      nums: [100, 1, 1, 1, 1, 1]
+  - name: "dominant-pair"
+    in:
+      nums: [99, 98, 1, 1, 1, 1, 1]
+  - name: "half-sum-boundary"
+    in:
+      nums: [8, 4, 4]
+  - name: "equal-largest-tie"
+    in:
+      nums: [8, 8, 4, 4]
+  - name: "three-largest-needed"
+    in:
+      nums: [7, 7, 7, 1, 1, 1, 1]
+  - name: "many-fours"
+    in:
+      nums: [4, 4, 4, 4, 4, 4, 4]
+  - name: "mixed-small"
+    in:
+      nums: [2, 5, 1, 9, 3, 6]
+  - name: "mixed-medium"
+    in:
+      nums: [11, 2, 19, 7, 13, 5, 17]
+  - name: "near-maximum-values"
+    in:
+      nums: [100, 99, 98, 97, 1, 2, 3]
+  - name: "balanced-pairs"
+    in:
+      nums: [10, 10, 9, 9, 8, 8]
+  - name: "repeated-high"
+    in:
+      nums: [20, 20, 20, 3, 3, 3, 3, 3]
+  - name: "one-through-ten"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  - name: "ten-equal"
+    in:
+      nums: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+  - name: "alternating-extremes"
+    in:
+      nums: [100, 1, 99, 2, 98, 3, 97, 4]
+  - name: "large-tail"
+    in:
+      nums: [50, 49, 48, 47, 46, 1, 1, 1, 1, 1, 1, 1]
+  - name: "small-leading"
+    in:
+      nums: [1, 100, 2, 99, 3, 98, 4, 97]
+  - name: "multiples-of-seven"
+    in:
+      nums: [7, 14, 21, 28, 35, 42, 49]
+  - name: "mixed-duplicates"
+    in:
+      nums: [6, 6, 5, 5, 4, 4, 3, 3, 2, 1]
+  - name: "twenty-values"
+    in:
+      nums:
+        [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+  - name: "maximum-bound-values"
+    in:
+      nums: [100, 100, 100, 100, 100, 1, 1, 1, 1, 1]
+  - name: "long-flat-tail"
+    in:
+      nums: [30, 29, 28, 27, 26, 25, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: "thirty-one-elements"
+    in:
+      nums:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+        ]
+  - name: "large-mixed"
+    in:
+      nums: [100, 1, 50, 2, 75, 3, 25, 4, 90, 5, 60, 6, 40, 7, 80, 8]
+  - name: "generated-small-range"
+    seed: 14031
+    in:
+      nums:
+        gen: "array"
+        len: 17
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        elemType: "int"
+  - name: "generated-medium-range"
+    seed: 14032
+    in:
+      nums:
+        gen: "array"
+        len: 64
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        elemType: "int"
+  - name: "generated-all-minimum"
+    seed: 14033
+    in:
+      nums:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        distinct: false
+        elemType: "int"
+  - name: "generated-all-maximum"
+    seed: 14034
+    in:
+      nums:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 100
+          max: 100
+        distinct: false
+        elemType: "int"
+  - name: "generated-full-range"
+    seed: 14035
+    in:
+      nums:
+        gen: "array"
+        len: 499
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        elemType: "int"

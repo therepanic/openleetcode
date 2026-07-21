@@ -1,0 +1,271 @@
+entry:
+  id: 1186
+  title: "maximum-subarray-sum-with-one-deletion"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maximumSum({arr})"
+    rust: "Solution::maximum_sum({arr})"
+    python3: "Solution().maximumSum({arr})"
+    python2: "Solution().maximumSum({arr})"
+    ruby: "maximum_sum({arr})"
+    java: "new Solution().maximumSum({arr})"
+    csharp: "new Solution().MaximumSum({arr})"
+    kotlin: "Solution().maximumSum({arr})"
+    go: "maximumSum({arr})"
+    dart: "Solution().maximumSum({arr})"
+    swift: "Solution().maximumSum({arr})"
+    typescript: "maximumSum({arr})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maximumSum(arr, {result})"
+    checker: |
+      class Checker:
+          def maximumSum(self, arr, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              size = len(arr)
+              if size == 0:
+                  return False
+              if size == 1:
+                  return result == arr[0]
+
+              # Best non-empty subarray ending at each position.
+              left = [0] * size
+              left[0] = arr[0]
+              for index in range(1, size):
+                  left[index] = max(arr[index], left[index - 1] + arr[index])
+
+              # Best non-empty subarray starting at each position.
+              right = [0] * size
+              right[-1] = arr[-1]
+              for index in range(size - 2, -1, -1):
+                  right[index] = max(arr[index], arr[index] + right[index + 1])
+
+              best = max(left)
+              for deleted_index in range(1, size - 1):
+                  best = max(best, left[deleted_index - 1] + right[deleted_index + 1])
+              return result == best
+
+seed: 118600
+
+tests:
+  - name: "example_one"
+    in:
+      arr: [1, -2, 0, 3]
+    out: 4
+  - name: "example_two"
+    in:
+      arr: [1, -2, -2, 3]
+    out: 3
+  - name: "example_three"
+    in:
+      arr: [-1, -1, -1, -1]
+    out: -1
+  - name: "single_positive"
+    in:
+      arr: [5]
+    out: 5
+  - name: "single_negative"
+    in:
+      arr: [-5]
+    out: -5
+  - name: "two_positive_values"
+    in:
+      arr: [4, 9]
+    out: 13
+  - name: "two_negative_values"
+    in:
+      arr: [-4, -9]
+    out: -4
+  - name: "increasing_positive"
+    in:
+      arr: [1, 2, 3]
+    out: 6
+  - name: "delete_single_middle_loss"
+    in:
+      arr: [1, -5, 3]
+    out: 4
+  - name: "bridge_best_segments"
+    in:
+      arr: [8, -1, 2, -10, 4]
+    out: 13
+  - name: "delete_internal_dip"
+    in:
+      arr: [1, -4, 3, -2, 3]
+    out: 6
+  - name: "all_negative_varied"
+    in:
+      arr: [-10, -2, -3]
+    out: -2
+  - name: "all_zero"
+    in:
+      arr: [0, 0, 0]
+    out: 0
+  - name: "positive_negative_positive"
+    in:
+      arr: [10, -10, 10]
+    out: 20
+  - name: "optional_deletion_only_hurts"
+    in:
+      arr: [2, 5, 1]
+    out: 8
+  - name: "two_loss_gap"
+    in:
+      arr: [3, -2, -2, 3]
+    out: 4
+  - name: "minimum_and_maximum"
+    in:
+      arr: [-10000, 10000, -10000]
+    out: 10000
+  - name: "maximum_values"
+    in:
+      arr: [10000, -10000, 10000]
+    out: 20000
+  - name: "alternating_ones"
+    in:
+      arr: [1, -1, 1, -1, 1]
+    out: 2
+  - name: "two_negatives_between"
+    in:
+      arr: [2, -1, -1, 2]
+    out: 3
+  - name: "positive_block"
+    in:
+      arr: [-5, 1, 1, 1, -5]
+    out: 3
+  - name: "prefix_and_suffix_join"
+    in:
+      arr: [7, -3, 4, -10, 6]
+    out: 14
+  - name: "single_positive_center"
+    in:
+      arr: [-2, -2, 5, -2]
+    out: 5
+  - name: "zero_gap"
+    in:
+      arr: [0, -1, 0, 0]
+    out: 0
+  - name: "one_of_two_equal_losses"
+    in:
+      arr: [6, -5, -5, 6]
+    out: 7
+  - name: "four_edges"
+    in:
+      arr: [4, -1, -1, -1, 4]
+    out: 6
+  - name: "alternating_three"
+    in:
+      arr: [-3, 2, -3, 2, -3]
+    out: 4
+  - name: "large_alternating"
+    in:
+      arr: [9, -8, 9, -8, 9]
+    out: 19
+  - name: "late_large_positive"
+    in:
+      arr: [-10, 1, -10, 1, 10]
+    out: 12
+  - name: "sparse_positive"
+    in:
+      arr: [1, -10, 2, -10, 3]
+    out: 5
+  - name: "equal_edges_positive"
+    in:
+      arr: [5, -4, -4, -4, 5]
+    out: 5
+  - name: "mixed_tail"
+    in:
+      arr: [-7, -6, 10, -1, -2]
+    out: 10
+  - name: "two_positive_pairs"
+    in:
+      arr: [2, 2, -10, 2, 2]
+    out: 8
+  - name: "maximum_boundary_pair"
+    in:
+      arr: [10000, -9999, -9999, 10000]
+    out: 10001
+  - name: "generated_large_mixed_ten_thousand"
+    seed: 118601
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+  - name: "generated_large_mixed_twenty_five_thousand"
+    seed: 118602
+    in:
+      arr:
+        gen: "array"
+        len: 25000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+  - name: "generated_large_all_negative"
+    seed: 118603
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: -10000
+          max: -1
+        distinct: false
+        sorted: false
+  - name: "generated_near_limit_mixed"
+    seed: 118604
+    in:
+      arr:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+  - name: "generated_maximum_all_nonnegative"
+    seed: 118605
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        distinct: false
+        sorted: false
+  - name: "generated_maximum_alternating_domain"
+    seed: 118606
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false

@@ -1,0 +1,501 @@
+entry:
+  id: 1452
+  title: people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list
+  params:
+    favoriteCompanies:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+  call:
+    cpp: "Solution().peopleIndexes({favoriteCompanies})"
+    rust: "Solution::people_indexes({favoriteCompanies})"
+    python3: "Solution().peopleIndexes({favoriteCompanies})"
+    python2: "Solution().peopleIndexes({favoriteCompanies})"
+    ruby: "people_indexes({favoriteCompanies})"
+    java: "new Solution().peopleIndexes({favoriteCompanies})"
+    csharp: "new Solution().PeopleIndexes({favoriteCompanies})"
+    kotlin: "Solution().peopleIndexes({favoriteCompanies})"
+    go: "peopleIndexes({favoriteCompanies})"
+    dart: "Solution().peopleIndexes({favoriteCompanies})"
+    swift: "Solution().peopleIndexes({favoriteCompanies})"
+    typescript: "peopleIndexes({favoriteCompanies})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().peopleIndexes(favoriteCompanies, {result})"
+    checker: |
+      class Checker:
+          def peopleIndexes(self, companies, result):
+              if not isinstance(result, list):
+                  return False
+              sets = [set(x) for x in companies]
+              expected = [i for i, current in enumerate(sets)
+                          if not any(i != j and current.issubset(other)
+                                     for j, other in enumerate(sets))]
+              return result == expected
+seed: 1452
+tests:
+  - name: example-one
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["leetcode", "google", "facebook"]
+          - ["google", "microsoft"]
+          - ["google", "facebook"]
+          - ["google"]
+          - ["amazon"]
+    out: [0, 1, 4]
+  - name: example-two
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["leetcode", "google", "facebook"]
+          - ["leetcode", "amazon"]
+          - ["facebook", "google"]
+    out: [0, 1]
+  - name: example-three
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["leetcode"]
+          - ["google"]
+          - ["facebook"]
+          - ["amazon"]
+    out: [0, 1, 2, 3]
+  - name: single-list
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["solo"]
+    out: [0]
+  - name: two-disjoint
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["alpha"]
+          - ["beta"]
+    out: [0, 1]
+  - name: first-contained
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["a", "b"]
+    out: [1]
+  - name: second-contained
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["a"]
+    out: [0]
+  - name: four-level-chain
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["a", "b"]
+          - ["a", "b", "c"]
+          - ["a", "b", "c", "d"]
+    out: [3]
+  - name: reverse-chain
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d"]
+          - ["a", "b", "c"]
+          - ["a", "b"]
+          - ["a"]
+    out: [0]
+  - name: pairwise-incomparable
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["b", "c"]
+          - ["a", "c"]
+    out: [0, 1, 2]
+  - name: two-maxima-and-subset
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["a", "c"]
+          - ["a"]
+    out: [0, 1]
+  - name: separate-maxima
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["c", "d"]
+          - ["a", "b", "c"]
+    out: [1, 2]
+  - name: all-singletons
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["b"]
+          - ["c"]
+          - ["d"]
+          - ["e"]
+    out: [0, 1, 2, 3, 4]
+  - name: overlapping-singletons
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["b", "c"]
+          - ["c", "d"]
+          - ["d", "e"]
+    out: [0, 1, 2, 3]
+  - name: broad-set
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d", "e"]
+          - ["a", "b"]
+          - ["c", "d"]
+          - ["e"]
+          - ["x"]
+    out: [0, 4]
+  - name: mixed-five
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["a", "b", "c"]
+          - ["b", "c"]
+          - ["a", "c", "d"]
+          - ["a", "b", "c", "d"]
+    out: [4]
+  - name: two-independent-chains
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["a", "b"]
+          - ["x"]
+          - ["x", "y"]
+    out: [1, 3]
+  - name: early-maximal
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b", "c"]
+          - ["a"]
+          - ["b"]
+          - ["c"]
+    out: [0]
+  - name: late-maximal
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["a", "b"]
+          - ["x", "y"]
+          - ["x", "y", "z"]
+    out: [1, 3]
+  - name: four-way-crossing
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b", "c"]
+          - ["a", "b", "d"]
+          - ["a", "c", "d"]
+          - ["b", "c", "d"]
+    out: [0, 1, 2, 3]
+  - name: nested-three
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["x"]
+          - ["x", "y"]
+          - ["x", "y", "z"]
+    out: [2]
+  - name: six-level-chain
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["a", "b"]
+          - ["a", "b", "c"]
+          - ["a", "b", "c", "d"]
+          - ["a", "b", "c", "d", "e"]
+          - ["a", "b", "c", "d", "e", "f"]
+    out: [5]
+  - name: six-disjoint
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["b"]
+          - ["c"]
+          - ["d"]
+          - ["e"]
+          - ["f"]
+    out: [0, 1, 2, 3, 4, 5]
+  - name: named-companies
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["apple", "google"]
+          - ["google", "microsoft"]
+          - ["apple", "amazon"]
+          - ["amazon", "google", "microsoft"]
+    out: [0, 2, 3]
+  - name: maximal-with-singletons
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["red", "blue", "green"]
+          - ["red"]
+          - ["blue"]
+          - ["yellow"]
+          - ["green", "yellow"]
+    out: [0, 4]
+  - name: disjoint-large-lists
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d"]
+          - ["e", "f", "g", "h"]
+          - ["a", "b"]
+          - ["e", "f"]
+          - ["i", "j", "k"]
+    out: [0, 1, 4]
+  - name: interleaved-chain
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b"]
+          - ["x"]
+          - ["a", "b", "c"]
+          - ["x", "y"]
+          - ["a", "b", "c", "d"]
+          - ["x", "y", "z"]
+    out: [4, 5]
+  - name: no-full-containment
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["aa", "bb"]
+          - ["aa", "cc"]
+          - ["bb", "cc"]
+          - ["aa", "bb", "cc"]
+          - ["dd", "ee"]
+    out: [3, 4]
+  - name: four-maxima-with-subsets
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d"]
+          - ["a", "b"]
+          - ["c", "d"]
+          - ["a", "c"]
+          - ["e", "f"]
+          - ["e"]
+    out: [0, 4]
+  - name: order-does-not-matter
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["z", "y", "x"]
+          - ["x", "y"]
+          - ["y", "z"]
+          - ["a", "b", "c", "d"]
+    out: [0, 3]
+  - name: length-twenty
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m",
+              "n",
+              "o",
+              "p",
+              "q",
+              "r",
+              "s",
+              "t",
+            ]
+          - ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+          - ["k", "l", "m", "n", "o", "p", "q", "r", "s", "t"]
+          - ["u", "v"]
+    out: [0, 3]
+  - name: mixed-seven
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a"]
+          - ["a", "b"]
+          - ["c"]
+          - ["c", "d"]
+          - ["a", "b", "c"]
+          - ["x"]
+          - ["x", "y"]
+    out: [3, 4, 6]
+  - name: disjoint-maximal-and-chain
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["p", "q", "r"]
+          - ["p", "q"]
+          - ["q", "r"]
+          - ["s"]
+          - ["s", "t"]
+          - ["u", "v"]
+    out: [0, 4, 5]
+  - name: overlapping-maxima
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["a", "b", "c", "d"]
+          - ["a", "b", "c"]
+          - ["b", "c", "d"]
+          - ["a", "d"]
+          - ["e", "f", "g"]
+          - ["e", "f"]
+    out: [0, 4]
+  - name: long-names
+    in:
+      favoriteCompanies:
+        elemType: "string"
+        value:
+          - ["abcdefghijklmnopqrst", "abcdefghijklmnopqrs"]
+          - ["abcdefghijklmnopqrst"]
+          - ["zzzzzzzzzzzzzzzzzzzzzz"]
+    out: [0, 2]
+  - name: generated-maximal-100x500-a
+    seed: 145201
+    in:
+      favoriteCompanies:
+        gen: array
+        elemType: "string"
+        len: 60
+        distinct: true
+        of:
+          gen: array
+          len: 250
+          distinct: true
+          of:
+            gen: str
+            len: 20
+            alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-maximal-100x500-b
+    seed: 145202
+    in:
+      favoriteCompanies:
+        gen: array
+        elemType: "string"
+        len: 40
+        distinct: true
+        of:
+          gen: array
+          len: 120
+          distinct: true
+          of:
+            gen: str
+            len: 20
+            alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-maximal-100x500-c
+    seed: 145203
+    in:
+      favoriteCompanies:
+        gen: array
+        elemType: "string"
+        len: 30
+        distinct: true
+        of:
+          gen: array
+          len: 80
+          distinct: true
+          of:
+            gen: str
+            len: 20
+            alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-maximal-100x500-d
+    seed: 145204
+    in:
+      favoriteCompanies:
+        gen: array
+        elemType: "string"
+        len: 20
+        distinct: true
+        of:
+          gen: array
+          len: 60
+          distinct: true
+          of:
+            gen: str
+            len: 20
+            alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-maximal-100x500-e
+    seed: 145205
+    in:
+      favoriteCompanies:
+        gen: array
+        elemType: "string"
+        len: 12
+        distinct: true
+        of:
+          gen: array
+          len: 40
+          distinct: true
+          of:
+            gen: str
+            len: 20
+            alphabet: "abcdefghijklmnopqrstuvwxyz"

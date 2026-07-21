@@ -1,0 +1,1020 @@
+entry:
+  id: 1252
+  title: "cells-with-odd-values-in-a-matrix"
+  params:
+    m:
+      type: int
+    n:
+      type: int
+    indices:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().oddCells({m}, {n}, {indices})"
+    rust: "Solution::odd_cells({m}, {n}, {indices})"
+    python3: "Solution().oddCells({m}, {n}, {indices})"
+    python2: "Solution().oddCells({m}, {n}, {indices})"
+    ruby: "odd_cells({m}, {n}, {indices})"
+    java: "new Solution().oddCells({m}, {n}, {indices})"
+    csharp: "new Solution().OddCells({m}, {n}, {indices})"
+    kotlin: "Solution().oddCells({m}, {n}, {indices})"
+    go: "oddCells({m}, {n}, {indices})"
+    dart: "Solution().oddCells({m}, {n}, {indices})"
+    swift: "Solution().oddCells({m}, {n}, {indices})"
+    typescript: "oddCells({m}, {n}, {indices})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().oddCells(m, n, indices, {result})"
+    checker: |
+      class Checker:
+          def oddCells(self, m, n, indices, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              row_parity = [0] * m
+              col_parity = [0] * n
+              for row, col in indices:
+                  row_parity[row] ^= 1
+                  col_parity[col] ^= 1
+              odd_rows = sum(row_parity)
+              odd_cols = sum(col_parity)
+              expected = odd_rows * (n - odd_cols) + (m - odd_rows) * odd_cols
+              return result == expected
+
+seed: 125200
+
+tests:
+  - name: "example_one"
+    in:
+      m: 2
+      n: 3
+      indices:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 1]
+    out: 6
+  - name: "example_two"
+    in:
+      m: 2
+      n: 2
+      indices:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [0, 0]
+    out: 0
+  - name: "one_by_one_once"
+    in:
+      m: 1
+      n: 1
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+    out: 0
+  - name: "one_by_one_twice"
+    in:
+      m: 1
+      n: 1
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 0]
+    out: 0
+  - name: "one_row_three_columns"
+    in:
+      m: 1
+      n: 5
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 2]
+          - [0, 4]
+    out: 2
+  - name: "one_column_three_rows"
+    in:
+      m: 5
+      n: 1
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [2, 0]
+          - [4, 0]
+    out: 2
+  - name: "duplicate_pair_cancels"
+    in:
+      m: 3
+      n: 4
+      indices:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [1, 2]
+    out: 0
+  - name: "one_odd_row_three_odd_columns"
+    in:
+      m: 4
+      n: 4
+      indices:
+        elemType: "int"
+        value:
+          - [2, 0]
+          - [2, 1]
+          - [2, 2]
+    out: 10
+  - name: "shared_column_with_repeat"
+    in:
+      m: 4
+      n: 3
+      indices:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+          - [0, 1]
+    out: 5
+  - name: "all_corners_cancel"
+    in:
+      m: 3
+      n: 3
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 2]
+          - [2, 0]
+          - [2, 2]
+    out: 0
+  - name: "full_diagonal_even_square"
+    in:
+      m: 4
+      n: 4
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+    out: 0
+  - name: "repeated_diagonal_cancels"
+    in:
+      m: 4
+      n: 4
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [0, 0]
+          - [1, 1]
+    out: 0
+  - name: "all_rows_one_column"
+    in:
+      m: 5
+      n: 6
+      indices:
+        elemType: "int"
+        value:
+          - [0, 2]
+          - [1, 2]
+          - [2, 2]
+          - [3, 2]
+          - [4, 2]
+    out: 25
+  - name: "one_row_all_columns"
+    in:
+      m: 6
+      n: 5
+      indices:
+        elemType: "int"
+        value:
+          - [3, 0]
+          - [3, 1]
+          - [3, 2]
+          - [3, 3]
+          - [3, 4]
+    out: 25
+  - name: "odd_duplicate_and_single"
+    in:
+      m: 7
+      n: 8
+      indices:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [2, 2]
+    out: 22
+  - name: "small_scattered"
+    in:
+      m: 2
+      n: 5
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [0, 2]
+          - [1, 3]
+    out: 8
+  - name: "rectangular_wide"
+    in:
+      m: 3
+      n: 10
+      indices:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 3]
+          - [2, 5]
+          - [0, 7]
+          - [1, 9]
+    out: 15
+  - name: "rectangular_tall"
+    in:
+      m: 10
+      n: 3
+      indices:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [3, 1]
+          - [5, 2]
+          - [7, 0]
+          - [9, 1]
+    out: 15
+  - name: "three_by_three_grid"
+    in:
+      m: 3
+      n: 3
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 1]
+          - [1, 0]
+          - [1, 1]
+          - [2, 2]
+    out: 4
+  - name: "two_pairs_cancel_then_two_single"
+    in:
+      m: 4
+      n: 5
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [0, 0]
+          - [1, 1]
+    out: 10
+  - name: "high_coordinates"
+    in:
+      m: 10
+      n: 10
+      indices:
+        elemType: "int"
+        value:
+          - [9, 9]
+          - [9, 8]
+          - [8, 9]
+          - [0, 0]
+    out: 32
+  - name: "anti_diagonal_even_square"
+    in:
+      m: 6
+      n: 6
+      indices:
+        elemType: "int"
+        value:
+          - [0, 5]
+          - [1, 4]
+          - [2, 3]
+          - [3, 2]
+          - [4, 1]
+          - [5, 0]
+    out: 0
+  - name: "row_and_column_cross"
+    in:
+      m: 5
+      n: 5
+      indices:
+        elemType: "int"
+        value:
+          - [2, 0]
+          - [2, 1]
+          - [2, 2]
+          - [2, 3]
+          - [2, 4]
+          - [0, 2]
+          - [1, 2]
+    out: 10
+  - name: "sparse_even_square"
+    in:
+      m: 10
+      n: 10
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [2, 2]
+          - [4, 4]
+          - [6, 6]
+          - [8, 8]
+    out: 50
+  - name: "dense_partial_square"
+    in:
+      m: 10
+      n: 10
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 1]
+          - [1, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+    out: 48
+  - name: "large_all_rows_once"
+    in:
+      m: 50
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 0]
+          - [2, 0]
+          - [3, 0]
+          - [4, 0]
+          - [5, 0]
+          - [6, 0]
+          - [7, 0]
+          - [8, 0]
+          - [9, 0]
+          - [10, 0]
+          - [11, 0]
+          - [12, 0]
+          - [13, 0]
+          - [14, 0]
+          - [15, 0]
+          - [16, 0]
+          - [17, 0]
+          - [18, 0]
+          - [19, 0]
+          - [20, 0]
+          - [21, 0]
+          - [22, 0]
+          - [23, 0]
+          - [24, 0]
+          - [25, 0]
+          - [26, 0]
+          - [27, 0]
+          - [28, 0]
+          - [29, 0]
+          - [30, 0]
+          - [31, 0]
+          - [32, 0]
+          - [33, 0]
+          - [34, 0]
+          - [35, 0]
+          - [36, 0]
+          - [37, 0]
+          - [38, 0]
+          - [39, 0]
+          - [40, 0]
+          - [41, 0]
+          - [42, 0]
+          - [43, 0]
+          - [44, 0]
+          - [45, 0]
+          - [46, 0]
+          - [47, 0]
+          - [48, 0]
+          - [49, 0]
+    out: 2500
+  - name: "large_main_diagonal"
+    in:
+      m: 50
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+          - [6, 6]
+          - [7, 7]
+          - [8, 8]
+          - [9, 9]
+          - [10, 10]
+          - [11, 11]
+          - [12, 12]
+          - [13, 13]
+          - [14, 14]
+          - [15, 15]
+          - [16, 16]
+          - [17, 17]
+          - [18, 18]
+          - [19, 19]
+          - [20, 20]
+          - [21, 21]
+          - [22, 22]
+          - [23, 23]
+          - [24, 24]
+          - [25, 25]
+          - [26, 26]
+          - [27, 27]
+          - [28, 28]
+          - [29, 29]
+          - [30, 30]
+          - [31, 31]
+          - [32, 32]
+          - [33, 33]
+          - [34, 34]
+          - [35, 35]
+          - [36, 36]
+          - [37, 37]
+          - [38, 38]
+          - [39, 39]
+          - [40, 40]
+          - [41, 41]
+          - [42, 42]
+          - [43, 43]
+          - [44, 44]
+          - [45, 45]
+          - [46, 46]
+          - [47, 47]
+          - [48, 48]
+          - [49, 49]
+    out: 0
+  - name: "large_anti_diagonal"
+    in:
+      m: 50
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [0, 49]
+          - [1, 48]
+          - [2, 47]
+          - [3, 46]
+          - [4, 45]
+          - [5, 44]
+          - [6, 43]
+          - [7, 42]
+          - [8, 41]
+          - [9, 40]
+          - [10, 39]
+          - [11, 38]
+          - [12, 37]
+          - [13, 36]
+          - [14, 35]
+          - [15, 34]
+          - [16, 33]
+          - [17, 32]
+          - [18, 31]
+          - [19, 30]
+          - [20, 29]
+          - [21, 28]
+          - [22, 27]
+          - [23, 26]
+          - [24, 25]
+          - [25, 24]
+          - [26, 23]
+          - [27, 22]
+          - [28, 21]
+          - [29, 20]
+          - [30, 19]
+          - [31, 18]
+          - [32, 17]
+          - [33, 16]
+          - [34, 15]
+          - [35, 14]
+          - [36, 13]
+          - [37, 12]
+          - [38, 11]
+          - [39, 10]
+          - [40, 9]
+          - [41, 8]
+          - [42, 7]
+          - [43, 6]
+          - [44, 5]
+          - [45, 4]
+          - [46, 3]
+          - [47, 2]
+          - [48, 1]
+          - [49, 0]
+    out: 0
+  - name: "large_odd_single_corner"
+    in:
+      m: 50
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+          - [49, 49]
+    out: 98
+  - name: "large_tall_diagonal"
+    in:
+      m: 50
+      n: 49
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+          - [6, 6]
+          - [7, 7]
+          - [8, 8]
+          - [9, 9]
+          - [10, 10]
+          - [11, 11]
+          - [12, 12]
+          - [13, 13]
+          - [14, 14]
+          - [15, 15]
+          - [16, 16]
+          - [17, 17]
+          - [18, 18]
+          - [19, 19]
+          - [20, 20]
+          - [21, 21]
+          - [22, 22]
+          - [23, 23]
+          - [24, 24]
+          - [25, 25]
+          - [26, 26]
+          - [27, 27]
+          - [28, 28]
+          - [29, 29]
+          - [30, 30]
+          - [31, 31]
+          - [32, 32]
+          - [33, 33]
+          - [34, 34]
+          - [35, 35]
+          - [36, 36]
+          - [37, 37]
+          - [38, 38]
+          - [39, 39]
+          - [40, 40]
+          - [41, 41]
+          - [42, 42]
+          - [43, 43]
+          - [44, 44]
+          - [45, 45]
+          - [46, 46]
+          - [47, 47]
+          - [48, 48]
+    out: 49
+  - name: "large_wide_diagonal"
+    in:
+      m: 49
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+          - [6, 6]
+          - [7, 7]
+          - [8, 8]
+          - [9, 9]
+          - [10, 10]
+          - [11, 11]
+          - [12, 12]
+          - [13, 13]
+          - [14, 14]
+          - [15, 15]
+          - [16, 16]
+          - [17, 17]
+          - [18, 18]
+          - [19, 19]
+          - [20, 20]
+          - [21, 21]
+          - [22, 22]
+          - [23, 23]
+          - [24, 24]
+          - [25, 25]
+          - [26, 26]
+          - [27, 27]
+          - [28, 28]
+          - [29, 29]
+          - [30, 30]
+          - [31, 31]
+          - [32, 32]
+          - [33, 33]
+          - [34, 34]
+          - [35, 35]
+          - [36, 36]
+          - [37, 37]
+          - [38, 38]
+          - [39, 39]
+          - [40, 40]
+          - [41, 41]
+          - [42, 42]
+          - [43, 43]
+          - [44, 44]
+          - [45, 45]
+          - [46, 46]
+          - [47, 47]
+          - [48, 48]
+    out: 49
+  - name: "maximum_operation_boundary_rows"
+    in:
+      m: 50
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [0, 4]
+          - [0, 5]
+          - [0, 6]
+          - [0, 7]
+          - [0, 8]
+          - [0, 9]
+          - [0, 10]
+          - [0, 11]
+          - [0, 12]
+          - [0, 13]
+          - [0, 14]
+          - [0, 15]
+          - [0, 16]
+          - [0, 17]
+          - [0, 18]
+          - [0, 19]
+          - [0, 20]
+          - [0, 21]
+          - [0, 22]
+          - [0, 23]
+          - [0, 24]
+          - [0, 25]
+          - [0, 26]
+          - [0, 27]
+          - [0, 28]
+          - [0, 29]
+          - [0, 30]
+          - [0, 31]
+          - [0, 32]
+          - [0, 33]
+          - [0, 34]
+          - [0, 35]
+          - [0, 36]
+          - [0, 37]
+          - [0, 38]
+          - [0, 39]
+          - [0, 40]
+          - [0, 41]
+          - [0, 42]
+          - [0, 43]
+          - [0, 44]
+          - [0, 45]
+          - [0, 46]
+          - [0, 47]
+          - [0, 48]
+          - [0, 49]
+          - [49, 0]
+          - [49, 1]
+          - [49, 2]
+          - [49, 3]
+          - [49, 4]
+          - [49, 5]
+          - [49, 6]
+          - [49, 7]
+          - [49, 8]
+          - [49, 9]
+          - [49, 10]
+          - [49, 11]
+          - [49, 12]
+          - [49, 13]
+          - [49, 14]
+          - [49, 15]
+          - [49, 16]
+          - [49, 17]
+          - [49, 18]
+          - [49, 19]
+          - [49, 20]
+          - [49, 21]
+          - [49, 22]
+          - [49, 23]
+          - [49, 24]
+          - [49, 25]
+          - [49, 26]
+          - [49, 27]
+          - [49, 28]
+          - [49, 29]
+          - [49, 30]
+          - [49, 31]
+          - [49, 32]
+          - [49, 33]
+          - [49, 34]
+          - [49, 35]
+          - [49, 36]
+          - [49, 37]
+          - [49, 38]
+          - [49, 39]
+          - [49, 40]
+          - [49, 41]
+          - [49, 42]
+          - [49, 43]
+          - [49, 44]
+          - [49, 45]
+          - [49, 46]
+          - [49, 47]
+          - [49, 48]
+          - [49, 49]
+    out: 0
+  - name: "ten_odd_rows_and_columns"
+    in:
+      m: 50
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+          - [6, 6]
+          - [7, 7]
+          - [8, 8]
+          - [9, 9]
+    out: 800
+  - name: "two_by_fifty_all_columns"
+    in:
+      m: 2
+      n: 50
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [0, 4]
+          - [0, 5]
+          - [0, 6]
+          - [0, 7]
+          - [0, 8]
+          - [0, 9]
+          - [0, 10]
+          - [0, 11]
+          - [0, 12]
+          - [0, 13]
+          - [0, 14]
+          - [0, 15]
+          - [0, 16]
+          - [0, 17]
+          - [0, 18]
+          - [0, 19]
+          - [0, 20]
+          - [0, 21]
+          - [0, 22]
+          - [0, 23]
+          - [0, 24]
+          - [0, 25]
+          - [0, 26]
+          - [0, 27]
+          - [0, 28]
+          - [0, 29]
+          - [0, 30]
+          - [0, 31]
+          - [0, 32]
+          - [0, 33]
+          - [0, 34]
+          - [0, 35]
+          - [0, 36]
+          - [0, 37]
+          - [0, 38]
+          - [0, 39]
+          - [0, 40]
+          - [0, 41]
+          - [0, 42]
+          - [0, 43]
+          - [0, 44]
+          - [0, 45]
+          - [0, 46]
+          - [0, 47]
+          - [0, 48]
+          - [0, 49]
+    out: 100
+  - name: "fifty_by_two_all_rows"
+    in:
+      m: 50
+      n: 2
+      indices:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 0]
+          - [2, 0]
+          - [3, 0]
+          - [4, 0]
+          - [5, 0]
+          - [6, 0]
+          - [7, 0]
+          - [8, 0]
+          - [9, 0]
+          - [10, 0]
+          - [11, 0]
+          - [12, 0]
+          - [13, 0]
+          - [14, 0]
+          - [15, 0]
+          - [16, 0]
+          - [17, 0]
+          - [18, 0]
+          - [19, 0]
+          - [20, 0]
+          - [21, 0]
+          - [22, 0]
+          - [23, 0]
+          - [24, 0]
+          - [25, 0]
+          - [26, 0]
+          - [27, 0]
+          - [28, 0]
+          - [29, 0]
+          - [30, 0]
+          - [31, 0]
+          - [32, 0]
+          - [33, 0]
+          - [34, 0]
+          - [35, 0]
+          - [36, 0]
+          - [37, 0]
+          - [38, 0]
+          - [39, 0]
+          - [40, 0]
+          - [41, 0]
+          - [42, 0]
+          - [43, 0]
+          - [44, 0]
+          - [45, 0]
+          - [46, 0]
+          - [47, 0]
+          - [48, 0]
+          - [49, 0]
+    out: 100
+  - name: "generated_max_square_100_ops"
+    in:
+      m: 50
+      n: 50
+      indices:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 49
+    seed: 125201
+  - name: "generated_max_square_99_ops"
+    in:
+      m: 50
+      n: 50
+      indices:
+        gen: array
+        len: 99
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 49
+    seed: 125202
+  - name: "generated_max_square_seed_three"
+    in:
+      m: 50
+      n: 50
+      indices:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 49
+    seed: 125203
+  - name: "generated_max_square_seed_four"
+    in:
+      m: 50
+      n: 50
+      indices:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 49
+    seed: 125204
+  - name: "generated_max_square_repeat_heavy"
+    in:
+      m: 50
+      n: 50
+      indices:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 49
+    seed: 125205

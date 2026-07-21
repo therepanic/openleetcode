@@ -1,0 +1,50 @@
+class Solution(object):
+    def minCost(self, houses, cost, m, n, target):
+        """
+        :type houses: List[int]
+        :type cost: List[List[int]]
+        :type m: int
+        :type n: int
+        :type target: int
+        :rtype: int
+        """
+        prev = [[float('inf')] * (target + 1) for _ in range(n)]
+        if houses[0]:
+            c = houses[0] - 1
+            prev[c][1] = 0
+        else:
+            for c in range(n):
+                prev[c][1] = cost[0][c]
+        for i in range(1, m):
+            curr = [[float('inf')] * (target + 1) for _ in range(n)]
+            if houses[i]:
+                c = houses[i] - 1
+                add = 0
+                for k in range(1, target + 1):
+                    if prev[c][k] < float('inf'):
+                        if prev[c][k] + add < curr[c][k]:
+                            curr[c][k] = prev[c][k] + add
+                    if k > 1:
+                        best = float('inf')
+                        for pc in range(n):
+                            if pc != c and prev[pc][k - 1] < best:
+                                best = prev[pc][k - 1]
+                        if best < float('inf') and best + add < curr[c][k]:
+                            curr[c][k] = best + add
+            else:
+                for c in range(n):
+                    add = cost[i][c]
+                    for k in range(1, target + 1):
+                        if prev[c][k] < float('inf'):
+                            if prev[c][k] + add < curr[c][k]:
+                                curr[c][k] = prev[c][k] + add
+                        if k > 1:
+                            best = float('inf')
+                            for pc in range(n):
+                                if pc != c and prev[pc][k - 1] < best:
+                                    best = prev[pc][k - 1]
+                            if best < float('inf') and best + add < curr[c][k]:
+                                curr[c][k] = best + add
+            prev = curr
+        ans = min(prev[c][target] for c in range(n))
+        return -1 if ans >= float('inf') else ans

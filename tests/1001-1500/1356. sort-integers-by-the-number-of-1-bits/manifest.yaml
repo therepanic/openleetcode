@@ -1,0 +1,252 @@
+entry:
+  id: 1356
+  title: "sort-integers-by-the-number-of-1-bits"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().sortByBits({arr})"
+    rust: "Solution::sort_by_bits({arr})"
+    python3: "Solution().sortByBits({arr})"
+    python2: "Solution().sortByBits({arr})"
+    ruby: "sort_by_bits({arr})"
+    java: "new Solution().sortByBits({arr})"
+    csharp: "new Solution().SortByBits({arr})"
+    kotlin: "Solution().sortByBits({arr})"
+    go: "sortByBits({arr})"
+    dart: "Solution().sortByBits({arr})"
+    swift: "Solution().sortByBits({arr})"
+    typescript: "sortByBits({arr})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 300
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().sortByBits(arr, {result})"
+    checker: |
+      class Checker:
+          def sortByBits(self, arr, result):
+              if not isinstance(result, list) or len(result) != len(arr):
+                  return False
+              if sorted(result) != sorted(arr):
+                  return False
+              def ones(value):
+                  total = 0
+                  while value:
+                      total += value & 1
+                      value >>= 1
+                  return total
+              for index in range(1, len(result)):
+                  if (ones(result[index - 1]), result[index - 1]) > (ones(result[index]), result[index]):
+                      return False
+              return True
+
+seed: 1356001
+
+tests:
+  - name: "example_1"
+    in:
+      arr: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    out: [0, 1, 2, 4, 8, 3, 5, 6, 7]
+  - name: "example_2"
+    in:
+      arr: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
+    out: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+  - name: "single_zero"
+    in:
+      arr: [0]
+    out: [0]
+  - name: "single_upper_bound"
+    in:
+      arr: [10000]
+    out: [10000]
+  - name: "two_values"
+    in:
+      arr: [10000, 0]
+    out: [0, 10000]
+  - name: "all_same_popcount"
+    in:
+      arr: [15, 3, 5, 9, 10, 12, 6]
+    out: [3, 5, 6, 9, 10, 12, 15]
+  - name: "duplicates_across_groups"
+    in:
+      arr: [7, 3, 7, 0, 3, 1, 0, 7]
+    out: [0, 0, 1, 3, 3, 7, 7, 7]
+  - name: "all_zeroes"
+    in:
+      arr: [0, 0, 0, 0, 0]
+    out: [0, 0, 0, 0, 0]
+  - name: "zero_and_powers"
+    in:
+      arr: [16, 0, 8, 4, 2, 1]
+    out: [0, 1, 2, 4, 8, 16]
+  - name: "two_bit_ties"
+    in:
+      arr: [192, 33, 6, 129, 3, 18, 9]
+    out: [3, 6, 9, 18, 33, 129, 192]
+  - name: "high_bit_values"
+    in:
+      arr: [8191, 8192, 8193, 9999, 10000]
+    out: [8192, 8193, 10000, 9999, 8191]
+  - name: "boundary_mix"
+    in:
+      arr: [10000, 0, 9999, 1, 4096, 8192, 1023, 1024]
+    out: [0, 1, 1024, 4096, 8192, 10000, 9999, 1023]
+  - name: "alternating_patterns"
+    in:
+      arr: [682, 341, 170, 85, 255, 256]
+    out: [256, 85, 170, 341, 682, 255]
+  - name: "small_duplicates"
+    in:
+      arr: [2, 2, 2, 1, 1, 3, 3, 0]
+    out: [0, 1, 1, 2, 2, 2, 3, 3]
+  - name: "valid_ten_thousand_patterns"
+    in:
+      arr: [8192, 5461, 4096, 8191, 2730, 10000]
+    out: [4096, 8192, 10000, 2730, 5461, 8191]
+  - name: "mixed_small"
+    in:
+      arr: [14, 11, 13, 10, 12, 8, 7, 4]
+    out: [4, 8, 10, 12, 7, 11, 13, 14]
+  - name: "near_upper_bound"
+    in:
+      arr: [9990, 9991, 9992, 9993, 9994, 9995, 9996, 9997, 9998, 9999, 10000]
+    out: [9992, 10000, 9990, 9993, 9994, 9996, 9991, 9995, 9997, 9998, 9999]
+  - name: "powers_and_masks"
+    in:
+      arr: [512, 511, 256, 255, 128, 127, 64, 63]
+    out: [64, 128, 256, 512, 63, 127, 255, 511]
+  - name: "single_bit_scattered"
+    in:
+      arr: [4096, 32, 2048, 2, 8192, 128, 1]
+    out: [1, 2, 32, 128, 2048, 4096, 8192]
+  - name: "popcount_three"
+    in:
+      arr: [28, 25, 22, 21, 14, 13, 11, 7]
+    out: [7, 11, 13, 14, 21, 22, 25, 28]
+  - name: "popcount_four"
+    in:
+      arr: [43, 39, 30, 29, 27, 23, 15]
+    out: [15, 23, 27, 29, 30, 39, 43]
+  - name: "repeated_upper_values"
+    in:
+      arr: [10000, 10000, 9999, 9999]
+    out: [10000, 10000, 9999, 9999]
+  - name: "low_range_reverse"
+    in:
+      arr: [31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16]
+    out: [16, 17, 18, 20, 24, 19, 21, 22, 25, 26, 28, 23, 27, 29, 30, 31]
+  - name: "equal_values_and_ties"
+    in:
+      arr: [42, 7, 42, 7, 0, 15]
+    out: [0, 7, 7, 42, 42, 15]
+  - name: "upper_boundary_ties"
+    in:
+      arr: [8191, 4095, 2047, 1023, 10000, 9999]
+    out: [10000, 9999, 1023, 2047, 4095, 8191]
+  - name: "consecutive_zero_to_fifteen"
+    in:
+      arr: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+    out: [0, 1, 2, 4, 8, 3, 5, 6, 9, 10, 12, 7, 11, 13, 14, 15]
+  - name: "maximum_popcount_in_range"
+    in:
+      arr: [8191, 4095, 2047, 1023, 511, 255, 127, 63]
+    out: [63, 127, 255, 511, 1023, 2047, 4095, 8191]
+  - name: "sparse_high_and_low"
+    in:
+      arr: [9999, 8192, 5000, 4097, 2049, 1025, 513, 257, 129, 65, 33, 17]
+    out: [8192, 17, 33, 65, 129, 257, 513, 1025, 2049, 4097, 5000, 9999]
+  - name: "input_already_correct"
+    in:
+      arr: [0, 1, 2, 4, 8, 3, 5, 6, 7]
+    out: [0, 1, 2, 4, 8, 3, 5, 6, 7]
+  - name: "input_reverse_correct_order"
+    in:
+      arr: [7, 6, 5, 3, 8, 4, 2, 1, 0]
+    out: [0, 1, 2, 4, 8, 3, 5, 6, 7]
+  - name: "mixed_zeroes_and_upper_bound"
+    in:
+      arr: [0, 10000, 0, 8192, 9999, 1, 1, 4096]
+    out: [0, 0, 1, 1, 4096, 8192, 10000, 9999]
+  - name: "bit_count_transition"
+    in:
+      arr: [255, 256, 257, 511, 512, 513, 1023, 1024]
+    out: [256, 512, 1024, 257, 513, 255, 511, 1023]
+  - name: "selected_five_bit_values"
+    in:
+      arr: [31, 47, 55, 59, 61, 62, 992, 961]
+    out: [31, 47, 55, 59, 61, 62, 961, 992]
+  - name: "one_four_and_five_bit_groups"
+    in:
+      arr: [47, 32, 31, 23, 16, 15]
+    out: [16, 32, 15, 23, 31, 47]
+  - name: "nine_bit_masks_and_powers"
+    in:
+      arr: [1023, 512, 511, 256, 255, 128, 127, 64]
+    out: [64, 128, 256, 512, 127, 255, 511, 1023]
+  - name: "generated_small"
+    seed: 135601
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+  - name: "generated_medium"
+    seed: 135602
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50
+          max: 150
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+  - name: "generated_duplicate_heavy"
+    seed: 135603
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 200
+        of:
+          gen: "int"
+          min: 0
+          max: 31
+  - name: "generated_maximum_length"
+    seed: 135604
+    in:
+      arr:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+  - name: "generated_maximum_length_low_domain"
+    seed: 135605
+    in:
+      arr:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 0
+          max: 255
