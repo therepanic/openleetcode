@@ -1,0 +1,266 @@
+entry:
+  id: 1457
+  title: pseudo-palindromic-paths-in-a-binary-tree
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().pseudoPalindromicPaths({root})"
+    rust: "Solution::pseudo_palindromic_paths({root})"
+    python3: "Solution().pseudoPalindromicPaths({root})"
+    python2: "Solution().pseudoPalindromicPaths({root})"
+    ruby: "pseudo_palindromic_paths({root})"
+    java: "new Solution().pseudoPalindromicPaths({root})"
+    csharp: "new Solution().PseudoPalindromicPaths({root})"
+    kotlin: "Solution().pseudoPalindromicPaths({root})"
+    go: "pseudoPalindromicPaths({root})"
+    dart: "Solution().pseudoPalindromicPaths({root})"
+    swift: "Solution().pseudoPalindromicPaths({root})"
+    typescript: "pseudoPalindromicPaths({root})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().pseudoPalindromicPaths(root, {result})"
+    checker: |
+      class Checker:
+          def pseudoPalindromicPaths(self, root, result):
+              if type(result) is not int:
+                  return False
+              values = root if isinstance(root, list) else None
+              if not values or values[0] is None:
+                  return result == 0
+              nodes = [None if value is None else [value, None, None] for value in values]
+              queue = [nodes[0]]
+              position = 1
+              while queue and position < len(nodes):
+                  node = queue.pop(0)
+                  if node is None:
+                      continue
+                  node[1] = nodes[position]
+                  position += 1
+                  if position < len(nodes):
+                      node[2] = nodes[position]
+                      position += 1
+                  if node[1] is not None:
+                      queue.append(node[1])
+                  if node[2] is not None:
+                      queue.append(node[2])
+              answer = 0
+              def visit(node, mask):
+                  nonlocal answer
+                  if node is None:
+                      return
+                  mask ^= 1 << node[0]
+                  if node[1] is None and node[2] is None:
+                      answer += int(mask & (mask - 1) == 0)
+                      return
+                  visit(node[1], mask)
+                  visit(node[2], mask)
+              visit(nodes[0], 0)
+              return result == answer
+seed: 1457
+tests:
+  - name: prompt-example-one
+    in:
+      root: [2, 3, 1, 3, 1, null, 1]
+    out: 2
+  - name: prompt-example-two
+    in:
+      root: [2, 1, 1, 1, 3, null, null, null, null, null, 1]
+    out: 1
+  - name: single-nine
+    in:
+      root: [9]
+    out: 1
+  - name: two-node-left
+    in:
+      root: [1, 2]
+    out: 0
+  - name: two-node-right
+    in:
+      root: [1, null, 2]
+    out: 0
+  - name: pair-equal
+    in:
+      root: [4, 4]
+    out: 1
+  - name: pair-different
+    in:
+      root: [4, 5]
+    out: 0
+  - name: full-three-all-good
+    in:
+      root: [1, 2, 2]
+    out: 0
+  - name: full-three-all-bad
+    in:
+      root: [1, 2, 3]
+    out: 0
+  - name: full-seven
+    in:
+      root: [2, 3, 1, 3, 1, 1, 1]
+    out: 3
+  - name: all-ones
+    in:
+      root: [1, 1, 1, 1, 1, 1, 1]
+    out: 4
+  - name: all-distinct-depth-three
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+    out: 0
+  - name: skew-left-good
+    in:
+      root: [1, 2, null, 1, null, 2]
+    out: 1
+  - name: skew-left-bad
+    in:
+      root: [1, 2, null, 3, null, 4]
+    out: 0
+  - name: skew-right-good
+    in:
+      root: [1, null, 2, null, 1, null, 2]
+    out: 1
+  - name: skew-right-bad
+    in:
+      root: [1, null, 2, null, 3, null, 4]
+    out: 0
+  - name: zigzag-good
+    in:
+      root: [2, 3, null, null, 2]
+    out: 1
+  - name: zigzag-bad
+    in:
+      root: [2, 3, null, null, 4]
+    out: 0
+  - name: sparse-left-leaf
+    in:
+      root: [1, 2, 3, 4, null, null, null]
+    out: 0
+  - name: sparse-right-leaf
+    in:
+      root: [1, 2, 3, null, null, null, 1]
+    out: 1
+  - name: generated-complete-50000
+    seed: 245701
+    in:
+      root:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 9
+        distinct: false
+        sorted: false
+  - name: values-one-to-seven
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: 0
+  - name: value-nine-heavy
+    in:
+      root: [9, 9, 1, 9, 9, 1, 1]
+    out: 4
+  - name: two-good-one-bad
+    in:
+      root: [2, 1, 3, 2, 1, 4, 5]
+    out: 2
+  - name: four-level-perfect
+    in:
+      root: [1, 2, 3, 2, 3, 1, 1, 4, 4, 5, 5, 6, 6, 7, 7]
+    out: 0
+  - name: four-level-repeated
+    in:
+      root: [4, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+    out: 0
+  - name: left-heavy-with-sibling
+    in:
+      root: [3, 2, 4, 2, null, null, 4, 3, null, null, 2]
+    out: 1
+  - name: right-heavy-with-sibling
+    in:
+      root: [3, 2, 4, null, null, 4, null, null, 3]
+    out: 1
+  - name: all-nine-chain
+    in:
+      root: [9, 9, null, 9, null, 9, null, 9]
+    out: 1
+  - name: alternating-chain
+    in:
+      root: [1, 2, null, 1, null, 2, null, 1]
+    out: 1
+  - name: alternating-chain-bad
+    in:
+      root: [1, 2, null, 3, null, 4, null, 5]
+    out: 0
+  - name: generated-complete-62500
+    seed: 245702
+    in:
+      root:
+        gen: "array"
+        len: 62500
+        of:
+          gen: "int"
+          min: 1
+          max: 9
+        distinct: false
+        sorted: false
+  - name: mixed-nine-tree
+    in:
+      root: [6, 1, 9, 1, 9, 6, 9, 2, 3, 4, 5, 6, 6, 9, 9]
+    out: 0
+  - name: deep-left-seven
+    in:
+      root: [7, 1, null, 2, null, 3, null, 4, null, 5, null, 6]
+    out: 0
+  - name: deep-right-seven
+    in:
+      root: [7, null, 1, null, 2, null, 3, null, 4, null, 5, null, 6]
+    out: 0
+  - name: generated-complete-75000
+    seed: 245703
+    in:
+      root:
+        gen: "array"
+        len: 75000
+        of:
+          gen: "int"
+          min: 1
+          max: 9
+        distinct: false
+        sorted: false
+  - name: generated-complete-87500
+    seed: 245704
+    in:
+      root:
+        gen: "array"
+        len: 87500
+        of:
+          gen: "int"
+          min: 1
+          max: 9
+        distinct: false
+        sorted: false
+  - name: generated-complete-100000
+    seed: 245705
+    in:
+      root:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 9
+        distinct: false
+        sorted: false
+  - name: asymmetric-equal-prefixes
+    in:
+      root: [8, 8, 7, 8, 7, 7, 8]
+    out: 4
+  - name: single-good-branch
+    in:
+      root: [1, 1, 2]
+    out: 1

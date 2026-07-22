@@ -2,50 +2,44 @@ function smallestSufficientTeam(
   req_skills: string[],
   people: string[][],
 ): number[] {
-  const n = req_skills.length;
-  const m = people.length;
+  const n = people.length;
+  let peopleSets: Set<string>[] = people.map((p) => new Set(p));
 
-  const skillIdx: Map<string, number> = new Map();
-  req_skills.forEach((skill, i) => skillIdx.set(skill, i));
-
-  const peopleMask: number[] = new Array(m).fill(0);
-  for (let i = 0; i < m; i++) {
-    let mask = 0;
-    for (const skill of people[i]) {
-      mask |= 1 << skillIdx.get(skill)!;
-    }
-    peopleMask[i] = mask;
-  }
-
-  for (let i = 0; i < m; i++) {
-    for (let j = 0; j < m; j++) {
-      if (
-        i !== j &&
-        peopleMask[i] !== 0 &&
-        (peopleMask[i] & peopleMask[j]) === peopleMask[i]
-      ) {
-        peopleMask[i] = 0;
-        break;
+  // Remove all skill sets that are subset of another skillset
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      if (i !== j) {
+        let isSubset = true;
+        for (const s of peopleSets[i]) {
+          if (!peopleSets[j].has(s)) {
+            isSubset = false;
+            break;
+          }
+        }
+        if (isSubset) {
+          peopleSets[i] = new Set();
+        }
       }
     }
   }
 
-  const skillToPeople: number[][] = Array.from({ length: n }, () => []);
-  for (let i = 0; i < m; i++) {
-    if (peopleMask[i] === 0) continue;
-    for (let bit = 0; bit < n; bit++) {
-      if ((peopleMask[i] & (1 << bit)) !== 0) {
-        skillToPeople[bit].push(i);
+  // Build dictionary of skills to the people who can perform them
+  const skillsToPeople: Map<string, Set<number>> = new Map();
+  for (let i = 0; i < n; i++) {
+    for (const skill of peopleSets[i]) {
+      if (!skillsToPeople.has(skill)) {
+        skillsToPeople.set(skill, new Set());
       }
+      skillsToPeople.get(skill)!.add(i);
     }
   }
 
-  const unmetSkills: Set<string> = new Set(req_skills);
-  let smallestLength = Infinity;
+  let unmetSkills: Set<string> = new Set(req_skills);
+  let smallestLength: number = Infinity;
   let currentTeam: number[] = [];
   let bestTeam: number[] = [];
 
-  function backtrack(skill: number): void {
+  function meetSkill(skill: number = 0): void {
     if (unmetSkills.size === 0) {
       if (smallestLength > currentTeam.length) {
         smallestLength = currentTeam.length;
@@ -54,33 +48,36 @@ function smallestSufficientTeam(
       return;
     }
 
-    if (skill >= n) return;
-
-    if (!unmetSkills.has(req_skills[skill])) {
-      backtrack(skill + 1);
+    if (skill >= req_skills.length || !unmetSkills.has(req_skills[skill])) {
+      meetSkill(skill + 1);
       return;
     }
 
-    for (const i of skillToPeople[skill]) {
-      const mask = peopleMask[i];
-      const skillsAdded: string[] = [];
-      for (const s of unmetSkills) {
-        if ((mask & (1 << skillIdx.get(s)!)) !== 0) {
-          skillsAdded.push(s);
+    const candidates = skillsToPeople.get(req_skills[skill]);
+    if (!candidates) return;
+
+    for (const i of candidates) {
+      const skillsAdded = new Set<string>();
+      for (const s of peopleSets[i]) {
+        if (unmetSkills.has(s)) {
+          skillsAdded.add(s);
         }
       }
-      if (skillsAdded.length === 0) continue;
 
-      skillsAdded.forEach((s) => unmetSkills.delete(s));
+      for (const s of skillsAdded) {
+        unmetSkills.delete(s);
+      }
       currentTeam.push(i);
 
-      backtrack(skill + 1);
+      meetSkill(skill + 1);
 
       currentTeam.pop();
-      skillsAdded.forEach((s) => unmetSkills.add(s));
+      for (const s of skillsAdded) {
+        unmetSkills.add(s);
+      }
     }
   }
 
-  backtrack(0);
+  meetSkill();
   return bestTeam;
 }

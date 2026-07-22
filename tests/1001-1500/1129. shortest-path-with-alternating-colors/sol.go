@@ -5,9 +5,10 @@ func shortestAlternatingPaths(n int, redEdges [][]int, blueEdges [][]int) []int 
     }
     
     type edge struct {
-        v    int
-        color int // 1-red, 2-blue
+        to   int
+        color int // 1=red, 2=blue
     }
+    
     graph := make([][]edge, n)
     for _, e := range redEdges {
         graph[e[0]] = append(graph[e[0]], edge{e[1], 1})
@@ -16,28 +17,28 @@ func shortestAlternatingPaths(n int, redEdges [][]int, blueEdges [][]int) []int 
         graph[e[0]] = append(graph[e[0]], edge{e[1], 2})
     }
     
-    type node struct {
-        u     int
-        prevColor int
+    type pair struct {
+        node      int
+        prevColor int // 0=init
     }
-    q := []node{{0, 0}}
+    
+    q := []pair{{0, 0}}
     step := 0
     
     for len(q) > 0 {
         size := len(q)
         for i := 0; i < size; i++ {
-            cur := q[0]
+            u, prevColor := q[0].node, q[0].prevColor
             q = q[1:]
-            if ans[cur.u] == -1 {
-                ans[cur.u] = step
+            if ans[u] == -1 {
+                ans[u] = step
             }
-            for j := range graph[cur.u] {
-                e := graph[cur.u][j]
-                if e.v == -1 || e.color == cur.prevColor {
+            for j, e := range graph[u] {
+                if e.to == -1 || e.color == prevColor {
                     continue
                 }
-                q = append(q, node{e.v, e.color})
-                graph[cur.u][j].v = -1
+                q = append(q, pair{e.to, e.color})
+                graph[u][j].to = -1
             }
         }
         step++

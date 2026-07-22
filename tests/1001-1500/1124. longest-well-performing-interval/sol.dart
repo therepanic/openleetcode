@@ -10,7 +10,10 @@ class Solution {
       if (score > 0) {
         longestInterval = i + 1;
       } else if (seenAt.containsKey(score - 1)) {
-        longestInterval = max(longestInterval, i - seenAt[score - 1]!);
+        int candidate = i - seenAt[score - 1]!;
+        if (candidate > longestInterval) {
+          longestInterval = candidate;
+        }
       }
       
       if (!seenAt.containsKey(score)) {
@@ -20,6 +23,4 @@ class Solution {
     
     return longestInterval;
   }
-  
-  int max(int a, int b) => a > b ? a : b;
 }

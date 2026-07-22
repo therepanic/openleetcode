@@ -3,9 +3,9 @@
 # @param {Integer[][]} blue_edges
 # @return {Integer[]}
 def shortest_alternating_paths(n, red_edges, blue_edges)
-    ans = Array.new(n, -1)
+    ans = [-1] * n
     graph = Array.new(n) { [] }
-    q = [[0, 0]]  # [node, prevColor]: 0-init, 1-red, 2-blue
+    q = [[0, 0]]  # [node, prevColor]: 0=init, 1=red, 2=blue
     
     red_edges.each { |u, v| graph[u] << [v, 1] }
     blue_edges.each { |u, v| graph[u] << [v, 2] }

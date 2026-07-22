@@ -8,15 +8,15 @@ public class Solution {
             graph[i] = new List<(int, int)>();
         }
         
-        foreach (var edge in redEdges) {
-            graph[edge[0]].Add((edge[1], 1)); // 1-red
+        foreach (var e in redEdges) {
+            graph[e[0]].Add((e[1], 1)); // 1 = red
         }
-        foreach (var edge in blueEdges) {
-            graph[edge[0]].Add((edge[1], 2)); // 2-blue
+        foreach (var e in blueEdges) {
+            graph[e[0]].Add((e[1], 2)); // 2 = blue
         }
         
-        Queue<(int, int)> q = new Queue<(int, int)>();
-        q.Enqueue((0, 0)); // (node, prevColor): 0-init, 1-red, 2-blue
+        Queue<(int, int)> q = new Queue<(int, int)>(); // (node, prevColor): 0=init
+        q.Enqueue((0, 0));
         
         int step = 0;
         while (q.Count > 0) {
@@ -26,12 +26,11 @@ public class Solution {
                 if (ans[u] == -1) {
                     ans[u] = step;
                 }
-                var neighbors = graph[u];
-                for (int j = 0; j < neighbors.Count; j++) {
-                    var (v, edgeColor) = neighbors[j];
+                for (int j = 0; j < graph[u].Count; j++) {
+                    var (v, edgeColor) = graph[u][j];
                     if (v == -1 || edgeColor == prevColor) continue;
                     q.Enqueue((v, edgeColor));
-                    neighbors[j] = (-1, edgeColor);
+                    graph[u][j] = (-1, edgeColor);
                 }
             }
             step++;

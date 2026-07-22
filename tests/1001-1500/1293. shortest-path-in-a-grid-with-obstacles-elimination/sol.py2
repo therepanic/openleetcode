@@ -1,0 +1,25 @@
+class Solution(object):
+    def shortestPath(self, grid, k):
+        """
+        :type grid: List[List[int]]
+        :type k: int
+        :rtype: int
+        """
+        from collections import deque
+        n, m = len(grid), len(grid[0])
+        q = deque([(0, 0, k, 0)])
+        visi = set()
+        visi.add((0, 0, k))
+        while q:
+            r, c, k_rem, d = q.popleft()
+            if (r, c) == (n - 1, m - 1):
+                return d
+            if grid[r][c] == 1:
+                k_rem -= 1
+            for dr, dc in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < n and 0 <= nc < m:
+                    if (nr, nc, k_rem) not in visi and k_rem >= 0:
+                        visi.add((nr, nc, k_rem))
+                        q.append((nr, nc, k_rem, d + 1))
+        return -1

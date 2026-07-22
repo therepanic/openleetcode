@@ -1,0 +1,386 @@
+entry:
+  id: 1349
+  title: "maximum-students-taking-exam"
+  params:
+    seats:
+      type: array
+      items:
+        type: array
+        items:
+          type: char
+  call:
+    cpp: "Solution().maxStudents({seats})"
+    rust: "Solution::max_students({seats})"
+    python3: "Solution().maxStudents({seats})"
+    python2: "Solution().maxStudents({seats})"
+    ruby: "max_students({seats})"
+    java: "new Solution().maxStudents({seats})"
+    csharp: "new Solution().MaxStudents({seats})"
+    kotlin: "Solution().maxStudents({seats})"
+    go: "maxStudents({seats})"
+    dart: "Solution().maxStudents({seats})"
+    swift: "Solution().maxStudents({seats})"
+    typescript: "maxStudents({seats})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxStudents(seats, {result})"
+    checker: |
+      class Checker:
+          def maxStudents(self, seats, result):
+              m, n = len(seats), len(seats[0])
+              masks = []
+              for row in seats:
+                  allowed = []
+                  for mask in range(1 << n):
+                      if mask & (mask << 1):
+                          continue
+                      if any(row[c] == '#' and (mask >> c) & 1 for c in range(n)):
+                          continue
+                      allowed.append(mask)
+                  masks.append(allowed)
+              dp = {0: 0}
+              for r in range(m):
+                  nxt = {}
+                  for mask in masks[r]:
+                      best = 0
+                      for prev, value in dp.items():
+                          if mask & (prev << 1) or mask & (prev >> 1):
+                              continue
+                          best = max(best, value + mask.bit_count())
+                      nxt[mask] = best
+                  dp = nxt
+              return result == max(dp.values(), default=0)
+
+seed: 1349
+
+tests:
+  - name: "example-one"
+    in:
+      seats:
+        - ["#", ".", "#", "#", ".", "#"]
+        - [".", "#", "#", "#", "#", "."]
+        - ["#", ".", "#", "#", ".", "#"]
+  - name: "example-two"
+    in:
+      seats:
+        - [".", "#"]
+        - ["#", "#"]
+        - ["#", "."]
+        - ["#", "#"]
+        - [".", "#"]
+  - name: "example-three"
+    in:
+      seats:
+        - ["#", ".", ".", ".", "#"]
+        - [".", "#", ".", "#", "."]
+        - [".", ".", "#", ".", "."]
+        - [".", "#", ".", "#", "."]
+        - ["#", ".", ".", ".", "#"]
+  - name: "single-good"
+    in:
+      seats:
+        - ["."]
+  - name: "single-broken"
+    in:
+      seats:
+        - ["#"]
+  - name: "one-row-open"
+    in:
+      seats:
+        - [".", ".", ".", ".", "."]
+  - name: "one-row-broken"
+    in:
+      seats:
+        - ["#", "#", "#", "#"]
+  - name: "one-row-alternating"
+    in:
+      seats:
+        - [".", "#", ".", "#", ".", "#", "."]
+  - name: "two-by-two-open"
+    in:
+      seats:
+        - [".", "."]
+        - [".", "."]
+  - name: "generated-large-01"
+    seed: 134901
+    in:
+      seats:
+        gen: "array"
+        len: 8
+        elemType: "char"
+        of:
+          gen: "array"
+          len: 8
+          elemType: "char"
+          of:
+            gen: "char"
+            variety: [".", "#"]
+  - name: "two-by-five-checker"
+    in:
+      seats:
+        - [".", "#", ".", "#", "."]
+        - ["#", ".", "#", ".", "#"]
+  - name: "two-by-six-middle-broken"
+    in:
+      seats:
+        - [".", ".", "#", "#", ".", "."]
+        - [".", ".", ".", ".", ".", "."]
+  - name: "generated-large-02"
+    seed: 134902
+    in:
+      seats:
+        gen: "array"
+        len: 8
+        elemType: "char"
+        of:
+          gen: "array"
+          len: 8
+          elemType: "char"
+          of:
+            gen: "char"
+            variety: [".", "#"]
+  - name: "three-by-three-center"
+    in:
+      seats:
+        - [".", ".", "."]
+        - [".", "#", "."]
+        - [".", ".", "."]
+  - name: "three-by-three-diagonal"
+    in:
+      seats:
+        - [".", "#", "#"]
+        - ["#", ".", "#"]
+        - ["#", "#", "."]
+  - name: "three-by-four-stripes"
+    in:
+      seats:
+        - [".", ".", "#", "#"]
+        - ["#", "#", ".", "."]
+        - [".", ".", "#", "#"]
+  - name: "three-by-five-sparse"
+    in:
+      seats:
+        - [".", "#", ".", "#", "."]
+        - [".", ".", "#", ".", "."]
+        - ["#", ".", ".", ".", "#"]
+  - name: "generated-large-03"
+    seed: 134903
+    in:
+      seats:
+        gen: "array"
+        len: 8
+        elemType: "char"
+        of:
+          gen: "array"
+          len: 8
+          elemType: "char"
+          of:
+            gen: "char"
+            variety: [".", "#"]
+  - name: "four-by-four-broken-border"
+    in:
+      seats:
+        - ["#", ".", ".", "#"]
+        - [".", ".", ".", "."]
+        - [".", ".", ".", "."]
+        - ["#", ".", ".", "#"]
+  - name: "four-by-five-alternating"
+    in:
+      seats:
+        - [".", "#", ".", "#", "."]
+        - ["#", ".", "#", ".", "#"]
+        - [".", "#", ".", "#", "."]
+        - ["#", ".", "#", ".", "#"]
+  - name: "four-by-six-middle"
+    in:
+      seats:
+        - [".", ".", ".", ".", ".", "."]
+        - [".", "#", "#", "#", "#", "."]
+        - [".", ".", ".", ".", ".", "."]
+        - [".", "#", "#", "#", "#", "."]
+  - name: "generated-large-04"
+    seed: 134904
+    in:
+      seats:
+        gen: "array"
+        len: 8
+        elemType: "char"
+        of:
+          gen: "array"
+          len: 8
+          elemType: "char"
+          of:
+            gen: "char"
+            variety: [".", "#"]
+  - name: "five-by-five-cross"
+    in:
+      seats:
+        - [".", ".", "#", ".", "."]
+        - [".", ".", "#", ".", "."]
+        - ["#", "#", "#", "#", "#"]
+        - [".", ".", "#", ".", "."]
+        - [".", ".", "#", ".", "."]
+  - name: "five-by-six-random"
+    in:
+      seats:
+        - ["#", ".", ".", "#", ".", "."]
+        - [".", ".", "#", ".", ".", "#"]
+        - [".", "#", ".", ".", "#", "."]
+        - ["#", ".", ".", "#", ".", "."]
+        - [".", ".", "#", ".", ".", "#"]
+  - name: "generated-large-05"
+    seed: 134905
+    in:
+      seats:
+        gen: "array"
+        len: 8
+        elemType: "char"
+        of:
+          gen: "array"
+          len: 8
+          elemType: "char"
+          of:
+            gen: "char"
+            variety: [".", "#"]
+  - name: "six-by-seven-blocked"
+    in:
+      seats:
+        - [".", ".", "#", "#", ".", ".", "."]
+        - [".", "#", "#", "#", "#", ".", "."]
+        - [".", ".", ".", ".", ".", ".", "."]
+        - [".", "#", ".", "#", ".", "#", "."]
+        - [".", ".", ".", ".", ".", ".", "."]
+        - ["#", ".", "#", ".", "#", ".", "#"]
+  - name: "seven-by-seven-sparse"
+    in:
+      seats:
+        - [".", "#", ".", "#", ".", "#", "."]
+        - ["#", ".", "#", ".", "#", ".", "#"]
+        - [".", ".", ".", ".", ".", ".", "."]
+        - ["#", "#", ".", ".", ".", "#", "#"]
+        - [".", ".", ".", ".", ".", ".", "."]
+        - ["#", ".", "#", ".", "#", ".", "#"]
+        - [".", "#", ".", "#", ".", "#", "."]
+  - name: "eight-by-eight-open"
+    in:
+      seats:
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+  - name: "eight-by-eight-broken"
+    in:
+      seats:
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", ".", ".", ".", ".", ".", ".", "#"]
+        - ["#", ".", "#", "#", "#", "#", ".", "#"]
+        - ["#", ".", "#", ".", ".", "#", ".", "#"]
+        - ["#", ".", "#", ".", ".", "#", ".", "#"]
+        - ["#", ".", "#", "#", "#", "#", ".", "#"]
+        - ["#", ".", ".", ".", ".", ".", ".", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+  - name: "one-by-eight-alternating"
+    in:
+      seats:
+        - [".", "#", ".", "#", ".", "#", ".", "#"]
+  - name: "generated-large-06"
+    seed: 134906
+    in:
+      seats:
+        gen: "array"
+        len: 8
+        elemType: "char"
+        of:
+          gen: "array"
+          len: 8
+          elemType: "char"
+          of:
+            gen: "char"
+            variety: [".", "#"]
+  - name: "three-by-eight-center-wall"
+    in:
+      seats:
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", "#", "#", "#", "#", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+  - name: "seven-by-three-open"
+    in:
+      seats:
+        - [".", ".", "."]
+        - [".", ".", "."]
+        - [".", ".", "."]
+        - [".", ".", "."]
+        - [".", ".", "."]
+        - [".", ".", "."]
+        - [".", ".", "."]
+  - name: "eight-by-two-alternating"
+    in:
+      seats:
+        - [".", "#"]
+        - ["#", "."]
+        - [".", "#"]
+        - ["#", "."]
+        - [".", "#"]
+        - ["#", "."]
+        - [".", "#"]
+        - ["#", "."]
+  - name: "one-by-eight-open"
+    in:
+      seats:
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+  - name: "eight-by-one-open"
+    in:
+      seats:
+        - ["."]
+        - ["."]
+        - ["."]
+        - ["."]
+        - ["."]
+        - ["."]
+        - ["."]
+        - ["."]
+  - name: "eight-by-eight-all-broken"
+    in:
+      seats:
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "#"]
+  - name: "eight-by-eight-single-diagonal"
+    in:
+      seats:
+        - [".", "#", "#", "#", "#", "#", "#", "#"]
+        - ["#", ".", "#", "#", "#", "#", "#", "#"]
+        - ["#", "#", ".", "#", "#", "#", "#", "#"]
+        - ["#", "#", "#", ".", "#", "#", "#", "#"]
+        - ["#", "#", "#", "#", ".", "#", "#", "#"]
+        - ["#", "#", "#", "#", "#", ".", "#", "#"]
+        - ["#", "#", "#", "#", "#", "#", ".", "#"]
+        - ["#", "#", "#", "#", "#", "#", "#", "."]
+  - name: "eight-by-eight-offset-zigzag"
+    in:
+      seats:
+        - [".", ".", "#", "#", "#", "#", "#", "#"]
+        - ["#", ".", ".", "#", "#", "#", "#", "#"]
+        - ["#", "#", ".", ".", "#", "#", "#", "#"]
+        - ["#", "#", "#", ".", ".", "#", "#", "#"]
+        - ["#", "#", "#", "#", ".", ".", "#", "#"]
+        - ["#", "#", "#", "#", "#", ".", ".", "#"]
+        - ["#", "#", "#", "#", "#", "#", ".", "."]
+        - [".", "#", "#", "#", "#", "#", "#", "."]

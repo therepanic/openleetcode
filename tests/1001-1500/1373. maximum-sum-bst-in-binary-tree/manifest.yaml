@@ -1,0 +1,324 @@
+entry:
+  id: 1373
+  title: "maximum-sum-bst-in-binary-tree"
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().maxSumBST({root})"
+    rust: "Solution::max_sum_bst({root})"
+    python3: "Solution().maxSumBST({root})"
+    python2: "Solution().maxSumBST({root})"
+    ruby: "max_sum_bst({root})"
+    java: "new Solution().maxSumBST({root})"
+    csharp: "new Solution().MaxSumBST({root})"
+    kotlin: "Solution().maxSumBST({root})"
+    go: "maxSumBST({root})"
+    dart: "Solution().maxSumBST({root})"
+    swift: "Solution().maxSumBST({root})"
+    typescript: "maxSumBST({root})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxSumBST(root, {result})"
+    checker: |
+      class Checker:
+          def maxSumBST(self, root, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+
+              if isinstance(root, list):
+                  class Node:
+                      def __init__(self, value):
+                          self.val = value
+                          self.left = None
+                          self.right = None
+
+                  serialized_nodes = [None if value is None else Node(value) for value in root]
+                  child = 1
+                  for node in serialized_nodes:
+                      if node is not None:
+                          if child < len(serialized_nodes):
+                              node.left = serialized_nodes[child]
+                          child += 1
+                          if child < len(serialized_nodes):
+                              node.right = serialized_nodes[child]
+                          child += 1
+                  root = serialized_nodes[0] if serialized_nodes else None
+
+              nodes = []
+              stack = [root] if root is not None else []
+              while stack:
+                  node = stack.pop()
+                  nodes.append(node)
+                  if node.left is not None:
+                      stack.append(node.left)
+                  if node.right is not None:
+                      stack.append(node.right)
+
+              best = 0
+              for candidate in nodes:
+                  total = 0
+                  previous = None
+                  valid = True
+                  traversal = []
+                  current = candidate
+                  while traversal or current is not None:
+                      while current is not None:
+                          traversal.append(current)
+                          current = current.left
+                      current = traversal.pop()
+                      if previous is not None and current.val <= previous:
+                          valid = False
+                          break
+                      previous = current.val
+                      total += current.val
+                      current = current.right
+                  if valid and total > best:
+                      best = total
+              return result == best
+
+seed: 1373
+
+tests:
+  - name: "example-one"
+    in:
+      root: [1, 4, 3, 2, 4, 2, 5, null, null, null, null, null, null, 4, 6]
+  - name: "example-two"
+    in:
+      root: [4, 3, null, 1, 2]
+  - name: "example-three"
+    in:
+      root: [-4, -2, -5]
+  - name: "single-positive"
+    in:
+      root: [7]
+  - name: "single-negative"
+    in:
+      root: [-7]
+  - name: "single-zero"
+    in:
+      root: [0]
+  - name: "two-node-valid"
+    in:
+      root: [2, 1]
+  - name: "two-node-invalid"
+    in:
+      root: [2, 3]
+  - name: "right-chain-valid"
+    in:
+      root: [1, null, 2, null, 3]
+  - name: "left-chain-valid"
+    in:
+      root: [3, 2, null, 1]
+  - name: "balanced-bst"
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+  - name: "duplicate-on-left"
+    in:
+      root: [5, 5, 6]
+  - name: "duplicate-on-right"
+    in:
+      root: [5, 4, 5]
+  - name: "cross-subtree-violation"
+    in:
+      root: [5, 3, 8, 2, 6, 7, 9]
+  - name: "best-valid-right-subtree"
+    in:
+      root: [10, 5, 15, 1, 8, 7, 20]
+  - name: "right-subtree-only"
+    in:
+      root: [10, 5, 15, null, null, 6, 20]
+  - name: "negative-valid-bst"
+    in:
+      root: [-1, -3, 2, -4, -2, 1, 3]
+  - name: "mixed-sign-valid-bst"
+    in:
+      root: [0, -3, 4, -5, -1, 2, 7]
+  - name: "all-negative-valid-bst"
+    in:
+      root: [-2, -4, -1, -5, -3]
+  - name: "invalid-left-valid-right"
+    in:
+      root: [8, 4, 12, 2, 10, 9, 14]
+  - name: "invalid-left-large-right"
+    in:
+      root: [20, 10, 30, 5, 25, 22, 35]
+  - name: "sparse-valid"
+    in:
+      root: [6, 2, 9, null, 4, 7, null, 3, 5]
+  - name: "sparse-boundaries-valid"
+    in:
+      root: [5, 1, 8, null, 4, 6, 9, 3]
+  - name: "extreme-values-valid"
+    in:
+      root: [0, -40000, 40000, null, -1, 1]
+  - name: "extreme-values-duplicate"
+    in:
+      root: [40000, 40000, -40000]
+  - name: "largest-single-leaf"
+    in:
+      root: [50, 60, 40, 70, 55, 45, 30]
+  - name: "zero-root-positive-subtree"
+    in:
+      root: [0, -2, 3, -3, -1, 2, 4]
+  - name: "all-equal-values"
+    in:
+      root: [4, 4, 4, 4, 4, 4, 4]
+  - name: "deep-left-chain"
+    in:
+      root:
+        [
+          10,
+          9,
+          null,
+          8,
+          null,
+          7,
+          null,
+          6,
+          null,
+          5,
+          null,
+          4,
+          null,
+          3,
+          null,
+          2,
+          null,
+          1,
+        ]
+  - name: "deep-descendant-breaks-root"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20, null, null, null, 11]
+  - name: "complete-fifteen-node-bst"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+  - name: "broken-root-two-bst-branches"
+    in:
+      root: [15, 5, 20, 1, 30, 17, 25]
+  - name: "complete-thirty-one-node-bst"
+    in:
+      root:
+        [
+          16,
+          8,
+          24,
+          4,
+          12,
+          20,
+          28,
+          2,
+          6,
+          10,
+          14,
+          18,
+          22,
+          26,
+          30,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          19,
+          21,
+          23,
+          25,
+          27,
+          29,
+          31,
+        ]
+  - name: "large-invalid-branches"
+    in:
+      root: [50, 25, 75, 10, 80, 60, 90, 5, 15, 70, 85, 55, 65, 85, 95]
+  - name: "long-right-chain"
+    in:
+      root:
+        [
+          1,
+          null,
+          2,
+          null,
+          3,
+          null,
+          4,
+          null,
+          5,
+          null,
+          6,
+          null,
+          7,
+          null,
+          8,
+          null,
+          9,
+          null,
+          10,
+          null,
+          11,
+          null,
+          12,
+          null,
+          13,
+          null,
+          14,
+          null,
+          15,
+        ]
+  - name: "long-left-chain"
+    in:
+      root:
+        [
+          15,
+          14,
+          null,
+          13,
+          null,
+          12,
+          null,
+          11,
+          null,
+          10,
+          null,
+          9,
+          null,
+          8,
+          null,
+          7,
+          null,
+          6,
+          null,
+          5,
+          null,
+          4,
+          null,
+          3,
+          null,
+          2,
+          null,
+          1,
+        ]
+  - name: "zigzag-valid-bst"
+    in:
+      root: [8, 3, 10, 1, 6, null, 14, null, null, 4, 7, 13]
+  - name: "zigzag-broken-boundary"
+    in:
+      root: [8, 3, 10, 1, 6, null, 14, null, null, 4, 9, 13]
+  - name: "negative-root-best-right"
+    in:
+      root: [-100, 5, 10, 2, 7, 8, 12]
+  - name: "maximum-value-positive-branch"
+    in:
+      root: [0, -40000, 40000, -39999, -1, 1, 39999]

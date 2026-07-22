@@ -1,0 +1,352 @@
+entry:
+  id: 1397
+  title: find-all-good-strings
+  params:
+    n:
+      type: int
+    s1:
+      type: string
+    s2:
+      type: string
+    evil:
+      type: string
+  call:
+    cpp: "Solution().findGoodStrings({n}, {s1}, {s2}, {evil})"
+    rust: "Solution::find_good_strings({n}, {s1}, {s2}, {evil})"
+    python3: "Solution().findGoodStrings({n}, {s1}, {s2}, {evil})"
+    python2: "Solution().findGoodStrings({n}, {s1}, {s2}, {evil})"
+    ruby: "find_good_strings({n}, {s1}, {s2}, {evil})"
+    java: "new Solution().findGoodStrings({n}, {s1}, {s2}, {evil})"
+    csharp: "new Solution().FindGoodStrings({n}, {s1}, {s2}, {evil})"
+    kotlin: "Solution().findGoodStrings({n}, {s1}, {s2}, {evil})"
+    go: "findGoodStrings({n}, {s1}, {s2}, {evil})"
+    dart: "Solution().findGoodStrings({n}, {s1}, {s2}, {evil})"
+    swift: "Solution().findGoodStrings({n}, {s1}, {s2}, {evil})"
+    typescript: "findGoodStrings({n}, {s1}, {s2}, {evil})"
+judge:
+  type: exact
+limits:
+  time_ms: 1500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().findGoodStrings(n, s1, s2, evil, {result})"
+    checker: |
+      class Checker:
+          def findGoodStrings(self, n, s1, s2, evil, result):
+              if not isinstance(n, int) or not 1 <= n <= 500:
+                  return False
+              if not all(isinstance(value, str) and len(value) == n for value in (s1, s2)):
+                  return False
+              if not isinstance(evil, str) or not 1 <= len(evil) <= n:
+                  return False
+              if not all(all('a' <= char <= 'z' for char in value) for value in (s1, s2, evil)) or s1 > s2:
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              m = len(evil)
+              lps = [0] * m
+              for i in range(1, m):
+                  j = lps[i - 1]
+                  while j and evil[i] != evil[j]:
+                      j = lps[j - 1]
+                  if evil[i] == evil[j]:
+                      j += 1
+                  lps[i] = j
+
+              transitions = [[0] * 26 for _ in range(m)]
+              for state in range(m):
+                  for code in range(26):
+                      char = chr(ord('a') + code)
+                      j = state
+                      while j and char != evil[j]:
+                          j = lps[j - 1]
+                      if char == evil[j]:
+                          j += 1
+                      transitions[state][code] = j
+
+              def count_at_most(bound):
+                  less = [0] * m
+                  equal = [1] + [0] * (m - 1)
+                  for pos, limit_char in enumerate(bound):
+                      limit = ord(limit_char) - ord('a')
+                      next_less = [0] * m
+                      next_equal = [0] * m
+                      for state, ways in enumerate(less):
+                          if not ways:
+                              continue
+                          for code in range(26):
+                              next_state = transitions[state][code]
+                              if next_state < m:
+                                  next_less[next_state] = (next_less[next_state] + ways) % mod
+                      for state, ways in enumerate(equal):
+                          if not ways:
+                              continue
+                          for code in range(limit):
+                              next_state = transitions[state][code]
+                              if next_state < m:
+                                  next_less[next_state] = (next_less[next_state] + ways) % mod
+                          next_state = transitions[state][limit]
+                          if next_state < m:
+                              next_equal[next_state] = (next_equal[next_state] + ways) % mod
+                      less, equal = next_less, next_equal
+                  return (sum(less) + sum(equal)) % mod
+
+              def predecessor(value):
+                  chars = list(value)
+                  index = len(chars) - 1
+                  while chars[index] == 'a':
+                      chars[index] = 'z'
+                      index -= 1
+                  if index < 0:
+                      return None
+                  chars[index] = chr(ord(chars[index]) - 1)
+                  return ''.join(chars)
+
+              lower = predecessor(s1)
+              below_lower = 0 if lower is None else count_at_most(lower)
+              expected = (count_at_most(s2) - below_lower) % mod
+              return result == expected
+seed: 1397
+tests:
+  - name: one_letter_no_match
+    in:
+      n: 1
+      s1: a
+      s2: z
+      evil: b
+  - name: one_letter_exact_evil
+    in:
+      n: 1
+      s1: a
+      s2: a
+      evil: a
+  - name: exact_single_range
+    in:
+      n: 2
+      s1: aa
+      s2: aa
+      evil: b
+  - name: exact_evil_range
+    in:
+      n: 2
+      s1: ab
+      s2: ab
+      evil: ab
+  - name: example_like
+    in:
+      n: 2
+      s1: aa
+      s2: zz
+      evil: b
+  - name: evil_at_prefix
+    in:
+      n: 3
+      s1: aaa
+      s2: abc
+      evil: aa
+  - name: evil_at_suffix
+    in:
+      n: 3
+      s1: aba
+      s2: abz
+      evil: ba
+  - name: no_possible_evil
+    in:
+      n: 3
+      s1: aaa
+      s2: aaa
+      evil: zzz
+  - name: full_alphabet_three
+    in:
+      n: 3
+      s1: aaa
+      s2: zzz
+      evil: abc
+  - name: tight_lower
+    in:
+      n: 3
+      s1: abc
+      s2: abd
+      evil: c
+  - name: tight_upper
+    in:
+      n: 3
+      s1: xya
+      s2: xyz
+      evil: "y"
+  - name: repeated_evil
+    in:
+      n: 4
+      s1: aaaa
+      s2: aazz
+      evil: aa
+  - name: overlapping_evil
+    in:
+      n: 4
+      s1: abaa
+      s2: abzz
+      evil: aba
+  - name: evil_length_n
+    in:
+      n: 4
+      s1: abcd
+      s2: abcd
+      evil: abcd
+  - name: evil_length_long
+    in:
+      n: 4
+      s1: aaaa
+      s2: zzzz
+      evil: zzzz
+  - name: narrow_range
+    in:
+      n: 4
+      s1: bcde
+      s2: bcdf
+      evil: cd
+  - name: repeated_a
+    in:
+      n: 5
+      s1: aaaaa
+      s2: aaaaa
+      evil: aaa
+  - name: repeated_b
+    in:
+      n: 5
+      s1: bbbbb
+      s2: bbbbb
+      evil: bb
+  - name: evil_middle
+    in:
+      n: 5
+      s1: aaaaa
+      s2: abcde
+      evil: bc
+  - name: evil_impossible_alphabet
+    in:
+      n: 5
+      s1: aaaaa
+      s2: ccccc
+      evil: z
+  - name: reversed_not_allowed_boundary
+    in:
+      n: 3
+      s1: aaa
+      s2: aaz
+      evil: az
+  - name: distinct_evil
+    in:
+      n: 5
+      s1: abcde
+      s2: abcde
+      evil: abcde
+  - name: lexicographic_small
+    in:
+      n: 5
+      s1: aaaaa
+      s2: aaazz
+      evil: az
+  - name: lexicographic_large
+    in:
+      n: 5
+      s1: xxxxx
+      s2: zzzzz
+      evil: xy
+  - name: evil_single_c
+    in:
+      n: 5
+      s1: aaaaa
+      s2: eeeee
+      evil: c
+  - name: evil_single_a
+    in:
+      n: 4
+      s1: aaaa
+      s2: dddd
+      evil: a
+  - name: two_evil_patterns
+    in:
+      n: 6
+      s1: aaaaaa
+      s2: abzzzz
+      evil: ab
+  - name: six_repeated
+    in:
+      n: 6
+      s1: abcabc
+      s2: abcabc
+      evil: cab
+  - name: seven_narrow
+    in:
+      n: 7
+      s1: aaaaaaa
+      s2: aaazzzz
+      evil: aaa
+  - name: eight_pattern
+    in:
+      n: 8
+      s1: abababab
+      s2: abababab
+      evil: bab
+  - name: nine_full_range
+    in:
+      n: 9
+      s1: aaaaaaaaa
+      s2: zzzzzzzzz
+      evil: xyz
+  - name: ten_long_evil
+    in:
+      n: 10
+      s1: aaaaaaaaaa
+      s2: aazzzzzzzz
+      evil: aaz
+  - name: ten_exact_upper
+    in:
+      n: 10
+      s1: abcdefghij
+      s2: abcdefghij
+      evil: fgh
+  - name: repeated_prefix_evil
+    in:
+      n: 6
+      s1: aaaaaa
+      s2: zzzzzz
+      evil: aaaa
+  - name: final_mixed
+    in:
+      n: 8
+      s1: abcdefgh
+      s2: abcdefgz
+      evil: def
+  - name: example_one
+    in:
+      n: 2
+      s1: aa
+      s2: da
+      evil: b
+  - name: example_two_zero
+    in:
+      n: 8
+      s1: leetcode
+      s2: leetgoes
+      evil: leet
+  - name: example_three
+    in:
+      n: 2
+      s1: gx
+      s2: gz
+      evil: x
+  - name: evil_after_partial_overlap
+    in:
+      n: 7
+      s1: aababaa
+      s2: aabzzzz
+      evil: abab
+  - name: full_range_longer_pattern
+    in:
+      n: 12
+      s1: aaaaaaaaaaaa
+      s2: zzzzzzzzzzzz
+      evil: abcdef

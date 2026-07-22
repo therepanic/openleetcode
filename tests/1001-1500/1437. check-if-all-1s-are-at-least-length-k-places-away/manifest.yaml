@@ -1,0 +1,271 @@
+entry:
+  id: 1437
+  title: "check-if-all-1s-are-at-least-length-k-places-away"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().kLengthApart({nums}, {k})"
+    rust: "Solution::k_length_apart({nums}, {k})"
+    python3: "Solution().kLengthApart({nums}, {k})"
+    python2: "Solution().kLengthApart({nums}, {k})"
+    ruby: "k_length_apart({nums}, {k})"
+    java: "new Solution().kLengthApart({nums}, {k})"
+    csharp: "new Solution().KLengthApart({nums}, {k})"
+    kotlin: "Solution().kLengthApart({nums}, {k})"
+    go: "kLengthApart({nums}, {k})"
+    dart: "Solution().kLengthApart({nums}, {k})"
+    swift: "Solution().kLengthApart({nums}, {k})"
+    typescript: "kLengthApart({nums}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().kLengthApart(nums, k, {result})"
+    checker: |
+      class Checker:
+          def kLengthApart(self, nums, k, result):
+              one_positions = [i for i, value in enumerate(nums) if value == 1]
+              distances = [b - a for a, b in zip(one_positions, one_positions[1:])]
+              expected = not distances or min(distances) > k
+              return isinstance(result, bool) and result == expected
+
+seed: 1437
+
+tests:
+  - name: "official-valid"
+    in:
+      nums: [1, 0, 0, 0, 1, 0, 0, 1]
+      k: 2
+  - name: "official-invalid"
+    in:
+      nums: [1, 0, 0, 1, 0, 1]
+      k: 2
+  - name: "single-one-zero-k"
+    in:
+      nums: [1]
+      k: 0
+  - name: "single-one-maximum-k"
+    in:
+      nums: [1]
+      k: 1
+  - name: "all-zeros-maximum-k"
+    in:
+      nums: [0, 0, 0, 0, 0]
+      k: 5
+  - name: "adjacent-ones-k-zero"
+    in:
+      nums: [1, 1, 1, 1]
+      k: 0
+  - name: "adjacent-ones-k-one"
+    in:
+      nums: [1, 1]
+      k: 1
+  - name: "two-ones-exact-distance"
+    in:
+      nums: [1, 0, 1]
+      k: 2
+  - name: "two-ones-one-beyond"
+    in:
+      nums: [1, 0, 0, 1]
+      k: 2
+  - name: "two-ones-at-extremes"
+    in:
+      nums: [1, 0, 0, 0, 1]
+      k: 3
+  - name: "alternating-k-one"
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1]
+      k: 1
+  - name: "alternating-k-two"
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1]
+      k: 2
+  - name: "early-violation"
+    in:
+      nums: [1, 0, 1, 0, 0, 0, 1]
+      k: 2
+  - name: "late-violation"
+    in:
+      nums: [1, 0, 0, 0, 1, 0, 1]
+      k: 2
+  - name: "three-evenly-spaced"
+    in:
+      nums: [1, 0, 0, 1, 0, 0, 1]
+      k: 2
+  - name: "three-middle-violation"
+    in:
+      nums: [1, 0, 0, 1, 0, 1, 0, 0]
+      k: 2
+  - name: "k-greater-than-all-distances"
+    in:
+      nums: [0, 1, 0, 0]
+      k: 4
+  - name: "first-two-close-third-far"
+    in:
+      nums: [1, 0, 1, 0, 0, 0, 0, 1]
+      k: 2
+  - name: "three-valid-with-leading-zero"
+    in:
+      nums: [0, 1, 0, 0, 1, 0, 0, 1]
+      k: 2
+  - name: "zero-k-single-run"
+    in:
+      nums: [1, 1, 0, 0, 1]
+      k: 0
+  - name: "positive-k-single-run"
+    in:
+      nums: [1, 1, 0, 0, 1]
+      k: 1
+  - name: "six-zero-gap-boundary"
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 0, 1]
+      k: 6
+  - name: "six-zero-gap-extra"
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 0, 1]
+      k: 5
+  - name: "cluster-at-start"
+    in:
+      nums: [1, 1, 1, 0, 0, 0, 0]
+      k: 2
+  - name: "cluster-at-end"
+    in:
+      nums: [0, 0, 0, 0, 1, 1, 1]
+      k: 1
+  - name: "only-last-one"
+    in:
+      nums: [0, 0, 0, 0, 0, 1]
+      k: 6
+  - name: "four-valid-spacing"
+    in:
+      nums: [1, 0, 0, 1, 0, 0, 1, 0, 0, 1]
+      k: 2
+  - name: "four-invalid-final"
+    in:
+      nums: [1, 0, 0, 1, 0, 0, 1, 0, 1, 0]
+      k: 2
+  - name: "mixed-valid-spacing"
+    in:
+      nums: [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0]
+      k: 3
+  - name: "mixed-invalid-spacing"
+    in:
+      nums: [0, 1, 0, 0, 1, 0, 0, 0, 1, 0]
+      k: 3
+  - name: "large-k-invalid"
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+      k: 9
+  - name: "large-k-valid"
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+      k: 9
+  - name: "alternating-long-one-k"
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+      k: 1
+  - name: "alternating-long-two-k"
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+      k: 2
+  - name: "boundary-single-zero"
+    in:
+      nums: [1, 0, 1]
+      k: 1
+  - name: "generated-small-binary"
+    seed: 143701
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 40
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 0
+        max: 1
+  - name: "generated-medium-binary"
+    seed: 143702
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50
+          max: 300
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 0
+        max: 50
+  - name: "generated-large-binary"
+    seed: 143703
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 0
+        max: 100000
+  - name: "generated-large-sparse-domain"
+    seed: 143704
+    in:
+      nums:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 0
+        max: 99999
+  - name: "generated-singleton"
+    seed: 143705
+    in:
+      nums:
+        gen: "array"
+        len: 1
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 0
+        max: 1

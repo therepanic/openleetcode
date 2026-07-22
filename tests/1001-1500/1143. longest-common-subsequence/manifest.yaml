@@ -1,0 +1,288 @@
+entry:
+  id: 1143
+  title: longest-common-subsequence
+  params:
+    text1:
+      type: string
+    text2:
+      type: string
+  call:
+    cpp: "Solution().longestCommonSubsequence({text1}, {text2})"
+    rust: "Solution::longest_common_subsequence({text1}, {text2})"
+    python3: "Solution().longestCommonSubsequence({text1}, {text2})"
+    python2: "Solution().longestCommonSubsequence({text1}, {text2})"
+    ruby: "longest_common_subsequence({text1}, {text2})"
+    java: "new Solution().longestCommonSubsequence({text1}, {text2})"
+    csharp: "new Solution().LongestCommonSubsequence({text1}, {text2})"
+    kotlin: "Solution().longestCommonSubsequence({text1}, {text2})"
+    go: "longestCommonSubsequence({text1}, {text2})"
+    dart: "Solution().longestCommonSubsequence({text1}, {text2})"
+    swift: "Solution().longestCommonSubsequence({text1}, {text2})"
+    typescript: "longestCommonSubsequence({text1}, {text2})"
+judge:
+  type: exact
+limits:
+  time_ms: 1500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().longestCommonSubsequence(text1, text2, {result})"
+    checker: |
+      class Checker:
+          def longestCommonSubsequence(self, text1, text2, result):
+              if not isinstance(text1, str) or not isinstance(text2, str):
+                  return False
+              if not 1 <= len(text1) <= 1000 or not 1 <= len(text2) <= 1000:
+                  return False
+              if any(c < 'a' or c > 'z' for c in text1 + text2):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              previous = [0] * (len(text2) + 1)
+              for first in text1:
+                  current = [0]
+                  for index, second in enumerate(text2, 1):
+                      if first == second:
+                          current.append(previous[index - 1] + 1)
+                      else:
+                          current.append(max(previous[index], current[-1]))
+                  previous = current
+              return result == previous[-1]
+seed: 1143
+tests:
+  - name: example_abcde_ace
+    in:
+      text1: abcde
+      text2: ace
+    out: 3
+  - name: example_identical
+    in:
+      text1: abc
+      text2: abc
+    out: 3
+  - name: example_disjoint
+    in:
+      text1: abc
+      text2: def
+    out: 0
+  - name: single_same_character
+    in:
+      text1: a
+      text2: a
+    out: 1
+  - name: single_different_characters
+    in:
+      text1: a
+      text2: z
+    out: 0
+  - name: repeated_character_shorter_second
+    in:
+      text1: aaaaa
+      text2: aaa
+    out: 3
+  - name: reverse_distinct_sequence
+    in:
+      text1: abcdef
+      text2: fedcba
+    out: 1
+  - name: alternating_shift
+    in:
+      text1: abababab
+      text2: babababa
+    out: 7
+  - name: interleaved_letters
+    in:
+      text1: axbycz
+      text2: abcxyz
+    out: 4
+  - name: one_scattered_match
+    in:
+      text1: qwerty
+      text2: zqz
+    out: 1
+  - name: common_prefix_only
+    in:
+      text1: abcxyz
+      text2: abcuvw
+    out: 3
+  - name: common_suffix_only
+    in:
+      text1: xyzabc
+      text2: uvwabc
+    out: 3
+  - name: common_middle_block
+    in:
+      text1: xxmnopqyy
+      text2: zzmnopqww
+    out: 5
+  - name: distinct_shifted_window
+    in:
+      text1: abcdefghij
+      text2: bcdefghijk
+    out: 9
+  - name: entirely_disjoint_repetitions
+    in:
+      text1: kkkkkkkk
+      text2: llllllll
+    out: 0
+  - name: repeated_ordering_choice
+    in:
+      text1: aaabbb
+      text2: ababab
+    out: 4
+  - name: crossing_choices
+    in:
+      text1: bdca
+      text2: abc
+    out: 2
+  - name: duplicate_branching
+    in:
+      text1: cacbab
+      text2: abacba
+    out: 4
+  - name: classic_dynamic_programming_case
+    in:
+      text1: aggtab
+      text2: gxtxayb
+    out: 4
+  - name: repeated_blocks_with_offset
+    in:
+      text1: aaabaaaab
+      text2: abaaabaaa
+    out: 7
+  - name: palindromic_order_conflict
+    in:
+      text1: abcba
+      text2: bacab
+    out: 3
+  - name: alphabet_subset_in_order
+    in:
+      text1: qazwsxedc
+      text2: zsxdc
+    out: 5
+  - name: alphabet_subset_reversed
+    in:
+      text1: qazwsxedc
+      text2: cdxsz
+    out: 1
+  - name: long_identical_phrase
+    in:
+      text1: thequickbrownfox
+      text2: thequickbrownfox
+    out: 16
+  - name: embedded_subsequence
+    in:
+      text1: dynamicprogramming
+      text2: dymcpg
+    out: 6
+  - name: repeated_two_letter_runs
+    in:
+      text1: aabbaabbaabb
+      text2: bbaabbaabbaa
+    out: 10
+  - name: shared_letters_require_skips
+    in:
+      text1: xmjyauz
+      text2: mzjawxu
+    out: 4
+  - name: dense_repetition_with_single_separator
+    in:
+      text1: aaaaaabaaaaaa
+      text2: aaaaacaaaaa
+    out: 10
+  - name: all_alphabet_once
+    in:
+      text1: abcdefghijklmnopqrstuvwxyz
+      text2: abcdefghijklmnopqrstuvwxyz
+    out: 26
+  - name: all_alphabet_reverse
+    in:
+      text1: abcdefghijklmnopqrstuvwxyz
+      text2: zyxwvutsrqponmlkjihgfedcba
+    out: 1
+  - name: long_alternating_blocks
+    in:
+      text1: abcabcabcabc
+      text2: acbacbacbacb
+    out: 8
+  - name: insertion_at_both_ends
+    in:
+      text1: zaabcdefghijklmnopqrstuvwxy
+      text2: abcdefghijklmnopqrstuvwxyz
+    out: 25
+  - name: subsequence_uses_final_character
+    in:
+      text1: hijklmnopqrstuvwxyzabcde
+      text2: ijklmnopqrstuvwxyzabcdez
+    out: 23
+  - name: same_multiset_different_order
+    in:
+      text1: aabbccddeeff
+      text2: ffeeddccbbaa
+    out: 2
+  - name: generated_binary_dense
+    seed: 101
+    in:
+      text1:
+        gen: str
+        len: 400
+        alphabet: ab
+      text2:
+        gen: str
+        len: 400
+        alphabet: ab
+  - name: generated_small_alphabet_dense
+    seed: 202
+    in:
+      text1:
+        gen: str
+        len: 400
+        alphabet: abcd
+      text2:
+        gen: str
+        len: 400
+        alphabet: abcd
+  - name: generated_medium_alphabet
+    seed: 303
+    in:
+      text1:
+        gen: str
+        len: 400
+        alphabet: abcdefgh
+      text2:
+        gen: str
+        len: 400
+        alphabet: abcdefgh
+  - name: generated_full_alphabet
+    seed: 404
+    in:
+      text1:
+        gen: str
+        len: 400
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      text2:
+        gen: str
+        len: 400
+        alphabet: abcdefghijklmnopqrstuvwxyz
+  - name: generated_vowel_consonant_mix
+    seed: 505
+    in:
+      text1:
+        gen: str
+        len: 400
+        alphabet: aeioubcdfg
+      text2:
+        gen: str
+        len: 400
+        alphabet: aeioubcdfg
+  - name: generated_late_alphabet
+    seed: 606
+    in:
+      text1:
+        gen: str
+        len: 400
+        alphabet: qrstuvwxyz
+      text2:
+        gen: str
+        len: 400
+        alphabet: qrstuvwxyz

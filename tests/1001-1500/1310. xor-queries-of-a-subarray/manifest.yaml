@@ -1,0 +1,487 @@
+entry:
+  id: 1310
+  title: xor-queries-of-a-subarray
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().xorQueries({arr}, {queries})"
+    rust: "Solution::xor_queries({arr}, {queries})"
+    python3: "Solution().xorQueries({arr}, {queries})"
+    python2: "Solution().xorQueries({arr}, {queries})"
+    ruby: "xor_queries({arr}, {queries})"
+    java: "new Solution().xorQueries({arr}, {queries})"
+    csharp: "new Solution().XorQueries({arr}, {queries})"
+    kotlin: "Solution().xorQueries({arr}, {queries})"
+    go: "xorQueries({arr}, {queries})"
+    dart: "Solution().xorQueries({arr}, {queries})"
+    swift: "Solution().xorQueries({arr}, {queries})"
+    typescript: "xorQueries({arr}, {queries})"
+judge:
+  type: exact
+limits:
+  time_ms: 5000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().xorQueries(arr, queries, {result})"
+    checker: |
+      class Checker:
+          def xorQueries(self, arr, queries, result):
+              if not isinstance(arr, list) or not 1 <= len(arr) <= 30000 or not isinstance(queries, list) or not 1 <= len(queries) <= 30000:
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) or x < 1 or x > 1000000000 for x in arr):
+                  return False
+              if not isinstance(result, list):
+                  return False
+              prefix = [0]
+              for value in arr:
+                  prefix.append(prefix[-1] ^ value)
+              expected = []
+              for query in queries:
+                  if not isinstance(query, list) or len(query) != 2:
+                      return False
+                  a, b = query
+                  if not isinstance(a, int) or not isinstance(b, int) or a < 0 or b < a or b >= len(arr):
+                      return False
+                  expected.append(prefix[b + 1] ^ prefix[a])
+              return result == expected
+seed: 1310
+tests:
+  - name: single_element
+    in:
+      arr: [7]
+      queries:
+        - [0, 0]
+  - name: example_one
+    in:
+      arr: [1, 3, 4, 8]
+      queries:
+        - [0, 1]
+        - [1, 2]
+        - [0, 3]
+        - [3, 3]
+  - name: all_identical
+    in:
+      arr: [1, 1, 1, 1]
+      queries:
+        - [0, 3]
+        - [1, 2]
+  - name: powers_of_two
+    in:
+      arr: [1, 2, 4, 8, 16]
+      queries:
+        - [0, 4]
+        - [1, 3]
+        - [2, 2]
+  - name: repeated_values
+    in:
+      arr: [5, 5, 5, 5, 5]
+      queries:
+        - [0, 4]
+        - [0, 1]
+        - [1, 3]
+  - name: full_ranges
+    in:
+      arr: [9, 8, 7, 6, 5, 4]
+      queries:
+        - [0, 5]
+        - [0, 0]
+        - [5, 5]
+  - name: overlapping_queries
+    in:
+      arr: [10, 20, 30, 40, 50]
+      queries:
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [0, 4]
+  - name: adjacent_queries
+    in:
+      arr: [3, 1, 4, 1, 5, 9]
+      queries:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+  - name: disjoint_queries
+    in:
+      arr: [12, 7, 3, 9, 15, 2]
+      queries:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+  - name: large_values
+    in:
+      arr: [1000000000, 999999999, 536870912, 1]
+      queries:
+        - [0, 0]
+        - [0, 3]
+        - [1, 2]
+  - name: palindromic_values
+    in:
+      arr: [1, 2, 3, 2, 1]
+      queries:
+        - [0, 4]
+        - [0, 2]
+        - [2, 4]
+  - name: cancellation
+    in:
+      arr: [6, 6, 12, 12, 3]
+      queries:
+        - [0, 1]
+        - [0, 3]
+        - [1, 4]
+  - name: alternating_bits
+    in:
+      arr: [255, 1, 255, 1, 255, 1]
+      queries:
+        - [0, 5]
+        - [0, 4]
+        - [1, 4]
+  - name: two_elements
+    in:
+      arr: [100, 200]
+      queries:
+        - [0, 0]
+        - [1, 1]
+        - [0, 1]
+  - name: descending
+    in:
+      arr: [15, 14, 13, 12, 11, 10, 9]
+      queries:
+        - [1, 5]
+        - [2, 6]
+  - name: many_singletons
+    in:
+      arr: [4, 8, 15, 16, 23, 42]
+      queries:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+        - [5, 5]
+  - name: nested_ranges
+    in:
+      arr: [2, 4, 6, 8, 10, 12]
+      queries:
+        - [0, 5]
+        - [1, 4]
+        - [2, 3]
+  - name: alternating_small_values
+    in:
+      arr: [1, 2, 1, 2, 1, 2, 1]
+      queries:
+        - [0, 6]
+        - [1, 5]
+        - [2, 4]
+  - name: mixed_small
+    in:
+      arr: [17, 23, 4, 31, 8, 12, 29, 2]
+      queries:
+        - [0, 7]
+        - [1, 6]
+        - [3, 5]
+  - name: powers_boundary
+    in:
+      arr: [1, 3, 7, 15, 31, 63]
+      queries:
+        - [0, 5]
+        - [1, 4]
+        - [2, 2]
+  - name: long_static
+    in:
+      arr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      queries:
+        - [0, 11]
+        - [0, 5]
+        - [6, 11]
+        - [4, 8]
+  - name: query_ordered_pairs
+    in:
+      arr: [21, 34, 55, 89, 144]
+      queries:
+        - [0, 4]
+        - [0, 2]
+        - [2, 4]
+  - name: xor_self_inverse
+    in:
+      arr: [31, 31, 31, 31]
+      queries:
+        - [0, 3]
+        - [0, 1]
+        - [1, 2]
+  - name: high_bit_values
+    in:
+      arr: [536870912, 268435456, 134217728, 67108864]
+      queries:
+        - [0, 3]
+        - [1, 3]
+  - name: alternating_large
+    in:
+      arr: [1000000000, 1, 1000000000, 1, 1000000000]
+      queries:
+        - [0, 4]
+        - [1, 3]
+        - [2, 4]
+  - name: prefix_suffix
+    in:
+      arr: [2, 3, 5, 7, 11, 13, 17]
+      queries:
+        - [0, 2]
+        - [4, 6]
+        - [0, 6]
+  - name: adjacent_singletons
+    in:
+      arr: [101, 202, 303, 404, 505]
+      queries:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+  - name: nested_long_ranges
+    in:
+      arr: [1, 4, 9, 16, 25, 36, 49, 64]
+      queries:
+        - [0, 7]
+        - [1, 6]
+        - [2, 5]
+        - [3, 4]
+  - name: sparse_queries
+    in:
+      arr: [8, 16, 32, 64, 128, 256, 512, 1024]
+      queries:
+        - [0, 7]
+        - [0, 1]
+        - [6, 7]
+  - name: mixed_repeated_ranges
+    in:
+      arr: [1, 9, 1, 9, 1, 9, 1]
+      queries:
+        - [0, 6]
+        - [1, 5]
+        - [2, 4]
+  - name: generated_small
+    seed: 101
+    in:
+      arr:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: 1
+          max: 1023
+        distinct: false
+        sorted: false
+        elemType: int
+      queries:
+        gen: array
+        len: 30
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 19
+          distinct: false
+          sorted: true
+        distinct: false
+        sorted: false
+  - name: generated_medium
+    seed: 202
+    in:
+      arr:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      queries:
+        gen: array
+        len: 200
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 99
+          distinct: false
+          sorted: true
+        distinct: false
+        sorted: false
+  - name: generated_binary_values
+    seed: 303
+    in:
+      arr:
+        gen: array
+        len: 500
+        of:
+          gen: int
+          min: 1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: int
+      queries:
+        gen: array
+        len: 500
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 499
+          distinct: false
+          sorted: true
+        distinct: false
+        sorted: false
+  - name: generated_large
+    seed: 404
+    in:
+      arr:
+        gen: array
+        len: 5000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      queries:
+        gen: array
+        len: 5000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 4999
+          distinct: false
+          sorted: true
+        distinct: false
+        sorted: false
+  - name: stress_maximum
+    seed: 505
+    in:
+      arr:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      queries:
+        gen: array
+        len: 30000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 29999
+          distinct: false
+          sorted: true
+        distinct: false
+        sorted: false
+  - name: nonzero_minimum_values
+    in:
+      arr: [1, 1, 1, 1, 1, 1, 1]
+      queries:
+        - [0, 6]
+        - [0, 5]
+        - [1, 6]
+        - [3, 3]
+  - name: bit_boundary_values
+    in:
+      arr: [1, 1023, 1024, 1048575, 1048576, 1000000000]
+      queries:
+        - [0, 5]
+        - [1, 4]
+        - [2, 3]
+        - [5, 5]
+  - name: repeated_query_intervals
+    in:
+      arr: [73, 146, 219, 292, 365, 438, 511]
+      queries:
+        - [1, 5]
+        - [1, 5]
+        - [0, 6]
+        - [2, 4]
+        - [1, 5]
+  - name: stress_maximum_narrow_values
+    seed: 606
+    in:
+      arr:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: 1
+          max: 3
+        distinct: false
+        sorted: false
+        elemType: int
+      queries:
+        gen: array
+        len: 30000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 29999
+          distinct: false
+          sorted: true
+        distinct: false
+        sorted: false
+  - name: stress_maximum_high_values
+    seed: 707
+    in:
+      arr:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: 999000000
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: int
+      queries:
+        gen: array
+        len: 30000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 29999
+          distinct: false
+          sorted: true
+        distinct: false
+        sorted: false

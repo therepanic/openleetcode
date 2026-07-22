@@ -1,0 +1,311 @@
+entry:
+  id: 1187
+  title: "make-array-strictly-increasing"
+  params:
+    arr1:
+      type: array
+      items:
+        type: int
+    arr2:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().makeArrayIncreasing({arr1}, {arr2})"
+    rust: "Solution::make_array_increasing({arr1}, {arr2})"
+    python3: "Solution().makeArrayIncreasing({arr1}, {arr2})"
+    python2: "Solution().makeArrayIncreasing({arr1}, {arr2})"
+    ruby: "make_array_increasing({arr1}, {arr2})"
+    java: "new Solution().makeArrayIncreasing({arr1}, {arr2})"
+    csharp: "new Solution().MakeArrayIncreasing({arr1}, {arr2})"
+    kotlin: "Solution().makeArrayIncreasing({arr1}, {arr2})"
+    go: "makeArrayIncreasing({arr1}, {arr2})"
+    dart: "Solution().makeArrayIncreasing({arr1}, {arr2})"
+    swift: "Solution().makeArrayIncreasing({arr1}, {arr2})"
+    typescript: "makeArrayIncreasing({arr1}, {arr2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 400
+
+oracle:
+  python3:
+    call: "Checker().makeArrayIncreasing(arr1, arr2, {result})"
+    checker: |
+      class Checker:
+          def makeArrayIncreasing(self, arr1, arr2, result):
+              from bisect import bisect_right
+
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+
+              replacements = sorted(set(arr2))
+              states = {-1: 0}
+              for value in arr1:
+                  next_states = {}
+                  for previous, operations in states.items():
+                      if value > previous:
+                          old = next_states.get(value)
+                          if old is None or operations < old:
+                              next_states[value] = operations
+                      replacement_index = bisect_right(replacements, previous)
+                      if replacement_index < len(replacements):
+                          replacement = replacements[replacement_index]
+                          candidate = operations + 1
+                          old = next_states.get(replacement)
+                          if old is None or candidate < old:
+                              next_states[replacement] = candidate
+                  states = next_states
+                  if not states:
+                      break
+
+              expected = min(states.values()) if states else -1
+              return result == expected
+
+seed: 1187
+
+tests:
+  - name: "example_one"
+    in:
+      arr1: [1, 5, 3, 6, 7]
+      arr2: [1, 3, 2, 4]
+    out: 1
+  - name: "example_two"
+    in:
+      arr1: [1, 5, 3, 6, 7]
+      arr2: [4, 3, 1]
+    out: 2
+  - name: "example_three"
+    in:
+      arr1: [1, 5, 3, 6, 7]
+      arr2: [1, 6, 3, 3]
+    out: -1
+  - name: "single_element"
+    in:
+      arr1: [1000000000]
+      arr2: [0]
+  - name: "already_strict_with_duplicates_in_pool"
+    in:
+      arr1: [0, 2, 4, 7]
+      arr2: [1, 1, 3, 5]
+  - name: "two_equal_values"
+    in:
+      arr1: [4, 4]
+      arr2: [3, 5]
+  - name: "all_equal_requires_full_rebuild"
+    in:
+      arr1: [4, 4, 4]
+      arr2: [1, 2, 3, 5]
+  - name: "descending_can_be_rebuilt"
+    in:
+      arr1: [5, 4, 3, 2, 1]
+      arr2: [1, 2, 3, 4, 5]
+  - name: "descending_impossible_with_one_pool_value"
+    in:
+      arr1: [3, 2, 1]
+      arr2: [2, 2, 2]
+  - name: "zero_boundary"
+    in:
+      arr1: [0, 0, 1]
+      arr2: [0, 1, 2, 3]
+  - name: "maximum_value_boundary"
+    in:
+      arr1: [1000000000, 0, 1000000000]
+      arr2: [1, 2, 999999999]
+  - name: "must_replace_middle_with_smaller_value"
+    in:
+      arr1: [1, 5, 3]
+      arr2: [2, 2, 4]
+  - name: "no_replacement_is_usable"
+    in:
+      arr1: [1, 2, 1, 2]
+      arr2: [0]
+  - name: "all_positions_can_be_replaced"
+    in:
+      arr1: [10, 10, 10]
+      arr2: [1, 2, 3, 4]
+  - name: "preserve_later_anchor"
+    in:
+      arr1: [1, 10, 2, 9, 3]
+      arr2: [4, 5, 6, 7, 8]
+  - name: "one_inversion_with_multiple_choices"
+    in:
+      arr1: [1, 2, 10, 4, 5]
+      arr2: [3, 6, 7, 8, 9]
+  - name: "many_equal_first_values"
+    in:
+      arr1: [2, 2, 2, 2]
+      arr2: [1, 3, 4, 5]
+  - name: "replacement_must_fit_both_neighbors"
+    in:
+      arr1: [1, 100, 2]
+      arr2: [3]
+  - name: "zero_before_large_drop"
+    in:
+      arr1: [0, 100, 2, 3]
+      arr2: [1, 2, 4]
+  - name: "repeated_pivots"
+    in:
+      arr1: [1, 3, 2, 4, 3, 5, 4, 6]
+      arr2: [2, 3, 4, 5]
+  - name: "pool_below_all_original_values"
+    in:
+      arr1: [5, 6, 7]
+      arr2: [1, 2, 3, 4]
+  - name: "pool_above_all_original_values"
+    in:
+      arr1: [1, 2, 3]
+      arr2: [4, 5, 6]
+  - name: "alternating_extremes"
+    in:
+      arr1: [100, 1, 100, 1, 100]
+      arr2: [2, 3, 4, 5]
+  - name: "duplicate_pool_values"
+    in:
+      arr1: [5, 1, 5, 1]
+      arr2: [2, 2, 3, 3]
+  - name: "minimal_increasing_prefix"
+    in:
+      arr1: [0, 1]
+      arr2: [0, 0]
+  - name: "long_interleaved_decisions"
+    in:
+      arr1: [1, 9, 2, 8, 3, 7, 4, 6, 5]
+      arr2: [2, 3, 4, 5, 6, 7, 8]
+  - name: "high_boundary_gap"
+    in:
+      arr1: [999999998, 0, 999999999]
+      arr2: [1, 999999998]
+  - name: "replace_prefix_to_keep_suffix"
+    in:
+      arr1: [8, 9, 1, 10]
+      arr2: [2, 3, 4, 5, 6, 7]
+  - name: "replace_suffix_after_peak"
+    in:
+      arr1: [1, 8, 2, 3]
+      arr2: [4, 5, 6, 7]
+  - name: "duplicate_original_and_duplicate_pool"
+    in:
+      arr1: [0, 2, 2, 5, 5]
+      arr2: [1, 1, 3, 3, 4, 6]
+  - name: "requires_non_greedy_early_replacement"
+    in:
+      arr1: [4, 9, 3, 10]
+      arr2: [1, 5, 6, 7, 8]
+  - name: "impossible_after_maximum"
+    in:
+      arr1: [0, 1000000000, 1]
+      arr2: [2, 3, 4]
+  - name: "replacement_would_create_equality"
+    in:
+      arr1: [1, 3, 2]
+      arr2: [2]
+  - name: "keep_last_original_anchor"
+    in:
+      arr1: [6, 5, 4]
+      arr2: [1, 2, 3, 7]
+  - name: "generated_dense_duplicate_stress"
+    seed: 118701
+    in:
+      arr1:
+        gen: "array"
+        len: 850
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      arr2:
+        gen: "array"
+        len: 850
+        of:
+          gen: "int"
+          min: 0
+          max: 120
+  - name: "generated_wide_value_stress"
+    seed: 118702
+    in:
+      arr1:
+        gen: "array"
+        len: 900
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      arr2:
+        gen: "array"
+        len: 900
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+  - name: "generated_medium_domain_stress"
+    seed: 118703
+    in:
+      arr1:
+        gen: "array"
+        len: 875
+        of:
+          gen: "int"
+          min: 0
+          max: 5000
+      arr2:
+        gen: "array"
+        len: 875
+        of:
+          gen: "int"
+          min: 0
+          max: 5000
+  - name: "generated_zero_heavy_stress"
+    seed: 118704
+    in:
+      arr1:
+        gen: "array"
+        len: 800
+        of:
+          gen: "int"
+          min: 0
+          max: 12
+      arr2:
+        gen: "array"
+        len: 800
+        of:
+          gen: "int"
+          min: 0
+          max: 20
+  - name: "generated_asymmetric_pool_stress"
+    seed: 118705
+    in:
+      arr1:
+        gen: "array"
+        len: 900
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000
+      arr2:
+        gen: "array"
+        len: 700
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000
+  - name: "generated_near_recursion_limit_stress"
+    seed: 118706
+    in:
+      arr1:
+        gen: "array"
+        len: 950
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      arr2:
+        gen: "array"
+        len: 950
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000

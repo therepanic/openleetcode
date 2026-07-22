@@ -1,0 +1,223 @@
+entry:
+  id: 1419
+  title: minimum-number-of-frogs-croaking
+  params:
+    croakOfFrogs:
+      type: string
+  call:
+    cpp: "Solution().minNumberOfFrogs({croakOfFrogs})"
+    rust: "Solution::min_number_of_frogs({croakOfFrogs})"
+    python3: "Solution().minNumberOfFrogs({croakOfFrogs})"
+    python2: "Solution().minNumberOfFrogs({croakOfFrogs})"
+    ruby: "min_number_of_frogs({croakOfFrogs})"
+    java: "new Solution().minNumberOfFrogs({croakOfFrogs})"
+    csharp: "new Solution().MinNumberOfFrogs({croakOfFrogs})"
+    kotlin: "Solution().minNumberOfFrogs({croakOfFrogs})"
+    go: "minNumberOfFrogs({croakOfFrogs})"
+    dart: "Solution().minNumberOfFrogs({croakOfFrogs})"
+    swift: "Solution().minNumberOfFrogs({croakOfFrogs})"
+    typescript: "minNumberOfFrogs({croakOfFrogs})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minNumberOfFrogs(croakOfFrogs, {result})"
+    checker: |
+      class Checker:
+          def minNumberOfFrogs(self, text, result):
+              if not isinstance(text, str) or not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              order = {'c': 0, 'r': 1, 'o': 2, 'a': 3, 'k': 4}
+              stages = [0] * 5
+              active = 0
+              maximum = 0
+              for char in text:
+                  if char not in order:
+                      return result == -1
+                  stage = order[char]
+                  if stage == 0:
+                      stages[0] += 1
+                      active += 1
+                      maximum = max(maximum, active)
+                  else:
+                      if stages[stage - 1] <= stages[stage]:
+                          return result == -1
+                      stages[stage] += 1
+                      if stage == 4:
+                          active -= 1
+              expected = maximum if active == 0 and stages[0] == stages[1] == stages[2] == stages[3] == stages[4] else -1
+              return result == expected
+seed: 1419
+tests:
+  - name: single_invalid_o
+    in:
+      croakOfFrogs: o
+    out: -1
+  - name: one_call
+    in:
+      croakOfFrogs: croak
+    out: 1
+  - name: two_sequential
+    in:
+      croakOfFrogs: croakcroak
+    out: 1
+  - name: three_sequential
+    in:
+      croakOfFrogs: croakcroakcroak
+    out: 1
+  - name: two_overlapping
+    in:
+      croakOfFrogs: ccrrooaakk
+    out: 2
+  - name: three_overlapping
+    in:
+      croakOfFrogs: cccrrroooaaakkk
+    out: 3
+  - name: example_valid
+    in:
+      croakOfFrogs: croakcroak
+    out: 1
+  - name: example_invalid_order
+    in:
+      croakOfFrogs: croakcroakcr
+    out: -1
+  - name: invalid_starts_r
+    in:
+      croakOfFrogs: r
+    out: -1
+  - name: invalid_starts_k
+    in:
+      croakOfFrogs: k
+    out: -1
+  - name: incomplete_c
+    in:
+      croakOfFrogs: c
+    out: -1
+  - name: incomplete_cro
+    in:
+      croakOfFrogs: cro
+    out: -1
+  - name: incomplete_croa
+    in:
+      croakOfFrogs: croa
+    out: -1
+  - name: wrong_cr
+    in:
+      croakOfFrogs: cr
+    out: -1
+  - name: wrong_co
+    in:
+      croakOfFrogs: co
+    out: -1
+  - name: wrong_ca
+    in:
+      croakOfFrogs: ca
+    out: -1
+  - name: wrong_ck
+    in:
+      croakOfFrogs: ck
+    out: -1
+  - name: extra_r
+    in:
+      croakOfFrogs: croakr
+    out: -1
+  - name: early_k
+    in:
+      croakOfFrogs: croakkk
+    out: -1
+  - name: late_r
+    in:
+      croakOfFrogs: croakcr
+    out: -1
+  - name: split_overlap
+    in:
+      croakOfFrogs: ccroakrokak
+    out: -1
+  - name: alternating_calls
+    in:
+      croakOfFrogs: ccrrooaakkcroak
+    out: 2
+  - name: four_overlap
+    in:
+      croakOfFrogs: ccccrrrrooooaaaakkkk
+    out: 4
+  - name: invalid_extra_c
+    in:
+      croakOfFrogs: ccrcrooaakkak
+    out: -1
+  - name: invalid_missing_o
+    in:
+      croakOfFrogs: crak
+    out: -1
+  - name: invalid_missing_a
+    in:
+      croakOfFrogs: crok
+    out: -1
+  - name: invalid_missing_r
+    in:
+      croakOfFrogs: coak
+    out: -1
+  - name: invalid_suffix_c
+    in:
+      croakOfFrogs: croakcroakc
+    out: -1
+  - name: invalid_prefix_c
+    in:
+      croakOfFrogs: ccroak
+    out: -1
+  - name: five_sequential
+    in:
+      croakOfFrogs: croakcroakcroakcroakcroak
+    out: 1
+  - name: five_overlap
+    in:
+      croakOfFrogs: cccccrrrrroooooaaaaakkkkk
+    out: 5
+  - name: six_sequential
+    in:
+      croakOfFrogs: croakcroakcroakcroakcroakcroak
+    out: 1
+  - name: stage_switching
+    in:
+      croakOfFrogs: ccrroakcroak
+    out: -1
+  - name: invalid_o_first
+    in:
+      croakOfFrogs: ocrak
+    out: -1
+  - name: invalid_a_first
+    in:
+      croakOfFrogs: acrok
+    out: -1
+  - name: long_valid_overlap
+    in:
+      croakOfFrogs: ccccrrrrooooaaaakkkkcroak
+    out: 4
+  - name: final_invalid
+    in:
+      croakOfFrogs: croakcroakcro
+    out: -1
+  - name: max_length_random_a
+    seed: 1419001
+    in:
+      croakOfFrogs:
+        gen: str
+        len: 100000
+        alphabet: croak
+  - name: max_length_random_b
+    seed: 1419002
+    in:
+      croakOfFrogs:
+        gen: str
+        len: 99999
+        alphabet: croak
+  - name: medium_random_boundary
+    seed: 1419003
+    in:
+      croakOfFrogs:
+        gen: str
+        len: 50000
+        alphabet: croak

@@ -1,0 +1,43 @@
+from collections import deque
+
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def subtree_count(self, node):
+        if node is None:
+            return 0
+
+        left_count = self.subtree_count(node.left)
+        right_count = self.subtree_count(node.right)
+        return left_count + right_count + 1
+
+    def btreeGameWinningMove(self, root: Optional[TreeNode], n: int, x: int) -> bool:
+        # find the node with value x
+        queue = deque([root])
+        node = None
+        while queue:
+            front = queue.popleft()
+            if front.val == x:
+                node = front
+                break
+            if front.left:
+                queue.append(front.left)
+            if front.right:
+                queue.append(front.right)
+
+        # count subtree length going from either left, right or parent directions
+        left_count = self.subtree_count(node.left)
+        right_count = self.subtree_count(node.right)
+        parent_count = n - left_count - right_count - 1
+        if parent_count > left_count + right_count:
+            return True
+        elif left_count > parent_count + right_count:
+            return True
+        elif right_count > parent_count + left_count:
+            return True
+        return False

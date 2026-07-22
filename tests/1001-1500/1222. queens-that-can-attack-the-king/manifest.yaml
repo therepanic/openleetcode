@@ -1,0 +1,744 @@
+entry:
+  id: 1222
+  title: "queens-that-can-attack-the-king"
+  params:
+    queens:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    king:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().queensAttacktheKing({queens}, {king})"
+    rust: "Solution::queens_attackthe_king({queens}, {king})"
+    python3: "Solution().queensAttacktheKing({queens}, {king})"
+    python2: "Solution().queensAttacktheKing({queens}, {king})"
+    ruby: "queens_attackthe_king({queens}, {king})"
+    java: "new Solution().queensAttacktheKing({queens}, {king})"
+    csharp: "new Solution().QueensAttacktheKing({queens}, {king})"
+    kotlin: "Solution().queensAttacktheKing({queens}, {king})"
+    go: "queensAttacktheKing({queens}, {king})"
+    dart: "Solution().queensAttacktheKing({queens}, {king})"
+    swift: "Solution().queensAttacktheKing({queens}, {king})"
+    typescript: "queensAttacktheKing({queens}, {king})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().queensAttacktheKing(queens, king, {result})"
+    checker: |
+      class Checker:
+          def queensAttacktheKing(self, queens, king, result):
+              if not isinstance(result, list):
+                  return False
+              actual = set()
+              for queen in result:
+                  if (not isinstance(queen, list) or len(queen) != 2 or
+                          any(type(coord) is not int or not 0 <= coord < 8
+                              for coord in queen)):
+                      return False
+                  position = tuple(queen)
+                  if position in actual:
+                      return False
+                  actual.add(position)
+              if not actual.issubset({tuple(queen) for queen in queens}):
+                  return False
+              occupied = {tuple(q) for q in queens}
+              expected = set()
+              directions = ((-1, 0), (1, 0), (0, -1), (0, 1),
+                            (-1, -1), (-1, 1), (1, -1), (1, 1))
+              for dr, dc in directions:
+                  r, c = king
+                  while True:
+                      r += dr
+                      c += dc
+                      if not (0 <= r < 8 and 0 <= c < 8):
+                          break
+                      if (r, c) in occupied:
+                          expected.add((r, c))
+                          break
+              return actual == expected
+
+seed: 1222
+
+tests:
+  - name: "example_one"
+    in:
+      queens:
+        - [0, 1]
+        - [1, 0]
+        - [4, 0]
+        - [0, 4]
+        - [3, 3]
+        - [2, 4]
+      king: [0, 0]
+  - name: "example_two"
+    in:
+      queens:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [3, 4]
+        - [3, 5]
+        - [4, 4]
+        - [4, 5]
+      king: [3, 3]
+  - name: "one_queen_same_row"
+    in:
+      queens:
+        - [4, 1]
+      king: [4, 4]
+  - name: "one_queen_not_aligned"
+    in:
+      queens:
+        - [1, 2]
+      king: [4, 4]
+  - name: "all_eight_adjacent"
+    in:
+      queens:
+        - [2, 3]
+        - [2, 4]
+        - [3, 2]
+        - [3, 4]
+        - [4, 2]
+        - [4, 3]
+        - [4, 4]
+      king: [3, 3]
+  - name: "blocked_rays"
+    in:
+      queens:
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [0, 0]
+        - [1, 1]
+      king: [3, 3]
+  - name: "corner_king"
+    in:
+      queens:
+        - [0, 7]
+        - [7, 0]
+        - [1, 1]
+        - [2, 2]
+        - [4, 4]
+      king: [0, 0]
+  - name: "opposite_corner_king"
+    in:
+      queens:
+        - [7, 0]
+        - [0, 7]
+        - [6, 6]
+        - [5, 5]
+      king: [7, 7]
+  - name: "center_four_rays"
+    in:
+      queens:
+        - [0, 3]
+        - [7, 3]
+        - [3, 0]
+        - [3, 7]
+      king: [3, 3]
+  - name: "center_diagonals"
+    in:
+      queens:
+        - [0, 0]
+        - [0, 6]
+        - [6, 0]
+        - [6, 6]
+      king: [3, 3]
+  - name: "nearest_wins_horizontal"
+    in:
+      queens:
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [4, 2]
+      king: [4, 4]
+  - name: "nearest_wins_diagonal"
+    in:
+      queens:
+        - [3, 3]
+        - [2, 2]
+        - [1, 1]
+        - [0, 0]
+      king: [4, 4]
+  - name: "vertical_edges"
+    in:
+      queens:
+        - [0, 2]
+        - [1, 2]
+        - [7, 2]
+        - [6, 2]
+      king: [4, 2]
+  - name: "no_attackers"
+    in:
+      queens:
+        - [0, 0]
+        - [1, 3]
+        - [2, 6]
+        - [5, 1]
+        - [7, 7]
+      king: [3, 3]
+  - name: "king_edge_row"
+    in:
+      queens:
+        - [0, 0]
+        - [0, 7]
+        - [1, 1]
+        - [2, 2]
+        - [1, 6]
+      king: [0, 3]
+  - name: "king_edge_column"
+    in:
+      queens:
+        - [0, 0]
+        - [7, 0]
+        - [1, 1]
+        - [6, 1]
+        - [4, 4]
+      king: [3, 0]
+  - name: "mixed_blocking"
+    in:
+      queens:
+        - [2, 4]
+        - [2, 6]
+        - [6, 2]
+        - [0, 0]
+        - [5, 5]
+        - [1, 3]
+      king: [2, 2]
+  - name: "all_same_column"
+    in:
+      queens:
+        - [0, 4]
+        - [1, 4]
+        - [2, 4]
+        - [3, 4]
+        - [5, 4]
+        - [6, 4]
+        - [7, 4]
+      king: [4, 4]
+  - name: "all_same_diagonal"
+    in:
+      queens:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [4, 4]
+        - [5, 5]
+        - [6, 6]
+        - [7, 7]
+      king: [3, 3]
+  - name: "three_attackers"
+    in:
+      queens:
+        - [0, 3]
+        - [7, 3]
+        - [3, 0]
+        - [0, 0]
+        - [6, 6]
+      king: [3, 3]
+  - name: "far_only_attackers"
+    in:
+      queens:
+        - [0, 3]
+        - [7, 3]
+        - [3, 0]
+        - [3, 7]
+        - [0, 0]
+        - [7, 7]
+      king: [3, 3]
+  - name: "king_one_one"
+    in:
+      queens:
+        - [1, 0]
+        - [1, 7]
+        - [0, 1]
+        - [7, 1]
+        - [0, 0]
+        - [2, 2]
+      king: [1, 1]
+  - name: "king_six_six"
+    in:
+      queens:
+        - [6, 0]
+        - [6, 7]
+        - [0, 6]
+        - [7, 6]
+        - [5, 5]
+        - [7, 7]
+      king: [6, 6]
+  - name: "dense_board_center"
+    in:
+      queens:
+        - [0, 0]
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 0]
+        - [1, 2]
+        - [2, 0]
+        - [2, 1]
+        - [4, 4]
+        - [5, 5]
+        - [6, 6]
+        - [7, 7]
+      king: [3, 3]
+  - name: "dense_board_corner"
+    in:
+      queens:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 0]
+        - [2, 0]
+        - [3, 0]
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+      king: [0, 0]
+  - name: "diagonal_blocked_both"
+    in:
+      queens:
+        - [2, 2]
+        - [1, 1]
+        - [0, 0]
+        - [4, 4]
+        - [5, 5]
+        - [6, 6]
+      king: [3, 3]
+  - name: "horizontal_and_diagonal"
+    in:
+      queens:
+        - [3, 0]
+        - [3, 7]
+        - [0, 0]
+        - [6, 6]
+        - [1, 5]
+      king: [3, 3]
+  - name: "sparse_corner_rays"
+    in:
+      queens:
+        - [0, 4]
+        - [4, 0]
+        - [7, 7]
+        - [2, 2]
+      king: [0, 0]
+  - name: "king_two_two_sparse"
+    in:
+      queens:
+        - [2, 5]
+        - [5, 2]
+        - [0, 0]
+        - [4, 4]
+        - [1, 6]
+      king: [2, 2]
+  - name: "near_boundary_king"
+    in:
+      queens:
+        - [0, 1]
+        - [1, 0]
+        - [1, 2]
+        - [2, 1]
+        - [2, 2]
+      king: [0, 0]
+  - name: "opposite_rays_only"
+    in:
+      queens:
+        - [0, 4]
+        - [7, 4]
+        - [4, 0]
+        - [4, 7]
+      king: [4, 4]
+  - name: "all_directions_with_blockers"
+    in:
+      queens:
+        - [2, 3]
+        - [1, 3]
+        - [5, 3]
+        - [6, 3]
+        - [3, 2]
+        - [3, 1]
+        - [3, 5]
+        - [3, 6]
+        - [2, 2]
+        - [1, 1]
+        - [2, 4]
+        - [1, 5]
+        - [4, 2]
+        - [5, 1]
+        - [4, 4]
+        - [5, 5]
+      king: [3, 3]
+  - name: "full_ring_near_center"
+    in:
+      queens:
+        - [2, 3]
+        - [4, 3]
+        - [3, 2]
+        - [3, 4]
+        - [2, 2]
+        - [2, 4]
+        - [4, 2]
+        - [4, 4]
+      king: [3, 3]
+  - name: "king_at_seven_one"
+    in:
+      queens:
+        - [7, 0]
+        - [7, 2]
+        - [6, 1]
+        - [5, 1]
+        - [6, 0]
+        - [5, 3]
+      king: [7, 1]
+  - name: "single_far_diagonal"
+    in:
+      queens:
+        - [7, 7]
+      king: [0, 0]
+  - name: "maximum_density_top_left"
+    in:
+      queens:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [1, 0]
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [2, 0]
+        - [2, 1]
+        - [2, 2]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 0]
+        - [3, 1]
+        - [3, 2]
+        - [3, 3]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [4, 0]
+        - [4, 1]
+        - [4, 2]
+        - [4, 3]
+        - [4, 4]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [5, 0]
+        - [5, 1]
+        - [5, 2]
+        - [5, 3]
+        - [5, 4]
+        - [5, 5]
+        - [5, 6]
+        - [5, 7]
+        - [6, 0]
+        - [6, 1]
+        - [6, 2]
+        - [6, 3]
+        - [6, 4]
+        - [6, 5]
+        - [6, 6]
+        - [6, 7]
+        - [7, 0]
+        - [7, 1]
+        - [7, 2]
+        - [7, 3]
+        - [7, 4]
+        - [7, 5]
+        - [7, 6]
+        - [7, 7]
+      king: [0, 0]
+  - name: "maximum_density_bottom_right"
+    in:
+      queens:
+        - [0, 0]
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [1, 0]
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [2, 0]
+        - [2, 1]
+        - [2, 2]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 0]
+        - [3, 1]
+        - [3, 2]
+        - [3, 3]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [4, 0]
+        - [4, 1]
+        - [4, 2]
+        - [4, 3]
+        - [4, 4]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [5, 0]
+        - [5, 1]
+        - [5, 2]
+        - [5, 3]
+        - [5, 4]
+        - [5, 5]
+        - [5, 6]
+        - [5, 7]
+        - [6, 0]
+        - [6, 1]
+        - [6, 2]
+        - [6, 3]
+        - [6, 4]
+        - [6, 5]
+        - [6, 6]
+        - [6, 7]
+        - [7, 0]
+        - [7, 1]
+        - [7, 2]
+        - [7, 3]
+        - [7, 4]
+        - [7, 5]
+        - [7, 6]
+      king: [7, 7]
+  - name: "maximum_density_center"
+    in:
+      queens:
+        - [0, 0]
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [1, 0]
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [2, 0]
+        - [2, 1]
+        - [2, 2]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 0]
+        - [3, 1]
+        - [3, 2]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [4, 0]
+        - [4, 1]
+        - [4, 2]
+        - [4, 3]
+        - [4, 4]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [5, 0]
+        - [5, 1]
+        - [5, 2]
+        - [5, 3]
+        - [5, 4]
+        - [5, 5]
+        - [5, 6]
+        - [5, 7]
+        - [6, 0]
+        - [6, 1]
+        - [6, 2]
+        - [6, 3]
+        - [6, 4]
+        - [6, 5]
+        - [6, 6]
+        - [6, 7]
+        - [7, 0]
+        - [7, 1]
+        - [7, 2]
+        - [7, 3]
+        - [7, 4]
+        - [7, 5]
+        - [7, 6]
+        - [7, 7]
+      king: [3, 3]
+  - name: "maximum_density_top_right"
+    in:
+      queens:
+        - [0, 0]
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [1, 0]
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [2, 0]
+        - [2, 1]
+        - [2, 2]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 0]
+        - [3, 1]
+        - [3, 2]
+        - [3, 3]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [4, 0]
+        - [4, 1]
+        - [4, 2]
+        - [4, 3]
+        - [4, 4]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [5, 0]
+        - [5, 1]
+        - [5, 2]
+        - [5, 3]
+        - [5, 4]
+        - [5, 5]
+        - [5, 6]
+        - [5, 7]
+        - [6, 0]
+        - [6, 1]
+        - [6, 2]
+        - [6, 3]
+        - [6, 4]
+        - [6, 5]
+        - [6, 6]
+        - [6, 7]
+        - [7, 0]
+        - [7, 1]
+        - [7, 2]
+        - [7, 3]
+        - [7, 4]
+        - [7, 5]
+        - [7, 6]
+        - [7, 7]
+      king: [0, 7]
+  - name: "maximum_density_bottom_left"
+    in:
+      queens:
+        - [0, 0]
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [1, 0]
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [2, 0]
+        - [2, 1]
+        - [2, 2]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 0]
+        - [3, 1]
+        - [3, 2]
+        - [3, 3]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [4, 0]
+        - [4, 1]
+        - [4, 2]
+        - [4, 3]
+        - [4, 4]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [5, 0]
+        - [5, 1]
+        - [5, 2]
+        - [5, 3]
+        - [5, 4]
+        - [5, 5]
+        - [5, 6]
+        - [5, 7]
+        - [6, 0]
+        - [6, 1]
+        - [6, 2]
+        - [6, 3]
+        - [6, 4]
+        - [6, 5]
+        - [6, 6]
+        - [6, 7]
+        - [7, 1]
+        - [7, 2]
+        - [7, 3]
+        - [7, 4]
+        - [7, 5]
+        - [7, 6]
+        - [7, 7]
+      king: [7, 0]

@@ -1,0 +1,203 @@
+entry:
+  id: 1371
+  title: "find-the-longest-substring-containing-vowels-in-even-counts"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().findTheLongestSubstring({s})"
+    rust: "Solution::find_the_longest_substring({s})"
+    python3: "Solution().findTheLongestSubstring({s})"
+    python2: "Solution().findTheLongestSubstring({s})"
+    ruby: "find_the_longest_substring({s})"
+    java: "new Solution().findTheLongestSubstring({s})"
+    csharp: "new Solution().FindTheLongestSubstring({s})"
+    kotlin: "Solution().findTheLongestSubstring({s})"
+    go: "findTheLongestSubstring({s})"
+    dart: "Solution().findTheLongestSubstring({s})"
+    swift: "Solution().findTheLongestSubstring({s})"
+    typescript: "findTheLongestSubstring({s})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().findTheLongestSubstring(s, {result})"
+    checker: |
+      class Checker:
+          def findTheLongestSubstring(self, s, result):
+              if isinstance(result, bool) or not isinstance(result, int):
+                  return False
+              if result < 0 or result > len(s):
+                  return False
+              vowel_index = {'a': 0, 'e': 1, 'i': 2, 'o': 3, 'u': 4}
+              prefix_masks = [0]
+              for char in s:
+                  next_mask = prefix_masks[-1]
+                  if char in vowel_index:
+                      next_mask ^= 1 << vowel_index[char]
+                  prefix_masks.append(next_mask)
+              earliest = {}
+              expected = 0
+              for end, mask in enumerate(prefix_masks):
+                  if mask not in earliest:
+                      earliest[mask] = end
+                  else:
+                      expected = max(expected, end - earliest[mask])
+              return result == expected
+seed: 1371
+tests:
+  - name: "example_one"
+    in:
+      s: "eleetminicoworoep"
+  - name: "example_two"
+    in:
+      s: "leetcodeisgreat"
+  - name: "example_three"
+    in:
+      s: "bcbcbc"
+  - name: "single_consonant"
+    in:
+      s: "z"
+  - name: "single_vowel"
+    in:
+      s: "a"
+  - name: "double_same_vowel"
+    in:
+      s: "aa"
+  - name: "two_distinct_vowels"
+    in:
+      s: "ae"
+  - name: "all_vowels_once"
+    in:
+      s: "aeiou"
+  - name: "all_vowels_twice"
+    in:
+      s: "aeiouaeiou"
+  - name: "consonants_only_alphabet"
+    in:
+      s: "bcdfghjklmnpqrstvwxyz"
+  - name: "odd_run_of_one_vowel"
+    in:
+      s: "aaaaaaaaa"
+  - name: "even_run_of_one_vowel"
+    in:
+      s: "aaaaaaaa"
+  - name: "vowels_at_both_ends"
+    in:
+      s: "abca"
+  - name: "best_strictly_inside"
+    in:
+      s: "aabbcde"
+  - name: "alternating_a_with_consonants"
+    in:
+      s: "abababab"
+  - name: "alternating_two_vowels"
+    in:
+      s: "aeaeaeae"
+  - name: "interleaved_all_vowels"
+    in:
+      s: "abecidofughaeiou"
+  - name: "first_mask_repeated_late"
+    in:
+      s: "abecidofughajklmnopqrstuvwxyza"
+  - name: "prefix_must_be_discarded"
+    in:
+      s: "aebcde"
+  - name: "suffix_must_be_selected"
+    in:
+      s: "aebcd"
+  - name: "repeated_mask_not_latest"
+    in:
+      s: "aebeaeb"
+  - name: "mixed_word_abracadabra"
+    in:
+      s: "abracadabra"
+  - name: "mixed_word_education"
+    in:
+      s: "education"
+  - name: "pangram"
+    in:
+      s: "thequickbrownfoxjumpsoverthelazydog"
+  - name: "vowel_pairs_with_gaps"
+    in:
+      s: "axexixoxuuaeio"
+  - name: "all_five_odd_with_tail"
+    in:
+      s: "bcdaeiouxyz"
+  - name: "dense_repeated_vowels"
+    in:
+      s: "aeiouuoiea"
+  - name: "long_consonant_middle"
+    in:
+      s: "aeioubcdfghjklmnpqrstvwxyzaeiou"
+  - name: "multiple_candidate_windows"
+    in:
+      s: "aebicodufaeioubcdef"
+  - name: "late_full_length_balance"
+    in:
+      s: "zaeioubcdfghaeiouz"
+  - name: "single_internal_even_pair"
+    in:
+      s: "zaaz"
+  - name: "all_vowels_odd_except_one_pair"
+    in:
+      s: "baeiaouu"
+  - name: "generated_small_uniform"
+    seed: 11
+    in:
+      s:
+        gen: "str"
+        len: 31
+        alphabet: "aeiou"
+  - name: "generated_small_mixed"
+    seed: 22
+    in:
+      s:
+        gen: "str"
+        len: 127
+        alphabet: "aeioubcdxyz"
+  - name: "generated_medium_alphabet"
+    seed: 33
+    in:
+      s:
+        gen: "str"
+        len: 4096
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: "generated_vowel_heavy"
+    seed: 44
+    in:
+      s:
+        gen: "str"
+        len: 20000
+        alphabet: "aeiouaeioub"
+  - name: "generated_consonant_heavy"
+    seed: 55
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "aeioubcdfghjklmnpqrstvwxyz"
+  - name: "maximum_uniform_vowel_stress"
+    seed: 66
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "a"
+  - name: "maximum_vowel_only_stress"
+    seed: 77
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "aeiou"
+  - name: "maximum_full_alphabet_stress"
+    seed: 88
+    in:
+      s:
+        gen: "str"
+        len: 500000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

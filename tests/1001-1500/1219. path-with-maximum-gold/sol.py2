@@ -1,0 +1,46 @@
+class Solution(object):
+    def getMaximumGold(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        n = len(grid)
+        m = len(grid[0])
+        # A fully positive rectangular grid has a Hamiltonian path, so no search is needed.
+        if all(grid[r][c] > 0 for r in xrange(n) for c in xrange(m)):
+            return sum(sum(row) for row in grid)
+
+        # The same holds for a single positive rectangular island embedded in zeros.
+        cells = [(r, c) for r in xrange(n) for c in xrange(m) if grid[r][c] > 0]
+        if cells:
+            min_r = min(r for r, _ in cells)
+            max_r = max(r for r, _ in cells)
+            min_c = min(c for _, c in cells)
+            max_c = max(c for _, c in cells)
+            if len(cells) == (max_r - min_r + 1) * (max_c - min_c + 1):
+                return sum(grid[r][c] for r, c in cells)
+        
+        visited = [[False] * m for _ in range(n)]
+        directions = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+        
+        def dfs(r, c):
+            total = grid[r][c]
+            visited[r][c] = True
+            
+            curr = 0
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < n and 0 <= nc < m:
+                    if grid[nr][nc] != 0 and not visited[nr][nc]:
+                        a = dfs(nr, nc)
+                        curr = max(curr, a)
+            total += curr
+            visited[r][c] = False
+            return total
+        
+        ans = 0
+        for i in range(n):
+            for j in range(m):
+                if not visited[i][j] and grid[i][j] != 0:
+                    ans = max(ans, dfs(i, j))
+        return ans

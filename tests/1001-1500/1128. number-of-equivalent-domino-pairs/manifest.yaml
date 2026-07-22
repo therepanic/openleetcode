@@ -1,6 +1,6 @@
 entry:
   id: 1128
-  title: number-of-equivalent-domino-pairs
+  title: "number-of-equivalent-domino-pairs"
   params:
     dominoes:
       type: array
@@ -21,36 +21,35 @@ entry:
     dart: "Solution().numEquivDominoPairs({dominoes})"
     swift: "Solution().numEquivDominoPairs({dominoes})"
     typescript: "numEquivDominoPairs({dominoes})"
+
 judge:
-  type: exact
+  type: "exact"
+
 limits:
-  time_ms: 1000
-  memory_mb: 256
+  time_ms: 500
+  memory_mb: 300
+
 oracle:
   python3:
     call: "Checker().numEquivDominoPairs(dominoes, {result})"
     checker: |
       class Checker:
           def numEquivDominoPairs(self, dominoes, result):
-              if not isinstance(result, int):
+              if not isinstance(result, int) or isinstance(result, bool) or result < 0:
                   return False
-              count = 0
-              seen = [0] * 100
+              counts = {}
+              expected = 0
               for pair in dominoes:
-                  if not isinstance(pair, list) or len(pair) != 2:
-                      return False
-                  a, b = pair
-                  if not isinstance(a, int) or not isinstance(b, int):
-                      return False
-                  if a < 1 or a > 9 or b < 1 or b > 9:
-                      return False
-                  key = a * 10 + b if a <= b else b * 10 + a
-                  count += seen[key]
-                  seen[key] += 1
-              return result == count
+                  key = tuple(sorted(pair))
+                  previous = counts.get(key, 0)
+                  expected += previous
+                  counts[key] = previous + 1
+              return result == expected
+
 seed: 1128
+
 tests:
-  - name: ex1
+  - name: "example_one"
     in:
       dominoes:
         - [1, 2]
@@ -58,7 +57,7 @@ tests:
         - [3, 4]
         - [5, 6]
     out: 1
-  - name: ex2
+  - name: "example_two"
     in:
       dominoes:
         - [1, 2]
@@ -67,99 +66,11 @@ tests:
         - [1, 2]
         - [2, 2]
     out: 3
-  - name: single_domino
+  - name: "single_domino"
     in:
-      dominoes:
-        - [1, 1]
+      dominoes: [[1, 9]]
     out: 0
-  - name: two_identical
-    in:
-      dominoes:
-        - [1, 1]
-        - [1, 1]
-    out: 1
-  - name: two_reversed
-    in:
-      dominoes:
-        - [2, 3]
-        - [3, 2]
-    out: 1
-  - name: three_same
-    in:
-      dominoes:
-        - [4, 5]
-        - [5, 4]
-        - [4, 5]
-    out: 3
-  - name: no_pairs
-    in:
-      dominoes:
-        - [1, 2]
-        - [3, 4]
-        - [5, 6]
-    out: 0
-  - name: all_same_four
-    in:
-      dominoes:
-        - [7, 8]
-        - [8, 7]
-        - [7, 8]
-        - [8, 7]
-    out: 6
-  - name: mixed_multiples
-    in:
-      dominoes:
-        - [1, 2]
-        - [2, 1]
-        - [1, 2]
-        - [3, 3]
-        - [3, 3]
-        - [3, 3]
-    out: 6
-  - name: pair_and_single
-    in:
-      dominoes:
-        - [9, 1]
-        - [1, 9]
-        - [1, 1]
-    out: 1
-  - name: cross_two_groups
-    in:
-      dominoes:
-        - [1, 3]
-        - [3, 1]
-        - [2, 4]
-        - [4, 2]
-    out: 2
-  - name: boundary_nine
-    in:
-      dominoes:
-        - [9, 9]
-        - [9, 1]
-        - [1, 9]
-        - [9, 9]
-    out: 2
-  - name: alternating_two_groups
-    in:
-      dominoes:
-        - [1, 4]
-        - [4, 1]
-        - [1, 4]
-        - [4, 1]
-        - [2, 2]
-        - [2, 2]
-    out: 7
-  - name: mixed_triples
-    in:
-      dominoes:
-        - [2, 5]
-        - [5, 2]
-        - [5, 2]
-        - [6, 6]
-        - [6, 6]
-        - [1, 7]
-    out: 4
-  - name: all_unique_ordered
+  - name: "all_distinct"
     in:
       dominoes:
         - [1, 2]
@@ -167,39 +78,88 @@ tests:
         - [1, 4]
         - [1, 5]
         - [1, 6]
-        - [1, 7]
     out: 0
-  - name: all_unique_reversed
+  - name: "reversed_pairs"
     in:
       dominoes:
+        - [9, 1]
+        - [1, 9]
+        - [9, 1]
+        - [2, 8]
+        - [8, 2]
+    out: 4
+  - name: "double_one_one"
+    in:
+      dominoes:
+        - [1, 1]
+        - [1, 1]
+    out: 1
+  - name: "double_nine_nine"
+    in:
+      dominoes:
+        - [9, 9]
+        - [9, 9]
+        - [9, 9]
+    out: 3
+  - name: "three_same_orientation"
+    in:
+      dominoes:
+        - [4, 7]
+        - [4, 7]
+        - [4, 7]
+    out: 3
+  - name: "three_mixed_orientation"
+    in:
+      dominoes:
+        - [7, 4]
+        - [4, 7]
+        - [7, 4]
+    out: 3
+  - name: "two_groups"
+    in:
+      dominoes:
+        - [1, 2]
         - [2, 1]
-        - [3, 1]
-        - [4, 1]
-        - [5, 1]
-        - [6, 1]
-        - [7, 1]
+        - [3, 3]
+        - [3, 3]
+    out: 2
+  - name: "interleaved_groups"
+    in:
+      dominoes:
+        - [1, 2]
+        - [3, 4]
+        - [2, 1]
+        - [4, 3]
+        - [1, 2]
+    out: 4
+  - name: "one_each_small"
+    in:
+      dominoes:
+        - [1, 1]
+        - [1, 2]
+        - [2, 2]
+        - [2, 3]
+        - [3, 3]
+        - [3, 4]
     out: 0
-  - name: cluster_one
+  - name: "four_same"
     in:
       dominoes:
-        - [3, 8]
-        - [8, 3]
-        - [3, 8]
-        - [3, 8]
-        - [2, 9]
-        - [9, 2]
-    out: 7
-  - name: cluster_two
-    in:
-      dominoes:
-        - [4, 4]
-        - [4, 4]
-        - [4, 4]
-        - [4, 4]
         - [5, 6]
         - [6, 5]
-    out: 7
-  - name: symmetric_mix
+        - [5, 6]
+        - [6, 5]
+    out: 6
+  - name: "five_same"
+    in:
+      dominoes:
+        - [2, 5]
+        - [5, 2]
+        - [2, 5]
+        - [5, 2]
+        - [2, 5]
+    out: 10
+  - name: "three_groups_of_two"
     in:
       dominoes:
         - [1, 8]
@@ -209,61 +169,33 @@ tests:
         - [3, 6]
         - [6, 3]
     out: 3
-  - name: repeated_fives
+  - name: "same_endpoint_different_other"
     in:
       dominoes:
-        - [5, 5]
-        - [5, 5]
-        - [5, 5]
-        - [5, 5]
-        - [5, 5]
-    out: 10
-  - name: repeated_nines
-    in:
-      dominoes:
-        - [9, 9]
-        - [9, 9]
-        - [9, 9]
-        - [9, 9]
-    out: 6
-  - name: ascending_chain
-    in:
-      dominoes:
+        - [1, 1]
         - [1, 2]
-        - [2, 3]
-        - [3, 4]
-        - [4, 5]
-        - [5, 6]
-        - [6, 7]
-    out: 0
-  - name: descending_chain
-    in:
-      dominoes:
-        - [2, 1]
-        - [3, 2]
-        - [4, 3]
-        - [5, 4]
-        - [6, 5]
-        - [7, 6]
-    out: 0
-  - name: one_pair_one_noise
-    in:
-      dominoes:
-        - [2, 9]
-        - [9, 2]
-        - [2, 3]
-        - [4, 5]
-    out: 1
-  - name: two_pairs_separate
-    in:
-      dominoes:
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
         - [1, 6]
-        - [6, 1]
-        - [2, 7]
-        - [7, 2]
-        - [8, 9]
-    out: 2
-  - name: three_pairs_separate
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+    out: 0
+  - name: "all_nine_types"
+    in:
+      dominoes:
+        - [9, 1]
+        - [9, 2]
+        - [9, 3]
+        - [9, 4]
+        - [9, 5]
+        - [9, 6]
+        - [9, 7]
+        - [9, 8]
+        - [9, 9]
+    out: 0
+  - name: "two_each_three_types"
     in:
       dominoes:
         - [1, 9]
@@ -273,115 +205,369 @@ tests:
         - [3, 7]
         - [7, 3]
     out: 3
-  - name: four_pair_groups
+  - name: "late_match"
     in:
       dominoes:
-        - [1, 4]
-        - [4, 1]
-        - [2, 5]
-        - [5, 2]
-        - [3, 6]
-        - [6, 3]
-        - [7, 7]
-        - [7, 7]
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [7, 8]
+        - [9, 9]
+        - [2, 1]
+    out: 1
+  - name: "four_doubles"
+    in:
+      dominoes:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
     out: 4
-  - name: all_same_pair_value
+  - name: "six_same"
     in:
       dominoes:
-        - [8, 2]
-        - [2, 8]
-        - [8, 2]
-        - [2, 8]
-        - [8, 2]
-    out: 10
-  - name: mixed_with_double
+        - [9, 4]
+        - [4, 9]
+        - [9, 4]
+        - [4, 9]
+        - [9, 4]
+        - [4, 9]
+    out: 15
+  - name: "ten_same"
     in:
       dominoes:
-        - [1, 1]
-        - [1, 1]
+        - [6, 8]
+        - [8, 6]
+        - [6, 8]
+        - [8, 6]
+        - [6, 8]
+        - [8, 6]
+        - [6, 8]
+        - [8, 6]
+        - [6, 8]
+        - [8, 6]
+    out: 45
+  - name: "mixed_counts"
+    in:
+      dominoes:
         - [1, 2]
         - [2, 1]
-        - [3, 3]
-        - [3, 3]
+        - [2, 1]
+        - [3, 4]
+        - [4, 3]
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+        - [6, 7]
+    out: 7
+  - name: "max_values_mixed"
+    in:
+      dominoes:
+        - [9, 9]
+        - [9, 8]
+        - [8, 9]
+        - [9, 9]
+        - [1, 9]
+        - [9, 1]
     out: 3
-  - name: many_twos_and_threes
+  - name: "ten_distinct_types"
     in:
       dominoes:
-        - [2, 3]
-        - [3, 2]
-        - [2, 3]
-        - [3, 2]
-        - [2, 3]
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [2, 2]
+    out: 0
+  - name: "two_large_groups"
+    in:
+      dominoes:
+        - [1, 9]
+        - [9, 1]
+        - [1, 9]
+        - [2, 8]
+        - [8, 2]
+        - [2, 8]
+        - [2, 8]
+    out: 9
+  - name: "pair_after_many_nonmatches"
+    in:
+      dominoes:
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+        - [7, 9]
+        - [3, 1]
+    out: 1
+  - name: "three_double_types"
+    in:
+      dominoes:
+        - [2, 2]
+        - [2, 2]
         - [4, 4]
         - [4, 4]
+        - [8, 8]
+        - [8, 8]
+    out: 3
+  - name: "four_reversed_pairs"
+    in:
+      dominoes:
+        - [1, 9]
+        - [9, 1]
+        - [2, 8]
+        - [8, 2]
+        - [3, 7]
+        - [7, 3]
+        - [4, 6]
+        - [6, 4]
+    out: 4
+  - name: "nine_identical"
+    in:
+      dominoes:
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+    out: 36
+  - name: "all_canonical_domino_types_once"
+    in:
+      dominoes:
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [2, 2]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [2, 8]
+        - [2, 9]
+        - [3, 3]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [3, 8]
+        - [3, 9]
+        - [4, 4]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [4, 8]
+        - [4, 9]
+        - [5, 5]
+        - [5, 6]
+        - [5, 7]
+        - [5, 8]
+        - [5, 9]
+        - [6, 6]
+        - [6, 7]
+        - [6, 8]
+        - [6, 9]
+        - [7, 7]
+        - [7, 8]
+        - [7, 9]
+        - [8, 8]
+        - [8, 9]
+        - [9, 9]
+    out: 0
+  - name: "all_canonical_types_once_reversed"
+    in:
+      dominoes:
+        - [1, 1]
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [5, 1]
+        - [6, 1]
+        - [7, 1]
+        - [8, 1]
+        - [9, 1]
+        - [2, 2]
+        - [3, 2]
+        - [4, 2]
+        - [5, 2]
+        - [6, 2]
+        - [7, 2]
+        - [8, 2]
+        - [9, 2]
+        - [3, 3]
+        - [4, 3]
+        - [5, 3]
+        - [6, 3]
+        - [7, 3]
+        - [8, 3]
+        - [9, 3]
+        - [4, 4]
+        - [5, 4]
+        - [6, 4]
+        - [7, 4]
+        - [8, 4]
+        - [9, 4]
+        - [5, 5]
+        - [6, 5]
+        - [7, 5]
+        - [8, 5]
+        - [9, 5]
+        - [6, 6]
+        - [7, 6]
+        - [8, 6]
+        - [9, 6]
+        - [7, 7]
+        - [8, 7]
+        - [9, 7]
+        - [8, 8]
+        - [9, 8]
+        - [9, 9]
+    out: 0
+  - name: "uneven_group_frequencies"
+    in:
+      dominoes:
+        - [1, 2]
+        - [2, 1]
+        - [1, 2]
+        - [2, 1]
+        - [3, 4]
+        - [4, 3]
+        - [3, 4]
+        - [5, 5]
+        - [5, 5]
+        - [6, 9]
+        - [9, 6]
+        - [8, 8]
     out: 11
-  - name: generated_small_a
+  - name: "reversed_pairs_separated_by_doubles"
     in:
       dominoes:
-        gen: array
-        len: 24
+        - [1, 9]
+        - [2, 2]
+        - [3, 3]
+        - [9, 1]
+        - [4, 4]
+        - [2, 2]
+        - [1, 9]
+        - [3, 3]
+        - [9, 1]
+        - [4, 4]
+    out: 9
+  - name: "fifteen_identical_mixed_orientation"
+    in:
+      dominoes:
+        - [2, 7]
+        - [7, 2]
+        - [2, 7]
+        - [7, 2]
+        - [2, 7]
+        - [7, 2]
+        - [2, 7]
+        - [7, 2]
+        - [2, 7]
+        - [7, 2]
+        - [2, 7]
+        - [7, 2]
+        - [2, 7]
+        - [7, 2]
+        - [2, 7]
+    out: 105
+  - name: "generator_large_5000"
+    seed: 11
+    in:
+      dominoes:
+        gen: "array"
+        len: 5000
+        elemType: "int"
         of:
-          gen: array
+          gen: "array"
           len: 2
+          elemType: "int"
           of:
-            gen: int
+            gen: "int"
             min: 1
             max: 9
-          elemType: int
-        elemType: int
-  - name: generated_small_b
+  - name: "generator_large_10000"
+    seed: 22
     in:
       dominoes:
-        gen: array
-        len: 37
+        gen: "array"
+        len: 10000
+        elemType: "int"
         of:
-          gen: array
+          gen: "array"
           len: 2
+          elemType: "int"
           of:
-            gen: int
+            gen: "int"
             min: 1
             max: 9
-          elemType: int
-        elemType: int
-  - name: generated_large_a
+  - name: "generator_large_20000"
+    seed: 33
     in:
       dominoes:
-        gen: array
-        len: 40000
-        of:
-          gen: array
-          len: 2
-          of:
-            gen: int
-            min: 1
-            max: 9
-          elemType: int
-        elemType: int
-  - name: generated_large_b
-    in:
-      dominoes:
-        gen: array
-        len: 39999
-        of:
-          gen: array
-          len: 2
-          of:
-            gen: int
-            min: 1
-            max: 9
-          elemType: int
-        elemType: int
-  - name: generated_large_c
-    in:
-      dominoes:
-        gen: array
+        gen: "array"
         len: 20000
+        elemType: "int"
         of:
-          gen: array
+          gen: "array"
           len: 2
+          elemType: "int"
           of:
-            gen: int
+            gen: "int"
             min: 1
             max: 9
-          elemType: int
-        elemType: int
+  - name: "generator_large_30000"
+    seed: 44
+    in:
+      dominoes:
+        gen: "array"
+        len: 30000
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 2
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 1
+            max: 9
+  - name: "generator_maximum_40000"
+    seed: 55
+    in:
+      dominoes:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 40000
+          max: 40000
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 2
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 1
+            max: 9

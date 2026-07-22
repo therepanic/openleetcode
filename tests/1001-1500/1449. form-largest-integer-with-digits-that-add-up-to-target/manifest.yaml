@@ -1,0 +1,278 @@
+entry:
+  id: 1449
+  title: "form-largest-integer-with-digits-that-add-up-to-target"
+  params:
+    cost:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().largestNumber({cost}, {target})"
+    rust: "Solution::largest_number({cost}, {target})"
+    python3: "Solution().largestNumber({cost}, {target})"
+    python2: "Solution().largestNumber({cost}, {target})"
+    ruby: "largest_number({cost}, {target})"
+    java: "new Solution().largestNumber({cost}, {target})"
+    csharp: "new Solution().LargestNumber({cost}, {target})"
+    kotlin: "Solution().largestNumber({cost}, {target})"
+    go: "largestNumber({cost}, {target})"
+    dart: "Solution().largestNumber({cost}, {target})"
+    swift: "Solution().largestNumber({cost}, {target})"
+    typescript: "largestNumber({cost}, {target})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().largestNumber(cost, target, {result})"
+    checker: |
+      class Checker:
+          def largestNumber(self, cost, target, result):
+              if len(cost) != 9:
+                  return False
+              best = [None] * (target + 1)
+              best[0] = ""
+              for total in range(1, target + 1):
+                  choices = []
+                  for digit, c in enumerate(cost, 1):
+                      if total >= c and best[total - c] is not None:
+                          choices.append(str(digit) + best[total - c])
+                  if choices:
+                      best[total] = max(choices, key=lambda s: (len(s), s))
+              if best[target] is None:
+                  return isinstance(result, str) and result == "0"
+              if not isinstance(result, str):
+                  return False
+              return result == best[target]
+
+seed: 1449
+
+tests:
+  - name: "example_one"
+    in:
+      cost: [4, 3, 2, 5, 6, 7, 2, 5, 5]
+      target: 9
+  - name: "example_two"
+    in:
+      cost: [7, 6, 5, 5, 5, 6, 8, 7, 8]
+      target: 12
+  - name: "example_three_impossible"
+    in:
+      cost: [2, 4, 6, 2, 4, 6, 4, 4, 4]
+      target: 5
+    out: '"0"'
+  - name: "single_digit_one"
+    in:
+      cost: [1, 9, 9, 9, 9, 9, 9, 9, 9]
+      target: 1
+  - name: "single_digit_nine"
+    in:
+      cost: [9, 9, 9, 9, 9, 9, 9, 9, 1]
+      target: 1
+  - name: "all_costs_one"
+    in:
+      cost: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+      target: 12
+  - name: "all_costs_nine"
+    in:
+      cost: [9, 9, 9, 9, 9, 9, 9, 9, 9]
+      target: 8
+    out: '"0"'
+  - name: "target_equals_cheapest"
+    in:
+      cost: [8, 7, 6, 5, 4, 3, 2, 9, 1]
+      target: 1
+  - name: "highest_digit_tie"
+    in:
+      cost: [2, 2, 2, 2, 2, 2, 2, 2, 2]
+      target: 6
+  - name: "longer_beats_digit"
+    in:
+      cost: [3, 3, 3, 3, 3, 3, 3, 3, 4]
+      target: 12
+  - name: "digit_nine_expensive"
+    in:
+      cost: [1, 1, 1, 1, 1, 1, 1, 1, 10]
+      target: 10
+  - name: "digit_nine_affordable"
+    in:
+      cost: [2, 2, 2, 2, 2, 2, 2, 2, 1]
+      target: 4
+  - name: "mixed_small_target"
+    in:
+      cost: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+      target: 6
+  - name: "mixed_target_seven"
+    in:
+      cost: [5, 4, 3, 2, 1, 6, 7, 8, 9]
+      target: 7
+  - name: "unreachable_gap"
+    in:
+      cost: [4, 6, 8, 10, 12, 14, 16, 18, 20]
+      target: 7
+    out: '"0"'
+  - name: "even_costs_reachable"
+    in:
+      cost: [2, 4, 6, 8, 10, 12, 14, 16, 18]
+      target: 20
+  - name: "all_distinct"
+    in:
+      cost: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+      target: 15
+  - name: "high_digits_cheap"
+    in:
+      cost: [8, 8, 8, 8, 8, 8, 1, 1, 1]
+      target: 10
+  - name: "low_digits_cheap"
+    in:
+      cost: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      target: 10
+  - name: "zero_result_target_two"
+    in:
+      cost: [3, 3, 3, 3, 3, 3, 3, 3, 3]
+      target: 2
+    out: '"0"'
+  - name: "repeated_best_digit"
+    in:
+      cost: [6, 6, 6, 6, 6, 6, 2, 6, 6]
+      target: 14
+  - name: "target_fifteen"
+    in:
+      cost: [2, 5, 9, 4, 7, 3, 8, 6, 1]
+      target: 15
+  - name: "target_twenty_five"
+    in:
+      cost: [3, 8, 2, 9, 4, 7, 5, 6, 1]
+      target: 25
+  - name: "target_fifty"
+    in:
+      cost: [10, 9, 8, 7, 6, 5, 4, 3, 2]
+      target: 50
+  - name: "target_one_hundred"
+    in:
+      cost: [1, 10, 10, 10, 10, 10, 10, 10, 10]
+      target: 100
+  - name: "target_five_hundred"
+    in:
+      cost: [11, 12, 13, 14, 15, 16, 17, 18, 19]
+      target: 500
+  - name: "target_maximum_uniform"
+    in:
+      cost: [25, 25, 25, 25, 25, 25, 25, 25, 25]
+      target: 5000
+  - name: "target_maximum_cheap_nine"
+    in:
+      cost: [5000, 4999, 4998, 4997, 4996, 4995, 4994, 4993, 1]
+      target: 5000
+  - name: "target_maximum_mixed"
+    in:
+      cost: [4992, 4991, 4990, 4989, 4988, 4987, 4986, 4985, 4984]
+      target: 5000
+  - name: "generated_low_costs"
+    seed: 101
+    in:
+      cost:
+        gen: "array"
+        len: 9
+        of:
+          gen: "int"
+          min: 1
+          max: 9
+      target:
+        gen: "int"
+        min: 1
+        max: 100
+  - name: "generated_medium_costs"
+    seed: 202
+    in:
+      cost:
+        gen: "array"
+        len: 9
+        of:
+          gen: "int"
+          min: 10
+          max: 100
+      target:
+        gen: "int"
+        min: 100
+        max: 1000
+  - name: "generated_large_target"
+    seed: 303
+    in:
+      cost:
+        gen: "array"
+        len: 9
+        of:
+          gen: "int"
+          min: 1
+          max: 5000
+      target: 5000
+  - name: "generated_dense_options"
+    seed: 404
+    in:
+      cost:
+        gen: "array"
+        len: 9
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+      target:
+        gen: "int"
+        min: 200
+        max: 5000
+  - name: "generated_high_costs"
+    seed: 505
+    in:
+      cost:
+        gen: "array"
+        len: 9
+        of:
+          gen: "int"
+          min: 4000
+          max: 5000
+      target:
+        gen: "int"
+        min: 1
+        max: 5000
+  - name: "generated_small_impossible_possible"
+    seed: 606
+    in:
+      cost:
+        gen: "array"
+        len: 9
+        of:
+          gen: "int"
+          min: 2
+          max: 6
+      target:
+        gen: "int"
+        min: 1
+        max: 15
+  - name: "minimum_target_impossible"
+    in:
+      cost: [2, 2, 2, 2, 2, 2, 2, 2, 2]
+      target: 1
+  - name: "max_cost_single_digit"
+    in:
+      cost: [5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000]
+      target: 5000
+  - name: "max_cost_impossible"
+    in:
+      cost: [5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000]
+      target: 4999
+  - name: "nine_cost_three_longer"
+    in:
+      cost: [2, 2, 2, 2, 2, 2, 2, 2, 3]
+      target: 9
+  - name: "mixed_remainder_longest"
+    in:
+      cost: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+      target: 11

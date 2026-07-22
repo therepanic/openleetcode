@@ -1,0 +1,207 @@
+entry:
+  id: 1138
+  title: alphabet-board-path
+  params:
+    target:
+      type: string
+  call:
+    cpp: "Solution().alphabetBoardPath({target})"
+    rust: "Solution::alphabet_board_path({target})"
+    python3: "Solution().alphabetBoardPath({target})"
+    python2: "Solution().alphabetBoardPath({target})"
+    ruby: "alphabet_board_path({target})"
+    java: "new Solution().alphabetBoardPath({target})"
+    csharp: "new Solution().AlphabetBoardPath({target})"
+    kotlin: "Solution().alphabetBoardPath({target})"
+    go: "alphabetBoardPath({target})"
+    dart: "Solution().alphabetBoardPath({target})"
+    swift: "Solution().alphabetBoardPath({target})"
+    typescript: "alphabetBoardPath({target})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().alphabetBoardPath(target, {result})"
+    checker: |
+      class Checker:
+          def alphabetBoardPath(self, target, result):
+              if not isinstance(result, str): return False
+              pos = {chr(97+i): (i//5, i%5) for i in range(26)}
+              valid = set(pos.values())
+              r = c = 0
+              made = []
+              steps = 0
+              for ch in result:
+                  if ch == '!':
+                      if (r, c) not in valid: return False
+                      made.append(chr(97 + r*5 + c))
+                  elif ch in 'UDLR':
+                      nr, nc = r, c
+                      if ch == 'U': nr -= 1
+                      elif ch == 'D': nr += 1
+                      elif ch == 'L': nc -= 1
+                      else: nc += 1
+                      if (nr, nc) not in valid: return False
+                      r, c = nr, nc
+                      steps += 1
+                  else: return False
+              if ''.join(made) != target: return False
+              prev = (0, 0)
+              minimum = len(target)
+              for ch in target:
+                  cur = pos[ch]
+                  minimum += abs(prev[0]-cur[0]) + abs(prev[1]-cur[1])
+                  prev = cur
+              return steps + len(made) == minimum
+seed: 1138
+tests:
+  - name: example-leet
+    in:
+      target: "leet"
+  - name: example-code
+    in:
+      target: "code"
+  - name: first-letter
+    in:
+      target: "a"
+  - name: last-letter
+    in:
+      target: "z"
+  - name: same-letter
+    in:
+      target: "aaaaa"
+  - name: repeated-z
+    in:
+      target: "zzz"
+  - name: horizontal-row
+    in:
+      target: "abcde"
+  - name: vertical-column
+    in:
+      target: "afkpu"
+  - name: full-board
+    in:
+      target: "abcdefghijklmnopqrstuvwxyz"
+  - name: reverse-board
+    in:
+      target: "zyxwvutsrqponmlkjihgfedcba"
+  - name: z-to-top
+    in:
+      target: "za"
+  - name: top-to-z
+    in:
+      target: "az"
+  - name: z-transitions
+    in:
+      target: "azbzczdz"
+  - name: row-boundaries
+    in:
+      target: "ejotyd"
+  - name: column-boundaries
+    in:
+      target: "afkpuze"
+  - name: zigzag
+    in:
+      target: "aeimquy"
+  - name: diagonal
+    in:
+      target: "agmsye"
+  - name: scattered
+    in:
+      target: "qazwsxedcrfvtgbyhnujmikolp"
+  - name: duplicate-corners
+    in:
+      target: "azezaz"
+  - name: duplicate-rows
+    in:
+      target: "fghijjihgf"
+  - name: middle-cycle
+    in:
+      target: "klmnoponmlk"
+  - name: bottom-row
+    in:
+      target: "uvwxy"
+  - name: bottom-z-cycle
+    in:
+      target: "uvwxyzuvwx"
+  - name: vowels
+    in:
+      target: "aeiou"
+  - name: consonants
+    in:
+      target: "bcdfghjklmnpqrstvwxyz"
+  - name: long-repetition
+    in:
+      target: "thequickbrownfoxthequickbrownfox"
+  - name: long-zigzag
+    in:
+      target: "azbycxdwevfugthsirjqkplomn"
+  - name: edge-pair
+    in:
+      target: "py"
+  - name: edge-pair-reverse
+    in:
+      target: "yp"
+  - name: central-cross
+    in:
+      target: "mnrw"
+  - name: corner-tour
+    in:
+      target: "azpy"
+  - name: generated-short
+    in:
+      target:
+        gen: "str"
+        len: 12
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-medium
+    in:
+      target:
+        gen: "str"
+        len: 64
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-max
+    in:
+      target:
+        gen: "str"
+        len: 100
+        alphabet: "aejotyz"
+  - name: generated-z-heavy
+    in:
+      target:
+        gen: "str"
+        len: 100
+        alphabet: "abyz"
+  - name: generated-max-all-letters
+    in:
+      target:
+        gen: "str"
+        len: 100
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-max-z-corridor
+    in:
+      target:
+        gen: "str"
+        len: 100
+        alphabet: "az"
+  - name: generated-max-right-edge
+    in:
+      target:
+        gen: "str"
+        len: 100
+        alphabet: "ejoty"
+  - name: generated-max-left-column
+    in:
+      target:
+        gen: "str"
+        len: 100
+        alphabet: "afkpuz"
+  - name: generated-max-corner-jumps
+    in:
+      target:
+        gen: "str"
+        len: 100
+        alphabet: "apzye"

@@ -1,0 +1,236 @@
+entry:
+  id: 1402
+  title: reducing-dishes
+  params:
+    satisfaction:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxSatisfaction({satisfaction})"
+    rust: "Solution::max_satisfaction({satisfaction})"
+    python3: "Solution().maxSatisfaction({satisfaction})"
+    python2: "Solution().maxSatisfaction({satisfaction})"
+    ruby: "max_satisfaction({satisfaction})"
+    java: "new Solution().maxSatisfaction({satisfaction})"
+    csharp: "new Solution().MaxSatisfaction({satisfaction})"
+    kotlin: "Solution().maxSatisfaction({satisfaction})"
+    go: "maxSatisfaction({satisfaction})"
+    dart: "Solution().maxSatisfaction({satisfaction})"
+    swift: "Solution().maxSatisfaction({satisfaction})"
+    typescript: "maxSatisfaction({satisfaction})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxSatisfaction(satisfaction, {result})"
+    checker: |
+      class Checker:
+          def maxSatisfaction(self, satisfaction, result):
+              values = sorted(satisfaction)
+              neg_inf = -10**18
+              dp = [neg_inf] * (len(values) + 1)
+              dp[0] = 0
+              for value in values:
+                  for count in range(len(values), 0, -1):
+                      if dp[count - 1] != neg_inf:
+                          candidate = dp[count - 1] + count * value
+                          if candidate > dp[count]:
+                              dp[count] = candidate
+              best = max(dp)
+              return type(result) is int and result == best
+seed: 1402
+tests:
+  - name: example-one
+    in:
+      satisfaction: [-1, -8, 0, 5, -9]
+    out: 14
+  - name: example-two
+    in:
+      satisfaction: [4, 3, 2]
+    out: 20
+  - name: example-three
+    in:
+      satisfaction: [-1, -4, -5]
+    out: 0
+  - name: one-positive
+    in:
+      satisfaction: [1000]
+    out: 1000
+  - name: one-negative
+    in:
+      satisfaction: [-1000]
+    out: 0
+  - name: one-zero
+    in:
+      satisfaction: [0]
+    out: 0
+  - name: two-positive
+    in:
+      satisfaction: [1, 2]
+    out: 5
+  - name: mixed-pair
+    in:
+      satisfaction: [-1, 5]
+    out: 9
+  - name: zero-and-positive
+    in:
+      satisfaction: [0, 7]
+    out: 14
+  - name: all-positive
+    in:
+      satisfaction: [1, 2, 3, 4, 5]
+    out: 55
+  - name: all-negative
+    in:
+      satisfaction: [-1, -2, -3, -4, -5]
+    out: 0
+  - name: all-zero
+    in:
+      satisfaction: [0, 0, 0, 0]
+    out: 0
+  - name: one-useful-positive
+    in:
+      satisfaction: [10, -100, -100]
+    out: 10
+  - name: negative-threshold-kept
+    in:
+      satisfaction: [4, -1, -1]
+    out: 9
+  - name: negative-threshold-rejected
+    in:
+      satisfaction: [5, -3, -3]
+    out: 7
+  - name: input-ascending
+    in:
+      satisfaction: [1, 2, 3, 4, 5]
+    out: 55
+  - name: alternating-signs
+    in:
+      satisfaction: [10, -1, 9, -2, 8, -3]
+    out: 127
+  - name: late-positive-values
+    in:
+      satisfaction: [-10, -5, 1, 2, 3]
+    out: 15
+  - name: zeros-between-values
+    in:
+      satisfaction: [-1, 0, 0, 4]
+    out: 15
+  - name: duplicate-positive
+    in:
+      satisfaction: [3, 3, 3, 3]
+    out: 30
+  - name: duplicate-negative
+    in:
+      satisfaction: [-2, -2, -2, -2]
+    out: 0
+  - name: balanced-values
+    in:
+      satisfaction: [-3, -2, 1, 2, 3]
+    out: 19
+  - name: exact-zero-prefix
+    in:
+      satisfaction: [-2, -1, 1, 2]
+    out: 7
+  - name: large-positive-bound
+    in:
+      satisfaction: [1000, 1000, 1000, 1000]
+    out: 10000
+  - name: large-negative-bound
+    in:
+      satisfaction: [-1000, -1000, -1000, 1000]
+    out: 1000
+  - name: five-value-mix
+    in:
+      satisfaction: [-9, -1, 0, 1, 6]
+    out: 26
+  - name: seven-value-mix
+    in:
+      satisfaction: [-4, 1, 2, 3, -1, 5, -2]
+    out: 56
+  - name: eight-value-mix
+    in:
+      satisfaction: [8, -7, 6, -5, 4, -3, 2, -1]
+    out: 110
+  - name: nine-value-mix
+    in:
+      satisfaction: [-9, -1, 0, 1, 2, 3, 4, 5, 6]
+    out: 143
+  - name: ten-value-mix
+    in:
+      satisfaction: [10, 9, -8, 7, -6, 5, -4, 3, -2, 1]
+    out: 255
+  - name: zero-with-negative-only
+    in:
+      satisfaction: [-2, -3, 0]
+    out: 0
+  - name: high-values-with-negatives
+    in:
+      satisfaction: [1000, -999, 999, -998]
+    out: 4002
+  - name: four-small-negatives
+    in:
+      satisfaction: [6, -1, -1, -1, -1]
+    out: 20
+  - name: many-positive-duplicates
+    in:
+      satisfaction: [2, 2, 2, 2, 2, 2]
+    out: 42
+  - name: boundary-symmetric-mix
+    in:
+      satisfaction: [-1000, -500, -1, 0, 1, 500, 1000]
+    out: 8002
+  - name: generated-small
+    in:
+      satisfaction:
+        gen: array
+        len: 12
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        elemType: int
+  - name: generated-medium
+    in:
+      satisfaction:
+        gen: array
+        len: 50
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        elemType: int
+  - name: generated-boundary-values
+    in:
+      satisfaction:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        elemType: int
+  - name: generated-large
+    in:
+      satisfaction:
+        gen: array
+        len: 400
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        elemType: int
+  - name: generated-maximum
+    in:
+      satisfaction:
+        gen: array
+        len: 500
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        elemType: int

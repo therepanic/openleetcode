@@ -1,0 +1,312 @@
+entry:
+  id: 1296
+  title: divide-array-in-sets-of-k-consecutive-numbers
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().isPossibleDivide({nums}, {k})"
+    rust: "Solution::is_possible_divide({nums}, {k})"
+    python3: "Solution().isPossibleDivide({nums}, {k})"
+    python2: "Solution().isPossibleDivide({nums}, {k})"
+    ruby: "is_possible_divide({nums}, {k})"
+    java: "new Solution().isPossibleDivide({nums}, {k})"
+    csharp: "new Solution().IsPossibleDivide({nums}, {k})"
+    kotlin: "Solution().isPossibleDivide({nums}, {k})"
+    go: "isPossibleDivide({nums}, {k})"
+    dart: "Solution().isPossibleDivide({nums}, {k})"
+    swift: "Solution().isPossibleDivide({nums}, {k})"
+    typescript: "isPossibleDivide({nums}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().isPossibleDivide(nums, k, {result})"
+    checker: |
+      class Checker:
+          def isPossibleDivide(self, nums, k, result):
+              if type(result) is not bool:
+                  return False
+              if not isinstance(nums, list) or not 1 <= len(nums) <= 100000:
+                  return False
+              if not isinstance(k, int) or isinstance(k, bool) or not 1 <= k <= len(nums):
+                  return False
+              if any(not isinstance(value, int) or isinstance(value, bool) or not 1 <= value <= 1000000000 for value in nums):
+                  return False
+              if len(nums) % k != 0:
+                  return result is False
+              counts = {}
+              for value in nums:
+                  counts[value] = counts.get(value, 0) + 1
+              for start in sorted(counts):
+                  needed = counts[start]
+                  if needed == 0:
+                      continue
+                  for value in range(start, start + k):
+                      if counts.get(value, 0) < needed:
+                          return result is False
+                      counts[value] -= needed
+              return result is True
+seed: 1296
+tests:
+  - name: example_one_overlapping_groups
+    in:
+      nums: [1, 2, 3, 3, 4, 4, 5, 6]
+      k: 4
+    out: true
+  - name: example_two_multiple_starts
+    in:
+      nums: [3, 2, 1, 2, 3, 4, 3, 4, 5, 9, 10, 11]
+      k: 3
+    out: true
+  - name: example_three_nondivisible_length
+    in:
+      nums: [1, 2, 3, 4]
+      k: 3
+    out: false
+  - name: single_value_k_one
+    in:
+      nums: [1]
+      k: 1
+    out: true
+  - name: mixed_values_k_one
+    in:
+      nums: [1000000000, 1, 17, 17, 500000000]
+      k: 1
+    out: true
+  - name: adjacent_pair
+    in:
+      nums: [1, 2]
+      k: 2
+    out: true
+  - name: gapped_pair
+    in:
+      nums: [1, 3]
+      k: 2
+    out: false
+  - name: full_array_one_group
+    in:
+      nums: [5, 2, 4, 1, 3]
+      k: 5
+    out: true
+  - name: full_array_missing_middle
+    in:
+      nums: [1, 2, 4, 5]
+      k: 4
+    out: false
+  - name: equal_duplicate_layers
+    in:
+      nums: [1, 1, 2, 2, 3, 3]
+      k: 3
+    out: true
+  - name: excess_lowest_value
+    in:
+      nums: [1, 1, 1, 2, 2, 3]
+      k: 3
+    out: false
+  - name: excess_highest_value
+    in:
+      nums: [1, 2, 2, 3, 3, 3]
+      k: 3
+    out: false
+  - name: all_equal_divisible_but_not_consecutive
+    in:
+      nums: [7, 7, 7, 7]
+      k: 2
+    out: false
+  - name: two_disjoint_runs
+    in:
+      nums: [10, 11, 12, 1, 2, 3]
+      k: 3
+    out: true
+  - name: disjoint_run_with_gap
+    in:
+      nums: [1, 2, 4, 10, 11, 12]
+      k: 3
+    out: false
+  - name: descending_input
+    in:
+      nums: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 3
+    out: true
+  - name: shuffled_duplicate_starts
+    in:
+      nums: [4, 2, 3, 1, 3, 2, 4, 1]
+      k: 4
+    out: true
+  - name: overlapping_three_chains
+    in:
+      nums: [1, 2, 2, 3, 3, 3, 4, 4, 5]
+      k: 3
+    out: true
+  - name: overlapping_chain_shortage
+    in:
+      nums: [1, 2, 2, 3, 3, 4]
+      k: 3
+    out: true
+  - name: staggered_four_chains
+    in:
+      nums: [1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6]
+      k: 4
+    out: true
+  - name: staggered_four_chains_shortage
+    in:
+      nums: [1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6]
+      k: 4
+    out: false
+  - name: length_divisible_but_terminal_gap
+    in:
+      nums: [1, 2, 3, 5, 6, 7]
+      k: 3
+    out: true
+  - name: terminal_gap_breaks_group
+    in:
+      nums: [1, 2, 3, 5, 6, 8]
+      k: 3
+    out: false
+  - name: consecutive_ten_split_by_two
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      k: 2
+    out: true
+  - name: consecutive_ten_split_by_five
+    in:
+      nums: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 5
+    out: true
+  - name: two_gapped_length_five_groups
+    in:
+      nums: [1, 2, 3, 4, 5, 7, 8, 9, 10, 11]
+      k: 5
+    out: true
+  - name: repeated_four_value_runs
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 4]
+      k: 4
+    out: true
+  - name: repeated_four_value_runs_unbalanced
+    in:
+      nums: [1, 1, 2, 2, 3, 4, 4, 5]
+      k: 4
+    out: false
+  - name: starts_after_existing_run
+    in:
+      nums: [1, 2, 3, 3, 4, 5, 6, 7, 8]
+      k: 3
+    out: true
+  - name: starts_after_existing_run_missing_tail
+    in:
+      nums: [1, 2, 3, 3, 4, 5, 6, 7, 9]
+      k: 3
+    out: false
+  - name: near_upper_bound_single_group
+    in:
+      nums: [999999997, 999999998, 999999999, 1000000000]
+      k: 4
+    out: true
+  - name: near_upper_bound_gap
+    in:
+      nums: [999999997, 999999998, 1000000000, 1000000000]
+      k: 4
+    out: false
+  - name: widely_separated_high_value_groups
+    in:
+      nums: [1000000000, 999999999, 999999998, 100, 101, 102]
+      k: 3
+    out: true
+  - name: many_parallel_pairs
+    in:
+      nums: [2, 1, 2, 1, 2, 1, 4, 3, 4, 3, 4, 3]
+      k: 2
+    out: true
+  - name: generated_max_length_k_one
+    seed: 129601
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 1
+  - name: generated_max_length_pairs
+    seed: 129602
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 2
+  - name: generated_max_length_small_groups
+    seed: 129603
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 4
+  - name: generated_max_length_moderate_groups
+    seed: 129604
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 100
+  - name: generated_max_length_half_groups
+    seed: 129605
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 50000
+  - name: generated_max_length_single_group
+    seed: 129606
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 100000

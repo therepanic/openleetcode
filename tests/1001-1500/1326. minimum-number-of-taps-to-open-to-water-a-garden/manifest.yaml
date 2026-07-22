@@ -1,0 +1,316 @@
+entry:
+  id: 1326
+  title: "minimum-number-of-taps-to-open-to-water-a-garden"
+  params:
+    n:
+      type: int
+    ranges:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minTaps({n}, {ranges})"
+    rust: "Solution::min_taps({n}, {ranges})"
+    python3: "Solution().minTaps({n}, {ranges})"
+    python2: "Solution().minTaps({n}, {ranges})"
+    ruby: "min_taps({n}, {ranges})"
+    java: "new Solution().minTaps({n}, {ranges})"
+    csharp: "new Solution().MinTaps({n}, {ranges})"
+    kotlin: "Solution().minTaps({n}, {ranges})"
+    go: "minTaps({n}, {ranges})"
+    dart: "Solution().minTaps({n}, {ranges})"
+    swift: "Solution().minTaps({n}, {ranges})"
+    typescript: "minTaps({n}, {ranges})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().minTaps(n, ranges, {result})"
+    checker: |
+      class Checker:
+          def minTaps(self, n, ranges, result):
+              if isinstance(result, bool) or not isinstance(result, int):
+                  return False
+              if n < 1 or len(ranges) != n + 1:
+                  return False
+
+              intervals = []
+              for position, radius in enumerate(ranges):
+                  if radius < 0 or radius > 100:
+                      return False
+                  intervals.append((max(0, position - radius), min(n, position + radius)))
+              intervals.sort()
+
+              covered = 0
+              taps = 0
+              index = 0
+              while covered < n:
+                  furthest = covered
+                  while index < len(intervals) and intervals[index][0] <= covered:
+                      furthest = max(furthest, intervals[index][1])
+                      index += 1
+                  if furthest == covered:
+                      return result == -1
+                  covered = furthest
+                  taps += 1
+              return result == taps
+seed: 1326
+tests:
+  - name: "single_garden_left_tap"
+    in:
+      n: 1
+      ranges: [1, 0]
+    out: 1
+  - name: "single_garden_right_tap"
+    in:
+      n: 1
+      ranges: [0, 1]
+    out: 1
+  - name: "single_center_covers_two"
+    in:
+      n: 2
+      ranges: [0, 2, 0]
+    out: 1
+  - name: "example_one"
+    in:
+      n: 5
+      ranges: [3, 4, 1, 1, 0, 0]
+    out: 1
+  - name: "example_two_all_zero"
+    in:
+      n: 3
+      ranges: [0, 0, 0, 0]
+    out: -1
+  - name: "two_overlapping_taps"
+    in:
+      n: 4
+      ranges: [0, 1, 1, 1, 0]
+    out: 2
+  - name: "unit_radius_chain"
+    in:
+      n: 6
+      ranges: [1, 1, 1, 1, 1, 1, 1]
+    out: 3
+  - name: "radius_two_chain"
+    in:
+      n: 8
+      ranges: [2, 2, 2, 2, 2, 2, 2, 2, 2]
+    out: 2
+  - name: "left_boundary_alone"
+    in:
+      n: 5
+      ranges: [5, 0, 0, 0, 0, 0]
+    out: 1
+  - name: "unbridgeable_middle_gap"
+    in:
+      n: 6
+      ranges: [2, 0, 0, 0, 0, 2, 0]
+    out: -1
+  - name: "both_endpoints_need_coverage"
+    in:
+      n: 3
+      ranges: [1, 1, 1, 1]
+    out: 2
+  - name: "right_boundary_alone"
+    in:
+      n: 5
+      ranges: [0, 0, 0, 0, 0, 5]
+    out: 1
+  - name: "zero_radius_everywhere"
+    in:
+      n: 5
+      ranges: [0, 0, 0, 0, 0, 0]
+    out: -1
+  - name: "two_taps_meet_at_middle"
+    in:
+      n: 5
+      ranges: [2, 0, 1, 0, 2, 0]
+    out: 2
+  - name: "alternating_unit_taps"
+    in:
+      n: 7
+      ranges: [0, 1, 0, 1, 0, 1, 0, 1]
+    out: 4
+  - name: "long_overlap_from_middle"
+    in:
+      n: 7
+      ranges: [3, 0, 0, 0, 3, 0, 0, 0]
+    out: 2
+  - name: "two_large_overlaps"
+    in:
+      n: 10
+      ranges: [0, 5, 0, 0, 0, 0, 4, 0, 0, 0, 0]
+    out: 2
+  - name: "three_staged_intervals"
+    in:
+      n: 10
+      ranges: [0, 0, 2, 0, 0, 3, 0, 0, 2, 0, 0]
+    out: 3
+  - name: "coverage_stops_after_first_unit"
+    in:
+      n: 10
+      ranges: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    out: -1
+  - name: "far_right_full_radius"
+    in:
+      n: 10
+      ranges: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10]
+    out: 1
+  - name: "two_endpoint_intervals"
+    in:
+      n: 2
+      ranges: [1, 0, 1]
+  - name: "three_exactly_touching_intervals"
+    in:
+      n: 9
+      ranges: [0, 2, 0, 0, 1, 0, 0, 2, 0, 0]
+  - name: "left_edge_not_reached"
+    in:
+      n: 9
+      ranges: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "large_left_then_middle"
+    in:
+      n: 9
+      ranges: [4, 0, 0, 0, 0, 4, 0, 0, 0, 0]
+  - name: "missing_initial_coverage"
+    in:
+      n: 12
+      ranges: [0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0]
+  - name: "four_taps_with_overlaps"
+    in:
+      n: 12
+      ranges: [2, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 2]
+  - name: "three_wide_centered_taps"
+    in:
+      n: 12
+      ranges: [0, 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0]
+  - name: "three_taps_touching_boundaries"
+    in:
+      n: 15
+      ranges: [0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0]
+  - name: "overlap_requires_late_final_tap"
+    in:
+      n: 15
+      ranges: [5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 3, 0, 0, 0]
+  - name: "fifteen_unit_coverage"
+    in:
+      n: 15
+      ranges: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: "one_maximum_radius_tap"
+    in:
+      n: 20
+      ranges: [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "rightmost_tap_spans_garden"
+    in:
+      n: 20
+      ranges: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20]
+  - name: "initial_tap_cannot_be_extended"
+    in:
+      n: 20
+      ranges: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "four_interval_chain_length_twenty"
+    in:
+      n: 20
+      ranges: [4, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 2, 0, 0]
+  - name: "four_touching_triplets"
+    in:
+      n: 20
+      ranges: [0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2]
+  - name: "seven_sparse_radius_two_taps"
+    in:
+      n: 25
+      ranges:
+        [
+          2,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          2,
+          0,
+        ]
+  - name: "one_hundred_length_alternating_taps"
+    in:
+      n: 30
+      ranges:
+        [
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+        ]
+  - name: "interior_maximum_radius_clamps_both_sides"
+    in:
+      n: 20
+      ranges: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "large_all_zero_impossible"
+    seed: 132601
+    in:
+      n: 10000
+      ranges:
+        gen: "array"
+        len: 10001
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+  - name: "large_maximum_allowed_radius"
+    seed: 132602
+    in:
+      n: 10000
+      ranges:
+        gen: "array"
+        len: 10001
+        of:
+          gen: "int"
+          min: 100
+          max: 100

@@ -1,0 +1,247 @@
+entry:
+  id: 1488
+  title: "avoid-flood-in-the-city"
+  params:
+    rains:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().avoidFlood({rains})"
+    rust: "Solution::avoid_flood({rains})"
+    python3: "Solution().avoidFlood({rains})"
+    python2: "Solution().avoidFlood({rains})"
+    ruby: "avoid_flood({rains})"
+    java: "new Solution().avoidFlood({rains})"
+    csharp: "new Solution().AvoidFlood({rains})"
+    kotlin: "Solution().avoidFlood({rains})"
+    go: "avoidFlood({rains})"
+    dart: "Solution().avoidFlood({rains})"
+    swift: "Solution().avoidFlood({rains})"
+    typescript: "avoidFlood({rains})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().avoidFlood(rains, {result})"
+    checker: |
+      class Checker:
+          def avoidFlood(self, rains, result):
+              if not isinstance(result, list):
+                  return False
+              if result == []:
+                  size = len(rains)
+                  tree = [0] * (size + 1)
+
+                  def update(index, delta):
+                      index += 1
+                      while index <= size:
+                          tree[index] += delta
+                          index += index & -index
+
+                  def prefix(end):
+                      total = 0
+                      while end > 0:
+                          total += tree[end]
+                          end -= end & -end
+                      return total
+
+                  def kth(order):
+                      index = 0
+                      bit = 1 << (size.bit_length() - 1)
+                      while bit:
+                          next_index = index + bit
+                          if next_index <= size and tree[next_index] < order:
+                              index = next_index
+                              order -= tree[next_index]
+                          bit >>= 1
+                      return index
+
+                  available = 0
+                  last_rain = {}
+                  for day, lake in enumerate(rains):
+                      if lake == 0:
+                          update(day, 1)
+                          available += 1
+                      elif lake in last_rain:
+                          before = prefix(last_rain[lake] + 1)
+                          if available <= before:
+                              return True
+                          update(kth(before + 1), -1)
+                          available -= 1
+                          last_rain[lake] = day
+                      else:
+                          last_rain[lake] = day
+                  return False
+              if len(result) != len(rains):
+                  return False
+              full = set()
+              for day, lake in enumerate(rains):
+                  selected = result[day]
+                  if lake > 0:
+                      if selected != -1 or lake in full:
+                          return False
+                      full.add(lake)
+                  else:
+                      if selected <= 0:
+                          return False
+                      full.discard(selected)
+              return True
+seed: 1488
+tests:
+  - name: "official-no-repeat"
+    in:
+      rains: [1, 2, 3, 4]
+  - name: "official-repeatable"
+    in:
+      rains: [1, 2, 0, 0, 2, 1]
+  - name: "official-impossible"
+    in:
+      rains: [1, 2, 0, 1, 2]
+  - name: "single-rain"
+    in:
+      rains: [7]
+  - name: "single-dry"
+    in:
+      rains: [0]
+  - name: "rain-dry-rain"
+    in:
+      rains: [4, 0, 4]
+  - name: "dry-before-rain"
+    in:
+      rains: [0, 5]
+  - name: "many-dry-days"
+    in:
+      rains: [0, 0, 0, 8]
+  - name: "two-lakes-one-dry"
+    in:
+      rains: [1, 2, 0, 1, 2]
+  - name: "two-lakes-two-dry"
+    in:
+      rains: [1, 2, 0, 0, 1, 2]
+  - name: "same-lake-spaced"
+    in:
+      rains: [3, 0, 0, 3, 0, 3]
+  - name: "same-lake-no-dry"
+    in:
+      rains: [3, 3]
+  - name: "three-lakes-cyclic"
+    in:
+      rains: [1, 2, 3, 0, 1, 0, 2, 0, 3]
+  - name: "three-lakes-short"
+    in:
+      rains: [1, 2, 3, 0, 1, 2, 3]
+  - name: "dry-reused-choice"
+    in:
+      rains: [5, 0, 5, 0, 6, 0, 6]
+  - name: "large-lake-id"
+    in:
+      rains: [1000000000, 0, 1000000000]
+  - name: "several-large-ids"
+    in:
+      rains: [999999999, 888888888, 0, 999999999, 0, 888888888]
+  - name: "dry-after-every-rain"
+    in:
+      rains: [1, 0, 2, 0, 3, 0, 4]
+  - name: "dry-days-too-late"
+    in:
+      rains: [1, 2, 1, 0, 2]
+  - name: "one-dry-for-two-repeats"
+    in:
+      rains: [1, 2, 0, 1, 2, 1]
+  - name: "four-lake-cycle"
+    in:
+      rains: [1, 2, 3, 4, 0, 1, 0, 2, 0, 3, 0, 4]
+  - name: "four-lake-cycle-short"
+    in:
+      rains: [1, 2, 3, 4, 0, 1, 2, 3, 4]
+  - name: "repeated-single-lake"
+    in:
+      rains: [9, 0, 9, 0, 9, 0, 9]
+  - name: "zero-heavy-prefix"
+    in:
+      rains: [0, 0, 1, 2, 0, 1, 2]
+  - name: "zero-heavy-between"
+    in:
+      rains: [1, 0, 0, 0, 1, 0, 0, 1]
+  - name: "alternating-lakes"
+    in:
+      rains: [1, 2, 1, 2, 0, 0]
+  - name: "alternating-with-space"
+    in:
+      rains: [1, 2, 0, 1, 2, 0]
+  - name: "five-lakes-all-repeat"
+    in:
+      rains: [1, 2, 3, 4, 5, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5]
+  - name: "five-lakes-insufficient"
+    in:
+      rains: [1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]
+  - name: "dry-empty-lake-allowed"
+    in:
+      rains: [0, 1, 0, 2]
+  - name: "dry-selection-must-be-positive"
+    in:
+      rains: [1, 0, 2, 0, 1, 2]
+  - name: "late-single-repeat"
+    in:
+      rains: [6, 0, 0, 0, 0, 6]
+  - name: "multiple-independent-repeats"
+    in:
+      rains: [1, 0, 2, 0, 3, 0, 1, 2, 3]
+  - name: "nested-repeats"
+    in:
+      rains: [1, 2, 0, 3, 0, 2, 0, 1, 3]
+  - name: "long-safe-sequence"
+    in:
+      rains: [1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 1, 0, 2, 0, 3]
+  - name: "long-impossible-sequence"
+    in:
+      rains: [1, 2, 3, 1, 2, 3, 0, 0]
+  - name: "maximum-all-dry-days"
+    seed: 148801
+    in:
+      rains:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+        elemType: "int"
+  - name: "maximum-single-lake-repeat"
+    seed: 148802
+    in:
+      rains:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        elemType: "int"
+  - name: "maximum-distinct-lakes"
+    seed: 148803
+    in:
+      rains:
+        gen: "array"
+        len: 100000
+        distinct: true
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        elemType: "int"
+  - name: "maximum-boundary-values"
+    seed: 148804
+    in:
+      rains:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        elemType: "int"

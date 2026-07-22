@@ -1,0 +1,260 @@
+entry:
+  id: 1171
+  title: remove-zero-sum-consecutive-nodes-from-linked-list
+  params:
+    head:
+      type: list_node
+  call:
+    cpp: "listNodeToArray(Solution().removeZeroSumSublists({head}))"
+    rust: "ListNode::list_node_to_array(Solution::remove_zero_sum_sublists({head}))"
+    python3: "list_node_to_array(Solution().removeZeroSumSublists({head}))"
+    python2: "list_node_to_array(Solution().removeZeroSumSublists({head}))"
+    ruby: "list_node_to_array(remove_zero_sum_sublists({head}))"
+    java: "ListNode.listNodeToArray(new Solution().removeZeroSumSublists({head}))"
+    csharp: "ListNode.ListNodeToArray(new Solution().RemoveZeroSumSublists({head}))"
+    kotlin: "listNodeToArray(Solution().removeZeroSumSublists({head}))"
+    go: "listNodeToArray(removeZeroSumSublists({head}))"
+    dart: "list_node_to_array(Solution().removeZeroSumSublists({head}))"
+    swift: "list_node_to_array(Solution().removeZeroSumSublists({head}))"
+    typescript: "listNodeToArray(removeZeroSumSublists({head}))"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().removeZeroSumSublists(head, {result})"
+    checker: |
+      class Checker:
+          def removeZeroSumSublists(self, head, result):
+              if not isinstance(head, list) or not isinstance(result, list):
+                  return False
+              if not 1 <= len(head) <= 1000:
+                  return False
+              if any(isinstance(value, bool) or not isinstance(value, int) or value < -1000 or value > 1000 for value in head):
+                  return False
+              if any(isinstance(value, bool) or not isinstance(value, int) for value in result):
+                  return False
+
+              # A final list cannot contain another removable zero-sum interval.
+              seen_sums = set([0])
+              total = 0
+              for value in result:
+                  total += value
+                  if total in seen_sums:
+                      return False
+                  seen_sums.add(total)
+
+              # Every removed gap between retained nodes must sum to zero. Dynamic
+              # programming checks that some matching subsequence has that property.
+              prefix = [0]
+              for value in head:
+                  prefix.append(prefix[-1] + value)
+              if not result:
+                  return prefix[-1] == 0
+
+              previous = set()
+              for index, value in enumerate(head):
+                  if value == result[0] and prefix[index] == 0:
+                      previous.add(index)
+              if not previous:
+                  return False
+
+              for wanted in result[1:]:
+                  current = set()
+                  next_prefixes = dict()
+                  for prior in previous:
+                      total = prefix[prior + 1]
+                      if total not in next_prefixes or prior < next_prefixes[total]:
+                          next_prefixes[total] = prior
+                  for index, value in enumerate(head):
+                      if value == wanted and next_prefixes.get(prefix[index], index) < index:
+                          current.add(index)
+                  if not current:
+                      return False
+                  previous = current
+
+              return any(prefix[index + 1] == prefix[-1] for index in previous)
+seed: 1171
+tests:
+  - name: example_one_multiple_valid_finals
+    in:
+      head: [1, 2, -3, 3, 1]
+  - name: example_two_internal_pair
+    in:
+      head: [1, 2, 3, -3, 4]
+  - name: example_three_suffix_chain
+    in:
+      head: [1, 2, 3, -3, -2]
+  - name: single_zero
+    in:
+      head: [0]
+  - name: single_positive
+    in:
+      head: [7]
+  - name: single_negative
+    in:
+      head: [-7]
+  - name: adjacent_opposites
+    in:
+      head: [1, -1]
+  - name: all_zeroes
+    in:
+      head: [0, 0, 0, 0, 0]
+  - name: entire_list_cancels
+    in:
+      head: [4, -1, -3]
+  - name: zero_prefix
+    in:
+      head: [3, -3, 5, 6]
+  - name: zero_suffix
+    in:
+      head: [5, 6, 3, -3]
+  - name: nested_zero_span
+    in:
+      head: [2, 3, -3, -2]
+  - name: overlapping_removal_choices
+    in:
+      head: [1, 2, -2, -1, 3]
+  - name: repeated_prefix_sums
+    in:
+      head: [1, 3, -3, 2, -2, 4]
+  - name: strictly_positive_survives
+    in:
+      head: [1, 2, 3, 4, 5]
+  - name: strictly_negative_survives
+    in:
+      head: [-1, -2, -3, -4]
+  - name: alternating_pairs
+    in:
+      head: [5, -5, 6, -6, 7, -7]
+  - name: internal_single_zero
+    in:
+      head: [8, 0, -2]
+  - name: cascading_after_removal
+    in:
+      head: [1, 2, -3, 3, -3]
+  - name: enclosing_cancellation
+    in:
+      head: [2, 1, -1, -2, 9]
+  - name: duplicate_prefix_values
+    in:
+      head: [1, 2, -3, 1, -1, 2]
+  - name: maximum_value_pair
+    in:
+      head: [1000, -1000, 999]
+  - name: boundary_values_retained
+    in:
+      head: [-1000, 1, -1, 1000]
+  - name: two_disjoint_zero_runs
+    in:
+      head: [9, 4, -4, 8, -8, 7]
+  - name: zero_gap_between_survivors
+    in:
+      head: [6, 2, -2, 5]
+  - name: middle_removal_creates_new_zero_sum
+    in:
+      head: [1, 2, -2, -1, 4]
+  - name: prefix_and_suffix_removals
+    in:
+      head: [3, -3, 8, 4, -4]
+  - name: repeated_zero_prefixes
+    in:
+      head: [1, -1, 2, -2, 3]
+  - name: negative_positive_mixture
+    in:
+      head: [-4, 6, -2, -5, 5, 3]
+  - name: zero_pair_at_end
+    in:
+      head: [4, -2, 2]
+  - name: zero_pair_at_start
+    in:
+      head: [-2, 2, 4]
+  - name: preserved_duplicate_values
+    in:
+      head: [2, 2, -1, 3]
+  - name: long_static_mixed_intervals
+    in:
+      head: [10, -3, -7, 4, -4, 6, 1, -1, -6, 8, 9]
+  - name: large_magnitude_nonzero_total
+    in:
+      head: [1000, -999, -1, 998, -997, 4]
+  - name: stress_seed_101
+    seed: 101
+    in:
+      head:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: stress_seed_202
+    seed: 202
+    in:
+      head:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: stress_seed_303
+    seed: 303
+    in:
+      head:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: stress_seed_404
+    seed: 404
+    in:
+      head:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: stress_seed_505
+    seed: 505
+    in:
+      head:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int
+  - name: stress_seed_606
+    seed: 606
+    in:
+      head:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: int

@@ -1,0 +1,1104 @@
+entry:
+  id: 1293
+  title: shortest-path-in-a-grid-with-obstacles-elimination
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().shortestPath({grid}, {k})"
+    rust: "Solution::shortest_path({grid}, {k})"
+    python3: "Solution().shortestPath({grid}, {k})"
+    python2: "Solution().shortestPath({grid}, {k})"
+    ruby: "shortest_path({grid}, {k})"
+    java: "new Solution().shortestPath({grid}, {k})"
+    csharp: "new Solution().ShortestPath({grid}, {k})"
+    kotlin: "Solution().shortestPath({grid}, {k})"
+    go: "shortestPath({grid}, {k})"
+    dart: "Solution().shortestPath({grid}, {k})"
+    swift: "Solution().shortestPath({grid}, {k})"
+    typescript: "shortestPath({grid}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 1500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().shortestPath(grid, k, {result})"
+    checker: |
+      class Checker:
+          def shortestPath(self, grid, k, result):
+              if not isinstance(grid, list) or not grid or not isinstance(k, int) or isinstance(k, bool) or k < 1:
+                  return False
+              rows, cols = len(grid), len(grid[0])
+              if rows > 40 or cols < 1 or cols > 40 or k > rows * cols or any(not isinstance(row, list) or len(row) != cols for row in grid):
+                  return False
+              if any(cell not in (0, 1) for row in grid for cell in row) or grid[0][0] != 0 or grid[-1][-1] != 0:
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              queue = [(0, 0, k, 0)]
+              seen = {(0, 0, k)}
+              head = 0
+              while head < len(queue):
+                  r, c, remaining, distance = queue[head]
+                  head += 1
+                  if r == rows - 1 and c == cols - 1:
+                      return result == distance
+                  for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                      nr, nc = r + dr, c + dc
+                      if 0 <= nr < rows and 0 <= nc < cols:
+                          next_remaining = remaining - grid[nr][nc]
+                          state = (nr, nc, next_remaining)
+                          if next_remaining >= 0 and state not in seen:
+                              seen.add(state)
+                              queue.append((nr, nc, next_remaining, distance + 1))
+              return result == -1
+seed: 1293
+tests:
+  - name: single_cell
+    in:
+      grid:
+        - [0]
+      k: 1
+    out: 0
+  - name: single_row_clear
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+      k: 1
+    out: 4
+  - name: single_row_obstacles
+    in:
+      grid:
+        - [0, 1, 1, 1, 0]
+      k: 3
+    out: 4
+  - name: single_column_clear
+    in:
+      grid:
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+      k: 1
+    out: 3
+  - name: single_column_blocked
+    in:
+      grid:
+        - [0]
+        - [1]
+        - [1]
+        - [0]
+      k: 1
+    out: -1
+  - name: example_one
+    in:
+      grid:
+        - [0, 0, 0]
+        - [1, 1, 0]
+        - [0, 0, 0]
+        - [0, 1, 1]
+        - [0, 0, 0]
+      k: 1
+    out: 6
+  - name: example_two
+    in:
+      grid:
+        - [0, 1, 1]
+        - [1, 1, 1]
+        - [1, 0, 0]
+      k: 1
+    out: -1
+  - name: clear_two_by_two
+    in:
+      grid:
+        - [0, 0]
+        - [0, 0]
+      k: 1
+    out: 2
+  - name: one_block_two_by_two
+    in:
+      grid:
+        - [0, 1]
+        - [0, 0]
+      k: 1
+    out: 2
+  - name: no_route_without_elimination
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+      k: 1
+    out: -1
+  - name: route_with_elimination
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+      k: 4
+    out: 4
+  - name: open_border
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [1, 1, 1, 0]
+        - [0, 0, 0, 0]
+      k: 1
+    out: 5
+  - name: central_wall
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 1, 0]
+        - [0, 0, 0]
+      k: 1
+    out: 4
+  - name: three_by_three_all_interior_obstacles
+    in:
+      grid:
+        - [0, 0, 0]
+        - [1, 1, 1]
+        - [0, 0, 0]
+      k: 3
+    out: 4
+  - name: zigzag_obstacles
+    in:
+      grid:
+        - [0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0]
+        - [0, 0, 0, 1, 0]
+      k: 1
+    out: 6
+  - name: dense_four_by_four
+    in:
+      grid:
+        - [0, 1, 1, 0]
+        - [0, 1, 1, 0]
+        - [0, 0, 0, 1]
+        - [1, 1, 0, 0]
+      k: 2
+    out: 6
+  - name: dense_requires_three
+    in:
+      grid:
+        - [0, 1, 1, 1]
+        - [0, 1, 0, 1]
+        - [0, 1, 0, 1]
+        - [0, 0, 0, 0]
+      k: 2
+    out: 6
+  - name: detour_beats_wall
+    in:
+      grid:
+        - [0, 1, 1, 1, 0]
+        - [0, 0, 0, 1, 0]
+        - [1, 1, 0, 0, 0]
+      k: 1
+    out: 6
+  - name: checkerboard_small
+    in:
+      grid:
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+      k: 2
+    out: -1
+  - name: checkerboard_budget_zero
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 0, 1]
+        - [0, 1, 0]
+      k: 1
+    out: -1
+  - name: all_obstacles_interior
+    in:
+      grid:
+        - [0, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 1]
+        - [0, 1, 1, 1, 0]
+      k: 5
+    out: 6
+  - name: long_clear_corridor
+    in:
+      grid:
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      k: 1
+    out: 9
+  - name: long_wall
+    in:
+      grid:
+        - [0, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+      k: 8
+    out: 9
+  - name: five_by_five_clear
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+      k: 1
+    out: 8
+  - name: five_by_five_diagonal
+    in:
+      grid:
+        - [0, 1, 1, 1, 1]
+        - [0, 0, 1, 1, 1]
+        - [1, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 1]
+        - [1, 1, 1, 0, 0]
+      k: 2
+    out: 8
+  - name: five_by_five_barriers
+    in:
+      grid:
+        - [0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0]
+        - [0, 0, 0, 0, 0]
+      k: 1
+    out: 8
+  - name: six_by_six_sparse
+    in:
+      grid:
+        - [0, 0, 1, 0, 0, 0]
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 0, 0, 0, 1, 0]
+        - [0, 1, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 1, 0]
+        - [0, 1, 0, 0, 0, 0]
+      k: 2
+    out: 10
+  - name: six_by_six_dense
+    in:
+      grid:
+        - [0, 1, 1, 1, 1, 1]
+        - [0, 1, 0, 0, 0, 1]
+        - [0, 1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0, 1]
+        - [0, 0, 0, 1, 0, 0]
+        - [1, 1, 0, 1, 1, 0]
+      k: 3
+    out: 10
+  - name: seven_by_three
+    in:
+      grid:
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 0, 0]
+      k: 1
+    out: 8
+  - name: three_by_seven
+    in:
+      grid:
+        - [0, 1, 1, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0, 1, 0]
+        - [1, 1, 1, 1, 0, 0, 0]
+      k: 2
+    out: 8
+  - name: eight_by_eight_open
+    in:
+      grid:
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 1, 1, 1, 0]
+      k: 1
+    out: 14
+  - name: eight_by_eight_budget
+    in:
+      grid:
+        - [0, 1, 1, 1, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [0, 1, 0, 0, 0, 0, 1, 0]
+        - [0, 1, 0, 1, 1, 0, 1, 0]
+        - [0, 1, 0, 0, 0, 0, 1, 0]
+        - [0, 1, 1, 1, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1, 1, 0]
+      k: 5
+    out: 14
+  - name: narrow_turns
+    in:
+      grid:
+        - [0, 1, 0, 0]
+        - [0, 1, 0, 1]
+        - [0, 0, 0, 1]
+        - [1, 1, 0, 0]
+      k: 1
+    out: 6
+  - name: two_routes_different_cost
+    in:
+      grid:
+        - [0, 1, 0, 0, 0]
+        - [0, 1, 0, 1, 0]
+        - [0, 0, 0, 1, 0]
+        - [1, 1, 1, 1, 0]
+      k: 2
+    out: 7
+  - name: nine_by_two_column
+    in:
+      grid:
+        - [0, 1]
+        - [0, 1]
+        - [0, 1]
+        - [0, 1]
+        - [0, 1]
+        - [0, 1]
+        - [0, 1]
+        - [0, 1]
+        - [0, 0]
+      k: 1
+    out: 9
+  - name: max_height_clear_column
+    in:
+      grid:
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+      k: 1
+    out: 39
+  - name: near_max_height_obstacle_column_exact_budget
+    in:
+      grid:
+        - [0]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [0]
+      k: 37
+    out: 38
+  - name: near_max_height_obstacle_column_insufficient_budget
+    in:
+      grid:
+        - [0]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [0]
+      k: 36
+    out: -1
+  - name: large_width_open_grid
+    in:
+      grid:
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+      k: 1
+    out: 42
+  - name: large_ten_by_forty_open_grid
+    in:
+      grid:
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+        - [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+          ]
+      k: 1
+    out: 48

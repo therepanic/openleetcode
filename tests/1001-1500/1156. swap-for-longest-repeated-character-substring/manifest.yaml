@@ -1,0 +1,221 @@
+entry:
+  id: 1156
+  title: "swap-for-longest-repeated-character-substring"
+  params:
+    text:
+      type: string
+  call:
+    cpp: "Solution().maxRepOpt1({text})"
+    rust: "Solution::max_rep_opt1({text})"
+    python3: "Solution().maxRepOpt1({text})"
+    python2: "Solution().maxRepOpt1({text})"
+    ruby: "max_rep_opt1({text})"
+    java: "new Solution().maxRepOpt1({text})"
+    csharp: "new Solution().MaxRepOpt1({text})"
+    kotlin: "Solution().maxRepOpt1({text})"
+    go: "maxRepOpt1({text})"
+    dart: "Solution().maxRepOpt1({text})"
+    swift: "Solution().maxRepOpt1({text})"
+    typescript: "maxRepOpt1({text})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().maxRepOpt1(text, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def maxRepOpt1(self, text, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              counts = Counter(text)
+              runs = []
+              start = 0
+              for index in range(1, len(text) + 1):
+                  if index == len(text) or text[index] != text[start]:
+                      runs.append((text[start], index - start))
+                      start = index
+
+              best = 0
+              for index, (ch, length) in enumerate(runs):
+                  # A run can gain one matching character from elsewhere.
+                  best = max(best, min(counts[ch], length + 1))
+                  # Exactly one intervening character permits joining two runs.
+                  if (index + 2 < len(runs) and runs[index + 1][1] == 1
+                          and runs[index + 2][0] == ch):
+                      best = max(best, min(counts[ch], length + 1 + runs[index + 2][1]))
+              return result == best
+seed: 1156
+tests:
+  - name: official_one
+    in:
+      text: "ababa"
+    out: 3
+  - name: official_two
+    in:
+      text: "aaabaaa"
+    out: 6
+  - name: official_three
+    in:
+      text: "aaaaa"
+    out: 5
+  - name: single
+    in:
+      text: "a"
+    out: 1
+  - name: two_different
+    in:
+      text: "ab"
+    out: 1
+  - name: two_equal
+    in:
+      text: "aa"
+    out: 2
+  - name: all_distinct
+    in:
+      text: "abcdef"
+    out: 1
+  - name: separated_pair
+    in:
+      text: "aba"
+    out: 2
+  - name: separated_triplet
+    in:
+      text: "abcaa"
+    out: 3
+  - name: two_groups
+    in:
+      text: "aabbb"
+    out: 3
+  - name: swap_one_gap
+    in:
+      text: "aabaa"
+    out: 4
+  - name: gap_larger_than_one
+    in:
+      text: "aabaca"
+    out: 4
+  - name: alternating
+    in:
+      text: "abababab"
+    out: 3
+  - name: dominant_middle
+    in:
+      text: "baaab"
+    out: 3
+  - name: dominant_edges
+    in:
+      text: "aaabacaa"
+    out: 5
+  - name: three_char_alphabet
+    in:
+      text: "abcabcabc"
+    out: 2
+  - name: repeated_blocks
+    in:
+      text: "aabbccaa"
+    out: 3
+  - name: unique_extra
+    in:
+      text: "aaaaab"
+    out: 5
+  - name: no_swap_needed
+    in:
+      text: "bbbbac"
+    out: 4
+  - name: late_pair
+    in:
+      text: "xyzxy"
+    out: 2
+  - name: long_run_with_gap
+    in:
+      text: "aaabaaac"
+    out: 6
+  - name: symmetric_bridge
+    in:
+      text: "aaaaabaaaaa"
+    out: 10
+  - name: two_character_gap
+    in:
+      text: "aaabbaaac"
+    out: 4
+  - name: minority_at_both_ends
+    in:
+      text: "baaaaab"
+    out: 5
+  - name: oracle_small_1
+    in:
+      text: "cabac"
+  - name: oracle_small_2
+    in:
+      text: "ccadcc"
+  - name: oracle_small_3
+    in:
+      text: "abccbaab"
+  - name: oracle_small_4
+    in:
+      text: "zzxyzzx"
+  - name: oracle_small_5
+    in:
+      text: "qwertqq"
+  - name: generated_max_binary
+    seed: 115601
+    in:
+      text:
+        gen: str
+        len: 20000
+        alphabet: "ab"
+  - name: oracle_pattern_1
+    in:
+      text: "aabacada"
+  - name: oracle_pattern_2
+    in:
+      text: "mnopmmop"
+  - name: oracle_pattern_3
+    in:
+      text: "rrsrrt"
+  - name: oracle_pattern_4
+    in:
+      text: "abacabad"
+  - name: oracle_pattern_5
+    in:
+      text: "kkkkjkkk"
+  - name: generated_max_quaternary
+    seed: 115602
+    in:
+      text:
+        gen: str
+        len: 20000
+        alphabet: "abcd"
+  - name: generated_max_eight_letters
+    seed: 115603
+    in:
+      text:
+        gen: str
+        len: 20000
+        alphabet: "abcdefgh"
+  - name: generated_max_half_alphabet
+    seed: 115604
+    in:
+      text:
+        gen: str
+        len: 20000
+        alphabet: "abcdefghijklmn"
+  - name: generated_max_full_alphabet
+    seed: 115605
+    in:
+      text:
+        gen: str
+        len: 20000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated_max_skewed_alphabet
+    seed: 115606
+    in:
+      text:
+        gen: str
+        len: 20000
+        alphabet: "aaaabc"

@@ -1,0 +1,252 @@
+entry:
+  id: 1345
+  title: "jump-game-iv"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minJumps({arr})"
+    rust: "Solution::min_jumps({arr})"
+    python3: "Solution().minJumps({arr})"
+    python2: "Solution().minJumps({arr})"
+    ruby: "min_jumps({arr})"
+    java: "new Solution().minJumps({arr})"
+    csharp: "new Solution().MinJumps({arr})"
+    kotlin: "Solution().minJumps({arr})"
+    go: "minJumps({arr})"
+    dart: "Solution().minJumps({arr})"
+    swift: "Solution().minJumps({arr})"
+    typescript: "minJumps({arr})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minJumps(arr, {result})"
+    checker: |
+      from collections import deque, defaultdict
+
+      class Checker:
+          def minJumps(self, arr, result):
+              if not isinstance(result, int) or isinstance(result, bool) or not arr:
+                  return False
+              n = len(arr)
+              groups = defaultdict(list)
+              for index, value in enumerate(arr):
+                  groups[value].append(index)
+              distance = [-1] * n
+              distance[0] = 0
+              queue = deque([0])
+              while queue:
+                  index = queue.popleft()
+                  if index == n - 1:
+                      break
+                  neighbors = []
+                  if index > 0:
+                      neighbors.append(index - 1)
+                  if index + 1 < n:
+                      neighbors.append(index + 1)
+                  neighbors.extend(groups[arr[index]])
+                  groups[arr[index]] = []
+                  for nxt in neighbors:
+                      if distance[nxt] == -1:
+                          distance[nxt] = distance[index] + 1
+                          queue.append(nxt)
+              return result == distance[-1]
+
+seed: 134500
+
+tests:
+  - name: "example_one"
+    in:
+      arr: [100, -23, -23, 404, 100, 23, 23, 23, 3, 404]
+  - name: "singleton"
+    in:
+      arr: [7]
+  - name: "example_direct_jump"
+    in:
+      arr: [7, 6, 9, 6, 9, 6, 9, 7]
+  - name: "two_values"
+    in:
+      arr: [1, 2]
+  - name: "three_distinct"
+    in:
+      arr: [1, 2, 3]
+  - name: "direct_equal_ends"
+    in:
+      arr: [5, 1, 2, 3, 5]
+  - name: "all_equal"
+    in:
+      arr: [4, 4, 4, 4, 4]
+  - name: "alternating_pair"
+    in:
+      arr: [1, 2, 1, 2, 1, 2]
+  - name: "equal_middle_cluster"
+    in:
+      arr: [0, 1, 2, 3, 2, 1, 0]
+  - name: "negative_values"
+    in:
+      arr: [-1, -2, -3, -1]
+  - name: "extreme_values"
+    in:
+      arr: [-100000000, 1, 2, -100000000]
+  - name: "repeated_target_value"
+    in:
+      arr: [7, 7, 1, 2, 3, 4]
+  - name: "target_cluster"
+    in:
+      arr: [1, 2, 3, 4, 4, 4]
+  - name: "long_unique_small"
+    in:
+      arr: [1, 2, 3, 4, 5, 6, 7, 8]
+  - name: "duplicate_shortcut"
+    in:
+      arr: [1, 9, 9, 9, 1]
+  - name: "two_duplicate_groups"
+    in:
+      arr: [1, 2, 1, 2, 3, 3]
+  - name: "interleaved_groups"
+    in:
+      arr: [1, 2, 3, 1, 2, 3, 4]
+  - name: "palindrome_values"
+    in:
+      arr: [1, 2, 3, 2, 1]
+  - name: "large_gap_unique"
+    in:
+      arr: [10, 20, 30, 40, 50]
+  - name: "same_start_end"
+    in:
+      arr: [8, 1, 2, 3, 4, 8]
+  - name: "same_start_near_end"
+    in:
+      arr: [8, 1, 2, 8, 4, 5]
+  - name: "all_negative_repeat"
+    in:
+      arr: [-5, -4, -5, -3, -2]
+  - name: "zeros"
+    in:
+      arr: [0, 1, 0, 2, 0, 3]
+  - name: "many_zeros"
+    in:
+      arr: [0, 0, 1, 0, 2, 0, 3, 0]
+  - name: "repeated_endpoints"
+    in:
+      arr: [2, 1, 2, 3, 4, 3, 4]
+  - name: "cluster_at_start"
+    in:
+      arr: [9, 9, 9, 1, 2, 3, 4]
+  - name: "cluster_at_end"
+    in:
+      arr: [1, 2, 3, 4, 9, 9, 9]
+  - name: "multiple_shortcuts"
+    in:
+      arr: [1, 2, 1, 3, 2, 4, 3, 4]
+  - name: "large_duplicate_block"
+    in:
+      arr: [1, 2, 3, 3, 3, 3, 4, 5]
+  - name: "alternating_three"
+    in:
+      arr: [1, 2, 3, 1, 2, 3, 1, 2, 3]
+  - name: "descending_values"
+    in:
+      arr: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "extreme_duplicate_end"
+    in:
+      arr: [100000000, 1, 2, 3, 100000000]
+  - name: "backtrack_then_value_shortcut"
+    in:
+      arr: [10, 20, 30, 40, 20, 50, 60, 30, 70]
+  - name: "generated_small"
+    seed: 134501
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        of:
+          gen: "int"
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+  - name: "generated_medium"
+    seed: 134502
+    in:
+      arr:
+        gen: "array"
+        len: 200
+        of:
+          gen: "int"
+          min: -100000000
+          max: 100000000
+        distinct: false
+        sorted: false
+  - name: "generated_duplicate_heavy"
+    seed: 134503
+    in:
+      arr:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 5
+        distinct: false
+        sorted: false
+  - name: "generated_large"
+    seed: 134504
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: -100000000
+          max: 100000000
+        distinct: false
+        sorted: false
+  - name: "generated_maximum_duplicate_heavy"
+    seed: 134506
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: -3
+          max: 3
+        distinct: false
+        sorted: false
+  - name: "generated_maximum"
+    seed: 134505
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: -100000000
+          max: 100000000
+        distinct: false
+        sorted: false
+  - name: "generated_full_range_boundary"
+    seed: 134507
+    in:
+      arr:
+        gen: "array"
+        len: 37
+        of:
+          gen: "int"
+          min: -100000000
+          max: 100000000
+        distinct: false
+        sorted: false

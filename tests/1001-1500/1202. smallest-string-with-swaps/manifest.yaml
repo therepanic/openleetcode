@@ -1,0 +1,457 @@
+entry:
+  id: 1202
+  title: smallest-string-with-swaps
+  params:
+    s:
+      type: string
+    pairs:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().smallestStringWithSwaps({s}, {pairs})"
+    rust: "Solution::smallest_string_with_swaps({s}, {pairs})"
+    python3: "Solution().smallestStringWithSwaps({s}, {pairs})"
+    python2: "Solution().smallestStringWithSwaps({s}, {pairs})"
+    ruby: "smallest_string_with_swaps({s}, {pairs})"
+    java: "new Solution().smallestStringWithSwaps({s}, {pairs})"
+    csharp: "new Solution().SmallestStringWithSwaps({s}, {pairs})"
+    kotlin: "Solution().smallestStringWithSwaps({s}, {pairs})"
+    go: "smallestStringWithSwaps({s}, {pairs})"
+    dart: "Solution().smallestStringWithSwaps({s}, {pairs})"
+    swift: "Solution().smallestStringWithSwaps({s}, {pairs})"
+    typescript: "smallestStringWithSwaps({s}, {pairs})"
+judge:
+  type: exact
+limits:
+  time_ms: 1500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().smallestStringWithSwaps(s, pairs, {result})"
+    checker: |
+      class Checker:
+          def smallestStringWithSwaps(self, s, pairs, result):
+              if not isinstance(s, str) or not isinstance(pairs, list) or not isinstance(result, str):
+                  return False
+              if len(result) != len(s):
+                  return False
+              parent = list(range(len(s)))
+
+              def find(x):
+                  while parent[x] != x:
+                      parent[x] = parent[parent[x]]
+                      x = parent[x]
+                  return x
+
+              for pair in pairs:
+                  if not isinstance(pair, list) or len(pair) != 2:
+                      return False
+                  a, b = pair
+                  if not isinstance(a, int) or not isinstance(b, int):
+                      return False
+                  if not 0 <= a < len(s) or not 0 <= b < len(s):
+                      return False
+                  ra, rb = find(a), find(b)
+                  if ra != rb:
+                      parent[ra] = rb
+
+              components = {}
+              for index in range(len(s)):
+                  components.setdefault(find(index), []).append(index)
+              expected = list(s)
+              for indices in components.values():
+                  for index, char in zip(sorted(indices), sorted(s[index] for index in indices)):
+                      expected[index] = char
+              return result == ''.join(expected)
+seed: 1202
+tests:
+  - name: example_one
+    in:
+      s: dcab
+      pairs:
+        - [0, 3]
+        - [1, 2]
+    out: bacd
+  - name: example_two
+    in:
+      s: dcab
+      pairs:
+        - [0, 3]
+        - [1, 2]
+        - [0, 2]
+    out: abcd
+  - name: example_three
+    in:
+      s: cba
+      pairs:
+        - [0, 1]
+        - [1, 2]
+    out: abc
+  - name: no_pairs
+    in:
+      s: zyxwv
+      pairs: []
+    out: zyxwv
+  - name: single_character
+    in:
+      s: q
+      pairs: []
+    out: q
+  - name: one_swap
+    in:
+      s: ba
+      pairs:
+        - [0, 1]
+    out: ab
+  - name: already_smallest_with_swaps
+    in:
+      s: abcde
+      pairs:
+        - [0, 4]
+        - [1, 3]
+    out: abcde
+  - name: reverse_full_component
+    in:
+      s: edcba
+      pairs:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: abcde
+  - name: transitive_chain
+    in:
+      s: zyxw
+      pairs:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+    out: wxyz
+  - name: disconnected_components
+    in:
+      s: zyxwvuts
+      pairs:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+    out: yzwxuvts
+  - name: duplicate_and_reversed_edges
+    in:
+      s: cba
+      pairs:
+        - [0, 1]
+        - [0, 1]
+        - [1, 0]
+    out: bca
+  - name: self_pairs_only
+    in:
+      s: cabd
+      pairs:
+        - [0, 0]
+        - [2, 2]
+    out: cabd
+  - name: repeated_letters
+    in:
+      s: bbaca
+      pairs:
+        - [0, 4]
+        - [1, 2]
+        - [2, 3]
+    out: aabcb
+  - name: two_components_mixed_sizes
+    in:
+      s: hgfedcba
+      pairs:
+        - [0, 2]
+        - [1, 3]
+        - [4, 7]
+    out: fehgacbd
+  - name: isolated_middle
+    in:
+      s: zabczy
+      pairs:
+        - [0, 5]
+        - [1, 2]
+        - [2, 3]
+    out: yabczz
+  - name: all_same_characters
+    in:
+      s: aaaaaa
+      pairs:
+        - [0, 5]
+        - [1, 4]
+    out: aaaaaa
+  - name: pair_order_irrelevant
+    in:
+      s: qponml
+      pairs:
+        - [4, 1]
+        - [5, 0]
+        - [3, 2]
+    out: lmnopq
+  - name: alternating_components
+    in:
+      s: zyxwvuts
+      pairs:
+        - [0, 2]
+        - [2, 4]
+        - [1, 3]
+        - [3, 5]
+    out: vuxwzyts
+  - name: noncontiguous_components
+    in:
+      s: kjihgfedcba
+      pairs:
+        - [0, 5]
+        - [5, 10]
+        - [2, 8]
+    out: ajchgfedibk
+  - name: lexicographic_rotation
+    in:
+      s: bdac
+      pairs:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+    out: abcd
+  - name: two_components_of_two
+    in:
+      s: zyxwvu
+      pairs:
+        - [0, 1]
+        - [3, 4]
+    out: yzxvwu
+  - name: nested_union
+    in:
+      s: fdbcae
+      pairs:
+        - [0, 1]
+        - [1, 4]
+        - [2, 3]
+        - [3, 5]
+    out: adbcfe
+  - name: sparse_swaps
+    in:
+      s: qwertyui
+      pairs:
+        - [0, 7]
+        - [2, 5]
+    out: iwertyuq
+  - name: long_chain
+    in:
+      s: jihgfedcba
+      pairs:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+    out: abcdefghij
+  - name: two_disjoint_swaps
+    in:
+      s: dcba
+      pairs:
+        - [0, 1]
+        - [2, 3]
+    out: cdab
+  - name: component_with_gaps
+    in:
+      s: zyxwv
+      pairs:
+        - [0, 2]
+        - [2, 4]
+    out: vyxwz
+  - name: bridge_connects_components
+    in:
+      s: edcba
+      pairs:
+        - [0, 1]
+        - [3, 4]
+        - [1, 3]
+    out: abcde
+  - name: singleton_components
+    in:
+      s: abcdef
+      pairs:
+        - [1, 1]
+        - [3, 3]
+    out: abcdef
+  - name: reverse_pairs
+    in:
+      s: hgfedcba
+      pairs:
+        - [7, 0]
+        - [6, 1]
+        - [5, 2]
+    out: abcedfgh
+  - name: repeated_transitive_edges
+    in:
+      s: zyxwv
+      pairs:
+        - [0, 1]
+        - [1, 2]
+        - [0, 2]
+        - [2, 3]
+    out: wxyzv
+  - name: mixed_singletons_and_chain
+    in:
+      s: qponmlk
+      pairs:
+        - [0, 6]
+        - [2, 3]
+    out: kpnomlq
+  - name: alphabet_with_no_connectivity
+    in:
+      s: abcdefghijklmnopqrstuvwxyz
+      pairs: []
+    out: abcdefghijklmnopqrstuvwxyz
+  - name: separate_repeated_groups
+    in:
+      s: ccbbaa
+      pairs:
+        - [0, 2]
+        - [2, 4]
+        - [1, 3]
+        - [3, 5]
+    out: aabbcc
+  - name: late_bridge_merges_groups
+    in:
+      s: gfedcba
+      pairs:
+        - [0, 2]
+        - [4, 6]
+        - [2, 4]
+    out: afcdebg
+  - name: stress_maximum_length_and_pairs
+    seed: 120201
+    in:
+      s:
+        gen: str
+        len: 100000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      pairs:
+        gen: array
+        len: 100000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 99999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: stress_many_edges
+    seed: 120202
+    in:
+      s:
+        gen: str
+        len: 75000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      pairs:
+        gen: array
+        len: 100000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 74999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: stress_large_balanced
+    seed: 120203
+    in:
+      s:
+        gen: str
+        len: 50000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      pairs:
+        gen: array
+        len: 75000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 49999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: stress_large_sparse_graph
+    seed: 120204
+    in:
+      s:
+        gen: str
+        len: 25000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      pairs:
+        gen: array
+        len: 50000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 24999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: stress_medium_random_graph
+    seed: 120205
+    in:
+      s:
+        gen: str
+        len: 10000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      pairs:
+        gen: array
+        len: 20000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 9999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: stress_dense_small_alphabet
+    seed: 120206
+    in:
+      s:
+        gen: str
+        len: 5000
+        alphabet: abc
+      pairs:
+        gen: array
+        len: 10000
+        of:
+          gen: array
+          len: 2
+          of:
+            gen: int
+            min: 0
+            max: 4999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false

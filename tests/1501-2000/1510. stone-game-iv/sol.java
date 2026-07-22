@@ -1,0 +1,24 @@
+class Solution {
+    public boolean winnerSquareGame(int n) {
+        int[][] memo = new int[2][n + 1];
+        for (int i = 0; i < 2; i++) {
+            java.util.Arrays.fill(memo[i], -1);
+        }
+        return dp(0, n, memo);
+    }
+    
+    private boolean dp(int player, int stones, int[][] memo) {
+        if (stones == 0) return false;
+        if (memo[player][stones] != -1) return memo[player][stones] == 1;
+        int sqrt = (int) Math.sqrt(stones);
+        for (int i = sqrt; i >= 1; i--) {
+            int sq = i * i;
+            if (sq == stones || !dp(player ^ 1, stones - sq, memo)) {
+                memo[player][stones] = 1;
+                return true;
+            }
+        }
+        memo[player][stones] = 0;
+        return false;
+    }
+}

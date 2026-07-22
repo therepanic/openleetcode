@@ -1,0 +1,367 @@
+entry:
+  id: 1458
+  title: "max-dot-product-of-two-subsequences"
+  params:
+    nums1:
+      type: array
+      items:
+        type: int
+    nums2:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxDotProduct({nums1}, {nums2})"
+    rust: "Solution::max_dot_product({nums1}, {nums2})"
+    python3: "Solution().maxDotProduct({nums1}, {nums2})"
+    python2: "Solution().maxDotProduct({nums1}, {nums2})"
+    ruby: "max_dot_product({nums1}, {nums2})"
+    java: "new Solution().maxDotProduct({nums1}, {nums2})"
+    csharp: "new Solution().MaxDotProduct({nums1}, {nums2})"
+    kotlin: "Solution().maxDotProduct({nums1}, {nums2})"
+    go: "maxDotProduct({nums1}, {nums2})"
+    dart: "Solution().maxDotProduct({nums1}, {nums2})"
+    swift: "Solution().maxDotProduct({nums1}, {nums2})"
+    typescript: "maxDotProduct({nums1}, {nums2})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 900
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxDotProduct(nums1, nums2, {result})"
+    checker: |
+      class Checker:
+          def maxDotProduct(self, nums1, nums2, result):
+              n = len(nums1)
+              m = len(nums2)
+              neg = -10 ** 18
+              dp = [[neg] * (m + 1) for _ in range(n + 1)]
+              for i in range(n - 1, -1, -1):
+                  for j in range(m - 1, -1, -1):
+                      product = nums1[i] * nums2[j]
+                      dp[i][j] = max(product, product + dp[i + 1][j + 1], dp[i + 1][j], dp[i][j + 1])
+              return result == dp[0][0]
+seed: 1458
+tests:
+  - name: "official-one"
+    in:
+      nums1: [2, 1, -2, 5]
+      nums2: [3, 0, -6]
+    out: 18
+  - name: "official-two"
+    in:
+      nums1: [3, -2]
+      nums2: [2, -6, 7]
+    out: 21
+  - name: "official-three"
+    in:
+      nums1: [-1, -1]
+      nums2: [1, 1]
+    out: -1
+  - name: "single-positive"
+    in:
+      nums1: [5]
+      nums2: [4]
+    out: 20
+  - name: "single-negative"
+    in:
+      nums1: [-5]
+      nums2: [4]
+    out: -20
+  - name: "single-both-negative"
+    in:
+      nums1: [-5]
+      nums2: [-4]
+    out: 20
+  - name: "zero-only"
+    in:
+      nums1: [0, 0]
+      nums2: [0, 0, 0]
+    out: 0
+  - name: "positive-aligned"
+    in:
+      nums1: [1, 2, 3]
+      nums2: [4, 5, 6]
+    out: 32
+  - name: "negative-aligned"
+    in:
+      nums1: [-1, -2, -3]
+      nums2: [-4, -5, -6]
+    out: 32
+  - name: "mixed-signs"
+    in:
+      nums1: [-2, 4, -3, 5]
+      nums2: [3, -1, 6]
+    out: 45
+  - name: "all-negative-first"
+    in:
+      nums1: [-1, -2, -3]
+      nums2: [2, 4, 1]
+    out: -1
+  - name: "all-negative-second"
+    in:
+      nums1: [1, 2, 3]
+      nums2: [-2, -4, -1]
+    out: -1
+  - name: "need-skip-first"
+    in:
+      nums1: [1, 10]
+      nums2: [1, 1]
+    out: 11
+  - name: "need-skip-second"
+    in:
+      nums1: [1, 1]
+      nums2: [1, 10]
+    out: 11
+  - name: "matching-subsequence"
+    in:
+      nums1: [5, -10, 5]
+      nums2: [5, 5, -10]
+    out: 125
+  - name: "alternating-values"
+    in:
+      nums1: [7, -7, 7, -7]
+      nums2: [-3, 3, -3, 3]
+    out: 63
+  - name: "longer-first"
+    in:
+      nums1: [1, 2, 3, 4, 5]
+      nums2: [5, 4]
+    out: 40
+  - name: "longer-second"
+    in:
+      nums1: [5, 4]
+      nums2: [1, 2, 3, 4, 5]
+    out: 40
+  - name: "large-positive"
+    in:
+      nums1: [1000, 999]
+      nums2: [1000, 999]
+    out: 1998001
+  - name: "large-negative-pair"
+    in:
+      nums1: [-1000, -999]
+      nums2: [-1000, -999]
+    out: 1998001
+  - name: "large-opposite-sign"
+    in:
+      nums1: [-1000, 1000]
+      nums2: [1000, -1000]
+    out: 1000000
+  - name: "zeros-between"
+    in:
+      nums1: [0, 8, 0, -2]
+      nums2: [5, 0, 4, -3]
+    out: 46
+  - name: "repeated-positive"
+    in:
+      nums1: [3, 3, 3, 3]
+      nums2: [2, 2, 2]
+    out: 18
+  - name: "repeated-negative"
+    in:
+      nums1: [-3, -3, -3]
+      nums2: [-2, -2, -2, -2]
+    out: 18
+  - name: "alternating-zero"
+    in:
+      nums1: [0, 1, 0, 1, 0]
+      nums2: [1, 0, 1, 0]
+    out: 2
+  - name: "best-late-pair"
+    in:
+      nums1: [-100, -100, 9]
+      nums2: [1, 1, 10]
+    out: 90
+  - name: "best-early-pair"
+    in:
+      nums1: [9, -100, -100]
+      nums2: [10, 1, 1]
+    out: 90
+  - name: "crossing-order"
+    in:
+      nums1: [8, 1, 7]
+      nums2: [1, 9, 2]
+    out: 86
+  - name: "four-by-four"
+    in:
+      nums1: [2, -1, 4, -3]
+      nums2: [-2, 5, -4, 3]
+    out: 34
+  - name: "five-by-three"
+    in:
+      nums1: [6, -2, 1, 8, -5]
+      nums2: [3, -7, 4]
+    out: 64
+  - name: "three-by-five"
+    in:
+      nums1: [-6, 2, 9]
+      nums2: [4, -8, 1, 7, -3]
+    out: 113
+  - name: "boundary-minus-one"
+    in:
+      nums1: [-1000, -1]
+      nums2: [1, -1000]
+    out: 1000000
+  - name: "boundary-plus-one"
+    in:
+      nums1: [1000, 1]
+      nums2: [1, 1000]
+    out: 1000000
+  - name: "sign-switching"
+    in:
+      nums1: [4, -5, 6, -7]
+      nums2: [-8, 9, -10, 11]
+    out: 164
+  - name: "stress-balanced"
+    in:
+      nums1:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 450
+          max: 500
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 450
+          max: 500
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+    seed: 145801
+  - name: "stress-positive-heavy"
+    in:
+      nums1:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+    seed: 145802
+  - name: "stress-negative-heavy"
+    in:
+      nums1:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: -1000
+          max: 0
+        distinct: false
+        sorted: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: -1000
+          max: 0
+        distinct: false
+        sorted: false
+        elemType: "int"
+    seed: 145803
+  - name: "stress-zero-mixed"
+    in:
+      nums1:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 490
+          max: 500
+        of:
+          gen: "int"
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 490
+          max: 500
+        of:
+          gen: "int"
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: "int"
+    seed: 145804
+  - name: "stress-asymmetric"
+    in:
+      nums1:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 450
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+    seed: 145805
+  - name: "stress-shorter-first"
+    in:
+      nums1:
+        gen: "array"
+        len: 450
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+    seed: 145806

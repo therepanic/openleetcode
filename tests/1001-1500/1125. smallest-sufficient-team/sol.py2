@@ -5,43 +5,30 @@ class Solution(object):
         :type people: List[List[str]]
         :rtype: List[int]
         """
-        n = len(req_skills)
-        m = len(people)
-        # map skill to index
-        skill_idx = {skill: i for i, skill in enumerate(req_skills)}
+        import collections
+        import math
         
-        # convert each person's skills to a bitmask
-        people_mask = []
-        for p in people:
-            mask = 0
-            for skill in p:
-                mask |= (1 << skill_idx[skill])
-            people_mask.append(mask)
+        # Convert all sublists into sets
+        for i, skills in enumerate(people):
+            people[i] = set(skills)
         
-        # remove people whose skills are subset of another (still track original index)
-        for i in range(m):
-            for j in range(m):
-                if i != j and people_mask[i] and (people_mask[i] & people_mask[j]) == people_mask[i]:
-                    people_mask[i] = 0
-                    break
+        # Remove all skill sets that are subset of another skillset
+        for i, i_skills in enumerate(people):
+            for j, j_skills in enumerate(people):
+                if i != j and i_skills.issubset(j_skills):
+                    people[i] = set()
         
-        # map skill bit to people who have it (only if person not removed)
-        skill_to_people = {i: [] for i in range(n)}
-        for i, mask in enumerate(people_mask):
-            if mask == 0:
-                continue
-            for skill_idx_val, bit in enumerate(range(n)):
-                if mask & (1 << bit):
-                    skill_to_people[skill_idx_val].append(i)
+        # Build dictionary of skills to the people who can perform them
+        skills_to_people = collections.defaultdict(set)
+        for i, skills in enumerate(people):
+            for skill in skills:
+                skills_to_people[skill].add(i)
+            people[i] = set(skills)
         
         self.unmet_skills = set(req_skills)
         self.smallest_length = float('inf')
         self.current_team = []
         self.best_team = []
-        self.req_skills = req_skills
-        self.skills_to_people = skill_to_people
-        self.people_mask = people_mask
-        self.skill_idx = skill_idx
         
         def meet_skill(skill=0):
             if not self.unmet_skills:
@@ -50,29 +37,19 @@ class Solution(object):
                     self.best_team = self.current_team[:]
                 return
             
-            if skill >= len(self.req_skills):
-                return
-            
-            if self.req_skills[skill] not in self.unmet_skills:
+            if req_skills[skill] not in self.unmet_skills:
                 meet_skill(skill + 1)
                 return
             
-            for i in self.skills_to_people[skill]:
-                mask = self.people_mask[i]
-                skills_added = set()
-                for s in list(self.unmet_skills):
-                    if mask & (1 << self.skill_idx[s]):
-                        skills_added.add(s)
-                if not skills_added:
-                    continue
-                
-                self.unmet_skills -= skills_added
+            for i in skills_to_people[req_skills[skill]]:
+                skills_added_by_person = people[i].intersection(self.unmet_skills)
+                self.unmet_skills = self.unmet_skills - skills_added_by_person
                 self.current_team.append(i)
                 
                 meet_skill(skill + 1)
                 
                 self.current_team.pop()
-                self.unmet_skills |= skills_added
+                self.unmet_skills = self.unmet_skills.union(skills_added_by_person)
         
         meet_skill()
         return self.best_team

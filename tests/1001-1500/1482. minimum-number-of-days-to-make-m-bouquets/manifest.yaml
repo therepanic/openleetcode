@@ -1,0 +1,282 @@
+entry:
+  id: 1482
+  title: "minimum-number-of-days-to-make-m-bouquets"
+  params:
+    bloomDay:
+      type: array
+      items:
+        type: int
+    m:
+      type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().minDays({bloomDay}, {m}, {k})"
+    rust: "Solution::min_days({bloomDay}, {m}, {k})"
+    python3: "Solution().minDays({bloomDay}, {m}, {k})"
+    python2: "Solution().minDays({bloomDay}, {m}, {k})"
+    ruby: "min_days({bloomDay}, {m}, {k})"
+    java: "new Solution().minDays({bloomDay}, {m}, {k})"
+    csharp: "new Solution().MinDays({bloomDay}, {m}, {k})"
+    kotlin: "Solution().minDays({bloomDay}, {m}, {k})"
+    go: "minDays({bloomDay}, {m}, {k})"
+    dart: "Solution().minDays({bloomDay}, {m}, {k})"
+    swift: "Solution().minDays({bloomDay}, {m}, {k})"
+    typescript: "minDays({bloomDay}, {m}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 900
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minDays(bloomDay, m, k, {result})"
+    checker: |
+      class Checker:
+          def minDays(self, bloomDay, m, k, result):
+              if m * k > len(bloomDay):
+                  return result == -1
+              low = min(bloomDay)
+              high = max(bloomDay)
+              while low < high:
+                  day = (low + high) // 2
+                  bouquets = 0
+                  run = 0
+                  for bloom in bloomDay:
+                      if bloom <= day:
+                          run += 1
+                          if run == k:
+                              bouquets += 1
+                              run = 0
+                      else:
+                          run = 0
+                  if bouquets >= m:
+                      high = day
+                  else:
+                      low = day + 1
+              return result == low
+seed: 1482
+tests:
+  - name: "official-one"
+    in:
+      bloomDay: [1, 10, 3, 10, 2]
+      m: 3
+      k: 1
+    out: 3
+  - name: "official-two-impossible"
+    in:
+      bloomDay: [1, 10, 3, 10, 2]
+      m: 3
+      k: 2
+    out: -1
+  - name: "official-three"
+    in:
+      bloomDay: [7, 7, 7, 7, 12, 7, 7]
+      m: 2
+      k: 3
+    out: 12
+  - name: "single-flower"
+    in:
+      bloomDay: [5]
+      m: 1
+      k: 1
+  - name: "single-impossible"
+    in:
+      bloomDay: [5]
+      m: 2
+      k: 1
+  - name: "all-same-one"
+    in:
+      bloomDay: [4, 4, 4, 4]
+      m: 1
+      k: 4
+  - name: "all-same-many"
+    in:
+      bloomDay: [4, 4, 4, 4, 4, 4]
+      m: 3
+      k: 2
+  - name: "all-same-too-many"
+    in:
+      bloomDay: [4, 4, 4]
+      m: 2
+      k: 2
+  - name: "k-one"
+    in:
+      bloomDay: [9, 2, 6, 1, 8]
+      m: 4
+      k: 1
+  - name: "k-one-all"
+    in:
+      bloomDay: [9, 2, 6, 1, 8]
+      m: 5
+      k: 1
+  - name: "adjacent-ready"
+    in:
+      bloomDay: [1, 2, 3, 4, 5, 6]
+      m: 2
+      k: 3
+  - name: "adjacent-blocked"
+    in:
+      bloomDay: [1, 9, 1, 9, 1, 9]
+      m: 2
+      k: 2
+  - name: "two-runs"
+    in:
+      bloomDay: [2, 2, 9, 9, 2, 2]
+      m: 2
+      k: 2
+  - name: "three-runs"
+    in:
+      bloomDay: [3, 3, 3, 8, 3, 3, 3]
+      m: 2
+      k: 3
+  - name: "late-bridge"
+    in:
+      bloomDay: [1, 1, 10, 1, 1]
+      m: 1
+      k: 5
+  - name: "late-bridge-impossible"
+    in:
+      bloomDay: [1, 1, 10, 1, 1]
+      m: 2
+      k: 2
+  - name: "alternating-days"
+    in:
+      bloomDay: [10, 1, 10, 1, 10, 1]
+      m: 2
+      k: 2
+  - name: "smallest-day-answer"
+    in:
+      bloomDay: [1, 1, 1, 2, 2, 2]
+      m: 2
+      k: 3
+  - name: "largest-day-answer"
+    in:
+      bloomDay: [1, 2, 1, 2, 1, 2]
+      m: 2
+      k: 3
+  - name: "large-days"
+    in:
+      bloomDay: [1000000000, 999999999, 500000000, 1000000000]
+      m: 2
+      k: 2
+  - name: "near-billion"
+    in:
+      bloomDay: [999999998, 999999999, 1000000000]
+      m: 1
+      k: 3
+  - name: "capacity-exact"
+    in:
+      bloomDay: [6, 5, 4, 3, 2, 1]
+      m: 2
+      k: 3
+  - name: "capacity-short"
+    in:
+      bloomDay: [6, 5, 4, 3, 2]
+      m: 2
+      k: 3
+  - name: "one-long-bouquet"
+    in:
+      bloomDay: [2, 1, 3, 4, 5]
+      m: 1
+      k: 5
+  - name: "separated-singletons"
+    in:
+      bloomDay: [1, 9, 1, 9, 1]
+      m: 3
+      k: 1
+  - name: "separated-pairs"
+    in:
+      bloomDay: [1, 1, 9, 1, 1, 9]
+      m: 2
+      k: 2
+  - name: "three-bouquets-of-two"
+    in:
+      bloomDay: [2, 2, 4, 4, 6, 6]
+      m: 3
+      k: 2
+  - name: "competing-runs"
+    in:
+      bloomDay: [5, 1, 5, 1, 5, 1, 5]
+      m: 2
+      k: 2
+  - name: "all-early"
+    in:
+      bloomDay: [1, 1, 1, 1, 1, 10]
+      m: 2
+      k: 3
+  - name: "all-late"
+    in:
+      bloomDay: [10, 1, 1, 1, 1, 1]
+      m: 2
+      k: 3
+  - name: "mixed-five"
+    in:
+      bloomDay: [4, 8, 2, 6, 3, 7, 1, 5]
+      m: 2
+      k: 2
+  - name: "mixed-three"
+    in:
+      bloomDay: [8, 3, 7, 2, 6, 1, 5, 4]
+      m: 2
+      k: 3
+  - name: "minimum-values"
+    in:
+      bloomDay: [1, 1, 1, 1]
+      m: 4
+      k: 1
+  - name: "maximum-multiplicity"
+    in:
+      bloomDay: [1, 2, 3, 4, 5, 6, 7, 8]
+      m: 4
+      k: 2
+  - name: "alternating-three"
+    in:
+      bloomDay: [1, 4, 1, 4, 1, 4, 1, 4, 1]
+      m: 2
+      k: 3
+  - name: "late-single-flower"
+    in:
+      bloomDay: [1, 1, 1, 100]
+      m: 1
+      k: 4
+  - name: "all-flowers-single-bouquets-at-limit"
+    in:
+      bloomDay:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      m: 100000
+      k: 1
+  - name: "exact-capacity-at-limit"
+    in:
+      bloomDay:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      m: 33333
+      k: 3
+  - name: "minimum-day-single-bouquet"
+    in:
+      bloomDay: [1, 2, 1, 2, 1]
+      m: 1
+      k: 3
+    out: 2
+  - name: "late-boundary-pair"
+    in:
+      bloomDay: [1, 1000000000, 1, 1]
+      m: 1
+      k: 2
+    out: 1

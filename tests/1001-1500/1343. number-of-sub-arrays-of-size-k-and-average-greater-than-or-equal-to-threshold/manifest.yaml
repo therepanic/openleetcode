@@ -1,0 +1,299 @@
+entry:
+  id: 1343
+  title: "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+    threshold:
+      type: int
+  call:
+    cpp: "Solution().numOfSubarrays({arr}, {k}, {threshold})"
+    rust: "Solution::num_of_subarrays({arr}, {k}, {threshold})"
+    python3: "Solution().numOfSubarrays({arr}, {k}, {threshold})"
+    python2: "Solution().numOfSubarrays({arr}, {k}, {threshold})"
+    ruby: "num_of_subarrays({arr}, {k}, {threshold})"
+    java: "new Solution().numOfSubarrays({arr}, {k}, {threshold})"
+    csharp: "new Solution().NumOfSubarrays({arr}, {k}, {threshold})"
+    kotlin: "Solution().numOfSubarrays({arr}, {k}, {threshold})"
+    go: "numOfSubarrays({arr}, {k}, {threshold})"
+    dart: "Solution().numOfSubarrays({arr}, {k}, {threshold})"
+    swift: "Solution().numOfSubarrays({arr}, {k}, {threshold})"
+    typescript: "numOfSubarrays({arr}, {k}, {threshold})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().numOfSubarrays(arr, k, threshold, {result})"
+    checker: |
+      class Checker:
+          def numOfSubarrays(self, arr, k, threshold, result):
+              if type(result) is not int:
+                  return False
+              target = k * threshold
+              window_sum = sum(arr[:k])
+              expected = 1 if window_sum >= target else 0
+              for right in range(k, len(arr)):
+                  window_sum += arr[right] - arr[right - k]
+                  if window_sum >= target:
+                      expected += 1
+              return result == expected
+seed: 1343
+tests:
+  - name: "example_one"
+    in:
+      arr: [2, 2, 2, 2, 5, 5, 5, 8]
+      k: 3
+      threshold: 4
+  - name: "example_two"
+    in:
+      arr: [11, 13, 17, 23, 29, 31, 7, 5, 2, 3]
+      k: 3
+      threshold: 5
+  - name: "single_meets_zero_threshold"
+    in:
+      arr: [1]
+      k: 1
+      threshold: 0
+  - name: "single_below_positive_threshold"
+    in:
+      arr: [1]
+      k: 1
+      threshold: 2
+  - name: "single_at_maximum_value"
+    in:
+      arr: [10000]
+      k: 1
+      threshold: 10000
+  - name: "k_one_mixed_values"
+    in:
+      arr: [1, 5, 6, 4, 10000, 5, 2]
+      k: 1
+      threshold: 5
+  - name: "full_length_exact_average"
+    in:
+      arr: [1, 2, 3, 4, 5]
+      k: 5
+      threshold: 3
+  - name: "full_length_below_threshold"
+    in:
+      arr: [9999, 10000, 9999, 10000]
+      k: 4
+      threshold: 10000
+  - name: "all_windows_qualify"
+    in:
+      arr: [7, 7, 7, 7, 7, 7]
+      k: 3
+      threshold: 7
+  - name: "no_windows_qualify"
+    in:
+      arr: [1, 1, 1, 1, 1]
+      k: 2
+      threshold: 2
+  - name: "zero_threshold"
+    in:
+      arr: [1, 10000, 1, 10000]
+      k: 2
+      threshold: 0
+  - name: "alternating_exact_boundary"
+    in:
+      arr: [1, 9, 1, 9, 1, 9]
+      k: 2
+      threshold: 5
+  - name: "alternating_below_boundary"
+    in:
+      arr: [1, 8, 1, 8, 1, 8]
+      k: 2
+      threshold: 5
+  - name: "fractional_average_qualifies"
+    in:
+      arr: [4, 5, 4, 5, 4]
+      k: 2
+      threshold: 4
+  - name: "fractional_average_fails"
+    in:
+      arr: [4, 5, 4, 5, 4]
+      k: 2
+      threshold: 5
+  - name: "first_window_only"
+    in:
+      arr: [10, 10, 1, 1, 1]
+      k: 3
+      threshold: 7
+  - name: "last_window_only"
+    in:
+      arr: [1, 1, 1, 10, 10]
+      k: 3
+      threshold: 7
+  - name: "middle_windows_only"
+    in:
+      arr: [1, 9, 9, 9, 1]
+      k: 3
+      threshold: 7
+  - name: "sliding_entry_and_exit"
+    in:
+      arr: [1, 1, 10, 10, 1, 1]
+      k: 3
+      threshold: 5
+  - name: "overlapping_spike_windows"
+    in:
+      arr: [1, 1, 10000, 1, 1]
+      k: 3
+      threshold: 3334
+  - name: "adjacent_spike_windows"
+    in:
+      arr: [1, 10000, 10000, 1, 1]
+      k: 3
+      threshold: 3334
+  - name: "increasing_sequence"
+    in:
+      arr: [1, 2, 3, 4, 5, 6, 7, 8]
+      k: 4
+      threshold: 5
+  - name: "decreasing_sequence"
+    in:
+      arr: [8, 7, 6, 5, 4, 3, 2, 1]
+      k: 4
+      threshold: 5
+  - name: "threshold_at_maximum"
+    in:
+      arr: [10000, 10000, 9999, 10000, 10000]
+      k: 2
+      threshold: 10000
+  - name: "large_sum_exact_threshold"
+    in:
+      arr: [10000, 9999, 10000, 9999, 10000, 9999]
+      k: 3
+      threshold: 9999
+  - name: "large_sum_just_above_threshold"
+    in:
+      arr: [10000, 9999, 10000, 9999, 10000, 9999]
+      k: 3
+      threshold: 10000
+  - name: "k_near_length"
+    in:
+      arr: [3, 3, 3, 3, 3, 9]
+      k: 5
+      threshold: 4
+  - name: "duplicate_plateau_transition"
+    in:
+      arr: [2, 2, 2, 8, 8, 8, 2, 2, 2]
+      k: 3
+      threshold: 6
+  - name: "many_exact_windows"
+    in:
+      arr: [3, 6, 3, 6, 3, 6, 3, 6]
+      k: 2
+      threshold: 4
+  - name: "window_size_three_boundary"
+    in:
+      arr: [4, 4, 5, 4, 4, 5, 4]
+      k: 3
+      threshold: 4
+  - name: "window_size_seven"
+    in:
+      arr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      k: 7
+      threshold: 6
+  - name: "two_element_boundaries"
+    in:
+      arr: [1, 10000]
+      k: 2
+      threshold: 5000
+  - name: "long_constant_low"
+    in:
+      arr: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      k: 6
+      threshold: 1
+  - name: "long_constant_high"
+    in:
+      arr:
+        [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+      k: 9
+      threshold: 9999
+  - name: "single_high_value_in_long_window"
+    in:
+      arr: [1, 1, 1, 1, 10000, 1, 1, 1, 1]
+      k: 5
+      threshold: 2001
+  - name: "generated_small"
+    seed: 134301
+    in:
+      arr:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 7
+      threshold: 5000
+  - name: "generated_k_one"
+    seed: 134302
+    in:
+      arr:
+        gen: "array"
+        len: 200
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 1
+      threshold: 7500
+  - name: "generated_medium_window"
+    seed: 134303
+    in:
+      arr:
+        gen: "array"
+        len: 4096
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 257
+      threshold: 5000
+  - name: "generated_max_length_small_window"
+    seed: 134304
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 2
+      threshold: 5000
+  - name: "generated_max_length_full_window"
+    seed: 134305
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 100000
+      threshold: 5000

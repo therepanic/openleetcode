@@ -1,0 +1,401 @@
+entry:
+  id: 1267
+  title: "count-servers-that-communicate"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().countServers({grid})"
+    rust: "Solution::count_servers({grid})"
+    python3: "Solution().countServers({grid})"
+    python2: "Solution().countServers({grid})"
+    ruby: "count_servers({grid})"
+    java: "new Solution().countServers({grid})"
+    csharp: "new Solution().CountServers({grid})"
+    kotlin: "Solution().countServers({grid})"
+    go: "countServers({grid})"
+    dart: "Solution().countServers({grid})"
+    swift: "Solution().countServers({grid})"
+    typescript: "countServers({grid})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().countServers(grid, {result})"
+    checker: |
+      class Checker:
+          def countServers(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              row_counts = [sum(row) for row in grid]
+              col_counts = [sum(grid[row][col] for row in range(len(grid)))
+                            for col in range(len(grid[0]))]
+              expected = sum(
+                  cell
+                  for row, values in enumerate(grid)
+                  for col, cell in enumerate(values)
+                  if cell and (row_counts[row] > 1 or col_counts[col] > 1)
+              )
+              return result == expected
+seed: 1267
+tests:
+  - name: "example_diagonal_isolated"
+    in:
+      grid:
+        - [1, 0]
+        - [0, 1]
+    out: 0
+  - name: "example_three_communicate"
+    in:
+      grid:
+        - [1, 0]
+        - [1, 1]
+    out: 3
+  - name: "example_mixed_components"
+    in:
+      grid:
+        - [1, 1, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+    out: 4
+  - name: "single_server"
+    in:
+      grid:
+        - [1]
+    out: 0
+  - name: "single_empty_cell"
+    in:
+      grid:
+        - [0]
+    out: 0
+  - name: "one_row_two_servers"
+    in:
+      grid:
+        - [1, 1]
+    out: 2
+  - name: "one_column_two_servers"
+    in:
+      grid:
+        - [1]
+        - [1]
+    out: 2
+  - name: "one_row_sparse_servers"
+    in:
+      grid:
+        - [1, 0, 1, 0, 1]
+    out: 3
+  - name: "one_column_sparse_servers"
+    in:
+      grid:
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+    out: 3
+  - name: "all_empty_rectangle"
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+    out: 0
+  - name: "single_center_server"
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 1, 0]
+        - [0, 0, 0]
+    out: 0
+  - name: "four_by_four_diagonal"
+    in:
+      grid:
+        - [1, 0, 0, 0]
+        - [0, 1, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+    out: 0
+  - name: "row_pair_with_isolated_server"
+    in:
+      grid:
+        - [1, 1, 0]
+        - [0, 0, 1]
+        - [0, 0, 0]
+    out: 2
+  - name: "two_independent_column_pairs"
+    in:
+      grid:
+        - [1, 0, 1]
+        - [1, 0, 0]
+        - [0, 0, 1]
+    out: 4
+  - name: "cross_shape"
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+    out: 5
+  - name: "full_two_by_three"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 6
+  - name: "checkerboard_four_by_four"
+    in:
+      grid:
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+    out: 8
+  - name: "full_first_row"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+    out: 5
+  - name: "full_first_column"
+    in:
+      grid:
+        - [1, 0, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+    out: 5
+  - name: "two_pairs_and_corner_isolated"
+    in:
+      grid:
+        - [1, 1, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+    out: 4
+  - name: "full_three_by_three"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 9
+  - name: "row_pair_linked_by_column"
+    in:
+      grid:
+        - [1, 1, 0]
+        - [0, 1, 0]
+        - [0, 0, 0]
+    out: 3
+  - name: "separate_row_and_column_pairs"
+    in:
+      grid:
+        - [1, 0, 1, 0]
+        - [0, 0, 0, 1]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+    out: 5
+  - name: "five_by_five_permutation"
+    in:
+      grid:
+        - [1, 0, 0, 0, 0]
+        - [0, 1, 0, 0, 0]
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 1, 0]
+        - [0, 0, 0, 0, 1]
+    out: 0
+  - name: "row_pair_and_column_pair"
+    in:
+      grid:
+        - [1, 0, 0, 1]
+        - [0, 0, 1, 0]
+        - [0, 0, 1, 0]
+        - [1, 0, 0, 0]
+    out: 5
+  - name: "communicators_with_two_isolated"
+    in:
+      grid:
+        - [1, 0, 0, 0, 0]
+        - [0, 1, 1, 0, 0]
+        - [0, 0, 0, 1, 0]
+        - [0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0]
+    out: 4
+  - name: "alternating_two_rows"
+    in:
+      grid:
+        - [1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0]
+    out: 5
+  - name: "one_repeated_column"
+    in:
+      grid:
+        - [1, 0, 0, 0, 0]
+        - [0, 1, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+    out: 2
+  - name: "corner_row_and_column"
+    in:
+      grid:
+        - [1, 0, 1]
+        - [0, 0, 0]
+        - [1, 0, 0]
+    out: 3
+  - name: "six_servers_all_connected"
+    in:
+      grid:
+        - [1, 1, 0, 0, 0]
+        - [0, 0, 1, 0, 1]
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 0, 1]
+    out: 6
+  - name: "six_by_one_three_servers"
+    in:
+      grid:
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [0]
+        - [1]
+    out: 3
+  - name: "one_by_six_single_server"
+    in:
+      grid:
+        - [0, 0, 0, 1, 0, 0]
+    out: 0
+  - name: "full_two_by_two"
+    in:
+      grid:
+        - [1, 1]
+        - [1, 1]
+    out: 4
+  - name: "three_components_plus_isolated"
+    in:
+      grid:
+        - [1, 0, 0, 0, 0, 1]
+        - [0, 0, 1, 0, 0, 0]
+        - [0, 0, 1, 0, 0, 0]
+        - [0, 0, 0, 1, 0, 0]
+        - [0, 0, 0, 0, 1, 0]
+        - [0, 0, 0, 0, 1, 0]
+    out: 6
+  - name: "generated_dense_250_square"
+    seed: 126701
+    in:
+      grid:
+        gen: "array"
+        len: 250
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 250
+          distinct: false
+          sorted: false
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_tall_250_by_249"
+    seed: 126702
+    in:
+      grid:
+        gen: "array"
+        len: 250
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 249
+          distinct: false
+          sorted: false
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_wide_249_by_250"
+    seed: 126703
+    in:
+      grid:
+        gen: "array"
+        len: 249
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 250
+          distinct: false
+          sorted: false
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_200_by_250"
+    seed: 126704
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 250
+          distinct: false
+          sorted: false
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_250_by_200"
+    seed: 126705
+    in:
+      grid:
+        gen: "array"
+        len: 250
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 200
+          distinct: false
+          sorted: false
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_225_square"
+    seed: 126706
+    in:
+      grid:
+        gen: "array"
+        len: 225
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 225
+          distinct: false
+          sorted: false
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1

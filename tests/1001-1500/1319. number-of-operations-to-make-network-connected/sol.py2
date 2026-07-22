@@ -1,0 +1,39 @@
+class Solution(object):
+    def makeConnected(self, n, connections):
+        """
+        :type n: int
+        :type connections: List[List[int]]
+        :rtype: int
+        """
+        if len(connections) < n - 1:
+            return -1
+
+        parent = list(range(n))
+        size = [1] * n
+
+        def find(node):
+            if parent[node] != node:
+                parent[node] = find(parent[node])
+            return parent[node]
+
+        def union(u, v):
+            pu = find(u)
+            pv = find(v)
+            if pu == pv:
+                return
+            if size[pu] < size[pv]:
+                parent[pu] = pv
+                size[pv] += size[pu]
+            else:
+                parent[pv] = pu
+                size[pu] += size[pv]
+
+        extra = 0
+        for u, v in connections:
+            if find(u) == find(v):
+                extra += 1
+            else:
+                union(u, v)
+
+        components = sum(1 for i in range(n) if find(i) == i)
+        return components - 1 if extra >= components - 1 else -1

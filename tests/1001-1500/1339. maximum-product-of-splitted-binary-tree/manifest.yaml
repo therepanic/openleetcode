@@ -1,0 +1,547 @@
+entry:
+  id: 1339
+  title: "maximum-product-of-splitted-binary-tree"
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().maxProduct({root})"
+    rust: "Solution::max_product({root})"
+    python3: "Solution().maxProduct({root})"
+    python2: "Solution().maxProduct({root})"
+    ruby: "max_product({root})"
+    java: "new Solution().maxProduct({root})"
+    csharp: "new Solution().MaxProduct({root})"
+    kotlin: "Solution().maxProduct({root})"
+    go: "maxProduct({root})"
+    dart: "Solution().maxProduct({root})"
+    swift: "Solution().maxProduct({root})"
+    typescript: "maxProduct({root})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maxProduct(root, {result})"
+    checker: |
+      class Checker:
+          def maxProduct(self, root, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              nodes = []
+              queue = []
+              if not root or root[0] is None:
+                  return False
+              nodes.append([root[0], None, None])
+              queue.append(0)
+              cursor = 1
+              for parent in queue:
+                  for child_slot in (1, 2):
+                      if cursor == len(root):
+                          break
+                      value = root[cursor]
+                      cursor += 1
+                      if value is not None:
+                          nodes.append([value, None, None])
+                          child = len(nodes) - 1
+                          nodes[parent][child_slot] = child
+                          queue.append(child)
+              sums = [0] * len(nodes)
+              for index in range(len(nodes) - 1, -1, -1):
+                  value, left, right = nodes[index]
+                  sums[index] = value + (sums[left] if left is not None else 0) + (sums[right] if right is not None else 0)
+              total = sums[0]
+              return result == max(subtotal * (total - subtotal) for subtotal in sums) % 1000000007
+
+seed: 133900
+
+tests:
+  - name: "example_one"
+    in:
+      root: [1, 2, 3, 4, 5, 6]
+    out: 110
+  - name: "example_two"
+    in:
+      root: [1, null, 2, 3, 4, null, null, 5, 6]
+    out: 90
+  - name: "two_nodes_equal"
+    in:
+      root: [1, 1]
+    out: 1
+  - name: "two_nodes_unequal"
+    in:
+      root: [5, 2]
+    out: 10
+  - name: "three_balanced"
+    in:
+      root: [1, 2, 3]
+    out: 9
+  - name: "three_left_chain"
+    in:
+      root: [1, 2, null, 3]
+    out: 9
+  - name: "three_right_chain"
+    in:
+      root: [1, null, 2, null, 3]
+    out: 9
+  - name: "all_ones_seven"
+    in:
+      root: [1, 1, 1, 1, 1, 1, 1]
+    out: 12
+  - name: "weighted_balanced"
+    in:
+      root: [10, 2, 3, 4, 5, 6, 7]
+    out: 336
+  - name: "large_root"
+    in:
+      root: [10000, 1, 1]
+    out: 10001
+  - name: "large_leaves"
+    in:
+      root: [1, 10000, 10000]
+    out: 100010000
+  - name: "left_skewed_four"
+    in:
+      root: [4, 3, null, 2, null, 1]
+    out: 24
+  - name: "right_skewed_four"
+    in:
+      root: [1, null, 2, null, 3, null, 4]
+    out: 24
+  - name: "balanced_seven"
+    in:
+      root: [4, 2, 6, 1, 3, 5, 7]
+    out: 180
+  - name: "balanced_fifteen"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+    out: 3276
+  - name: "mixed_values"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20]
+    out: 1128
+  - name: "heavy_left_subtree"
+    in:
+      root: [10, 8, 1, 6, 7]
+    out: 231
+  - name: "heavy_right_subtree"
+    in:
+      root: [10, 1, 8, null, null, 6, 7]
+    out: 231
+  - name: "deep_left_chain"
+    in:
+      root: [6, 5, null, 4, null, 3, null, 2, null, 1]
+    out: 110
+  - name: "deep_right_chain"
+    in:
+      root: [1, null, 2, null, 3, null, 4, null, 5, null, 6]
+    out: 110
+  - name: "two_level_values"
+    in:
+      root: [5, 1, 9, 2, 3, 8, 10]
+    out: 297
+  - name: "unbalanced_right"
+    in:
+      root: [2, 1, 8, null, null, 5, 9, 4, 6]
+    out: 300
+  - name: "alternating_chain"
+    in:
+      root: [10, 5, null, null, 7, null, 8]
+    out: 225
+  - name: "one_heavy_leaf"
+    in:
+      root: [2, 1, 100]
+    out: 300
+  - name: "all_large_values"
+    in:
+      root: [10000, 10000, 10000, 10000, 10000, 10000, 10000]
+    out: 199999993
+  - name: "large_balanced"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+    out: 13104
+  - name: "small_values"
+    in:
+      root: [1, 1, 2, 1, 1, 1, 1]
+    out: 16
+  - name: "root_dominates"
+    in:
+      root: [10000, 1, 1, 1, 1, 1, 1]
+    out: 30009
+  - name: "leaf_dominates"
+    in:
+      root: [1, 10000, 10000, 10000, 10000]
+    out: 300030000
+  - name: "ten_node_tree"
+    in:
+      root: [10, 5, 15, 2, 7, 12, 20, 1, 3, 6]
+    out: 1598
+  - name: "dense_weighted"
+    in:
+      root: [20, 10, 30, 5, 15, 25, 35, 2, 7, 12, 17, 22, 27, 32, 37]
+    out: 19968
+  - name: "left_branch_near_half"
+    in:
+      root: [1, 2, 3, 4, 5]
+    out: 50
+  - name: "two_shallow_branches"
+    in:
+      root: [100, 1, 1, 1, null, null, 1]
+    out: 204
+  - name: "equal_half_subtree"
+    in:
+      root: [1, 4, 2, 8, 1, 3, 9]
+    out: 196
+  - name: "stress_complete_fifteen_ones"
+    in:
+      root: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 56
+  - name: "stress_complete_thirty_one_ones"
+    in:
+      root:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 240
+  - name: "stress_complete_sixty_three_ones"
+    in:
+      root:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 992
+  - name: "stress_complete_one_twenty_six_ones"
+    in:
+      root:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 3969
+  - name: "stress_complete_thirty_one_maximum"
+    in:
+      root:
+        [
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+        ]
+    out: 999999839
+  - name: "stress_complete_sixty_three_maximum"
+    in:
+      root:
+        [
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+        ]
+    out: 199999307

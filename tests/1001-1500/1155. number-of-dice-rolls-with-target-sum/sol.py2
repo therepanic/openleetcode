@@ -1,0 +1,28 @@
+class Solution(object):
+    def numRollsToTarget(self, n, k, target):
+        """
+        :type n: int
+        :type k: int
+        :type target: int
+        :rtype: int
+        """
+        MOD = 10**9 + 7
+        
+        dp = [0] * (target + 1)
+        dp[0] = 1
+        
+        for _ in range(n):
+            new_dp = [0] * (target + 1)
+            window_sum = 0
+            
+            for s in range(1, target + 1):
+                window_sum = (window_sum + dp[s - 1]) % MOD
+                
+                if s > k:
+                    window_sum = (window_sum - dp[s - k - 1] + MOD) % MOD
+                
+                new_dp[s] = window_sum
+                
+            dp = new_dp
+            
+        return dp[target]

@@ -1,0 +1,16 @@
+class Solution:
+    def isPathCrossing(self, path: str) -> bool:
+        pos = [(0, 0)]
+        dic = {"N": 1, "S": -1, "E": 1, "W": -1}
+        x = 0
+        for i in path:
+            left, right = pos[x]
+            if i == "N" or i == "S":
+                left += dic[i]
+            else:
+                right += dic[i]
+            x += 1
+            if (left, right) in pos:
+                return True
+            pos.append((left, right))
+        return False

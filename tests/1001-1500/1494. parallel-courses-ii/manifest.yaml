@@ -1,0 +1,702 @@
+entry:
+  id: 1494
+  title: "parallel-courses-ii"
+  params:
+    n:
+      type: int
+    relations:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().minNumberOfSemesters({n}, {relations}, {k})"
+    rust: "Solution::min_number_of_semesters({n}, {relations}, {k})"
+    python3: "Solution().minNumberOfSemesters({n}, {relations}, {k})"
+    python2: "Solution().minNumberOfSemesters({n}, {relations}, {k})"
+    ruby: "min_number_of_semesters({n}, {relations}, {k})"
+    java: "new Solution().minNumberOfSemesters({n}, {relations}, {k})"
+    csharp: "new Solution().MinNumberOfSemesters({n}, {relations}, {k})"
+    kotlin: "Solution().minNumberOfSemesters({n}, {relations}, {k})"
+    go: "minNumberOfSemesters({n}, {relations}, {k})"
+    dart: "Solution().minNumberOfSemesters({n}, {relations}, {k})"
+    swift: "Solution().minNumberOfSemesters({n}, {relations}, {k})"
+    typescript: "minNumberOfSemesters({n}, {relations}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1200
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().minNumberOfSemesters(n, relations, k, {result})"
+    checker: |
+      class Checker:
+          def minNumberOfSemesters(self, n, relations, k, result):
+              prerequisites = [0] * n
+              for before, after in relations:
+                  prerequisites[after - 1] |= 1 << (before - 1)
+              full = (1 << n) - 1
+              memo = {}
+              def solve(done):
+                  if done == full:
+                      return 0
+                  if done in memo:
+                      return memo[done]
+                  available = 0
+                  for course in range(n):
+                      bit = 1 << course
+                      if not done & bit and prerequisites[course] & ~done == 0:
+                          available |= bit
+                  choices = []
+                  sub = available
+                  while sub:
+                      if sub.bit_count() <= k:
+                          choices.append(sub)
+                      sub = (sub - 1) & available
+                  best = 10 ** 9
+                  for choice in choices:
+                      best = min(best, 1 + solve(done | choice))
+                  memo[done] = best
+                  return best
+              return result == solve(0)
+seed: 1494
+tests:
+  - name: "official-one"
+    in:
+      n: 4
+      relations:
+        - [2, 1]
+        - [3, 1]
+        - [1, 4]
+      k: 2
+    out: 3
+  - name: "official-two"
+    in:
+      n: 5
+      relations:
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [1, 5]
+      k: 2
+    out: 4
+  - name: "single-course"
+    in:
+      n: 1
+      relations: []
+      k: 1
+    out: 1
+  - name: "two-independent"
+    in:
+      n: 2
+      relations: []
+      k: 1
+  - name: "two-independent-all"
+    in:
+      n: 2
+      relations: []
+      k: 2
+  - name: "two-chain"
+    in:
+      n: 2
+      relations:
+        - [1, 2]
+      k: 2
+  - name: "long-chain-k-one"
+    in:
+      n: 6
+      relations:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+      k: 1
+  - name: "long-chain-wide-k"
+    in:
+      n: 6
+      relations:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+      k: 6
+  - name: "all-independent-three"
+    in:
+      n: 6
+      relations: []
+      k: 3
+  - name: "all-independent-five"
+    in:
+      n: 7
+      relations: []
+      k: 5
+  - name: "fork"
+    in:
+      n: 5
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+      k: 2
+  - name: "join"
+    in:
+      n: 5
+      relations:
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+      k: 2
+  - name: "diamond"
+    in:
+      n: 4
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 4]
+      k: 2
+  - name: "diamond-k-one"
+    in:
+      n: 4
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 4]
+      k: 1
+  - name: "two-components"
+    in:
+      n: 6
+      relations:
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+      k: 2
+  - name: "three-components"
+    in:
+      n: 8
+      relations:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+      k: 3
+  - name: "layered"
+    in:
+      n: 8
+      relations:
+        - [1, 3]
+        - [1, 4]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+      k: 2
+  - name: "layered-wide"
+    in:
+      n: 8
+      relations:
+        - [1, 4]
+        - [2, 4]
+        - [3, 4]
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+        - [7, 8]
+      k: 3
+  - name: "reverse-numbered-chain"
+    in:
+      n: 5
+      relations:
+        - [5, 4]
+        - [4, 3]
+        - [3, 2]
+        - [2, 1]
+      k: 2
+  - name: "sparse-high-labels"
+    in:
+      n: 10
+      relations:
+        - [8, 9]
+        - [9, 10]
+        - [2, 6]
+      k: 2
+  - name: "many-prerequisites"
+    in:
+      n: 7
+      relations:
+        - [1, 7]
+        - [2, 7]
+        - [3, 7]
+        - [4, 7]
+        - [5, 7]
+        - [6, 7]
+      k: 3
+  - name: "many-successors"
+    in:
+      n: 8
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+      k: 2
+  - name: "nested-chain-branch"
+    in:
+      n: 9
+      relations:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [3, 5]
+        - [5, 6]
+        - [4, 7]
+        - [6, 8]
+        - [7, 9]
+      k: 2
+  - name: "nested-chain-branch-wide"
+    in:
+      n: 9
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 6]
+        - [6, 7]
+        - [6, 8]
+        - [7, 9]
+      k: 3
+  - name: "six-node-dense-dag"
+    in:
+      n: 6
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 4]
+        - [2, 5]
+        - [3, 5]
+        - [4, 6]
+        - [5, 6]
+      k: 2
+  - name: "six-node-dense-k-three"
+    in:
+      n: 6
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 4]
+        - [2, 5]
+        - [3, 5]
+        - [4, 6]
+        - [5, 6]
+      k: 3
+  - name: "independent-plus-chain"
+    in:
+      n: 9
+      relations:
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+        - [7, 8]
+      k: 2
+  - name: "alternating-branches"
+    in:
+      n: 10
+      relations:
+        - [1, 3]
+        - [3, 5]
+        - [5, 7]
+        - [2, 4]
+        - [4, 6]
+        - [6, 8]
+        - [8, 10]
+      k: 2
+  - name: "four-level-funnel"
+    in:
+      n: 10
+      relations:
+        - [1, 5]
+        - [2, 5]
+        - [3, 6]
+        - [4, 6]
+        - [5, 7]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+      k: 2
+  - name: "ten-independent-k-four"
+    in:
+      n: 10
+      relations: []
+      k: 4
+  - name: "ten-independent-k-one"
+    in:
+      n: 10
+      relations: []
+      k: 1
+  - name: "max-node-chain"
+    in:
+      n: 15
+      relations:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+      k: 5
+  - name: "max-node-independent"
+    in:
+      n: 15
+      relations: []
+      k: 7
+  - name: "late-join"
+    in:
+      n: 8
+      relations:
+        - [1, 4]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+      k: 2
+  - name: "two-independent-forks"
+    in:
+      n: 10
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [6, 7]
+        - [6, 8]
+        - [7, 9]
+        - [8, 10]
+      k: 3
+  - name: "maximum-independent-all"
+    in:
+      n: 15
+      relations: []
+      k: 15
+  - name: "complete-dag-wide"
+    in:
+      n: 15
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [1, 10]
+        - [1, 11]
+        - [1, 12]
+        - [1, 13]
+        - [1, 14]
+        - [1, 15]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [2, 8]
+        - [2, 9]
+        - [2, 10]
+        - [2, 11]
+        - [2, 12]
+        - [2, 13]
+        - [2, 14]
+        - [2, 15]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [3, 8]
+        - [3, 9]
+        - [3, 10]
+        - [3, 11]
+        - [3, 12]
+        - [3, 13]
+        - [3, 14]
+        - [3, 15]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [4, 8]
+        - [4, 9]
+        - [4, 10]
+        - [4, 11]
+        - [4, 12]
+        - [4, 13]
+        - [4, 14]
+        - [4, 15]
+        - [5, 6]
+        - [5, 7]
+        - [5, 8]
+        - [5, 9]
+        - [5, 10]
+        - [5, 11]
+        - [5, 12]
+        - [5, 13]
+        - [5, 14]
+        - [5, 15]
+        - [6, 7]
+        - [6, 8]
+        - [6, 9]
+        - [6, 10]
+        - [6, 11]
+        - [6, 12]
+        - [6, 13]
+        - [6, 14]
+        - [6, 15]
+        - [7, 8]
+        - [7, 9]
+        - [7, 10]
+        - [7, 11]
+        - [7, 12]
+        - [7, 13]
+        - [7, 14]
+        - [7, 15]
+        - [8, 9]
+        - [8, 10]
+        - [8, 11]
+        - [8, 12]
+        - [8, 13]
+        - [8, 14]
+        - [8, 15]
+        - [9, 10]
+        - [9, 11]
+        - [9, 12]
+        - [9, 13]
+        - [9, 14]
+        - [9, 15]
+        - [10, 11]
+        - [10, 12]
+        - [10, 13]
+        - [10, 14]
+        - [10, 15]
+        - [11, 12]
+        - [11, 13]
+        - [11, 14]
+        - [11, 15]
+        - [12, 13]
+        - [12, 14]
+        - [12, 15]
+        - [13, 14]
+        - [13, 15]
+        - [14, 15]
+      k: 15
+  - name: "complete-dag-narrow"
+    in:
+      n: 15
+      relations:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [1, 10]
+        - [1, 11]
+        - [1, 12]
+        - [1, 13]
+        - [1, 14]
+        - [1, 15]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [2, 8]
+        - [2, 9]
+        - [2, 10]
+        - [2, 11]
+        - [2, 12]
+        - [2, 13]
+        - [2, 14]
+        - [2, 15]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [3, 8]
+        - [3, 9]
+        - [3, 10]
+        - [3, 11]
+        - [3, 12]
+        - [3, 13]
+        - [3, 14]
+        - [3, 15]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [4, 8]
+        - [4, 9]
+        - [4, 10]
+        - [4, 11]
+        - [4, 12]
+        - [4, 13]
+        - [4, 14]
+        - [4, 15]
+        - [5, 6]
+        - [5, 7]
+        - [5, 8]
+        - [5, 9]
+        - [5, 10]
+        - [5, 11]
+        - [5, 12]
+        - [5, 13]
+        - [5, 14]
+        - [5, 15]
+        - [6, 7]
+        - [6, 8]
+        - [6, 9]
+        - [6, 10]
+        - [6, 11]
+        - [6, 12]
+        - [6, 13]
+        - [6, 14]
+        - [6, 15]
+        - [7, 8]
+        - [7, 9]
+        - [7, 10]
+        - [7, 11]
+        - [7, 12]
+        - [7, 13]
+        - [7, 14]
+        - [7, 15]
+        - [8, 9]
+        - [8, 10]
+        - [8, 11]
+        - [8, 12]
+        - [8, 13]
+        - [8, 14]
+        - [8, 15]
+        - [9, 10]
+        - [9, 11]
+        - [9, 12]
+        - [9, 13]
+        - [9, 14]
+        - [9, 15]
+        - [10, 11]
+        - [10, 12]
+        - [10, 13]
+        - [10, 14]
+        - [10, 15]
+        - [11, 12]
+        - [11, 13]
+        - [11, 14]
+        - [11, 15]
+        - [12, 13]
+        - [12, 14]
+        - [12, 15]
+        - [13, 14]
+        - [13, 15]
+        - [14, 15]
+      k: 1
+  - name: "maximum-three-layers"
+    in:
+      n: 15
+      relations:
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [1, 10]
+        - [2, 6]
+        - [2, 7]
+        - [2, 8]
+        - [2, 9]
+        - [2, 10]
+        - [3, 6]
+        - [3, 7]
+        - [3, 8]
+        - [3, 9]
+        - [3, 10]
+        - [4, 6]
+        - [4, 7]
+        - [4, 8]
+        - [4, 9]
+        - [4, 10]
+        - [5, 6]
+        - [5, 7]
+        - [5, 8]
+        - [5, 9]
+        - [5, 10]
+        - [6, 11]
+        - [6, 12]
+        - [6, 13]
+        - [6, 14]
+        - [6, 15]
+        - [7, 11]
+        - [7, 12]
+        - [7, 13]
+        - [7, 14]
+        - [7, 15]
+        - [8, 11]
+        - [8, 12]
+        - [8, 13]
+        - [8, 14]
+        - [8, 15]
+        - [9, 11]
+        - [9, 12]
+        - [9, 13]
+        - [9, 14]
+        - [9, 15]
+        - [10, 11]
+        - [10, 12]
+        - [10, 13]
+        - [10, 14]
+        - [10, 15]
+      k: 4
+  - name: "maximum-parallel-chains"
+    in:
+      n: 15
+      relations:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+      k: 3

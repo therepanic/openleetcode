@@ -1,0 +1,887 @@
+entry:
+  id: 1253
+  title: "reconstruct-a-2-row-binary-matrix"
+  params:
+    upper:
+      type: int
+    lower:
+      type: int
+    colsum:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().reconstructMatrix({upper}, {lower}, {colsum})"
+    rust: "Solution::reconstruct_matrix({upper}, {lower}, {colsum})"
+    python3: "Solution().reconstructMatrix({upper}, {lower}, {colsum})"
+    python2: "Solution().reconstructMatrix({upper}, {lower}, {colsum})"
+    ruby: "reconstruct_matrix({upper}, {lower}, {colsum})"
+    java: "new Solution().reconstructMatrix({upper}, {lower}, {colsum})"
+    csharp: "new Solution().ReconstructMatrix({upper}, {lower}, {colsum})"
+    kotlin: "Solution().reconstructMatrix({upper}, {lower}, {colsum})"
+    go: "reconstructMatrix({upper}, {lower}, {colsum})"
+    dart: "Solution().reconstructMatrix({upper}, {lower}, {colsum})"
+    swift: "Solution().reconstructMatrix({upper}, {lower}, {colsum})"
+    typescript: "reconstructMatrix({upper}, {lower}, {colsum})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().reconstructMatrix(upper, lower, colsum, {result})"
+    checker: |
+      class Checker:
+          def reconstructMatrix(self, upper, lower, colsum, result):
+              double_columns = sum(value == 2 for value in colsum)
+              single_columns = sum(value == 1 for value in colsum)
+              top_single = upper - double_columns
+              bottom_single = lower - double_columns
+              feasible = (
+                  upper + lower == sum(colsum)
+                  and top_single >= 0
+                  and bottom_single >= 0
+                  and top_single + bottom_single == single_columns
+              )
+              if not feasible:
+                  return result == []
+              if type(result) is not list or len(result) != 2:
+                  return False
+              if any(type(row) is not list or len(row) != len(colsum) for row in result):
+                  return False
+              if any(type(value) is not int or value not in (0, 1) for row in result for value in row):
+                  return False
+              return (
+                  sum(result[0]) == upper
+                  and sum(result[1]) == lower
+                  and all(result[0][i] + result[1][i] == colsum[i] for i in range(len(colsum))))
+
+seed: 1253
+
+tests:
+  - name: "example-one"
+    in:
+      upper: 2
+      lower: 1
+      colsum: [1, 1, 1]
+  - name: "example-two-infeasible"
+    in:
+      upper: 2
+      lower: 3
+      colsum: [2, 2, 1, 1]
+    out: []
+  - name: "example-three"
+    in:
+      upper: 5
+      lower: 5
+      colsum: [2, 1, 2, 0, 1, 0, 1, 2, 0, 1]
+  - name: "single-top"
+    in:
+      upper: 1
+      lower: 0
+      colsum: [1]
+  - name: "single-bottom"
+    in:
+      upper: 0
+      lower: 1
+      colsum: [1]
+  - name: "single-double"
+    in:
+      upper: 1
+      lower: 1
+      colsum: [2]
+  - name: "single-zero-infeasible"
+    in:
+      upper: 1
+      lower: 0
+      colsum: [0]
+    out: []
+  - name: "all-zero"
+    in:
+      upper: 0
+      lower: 0
+      colsum: [0, 0, 0, 0]
+  - name: "all-double"
+    in:
+      upper: 4
+      lower: 4
+      colsum: [2, 2, 2, 2]
+  - name: "too-many-doubles"
+    in:
+      upper: 1
+      lower: 3
+      colsum: [2, 2]
+    out: []
+  - name: "total-too-high"
+    in:
+      upper: 3
+      lower: 0
+      colsum: [1, 1]
+    out: []
+  - name: "total-too-low"
+    in:
+      upper: 0
+      lower: 0
+      colsum: [1, 1]
+    out: []
+  - name: "balanced-single-columns"
+    in:
+      upper: 2
+      lower: 2
+      colsum: [1, 1, 1, 1]
+  - name: "top-heavy-single-columns"
+    in:
+      upper: 3
+      lower: 1
+      colsum: [1, 1, 1, 1]
+  - name: "bottom-heavy-single-columns"
+    in:
+      upper: 1
+      lower: 3
+      colsum: [1, 1, 1, 1]
+  - name: "mixed-doubles-and-zeros"
+    in:
+      upper: 3
+      lower: 3
+      colsum: [2, 1, 0, 2, 1]
+  - name: "mixed-infeasible-total"
+    in:
+      upper: 2
+      lower: 2
+      colsum: [2, 2, 1]
+    out: []
+  - name: "alternating-one-two"
+    in:
+      upper: 5
+      lower: 4
+      colsum: [1, 2, 1, 2, 1, 2]
+  - name: "zeros-between-required-columns"
+    in:
+      upper: 3
+      lower: 3
+      colsum: [0, 1, 2, 0, 1, 2]
+  - name: "interspersed-valid"
+    in:
+      upper: 5
+      lower: 5
+      colsum: [1, 0, 2, 1, 2, 0, 1, 2, 1, 0]
+  - name: "long-total-mismatch"
+    in:
+      upper: 5
+      lower: 4
+      colsum: [2, 2, 1, 1, 0, 0, 0, 0, 0, 0]
+    out: []
+  - name: "all-single-top"
+    in:
+      upper: 6
+      lower: 0
+      colsum: [1, 1, 1, 1, 1, 1]
+  - name: "all-single-bottom"
+    in:
+      upper: 0
+      lower: 6
+      colsum: [1, 1, 1, 1, 1, 1]
+  - name: "boundary-values"
+    in:
+      upper: 4
+      lower: 4
+      colsum: [2, 0, 1, 1, 2, 0, 1, 1]
+  - name: "double-budget-failure"
+    in:
+      upper: 2
+      lower: 3
+      colsum: [2, 2, 2, 1]
+    out: []
+  - name: "single-columns-insufficient"
+    in:
+      upper: 4
+      lower: 1
+      colsum: [2, 2, 1, 1]
+    out: []
+  - name: "all-one-even"
+    in:
+      upper: 5
+      lower: 5
+      colsum: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: "all-one-uneven"
+    in:
+      upper: 6
+      lower: 4
+      colsum: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: "double-at-last-column"
+    in:
+      upper: 4
+      lower: 3
+      colsum: [1, 1, 1, 1, 1, 2]
+  - name: "double-at-first-column"
+    in:
+      upper: 4
+      lower: 3
+      colsum: [2, 1, 1, 1, 1, 1]
+  - name: "balanced-doubles-with-one-columns"
+    in:
+      upper: 7
+      lower: 7
+      colsum: [2, 1, 2, 1, 2, 1, 2, 1, 1, 1]
+  - name: "all-slots-consumed-by-doubles"
+    in:
+      upper: 3
+      lower: 3
+      colsum: [2, 2, 2, 0, 0]
+  - name: "asymmetric-after-doubles"
+    in:
+      upper: 7
+      lower: 3
+      colsum: [2, 2, 2, 1, 1, 1, 1]
+  - name: "infeasible-despite-matching-total"
+    in:
+      upper: 1
+      lower: 3
+      colsum: [2, 2]
+    out: []
+  - name: "wide-all-ones"
+    in:
+      upper: 61
+      lower: 39
+      colsum:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+  - name: "wide-all-doubles"
+    in:
+      upper: 100
+      lower: 100
+      colsum:
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+        ]
+  - name: "wide-all-zeros"
+    in:
+      upper: 0
+      lower: 0
+      colsum:
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+  - name: "wide-doubles-then-zeros"
+    in:
+      upper: 50
+      lower: 50
+      colsum:
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+  - name: "wide-mixed-balanced"
+    in:
+      upper: 50
+      lower: 50
+      colsum:
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+  - name: "wide-mixed-asymmetric"
+    in:
+      upper: 30
+      lower: 20
+      colsum:
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]

@@ -1,0 +1,863 @@
+entry:
+  id: 1489
+  title: "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    rust: "Solution::find_critical_and_pseudo_critical_edges({n}, {edges})"
+    python3: "Solution().findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    python2: "Solution().findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    ruby: "find_critical_and_pseudo_critical_edges({n}, {edges})"
+    java: "new Solution().findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    csharp: "new Solution().FindCriticalAndPseudoCriticalEdges({n}, {edges})"
+    kotlin: "Solution().findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    go: "findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    dart: "Solution().findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    swift: "Solution().findCriticalAndPseudoCriticalEdges({n}, {edges})"
+    typescript: "findCriticalAndPseudoCriticalEdges({n}, {edges})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().findCriticalAndPseudoCriticalEdges(n, edges, {result})"
+    checker: |
+      class Checker:
+          def findCriticalAndPseudoCriticalEdges(self, n, edges, result):
+              if not isinstance(result, list) or len(result) != 2:
+                  return False
+              def mst(block=-1, force=-1):
+                  parent = list(range(n))
+                  def find(x):
+                      while parent[x] != x:
+                          parent[x] = parent[parent[x]]
+                          x = parent[x]
+                      return x
+                  def join(a, b):
+                      a, b = find(a), find(b)
+                      if a == b:
+                          return False
+                      parent[a] = b
+                      return True
+                  total = 0
+                  used = 0
+                  if force >= 0:
+                      a, b, w = edges[force]
+                      if join(a, b):
+                          total += w
+                          used += 1
+                  for i, (a, b, w) in sorted(enumerate(edges), key=lambda item: item[1][2]):
+                      if i == block or i == force:
+                          continue
+                      if join(a, b):
+                          total += w
+                          used += 1
+                  return total if used == n - 1 else None
+              base = mst()
+              critical = []
+              pseudo = []
+              for i in range(len(edges)):
+                  if mst(block=i) != base:
+                      critical.append(i)
+                  elif mst(force=i) == base:
+                      pseudo.append(i)
+              try:
+                  return sorted(result[0]) == critical and sorted(result[1]) == pseudo
+              except (TypeError, ValueError):
+                  return False
+
+seed: 1489
+
+tests:
+  - name: "example_one"
+    in:
+      n: 5
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [2, 3, 2]
+          - [0, 3, 2]
+          - [0, 4, 3]
+          - [3, 4, 3]
+          - [1, 4, 6]
+  - name: "example_two_equal_cycle"
+    in:
+      n: 4
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [2, 3, 1]
+          - [0, 3, 1]
+  - name: "single_mst_tree"
+    in:
+      n: 4
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 2]
+          - [2, 3, 3]
+  - name: "two_vertices_one_edge"
+    in:
+      n: 2
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1000]
+  - name: "triangle_unique_light"
+    in:
+      n: 3
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 2]
+          - [0, 2, 9]
+  - name: "triangle_all_equal"
+    in:
+      n: 3
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 7]
+          - [1, 2, 7]
+          - [0, 2, 7]
+  - name: "triangle_two_equal"
+    in:
+      n: 3
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [0, 2, 5]
+  - name: "square_unique_diagonals"
+    in:
+      n: 4
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 2]
+          - [2, 3, 3]
+          - [0, 3, 10]
+          - [0, 2, 8]
+          - [1, 3, 9]
+  - name: "square_equal_cycle"
+    in:
+      n: 4
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 4]
+          - [1, 2, 4]
+          - [2, 3, 4]
+          - [0, 3, 4]
+  - name: "square_two_mst_choices"
+    in:
+      n: 4
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [2, 3, 2]
+          - [0, 3, 2]
+          - [0, 2, 5]
+  - name: "star_tree"
+    in:
+      n: 5
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 2]
+          - [0, 3, 3]
+          - [0, 4, 4]
+  - name: "star_with_heavy_chords"
+    in:
+      n: 5
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [0, 3, 1]
+          - [0, 4, 1]
+          - [1, 2, 8]
+          - [2, 3, 9]
+          - [3, 4, 10]
+  - name: "five_cycle_equal"
+    in:
+      n: 5
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 2]
+          - [1, 2, 2]
+          - [2, 3, 2]
+          - [3, 4, 2]
+          - [0, 4, 2]
+  - name: "five_cycle_chord"
+    in:
+      n: 5
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [2, 3, 1]
+          - [3, 4, 1]
+          - [0, 4, 1]
+          - [0, 2, 5]
+          - [1, 3, 6]
+  - name: "parallel_weight_levels"
+    in:
+      n: 5
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [1, 2, 1]
+          - [1, 3, 2]
+          - [2, 4, 2]
+          - [3, 4, 2]
+  - name: "six_vertex_tree_plus_edges"
+    in:
+      n: 6
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 3]
+          - [1, 2, 1]
+          - [2, 3, 4]
+          - [3, 4, 2]
+          - [4, 5, 5]
+          - [0, 2, 6]
+          - [1, 4, 7]
+          - [2, 5, 8]
+  - name: "six_vertex_equal_layers"
+    in:
+      n: 6
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [1, 3, 2]
+          - [2, 4, 2]
+          - [3, 5, 3]
+          - [4, 5, 3]
+  - name: "six_complete_small_weights"
+    in:
+      n: 6
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 2]
+          - [0, 3, 3]
+          - [0, 4, 4]
+          - [0, 5, 5]
+          - [1, 2, 6]
+          - [1, 3, 7]
+          - [1, 4, 8]
+          - [1, 5, 9]
+          - [2, 3, 10]
+          - [2, 4, 11]
+          - [2, 5, 12]
+          - [3, 4, 13]
+          - [3, 5, 14]
+          - [4, 5, 15]
+  - name: "seven_path"
+    in:
+      n: 7
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 2]
+          - [2, 3, 3]
+          - [3, 4, 4]
+          - [4, 5, 5]
+          - [5, 6, 6]
+  - name: "seven_path_shortcuts"
+    in:
+      n: 7
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [2, 3, 1]
+          - [3, 4, 1]
+          - [4, 5, 1]
+          - [5, 6, 1]
+          - [0, 6, 2]
+          - [1, 5, 2]
+  - name: "seven_two_clusters"
+    in:
+      n: 7
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [0, 2, 1]
+          - [3, 4, 1]
+          - [4, 5, 1]
+          - [3, 5, 1]
+          - [2, 3, 5]
+          - [1, 4, 5]
+          - [0, 6, 7]
+  - name: "eight_binary_equal"
+    in:
+      n: 8
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 3]
+          - [0, 2, 3]
+          - [1, 3, 3]
+          - [1, 4, 3]
+          - [2, 5, 3]
+          - [2, 6, 3]
+          - [3, 7, 3]
+          - [4, 7, 3]
+          - [5, 7, 3]
+          - [6, 7, 3]
+  - name: "eight_cycle_heavy_chords"
+    in:
+      n: 8
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 2]
+          - [2, 3, 3]
+          - [3, 4, 4]
+          - [4, 5, 5]
+          - [5, 6, 6]
+          - [6, 7, 7]
+          - [0, 7, 20]
+          - [0, 4, 12]
+          - [2, 6, 13]
+  - name: "nine_star_equal"
+    in:
+      n: 9
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 5]
+          - [0, 2, 5]
+          - [0, 3, 5]
+          - [0, 4, 5]
+          - [0, 5, 5]
+          - [0, 6, 5]
+          - [0, 7, 5]
+          - [0, 8, 5]
+  - name: "nine_grid_like"
+    in:
+      n: 9
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [3, 4, 1]
+          - [4, 5, 1]
+          - [6, 7, 1]
+          - [7, 8, 1]
+          - [0, 3, 2]
+          - [1, 4, 2]
+          - [2, 5, 2]
+          - [3, 6, 2]
+          - [4, 7, 2]
+          - [5, 8, 2]
+  - name: "ten_path_equal_pairs"
+    in:
+      n: 10
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [2, 3, 2]
+          - [3, 4, 2]
+          - [4, 5, 3]
+          - [5, 6, 3]
+          - [6, 7, 4]
+          - [7, 8, 4]
+          - [8, 9, 5]
+          - [0, 9, 8]
+          - [1, 8, 7]
+  - name: "ten_two_equal_blocks"
+    in:
+      n: 10
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [1, 2, 1]
+          - [3, 4, 2]
+          - [3, 5, 2]
+          - [4, 5, 2]
+          - [6, 7, 3]
+          - [6, 8, 3]
+          - [7, 8, 3]
+          - [2, 3, 4]
+          - [5, 6, 4]
+          - [0, 9, 6]
+  - name: "eleven_chain_chords"
+    in:
+      n: 11
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 2]
+          - [1, 2, 2]
+          - [2, 3, 2]
+          - [3, 4, 2]
+          - [4, 5, 2]
+          - [5, 6, 2]
+          - [6, 7, 2]
+          - [7, 8, 2]
+          - [8, 9, 2]
+          - [9, 10, 2]
+          - [0, 5, 5]
+          - [5, 10, 5]
+  - name: "twelve_tree_only"
+    in:
+      n: 12
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 12]
+          - [1, 2, 11]
+          - [2, 3, 10]
+          - [3, 4, 9]
+          - [4, 5, 8]
+          - [5, 6, 7]
+          - [6, 7, 6]
+          - [7, 8, 5]
+          - [8, 9, 4]
+          - [9, 10, 3]
+          - [10, 11, 2]
+  - name: "twelve_dense_light_edges"
+    in:
+      n: 12
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [1, 2, 1]
+          - [3, 4, 1]
+          - [3, 5, 1]
+          - [4, 5, 1]
+          - [6, 7, 1]
+          - [6, 8, 1]
+          - [7, 8, 1]
+          - [9, 10, 1]
+          - [9, 11, 1]
+          - [10, 11, 1]
+          - [2, 3, 4]
+          - [5, 6, 4]
+          - [8, 9, 4]
+  - name: "thirteen_mixed_weights"
+    in:
+      n: 13
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 10]
+          - [1, 2, 1]
+          - [2, 3, 10]
+          - [3, 4, 1]
+          - [4, 5, 10]
+          - [5, 6, 1]
+          - [6, 7, 10]
+          - [7, 8, 1]
+          - [8, 9, 10]
+          - [9, 10, 1]
+          - [10, 11, 10]
+          - [11, 12, 1]
+          - [0, 12, 20]
+          - [2, 10, 3]
+  - name: "fourteen_ring"
+    in:
+      n: 14
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 3]
+          - [1, 2, 3]
+          - [2, 3, 3]
+          - [3, 4, 3]
+          - [4, 5, 3]
+          - [5, 6, 3]
+          - [6, 7, 3]
+          - [7, 8, 3]
+          - [8, 9, 3]
+          - [9, 10, 3]
+          - [10, 11, 3]
+          - [11, 12, 3]
+          - [12, 13, 3]
+          - [0, 13, 3]
+          - [0, 7, 4]
+  - name: "fifteen_hub_and_cycles"
+    in:
+      n: 15
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [0, 3, 1]
+          - [0, 4, 1]
+          - [1, 5, 2]
+          - [2, 6, 2]
+          - [3, 7, 2]
+          - [4, 8, 2]
+          - [5, 6, 2]
+          - [6, 7, 2]
+          - [7, 8, 2]
+          - [5, 8, 2]
+          - [9, 10, 3]
+          - [10, 11, 3]
+          - [11, 12, 3]
+          - [12, 13, 3]
+          - [13, 14, 3]
+          - [8, 9, 4]
+  - name: "sixteen_equal_completeish"
+    in:
+      n: 16
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [0, 3, 1]
+          - [1, 2, 1]
+          - [1, 3, 1]
+          - [2, 3, 1]
+          - [4, 5, 2]
+          - [4, 6, 2]
+          - [5, 6, 2]
+          - [7, 8, 3]
+          - [7, 9, 3]
+          - [8, 9, 3]
+          - [3, 4, 5]
+          - [6, 7, 5]
+          - [9, 10, 5]
+          - [10, 11, 6]
+          - [11, 12, 6]
+          - [12, 13, 6]
+          - [13, 14, 6]
+          - [14, 15, 6]
+  - name: "twenty_long_tree_plus_chords"
+    in:
+      n: 20
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 2]
+          - [2, 3, 3]
+          - [3, 4, 4]
+          - [4, 5, 5]
+          - [5, 6, 6]
+          - [6, 7, 7]
+          - [7, 8, 8]
+          - [8, 9, 9]
+          - [9, 10, 10]
+          - [10, 11, 11]
+          - [11, 12, 12]
+          - [12, 13, 13]
+          - [13, 14, 14]
+          - [14, 15, 15]
+          - [15, 16, 16]
+          - [16, 17, 17]
+          - [17, 18, 18]
+          - [18, 19, 19]
+          - [0, 19, 20]
+          - [0, 10, 21]
+          - [5, 15, 22]
+  - name: "six_vertex_bridge_tie"
+    in:
+      n: 6
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [0, 2, 1]
+          - [2, 3, 4]
+          - [2, 4, 4]
+          - [3, 4, 4]
+          - [3, 5, 9]
+          - [4, 5, 9]
+          - [0, 5, 20]
+  - name: "five_complete_weight_layers"
+    in:
+      n: 5
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [0, 2, 1]
+          - [0, 3, 2]
+          - [0, 4, 2]
+          - [1, 2, 1]
+          - [1, 3, 2]
+          - [1, 4, 3]
+          - [2, 3, 2]
+          - [2, 4, 2]
+          - [3, 4, 2]
+  - name: "eight_boundary_weight_graph"
+    in:
+      n: 8
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1000]
+          - [1, 2, 999]
+          - [2, 3, 998]
+          - [3, 4, 997]
+          - [4, 5, 996]
+          - [5, 6, 995]
+          - [6, 7, 994]
+          - [0, 2, 1]
+          - [2, 4, 1]
+          - [4, 6, 1]
+          - [1, 7, 2]
+          - [0, 7, 3]
+  - name: "hundred_vertex_unit_path"
+    in:
+      n: 100
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 1]
+          - [2, 3, 1]
+          - [3, 4, 1]
+          - [4, 5, 1]
+          - [5, 6, 1]
+          - [6, 7, 1]
+          - [7, 8, 1]
+          - [8, 9, 1]
+          - [9, 10, 1]
+          - [10, 11, 1]
+          - [11, 12, 1]
+          - [12, 13, 1]
+          - [13, 14, 1]
+          - [14, 15, 1]
+          - [15, 16, 1]
+          - [16, 17, 1]
+          - [17, 18, 1]
+          - [18, 19, 1]
+          - [19, 20, 1]
+          - [20, 21, 1]
+          - [21, 22, 1]
+          - [22, 23, 1]
+          - [23, 24, 1]
+          - [24, 25, 1]
+          - [25, 26, 1]
+          - [26, 27, 1]
+          - [27, 28, 1]
+          - [28, 29, 1]
+          - [29, 30, 1]
+          - [30, 31, 1]
+          - [31, 32, 1]
+          - [32, 33, 1]
+          - [33, 34, 1]
+          - [34, 35, 1]
+          - [35, 36, 1]
+          - [36, 37, 1]
+          - [37, 38, 1]
+          - [38, 39, 1]
+          - [39, 40, 1]
+          - [40, 41, 1]
+          - [41, 42, 1]
+          - [42, 43, 1]
+          - [43, 44, 1]
+          - [44, 45, 1]
+          - [45, 46, 1]
+          - [46, 47, 1]
+          - [47, 48, 1]
+          - [48, 49, 1]
+          - [49, 50, 1]
+          - [50, 51, 1]
+          - [51, 52, 1]
+          - [52, 53, 1]
+          - [53, 54, 1]
+          - [54, 55, 1]
+          - [55, 56, 1]
+          - [56, 57, 1]
+          - [57, 58, 1]
+          - [58, 59, 1]
+          - [59, 60, 1]
+          - [60, 61, 1]
+          - [61, 62, 1]
+          - [62, 63, 1]
+          - [63, 64, 1]
+          - [64, 65, 1]
+          - [65, 66, 1]
+          - [66, 67, 1]
+          - [67, 68, 1]
+          - [68, 69, 1]
+          - [69, 70, 1]
+          - [70, 71, 1]
+          - [71, 72, 1]
+          - [72, 73, 1]
+          - [73, 74, 1]
+          - [74, 75, 1]
+          - [75, 76, 1]
+          - [76, 77, 1]
+          - [77, 78, 1]
+          - [78, 79, 1]
+          - [79, 80, 1]
+          - [80, 81, 1]
+          - [81, 82, 1]
+          - [82, 83, 1]
+          - [83, 84, 1]
+          - [84, 85, 1]
+          - [85, 86, 1]
+          - [86, 87, 1]
+          - [87, 88, 1]
+          - [88, 89, 1]
+          - [89, 90, 1]
+          - [90, 91, 1]
+          - [91, 92, 1]
+          - [92, 93, 1]
+          - [93, 94, 1]
+          - [94, 95, 1]
+          - [95, 96, 1]
+          - [96, 97, 1]
+          - [97, 98, 1]
+          - [98, 99, 1]
+  - name: "hundred_vertex_boundary_path"
+    in:
+      n: 100
+      edges:
+        elemType: "int"
+        value:
+          - [0, 1, 1]
+          - [1, 2, 2]
+          - [2, 3, 3]
+          - [3, 4, 4]
+          - [4, 5, 5]
+          - [5, 6, 6]
+          - [6, 7, 7]
+          - [7, 8, 8]
+          - [8, 9, 9]
+          - [9, 10, 10]
+          - [10, 11, 11]
+          - [11, 12, 12]
+          - [12, 13, 13]
+          - [13, 14, 14]
+          - [14, 15, 15]
+          - [15, 16, 16]
+          - [16, 17, 17]
+          - [17, 18, 18]
+          - [18, 19, 19]
+          - [19, 20, 20]
+          - [20, 21, 21]
+          - [21, 22, 22]
+          - [22, 23, 23]
+          - [23, 24, 24]
+          - [24, 25, 25]
+          - [25, 26, 26]
+          - [26, 27, 27]
+          - [27, 28, 28]
+          - [28, 29, 29]
+          - [29, 30, 30]
+          - [30, 31, 31]
+          - [31, 32, 32]
+          - [32, 33, 33]
+          - [33, 34, 34]
+          - [34, 35, 35]
+          - [35, 36, 36]
+          - [36, 37, 37]
+          - [37, 38, 38]
+          - [38, 39, 39]
+          - [39, 40, 40]
+          - [40, 41, 41]
+          - [41, 42, 42]
+          - [42, 43, 43]
+          - [43, 44, 44]
+          - [44, 45, 45]
+          - [45, 46, 46]
+          - [46, 47, 47]
+          - [47, 48, 48]
+          - [48, 49, 49]
+          - [49, 50, 50]
+          - [50, 51, 51]
+          - [51, 52, 52]
+          - [52, 53, 53]
+          - [53, 54, 54]
+          - [54, 55, 55]
+          - [55, 56, 56]
+          - [56, 57, 57]
+          - [57, 58, 58]
+          - [58, 59, 59]
+          - [59, 60, 60]
+          - [60, 61, 61]
+          - [61, 62, 62]
+          - [62, 63, 63]
+          - [63, 64, 64]
+          - [64, 65, 65]
+          - [65, 66, 66]
+          - [66, 67, 67]
+          - [67, 68, 68]
+          - [68, 69, 69]
+          - [69, 70, 70]
+          - [70, 71, 71]
+          - [71, 72, 72]
+          - [72, 73, 73]
+          - [73, 74, 74]
+          - [74, 75, 75]
+          - [75, 76, 76]
+          - [76, 77, 77]
+          - [77, 78, 78]
+          - [78, 79, 79]
+          - [79, 80, 80]
+          - [80, 81, 81]
+          - [81, 82, 82]
+          - [82, 83, 83]
+          - [83, 84, 84]
+          - [84, 85, 85]
+          - [85, 86, 86]
+          - [86, 87, 87]
+          - [87, 88, 88]
+          - [88, 89, 89]
+          - [89, 90, 90]
+          - [90, 91, 91]
+          - [91, 92, 92]
+          - [92, 93, 93]
+          - [93, 94, 94]
+          - [94, 95, 95]
+          - [95, 96, 96]
+          - [96, 97, 97]
+          - [97, 98, 98]
+          - [98, 99, 1000]

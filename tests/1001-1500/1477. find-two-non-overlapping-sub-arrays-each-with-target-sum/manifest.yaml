@@ -1,0 +1,262 @@
+entry:
+  id: 1477
+  title: "find-two-non-overlapping-sub-arrays-each-with-target-sum"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().minSumOfLengths({arr}, {target})"
+    rust: "Solution::min_sum_of_lengths({arr}, {target})"
+    python3: "Solution().minSumOfLengths({arr}, {target})"
+    python2: "Solution().minSumOfLengths({arr}, {target})"
+    ruby: "min_sum_of_lengths({arr}, {target})"
+    java: "new Solution().minSumOfLengths({arr}, {target})"
+    csharp: "new Solution().MinSumOfLengths({arr}, {target})"
+    kotlin: "Solution().minSumOfLengths({arr}, {target})"
+    go: "minSumOfLengths({arr}, {target})"
+    dart: "Solution().minSumOfLengths({arr}, {target})"
+    swift: "Solution().minSumOfLengths({arr}, {target})"
+    typescript: "minSumOfLengths({arr}, {target})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 900
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minSumOfLengths(arr, target, {result})"
+    checker: |
+      class Checker:
+          def minSumOfLengths(self, arr, target, result):
+              n = len(arr)
+              best_before = [n + 1] * n
+              left = 0
+              current = 0
+              answer = n + 1
+              for right, value in enumerate(arr):
+                  current += value
+                  while left <= right and current > target:
+                      current -= arr[left]
+                      left += 1
+                  best_before[right] = best_before[right - 1] if right else n + 1
+                  if current == target:
+                      length = right - left + 1
+                      if left and best_before[left - 1] <= n:
+                          answer = min(answer, best_before[left - 1] + length)
+                      best_before[right] = min(best_before[right], length)
+              expected = -1 if answer == n + 1 else answer
+              return result == expected
+seed: 1477
+tests:
+  - name: "official-one"
+    in:
+      arr: [3, 2, 2, 4, 3]
+      target: 3
+    out: 2
+  - name: "official-two"
+    in:
+      arr: [7, 3, 4, 7]
+      target: 7
+    out: 2
+  - name: "official-three"
+    in:
+      arr: [4, 3, 2, 6, 2, 3, 4]
+      target: 6
+    out: -1
+  - name: "single-no-pair"
+    in:
+      arr: [5]
+      target: 5
+  - name: "two-singletons"
+    in:
+      arr: [5, 5]
+      target: 5
+  - name: "adjacent-pairs"
+    in:
+      arr: [2, 2, 2, 2]
+      target: 2
+  - name: "two-length-two"
+    in:
+      arr: [1, 2, 3, 1, 2]
+      target: 3
+  - name: "no-target"
+    in:
+      arr: [1, 1, 1]
+      target: 10
+  - name: "whole-array-only"
+    in:
+      arr: [1, 2, 3]
+      target: 6
+  - name: "repeated-singletons"
+    in:
+      arr: [4, 1, 4, 1, 4]
+      target: 4
+  - name: "separated-long-runs"
+    in:
+      arr: [1, 1, 1, 9, 1, 1, 1]
+      target: 3
+  - name: "overlapping-candidates"
+    in:
+      arr: [1, 1, 1, 1]
+      target: 2
+  - name: "choose-shortest"
+    in:
+      arr: [1, 1, 2, 2, 1, 1]
+      target: 2
+  - name: "large-target"
+    in:
+      arr: [1000, 1000, 1000, 1000]
+      target: 2000
+  - name: "target-one"
+    in:
+      arr: [1, 2, 1, 3, 1]
+      target: 1
+  - name: "target-two"
+    in:
+      arr: [1, 1, 1, 1, 1]
+      target: 2
+  - name: "target-three"
+    in:
+      arr: [1, 1, 1, 1, 1, 1]
+      target: 3
+  - name: "uneven-solutions"
+    in:
+      arr: [1, 2, 1, 1, 1, 2]
+      target: 3
+  - name: "far-apart-singletons"
+    in:
+      arr: [8, 1, 1, 1, 8]
+      target: 8
+  - name: "middle-solutions"
+    in:
+      arr: [9, 2, 2, 2, 9, 2, 2, 2]
+      target: 6
+  - name: "all-equal-length-three"
+    in:
+      arr: [2, 2, 2, 2, 2, 2]
+      target: 6
+  - name: "all-equal-length-one"
+    in:
+      arr: [3, 3, 3, 3, 3]
+      target: 3
+  - name: "large-elements"
+    in:
+      arr: [999, 1, 999, 1, 999]
+      target: 1000
+  - name: "one-long-one-short"
+    in:
+      arr: [1, 1, 1, 1, 5, 5]
+      target: 5
+  - name: "two-long-separated"
+    in:
+      arr: [2, 2, 2, 9, 3, 3, 3]
+      target: 6
+  - name: "near-end-pairs"
+    in:
+      arr: [9, 9, 1, 1, 9, 9]
+      target: 2
+  - name: "many-overlaps"
+    in:
+      arr: [1, 1, 1, 1, 1, 1, 1]
+      target: 3
+  - name: "three-singletons"
+    in:
+      arr: [6, 2, 6, 4, 6]
+      target: 6
+  - name: "no-two-disjoint"
+    in:
+      arr: [2, 3, 2]
+      target: 5
+  - name: "exact-boundary-sums"
+    in:
+      arr: [1, 4, 1, 4, 1]
+      target: 5
+  - name: "alternating-small"
+    in:
+      arr: [1, 2, 1, 2, 1, 2, 1]
+      target: 3
+  - name: "alternating-large"
+    in:
+      arr: [5, 1, 5, 1, 5, 1]
+      target: 6
+  - name: "leading-filler"
+    in:
+      arr: [9, 9, 2, 2, 9, 2, 2]
+      target: 4
+  - name: "trailing-filler"
+    in:
+      arr: [2, 2, 9, 2, 2, 9, 9]
+      target: 4
+  - name: "minimum-values"
+    in:
+      arr: [1, 1, 1, 1]
+      target: 1
+  - name: "generated-all-ones-singletons"
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target: 1
+  - name: "generated-all-ones-pairs"
+    in:
+      arr:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target: 2
+  - name: "generated-max-values"
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target: 1000
+  - name: "generated-wide-values"
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target: 100000000
+  - name: "generated-target-two"
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 2
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target: 2

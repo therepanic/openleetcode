@@ -1,0 +1,346 @@
+entry:
+  id: 1233
+  title: "remove-sub-folders-from-the-filesystem"
+  params:
+    folder:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().removeSubfolders({folder})"
+    rust: "Solution::remove_subfolders({folder})"
+    python3: "Solution().removeSubfolders({folder})"
+    python2: "Solution().removeSubfolders({folder})"
+    ruby: "remove_subfolders({folder})"
+    java: "new Solution().removeSubfolders({folder})"
+    csharp: "new Solution().RemoveSubfolders({folder})"
+    kotlin: "Solution().removeSubfolders({folder})"
+    go: "removeSubfolders({folder})"
+    dart: "Solution().removeSubfolders({folder})"
+    swift: "Solution().removeSubfolders({folder})"
+    typescript: "removeSubfolders({folder})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().removeSubfolders(folder, {result})"
+    checker: |
+      class Checker:
+          def removeSubfolders(self, folder, result):
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(path, str) for path in result):
+                  return False
+              if len(result) != len(set(result)):
+                  return False
+              roots = []
+              for path in sorted(folder):
+                  if not roots or not path.startswith(roots[-1] + '/'):
+                      roots.append(path)
+              return set(result) == set(roots)
+
+seed: 1233
+
+tests:
+  - name: "example_one"
+    in:
+      folder: ["/a", "/a/b", "/c/d", "/c/d/e", "/c/f"]
+  - name: "example_two"
+    in:
+      folder: ["/a", "/a/b/c", "/a/b/d"]
+  - name: "example_three"
+    in:
+      folder: ["/a/b/c", "/a/b/ca", "/a/b/d"]
+  - name: "single_path"
+    in:
+      folder: ["/root"]
+  - name: "two_unrelated"
+    in:
+      folder: ["/a", "/b"]
+  - name: "direct_child"
+    in:
+      folder: ["/a", "/a/b"]
+  - name: "deep_chain"
+    in:
+      folder: ["/a", "/a/b", "/a/b/c", "/a/b/c/d"]
+  - name: "prefix_not_folder"
+    in:
+      folder: ["/a", "/ab", "/abc", "/abcd"]
+  - name: "shared_prefix_divergence"
+    in:
+      folder: ["/home", "/homework", "/home/user", "/homely"]
+  - name: "multiple_roots"
+    in:
+      folder: ["/a/x", "/a/y", "/b/x", "/b/y"]
+  - name: "nested_two_branches"
+    in:
+      folder: ["/a", "/a/b", "/a/c", "/a/c/d", "/b", "/b/a"]
+  - name: "unsorted_input"
+    in:
+      folder: ["/z/y", "/a/b/c", "/z", "/a", "/m/n"]
+  - name: "single_level_many"
+    in:
+      folder: ["/a", "/b", "/c", "/d", "/e", "/f"]
+  - name: "same_parent_children"
+    in:
+      folder: ["/p/a", "/p/b", "/p/c", "/p/d"]
+  - name: "deep_unrelated"
+    in:
+      folder: ["/a/b/c/d", "/a/b/e", "/x/y/z", "/x/q"]
+  - name: "letter_boundary"
+    in:
+      folder: ["/a/z", "/a/za", "/a/zoo", "/a/y"]
+  - name: "root_and_many_descendants"
+    in:
+      folder: ["/r", "/r/a", "/r/b", "/r/a/x", "/r/b/y", "/r/c/d"]
+  - name: "two_deep_roots"
+    in:
+      folder: ["/one/two", "/one/two/three", "/one/twenty", "/two", "/two/a"]
+  - name: "long_names"
+    in:
+      folder: ["/aaaaaaaa", "/aaaaaaaa/bbbbbbbb", "/bbbbbbbb/cccccccc", "/c"]
+  - name: "interleaved_branches"
+    in:
+      folder: ["/a/x/y", "/b", "/a", "/b/c/d", "/a/x", "/c"]
+  - name: "all_nested_under_one"
+    in:
+      folder: ["/main", "/main/a", "/main/b", "/main/c/d", "/main/d/e/f"]
+  - name: "no_nested_paths"
+    in:
+      folder: ["/aa", "/ab", "/ac", "/ba", "/bb", "/bc"]
+  - name: "three_root_chains"
+    in:
+      folder: ["/a", "/a/b/c", "/b", "/b/c", "/c", "/c/d/e"]
+  - name: "near_prefixes"
+    in:
+      folder: ["/a/b", "/a/bb", "/a/b/c", "/a/bb/c", "/a/bbb"]
+  - name: "mixed_depths"
+    in:
+      folder: ["/x/y/z", "/x/y", "/x", "/y/z", "/y", "/z/a/b"]
+  - name: "sibling_subtrees"
+    in:
+      folder: ["/root/a/one", "/root/a/two", "/root/b/one", "/root/c", "/other"]
+  - name: "alphabetic_sort_trap"
+    in:
+      folder: ["/a/bb", "/a/b", "/a/b/c", "/a/bb/d", "/a/c"]
+  - name: "four_level_paths"
+    in:
+      folder: ["/a/b/c/d", "/a/b/c/e", "/a/b/f", "/a/g", "/h/i/j/k"]
+  - name: "root_names_one_letter"
+    in:
+      folder: ["/a/a", "/a/aa", "/aa/a", "/aa", "/b/b"]
+  - name: "deep_chain_and_prefix"
+    in:
+      folder: ["/q/r/s/t", "/q/r", "/q/rr", "/q/r/s", "/q/r/s/t/u"]
+  - name: "adjacent_sorted_descendants"
+    in:
+      folder: ["/map/a", "/map/a/b", "/map/ab", "/map/ab/c", "/map/b"]
+  - name: "parent_absent_all_leaves"
+    in:
+      folder:
+        [
+          "/tree/a/one",
+          "/tree/a/two",
+          "/tree/b/one",
+          "/tree/b/two",
+          "/tree/c/one",
+        ]
+  - name: "nested_root_between_prefix_names"
+    in:
+      folder:
+        ["/car", "/car/engine", "/card", "/card/deck", "/cargo", "/cargo/hold"]
+  - name: "maximum_length_components"
+    in:
+      folder:
+        [
+          "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "/ccccccccccccccccccccccccccccccccccccccccccccccccc/ddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        ]
+  - name: "wide_root_with_descendants"
+    in:
+      folder:
+        [
+          "/archive",
+          "/archive/a",
+          "/archive/b",
+          "/archive/c",
+          "/archive/d",
+          "/archive/e",
+          "/archive/f",
+          "/archive/g",
+          "/archive/h",
+          "/archive/i",
+          "/archive/j",
+          "/archive/k",
+          "/archive/l",
+          "/archive/m",
+          "/archive/n",
+          "/archive/o",
+          "/archive/p",
+          "/archive/q",
+          "/archive/r",
+          "/archive/s",
+          "/archive/t",
+          "/archive/u",
+          "/archive/v",
+          "/archive/w",
+          "/archive/x",
+          "/archive/y",
+          "/archive/z",
+          "/backup/a",
+          "/backup/b",
+        ]
+  - name: "large_forest_mixed_depths"
+    in:
+      folder:
+        [
+          "/alpha",
+          "/alpha/one",
+          "/alpha/two/three",
+          "/beta/one",
+          "/beta/one/two",
+          "/beta/two",
+          "/charlie/a/b/c",
+          "/charlie/a/b/d",
+          "/charlie/e",
+          "/delta",
+          "/delta/a/b",
+          "/echo/a",
+          "/echo/a/b",
+          "/foxtrot/a/b/c/d",
+          "/foxtrot/x",
+          "/golf",
+          "/golf/a",
+          "/hotel/a/b",
+          "/hotel/a/c",
+          "/india",
+          "/juliet/a/b/c",
+          "/kilo/a",
+          "/lima/a/b",
+          "/mike",
+          "/november/a/b/c",
+          "/oscar/a",
+        ]
+  - name: "large_lexicographic_prefix_set"
+    in:
+      folder:
+        [
+          "/a",
+          "/a/a",
+          "/aa",
+          "/aa/a",
+          "/aaa",
+          "/aaa/a",
+          "/ab",
+          "/ab/a",
+          "/aba",
+          "/aba/a",
+          "/abb",
+          "/abb/a",
+          "/b",
+          "/b/a",
+          "/ba",
+          "/ba/a",
+          "/baa",
+          "/baa/a",
+          "/bb",
+          "/bb/a",
+          "/bbb",
+          "/bbb/a",
+          "/c/a",
+          "/c/aa",
+          "/c/ab",
+          "/c/b",
+          "/c/ba",
+          "/c/bb",
+        ]
+  - name: "large_branching_subtrees"
+    in:
+      folder:
+        [
+          "/project/src",
+          "/project/src/api",
+          "/project/src/api/vone",
+          "/project/src/api/vtwo",
+          "/project/src/core",
+          "/project/src/core/cache",
+          "/project/src/core/model",
+          "/project/test",
+          "/project/test/unit",
+          "/project/docs",
+          "/project/docs/design",
+          "/project/docs/release",
+          "/project/assets",
+          "/project/assets/icons",
+          "/project/assets/images",
+          "/release/src",
+          "/release/src/api",
+          "/release/test",
+          "/release/docs",
+          "/sandbox/a/b/c",
+          "/sandbox/a/b/d",
+          "/sandbox/e/f",
+          "/tools/a",
+          "/tools/b",
+          "/tools/c",
+          "/tools/d",
+          "/tools/e",
+        ]
+  - name: "large_long_segment_forest"
+    in:
+      folder:
+        [
+          "/antidisestablishmentarianism",
+          "/antidisestablishmentarianism/child",
+          "/characteristicallylongfoldername",
+          "/characteristicallylongfoldername/subfolder",
+          "/counterrevolutionarymovement",
+          "/counterrevolutionarymovement/archive",
+          "/electroencephalographically",
+          "/electroencephalographically/data",
+          "/floccinaucinihilipilification",
+          "/floccinaucinihilipilification/logs",
+          "/honorificabilitudinitatibus",
+          "/honorificabilitudinitatibus/tmp",
+          "/incomprehensibilities/a/b/c",
+          "/incomprehensibilities/a/b/d",
+          "/pneumonoultramicroscopicsilicovolcanoconiosis",
+          "/pneumonoultramicroscopicsilicovolcanoconiosis/readme",
+          "/supercalifragilisticexpialidocious/a",
+          "/supercalifragilisticexpialidocious/b",
+          "/uncharacteristicallylong",
+          "/uncharacteristicallylong/nested",
+        ]
+  - name: "large_deep_independent_paths"
+    in:
+      folder:
+        [
+          "/a/b/c/d/e/f/g/h/i/j",
+          "/a/b/c/d/e/f/g/h/i/j/k",
+          "/b/c/d/e/f/g/h/i/j/k",
+          "/b/c/d/e/f/g/h/i/j/k/l",
+          "/c/d/e/f/g/h/i/j/k/l",
+          "/d/e/f/g/h/i/j/k/l/m",
+          "/e/f/g/h/i/j/k/l/m/n",
+          "/f/g/h/i/j/k/l/m/n/o",
+          "/g/h/i/j/k/l/m/n/o/p",
+          "/h/i/j/k/l/m/n/o/p/q",
+          "/i/j/k/l/m/n/o/p/q/r",
+          "/j/k/l/m/n/o/p/q/r/s",
+          "/k/l/m/n/o/p/q/r/s/t",
+          "/l/m/n/o/p/q/r/s/t/u",
+          "/m/n/o/p/q/r/s/t/u/v",
+          "/n/o/p/q/r/s/t/u/v/w",
+          "/o/p/q/r/s/t/u/v/w/x",
+          "/p/q/r/s/t/u/v/w/x/y",
+          "/q/r/s/t/u/v/w/x/y/z",
+          "/z/y/x/w/v/u/t/s/r/q",
+        ]

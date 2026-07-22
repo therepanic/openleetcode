@@ -1,12 +1,12 @@
 impl Solution {
     pub fn longest_wpi(hours: Vec<i32>) -> i32 {
-        let mut score: i32 = 0;
-        let mut longest_interval: i32 = 0;
-        let mut seen_at: std::collections::HashMap<i32, i32> = std::collections::HashMap::new();
+        let mut score = 0;
+        let mut longest_interval = 0;
+        let mut seen_at = std::collections::HashMap::new();
         seen_at.insert(0, -1);
         
-        for (i, &h) in hours.iter().enumerate() {
-            score += if h > 8 { 1 } else { -1 };
+        for i in 0..hours.len() {
+            score += if hours[i] > 8 { 1 } else { -1 };
             
             if score > 0 {
                 longest_interval = i as i32 + 1;

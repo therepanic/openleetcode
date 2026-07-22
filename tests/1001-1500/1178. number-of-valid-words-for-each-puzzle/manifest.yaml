@@ -1,0 +1,330 @@
+entry:
+  id: 1178
+  title: "number-of-valid-words-for-each-puzzle"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+    puzzles:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().findNumOfValidWords({words}, {puzzles})"
+    rust: "Solution::find_num_of_valid_words({words}, {puzzles})"
+    python3: "Solution().findNumOfValidWords({words}, {puzzles})"
+    python2: "Solution().findNumOfValidWords({words}, {puzzles})"
+    ruby: "find_num_of_valid_words({words}, {puzzles})"
+    java: "new Solution().findNumOfValidWords({words}, {puzzles})"
+    csharp: "new Solution().FindNumOfValidWords({words}, {puzzles})"
+    kotlin: "Solution().findNumOfValidWords({words}, {puzzles})"
+    go: "findNumOfValidWords({words}, {puzzles})"
+    dart: "Solution().findNumOfValidWords({words}, {puzzles})"
+    swift: "Solution().findNumOfValidWords({words}, {puzzles})"
+    typescript: "findNumOfValidWords({words}, {puzzles})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().findNumOfValidWords(words, puzzles, {result})"
+    checker: |
+      class Checker:
+          def findNumOfValidWords(self, words, puzzles, result):
+              expected = []
+              for puzzle in puzzles:
+                  allowed = set(puzzle)
+                  first = puzzle[0]
+                  expected.append(sum(
+                      first in word and set(word) <= allowed
+                      for word in words
+                  ))
+              return result == expected
+
+seed: 1178
+
+tests:
+  - name: "example-one"
+    in:
+      words: ["aaaa", "asas", "able", "ability", "actt", "actor", "access"]
+      puzzles:
+        ["aboveyz", "abrodyz", "abslute", "absoryz", "actresz", "gaswxyz"]
+    out: [1, 1, 3, 2, 4, 0]
+  - name: "example-two"
+    in:
+      words: ["apple", "pleas", "please"]
+      puzzles: ["aelwxyz", "aelpxyz", "aelpsxy", "saelpxy", "xaelpsy"]
+    out: [0, 1, 3, 2, 0]
+  - name: "one-word-match"
+    in:
+      words: ["abcd"]
+      puzzles: ["abcdefg"]
+    out: [1]
+  - name: "one-word-missing-first"
+    in:
+      words: ["bcde"]
+      puzzles: ["abcdefg"]
+    out: [0]
+  - name: "one-word-extra-letter"
+    in:
+      words: ["abcx"]
+      puzzles: ["abcdefg"]
+    out: [0]
+  - name: "first-letter-varies"
+    in:
+      words: ["abcd", "bcde", "cdef", "defg"]
+      puzzles: ["abcdefg", "bcdefgh", "cdefghi", "defghij"]
+    out: [1, 1, 1, 1]
+  - name: "repeated-word-counts"
+    in:
+      words: ["aaaa", "aaaa", "aaaa", "aaab"]
+      puzzles: ["abcdefg", "bacdefg"]
+    out: [4, 1]
+  - name: "repeated-word-letters"
+    in:
+      words: ["aabbcc", "abcabc", "abccdd", "bbbb"]
+      puzzles: ["abcdefg", "bcdefgh"]
+    out: [3, 1]
+  - name: "no-valid-words"
+    in:
+      words: ["hijk", "ijkl", "mnop", "qrst"]
+      puzzles: ["abcdefg", "bcdefgh"]
+    out: [0, 0]
+  - name: "all-valid-subsets"
+    in:
+      words: ["abcde", "abcf", "acdg", "efg", "abcdefg"]
+      puzzles: ["abcdefg"]
+    out: [4]
+  - name: "single-puzzle-many-words"
+    in:
+      words: ["face", "cafe", "fade", "bead", "bag", "gaga", "hace"]
+      puzzles: ["abcdefg"]
+    out: [6]
+  - name: "different-first-letters"
+    in:
+      words: ["abcd", "bcda", "cdef", "defg", "efga"]
+      puzzles: ["abcdefg", "bcdefga", "cdefgab", "defgabc"]
+    out: [3, 2, 3, 4]
+  - name: "minimum-word-length"
+    in:
+      words: ["abcd", "efgh", "ijkl", "mnop"]
+      puzzles: ["abcdefg", "efghabc"]
+    out: [1, 1]
+  - name: "maximum-word-length"
+    in:
+      words:
+        [
+          "abcdefghijklmnopqrstuvwxyz",
+          "abcdefghijklmnopqrstuvwxy",
+          "bcdefghijklmnopqrstuvwx",
+        ]
+      puzzles: ["abcdefg", "tuvwxyz", "bcdefgh"]
+    out: [0, 0, 0]
+  - name: "same-letter-set-different-order"
+    in:
+      words: ["face", "ecaf", "cafe", "abcd"]
+      puzzles: ["abcdefg", "bcdefga"]
+    out: [4, 1]
+  - name: "first-letter-required"
+    in:
+      words: ["bcde", "cdef", "defg", "efga"]
+      puzzles: ["abcdefg", "bcdefga", "cdefgab", "defgabc"]
+    out: [1, 1, 2, 3]
+  - name: "extra-character-rejection"
+    in:
+      words: ["abcde", "abcdefh", "abcdefg", "abcfgh"]
+      puzzles: ["abcdefg"]
+    out: [2]
+  - name: "overlapping-puzzles"
+    in:
+      words: ["abcd", "abef", "acfg", "bcde", "cdefg"]
+      puzzles: ["abcdefg", "abchijk", "bcdefgh"]
+    out: [3, 0, 1]
+  - name: "disjoint-puzzles"
+    in:
+      words: ["abcd", "efgh", "ijkl", "mnop", "qrstuv"]
+      puzzles: ["abcdefg", "hijklmn", "opqrstu"]
+    out: [1, 0, 0]
+  - name: "duplicate-character-heavy"
+    in:
+      words: ["aaaaab", "bbbbbc", "cccccd", "ddddde", "fffffg"]
+      puzzles: ["abcdefg", "bcdefgh", "cdefghi"]
+    out: [1, 1, 1]
+  - name: "all-first-letter-present"
+    in:
+      words: ["aabb", "aacc", "aadd", "aaee", "aaff", "aagg"]
+      puzzles: ["abcdefg"]
+    out: [6]
+  - name: "rotated-alphabet"
+    in:
+      words: ["wxyz", "xyza", "yzab", "zabc", "abcd"]
+      puzzles: ["wxyzabc", "xyzabcd", "yzabcde", "zabcdef", "abcdefg"]
+    out: [1, 1, 1, 1, 1]
+  - name: "short-subsets"
+    in:
+      words: ["abcd", "abce", "abcf", "abcg", "abch"]
+      puzzles: ["abcdefg", "bcdefgh"]
+    out: [4, 0]
+  - name: "late-first-letter"
+    in:
+      words: ["tuvw", "tuvx", "tuwy", "txyz", "uvwx"]
+      puzzles: ["tuvwxyz", "uvwxyzab", "vwxyzab"]
+    out: [4, 1, 0]
+  - name: "word-per-puzzle"
+    in:
+      words: ["abcd", "efgh", "ijkl", "mnop", "qrst", "uvwx"]
+      puzzles:
+        ["abcdefg", "efghabc", "ijklmno", "mnopqrs", "qrstuvw", "uvwxyzab"]
+    out: [1, 1, 1, 1, 1, 1]
+  - name: "near-complete-sets"
+    in:
+      words: ["abcdef", "bcdefg", "cdefgh", "defghi", "efghij"]
+      puzzles: ["abcdefg", "bcdefgh", "cdefghi", "defghij"]
+    out: [1, 1, 1, 1]
+  - name: "many-invalid"
+    in:
+      words: ["abch", "abci", "abcj", "abck", "abcl", "abcm", "abcd"]
+      puzzles: ["abcdefg"]
+    out: [1]
+  - name: "palindromic-words"
+    in:
+      words: ["abcba", "abccba", "abcdcba", "abddba"]
+      puzzles: ["abcdefg", "bcdefga"]
+    out: [4, 4]
+  - name: "puzzle-order-output"
+    in:
+      words: ["abcd", "bcde", "cdef", "defg"]
+      puzzles: ["defgabc", "abcdefg", "cdefgab", "bcdefga"]
+    out: [4, 1, 3, 2]
+  - name: "large-static-word-list"
+    in:
+      words:
+        [
+          "aaaa",
+          "aaab",
+          "aabb",
+          "abbb",
+          "bbbb",
+          "bbbc",
+          "bbcc",
+          "bccc",
+          "cccc",
+          "cccd",
+          "ccdd",
+          "cddd",
+          "dddd",
+          "ddde",
+          "ddee",
+          "deee",
+          "eeee",
+        ]
+      puzzles: ["abcdefg", "bcdefgh", "cdefghi", "defghij"]
+    out: [4, 4, 4, 4]
+  - name: "alphabet-boundary"
+    in:
+      words: ["wxyz", "xyza", "yzab", "zabc", "azzz", "zzzz"]
+      puzzles: ["wxyzabc", "xyzabcd", "yzabcde", "zabcdef"]
+    out: [1, 1, 1, 3]
+  - name: "seven-letter-combinations"
+    in:
+      words: ["abde", "acdf", "bceg", "defg", "aefg", "abcd", "bcfg"]
+      puzzles: ["abcdefg", "bcdefgh", "cdefgab"]
+    out: [4, 2, 4]
+  - name: "all-word-sets-fit"
+    in:
+      words: ["abcd", "abce", "abcf", "abde", "abdf", "abef"]
+      puzzles: ["abcdefg", "abcdefg"]
+    out: [6, 6]
+  - name: "first-letter-only-failure"
+    in:
+      words: ["bcde", "cdef", "defg", "efgh", "fgab"]
+      puzzles: ["abcdefg", "bcdefga", "cdefgab", "defgabc", "efgabcd"]
+    out: [1, 2, 2, 3, 3]
+  - name: "first-letter-present-but-extra"
+    in:
+      words: ["axxx", "abch", "abcd", "aefg"]
+      puzzles: ["abcdefg"]
+    out: [2]
+  - name: "fifty-character-words"
+    in:
+      words:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde",
+          "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefg",
+          "bcdefgbcdefgbcdefgbcdefgbcdefgbcdefgbcdefgbcdefg",
+        ]
+      puzzles: ["abcdefg", "bcdefgh"]
+    out: [3, 1]
+  - name: "duplicate-mask-frequency"
+    in:
+      words:
+        [
+          "abca",
+          "abca",
+          "abca",
+          "abca",
+          "abca",
+          "abbd",
+          "abbd",
+          "abbd",
+          "abbd",
+          "bcde",
+          "bcde",
+          "bcde",
+          "acef",
+          "acef",
+          "defg",
+        ]
+      puzzles: ["abcdefg", "bcdefgh", "cdefgab", "defgabc"]
+    out: [11, 3, 10, 8]
+  - name: "dense-seven-letter-subsets"
+    in:
+      words: ["abcdefg", "abcdef", "abcefg", "acdefg", "bcdefg", "aaaa"]
+      puzzles: ["abcdefg", "bcdefgh"]
+    out: [5, 1]
+  - name: "alphabet-rotation-corpus"
+    in:
+      words:
+        [
+          "abcd",
+          "bcde",
+          "cdef",
+          "defg",
+          "efgh",
+          "fghi",
+          "ghij",
+          "hijk",
+          "ijkl",
+          "jklm",
+          "klmn",
+          "lmno",
+          "mnop",
+          "nopq",
+          "opqr",
+          "pqrs",
+          "qrst",
+          "rstu",
+          "stuv",
+          "tuvw",
+          "uvwx",
+          "vwxy",
+          "wxyz",
+          "xyza",
+          "yzab",
+          "zabc",
+        ]
+      puzzles: ["abcdefg", "ghijklm", "tuvwxyz", "zabcdef"]
+    out: [1, 1, 1, 1]
+  - name: "repeated-puzzles-preserve-order"
+    in:
+      words: ["aaaa", "aaab", "abbb", "bbbb", "bcde", "cdef", "defg", "efga"]
+      puzzles:
+        ["abcdefg", "abcdefg", "bcdefgh", "bcdefgh", "cdefgab", "defgabc"]
+    out: [4, 4, 2, 2, 2, 3]

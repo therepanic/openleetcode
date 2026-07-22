@@ -1,0 +1,36 @@
+class Solution(object):
+    def watchedVideosByFriends(self, watchedVideos, friends, id, level):
+        """
+        :type watchedVideos: List[List[str]]
+        :type friends: List[List[int]]
+        :type id: int
+        :type level: int
+        :rtype: List[str]
+        """
+        from collections import deque, Counter
+        
+        n = len(friends)
+        visited = [False] * n
+        q = deque([(id, 0)])
+        visited[id] = True
+        
+        target_people = []
+        
+        while q:
+            person, dist = q.popleft()
+            
+            if dist == level:
+                target_people.append(person)
+                continue
+            
+            for f in friends[person]:
+                if not visited[f]:
+                    visited[f] = True
+                    q.append((f, dist + 1))
+        
+        freq = Counter()
+        for p in target_people:
+            for vid in watchedVideos[p]:
+                freq[vid] += 1
+        
+        return sorted(freq.keys(), key=lambda x: (freq[x], x))

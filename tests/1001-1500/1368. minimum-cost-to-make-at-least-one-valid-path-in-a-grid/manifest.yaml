@@ -1,0 +1,769 @@
+entry:
+  id: 1368
+  title: "minimum-cost-to-make-at-least-one-valid-path-in-a-grid"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minCost({grid})"
+    rust: "Solution::min_cost({grid})"
+    python3: "Solution().minCost({grid})"
+    python2: "Solution().minCost({grid})"
+    ruby: "min_cost({grid})"
+    java: "new Solution().minCost({grid})"
+    csharp: "new Solution().MinCost({grid})"
+    kotlin: "Solution().minCost({grid})"
+    go: "minCost({grid})"
+    dart: "Solution().minCost({grid})"
+    swift: "Solution().minCost({grid})"
+    typescript: "minCost({grid})"
+judge:
+  type: exact
+limits:
+  time_ms: 700
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().minCost(grid, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def minCost(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              rows, cols = len(grid), len(grid[0])
+              distance = [[rows * cols + 1] * cols for _ in range(rows)]
+              distance[0][0] = 0
+              queue = deque([(0, 0)])
+              directions = ((0, 1), (0, -1), (1, 0), (-1, 0))
+              while queue:
+                  row, col = queue.popleft()
+                  for sign, (dr, dc) in enumerate(directions, 1):
+                      next_row, next_col = row + dr, col + dc
+                      if not (0 <= next_row < rows and 0 <= next_col < cols):
+                          continue
+                      next_cost = distance[row][col] + (grid[row][col] != sign)
+                      if next_cost < distance[next_row][next_col]:
+                          distance[next_row][next_col] = next_cost
+                          if grid[row][col] == sign:
+                              queue.appendleft((next_row, next_col))
+                          else:
+                              queue.append((next_row, next_col))
+              return result == distance[rows - 1][cols - 1]
+seed: 1368
+tests:
+  - name: example_one
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [2, 2, 2, 2]
+        - [1, 1, 1, 1]
+        - [2, 2, 2, 2]
+  - name: example_two
+    in:
+      grid:
+        - [1, 1, 3]
+        - [3, 2, 2]
+        - [1, 1, 4]
+  - name: example_three
+    in:
+      grid:
+        - [1, 2]
+        - [4, 3]
+  - name: singleton_right
+    in:
+      grid:
+        - [1]
+  - name: singleton_up
+    in:
+      grid:
+        - [4]
+  - name: rightward_row
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+  - name: leftward_row
+    in:
+      grid:
+        - [2, 2, 2, 2, 2]
+  - name: downward_column
+    in:
+      grid:
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+  - name: upward_column
+    in:
+      grid:
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+  - name: two_by_two_zero
+    in:
+      grid:
+        - [3, 2]
+        - [1, 4]
+  - name: two_by_two_all_wrong
+    in:
+      grid:
+        - [2, 4]
+        - [4, 4]
+  - name: horizontal_snake
+    in:
+      grid:
+        - [1, 1, 1, 3]
+        - [3, 2, 2, 2]
+        - [1, 1, 1, 3]
+        - [2, 2, 2, 2]
+  - name: vertical_snake
+    in:
+      grid:
+        - [3, 3, 3, 3]
+        - [4, 4, 4, 3]
+        - [3, 3, 3, 3]
+        - [4, 4, 4, 4]
+  - name: alternating_horizontal
+    in:
+      grid:
+        - [1, 2, 1, 2, 1]
+        - [2, 1, 2, 1, 2]
+        - [1, 2, 1, 2, 1]
+  - name: alternating_vertical
+    in:
+      grid:
+        - [3, 4, 3]
+        - [4, 3, 4]
+        - [3, 4, 3]
+        - [4, 3, 4]
+        - [3, 4, 3]
+  - name: directional_cycle
+    in:
+      grid:
+        - [1, 3, 2]
+        - [4, 2, 3]
+        - [1, 4, 2]
+  - name: edge_outside_arrows
+    in:
+      grid:
+        - [4, 4, 4, 4]
+        - [2, 1, 3, 1]
+        - [2, 4, 2, 1]
+        - [2, 2, 2, 3]
+  - name: choice_of_zero_cost_components
+    in:
+      grid:
+        - [1, 3, 2, 2]
+        - [4, 1, 3, 2]
+        - [1, 4, 1, 3]
+        - [4, 1, 4, 1]
+  - name: detour_beats_direct
+    in:
+      grid:
+        - [3, 2, 2, 2, 2]
+        - [1, 1, 1, 1, 3]
+        - [4, 4, 4, 4, 3]
+  - name: wide_mixed
+    in:
+      grid:
+        - [1, 3, 1, 2, 3, 1, 4]
+        - [3, 1, 2, 3, 4, 2, 2]
+  - name: tall_mixed
+    in:
+      grid:
+        - [3, 1]
+        - [4, 3]
+        - [1, 4]
+        - [3, 2]
+        - [4, 3]
+        - [1, 4]
+        - [3, 2]
+  - name: five_by_five_pattern
+    in:
+      grid:
+        - [1, 2, 3, 4, 1]
+        - [2, 3, 4, 1, 2]
+        - [3, 4, 1, 2, 3]
+        - [4, 1, 2, 3, 4]
+        - [1, 2, 3, 4, 1]
+  - name: six_by_six_clockwise_loops
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 3]
+        - [4, 1, 1, 1, 3, 3]
+        - [4, 4, 1, 3, 3, 3]
+        - [4, 4, 4, 2, 2, 3]
+        - [4, 4, 2, 2, 2, 3]
+        - [4, 2, 2, 2, 2, 2]
+  - name: six_by_four_asymmetric
+    in:
+      grid:
+        - [2, 3, 4, 1]
+        - [1, 4, 2, 3]
+        - [3, 2, 1, 4]
+        - [4, 1, 3, 2]
+        - [2, 4, 1, 3]
+        - [3, 1, 4, 2]
+  - name: seven_by_three_asymmetric
+    in:
+      grid:
+        - [1, 3, 2]
+        - [4, 2, 3]
+        - [3, 1, 4]
+        - [2, 4, 1]
+        - [1, 3, 2]
+        - [4, 1, 3]
+        - [3, 2, 4]
+  - name: eight_by_eight_diagonal_bias
+    in:
+      grid:
+        - [3, 1, 1, 1, 1, 1, 1, 1]
+        - [4, 3, 1, 1, 1, 1, 1, 1]
+        - [4, 4, 3, 1, 1, 1, 1, 1]
+        - [4, 4, 4, 3, 1, 1, 1, 1]
+        - [4, 4, 4, 4, 3, 1, 1, 1]
+        - [4, 4, 4, 4, 4, 3, 1, 1]
+        - [4, 4, 4, 4, 4, 4, 3, 1]
+        - [4, 4, 4, 4, 4, 4, 4, 1]
+  - name: ten_by_ten_mixed
+    in:
+      grid:
+        - [1, 2, 3, 4, 1, 2, 3, 4, 1, 2]
+        - [2, 3, 4, 1, 2, 3, 4, 1, 2, 3]
+        - [3, 4, 1, 2, 3, 4, 1, 2, 3, 4]
+        - [4, 1, 2, 3, 4, 1, 2, 3, 4, 1]
+        - [1, 2, 3, 4, 1, 2, 3, 4, 1, 2]
+        - [2, 3, 4, 1, 2, 3, 4, 1, 2, 3]
+        - [3, 4, 1, 2, 3, 4, 1, 2, 3, 4]
+        - [4, 1, 2, 3, 4, 1, 2, 3, 4, 1]
+        - [1, 2, 3, 4, 1, 2, 3, 4, 1, 2]
+        - [2, 3, 4, 1, 2, 3, 4, 1, 2, 3]
+  - name: zero_cost_zigzag
+    in:
+      grid:
+        - [3, 2, 2, 2, 2]
+        - [1, 1, 1, 1, 3]
+        - [3, 2, 2, 2, 2]
+        - [1, 1, 1, 1, 3]
+        - [4, 4, 4, 4, 4]
+  - name: competing_short_paths
+    in:
+      grid:
+        - [1, 3, 2, 3, 2]
+        - [4, 1, 3, 1, 3]
+        - [3, 4, 1, 2, 3]
+        - [1, 3, 4, 1, 3]
+        - [4, 1, 1, 1, 4]
+  - name: max_width_rightward
+    in:
+      grid:
+        - [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+          ]
+  - name: max_width_leftward
+    in:
+      grid:
+        - [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+          ]
+  - name: max_height_downward
+    in:
+      grid:
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+        - [3]
+  - name: max_height_upward
+    in:
+      grid:
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+        - [4]
+  - name: nine_by_nine_perimeter_route
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 3]
+        - [4, 2, 2, 2, 2, 2, 2, 2, 3]
+        - [4, 2, 1, 1, 1, 1, 1, 2, 3]
+        - [4, 2, 1, 4, 4, 4, 1, 2, 3]
+        - [4, 2, 1, 4, 2, 4, 1, 2, 3]
+        - [4, 2, 1, 4, 4, 4, 1, 2, 3]
+        - [4, 2, 1, 1, 1, 1, 1, 2, 3]
+        - [4, 2, 2, 2, 2, 2, 2, 2, 3]
+        - [4, 4, 4, 4, 4, 4, 4, 4, 1]
+  - name: nine_by_nine_reverse_perimeter
+    in:
+      grid:
+        - [3, 2, 2, 2, 2, 2, 2, 2, 2]
+        - [3, 1, 1, 1, 1, 1, 1, 1, 4]
+        - [3, 1, 3, 3, 3, 3, 3, 1, 4]
+        - [3, 1, 3, 2, 2, 2, 3, 1, 4]
+        - [3, 1, 3, 2, 4, 2, 3, 1, 4]
+        - [3, 1, 3, 2, 2, 2, 3, 1, 4]
+        - [3, 1, 3, 3, 3, 3, 3, 1, 4]
+        - [3, 1, 1, 1, 1, 1, 1, 1, 4]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: generated_max_square_a
+    seed: 136801
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 4
+  - name: generated_max_square_b
+    seed: 136802
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 4
+  - name: generated_max_square_c
+    seed: 136803
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 4
+  - name: generated_max_square_d
+    seed: 136804
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 4
+  - name: generated_max_square_e
+    seed: 136805
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 1
+            max: 4

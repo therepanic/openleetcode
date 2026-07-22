@@ -1,0 +1,19 @@
+class Solution(object):
+    def maxSizeSlices(self, slices):
+        """
+        :type slices: List[int]
+        :rtype: int
+        """
+        n = len(slices)
+        m = n // 3
+
+        def dp(slices_subset):
+            k = len(slices_subset)
+            dp_table = [[0] * (m + 1) for _ in range(k + 1)]
+            for i in range(1, k + 1):
+                for j in range(1, min(i, m) + 1):
+                    take = (dp_table[i - 2][j - 1] if i > 1 else 0) + slices_subset[i - 1]
+                    dp_table[i][j] = max(dp_table[i - 1][j], take)
+            return dp_table[k][m]
+
+        return max(dp(slices[:-1]), dp(slices[1:]))

@@ -1,0 +1,333 @@
+entry:
+  id: 1300
+  title: "sum-of-mutated-array-closest-to-target"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().findBestValue({arr}, {target})"
+    rust: "Solution::find_best_value({arr}, {target})"
+    python3: "Solution().findBestValue({arr}, {target})"
+    python2: "Solution().findBestValue({arr}, {target})"
+    ruby: "find_best_value({arr}, {target})"
+    java: "new Solution().findBestValue({arr}, {target})"
+    csharp: "new Solution().FindBestValue({arr}, {target})"
+    kotlin: "Solution().findBestValue({arr}, {target})"
+    go: "findBestValue({arr}, {target})"
+    dart: "Solution().findBestValue({arr}, {target})"
+    swift: "Solution().findBestValue({arr}, {target})"
+    typescript: "findBestValue({arr}, {target})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().findBestValue(arr, target, {result})"
+    checker: |
+      class Checker:
+          def findBestValue(self, arr, target, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              maximum = max(arr)
+              if result < 0 or result > maximum:
+                  return False
+
+              def mutated_sum(value):
+                  return sum(min(item, value) for item in arr)
+
+              # The sum is monotone, so only the caps bracketing target can be optimal.
+              low, high = 0, maximum
+              while low < high:
+                  mid = (low + high) // 2
+                  if mutated_sum(mid) < target:
+                      low = mid + 1
+                  else:
+                      high = mid
+              lower = max(0, low - 1)
+              expected = min((lower, low), key=lambda value: (abs(mutated_sum(value) - target), value))
+              return result == expected
+
+seed: 130000
+
+tests:
+  - name: "example_one"
+    in:
+      arr: [4, 9, 3]
+      target: 10
+    out: 3
+  - name: "example_two"
+    in:
+      arr: [2, 3, 5]
+      target: 10
+    out: 5
+  - name: "example_three"
+    in:
+      arr: [60864, 25176, 27249, 21296, 20204]
+      target: 56803
+    out: 11361
+  - name: "single_exact"
+    in:
+      arr: [10]
+      target: 10
+    out: 10
+  - name: "single_partial"
+    in:
+      arr: [10]
+      target: 3
+    out: 3
+  - name: "single_target_above_sum"
+    in:
+      arr: [10]
+      target: 20
+    out: 10
+  - name: "all_equal_exact"
+    in:
+      arr: [5, 5, 5]
+      target: 15
+    out: 5
+  - name: "all_equal_round_down"
+    in:
+      arr: [5, 5, 5]
+      target: 10
+    out: 3
+  - name: "zero_cap_is_closest"
+    in:
+      arr: [5, 5, 5]
+      target: 1
+    out: 0
+  - name: "uncapped_sum_exact"
+    in:
+      arr: [1, 2, 3, 4]
+      target: 10
+    out: 4
+  - name: "one_vs_zero_tie"
+    in:
+      arr: [1, 2, 3]
+      target: 1
+    out: 0
+  - name: "small_exact_cap"
+    in:
+      arr: [1, 2]
+      target: 2
+    out: 1
+  - name: "nonmember_exact_answer"
+    in:
+      arr: [2, 4]
+      target: 5
+    out: 3
+  - name: "duplicates_with_outlier"
+    in:
+      arr: [4, 4, 4, 100]
+      target: 20
+    out: 8
+  - name: "small_values_with_outlier"
+    in:
+      arr: [1, 1, 1, 1000]
+      target: 10
+    out: 7
+  - name: "ascending_exact"
+    in:
+      arr: [1, 2, 3, 4, 5]
+      target: 12
+    out: 3
+  - name: "descending_order_irrelevant"
+    in:
+      arr: [5, 4, 3, 2, 1]
+      target: 12
+    out: 3
+  - name: "two_elements_nonmember"
+    in:
+      arr: [2, 8]
+      target: 9
+    out: 7
+  - name: "many_ones"
+    in:
+      arr: [1, 1, 1, 1, 1, 1]
+      target: 4
+    out: 1
+  - name: "powers_of_two"
+    in:
+      arr: [1, 2, 4, 8, 16]
+      target: 25
+    out: 10
+  - name: "large_values_exact"
+    in:
+      arr: [100000, 99999, 99998]
+      target: 150000
+    out: 50000
+  - name: "minimum_values"
+    in:
+      arr: [1, 1, 1, 1]
+      target: 3
+    out: 1
+  - name: "half_of_two_maxima"
+    in:
+      arr: [100000, 100000]
+      target: 100000
+    out: 50000
+  - name: "plateau_then_linear"
+    in:
+      arr: [3, 3, 3, 7, 20]
+      target: 25
+    out: 9
+  - name: "large_gap_exact"
+    in:
+      arr: [1, 50, 100]
+      target: 75
+    out: 37
+  - name: "repeated_large_values"
+    in:
+      arr: [1000, 1000, 1000, 1]
+      target: 2500
+    out: 833
+  - name: "mixed_even_values"
+    in:
+      arr: [2, 4, 6, 8, 10, 12]
+      target: 30
+    out: 6
+  - name: "tie_uses_lower_cap"
+    in:
+      arr: [10, 20, 30]
+      target: 41
+    out: 15
+  - name: "near_uncapped_sum"
+    in:
+      arr: [7, 8, 9, 10]
+      target: 33
+    out: 9
+  - name: "outlier_dominates"
+    in:
+      arr: [2, 2, 2, 2, 50]
+      target: 20
+    out: 12
+  - name: "high_cardinality_tie"
+    in:
+      arr: [11, 22, 33, 44, 55, 66, 77, 88]
+      target: 300
+    out: 47
+  - name: "small_target_large_elements"
+    in:
+      arr: [100, 200, 300, 400]
+      target: 5
+    out: 1
+  - name: "near_maximum_nonmember"
+    in:
+      arr: [1, 100000]
+      target: 100000
+    out: 99999
+  - name: "large_cap_after_small_prefix"
+    in:
+      arr: [1, 1, 1, 1, 100000]
+      target: 99999
+    out: 99995
+  - name: "generated_large_random_a"
+    seed: 130001
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_large_random_b"
+    seed: 130002
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_large_random_c"
+    seed: 130003
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_large_random_d"
+    seed: 130004
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_large_random_e"
+    seed: 130005
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_large_random_f"
+    seed: 130006
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 1
+        max: 100000

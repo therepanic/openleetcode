@@ -1,0 +1,779 @@
+entry:
+  id: 1473
+  title: "paint-house-iii"
+  params:
+    houses:
+      type: array
+      items:
+        type: int
+    cost:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    m:
+      type: int
+    n:
+      type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().minCost({houses}, {cost}, {m}, {n}, {target})"
+    rust: "Solution::min_cost({houses}, {cost}, {m}, {n}, {target})"
+    python3: "Solution().minCost({houses}, {cost}, {m}, {n}, {target})"
+    python2: "Solution().minCost({houses}, {cost}, {m}, {n}, {target})"
+    ruby: "min_cost({houses}, {cost}, {m}, {n}, {target})"
+    java: "new Solution().minCost({houses}, {cost}, {m}, {n}, {target})"
+    csharp: "new Solution().MinCost({houses}, {cost}, {m}, {n}, {target})"
+    kotlin: "Solution().minCost({houses}, {cost}, {m}, {n}, {target})"
+    go: "minCost({houses}, {cost}, {m}, {n}, {target})"
+    dart: "Solution().minCost({houses}, {cost}, {m}, {n}, {target})"
+    swift: "Solution().minCost({houses}, {cost}, {m}, {n}, {target})"
+    typescript: "minCost({houses}, {cost}, {m}, {n}, {target})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().minCost(houses, cost, m, n, target, {result})"
+    checker: |
+      class Checker:
+          def minCost(self, houses, cost, m, n, target, result):
+              inf = 10**18
+              dp = [[inf] * (target + 1) for _ in range(n)]
+              first = range(n) if houses[0] == 0 else [houses[0] - 1]
+              for color in first:
+                  dp[color][1] = 0 if houses[0] else cost[0][color]
+              for i in range(1, m):
+                  ndp = [[inf] * (target + 1) for _ in range(n)]
+                  choices = range(n) if houses[i] == 0 else [houses[i] - 1]
+                  for color in choices:
+                      add = 0 if houses[i] else cost[i][color]
+                      for groups in range(1, target + 1):
+                          ndp[color][groups] = min(ndp[color][groups], dp[color][groups] + add)
+                          if groups > 1:
+                              ndp[color][groups] = min(
+                                  ndp[color][groups],
+                                  min((dp[old][groups - 1] for old in range(n) if old != color), default=inf) + add)
+                  dp = ndp
+              expected = min(dp[color][target] for color in range(n))
+              expected = -1 if expected >= inf else expected
+              return isinstance(result, int) and not isinstance(result, bool) and result == expected
+
+seed: 1473
+
+tests:
+  - name: "example_one"
+    in:
+      houses: [0, 0, 0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 10]
+          - [10, 1]
+          - [10, 1]
+          - [1, 10]
+          - [5, 1]
+      m: 5
+      n: 2
+      target: 3
+    out: 9
+  - name: "example_two"
+    in:
+      houses: [0, 2, 1, 2, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 10]
+          - [10, 1]
+          - [10, 1]
+          - [1, 10]
+          - [5, 1]
+      m: 5
+      n: 2
+      target: 3
+    out: 11
+  - name: "example_three"
+    in:
+      houses: [3, 1, 2, 3]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+      m: 4
+      n: 3
+      target: 3
+    out: -1
+  - name: "one_house_unpainted"
+    in:
+      houses: [0]
+      cost:
+        elemType: "int"
+        value:
+          - [7, 2, 9]
+      m: 1
+      n: 3
+      target: 1
+    out: 2
+  - name: "one_house_fixed"
+    in:
+      houses: [2]
+      cost:
+        elemType: "int"
+        value:
+          - [7, 2, 9]
+      m: 1
+      n: 3
+      target: 1
+    out: 0
+  - name: "fixed_already_one_group"
+    in:
+      houses: [1, 1, 1, 1, 1]
+      cost:
+        elemType: "int"
+        value:
+          - [5, 5]
+          - [5, 5]
+          - [5, 5]
+          - [5, 5]
+          - [5, 5]
+      m: 5
+      n: 2
+      target: 1
+    out: 0
+  - name: "fixed_already_many_groups"
+    in:
+      houses: [1, 2, 1, 2]
+      cost:
+        elemType: "int"
+        value:
+          - [5, 5]
+          - [5, 5]
+          - [5, 5]
+          - [5, 5]
+      m: 4
+      n: 2
+      target: 4
+    out: 0
+  - name: "fixed_impossible_low_target"
+    in:
+      houses: [1, 2, 1]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+      m: 3
+      n: 2
+      target: 1
+    out: -1
+  - name: "two_colors_target_two"
+    in:
+      houses: [0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [4, 1]
+          - [2, 8]
+          - [9, 3]
+      m: 3
+      n: 2
+      target: 2
+  - name: "two_colors_target_three"
+    in:
+      houses: [0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [4, 1]
+          - [2, 8]
+          - [9, 3]
+      m: 3
+      n: 2
+      target: 3
+  - name: "three_colors_single_change"
+    in:
+      houses: [1, 0, 1, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [4, 4, 4]
+          - [9, 1, 5]
+          - [4, 4, 4]
+          - [2, 8, 3]
+      m: 4
+      n: 3
+      target: 2
+  - name: "three_colors_max_groups"
+    in:
+      houses: [0, 0, 0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 9, 9]
+          - [9, 1, 9]
+          - [9, 9, 1]
+          - [1, 9, 9]
+          - [9, 1, 9]
+      m: 5
+      n: 3
+      target: 5
+  - name: "three_colors_impossible_target"
+    in:
+      houses: [1, 1, 1, 1]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+          - [1, 1, 1]
+      m: 4
+      n: 3
+      target: 3
+    out: -1
+  - name: "expensive_fixed_mix"
+    in:
+      houses: [0, 2, 0, 3, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [100, 1, 100]
+          - [100, 100, 100]
+          - [1, 100, 100]
+          - [100, 100, 100]
+          - [100, 1, 100]
+      m: 5
+      n: 3
+      target: 3
+  - name: "cheap_color_dominates"
+    in:
+      houses: [0, 0, 0, 0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 50, 50]
+          - [1, 50, 50]
+          - [50, 1, 50]
+          - [50, 1, 50]
+          - [50, 50, 1]
+          - [50, 50, 1]
+      m: 6
+      n: 3
+      target: 3
+  - name: "alternating_fixed"
+    in:
+      houses: [1, 0, 2, 0, 1, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [3, 3]
+          - [2, 7]
+          - [3, 3]
+          - [8, 1]
+          - [3, 3]
+          - [1, 8]
+      m: 6
+      n: 2
+      target: 5
+  - name: "alternating_reduce_groups"
+    in:
+      houses: [1, 0, 2, 0, 1]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+          - [1, 1]
+      m: 5
+      n: 2
+      target: 3
+  - name: "four_colors"
+    in:
+      houses: [0, 0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [8, 7, 6, 1]
+          - [1, 8, 7, 6]
+          - [6, 1, 8, 7]
+          - [7, 6, 1, 8]
+      m: 4
+      n: 4
+      target: 2
+  - name: "four_colors_target_one"
+    in:
+      houses: [0, 0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [8, 7, 6, 1]
+          - [1, 8, 7, 6]
+          - [6, 1, 8, 7]
+          - [7, 6, 1, 8]
+      m: 4
+      n: 4
+      target: 1
+  - name: "six_houses_two_colors"
+    in:
+      houses: [0, 1, 0, 2, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [5, 2]
+          - [5, 5]
+          - [1, 7]
+          - [5, 5]
+          - [2, 4]
+          - [6, 1]
+      m: 6
+      n: 2
+      target: 4
+  - name: "six_houses_three_colors"
+    in:
+      houses: [0, 0, 3, 0, 0, 2]
+      cost:
+        elemType: "int"
+        value:
+          - [3, 9, 4]
+          - [8, 2, 6]
+          - [5, 5, 5]
+          - [1, 7, 8]
+          - [6, 3, 2]
+          - [4, 4, 4]
+      m: 6
+      n: 3
+      target: 3
+  - name: "large_cost_values"
+    in:
+      houses: [0, 0, 1, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [10000, 9999]
+          - [9998, 10000]
+          - [10000, 10000]
+          - [9997, 9996]
+          - [10000, 9995]
+      m: 5
+      n: 2
+      target: 2
+  - name: "all_fixed_three_colors"
+    in:
+      houses: [2, 2, 3, 3, 1, 1, 2, 2]
+      cost:
+        elemType: "int"
+        value:
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+      m: 8
+      n: 3
+      target: 3
+  - name: "all_fixed_wrong_target"
+    in:
+      houses: [2, 2, 3, 3, 1, 1, 2, 2]
+      cost:
+        elemType: "int"
+        value:
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [5, 5, 5]
+      m: 8
+      n: 3
+      target: 4
+  - name: "eight_houses_two_colors"
+    in:
+      houses: [0, 0, 0, 1, 0, 0, 2, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [4, 8]
+          - [3, 7]
+          - [2, 6]
+          - [5, 5]
+          - [1, 9]
+          - [8, 2]
+          - [5, 5]
+          - [7, 1]
+      m: 8
+      n: 2
+      target: 4
+  - name: "nine_houses_three_colors"
+    in:
+      houses: [0, 2, 0, 0, 3, 0, 0, 1, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [2, 5, 8]
+          - [5, 5, 5]
+          - [8, 2, 5]
+          - [1, 7, 4]
+          - [5, 5, 5]
+          - [6, 3, 1]
+          - [2, 9, 4]
+          - [5, 5, 5]
+          - [3, 4, 2]
+      m: 9
+      n: 3
+      target: 5
+  - name: "ten_houses_target_ten"
+    in:
+      houses: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 9]
+          - [9, 1]
+          - [1, 9]
+          - [9, 1]
+          - [1, 9]
+          - [9, 1]
+          - [1, 9]
+          - [9, 1]
+          - [1, 9]
+          - [9, 1]
+      m: 10
+      n: 2
+      target: 10
+  - name: "eleven_houses_fixed_blocks"
+    in:
+      houses: [0, 1, 1, 0, 2, 2, 0, 3, 3, 0, 1]
+      cost:
+        elemType: "int"
+        value:
+          - [4, 2, 8]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [1, 7, 3]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [3, 2, 6]
+          - [5, 5, 5]
+          - [5, 5, 5]
+          - [2, 8, 1]
+          - [5, 5, 5]
+      m: 11
+      n: 3
+      target: 7
+  - name: "twelve_houses_two_colors_middle_fixed"
+    in:
+      houses: [0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 2]
+      cost:
+        elemType: "int"
+        value:
+          - [2, 8]
+          - [3, 7]
+          - [5, 5]
+          - [1, 9]
+          - [4, 6]
+          - [5, 5]
+          - [6, 2]
+          - [7, 1]
+          - [5, 5]
+          - [2, 4]
+          - [3, 1]
+          - [5, 5]
+      m: 12
+      n: 2
+      target: 6
+  - name: "twelve_houses_four_colors"
+    in:
+      houses: [0, 2, 0, 0, 4, 0, 1, 0, 0, 3, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [3, 8, 5, 2]
+          - [5, 5, 5, 5]
+          - [7, 2, 6, 4]
+          - [1, 9, 3, 8]
+          - [5, 5, 5, 5]
+          - [6, 4, 2, 7]
+          - [5, 5, 5, 5]
+          - [2, 6, 9, 1]
+          - [4, 3, 8, 2]
+          - [5, 5, 5, 5]
+          - [1, 7, 4, 6]
+          - [8, 2, 5, 3]
+      m: 12
+      n: 4
+      target: 8
+  - name: "single_color_max_cost"
+    in:
+      houses: [0, 0, 0, 0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [10000]
+          - [9999]
+          - [10000]
+          - [9998]
+          - [10000]
+      m: 5
+      n: 1
+      target: 1
+    out: 49997
+  - name: "twenty_colors_two_houses"
+    in:
+      houses: [0, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [
+              20,
+              19,
+              18,
+              17,
+              16,
+              15,
+              14,
+              13,
+              12,
+              11,
+              10,
+              9,
+              8,
+              7,
+              6,
+              5,
+              4,
+              3,
+              2,
+              1,
+            ]
+          - [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+            ]
+      m: 2
+      n: 20
+      target: 1
+    out: 21
+  - name: "fixed_color_forces_split"
+    in:
+      houses: [0, 1, 0, 1, 0, 1, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [1, 100, 100]
+          - [100, 100, 100]
+          - [100, 1, 100]
+          - [100, 100, 100]
+          - [1, 100, 100]
+          - [100, 100, 100]
+          - [100, 1, 100]
+      m: 7
+      n: 3
+      target: 5
+  - name: "high_target_with_unpainted_edges"
+    in:
+      houses: [0, 2, 0, 3, 0, 1, 0, 2, 0]
+      cost:
+        elemType: "int"
+        value:
+          - [9, 1, 9]
+          - [9, 9, 9]
+          - [1, 9, 9]
+          - [9, 9, 9]
+          - [9, 9, 1]
+          - [9, 9, 9]
+          - [1, 9, 9]
+          - [9, 9, 9]
+          - [9, 1, 9]
+      m: 9
+      n: 3
+      target: 7
+  - name: "twenty_houses_four_colors_sparse_fixed"
+    in:
+      houses: [0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 1, 0, 0, 2, 0, 0, 3]
+      cost:
+        elemType: "int"
+        value:
+          - [4, 1, 9, 8]
+          - [5, 5, 5, 5]
+          - [1, 7, 6, 8]
+          - [2, 6, 5, 9]
+          - [5, 5, 5, 5]
+          - [8, 2, 7, 6]
+          - [6, 3, 1, 9]
+          - [5, 5, 5, 5]
+          - [7, 8, 2, 4]
+          - [1, 6, 9, 3]
+          - [5, 5, 5, 5]
+          - [4, 7, 3, 1]
+          - [8, 1, 6, 2]
+          - [5, 5, 5, 5]
+          - [2, 9, 4, 7]
+          - [6, 3, 8, 1]
+          - [5, 5, 5, 5]
+          - [9, 2, 6, 4]
+          - [3, 8, 1, 7]
+          - [5, 5, 5, 5]
+      m: 20
+      n: 4
+      target: 10
+  - name: "generated_max_m_two_colors"
+    seed: 147301
+    in:
+      houses:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+      cost:
+        gen: "array"
+        len: 100
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 2
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 1
+            max: 10000
+      m: 100
+      n: 2
+      target: 1
+  - name: "generated_max_m_three_colors"
+    seed: 147302
+    in:
+      houses:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 3
+      cost:
+        gen: "array"
+        len: 100
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 3
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 1
+            max: 10000
+      m: 100
+      n: 3
+      target: 50
+  - name: "generated_max_m_five_colors"
+    seed: 147303
+    in:
+      houses:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 5
+      cost:
+        gen: "array"
+        len: 100
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 5
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 1
+            max: 10000
+      m: 100
+      n: 5
+      target: 100
+  - name: "generated_max_m_ten_colors"
+    seed: 147304
+    in:
+      houses:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 10
+      cost:
+        gen: "array"
+        len: 100
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 10
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 1
+            max: 10000
+      m: 100
+      n: 10
+      target: 37
+  - name: "generated_max_m_twenty_colors"
+    seed: 147305
+    in:
+      houses:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 20
+      cost:
+        gen: "array"
+        len: 100
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 20
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 1
+            max: 10000
+      m: 100
+      n: 20
+      target: 75

@@ -1,0 +1,440 @@
+entry:
+  id: 1288
+  title: "remove-covered-intervals"
+  params:
+    intervals:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().removeCoveredIntervals({intervals})"
+    rust: "Solution::remove_covered_intervals({intervals})"
+    python3: "Solution().removeCoveredIntervals({intervals})"
+    python2: "Solution().removeCoveredIntervals({intervals})"
+    ruby: "remove_covered_intervals({intervals})"
+    java: "new Solution().removeCoveredIntervals({intervals})"
+    csharp: "new Solution().RemoveCoveredIntervals({intervals})"
+    kotlin: "Solution().removeCoveredIntervals({intervals})"
+    go: "removeCoveredIntervals({intervals})"
+    dart: "Solution().removeCoveredIntervals({intervals})"
+    swift: "Solution().removeCoveredIntervals({intervals})"
+    typescript: "removeCoveredIntervals({intervals})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 300
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().removeCoveredIntervals(intervals, {result})"
+    checker: |
+      class Checker:
+          def removeCoveredIntervals(self, intervals, result):
+              if not isinstance(result, int):
+                  return False
+              kept = 0
+              rightmost = -1
+              for left, right in sorted(intervals, key=lambda interval: (interval[0], -interval[1])):
+                  if right > rightmost:
+                      kept += 1
+                      rightmost = right
+              return result == kept
+seed: 1288
+tests:
+  - name: "example_1_crossing_and_covered"
+    in:
+      intervals:
+        - [1, 4]
+        - [3, 6]
+        - [2, 8]
+    out: 2
+  - name: "example_2_nested_pair"
+    in:
+      intervals:
+        - [1, 4]
+        - [2, 3]
+    out: 1
+  - name: "single_interval"
+    in:
+      intervals:
+        - [4, 9]
+    out: 1
+  - name: "disjoint_intervals"
+    in:
+      intervals:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+    out: 3
+  - name: "touching_intervals_are_not_covered"
+    in:
+      intervals:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 3
+  - name: "strictly_nested_chain"
+    in:
+      intervals:
+        - [1, 10]
+        - [2, 9]
+        - [3, 8]
+        - [4, 7]
+    out: 1
+  - name: "same_left_longest_first_required"
+    in:
+      intervals:
+        - [1, 8]
+        - [1, 10]
+        - [2, 9]
+        - [11, 12]
+    out: 2
+  - name: "same_right_shortest_is_covered"
+    in:
+      intervals:
+        - [2, 5]
+        - [1, 5]
+        - [3, 5]
+        - [6, 7]
+    out: 2
+  - name: "minimum_and_maximum_coordinates"
+    in:
+      intervals:
+        - [0, 100000]
+        - [0, 99999]
+        - [1, 100000]
+    out: 1
+  - name: "increasing_right_endpoints"
+    in:
+      intervals:
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+    out: 4
+  - name: "decreasing_right_endpoints"
+    in:
+      intervals:
+        - [3, 10]
+        - [0, 20]
+        - [2, 15]
+        - [1, 18]
+    out: 1
+  - name: "overlap_without_coverage"
+    in:
+      intervals:
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+    out: 3
+  - name: "unordered_multiple_coverers"
+    in:
+      intervals:
+        - [8, 12]
+        - [2, 9]
+        - [1, 10]
+        - [3, 4]
+        - [11, 13]
+    out: 3
+  - name: "one_interval_covers_many"
+    in:
+      intervals:
+        - [20, 30]
+        - [0, 100]
+        - [40, 50]
+        - [1, 99]
+        - [60, 70]
+    out: 1
+  - name: "two_separate_covering_groups"
+    in:
+      intervals:
+        - [11, 20]
+        - [1, 10]
+        - [2, 3]
+        - [12, 19]
+        - [4, 8]
+    out: 2
+  - name: "shared_left_with_later_extension"
+    in:
+      intervals:
+        - [5, 9]
+        - [5, 7]
+        - [6, 10]
+        - [7, 8]
+    out: 2
+  - name: "shared_right_with_earlier_extension"
+    in:
+      intervals:
+        - [3, 9]
+        - [2, 9]
+        - [1, 8]
+        - [0, 10]
+    out: 1
+  - name: "small_unit_intervals"
+    in:
+      intervals:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+    out: 5
+  - name: "one_unit_interval_inside_large"
+    in:
+      intervals:
+        - [99999, 100000]
+        - [0, 100000]
+    out: 1
+  - name: "covering_boundary_equal_left"
+    in:
+      intervals:
+        - [0, 10]
+        - [0, 9]
+        - [1, 10]
+        - [10, 11]
+    out: 2
+  - name: "alternating_kept_and_covered"
+    in:
+      intervals:
+        - [2, 3]
+        - [0, 5]
+        - [6, 8]
+        - [7, 9]
+        - [10, 20]
+        - [12, 15]
+    out: 4
+  - name: "later_interval_covers_prior_interval"
+    in:
+      intervals:
+        - [4, 8]
+        - [1, 5]
+        - [3, 10]
+        - [11, 12]
+    out: 3
+  - name: "wide_then_narrow_then_extension"
+    in:
+      intervals:
+        - [0, 50]
+        - [10, 20]
+        - [20, 60]
+        - [30, 40]
+        - [50, 70]
+    out: 3
+  - name: "all_lefts_distinct_all_rights_distinct"
+    in:
+      intervals:
+        - [9, 13]
+        - [1, 7]
+        - [4, 8]
+        - [2, 6]
+        - [8, 12]
+    out: 4
+  - name: "large_coordinate_overlapping_frontier"
+    in:
+      intervals:
+        - [0, 50000]
+        - [49999, 75000]
+        - [74999, 99999]
+        - [99998, 100000]
+        - [25000, 26000]
+    out: 4
+  - name: "covering_interval_not_first"
+    in:
+      intervals:
+        - [50, 60]
+        - [20, 80]
+        - [30, 40]
+        - [10, 90]
+    out: 1
+  - name: "three_components_with_nested_members"
+    in:
+      intervals:
+        - [1, 9]
+        - [2, 8]
+        - [10, 15]
+        - [11, 14]
+        - [16, 20]
+        - [17, 19]
+    out: 3
+  - name: "sorted_input_with_same_left"
+    in:
+      intervals:
+        - [0, 9]
+        - [0, 7]
+        - [1, 8]
+        - [2, 10]
+        - [3, 4]
+    out: 2
+  - name: "reverse_sorted_input"
+    in:
+      intervals:
+        - [9, 10]
+        - [8, 12]
+        - [7, 11]
+        - [1, 20]
+        - [0, 21]
+    out: 1
+  - name: "crossing_then_contained_tail"
+    in:
+      intervals:
+        - [1, 3]
+        - [2, 7]
+        - [4, 6]
+        - [5, 9]
+        - [6, 8]
+    out: 3
+  - name: "near_coordinate_limit_disjoint"
+    in:
+      intervals:
+        - [0, 1]
+        - [99997, 99998]
+        - [99998, 99999]
+        - [99999, 100000]
+    out: 4
+  - name: "nested_at_coordinate_limit"
+    in:
+      intervals:
+        - [99990, 100000]
+        - [99991, 99999]
+        - [99992, 99998]
+        - [99993, 99997]
+    out: 1
+  - name: "two_frontiers_with_equal_right"
+    in:
+      intervals:
+        - [1, 6]
+        - [2, 6]
+        - [3, 8]
+        - [4, 8]
+        - [9, 10]
+    out: 3
+  - name: "many_short_intervals_under_two_kept"
+    in:
+      intervals:
+        - [0, 30]
+        - [1, 2]
+        - [3, 4]
+        - [5, 20]
+        - [21, 29]
+        - [30, 40]
+        - [31, 32]
+        - [35, 39]
+    out: 2
+  - name: "endpoint_equality_is_coverage"
+    in:
+      intervals:
+        - [1, 5]
+        - [1, 4]
+        - [2, 5]
+        - [2, 4]
+    out: 1
+  - name: "touching_covering_groups"
+    in:
+      intervals:
+        - [0, 100]
+        - [0, 99]
+        - [100, 200]
+        - [100, 199]
+    out: 2
+  - name: "long_crossing_frontier"
+    in:
+      intervals:
+        - [0, 4]
+        - [1, 8]
+        - [2, 7]
+        - [3, 12]
+        - [4, 11]
+        - [5, 16]
+        - [6, 15]
+    out: 4
+  - name: "sparse_unsorted_mix"
+    in:
+      intervals:
+        - [700, 800]
+        - [100, 900]
+        - [200, 300]
+        - [850, 950]
+        - [0, 50]
+        - [400, 500]
+    out: 3
+  - name: "large_static_nested_and_frontier_stress"
+    in:
+      intervals:
+        - [400, 900]
+        - [0, 1000]
+        - [10, 990]
+        - [20, 980]
+        - [30, 970]
+        - [40, 960]
+        - [50, 950]
+        - [60, 940]
+        - [70, 930]
+        - [80, 920]
+        - [90, 910]
+        - [1000, 1100]
+        - [1010, 1090]
+        - [1020, 1080]
+        - [1100, 1200]
+        - [1110, 1190]
+        - [1120, 1180]
+        - [1200, 1300]
+        - [1210, 1290]
+        - [1220, 1280]
+        - [1300, 1400]
+        - [1310, 1390]
+        - [1320, 1380]
+        - [1400, 1500]
+        - [1410, 1490]
+        - [1420, 1480]
+        - [1500, 1600]
+        - [1510, 1590]
+        - [1520, 1580]
+        - [1600, 1700]
+        - [1610, 1690]
+        - [1620, 1680]
+    out: 8
+  - name: "large_static_crossing_staircase_stress"
+    in:
+      intervals:
+        - [490, 510]
+        - [0, 100]
+        - [10, 90]
+        - [50, 150]
+        - [60, 140]
+        - [100, 200]
+        - [110, 190]
+        - [150, 250]
+        - [160, 240]
+        - [200, 300]
+        - [210, 290]
+        - [250, 350]
+        - [260, 340]
+        - [300, 400]
+        - [310, 390]
+        - [350, 450]
+        - [360, 440]
+        - [400, 500]
+        - [410, 490]
+        - [450, 550]
+        - [460, 540]
+        - [500, 600]
+        - [510, 590]
+        - [550, 650]
+        - [560, 640]
+        - [600, 700]
+        - [610, 690]
+        - [650, 750]
+        - [660, 740]
+        - [700, 800]
+        - [710, 790]
+        - [750, 850]
+        - [760, 840]
+        - [800, 900]
+        - [810, 890]
+        - [850, 950]
+        - [860, 940]
+        - [900, 1000]
+        - [910, 990]
+    out: 19

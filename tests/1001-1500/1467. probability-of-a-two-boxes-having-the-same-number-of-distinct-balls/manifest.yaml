@@ -1,0 +1,172 @@
+entry:
+  id: 1467
+  title: "probability-of-a-two-boxes-having-the-same-number-of-distinct-balls"
+  params:
+    balls:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().getProbability({balls})"
+    rust: "Solution::get_probability({balls})"
+    python3: "Solution().getProbability({balls})"
+    python2: "Solution().getProbability({balls})"
+    ruby: "get_probability({balls})"
+    java: "new Solution().getProbability({balls})"
+    csharp: "new Solution().GetProbability({balls})"
+    kotlin: "Solution().getProbability({balls})"
+    go: "getProbability({balls})"
+    dart: "Solution().getProbability({balls})"
+    swift: "Solution().getProbability({balls})"
+    typescript: "getProbability({balls})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().getProbability(balls, {result})"
+    checker: |
+      from itertools import product
+      from math import comb, isfinite
+      class Checker:
+          def getProbability(self, balls, result):
+              if isinstance(result, bool) or not isinstance(result, (int, float)) or not isfinite(result):
+                  return False
+              half = sum(balls) // 2
+              total = comb(sum(balls), half)
+              good = 0
+              for allocation in product(*[range(count + 1) for count in balls]):
+                  if sum(allocation) != half:
+                      continue
+                  left = sum(value > 0 for value in allocation)
+                  right = sum(value < count for value, count in zip(allocation, balls))
+                  if left == right:
+                      ways = 1
+                      for count, value in zip(balls, allocation):
+                          ways *= comb(count, value)
+                      good += ways
+              return abs(result - good / total) <= 1e-5
+seed: 1467
+tests:
+  - name: ex1
+    in:
+      balls: [1, 1]
+  - name: ex2
+    in:
+      balls: [2, 1, 1]
+  - name: ex3
+    in:
+      balls: [1, 2, 1, 2]
+  - name: four_single_colors
+    in:
+      balls: [1, 1, 1, 1]
+  - name: six_single_colors
+    in:
+      balls: [1, 1, 1, 1, 1, 1]
+  - name: eight_single_colors
+    in:
+      balls: [1, 1, 1, 1, 1, 1, 1, 1]
+  - name: one_color_two
+    in:
+      balls: [2]
+  - name: one_color_four
+    in:
+      balls: [4]
+  - name: one_color_six
+    in:
+      balls: [6]
+  - name: two_colors_two_each
+    in:
+      balls: [2, 2]
+  - name: three_colors_two_each
+    in:
+      balls: [2, 2, 2]
+  - name: four_colors_two_each
+    in:
+      balls: [2, 2, 2, 2]
+  - name: six_colors_two_each
+    in:
+      balls: [2, 2, 2, 2, 2, 2]
+  - name: two_colors_three_each
+    in:
+      balls: [3, 3]
+  - name: three_three_two
+    in:
+      balls: [3, 3, 2]
+  - name: four_colors_three_each
+    in:
+      balls: [3, 3, 3, 3]
+  - name: four_two
+    in:
+      balls: [4, 2]
+  - name: two_colors_four_each
+    in:
+      balls: [4, 4]
+  - name: six_two
+    in:
+      balls: [6, 2]
+  - name: two_colors_six_each
+    in:
+      balls: [6, 6]
+  - name: three_one_two
+    in:
+      balls: [3, 1, 2]
+  - name: three_two_one
+    in:
+      balls: [3, 2, 1]
+  - name: four_one_one
+    in:
+      balls: [4, 1, 1]
+  - name: five_one_one_one
+    in:
+      balls: [5, 1, 1, 1]
+  - name: six_one_one
+    in:
+      balls: [6, 1, 1]
+  - name: six_two_two
+    in:
+      balls: [6, 2, 2]
+  - name: four_three_one
+    in:
+      balls: [4, 3, 1]
+  - name: four_two_two
+    in:
+      balls: [4, 2, 2]
+  - name: five_three_two
+    in:
+      balls: [5, 3, 2]
+  - name: four_four_two
+    in:
+      balls: [4, 4, 2]
+  - name: three_three_two_two
+    in:
+      balls: [3, 3, 2, 2]
+  - name: five_colors_two_each
+    in:
+      balls: [2, 2, 2, 2, 2]
+  - name: six_two_two_two
+    in:
+      balls: [6, 2, 2, 2]
+  - name: four_three_three_two
+    in:
+      balls: [4, 3, 3, 2]
+  - name: five_three_two_two_two
+    in:
+      balls: [5, 3, 2, 2, 2]
+  - name: four_colors_four_each
+    in:
+      balls: [4, 4, 4, 4]
+  - name: four_three_three_three_two_two
+    in:
+      balls: [3, 3, 3, 3, 2, 2]
+  - name: maximum_all_colors
+    in:
+      balls: [6, 6, 6, 6, 6, 6, 6, 6]
+  - name: one_one_two_two
+    in:
+      balls: [1, 1, 2, 2]
+  - name: two_one_two_one
+    in:
+      balls: [2, 1, 2, 1]

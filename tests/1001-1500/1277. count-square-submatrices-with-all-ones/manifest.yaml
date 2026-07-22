@@ -1,0 +1,399 @@
+entry:
+  id: 1277
+  title: "count-square-submatrices-with-all-ones"
+  params:
+    matrix:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().countSquares({matrix})"
+    rust: "Solution::count_squares({matrix})"
+    python3: "Solution().countSquares({matrix})"
+    python2: "Solution().countSquares({matrix})"
+    ruby: "count_squares({matrix})"
+    java: "new Solution().countSquares({matrix})"
+    csharp: "new Solution().CountSquares({matrix})"
+    kotlin: "Solution().countSquares({matrix})"
+    go: "countSquares({matrix})"
+    dart: "Solution().countSquares({matrix})"
+    swift: "Solution().countSquares({matrix})"
+    typescript: "countSquares({matrix})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().countSquares(matrix, {result})"
+    checker: |
+      class Checker:
+          def countSquares(self, matrix, result):
+              rows = len(matrix)
+              cols = len(matrix[0]) if rows else 0
+              total = 0
+              previous = [0] * (cols + 1)
+              for row in range(rows):
+                  current = [0] * (cols + 1)
+                  for col in range(1, cols + 1):
+                      if matrix[row][col - 1] == 1:
+                          current[col] = min(
+                              previous[col], current[col - 1], previous[col - 1]
+                          ) + 1
+                          total += current[col]
+                  previous = current
+              return result == total
+seed: 1277
+tests:
+  - name: "example_one"
+    in:
+      matrix:
+        - [0, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [0, 1, 1, 1]
+    out: 15
+  - name: "example_two"
+    in:
+      matrix:
+        - [1, 0, 1]
+        - [1, 1, 0]
+        - [1, 1, 0]
+    out: 7
+  - name: "single_zero"
+    in:
+      matrix:
+        - [0]
+    out: 0
+  - name: "single_one"
+    in:
+      matrix:
+        - [1]
+    out: 1
+  - name: "zero_row"
+    in:
+      matrix:
+        - [0, 0, 0, 0, 0]
+    out: 0
+  - name: "mixed_row"
+    in:
+      matrix:
+        - [1, 0, 1, 1, 0, 1]
+    out: 4
+  - name: "mixed_column"
+    in:
+      matrix:
+        - [1]
+        - [0]
+        - [1]
+        - [1]
+        - [0]
+        - [1]
+    out: 4
+  - name: "full_two_by_two"
+    in:
+      matrix:
+        - [1, 1]
+        - [1, 1]
+    out: 5
+  - name: "full_three_by_three"
+    in:
+      matrix:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 14
+  - name: "full_four_by_four"
+    in:
+      matrix:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 30
+  - name: "checkerboard"
+    in:
+      matrix:
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+    out: 8
+  - name: "full_three_by_four"
+    in:
+      matrix:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 20
+  - name: "full_two_by_three"
+    in:
+      matrix:
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 8
+  - name: "two_rows_with_gap"
+    in:
+      matrix:
+        - [1, 1, 0, 1]
+        - [1, 1, 1, 1]
+    out: 8
+  - name: "isolated_cross"
+    in:
+      matrix:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+    out: 5
+  - name: "hollow_three_by_three"
+    in:
+      matrix:
+        - [1, 1, 1]
+        - [1, 0, 1]
+        - [1, 1, 1]
+    out: 8
+  - name: "bottom_left_l_shape"
+    in:
+      matrix:
+        - [1, 0, 0]
+        - [1, 0, 0]
+        - [1, 1, 1]
+    out: 5
+  - name: "embedded_three_by_three"
+    in:
+      matrix:
+        - [0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 0]
+        - [0, 1, 1, 1, 0]
+        - [0, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0]
+    out: 14
+  - name: "four_by_four_missing_corner"
+    in:
+      matrix:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 0]
+    out: 26
+  - name: "upper_left_triangle"
+    in:
+      matrix:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 0]
+        - [1, 1, 0, 0]
+        - [1, 0, 0, 0]
+    out: 13
+  - name: "diamond"
+    in:
+      matrix:
+        - [0, 0, 1, 0, 0]
+        - [0, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 1]
+        - [0, 1, 1, 1, 0]
+        - [0, 0, 1, 0, 0]
+    out: 18
+  - name: "full_five_by_five"
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 55
+  - name: "full_three_by_five"
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 26
+  - name: "full_five_by_three"
+    in:
+      matrix:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 26
+  - name: "full_one_by_ten"
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 10
+  - name: "full_ten_by_one"
+    in:
+      matrix:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+    out: 10
+  - name: "full_four_by_five"
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 40
+  - name: "vertical_bands"
+    in:
+      matrix:
+        - [1, 1, 0, 1, 1]
+        - [1, 1, 0, 1, 1]
+        - [1, 1, 0, 1, 1]
+        - [1, 1, 0, 1, 1]
+    out: 22
+  - name: "horizontal_bands"
+    in:
+      matrix:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [0, 0, 0, 0]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 22
+  - name: "top_left_three_by_three"
+    in:
+      matrix:
+        - [1, 1, 1, 0]
+        - [1, 1, 1, 0]
+        - [1, 1, 1, 0]
+        - [0, 0, 0, 0]
+    out: 14
+  - name: "bottom_right_three_by_three"
+    in:
+      matrix:
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 1, 1, 1]
+        - [0, 0, 1, 1, 1]
+        - [0, 0, 1, 1, 1]
+    out: 14
+  - name: "alternating_full_rows"
+    in:
+      matrix:
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+    out: 19
+  - name: "one_offset_hole"
+    in:
+      matrix:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [0, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 24
+  - name: "full_zero_five_by_five"
+    in:
+      matrix:
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+    out: 0
+  - name: "generator_max_dense_square"
+    seed: 127701
+    in:
+      matrix:
+        gen: "array"
+        len: 300
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 300
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generator_max_wide"
+    seed: 127702
+    in:
+      matrix:
+        gen: "array"
+        len: 299
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 300
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generator_max_tall"
+    seed: 127703
+    in:
+      matrix:
+        gen: "array"
+        len: 300
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 299
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generator_max_single_column"
+    seed: 127704
+    in:
+      matrix:
+        gen: "array"
+        len: 300
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 1
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generator_max_single_row"
+    seed: 127705
+    in:
+      matrix:
+        gen: "array"
+        len: 1
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 300
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generator_large_rectangular"
+    seed: 127706
+    in:
+      matrix:
+        gen: "array"
+        len: 257
+        elemType: "int"
+        of:
+          gen: "array"
+          len: 263
+          elemType: "int"
+          of:
+            gen: "int"
+            min: 0
+            max: 1

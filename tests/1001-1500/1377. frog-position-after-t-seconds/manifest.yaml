@@ -1,0 +1,773 @@
+entry:
+  id: 1377
+  title: "frog-position-after-t-seconds"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    t:
+      type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().frogPosition({n}, {edges}, {t}, {target})"
+    rust: "Solution::frog_position({n}, {edges}, {t}, {target})"
+    python3: "Solution().frogPosition({n}, {edges}, {t}, {target})"
+    python2: "Solution().frogPosition({n}, {edges}, {t}, {target})"
+    ruby: "frog_position({n}, {edges}, {t}, {target})"
+    java: "new Solution().frogPosition({n}, {edges}, {t}, {target})"
+    csharp: "new Solution().FrogPosition({n}, {edges}, {t}, {target})"
+    kotlin: "Solution().frogPosition({n}, {edges}, {t}, {target})"
+    go: "frogPosition({n}, {edges}, {t}, {target})"
+    dart: "Solution().frogPosition({n}, {edges}, {t}, {target})"
+    swift: "Solution().frogPosition({n}, {edges}, {t}, {target})"
+    typescript: "frogPosition({n}, {edges}, {t}, {target})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().frogPosition(n, edges, t, target, {result})"
+    checker: |
+      import math
+
+      class Checker:
+          def frogPosition(self, n, edges, t, target, result):
+              if not isinstance(result, (int, float)) or not math.isfinite(result):
+                  return False
+              graph = [[] for _ in range(n + 1)]
+              for a, b in edges:
+                  graph[a].append(b)
+                  graph[b].append(a)
+              mass = {1: 1.0}
+              visited = {1: frozenset((1,))}
+              for _ in range(t):
+                  next_mass = {}
+                  next_visited = {}
+                  for vertex, probability in mass.items():
+                      seen = visited[vertex]
+                      choices = [u for u in graph[vertex] if u not in seen]
+                      if not choices:
+                          next_mass[vertex] = next_mass.get(vertex, 0.0) + probability
+                          next_visited[vertex] = seen
+                      else:
+                          share = probability / len(choices)
+                          for child in choices:
+                              next_mass[child] = next_mass.get(child, 0.0) + share
+                              next_visited[child] = seen | frozenset((child,))
+                  mass, visited = next_mass, next_visited
+              expected = mass.get(target, 0.0)
+              return abs(float(result) - expected) <= 1e-5
+seed: 1377
+tests:
+  - name: "minimum_leaf"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      t: 1
+      target: 2
+  - name: "minimum_root_not_staying"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      t: 1
+      target: 1
+  - name: "path_three_exact_depth"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      t: 2
+      target: 3
+  - name: "path_three_internal_at_one"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      t: 1
+      target: 2
+  - name: "path_three_leaf_wait"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      t: 50
+      target: 3
+  - name: "path_three_root_after_move"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      t: 4
+      target: 1
+  - name: "star_first_leaf"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+      t: 1
+      target: 4
+  - name: "star_root_after_one"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+      t: 2
+      target: 1
+  - name: "star_leaf_wait"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+      t: 50
+      target: 2
+  - name: "star_wrong_leaf_after_two"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+      t: 2
+      target: 5
+  - name: "balanced_left_leaf"
+    in:
+      n: 7
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [3, 7]
+      t: 2
+      target: 4
+  - name: "balanced_right_leaf"
+    in:
+      n: 7
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [3, 7]
+      t: 2
+      target: 7
+  - name: "balanced_internal_at_one"
+    in:
+      n: 7
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [3, 7]
+      t: 1
+      target: 3
+  - name: "balanced_root_late"
+    in:
+      n: 7
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [3, 7]
+      t: 50
+      target: 1
+  - name: "uneven_branch_short_leaf"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+        - [4, 5]
+        - [4, 6]
+      t: 2
+      target: 3
+  - name: "uneven_branch_deep_leaf"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+        - [4, 5]
+        - [4, 6]
+      t: 3
+      target: 5
+  - name: "uneven_branch_deep_wait"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+        - [4, 5]
+        - [4, 6]
+      t: 5
+      target: 6
+  - name: "uneven_branch_middle"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+        - [4, 5]
+        - [4, 6]
+      t: 2
+      target: 4
+  - name: "uneven_branch_root"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+        - [4, 5]
+        - [4, 6]
+      t: 4
+      target: 1
+  - name: "path_four_second_vertex"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      t: 1
+      target: 2
+  - name: "path_four_middle"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      t: 2
+      target: 3
+  - name: "path_four_end"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      t: 3
+      target: 4
+  - name: "path_four_stopped_end"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      t: 10
+      target: 4
+  - name: "path_four_unreachable_root"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      t: 4
+      target: 1
+  - name: "root_with_two_paths"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [3, 4]
+        - [4, 5]
+      t: 2
+      target: 4
+  - name: "root_with_two_paths_short_leaf"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [3, 4]
+        - [4, 5]
+      t: 2
+      target: 2
+  - name: "root_with_two_paths_deep_leaf"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [3, 4]
+        - [4, 5]
+      t: 4
+      target: 5
+  - name: "root_with_two_paths_wait"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [3, 4]
+        - [4, 5]
+      t: 50
+      target: 5
+  - name: "root_degree_three_deep"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [4, 6]
+        - [6, 7]
+        - [7, 8]
+      t: 4
+      target: 8
+  - name: "root_degree_three_short"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [4, 6]
+        - [6, 7]
+        - [7, 8]
+      t: 2
+      target: 5
+  - name: "root_degree_three_internal"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [4, 6]
+        - [6, 7]
+        - [7, 8]
+      t: 3
+      target: 6
+  - name: "balanced_leaf_too_early"
+    in:
+      n: 7
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [3, 7]
+      t: 1
+      target: 4
+  - name: "balanced_leaf_stays_forever"
+    in:
+      n: 7
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [3, 7]
+      t: 50
+      target: 5
+  - name: "mixed_depth_target_too_late"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+        - [6, 7]
+        - [7, 8]
+      t: 2
+      target: 8
+  - name: "mixed_depth_deep_leaf"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+        - [6, 7]
+        - [7, 8]
+      t: 4
+      target: 8
+  - name: "path_eight_midpoint"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+      t: 5
+      target: 6
+  - name: "path_eight_late_root"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+      t: 50
+      target: 1
+  - name: "maximum_path_end"
+    in:
+      n: 100
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+        - [24, 25]
+        - [25, 26]
+        - [26, 27]
+        - [27, 28]
+        - [28, 29]
+        - [29, 30]
+        - [30, 31]
+        - [31, 32]
+        - [32, 33]
+        - [33, 34]
+        - [34, 35]
+        - [35, 36]
+        - [36, 37]
+        - [37, 38]
+        - [38, 39]
+        - [39, 40]
+        - [40, 41]
+        - [41, 42]
+        - [42, 43]
+        - [43, 44]
+        - [44, 45]
+        - [45, 46]
+        - [46, 47]
+        - [47, 48]
+        - [48, 49]
+        - [49, 50]
+        - [50, 51]
+        - [51, 52]
+        - [52, 53]
+        - [53, 54]
+        - [54, 55]
+        - [55, 56]
+        - [56, 57]
+        - [57, 58]
+        - [58, 59]
+        - [59, 60]
+        - [60, 61]
+        - [61, 62]
+        - [62, 63]
+        - [63, 64]
+        - [64, 65]
+        - [65, 66]
+        - [66, 67]
+        - [67, 68]
+        - [68, 69]
+        - [69, 70]
+        - [70, 71]
+        - [71, 72]
+        - [72, 73]
+        - [73, 74]
+        - [74, 75]
+        - [75, 76]
+        - [76, 77]
+        - [77, 78]
+        - [78, 79]
+        - [79, 80]
+        - [80, 81]
+        - [81, 82]
+        - [82, 83]
+        - [83, 84]
+        - [84, 85]
+        - [85, 86]
+        - [86, 87]
+        - [87, 88]
+        - [88, 89]
+        - [89, 90]
+        - [90, 91]
+        - [91, 92]
+        - [92, 93]
+        - [93, 94]
+        - [94, 95]
+        - [95, 96]
+        - [96, 97]
+        - [97, 98]
+        - [98, 99]
+        - [99, 100]
+      t: 50
+      target: 51
+  - name: "maximum_star_leaf"
+    in:
+      n: 100
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [1, 10]
+        - [1, 11]
+        - [1, 12]
+        - [1, 13]
+        - [1, 14]
+        - [1, 15]
+        - [1, 16]
+        - [1, 17]
+        - [1, 18]
+        - [1, 19]
+        - [1, 20]
+        - [1, 21]
+        - [1, 22]
+        - [1, 23]
+        - [1, 24]
+        - [1, 25]
+        - [1, 26]
+        - [1, 27]
+        - [1, 28]
+        - [1, 29]
+        - [1, 30]
+        - [1, 31]
+        - [1, 32]
+        - [1, 33]
+        - [1, 34]
+        - [1, 35]
+        - [1, 36]
+        - [1, 37]
+        - [1, 38]
+        - [1, 39]
+        - [1, 40]
+        - [1, 41]
+        - [1, 42]
+        - [1, 43]
+        - [1, 44]
+        - [1, 45]
+        - [1, 46]
+        - [1, 47]
+        - [1, 48]
+        - [1, 49]
+        - [1, 50]
+        - [1, 51]
+        - [1, 52]
+        - [1, 53]
+        - [1, 54]
+        - [1, 55]
+        - [1, 56]
+        - [1, 57]
+        - [1, 58]
+        - [1, 59]
+        - [1, 60]
+        - [1, 61]
+        - [1, 62]
+        - [1, 63]
+        - [1, 64]
+        - [1, 65]
+        - [1, 66]
+        - [1, 67]
+        - [1, 68]
+        - [1, 69]
+        - [1, 70]
+        - [1, 71]
+        - [1, 72]
+        - [1, 73]
+        - [1, 74]
+        - [1, 75]
+        - [1, 76]
+        - [1, 77]
+        - [1, 78]
+        - [1, 79]
+        - [1, 80]
+        - [1, 81]
+        - [1, 82]
+        - [1, 83]
+        - [1, 84]
+        - [1, 85]
+        - [1, 86]
+        - [1, 87]
+        - [1, 88]
+        - [1, 89]
+        - [1, 90]
+        - [1, 91]
+        - [1, 92]
+        - [1, 93]
+        - [1, 94]
+        - [1, 95]
+        - [1, 96]
+        - [1, 97]
+        - [1, 98]
+        - [1, 99]
+        - [1, 100]
+      t: 1
+      target: 100
+  - name: "maximum_star_root_late"
+    in:
+      n: 100
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [1, 10]
+        - [1, 11]
+        - [1, 12]
+        - [1, 13]
+        - [1, 14]
+        - [1, 15]
+        - [1, 16]
+        - [1, 17]
+        - [1, 18]
+        - [1, 19]
+        - [1, 20]
+        - [1, 21]
+        - [1, 22]
+        - [1, 23]
+        - [1, 24]
+        - [1, 25]
+        - [1, 26]
+        - [1, 27]
+        - [1, 28]
+        - [1, 29]
+        - [1, 30]
+        - [1, 31]
+        - [1, 32]
+        - [1, 33]
+        - [1, 34]
+        - [1, 35]
+        - [1, 36]
+        - [1, 37]
+        - [1, 38]
+        - [1, 39]
+        - [1, 40]
+        - [1, 41]
+        - [1, 42]
+        - [1, 43]
+        - [1, 44]
+        - [1, 45]
+        - [1, 46]
+        - [1, 47]
+        - [1, 48]
+        - [1, 49]
+        - [1, 50]
+        - [1, 51]
+        - [1, 52]
+        - [1, 53]
+        - [1, 54]
+        - [1, 55]
+        - [1, 56]
+        - [1, 57]
+        - [1, 58]
+        - [1, 59]
+        - [1, 60]
+        - [1, 61]
+        - [1, 62]
+        - [1, 63]
+        - [1, 64]
+        - [1, 65]
+        - [1, 66]
+        - [1, 67]
+        - [1, 68]
+        - [1, 69]
+        - [1, 70]
+        - [1, 71]
+        - [1, 72]
+        - [1, 73]
+        - [1, 74]
+        - [1, 75]
+        - [1, 76]
+        - [1, 77]
+        - [1, 78]
+        - [1, 79]
+        - [1, 80]
+        - [1, 81]
+        - [1, 82]
+        - [1, 83]
+        - [1, 84]
+        - [1, 85]
+        - [1, 86]
+        - [1, 87]
+        - [1, 88]
+        - [1, 89]
+        - [1, 90]
+        - [1, 91]
+        - [1, 92]
+        - [1, 93]
+        - [1, 94]
+        - [1, 95]
+        - [1, 96]
+        - [1, 97]
+        - [1, 98]
+        - [1, 99]
+        - [1, 100]
+      t: 50
+      target: 1

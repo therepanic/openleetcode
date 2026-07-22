@@ -1,0 +1,31 @@
+class Solution(object):
+    def largestNumber(self, cost, target):
+        """
+        :type cost: List[int]
+        :type target: int
+        :rtype: str
+        """
+        N = len(cost)
+        memo = {}
+        def helper(i, c):
+            if c == 0:
+                return 0
+            if i == N or c < 0:
+                return -float('inf')
+            if (i, c) in memo:
+                return memo[(i, c)]
+            res = max(helper(i+1, c), 1 + helper(i, c - cost[i]))
+            memo[(i, c)] = res
+            return res
+        
+        e = helper(0, target)
+        if e == -float('inf'):
+            return "0"
+        s = ""
+        for _ in range(e):
+            for j in range(9, 0, -1):
+                if cost[j-1] <= target and helper(0, target - cost[j-1]) == e - len(s) - 1:
+                    target -= cost[j-1]
+                    s += str(j)
+                    break
+        return s

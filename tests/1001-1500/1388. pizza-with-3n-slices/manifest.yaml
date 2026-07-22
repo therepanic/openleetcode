@@ -1,0 +1,408 @@
+entry:
+  id: 1388
+  title: pizza-with-3n-slices
+  params:
+    slices:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxSizeSlices({slices})"
+    rust: "Solution::max_size_slices({slices})"
+    python3: "Solution().maxSizeSlices({slices})"
+    python2: "Solution().maxSizeSlices({slices})"
+    ruby: "max_size_slices({slices})"
+    java: "new Solution().maxSizeSlices({slices})"
+    csharp: "new Solution().MaxSizeSlices({slices})"
+    kotlin: "Solution().maxSizeSlices({slices})"
+    go: "maxSizeSlices({slices})"
+    dart: "Solution().maxSizeSlices({slices})"
+    swift: "Solution().maxSizeSlices({slices})"
+    typescript: "maxSizeSlices({slices})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxSizeSlices(slices, {result})"
+    checker: |
+      class Checker:
+          def maxSizeSlices(self, slices, result):
+              if not isinstance(slices, list) or len(slices) < 3 or len(slices) > 500 or len(slices) % 3 != 0:
+                  return False
+              if any(not isinstance(value, int) or isinstance(value, bool) or value < 1 or value > 1000 for value in slices):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              picks = len(slices) // 3
+              def solve(values):
+                  impossible = -10**18
+                  rows = len(values)
+                  dp = [[impossible] * (picks + 1) for _ in range(rows + 1)]
+                  for row in range(rows + 1):
+                      dp[row][0] = 0
+                  for row in range(1, rows + 1):
+                      limit = min(picks, (row + 1) // 2)
+                      for count in range(1, limit + 1):
+                          skip = dp[row - 1][count]
+                          take = values[0] if row == 1 and count == 1 else (dp[row - 2][count - 1] + values[row - 1] if row > 1 else impossible)
+                          dp[row][count] = max(skip, take)
+                  return dp[rows][picks]
+              expected = max(solve(slices[1:]), solve(slices[:-1]))
+              return result == expected
+seed: 1388
+tests:
+  - name: minimum_three
+    in:
+      slices: [1, 2, 3]
+  - name: six_basic
+    in:
+      slices: [1, 2, 3, 4, 5, 6]
+  - name: six_high_edges
+    in:
+      slices: [100, 1, 1, 1, 1, 100]
+  - name: six_middle_high
+    in:
+      slices: [1, 100, 1, 100, 1, 1]
+  - name: nine_increasing
+    in:
+      slices: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: nine_decreasing
+    in:
+      slices: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: nine_alternating
+    in:
+      slices: [100, 1, 100, 1, 100, 1, 100, 1, 100]
+  - name: nine_edges_low
+    in:
+      slices: [1, 50, 40, 30, 20, 10, 9, 8, 1]
+  - name: twelve_basic
+    in:
+      slices: [1, 4, 2, 8, 5, 7, 3, 9, 6, 10, 2, 11]
+  - name: twelve_spikes
+    in:
+      slices: [1000, 1, 1, 1000, 1, 1, 1000, 1, 1, 1000, 1, 1]
+  - name: twelve_sparse_high
+    in:
+      slices: [1, 1, 1, 1, 500, 1, 1, 1, 1, 1, 1, 500]
+  - name: twelve_pattern
+    in:
+      slices: [3, 9, 2, 8, 1, 7, 4, 6, 5, 5, 4, 4]
+  - name: fifteen_increasing
+    in:
+      slices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+  - name: fifteen_decreasing
+    in:
+      slices: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: fifteen_alternating
+    in:
+      slices: [90, 2, 90, 2, 90, 2, 90, 2, 90, 2, 90, 2, 90, 2, 90]
+  - name: fifteen_mixed
+    in:
+      slices: [11, 3, 17, 2, 8, 20, 4, 13, 6, 19, 1, 12, 7, 15, 5]
+  - name: eighteen_increasing
+    in:
+      slices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+  - name: eighteen_blocks
+    in:
+      slices: [100, 1, 1, 90, 2, 2, 80, 3, 3, 70, 4, 4, 60, 5, 5, 50, 6, 6]
+  - name: eighteen_edges
+    in:
+      slices:
+        [1000, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1000]
+  - name: twenty_one_pattern
+    in:
+      slices:
+        [2, 10, 3, 9, 4, 8, 5, 7, 6, 6, 7, 5, 8, 4, 9, 3, 10, 2, 11, 1, 12]
+  - name: twenty_four_increasing
+    in:
+      slices:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+        ]
+  - name: twenty_four_spikes
+    in:
+      slices:
+        [
+          1000,
+          1,
+          1,
+          1,
+          1000,
+          1,
+          1,
+          1,
+          1000,
+          1,
+          1,
+          1,
+          1000,
+          1,
+          1,
+          1,
+          1000,
+          1,
+          1,
+          1,
+          1000,
+          1,
+          1,
+          1,
+        ]
+  - name: twenty_four_mixed
+    in:
+      slices:
+        [
+          37,
+          12,
+          88,
+          4,
+          65,
+          23,
+          91,
+          7,
+          42,
+          56,
+          3,
+          79,
+          18,
+          100,
+          9,
+          31,
+          72,
+          6,
+          54,
+          20,
+          83,
+          11,
+          46,
+          29,
+        ]
+  - name: twenty_seven_descending
+    in:
+      slices:
+        [
+          27,
+          26,
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+        ]
+  - name: thirty_maximum
+    in:
+      slices:
+        [
+          1000,
+          999,
+          998,
+          997,
+          996,
+          995,
+          994,
+          993,
+          992,
+          991,
+          990,
+          989,
+          988,
+          987,
+          986,
+          985,
+          984,
+          983,
+          982,
+          981,
+          980,
+          979,
+          978,
+          977,
+          976,
+          975,
+          974,
+          973,
+          972,
+          971,
+        ]
+  - name: thirty_alternating
+    in:
+      slices:
+        [
+          1000,
+          1,
+          999,
+          2,
+          998,
+          3,
+          997,
+          4,
+          996,
+          5,
+          995,
+          6,
+          994,
+          7,
+          993,
+          8,
+          992,
+          9,
+          991,
+          10,
+          990,
+          11,
+          989,
+          12,
+          988,
+          13,
+          987,
+          14,
+          986,
+          15,
+        ]
+  - name: six_circular_conflict
+    in:
+      slices: [100, 90, 1, 1, 1, 90]
+  - name: twelve_boundary_choice
+    in:
+      slices: [500, 1, 2, 3, 500, 4, 5, 6, 500, 7, 8, 9]
+  - name: three_all_minimum
+    in:
+      slices: [1, 1, 1]
+  - name: six_all_maximum
+    in:
+      slices: [1000, 1000, 1000, 1000, 1000, 1000]
+  - name: nine_boundary_wave
+    in:
+      slices: [1, 1000, 1, 1000, 1, 1000, 1, 1000, 1]
+  - name: twelve_low_high_pairs
+    in:
+      slices: [1, 1000, 2, 999, 3, 998, 4, 997, 5, 996, 6, 995]
+  - name: fifteen_rotated_peak
+    in:
+      slices: [1, 2, 3, 1000, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+  - name: eighteen_repeated_ridges
+    in:
+      slices:
+        [1000, 1, 2, 3, 1000, 1, 2, 3, 1000, 1, 2, 3, 1000, 1, 2, 3, 1000, 1]
+  - name: twenty_one_endpoints
+    in:
+      slices:
+        [
+          1000,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          1000,
+        ]
+  - name: generated_minimum
+    in:
+      slices:
+        gen: "array"
+        len: 3
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated_small
+    in:
+      slices:
+        gen: "array"
+        len: 30
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated_medium
+    in:
+      slices:
+        gen: "array"
+        len: 90
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated_near_maximum
+    in:
+      slices:
+        gen: "array"
+        len: 498
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated_maximum
+    in:
+      slices:
+        gen: "array"
+        len: 495
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"

@@ -1,0 +1,236 @@
+entry:
+  id: 1448
+  title: "count-good-nodes-in-binary-tree"
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().goodNodes({root})"
+    rust: "Solution::good_nodes({root})"
+    python3: "Solution().goodNodes({root})"
+    python2: "Solution().goodNodes({root})"
+    ruby: "good_nodes({root})"
+    java: "new Solution().goodNodes({root})"
+    csharp: "new Solution().GoodNodes({root})"
+    kotlin: "Solution().goodNodes({root})"
+    go: "goodNodes({root})"
+    dart: "Solution().goodNodes({root})"
+    swift: "Solution().goodNodes({root})"
+    typescript: "goodNodes({root})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 900
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().goodNodes(root, {result})"
+    checker: |
+      class Checker:
+          def goodNodes(self, root, result):
+              class Node:
+                  def __init__(self, value):
+                      self.val = value
+                      self.left = None
+                      self.right = None
+              nodes = [Node(value) if value is not None else None for value in root]
+              child = 1
+              for node in nodes:
+                  if node is not None:
+                      if child < len(nodes):
+                          node.left = nodes[child]
+                          child += 1
+                      if child < len(nodes):
+                          node.right = nodes[child]
+                          child += 1
+              root = nodes[0]
+              def visit(node, path_max):
+                  if node is None:
+                      return 0
+                  good = 1 if node.val >= path_max else 0
+                  next_max = max(path_max, node.val)
+                  return good + visit(node.left, next_max) + visit(node.right, next_max)
+              return result == visit(root, root.val)
+seed: 1448
+tests:
+  - name: "single-root"
+    in:
+      root: [3]
+    out: 1
+  - name: "official-balanced"
+    in:
+      root: [3, 1, 4, 3, null, 1, 5]
+    out: 4
+  - name: "official-left-chain"
+    in:
+      root: [3, 3, null, 4, 2]
+    out: 3
+  - name: "two-equal"
+    in:
+      root: [5, 5, 5]
+    out: 3
+  - name: "decreasing-left"
+    in:
+      root: [5, 4, null, 3, null, 2]
+    out: 1
+  - name: "increasing-left"
+    in:
+      root: [1, 2, null, 3, null, 4]
+    out: 4
+  - name: "decreasing-right"
+    in:
+      root: [8, null, 7, null, 6, null, 5]
+    out: 1
+  - name: "increasing-right"
+    in:
+      root: [1, null, 2, null, 3, null, 4]
+    out: 4
+  - name: "negative-root"
+    in:
+      root: [-5, -6, -4, -7, null, -3, -2]
+    out: 4
+  - name: "all-negative-decreasing"
+    in:
+      root: [-1, -2, -3, -4, -5, -6, -7]
+    out: 1
+  - name: "all-negative-increasing"
+    in:
+      root: [-7, -6, -5, -4, -3, -2, -1]
+    out: 7
+  - name: "root-minimum"
+    in:
+      root: [-10000, -9999, -10000]
+    out: 3
+  - name: "root-maximum"
+    in:
+      root: [10000, 9999, 10000]
+    out: 2
+  - name: "large-positive-leaf"
+    in:
+      root: [0, -5, 7]
+    out: 2
+  - name: "large-negative-leaf"
+    in:
+      root: [0, -5, -7]
+    out: 1
+  - name: "zigzag-highs"
+    in:
+      root: [5, 4, 6, 3, 7, 2, 8]
+    out: 4
+  - name: "zigzag-lows"
+    in:
+      root: [5, 6, 4, 7, 3, 8, 2]
+    out: 4
+  - name: "complete-constant"
+    in:
+      root: [9, 9, 9, 9, 9, 9, 9]
+    out: 7
+  - name: "complete-descending"
+    in:
+      root: [10, 9, 8, 7, 6, 5, 4]
+    out: 1
+  - name: "complete-ascending-levels"
+    in:
+      root: [1, 2, 2, 3, 3, 3, 3]
+    out: 7
+  - name: "left-heavy-mixed"
+    in:
+      root: [6, 3, 8, 2, 5, null, 9, 1, null, 4]
+    out: 3
+  - name: "right-heavy-mixed"
+    in:
+      root: [6, 3, 8, null, 5, 7, 9, null, null, 6, 10]
+    out: 4
+  - name: "missing-middle-child"
+    in:
+      root: [4, 2, 6, 1, null, 5, 7, null, null, null, null, 4]
+    out: 3
+  - name: "repeated-plateaus"
+    in:
+      root: [2, 2, 3, 2, 2, 3, 1, 2]
+    out: 7
+  - name: "root-negative-branches"
+    in:
+      root: [-2, -3, -1, -4, -2, -2, 0]
+    out: 4
+  - name: "alternating-signs"
+    in:
+      root: [0, -1, 1, 2, -2, 2, -3]
+    out: 4
+  - name: "deep-left-records"
+    in:
+      root: [1, 2, null, 1, null, 3, null, 2]
+    out: 3
+  - name: "deep-right-records"
+    in:
+      root: [4, null, 5, null, 3, null, 6, null, 2]
+    out: 3
+  - name: "wide-records"
+    in:
+      root: [5, 1, 9, 0, 2, 8, 10]
+    out: 3
+  - name: "wide-no-new-records"
+    in:
+      root: [10, 5, 9, 1, 4, 8, 7]
+    out: 1
+  - name: "boundary-values"
+    in:
+      root: [-10000, 10000, -10000, 9999, null, -9999]
+    out: 4
+  - name: "duplicate-boundary"
+    in:
+      root: [10000, 10000, 9999, 10000, 9998, null, 9999]
+    out: 3
+  - name: "balanced-random-one"
+    in:
+      root: [7, 3, 11, 5, 1, 9, 13, 4, 6, 0, 2, 8, 10, 12, 14]
+    out: 4
+  - name: "balanced-random-two"
+    in:
+      root: [0, -3, 4, -5, -2, 2, 6, -6, -4, -1, 1, 3, 5, 7, 8]
+    out: 7
+  - name: "sparse-seven"
+    in:
+      root: [8, 3, null, 2, 5, null, null, 1, null, 4]
+    out: 1
+  - name: "sparse-right-record"
+    in:
+      root: [2, null, 1, null, 3, null, 0, null, 4]
+    out: 3
+  - name: "all-two-levels"
+    in:
+      root: [2, 1, 2, 0, 1, 1, 2]
+    out: 3
+  - name: "stress-complete-maximum"
+    seed: 144801
+    in:
+      root:
+        gen: "array"
+        len: 100000
+        elemType: "int"
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+  - name: "stress-complete-near-maximum"
+    seed: 144802
+    in:
+      root:
+        gen: "array"
+        len: 99999
+        elemType: "int"
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+  - name: "stress-complete-mid-large"
+    seed: 144803
+    in:
+      root:
+        gen: "array"
+        len: 75000
+        elemType: "int"
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000

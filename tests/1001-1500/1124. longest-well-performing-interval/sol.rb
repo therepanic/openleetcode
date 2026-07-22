@@ -14,9 +14,7 @@ def longest_wpi(hours)
             longest_interval = [longest_interval, i - seen_at[score - 1]].max
         end
         
-        unless seen_at.key?(score)
-            seen_at[score] = i
-        end
+        seen_at[score] = i unless seen_at.key?(score)
     end
     
     longest_interval

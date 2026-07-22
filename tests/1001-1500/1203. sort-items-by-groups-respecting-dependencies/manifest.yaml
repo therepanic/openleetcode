@@ -1,0 +1,428 @@
+entry:
+  id: 1203
+  title: sort-items-by-groups-respecting-dependencies
+  params:
+    n:
+      type: int
+    m:
+      type: int
+    group:
+      type: array
+      items:
+        type: int
+    beforeItems:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().sortItems({n}, {m}, {group}, {beforeItems})"
+    rust: "Solution::sort_items({n}, {m}, {group}, {beforeItems})"
+    python3: "Solution().sortItems({n}, {m}, {group}, {beforeItems})"
+    python2: "Solution().sortItems({n}, {m}, {group}, {beforeItems})"
+    ruby: "sort_items({n}, {m}, {group}, {beforeItems})"
+    java: "new Solution().sortItems({n}, {m}, {group}, {beforeItems})"
+    csharp: "new Solution().SortItems({n}, {m}, {group}, {beforeItems})"
+    kotlin: "Solution().sortItems({n}, {m}, {group}, {beforeItems})"
+    go: "sortItems({n}, {m}, {group}, {beforeItems})"
+    dart: "Solution().sortItems({n}, {m}, {group}, {beforeItems})"
+    swift: "Solution().sortItems({n}, {m}, {group}, {beforeItems})"
+    typescript: "sortItems({n}, {m}, {group}, {beforeItems})"
+judge:
+  type: exact
+limits:
+  time_ms: 5000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().sortItems(n, m, group, beforeItems, {result})"
+    checker: |
+      class Checker:
+          def sortItems(self, n, m, group, beforeItems, result):
+              if not isinstance(result, list) or result == [] or len(result) != n:
+                  return False
+              if sorted(result) != list(range(n)):
+                  return False
+              position = [0] * n
+              for index, item in enumerate(result):
+                  position[item] = index
+              for item, predecessors in enumerate(beforeItems):
+                  for before in predecessors:
+                      if position[before] >= position[item]:
+                          return False
+              first = [n] * m
+              last = [-1] * m
+              count = [0] * m
+              for item, item_group in enumerate(group):
+                  if 0 <= item_group < m:
+                      index = position[item]
+                      first[item_group] = min(first[item_group], index)
+                      last[item_group] = max(last[item_group], index)
+                      count[item_group] += 1
+              for item_group in range(m):
+                  if count[item_group] and last[item_group] - first[item_group] + 1 != count[item_group]:
+                      return False
+              return True
+seed: 1203
+tests:
+  - name: simple_groups
+    in:
+      n: 8
+      m: 2
+      group: [0, 0, 1, 1, -1, -1, 0, 1]
+      beforeItems: [[], [0], [1], [2], [3], [], [1], [2]]
+  - name: example_style
+    in:
+      n: 8
+      m: 2
+      group: [-1, -1, 1, 0, 0, 1, 0, -1]
+      beforeItems: [[], [6], [5], [6], [3, 6], [], [4], []]
+    out: []
+  - name: no_dependencies
+    in:
+      n: 5
+      m: 2
+      group: [0, 0, 1, -1, 1]
+      beforeItems: [[], [], [], [], []]
+  - name: all_ungrouped
+    in:
+      n: 4
+      m: 1
+      group: [-1, -1, -1, -1]
+      beforeItems: [[], [0], [1], [2]]
+  - name: one_group_chain
+    in:
+      n: 5
+      m: 1
+      group: [0, 0, 0, 0, 0]
+      beforeItems: [[], [0], [1], [2], [3]]
+  - name: cycle_items
+    in:
+      n: 3
+      m: 1
+      group: [0, 0, 0]
+      beforeItems: [[2], [0], [1]]
+    out: []
+  - name: cycle_between_groups
+    in:
+      n: 4
+      m: 2
+      group: [0, 0, 1, 1]
+      beforeItems: [[], [2], [1], []]
+    out: []
+  - name: cross_group_order
+    in:
+      n: 6
+      m: 3
+      group: [0, 0, 1, 1, 2, 2]
+      beforeItems: [[], [0], [1], [2], [3], [4]]
+  - name: ungrouped_between_groups
+    in:
+      n: 6
+      m: 2
+      group: [0, -1, 1, 0, -1, 1]
+      beforeItems: [[], [0], [1], [0], [2], [3]]
+  - name: branching_dependencies
+    in:
+      n: 7
+      m: 2
+      group: [0, 0, 1, 1, 0, 1, -1]
+      beforeItems: [[], [], [0], [0], [1], [2, 4], [3]]
+  - name: diamond_graph
+    in:
+      n: 6
+      m: 2
+      group: [0, 0, 1, 1, 0, 1]
+      beforeItems: [[], [0], [0], [0], [1], [2, 3]]
+  - name: empty_group_slots
+    in:
+      n: 4
+      m: 4
+      group: [0, 3, 3, 0]
+      beforeItems: [[], [0], [1], [0]]
+  - name: duplicate_free_edges
+    in:
+      n: 5
+      m: 2
+      group: [0, 1, 0, 1, -1]
+      beforeItems: [[], [0], [0], [1], [2, 3]]
+  - name: independent_components
+    in:
+      n: 8
+      m: 4
+      group: [0, 0, 1, 1, 2, 2, 3, 3]
+      beforeItems: [[], [0], [], [2], [], [4], [], [6]]
+  - name: single_item
+    in:
+      n: 1
+      m: 1
+      group: [-1]
+      beforeItems: [[]]
+  - name: all_items_separate_groups
+    in:
+      n: 5
+      m: 5
+      group: [0, 1, 2, 3, 4]
+      beforeItems: [[], [0], [1], [2], [3]]
+  - name: negative_group_mix
+    in:
+      n: 7
+      m: 2
+      group: [-1, 0, -1, 1, 0, 1, -1]
+      beforeItems: [[], [0], [1], [2], [1], [3], [4]]
+  - name: same_group_constraints
+    in:
+      n: 6
+      m: 2
+      group: [0, 0, 0, 1, 1, 1]
+      beforeItems: [[], [0], [1], [], [3], [4]]
+  - name: late_cross_edge
+    in:
+      n: 6
+      m: 2
+      group: [0, 0, 1, 1, 0, 1]
+      beforeItems: [[], [], [1], [2], [0], []]
+  - name: two_independent_groups
+    in:
+      n: 6
+      m: 2
+      group: [0, 0, 0, 1, 1, 1]
+      beforeItems: [[], [0], [1], [], [3], [4]]
+  - name: group_order_only
+    in:
+      n: 5
+      m: 3
+      group: [0, 1, 2, 1, 0]
+      beforeItems: [[], [0], [1], [1], []]
+  - name: ungrouped_dependency_chain
+    in:
+      n: 5
+      m: 2
+      group: [-1, 0, -1, 1, -1]
+      beforeItems: [[], [0], [1], [2], [3]]
+  - name: intra_group_branch
+    in:
+      n: 6
+      m: 1
+      group: [0, 0, 0, 0, 0, 0]
+      beforeItems: [[], [], [0], [0], [2, 3], [1]]
+  - name: cycle_single_group
+    in:
+      n: 4
+      m: 1
+      group: [0, 0, 0, 0]
+      beforeItems: [[1], [2], [3], [0]]
+    out: []
+  - name: empty_middle_group
+    in:
+      n: 5
+      m: 5
+      group: [0, 4, 0, 4, 0]
+      beforeItems: [[], [0], [], [], [2]]
+  - name: multiple_roots
+    in:
+      n: 8
+      m: 3
+      group: [0, 1, 2, 0, 1, 2, -1, -1]
+      beforeItems: [[], [], [], [0], [1], [2], [3, 4], [5]]
+  - name: cross_group_fanout
+    in:
+      n: 7
+      m: 3
+      group: [0, 1, 2, 1, 2, 0, -1]
+      beforeItems: [[], [0], [0], [0], [0], [0], [3, 4]]
+  - name: disconnected_ungrouped
+    in:
+      n: 6
+      m: 1
+      group: [-1, -1, 0, 0, -1, 0]
+      beforeItems: [[], [], [0], [1], [], [2, 3]]
+  - name: wide_no_edges
+    in:
+      n: 10
+      m: 3
+      group: [0, 1, 2, 0, 1, 2, -1, -1, 0, 2]
+      beforeItems: [[], [], [], [], [], [], [], [], [], []]
+  - name: long_chain_groups
+    in:
+      n: 10
+      m: 3
+      group: [0, 0, 1, 1, 2, 2, 0, 1, 2, -1]
+      beforeItems: [[], [0], [1], [2], [3], [4], [0], [2], [4], [8]]
+  - name: official_example_one
+    in:
+      n: 8
+      m: 2
+      group: [-1, -1, 1, 0, 0, 1, 0, -1]
+      beforeItems: [[], [6], [5], [6], [3, 6], [], [], []]
+  - name: repeated_cross_group_edges
+    in:
+      n: 6
+      m: 2
+      group: [0, 0, 0, 1, 1, 1]
+      beforeItems: [[], [], [], [0], [1], [2]]
+  - name: three_group_cycle_without_item_cycle
+    in:
+      n: 6
+      m: 3
+      group: [0, 0, 1, 1, 2, 2]
+      beforeItems: [[5], [], [1], [], [3], []]
+    out: []
+  - name: inter_and_intra_group_dependencies
+    in:
+      n: 9
+      m: 3
+      group: [0, 0, 0, 1, 1, 1, 2, 2, 2]
+      beforeItems: [[], [0], [1], [2], [3], [3, 4], [5], [6], [6, 7]]
+  - name: sparse_assigned_groups
+    in:
+      n: 7
+      m: 7
+      group: [0, 6, -1, 0, 6, -1, 0]
+      beforeItems: [[], [0], [1], [0], [1], [2], [3]]
+  - name: generated_max_all_assigned_one_group
+    seed: 101
+    in:
+      n: 30000
+      m: 1
+      group:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: 0
+          max: 0
+        distinct: false
+        sorted: false
+        elemType: int
+      beforeItems:
+        gen: array
+        len: 30000
+        of:
+          gen: array
+          len: 0
+          of:
+            gen: int
+            min: 0
+            max: 29999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: generated_max_all_ungrouped
+    seed: 202
+    in:
+      n: 30000
+      m: 1
+      group:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: -1
+          max: -1
+        distinct: false
+        sorted: false
+        elemType: int
+      beforeItems:
+        gen: array
+        len: 30000
+        of:
+          gen: array
+          len: 0
+          of:
+            gen: int
+            min: 0
+            max: 29999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: generated_max_random_groups
+    seed: 303
+    in:
+      n: 30000
+      m: 15000
+      group:
+        gen: array
+        len: 30000
+        of:
+          gen: int
+          min: -1
+          max: 14999
+        distinct: false
+        sorted: false
+        elemType: int
+      beforeItems:
+        gen: array
+        len: 30000
+        of:
+          gen: array
+          len: 0
+          of:
+            gen: int
+            min: 0
+            max: 29999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: generated_many_group_slots
+    seed: 404
+    in:
+      n: 24000
+      m: 24000
+      group:
+        gen: array
+        len: 24000
+        of:
+          gen: int
+          min: -1
+          max: 23999
+        distinct: false
+        sorted: false
+        elemType: int
+      beforeItems:
+        gen: array
+        len: 24000
+        of:
+          gen: array
+          len: 0
+          of:
+            gen: int
+            min: 0
+            max: 23999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false
+  - name: generated_large_few_groups
+    seed: 505
+    in:
+      n: 2000
+      m: 17
+      group:
+        gen: array
+        len: 2000
+        of:
+          gen: int
+          min: -1
+          max: 16
+        distinct: false
+        sorted: false
+        elemType: int
+      beforeItems:
+        gen: array
+        len: 2000
+        of:
+          gen: array
+          len: 0
+          of:
+            gen: int
+            min: 0
+            max: 17999
+          distinct: false
+          sorted: false
+        distinct: false
+        sorted: false

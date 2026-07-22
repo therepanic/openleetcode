@@ -1,0 +1,42 @@
+class Solution(object):
+    def invalidTransactions(self, transactions):
+        """
+        :type transactions: List[str]
+        :rtype: List[str]
+        """
+        userTxns = {}
+        invalids = []
+
+        for txn in transactions:
+            vals = txn.split(",")
+            if vals[0] not in userTxns:
+                userTxns[vals[0]] = []
+            userTxns[vals[0]].append(vals)
+
+        for user in userTxns:
+            txns = userTxns[user]
+            txns.sort(key=lambda x: int(x[1]))
+            cities = {}
+            l = 0
+            invalidTxnWithinWindow = set()
+
+            for r in range(len(txns)):
+                c = cities.get(txns[r][3], 0)
+                cities[txns[r][3]] = c + 1
+                while l < r and int(txns[r][1]) - int(txns[l][1]) > 60:
+                    cities[txns[l][3]] -= 1
+                    if cities[txns[l][3]] == 0:
+                        del cities[txns[l][3]]
+                    if l in invalidTxnWithinWindow:
+                        invalidTxnWithinWindow.remove(l)
+                    l += 1
+
+                if int(txns[r][2]) > 1000:
+                    invalids.append(",".join(txns[r]))
+                if len(cities) > 1:
+                    for i in range(l, r + 1):
+                        if int(txns[i][2]) <= 1000 and i not in invalidTxnWithinWindow:
+                            invalids.append(",".join(txns[i]))
+                            invalidTxnWithinWindow.add(i)
+
+        return invalids

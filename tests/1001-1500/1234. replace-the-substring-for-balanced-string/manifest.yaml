@@ -1,0 +1,220 @@
+entry:
+  id: 1234
+  title: "replace-the-substring-for-balanced-string"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().balancedString({s})"
+    rust: "Solution::balanced_string({s})"
+    python3: "Solution().balancedString({s})"
+    python2: "Solution().balancedString({s})"
+    ruby: "balanced_string({s})"
+    java: "new Solution().balancedString({s})"
+    csharp: "new Solution().BalancedString({s})"
+    kotlin: "Solution().balancedString({s})"
+    go: "balancedString({s})"
+    dart: "Solution().balancedString({s})"
+    swift: "Solution().balancedString({s})"
+    typescript: "balancedString({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().balancedString(s, {result})"
+    checker: |
+      class Checker:
+          def balancedString(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool) or len(s) < 4 or len(s) % 4 != 0:
+                  return False
+              target = len(s) // 4
+              total = {ch: s.count(ch) for ch in 'QWER'}
+              if all(total[ch] == target for ch in total):
+                  return result == 0
+              left = 0
+              window = {ch: 0 for ch in 'QWER'}
+              best = len(s)
+              for right, ch in enumerate(s):
+                  window[ch] += 1
+                  while left <= right and all(total[x] - window[x] <= target for x in 'QWER'):
+                      best = min(best, right - left + 1)
+                      window[s[left]] -= 1
+                      left += 1
+              return result == best
+
+seed: 123400
+
+tests:
+  - name: "example_balanced"
+    in:
+      s: "QWER"
+    out: 0
+  - name: "example_one_excess"
+    in:
+      s: "QQWE"
+    out: 1
+  - name: "example_two_excess"
+    in:
+      s: "QQQW"
+    out: 2
+  - name: "all_q_minimum"
+    in:
+      s: "QQQQ"
+    out: 3
+  - name: "all_w_minimum"
+    in:
+      s: "WWWW"
+    out: 3
+  - name: "all_e_minimum"
+    in:
+      s: "EEEE"
+    out: 3
+  - name: "all_r_minimum"
+    in:
+      s: "RRRR"
+    out: 3
+  - name: "two_q_two_w"
+    in:
+      s: "QQWW"
+    out: 2
+  - name: "two_q_two_e"
+    in:
+      s: "QQEE"
+    out: 2
+  - name: "two_q_two_r"
+    in:
+      s: "QQRR"
+    out: 2
+  - name: "three_w_one_q"
+    in:
+      s: "QWWW"
+    out: 2
+  - name: "three_e_one_r"
+    in:
+      s: "EEER"
+    out: 2
+  - name: "alternating_two"
+    in:
+      s: "QWQW"
+    out: 2
+  - name: "balanced_twice"
+    in:
+      s: "QWERQWER"
+    out: 0
+  - name: "balanced_permuted"
+    in:
+      s: "QQWWEERR"
+    out: 0
+  - name: "two_heavy_blocks"
+    in:
+      s: "QQQQWWWW"
+    out: 4
+  - name: "one_each_extra"
+    in:
+      s: "QQQWEERR"
+    out: 1
+  - name: "two_q_blocks"
+    in:
+      s: "QQQWQQQW"
+    out: 5
+  - name: "mixed_excess"
+    in:
+      s: "QWERRRQQ"
+    out: 2
+  - name: "balanced_scrambled"
+    in:
+      s: "QWQEQWER"
+    out: 1
+  - name: "eight_q"
+    in:
+      s: "QQQQQQQQ"
+    out: 6
+  - name: "balanced_thrice"
+    in:
+      s: "QWERQWERQWER"
+    out: 0
+  - name: "three_q_three_r_excess"
+    in:
+      s: "QQQQWWEERRQQ"
+    out: 3
+  - name: "alternating_long"
+    in:
+      s: "QWQWQWQW"
+    out: 4
+  - name: "three_overrepresented"
+    in:
+      s: "QQQQWWWWEEEE"
+    out: 6
+  - name: "one_q_excess_long"
+    in:
+      s: "QQQWEEER"
+    out: 3
+  - name: "many_e"
+    in:
+      s: "QWEEEEEE"
+    out: 4
+  - name: "q_w_r_mix"
+    in:
+      s: "QQWWRRRR"
+    out: 2
+  - name: "five_q_three_w"
+    in:
+      s: "QQQQQWWW"
+    out: 4
+  - name: "five_q_one_w_two_e"
+    in:
+      s: "QQQQQWEE"
+    out: 3
+  - name: "large_q_r_blocks"
+    in:
+      s: "QQQQQQQWRRRRRRRR"
+    out: 8
+  - name: "balanced_four_times"
+    in:
+      s: "QWERQWERQWERQWER"
+    out: 0
+  - name: "balanced_six_times"
+    in:
+      s: "QWERQWERQWERQWERQWERQWER"
+    out: 0
+  - name: "generated_small"
+    seed: 123401
+    in:
+      s:
+        gen: "str"
+        len: 20
+        alphabet: "QWER"
+  - name: "generated_medium"
+    seed: 123402
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "QWER"
+  - name: "generated_large"
+    seed: 123403
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "QWER"
+  - name: "generated_maximum_a"
+    seed: 123404
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "QWER"
+  - name: "generated_maximum_b"
+    seed: 123405
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "QWER"

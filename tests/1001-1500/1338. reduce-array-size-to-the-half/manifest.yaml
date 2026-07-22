@@ -1,0 +1,299 @@
+entry:
+  id: 1338
+  title: "reduce-array-size-to-the-half"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minSetSize({arr})"
+    rust: "Solution::min_set_size({arr})"
+    python3: "Solution().minSetSize({arr})"
+    python2: "Solution().minSetSize({arr})"
+    ruby: "min_set_size({arr})"
+    java: "new Solution().minSetSize({arr})"
+    csharp: "new Solution().MinSetSize({arr})"
+    kotlin: "Solution().minSetSize({arr})"
+    go: "minSetSize({arr})"
+    dart: "Solution().minSetSize({arr})"
+    swift: "Solution().minSetSize({arr})"
+    typescript: "minSetSize({arr})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minSetSize(arr, {result})"
+    checker: |
+      class Checker:
+          def minSetSize(self, arr, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              frequencies = {}
+              for value in arr:
+                  frequencies[value] = frequencies.get(value, 0) + 1
+              removed = 0
+              for size, count in enumerate(sorted(frequencies.values(), reverse=True), 1):
+                  removed += count
+                  if removed >= len(arr) // 2:
+                      return result == size
+              return False
+
+seed: 1338
+
+tests:
+  - name: "example-one"
+    in:
+      arr: [3, 3, 3, 3, 5, 5, 5, 2, 2, 7]
+    out: 2
+  - name: "example-two"
+    in:
+      arr: [7, 7, 7, 7, 7, 7]
+    out: 1
+  - name: "two-equal"
+    in:
+      arr: [1, 1]
+    out: 1
+  - name: "two-distinct"
+    in:
+      arr: [1, 2]
+    out: 1
+  - name: "all-equal-four"
+    in:
+      arr: [4, 4, 4, 4]
+    out: 1
+  - name: "all-distinct-four"
+    in:
+      arr: [1, 2, 3, 4]
+    out: 2
+  - name: "balanced-pairs"
+    in:
+      arr: [1, 1, 2, 2, 3, 3, 4, 4]
+    out: 2
+  - name: "dominant-exactly-half"
+    in:
+      arr: [1, 1, 1, 1, 1, 2, 3, 4, 5, 6]
+    out: 1
+  - name: "dominant-over-half"
+    in:
+      arr: [1, 1, 1, 1, 1, 1, 2, 3, 4, 5]
+    out: 1
+  - name: "two-large-groups"
+    in:
+      arr: [1, 1, 1, 1, 2, 2, 2, 2]
+    out: 1
+  - name: "three-required-by-frequencies"
+    in:
+      arr: [1, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5]
+    out: 2
+  - name: "odd-frequency-groups"
+    in:
+      arr: [1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4]
+    out: 2
+  - name: "minimum-value-boundary"
+    in:
+      arr: [1, 1, 1, 1, 2, 2, 3, 4]
+    out: 1
+  - name: "maximum-value-boundary"
+    in:
+      arr: [100000, 100000, 100000, 100000, 99999, 99999, 1, 1]
+    out: 1
+  - name: "alternating-two-values"
+    in:
+      arr: [5, 6, 5, 6, 5, 6, 5, 6]
+    out: 1
+  - name: "one-dominates"
+    in:
+      arr: [9, 9, 9, 9, 9, 9, 9, 2, 3, 4, 5, 6]
+    out: 1
+  - name: "one-pair-many-singletons"
+    in:
+      arr: [1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: 4
+  - name: "four-equal-groups"
+    in:
+      arr: [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]
+    out: 2
+  - name: "large-first-group"
+    in:
+      arr: [1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 4, 5]
+    out: 1
+  - name: "large-last-group"
+    in:
+      arr: [1, 2, 3, 4, 5, 9, 9, 9, 9, 9, 9, 9]
+    out: 1
+  - name: "sixteen-distinct"
+    in:
+      arr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    out: 8
+  - name: "sixteen-equal"
+    in:
+      arr: [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+    out: 1
+  - name: "quarter-sized-groups"
+    in:
+      arr: [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
+    out: 2
+  - name: "uneven-distribution"
+    in:
+      arr: [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7]
+    out: 2
+  - name: "mixed-value-boundaries"
+    in:
+      arr: [1, 1, 1, 100000, 100000, 99999, 99998, 99997]
+    out: 2
+  - name: "six-repeated-pairs"
+    in:
+      arr: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]
+    out: 3
+  - name: "two-thirds-dominant"
+    in:
+      arr: [7, 7, 7, 7, 7, 7, 7, 7, 1, 2, 3, 4]
+    out: 1
+  - name: "small-frequency-tail"
+    in:
+      arr: [1, 1, 1, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: 2
+  - name: "four-balanced-large-groups"
+    in:
+      arr:
+        [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4]
+    out: 2
+  - name: "half-size-dominant"
+    in:
+      arr:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+        ]
+    out: 1
+  - name: "two-largest-needed"
+    in:
+      arr: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 4, 5, 5]
+    out: 2
+  - name: "three-largest-needed"
+    in:
+      arr: [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6]
+    out: 3
+  - name: "four-largest-needed"
+    in:
+      arr: [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8]
+    out: 4
+  - name: "five-pairs-needed"
+    in:
+      arr: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9]
+    out: 5
+  - name: "generated-maximum-domain"
+    seed: 101
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+        distinct: false
+        sorted: false
+  - name: "generated-tiny-domain"
+    seed: 202
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 2
+        elemType: "int"
+        distinct: false
+        sorted: false
+  - name: "generated-narrow-domain"
+    seed: 303
+    in:
+      arr:
+        gen: "array"
+        len: 80000
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        elemType: "int"
+        distinct: false
+        sorted: false
+  - name: "generated-medium-domain"
+    seed: 404
+    in:
+      arr:
+        gen: "array"
+        len: 75000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+        distinct: false
+        sorted: false
+  - name: "generated-wide-domain"
+    seed: 505
+    in:
+      arr:
+        gen: "array"
+        len: 60000
+        of:
+          gen: "int"
+          min: 1
+          max: 50000
+        elemType: "int"
+        distinct: false
+        sorted: false
+  - name: "generated-near-unique-domain"
+    seed: 606
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+        distinct: false
+        sorted: false

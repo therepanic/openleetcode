@@ -1,0 +1,230 @@
+entry:
+  id: 1416
+  title: restore-the-array
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().numberOfArrays({s}, {k})"
+    rust: "Solution::number_of_arrays({s}, {k})"
+    python3: "Solution().numberOfArrays({s}, {k})"
+    python2: "Solution().numberOfArrays({s}, {k})"
+    ruby: "number_of_arrays({s}, {k})"
+    java: "new Solution().numberOfArrays({s}, {k})"
+    csharp: "new Solution().NumberOfArrays({s}, {k})"
+    kotlin: "Solution().numberOfArrays({s}, {k})"
+    go: "numberOfArrays({s}, {k})"
+    dart: "Solution().numberOfArrays({s}, {k})"
+    swift: "Solution().numberOfArrays({s}, {k})"
+    typescript: "numberOfArrays({s}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().numberOfArrays(s, k, {result})"
+    checker: |
+      class Checker:
+          def numberOfArrays(self, s, k, result):
+              if type(result) is not int:
+                  return False
+              mod = 1000000007
+              ways = [0] * (len(s) + 1)
+              ways[len(s)] = 1
+              width = len(str(k))
+              for start in range(len(s) - 1, -1, -1):
+                  if s[start] == '0':
+                      continue
+                  value = 0
+                  for end in range(start, min(len(s), start + width)):
+                      value = value * 10 + ord(s[end]) - 48
+                      if value > k:
+                          break
+                      ways[start] = (ways[start] + ways[end + 1]) % mod
+              return result == ways[0]
+seed: 1416
+tests:
+  - name: example-single
+    in:
+      s: "1000"
+      k: 10000
+  - name: example-impossible
+    in:
+      s: "1000"
+      k: 10
+  - name: example-eight
+    in:
+      s: "1317"
+      k: 2000
+  - name: minimum-digit
+    in:
+      s: "1"
+      k: 1
+  - name: minimum-k-nonzero
+    in:
+      s: "9"
+      k: 1
+  - name: exact-two-digit-limit
+    in:
+      s: "12"
+      k: 12
+  - name: two-digit-too-large
+    in:
+      s: "12"
+      k: 9
+  - name: all-ones-k-one
+    in:
+      s: "11111"
+      k: 1
+  - name: all-ones-k-eleven
+    in:
+      s: "11111"
+      k: 11
+  - name: internal-zero
+    in:
+      s: "101"
+      k: 100
+  - name: zero-after-prefix
+    in:
+      s: "1001"
+      k: 1000
+  - name: zero-after-one
+    in:
+      s: "1200"
+      k: 1000
+  - name: exact-nines
+    in:
+      s: "99"
+      k: 99
+  - name: nines-single-only
+    in:
+      s: "99"
+      k: 9
+  - name: three-digit-boundary
+    in:
+      s: "123"
+      k: 12
+  - name: four-digit-splits
+    in:
+      s: "1234"
+      k: 100
+  - name: restrictive-increasing
+    in:
+      s: "9876"
+      k: 9
+  - name: permissive-short
+    in:
+      s: "9876"
+      k: 10000
+  - name: alternating-zero
+    in:
+      s: "101010"
+      k: 101
+  - name: repeated-two
+    in:
+      s: "222222"
+      k: 22
+  - name: pi-prefix
+    in:
+      s: "314159"
+      k: 1000
+  - name: all-nines-six
+    in:
+      s: "999999"
+      k: 999999
+  - name: k-one-digit
+    in:
+      s: "123456"
+      k: 10
+  - name: k-two-digit
+    in:
+      s: "123456"
+      k: 99
+  - name: zero-block
+    in:
+      s: "1000001"
+      k: 1000000
+  - name: long-ones-static
+    in:
+      s: "1111111"
+      k: 11
+  - name: increasing-nine
+    in:
+      s: "123456789"
+      k: 100
+  - name: decreasing-nine
+    in:
+      s: "987654321"
+      k: 100
+  - name: repeated-pattern
+    in:
+      s: "123123123"
+      k: 123
+  - name: zero-separated
+    in:
+      s: "10203040"
+      k: 1000
+  - name: nine-digit-permissive
+    in:
+      s: "999999999"
+      k: 1000000000
+  - name: nine-digit-restrictive
+    in:
+      s: "999999999"
+      k: 9
+  - name: ten-digit-mixed
+    in:
+      s: "1234567891"
+      k: 10000
+  - name: pi-long
+    in:
+      s: "3141592653"
+      k: 100000
+  - name: billion-boundary
+    in:
+      s: "1000000000"
+      k: 1000000000
+  - name: generated-small
+    seed: 141601
+    in:
+      s:
+        gen: "str"
+        len: 37
+        alphabet: "123456789"
+      k: 999
+  - name: generated-medium
+    seed: 141602
+    in:
+      s:
+        gen: "str"
+        len: 121
+        alphabet: "123456789"
+      k: 100000
+  - name: generated-wide-k
+    seed: 141603
+    in:
+      s:
+        gen: "str"
+        len: 503
+        alphabet: "123456789"
+      k: 1000000000
+  - name: generated-large
+    seed: 141604
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "123456789"
+      k: 999999999
+  - name: generated-large-small-k
+    seed: 141605
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "123456789"
+      k: 9

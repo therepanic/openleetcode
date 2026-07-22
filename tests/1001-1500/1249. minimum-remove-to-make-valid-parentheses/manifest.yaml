@@ -1,0 +1,212 @@
+entry:
+  id: 1249
+  title: minimum-remove-to-make-valid-parentheses
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().minRemoveToMakeValid({s})"
+    rust: "Solution::min_remove_to_make_valid({s})"
+    python3: "Solution().minRemoveToMakeValid({s})"
+    python2: "Solution().minRemoveToMakeValid({s})"
+    ruby: "min_remove_to_make_valid({s})"
+    java: "new Solution().minRemoveToMakeValid({s})"
+    csharp: "new Solution().MinRemoveToMakeValid({s})"
+    kotlin: "Solution().minRemoveToMakeValid({s})"
+    go: "minRemoveToMakeValid({s})"
+    dart: "Solution().minRemoveToMakeValid({s})"
+    swift: "Solution().minRemoveToMakeValid({s})"
+    typescript: "minRemoveToMakeValid({s})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minRemoveToMakeValid(s, {result})"
+    checker: |
+      class Checker:
+          def minRemoveToMakeValid(self, s, result):
+              if not isinstance(result, str):
+                  return False
+
+              source_index = 0
+              for char in result:
+                  source_index = s.find(char, source_index)
+                  if source_index == -1:
+                      return False
+                  source_index += 1
+
+              if ''.join(char for char in s if char.isalpha()) != ''.join(char for char in result if char.isalpha()):
+                  return False
+
+              balance = 0
+              for char in result:
+                  if char == '(':
+                      balance += 1
+                  elif char == ')':
+                      balance -= 1
+                      if balance < 0:
+                          return False
+              if balance != 0:
+                  return False
+
+              unmatched_open = 0
+              removals = 0
+              for char in s:
+                  if char == '(':
+                      unmatched_open += 1
+                  elif char == ')':
+                      if unmatched_open:
+                          unmatched_open -= 1
+                      else:
+                          removals += 1
+              removals += unmatched_open
+              return len(s) - len(result) == removals
+seed: 1249
+tests:
+  - name: example-one
+    in:
+      s: "lee(t(c)o)de)"
+  - name: example-two
+    in:
+      s: "a)b(c)d"
+  - name: example-three
+    in:
+      s: "))(("
+  - name: single-letter
+    in:
+      s: "a"
+  - name: single-open
+    in:
+      s: "("
+  - name: single-close
+    in:
+      s: ")"
+  - name: one-pair
+    in:
+      s: "()"
+  - name: letters-only
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+  - name: all-opens
+    in:
+      s: "(((((("
+  - name: all-closes
+    in:
+      s: "))))))"
+  - name: deeply-nested-valid
+    in:
+      s: "(((((abc)))))"
+  - name: adjacent-valid-pairs
+    in:
+      s: "(a)(b)(c)(d)"
+  - name: leading-closes
+    in:
+      s: ")))abc"
+  - name: trailing-opens
+    in:
+      s: "abc((("
+  - name: close-in-middle
+    in:
+      s: "ab)cd(ef"
+  - name: nested-with-extra-close
+    in:
+      s: "a(b(c)d))e"
+  - name: nested-with-extra-open
+    in:
+      s: "a((b)c(d)"
+  - name: alternating-unmatched
+    in:
+      s: ")a(b)c)d(e(f"
+  - name: empty-pairs-and-extra
+    in:
+      s: "()())()"
+  - name: unmatched-before-pair
+    in:
+      s: "))(a)"
+  - name: unmatched-after-pair
+    in:
+      s: "(a))("
+  - name: crossing-runs
+    in:
+      s: "((a)))))((b"
+  - name: retains-all-letters
+    in:
+      s: "m)n(o)p)q(r"
+  - name: open-run-then-close-run
+    in:
+      s: "(((a)b))c)"
+  - name: close-run-then-open-run
+    in:
+      s: "))a((b)c("
+  - name: pair-inside-pair
+    in:
+      s: "x(y(z)w)v"
+  - name: valid-empty-pairs
+    in:
+      s: "()()()"
+  - name: extra-closes-between-words
+    in:
+      s: "a))b((c)d)e"
+  - name: extra-opens-between-pairs
+    in:
+      s: "((a)(b)(c"
+  - name: balanced-long-word
+    in:
+      s: "alphabet(soup)testing"
+  - name: multiple-independent-errors
+    in:
+      s: ")a(b))c((d)e("
+  - name: dense-parentheses
+    in:
+      s: "(()(()))(()))(()"
+  - name: valid-nesting-and-adjacency
+    in:
+      s: "(ab(cd))(ef)(gh)"
+  - name: minimum-length-mixed
+    in:
+      s: "a("
+  - name: generated-large-mixed-one
+    seed: 124901
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcde()"
+  - name: generated-large-mixed-two
+    seed: 124902
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "mnopq()"
+  - name: generated-large-open-heavy
+    seed: 124903
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "ab("
+  - name: generated-large-close-heavy
+    seed: 124904
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "xy)"
+  - name: generated-large-parentheses-only
+    seed: 124905
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "()"
+  - name: generated-large-letter-heavy
+    seed: 124906
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "aeiou()"

@@ -1,0 +1,358 @@
+entry:
+  id: 1444
+  title: "number-of-ways-of-cutting-a-pizza"
+  params:
+    pizza:
+      type: array
+      items:
+        type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().ways({pizza}, {k})"
+    rust: "Solution::ways({pizza}, {k})"
+    python3: "Solution().ways({pizza}, {k})"
+    python2: "Solution().ways({pizza}, {k})"
+    ruby: "ways({pizza}, {k})"
+    java: "new Solution().ways({pizza}, {k})"
+    csharp: "new Solution().Ways({pizza}, {k})"
+    kotlin: "Solution().ways({pizza}, {k})"
+    go: "ways({pizza}, {k})"
+    dart: "Solution().ways({pizza}, {k})"
+    swift: "Solution().ways({pizza}, {k})"
+    typescript: "ways({pizza}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 5000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().ways(pizza, k, {result})"
+    checker: |
+      class Checker:
+          def ways(self, pizza, k, result):
+              if type(result) is not int or not (1 <= k <= 10):
+                  return False
+              rows = len(pizza)
+              cols = len(pizza[0])
+              if not (1 <= rows <= 50 and 1 <= cols <= 50):
+                  return False
+              if any(len(row) != cols or any(ch not in 'A.' for ch in row) for row in pizza):
+                  return False
+
+              def has_apple(top, left, bottom, right):
+                  return any(pizza[r][c] == 'A'
+                             for r in range(top, bottom)
+                             for c in range(left, right))
+
+              memo = {}
+              def count(top, left, pieces):
+                  key = (top, left, pieces)
+                  if key in memo:
+                      return memo[key]
+                  if not has_apple(top, left, rows, cols):
+                      return 0
+                  if pieces == 1:
+                      return 1
+                  total = 0
+                  for cut in range(top + 1, rows):
+                      if has_apple(top, left, cut, cols):
+                          total += count(cut, left, pieces - 1)
+                  for cut in range(left + 1, cols):
+                      if has_apple(top, left, rows, cut):
+                          total += count(top, cut, pieces - 1)
+                  memo[key] = total % 1000000007
+                  return memo[key]
+
+              return result == count(0, 0, k)
+seed: 1444
+tests:
+  - name: "official-one"
+    in:
+      pizza: ["A..", "AAA", "..."]
+      k: 3
+    out: 3
+  - name: "official-two"
+    in:
+      pizza: ["A..", "AA.", "..."]
+      k: 3
+    out: 1
+  - name: "single-cell-one"
+    in:
+      pizza: ["A"]
+      k: 1
+    out: 1
+  - name: "single-cell-empty"
+    in:
+      pizza: ["."]
+      k: 1
+    out: 0
+  - name: "single-row-many-pieces"
+    in:
+      pizza: ["AAAAA"]
+      k: 5
+    out: 1
+  - name: "all-empty"
+    in:
+      pizza: ["...", "...", "..."]
+      k: 1
+    out: 0
+  - name: "all-apples-two-by-two-four"
+    in:
+      pizza: ["AA", "AA"]
+      k: 4
+    out: 0
+  - name: "top-left-only"
+    in:
+      pizza: ["A..", "...", "..."]
+      k: 2
+    out: 0
+  - name: "diagonal-apples"
+    in:
+      pizza: ["A..", ".A.", "..A"]
+      k: 2
+    out: 4
+  - name: "checkerboard"
+    in:
+      pizza: ["A.A", ".A.", "A.A"]
+      k: 3
+    out: 10
+  - name: "top-row-apples"
+    in:
+      pizza: ["AAAA", "....", "...."]
+      k: 3
+    out: 3
+  - name: "left-column-apples"
+    in:
+      pizza: ["A...", "A...", "A..."]
+      k: 3
+    out: 1
+  - name: "cross-shape"
+    in:
+      pizza: [".A.", "AAA", ".A."]
+      k: 3
+    out: 6
+  - name: "corner-pairs"
+    in:
+      pizza: ["A.A", "...", "A.A"]
+      k: 2
+    out: 4
+  - name: "two-by-three-full"
+    in:
+      pizza: ["AAA", "AAA"]
+      k: 3
+    out: 5
+  - name: "two-by-three-sparse"
+    in:
+      pizza: ["A.A", "..A"]
+      k: 2
+    out: 3
+  - name: "three-by-two-sparse"
+    in:
+      pizza: ["A.", ".A", "AA"]
+      k: 3
+    out: 4
+  - name: "four-by-four-diagonal"
+    in:
+      pizza: ["A...", ".A..", "..A.", "...A"]
+      k: 4
+    out: 8
+  - name: "four-by-four-border"
+    in:
+      pizza: ["AAAA", "A..A", "A..A", "AAAA"]
+      k: 3
+    out: 24
+  - name: "five-by-one"
+    in:
+      pizza: ["A", "A", "A", "A", "A"]
+      k: 5
+    out: 1
+  - name: "one-by-five"
+    in:
+      pizza: ["A.AAA"]
+      k: 3
+    out: 5
+  - name: "five-by-five-sparse"
+    in:
+      pizza: ["A....", "..A..", "....A", ".A...", "...A."]
+      k: 3
+    out: 28
+  - name: "five-by-five-dense"
+    in:
+      pizza: ["AAAA.", "AAA..", "AA...", "A....", "....."]
+      k: 4
+    out: 8
+  - name: "apple-strip-middle"
+    in:
+      pizza: [".....", ".AAA.", "....."]
+      k: 2
+    out: 2
+  - name: "apple-strip-bottom"
+    in:
+      pizza: [".....", ".....", "AAAAA"]
+      k: 3
+    out: 6
+  - name: "alternating-rows"
+    in:
+      pizza: ["AAAA", "....", "AAAA", "...."]
+      k: 4
+    out: 19
+  - name: "alternating-columns"
+    in:
+      pizza: ["A.A.", "A.A.", "A.A.", "A.A."]
+      k: 4
+    out: 19
+  - name: "six-by-six-diagonal-band"
+    in:
+      pizza: ["A.....", ".AA...", "..AA..", "...AA.", "....AA", ".....A"]
+      k: 5
+    out: 182
+  - name: "six-by-six-full"
+    in:
+      pizza: ["AAAAAA", "AAAAAA", "AAAAAA", "AAAAAA", "AAAAAA", "AAAAAA"]
+      k: 6
+    out: 2252
+  - name: "eight-by-eight-sparse"
+    in:
+      pizza:
+        [
+          "A.......",
+          "........",
+          "...A....",
+          "........",
+          ".......A",
+          "........",
+          ".A......",
+          ".....A..",
+        ]
+      k: 4
+    out: 268
+  - name: "maximum-all-apples"
+    in:
+      pizza:
+        [
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+          "AAAAAAAAAA",
+        ]
+      k: 10
+    out: 5280932
+  - name: "maximum-mixed-grid"
+    in:
+      pizza:
+        [
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+          "A.A.A.A.A.",
+        ]
+      k: 10
+    out: 511561
+  - name: "maximum-empty-grid"
+    in:
+      pizza:
+        [
+          "..........",
+          "..........",
+          "..........",
+          "..........",
+          "..........",
+          "..........",
+          "..........",
+          "..........",
+          "..........",
+          "..........",
+        ]
+      k: 10
+    out: 0
+  - name: "maximum-single-row"
+    in:
+      pizza: ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"]
+      k: 10
+    out: 54455620
+  - name: "maximum-k-one"
+    in:
+      pizza:
+        [
+          "AAAAAAAAAA",
+          "..........",
+          "AAAAAAAAAA",
+          "..........",
+          "AAAAAAAAAA",
+          "..........",
+          "AAAAAAAAAA",
+          "..........",
+          "AAAAAAAAAA",
+          "..........",
+        ]
+      k: 1
+    out: 1
+  - name: "generated-50x50-k1"
+    seed: 144401
+    in:
+      pizza:
+        gen: "array"
+        len: 50
+        of:
+          gen: "str"
+          len: 50
+          alphabet: "A."
+      k: 1
+  - name: "generated-50x50-k2"
+    seed: 144402
+    in:
+      pizza:
+        gen: "array"
+        len: 50
+        of:
+          gen: "str"
+          len: 50
+          alphabet: "A."
+      k: 2
+  - name: "generated-50x50-k5"
+    seed: 144405
+    in:
+      pizza:
+        gen: "array"
+        len: 50
+        of:
+          gen: "str"
+          len: 50
+          alphabet: "A."
+      k: 5
+  - name: "generated-50x50-k9"
+    seed: 144409
+    in:
+      pizza:
+        gen: "array"
+        len: 50
+        of:
+          gen: "str"
+          len: 50
+          alphabet: "A."
+      k: 9
+  - name: "generated-50x50-k10"
+    seed: 144410
+    in:
+      pizza:
+        gen: "array"
+        len: 50
+        of:
+          gen: "str"
+          len: 50
+          alphabet: "A."
+      k: 10

@@ -1,0 +1,504 @@
+entry:
+  id: 1177
+  title: "can-make-palindrome-from-substring"
+  params:
+    s:
+      type: string
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().canMakePaliQueries({s}, {queries})"
+    rust: "Solution::can_make_pali_queries({s}, {queries})"
+    python3: "Solution().canMakePaliQueries({s}, {queries})"
+    python2: "Solution().canMakePaliQueries({s}, {queries})"
+    ruby: "can_make_pali_queries({s}, {queries})"
+    java: "new Solution().canMakePaliQueries({s}, {queries})"
+    csharp: "new Solution().CanMakePaliQueries({s}, {queries})"
+    kotlin: "Solution().canMakePaliQueries({s}, {queries})"
+    go: "canMakePaliQueries({s}, {queries})"
+    dart: "Solution().canMakePaliQueries({s}, {queries})"
+    swift: "Solution().canMakePaliQueries({s}, {queries})"
+    typescript: "canMakePaliQueries({s}, {queries})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().canMakePaliQueries(s, queries, {result})"
+    checker: |
+      class Checker:
+          def canMakePaliQueries(self, s, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              expected = []
+              for query in queries:
+                  if not isinstance(query, list) or len(query) != 3:
+                      return False
+                  left, right, k = query
+                  if left < 0 or right >= len(s) or left > right or k < 0:
+                      return False
+                  counts = [0] * 26
+                  for ch in s[left:right + 1]:
+                      counts[ord(ch) - ord('a')] += 1
+                  odd = sum(count % 2 for count in counts)
+                  expected.append(odd // 2 <= k)
+              return result == expected
+
+seed: 117700
+
+tests:
+  - name: "example_one"
+    in:
+      s: "abcda"
+      queries:
+        elemType: "int"
+        value:
+          - [3, 3, 0]
+          - [1, 2, 0]
+          - [0, 3, 1]
+          - [0, 3, 2]
+          - [0, 4, 1]
+    out: [true, false, false, true, true]
+  - name: "example_two"
+    in:
+      s: "lyb"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 1, 0]
+          - [2, 2, 1]
+    out: [false, true]
+  - name: "single_character"
+    in:
+      s: "a"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+    out: [true]
+  - name: "two_equal"
+    in:
+      s: "aa"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 1, 0]
+          - [0, 0, 0]
+    out: [true, true]
+  - name: "two_different_thresholds"
+    in:
+      s: "ab"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 1, 0]
+          - [0, 1, 1]
+    out: [false, true]
+  - name: "all_same"
+    in:
+      s: "aaaaaa"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 5, 0]
+          - [1, 4, 0]
+          - [2, 2, 0]
+    out: [true, true, true]
+  - name: "all_distinct"
+    in:
+      s: "abcdef"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 5, 0]
+          - [0, 5, 2]
+          - [1, 4, 2]
+          - [2, 3, 1]
+    out: [false, false, true, true]
+  - name: "odd_count_one"
+    in:
+      s: "aab"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 2, 0]
+          - [0, 2, 1]
+    out: [true, true]
+  - name: "odd_count_three"
+    in:
+      s: "abc"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 2, 0]
+          - [0, 2, 1]
+    out: [false, true]
+  - name: "alternating"
+    in:
+      s: "abababab"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 7, 0]
+          - [0, 6, 0]
+          - [1, 6, 1]
+          - [2, 5, 0]
+    out: [true, true, true, true]
+  - name: "palindrome_substrings"
+    in:
+      s: "racecar"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 6, 0]
+          - [1, 5, 0]
+          - [0, 5, 1]
+          - [2, 4, 0]
+    out: [true, true, true, true]
+  - name: "mixed_repeated"
+    in:
+      s: "aabbccddeeff"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 11, 0]
+          - [0, 10, 0]
+          - [1, 10, 2]
+          - [3, 8, 1]
+    out: [true, true, true, true]
+  - name: "range_boundaries"
+    in:
+      s: "xyzxyz"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+          - [5, 5, 0]
+          - [0, 1, 1]
+          - [4, 5, 0]
+    out: [true, true, true, false]
+  - name: "nested_ranges"
+    in:
+      s: "abacabadabacaba"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 14, 0]
+          - [0, 14, 2]
+          - [1, 13, 1]
+          - [4, 10, 1]
+          - [5, 9, 0]
+    out: [true, true, true, true, true]
+  - name: "k_zero_focus"
+    in:
+      s: "aabbc"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 1, 0]
+          - [0, 3, 0]
+          - [0, 4, 0]
+          - [2, 4, 0]
+    out: [true, true, true, true]
+  - name: "large_k_focus"
+    in:
+      s: "abcdefghij"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 9, 5]
+          - [0, 8, 4]
+          - [1, 7, 3]
+          - [2, 6, 2]
+    out: [true, true, true, true]
+  - name: "overlapping_queries"
+    in:
+      s: "mississippi"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 10, 0]
+          - [1, 9, 1]
+          - [2, 8, 0]
+          - [3, 7, 1]
+          - [4, 6, 0]
+    out: [true, true, true, true, true]
+  - name: "near_palindrome"
+    in:
+      s: "abccbx"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 4, 0]
+          - [0, 5, 0]
+          - [0, 5, 1]
+          - [1, 4, 0]
+    out: [true, false, true, true]
+  - name: "disjoint_alphabet"
+    in:
+      s: "mnopqr"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 2, 1]
+          - [3, 5, 1]
+          - [0, 5, 2]
+    out: [true, true, false]
+  - name: "repeated_triplets"
+    in:
+      s: "aaabbbccc"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 8, 0]
+          - [0, 5, 1]
+          - [2, 6, 1]
+          - [3, 8, 1]
+    out: [false, true, true, true]
+  - name: "even_odd_windows"
+    in:
+      s: "abcdefghijk"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 10, 5]
+          - [0, 9, 4]
+          - [1, 9, 4]
+          - [1, 10, 5]
+    out: [true, false, true, true]
+  - name: "palindrome_with_center"
+    in:
+      s: "abbac"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 3, 0]
+          - [0, 4, 0]
+          - [1, 3, 0]
+          - [1, 4, 1]
+    out: [true, true, true, true]
+  - name: "many_singletons"
+    in:
+      s: "qwerty"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+          - [1, 1, 0]
+          - [2, 2, 0]
+          - [3, 3, 0]
+          - [4, 4, 0]
+          - [5, 5, 0]
+    out: [true, true, true, true, true, true]
+  - name: "edge_k_equals_length"
+    in:
+      s: "abcdefg"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 6, 7]
+          - [2, 5, 4]
+    out: [true, true]
+  - name: "two_pairs_and_single"
+    in:
+      s: "aabbcdd"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 6, 0]
+          - [0, 4, 1]
+          - [2, 6, 1]
+          - [4, 4, 0]
+    out: [true, true, true, true]
+  - name: "mirror_pattern"
+    in:
+      s: "abccbaabccba"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 5, 0]
+          - [6, 11, 0]
+          - [0, 11, 0]
+          - [2, 9, 1]
+    out: [true, true, true, true]
+  - name: "different_case_lengths"
+    in:
+      s: "zzxyzzxy"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 7, 0]
+          - [0, 3, 0]
+          - [2, 5, 0]
+          - [1, 6, 1]
+    out: [true, false, false, true]
+  - name: "threshold_exact_half"
+    in:
+      s: "abcdabcd"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 7, 2]
+          - [0, 7, 1]
+          - [0, 5, 1]
+          - [2, 7, 2]
+    out: [true, true, true, true]
+  - name: "long_repetition"
+    in:
+      s: "abcabcabcabcabcabc"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 17, 5]
+          - [0, 17, 6]
+          - [1, 16, 4]
+          - [3, 14, 3]
+    out: [true, true, true, true]
+  - name: "alternating_three_letters"
+    in:
+      s: "abcabcabc"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 8, 1]
+          - [0, 7, 1]
+          - [1, 8, 1]
+          - [2, 6, 1]
+    out: [true, true, true, true]
+  - name: "almost_all_same"
+    in:
+      s: "aaaaabaaaa"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 9, 0]
+          - [0, 9, 1]
+          - [4, 6, 0]
+          - [0, 4, 0]
+    out: [false, true, true, true]
+  - name: "full_alphabet_twice"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 51, 13]
+          - [0, 50, 13]
+          - [1, 26, 12]
+          - [25, 51, 12]
+    out: [true, true, false, true]
+  - name: "full_alphabet_threshold"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 25, 12]
+          - [0, 25, 13]
+          - [0, 24, 12]
+          - [1, 25, 11]
+    out: [false, true, true, false]
+  - name: "paired_alphabet_boundaries"
+    in:
+      s: "aabbccddeeffgghhiijjkkllmm"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 25, 0]
+          - [1, 24, 0]
+          - [1, 24, 1]
+          - [0, 1, 0]
+          - [24, 25, 0]
+    out: [true, false, true, true, true]
+  - name: "stress_full_range_random"
+    seed: 117701
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 99999, 0]
+          - [0, 99999, 13]
+          - [0, 99999, 100000]
+  - name: "stress_prefix_suffix_random"
+    seed: 117702
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+          - [0, 99998, 12]
+          - [1, 99999, 12]
+          - [50000, 99999, 100000]
+  - name: "stress_middle_windows_random"
+    seed: 117703
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklm"
+      queries:
+        elemType: "int"
+        value:
+          - [12345, 87654, 0]
+          - [12345, 87654, 6]
+          - [49999, 50000, 1]
+          - [25000, 74999, 100000]
+  - name: "stress_binary_alphabet_random"
+    seed: 117704
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "az"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 99999, 0]
+          - [11111, 88888, 0]
+          - [11111, 88888, 1]
+          - [99999, 99999, 0]
+  - name: "stress_skewed_alphabet_random"
+    seed: 117705
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "aaaaabcd"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 99999, 0]
+          - [1000, 99000, 1]
+          - [40000, 60000, 2]
+          - [0, 49999, 100000]
+  - name: "stress_all_letters_random"
+    seed: 117706
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      queries:
+        elemType: "int"
+        value:
+          - [0, 99999, 12]
+          - [1, 99998, 13]
+          - [33333, 66666, 13]
+          - [0, 99999, 100000]

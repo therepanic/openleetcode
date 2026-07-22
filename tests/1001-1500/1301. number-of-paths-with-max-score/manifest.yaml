@@ -1,0 +1,486 @@
+entry:
+  id: 1301
+  title: "number-of-paths-with-max-score"
+  params:
+    board:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().pathsWithMaxScore({board})"
+    rust: "Solution::paths_with_max_score({board})"
+    python3: "Solution().pathsWithMaxScore({board})"
+    python2: "Solution().pathsWithMaxScore({board})"
+    ruby: "paths_with_max_score({board})"
+    java: "new Solution().pathsWithMaxScore({board})"
+    csharp: "new Solution().PathsWithMaxScore({board})"
+    kotlin: "Solution().pathsWithMaxScore({board})"
+    go: "pathsWithMaxScore({board})"
+    dart: "Solution().pathsWithMaxScore({board})"
+    swift: "Solution().pathsWithMaxScore({board})"
+    typescript: "pathsWithMaxScore({board})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2500
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().pathsWithMaxScore(board, {result})"
+    checker: |
+      class Checker:
+          def pathsWithMaxScore(self, board, result):
+              mod = 1000000007
+              n = len(board)
+              score = [[-1] * n for _ in range(n)]
+              ways = [[0] * n for _ in range(n)]
+              score[n - 1][n - 1] = 0
+              ways[n - 1][n - 1] = 1
+              for i in range(n - 1, -1, -1):
+                  for j in range(n - 1, -1, -1):
+                      if board[i][j] == 'X' or (i == n - 1 and j == n - 1):
+                          continue
+                      choices = []
+                      for di, dj in ((1, 0), (0, 1), (1, 1)):
+                          ni, nj = i + di, j + dj
+                          if ni < n and nj < n and score[ni][nj] >= 0:
+                              choices.append((score[ni][nj], ways[ni][nj]))
+                      if choices:
+                          best = max(value for value, _ in choices)
+                          score[i][j] = best + (0 if board[i][j] == 'E' else int(board[i][j]))
+                          ways[i][j] = sum(count for value, count in choices if value == best) % mod
+              expected = [0, 0] if score[0][0] < 0 else [score[0][0], ways[0][0]]
+              return result == expected
+
+seed: 1301
+
+tests:
+  - name: "example-one"
+    in:
+      board: ["E23", "2X2", "12S"]
+    out: [7, 1]
+  - name: "example-two"
+    in:
+      board: ["E12", "1X1", "21S"]
+    out: [4, 2]
+  - name: "example-three"
+    in:
+      board: ["E11", "XXX", "11S"]
+    out: [0, 0]
+  - name: "two-by-two-zero"
+    in:
+      board: ["E0", "0S"]
+    out: [0, 3]
+  - name: "two-by-two-diagonal"
+    in:
+      board: ["E1", "1S"]
+    out: [1, 2]
+  - name: "two-by-two-blocked"
+    in:
+      board: ["EX", "XS"]
+    out: [0, 1]
+  - name: "two-by-two-top-route"
+    in:
+      board: ["E5", "1S"]
+    out: [5, 1]
+  - name: "two-by-two-left-route"
+    in:
+      board: ["E1", "5S"]
+    out: [5, 1]
+  - name: "three-direct-diagonal"
+    in:
+      board: ["E00", "000", "00S"]
+    out: [0, 13]
+  - name: "three-all-ones"
+    in:
+      board: ["E11", "111", "11S"]
+    out: [3, 6]
+  - name: "three-all-nines"
+    in:
+      board: ["E99", "999", "99S"]
+    out: [27, 6]
+  - name: "three-no-path-row"
+    in:
+      board: ["EX1", "XXX", "11S"]
+    out: [0, 0]
+  - name: "three-no-path-column"
+    in:
+      board: ["E1X", "1XX", "11S"]
+    out: [3, 1]
+  - name: "three-central-obstacle"
+    in:
+      board: ["E12", "3X4", "56S"]
+    out: [14, 1]
+  - name: "three-high-diagonal"
+    in:
+      board: ["E99", "9X9", "99S"]
+    out: [27, 2]
+  - name: "three-low-corners"
+    in:
+      board: ["E01", "0X1", "01S"]
+    out: [2, 1]
+  - name: "three-obstacle-corridor"
+    in:
+      board: ["E1X", "2XX", "34S"]
+    out: [9, 1]
+  - name: "three-left-heavy"
+    in:
+      board: ["E90", "9X0", "90S"]
+    out: [18, 1]
+  - name: "three-right-heavy"
+    in:
+      board: ["E09", "0X9", "09S"]
+    out: [18, 1]
+  - name: "four-zero-board"
+    in:
+      board: ["E000", "0000", "0000", "000S"]
+    out: [0, 63]
+  - name: "four-nine-board"
+    in:
+      board: ["E999", "9999", "9999", "999S"]
+    out: [45, 20]
+  - name: "four-diagonal-obstacles"
+    in:
+      board: ["E123", "4X56", "78X9", "123S"]
+    out: [24, 1]
+  - name: "four-blocked-top"
+    in:
+      board: ["EXXX", "1XXX", "11XX", "111S"]
+    out: [5, 2]
+  - name: "four-blocked-bottom"
+    in:
+      board: ["E111", "XX11", "XXX1", "111S"]
+    out: [5, 2]
+  - name: "four-single-corridor"
+    in:
+      board: ["E1XX", "11XX", "111X", "111S"]
+    out: [5, 7]
+  - name: "four-symmetric-tie"
+    in:
+      board: ["E111", "1111", "1111", "111S"]
+    out: [5, 20]
+  - name: "four-high-center"
+    in:
+      board: ["E919", "1991", "9199", "991S"]
+    out: [45, 1]
+  - name: "four-low-alternating"
+    in:
+      board: ["E101", "0101", "1010", "010S"]
+    out: [3, 12]
+  - name: "four-no-path"
+    in:
+      board: ["EXXX", "XXXX", "XXXX", "XXXS"]
+    out: [0, 0]
+  - name: "five-zero-board"
+    in:
+      board: ["E0000", "00000", "00000", "00000", "0000S"]
+    out: [0, 321]
+  - name: "five-nine-board"
+    in:
+      board: ["E9999", "99999", "99999", "99999", "9999S"]
+    out: [63, 70]
+  - name: "five-obstacle-maze"
+    in:
+      board: ["E1234", "5X7X9", "12X45", "6X789", "1234S"]
+    out: [33, 1]
+  - name: "five-top-wall"
+    in:
+      board: ["EXXXX", "11111", "11111", "11111", "1111S"]
+    out: [7, 35]
+  - name: "five-dense-ties"
+    in:
+      board: ["E1111", "11111", "11111", "11111", "1111S"]
+    out: [7, 70]
+  - name: "five-mixed-values"
+    in:
+      board: ["E2468", "13579", "24680", "97531", "8642S"]
+    out: [32, 2]
+  - name: "stress-ten-zero-ties"
+    in:
+      board:
+        [
+          "E000000000",
+          "0000000000",
+          "0000000000",
+          "0000000000",
+          "0000000000",
+          "0000000000",
+          "0000000000",
+          "0000000000",
+          "0000000000",
+          "000000000S",
+        ]
+    out: [0, 1462563]
+  - name: "stress-twenty-nine-score"
+    in:
+      board:
+        [
+          "E9999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "99999999999999999999",
+          "9999999999999999999S",
+        ]
+    out: [333, 345263555]
+  - name: "stress-thirty-zero-modulo"
+    in:
+      board:
+        [
+          "E00000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "000000000000000000000000000000",
+          "00000000000000000000000000000S",
+        ]
+    out: [0, 857594387]
+  - name: "stress-hundred-zero-modulo"
+    in:
+      board:
+        - &zero_top "E000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        - &zero_row "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - *zero_row
+        - "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000S"
+    out: [0, 888974356]
+  - name: "stress-hundred-nine-score"
+    in:
+      board:
+        - &nine_top "E999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+        - &nine_row "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - *nine_row
+        - "999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999S"
+    out: [1773, 690285631]

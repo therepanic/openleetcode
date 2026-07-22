@@ -1,0 +1,34 @@
+class Solution(object):
+    def findGoodStrings(self, n, s1, s2, evil):
+        mod = 1000000007
+        m = len(evil)
+        lps = [0] * m
+        for i in range(1, m):
+            j = lps[i - 1]
+            while j and evil[i] != evil[j]:
+                j = lps[j - 1]
+            if evil[i] == evil[j]:
+                lps[i] = j + 1
+        memo = {}
+        def dp(index, matched, lower_tight, upper_tight):
+            if matched == m:
+                return 0
+            if index == n:
+                return 1
+            key = (index, matched, lower_tight, upper_tight)
+            if key in memo:
+                return memo[key]
+            low = ord(s1[index]) if lower_tight else ord('a')
+            high = ord(s2[index]) if upper_tight else ord('z')
+            answer = 0
+            for code in range(low, high + 1):
+                char = chr(code)
+                next_matched = matched
+                while next_matched and char != evil[next_matched]:
+                    next_matched = lps[next_matched - 1]
+                if char == evil[next_matched]:
+                    next_matched += 1
+                answer = (answer + dp(index + 1, next_matched, lower_tight and code == low, upper_tight and code == high)) % mod
+            memo[key] = answer
+            return answer
+        return dp(0, 0, True, True)

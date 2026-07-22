@@ -1,0 +1,34 @@
+class Solution(object):
+    def frogPosition(self, n, edges, t, target):
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :type t: int
+        :type target: int
+        :rtype: float
+        """
+        from collections import defaultdict
+        
+        neighbors = defaultdict(set)
+        for a, b in edges:
+            neighbors[a].add(b)
+            neighbors[b].add(a)
+        
+        visited = set()
+        probability = [0.0]
+        
+        def dfs(vertex, chance, elapsed):
+            if elapsed == t:
+                if vertex == target:
+                    probability[0] = chance
+                return
+            visited.add(vertex)
+            choices = neighbors[vertex] - visited
+            if not choices:
+                dfs(vertex, chance, elapsed + 1)
+            else:
+                for child in choices:
+                    dfs(child, chance / len(choices), elapsed + 1)
+        
+        dfs(1, 1.0, 0)
+        return probability[0]

@@ -1,0 +1,260 @@
+entry:
+  id: 1433
+  title: check-if-a-string-can-break-another-string
+  params:
+    s1:
+      type: string
+    s2:
+      type: string
+  call:
+    cpp: "Solution().checkIfCanBreak({s1}, {s2})"
+    rust: "Solution::check_if_can_break({s1}, {s2})"
+    python3: "Solution().checkIfCanBreak({s1}, {s2})"
+    python2: "Solution().checkIfCanBreak({s1}, {s2})"
+    ruby: "check_if_can_break({s1}, {s2})"
+    java: "new Solution().checkIfCanBreak({s1}, {s2})"
+    csharp: "new Solution().CheckIfCanBreak({s1}, {s2})"
+    kotlin: "Solution().checkIfCanBreak({s1}, {s2})"
+    go: "checkIfCanBreak({s1}, {s2})"
+    dart: "Solution().checkIfCanBreak({s1}, {s2})"
+    swift: "Solution().checkIfCanBreak({s1}, {s2})"
+    typescript: "checkIfCanBreak({s1}, {s2})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().checkIfCanBreak(s1, s2, {result})"
+    checker: |
+      class Checker:
+          def checkIfCanBreak(self, s1, s2, result):
+              if not isinstance(s1, str) or not isinstance(s2, str):
+                  return False
+              if len(s1) != len(s2) or not 1 <= len(s1) <= 100000:
+                  return False
+              if any(ch < 'a' or ch > 'z' for ch in s1 + s2):
+                  return False
+              if not isinstance(result, bool):
+                  return False
+
+              def can_break(first, second):
+                  left = [0] * 26
+                  right = [0] * 26
+                  for ch in first:
+                      left[ord(ch) - 97] += 1
+                  for ch in second:
+                      right[ord(ch) - 97] += 1
+                  i = 0
+                  j = 0
+                  for _ in range(len(first)):
+                      while left[i] == 0:
+                          i += 1
+                      while right[j] == 0:
+                          j += 1
+                      if i < j:
+                          return False
+                      left[i] -= 1
+                      right[j] -= 1
+                  return True
+
+              expected = can_break(s1, s2) or can_break(s2, s1)
+              return result == expected
+seed: 1433
+tests:
+  - name: example_one
+    in:
+      s1: abc
+      s2: xya
+  - name: example_two
+    in:
+      s1: abe
+      s2: acd
+  - name: example_three
+    in:
+      s1: leetcodee
+      s2: interview
+  - name: single_equal
+    in:
+      s1: m
+      s2: m
+  - name: single_low_high
+    in:
+      s1: a
+      s2: z
+  - name: single_high_low
+    in:
+      s1: z
+      s2: a
+  - name: identical_unsorted_multiset
+    in:
+      s1: dcba
+      s2: abcd
+  - name: all_low_vs_all_high
+    in:
+      s1: aaaa
+      s2: zzzz
+  - name: repeated_boundary_letters
+    in:
+      s1: aaaz
+      s2: aazz
+  - name: one_coordinate_fails
+    in:
+      s1: abcd
+      s2: abce
+  - name: strict_nonbreak
+    in:
+      s1: ace
+      s2: bdf
+  - name: duplicate_counts_make_true
+    in:
+      s1: aabb
+      s2: abba
+  - name: crossing_histograms
+    in:
+      s1: aaazzz
+      s2: bbbccc
+  - name: alternating_input
+    in:
+      s1: abab
+      s2: baba
+  - name: reverse_alphabet
+    in:
+      s1: zyxwv
+      s2: abcde
+  - name: narrow_middle_overlap
+    in:
+      s1: mnopqr
+      s2: nopqrs
+  - name: one_low_outlier
+    in:
+      s1: bbbbbc
+      s2: aaabbb
+  - name: one_high_outlier
+    in:
+      s1: aaabbb
+      s2: bbbbbc
+  - name: equal_extreme_mix
+    in:
+      s1: azazaz
+      s2: zazaza
+  - name: adjacent_ranges
+    in:
+      s1: abcxyz
+      s2: defuvw
+  - name: separated_ranges
+    in:
+      s1: aaaabbbb
+      s2: ccccdddd
+  - name: interleaved_ranges
+    in:
+      s1: azby
+      s2: cxdw
+  - name: repeated_middle
+    in:
+      s1: mmnn
+      s2: lmno
+  - name: all_a_against_mixed
+    in:
+      s1: aaaaaa
+      s2: aaaaaz
+  - name: all_z_against_mixed
+    in:
+      s1: zzzzzz
+      s2: wxyzzy
+  - name: full_alphabet_same
+    in:
+      s1: abcdefghijklmnopqrstuvwxyz
+      s2: zyxwvutsrqponmlkjihgfedcba
+  - name: repeated_full_alphabet
+    in:
+      s1: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+      s2: zyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcba
+  - name: length_twenty_true
+    in:
+      s1: abcdefghijabcdefghij
+      s2: klmnopqrstklmnopqrst
+  - name: length_twenty_false
+    in:
+      s1: aeiouaeiouaeiouaeiou
+      s2: bcdfgbcdfgbcdfgbcdfg
+  - name: long_runs_touching
+    in:
+      s1: aaaaaabbbbbbcccccc
+      s2: bbbbbbaaaaaacccccc
+  - name: balanced_triplets
+    in:
+      s1: aaabbbccc
+      s2: abcbacabc
+  - name: sparse_extremes
+    in:
+      s1: aaaaaaaaaz
+      s2: aaaaaaaayz
+  - name: late_extreme_mismatch
+    in:
+      s1: azzz
+      s2: byyy
+  - name: two_low_two_middle
+    in:
+      s1: aaczz
+      s2: bbyyy
+  - name: strict_every_position
+    in:
+      s1: bcz
+      s2: aby
+  - name: generated_minimum_length
+    seed: 143301
+    in:
+      s1:
+        gen: str
+        len: 1
+        alphabet: az
+      s2:
+        gen: str
+        len: 1
+        alphabet: az
+  - name: generated_short_strings
+    seed: 143302
+    in:
+      s1:
+        gen: str
+        len: 17
+        alphabet: abcxyz
+      s2:
+        gen: str
+        len: 17
+        alphabet: abcxyz
+  - name: generated_full_alphabet
+    seed: 143303
+    in:
+      s1:
+        gen: str
+        len: 1000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      s2:
+        gen: str
+        len: 1000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+  - name: generated_large_bounded
+    seed: 143304
+    in:
+      s1:
+        gen: str
+        len: 50000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      s2:
+        gen: str
+        len: 50000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+  - name: generated_maximum_length
+    seed: 143305
+    in:
+      s1:
+        gen: str
+        len: 100000
+        alphabet: abcdefghijklmnopqrstuvwxyz
+      s2:
+        gen: str
+        len: 100000
+        alphabet: abcdefghijklmnopqrstuvwxyz

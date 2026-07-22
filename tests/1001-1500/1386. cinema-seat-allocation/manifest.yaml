@@ -1,0 +1,436 @@
+entry:
+  id: 1386
+  title: "cinema-seat-allocation"
+  params:
+    n:
+      type: int
+    reservedSeats:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxNumberOfFamilies({n}, {reservedSeats})"
+    rust: "Solution::max_number_of_families({n}, {reservedSeats})"
+    python3: "Solution().maxNumberOfFamilies({n}, {reservedSeats})"
+    python2: "Solution().maxNumberOfFamilies({n}, {reservedSeats})"
+    ruby: "max_number_of_families({n}, {reservedSeats})"
+    java: "new Solution().maxNumberOfFamilies({n}, {reservedSeats})"
+    csharp: "new Solution().MaxNumberOfFamilies({n}, {reservedSeats})"
+    kotlin: "Solution().maxNumberOfFamilies({n}, {reservedSeats})"
+    go: "maxNumberOfFamilies({n}, {reservedSeats})"
+    dart: "Solution().maxNumberOfFamilies({n}, {reservedSeats})"
+    swift: "Solution().maxNumberOfFamilies({n}, {reservedSeats})"
+    typescript: "maxNumberOfFamilies({n}, {reservedSeats})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 400
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maxNumberOfFamilies(n, reservedSeats, {result})"
+    checker: |
+      class Checker:
+          def maxNumberOfFamilies(self, n, reservedSeats, result):
+              if not isinstance(result, int) or isinstance(result, bool) or result < 0:
+                  return False
+              rows = {}
+              for row, seat in reservedSeats:
+                  rows.setdefault(row, set()).add(seat)
+              expected = (n - len(rows)) * 2
+              blocks = ((2, 3, 4, 5), (4, 5, 6, 7), (6, 7, 8, 9))
+              for seats in rows.values():
+                  usable = [all(seat not in seats for seat in block) for block in blocks]
+                  expected += (2 if usable[0] and usable[2] else 1 if any(usable) else 0)
+              return result == expected
+
+seed: 1386001
+
+tests:
+  - name: "example_1"
+    in:
+      n: 3
+      reservedSeats:
+        - [1, 2]
+        - [1, 3]
+        - [1, 8]
+        - [2, 6]
+        - [3, 1]
+        - [3, 10]
+  - name: "example_2"
+    in:
+      n: 2
+      reservedSeats:
+        - [2, 1]
+        - [1, 8]
+        - [2, 6]
+  - name: "example_3"
+    in:
+      n: 4
+      reservedSeats:
+        - [4, 3]
+        - [1, 4]
+        - [4, 6]
+        - [1, 7]
+  - name: "one_empty_row"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 1]
+  - name: "one_full_row"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [1, 10]
+  - name: "no_reservations"
+    in:
+      n: 10
+      reservedSeats:
+        - [1, 1]
+  - name: "middle_only_free"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 2]
+        - [1, 3]
+        - [1, 8]
+        - [1, 9]
+  - name: "left_block_blocked"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 2]
+  - name: "right_block_blocked"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 8]
+  - name: "middle_block_blocked"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 5]
+  - name: "two_rows_distinct"
+    in:
+      n: 2
+      reservedSeats:
+        - [1, 2]
+        - [2, 6]
+  - name: "reserved_outside_blocks"
+    in:
+      n: 3
+      reservedSeats:
+        - [1, 1]
+        - [1, 10]
+        - [2, 2]
+        - [3, 5]
+  - name: "all_rows_touched"
+    in:
+      n: 5
+      reservedSeats:
+        - [1, 1]
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [5, 1]
+  - name: "overlap_prefers_outer"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 4]
+  - name: "overlap_prefers_middle"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 2]
+        - [1, 8]
+  - name: "single_seat_each"
+    in:
+      n: 6
+      reservedSeats:
+        - [1, 2]
+        - [2, 4]
+        - [3, 6]
+        - [4, 8]
+        - [5, 5]
+        - [6, 10]
+  - name: "large_n_few_rows"
+    in:
+      n: 1000000000
+      reservedSeats:
+        - [1, 2]
+        - [500000000, 6]
+        - [1000000000, 9]
+  - name: "adjacent_reserved"
+    in:
+      n: 2
+      reservedSeats:
+        - [1, 3]
+        - [1, 4]
+        - [1, 7]
+        - [2, 5]
+        - [2, 6]
+  - name: "edge_seats_only"
+    in:
+      n: 4
+      reservedSeats:
+        - [1, 1]
+        - [1, 10]
+        - [2, 1]
+        - [2, 10]
+        - [3, 1]
+        - [4, 10]
+  - name: "all_left_reserved"
+    in:
+      n: 3
+      reservedSeats:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 2]
+        - [2, 5]
+  - name: "all_right_reserved"
+    in:
+      n: 3
+      reservedSeats:
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [1, 9]
+        - [3, 7]
+  - name: "middle_reservation_patterns"
+    in:
+      n: 4
+      reservedSeats:
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+        - [4, 7]
+  - name: "many_empty_rows"
+    in:
+      n: 20
+      reservedSeats:
+        - [2, 2]
+        - [10, 8]
+  - name: "ten_reserved_rows"
+    in:
+      n: 10
+      reservedSeats:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 1]
+        - [10, 10]
+  - name: "duplicate_block_boundary"
+    in:
+      n: 2
+      reservedSeats:
+        - [1, 5]
+        - [1, 6]
+        - [2, 4]
+        - [2, 7]
+  - name: "left_and_right_free"
+    in:
+      n: 2
+      reservedSeats:
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+  - name: "only_middle_free"
+    in:
+      n: 2
+      reservedSeats:
+        - [1, 2]
+        - [1, 3]
+        - [1, 8]
+        - [1, 9]
+  - name: "seat_ten_boundary"
+    in:
+      n: 5
+      reservedSeats:
+        - [5, 10]
+        - [4, 1]
+        - [3, 2]
+  - name: "maximal_sparse_input"
+    in:
+      n: 1000000000
+      reservedSeats:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+        - [5, 5]
+        - [6, 6]
+        - [7, 7]
+        - [8, 8]
+        - [9, 9]
+        - [10, 10]
+  - name: "mixed_three_rows"
+    in:
+      n: 3
+      reservedSeats:
+        - [1, 2]
+        - [1, 9]
+        - [2, 4]
+        - [2, 7]
+        - [3, 5]
+        - [3, 6]
+  - name: "alternating_rows"
+    in:
+      n: 8
+      reservedSeats:
+        - [1, 2]
+        - [3, 2]
+        - [5, 2]
+        - [7, 2]
+  - name: "full_middle_reservations"
+    in:
+      n: 3
+      reservedSeats:
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+  - name: "near_limit_rows"
+    in:
+      n: 999999999
+      reservedSeats:
+        - [999999999, 2]
+        - [999999998, 8]
+        - [999999997, 5]
+  - name: "mixed_edge_and_overlap"
+    in:
+      n: 7
+      reservedSeats:
+        - [1, 1]
+        - [1, 4]
+        - [2, 10]
+        - [3, 2]
+        - [4, 5]
+        - [5, 7]
+        - [6, 3]
+        - [7, 9]
+  - name: "single_row_seat_one_to_ten"
+    in:
+      n: 1
+      reservedSeats:
+        - [1, 1]
+        - [1, 10]
+
+  - name: "generated_small_sparse"
+    seed: 138601
+    in:
+      n: 1000000000
+      reservedSeats:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        distinct: true
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+
+  - name: "generated_small_mixed"
+    seed: 138602
+    in:
+      n: 1000000000
+      reservedSeats:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 10
+          max: 40
+        distinct: true
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+
+  - name: "generated_boundary_seats"
+    seed: 138603
+    in:
+      n: 1000000000
+      reservedSeats:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 50
+        distinct: true
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 10
+
+  - name: "generated_large_maximum"
+    seed: 138604
+    in:
+      n: 1000000000
+      reservedSeats:
+        gen: "array"
+        len: 10000
+        distinct: true
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+
+  - name: "generated_large_near_maximum"
+    seed: 138605
+    in:
+      n: 999999999
+      reservedSeats:
+        gen: "array"
+        len: 9999
+        distinct: true
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 999999999

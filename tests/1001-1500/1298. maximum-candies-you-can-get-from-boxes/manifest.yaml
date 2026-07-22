@@ -1,0 +1,1013 @@
+entry:
+  id: 1298
+  title: "maximum-candies-you-can-get-from-boxes"
+  params:
+    status:
+      type: array
+      items:
+        type: int
+    candies:
+      type: array
+      items:
+        type: int
+    keys:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    containedBoxes:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    initialBoxes:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    rust: "Solution::max_candies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    python3: "Solution().maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    python2: "Solution().maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    ruby: "max_candies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    java: "new Solution().maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    csharp: "new Solution().MaxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    kotlin: "Solution().maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    go: "maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    dart: "Solution().maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    swift: "Solution().maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+    typescript: "maxCandies({status}, {candies}, {keys}, {containedBoxes}, {initialBoxes})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().maxCandies(status, candies, keys, containedBoxes, initialBoxes, {result})"
+    checker: |
+      from collections import deque
+      class Checker:
+          def maxCandies(self, status, candies, keys, containedBoxes, initialBoxes, result):
+              owned = set(initialBoxes)
+              open_boxes = set(i for i, value in enumerate(status) if value)
+              opened = set()
+              queue = deque(initialBoxes)
+              total = 0
+              while queue:
+                  box = queue.popleft()
+                  if box in opened or box not in open_boxes:
+                      continue
+                  opened.add(box)
+                  total += candies[box]
+                  for key in keys[box]:
+                      open_boxes.add(key)
+                      if key in owned:
+                          queue.append(key)
+                  for child in containedBoxes[box]:
+                      owned.add(child)
+                      if child in open_boxes:
+                          queue.append(child)
+              return result == total
+seed: 1298
+tests:
+  - name: official_one
+    in:
+      status: [1, 0, 1, 0]
+      candies: [7, 5, 4, 100]
+      keys:
+        - []
+        - []
+        - [1]
+        - []
+      containedBoxes:
+        - [1, 2]
+        - [3]
+        - []
+        - []
+      initialBoxes: [0]
+    out: 16
+  - name: official_two
+    in:
+      status: [1, 0, 0, 0, 0, 0]
+      candies: [1, 1, 1, 1, 1, 1]
+      keys:
+        - [1, 2, 3, 4, 5]
+        - []
+        - []
+        - []
+        - []
+        - []
+      containedBoxes:
+        - [1, 2, 3, 4, 5]
+        - []
+        - []
+        - []
+        - []
+        - []
+      initialBoxes: [0]
+    out: 6
+  - name: one_open
+    in:
+      status: [1]
+      candies: [9]
+      keys: [[]]
+      containedBoxes: [[]]
+      initialBoxes: [0]
+    out: 9
+  - name: one_closed
+    in:
+      status: [0]
+      candies: [9]
+      keys: [[]]
+      containedBoxes: [[]]
+      initialBoxes: [0]
+    out: 0
+  - name: key_unlocks
+    in:
+      status: [1, 0]
+      candies: [3, 8]
+      keys: [[1], []]
+      containedBoxes: [[1], []]
+      initialBoxes: [0]
+    out: 11
+  - name: key_without_box
+    in:
+      status: [1, 0]
+      candies: [3, 8]
+      keys: [[1], []]
+      containedBoxes: [[], []]
+      initialBoxes: [0]
+    out: 3
+  - name: closed_chain
+    in:
+      status: [1, 0, 0]
+      candies: [1, 2, 4]
+      keys: [[1], [2], []]
+      containedBoxes: [[1], [2], []]
+      initialBoxes: [0]
+    out: 7
+  - name: contained_closed
+    in:
+      status: [1, 0, 1]
+      candies: [5, 6, 7]
+      keys: [[], [2], []]
+      containedBoxes: [[1], [], []]
+      initialBoxes: [0]
+    out: 5
+  - name: initial_multiple
+    in:
+      status: [1, 1, 0]
+      candies: [2, 3, 9]
+      keys: [[], [2], []]
+      containedBoxes: [[], [2], []]
+      initialBoxes: [0, 1]
+    out: 14
+  - name: all_open
+    in:
+      status: [1, 1, 1]
+      candies: [4, 5, 6]
+      keys: [[], [], []]
+      containedBoxes: [[1], [2], []]
+      initialBoxes: [0]
+    out: 15
+  - name: disconnected
+    in:
+      status: [1, 1, 1]
+      candies: [4, 5, 6]
+      keys: [[], [], []]
+      containedBoxes: [[], [], []]
+      initialBoxes: [1]
+    out: 5
+  - name: unlock_late
+    in:
+      status: [0, 1, 0]
+      candies: [10, 2, 30]
+      keys: [[], [0], [2]]
+      containedBoxes: [[2], [], []]
+      initialBoxes: [1]
+    out: 2
+  - name: nested_keys
+    in:
+      status: [1, 0, 0, 0]
+      candies: [1, 2, 3, 4]
+      keys: [[2], [3], [1], []]
+      containedBoxes: [[1], [2], [3], []]
+      initialBoxes: [0]
+    out: 1
+  - name: no_initial
+    in:
+      status: [1, 1]
+      candies: [7, 8]
+      keys: [[], []]
+      containedBoxes: [[], []]
+      initialBoxes: []
+    out: 0
+  - name: six_boxes
+    in:
+      status: [1, 0, 1, 0, 0, 1]
+      candies: [1, 2, 3, 4, 5, 6]
+      keys: [[1], [], [3], [4], [5], []]
+      containedBoxes: [[1], [], [3], [], [], []]
+      initialBoxes: [0, 2]
+    out: 10
+  - name: case22
+    in:
+      status: [1, 0, 0, 0, 0]
+      candies: [5, 4, 3, 2, 1]
+      keys: [[1, 2], [], [3], [4], []]
+      containedBoxes: [[1, 2], [], [3], [4], []]
+      initialBoxes: [0]
+    out: 15
+  - name: case23
+    in:
+      status: [0, 0, 0]
+      candies: [1, 2, 3]
+      keys: [[], [], []]
+      containedBoxes: [[], [], []]
+      initialBoxes: [0, 1]
+    out: 0
+  - name: case24
+    in:
+      status: [1, 0, 1, 0, 1]
+      candies: [1, 10, 100, 1000, 10000]
+      keys: [[1], [], [3], [], []]
+      containedBoxes: [[1], [], [3], [], []]
+      initialBoxes: [0, 2, 4]
+    out: 11111
+  - name: case25
+    in:
+      status: [1, 0]
+      candies: [100, 1]
+      keys: [[], []]
+      containedBoxes: [[1], []]
+      initialBoxes: [0]
+    out: 100
+  - name: case26
+    in:
+      status: [0, 1]
+      candies: [100, 1]
+      keys: [[1], []]
+      containedBoxes: [[0], []]
+      initialBoxes: [1]
+    out: 1
+  - name: case28
+    in:
+      status: [1, 1, 0, 0]
+      candies: [9, 8, 7, 6]
+      keys: [[], [2], [3], []]
+      containedBoxes: [[], [2], [3], []]
+      initialBoxes: [1]
+    out: 21
+  - name: case29
+    in:
+      status: [1, 0, 0]
+      candies: [11, 22, 33]
+      keys: [[1], [2], []]
+      containedBoxes: [[1], [2], []]
+      initialBoxes: [0]
+    out: 66
+  - name: case30
+    in:
+      status: [0, 1, 0, 1]
+      candies: [2, 4, 6, 8]
+      keys: [[], [0], [], []]
+      containedBoxes: [[2], [], [], []]
+      initialBoxes: [1, 3]
+    out: 12
+  - name: case31
+    in:
+      status: [1, 0, 1, 0, 0, 0]
+      candies: [1, 1, 1, 1, 1, 1]
+      keys: [[1], [], [3], [], [5], []]
+      containedBoxes: [[1], [], [3], [4], [5], []]
+      initialBoxes: [0, 2]
+    out: 4
+  - name: case32
+    in:
+      status: [1, 0, 0, 1, 0]
+      candies: [3, 6, 9, 12, 15]
+      keys: [[1], [], [], [4], []]
+      containedBoxes: [[1], [2], [], [4], []]
+      initialBoxes: [0, 3]
+    out: 36
+  - name: case33
+    in:
+      status: [0, 0, 1, 0]
+      candies: [4, 8, 12, 16]
+      keys: [[0], [1], [3], []]
+      containedBoxes: [[], [], [3], []]
+      initialBoxes: [2]
+    out: 28
+  - name: case34
+    in:
+      status: [1, 1, 1, 1]
+      candies: [10, 20, 30, 40]
+      keys: [[], [], [], []]
+      containedBoxes: [[1, 2], [3], [], []]
+      initialBoxes: [0]
+    out: 100
+  - name: case35
+    in:
+      status: [1, 0, 1, 0, 1, 0]
+      candies: [5, 10, 15, 20, 25, 30]
+      keys: [[1], [], [3], [], [5], []]
+      containedBoxes: [[1], [], [3], [], [5], []]
+      initialBoxes: [0, 2, 4]
+    out: 105
+  - name: chained_unlock_rounds
+    in:
+      status: [1, 1, 0, 0]
+      candies: [4, 5, 6, 7]
+      keys: [[], [2], [3], []]
+      containedBoxes: [[1], [], [3], []]
+      initialBoxes: [0]
+    out: 9
+  - name: duplicate_initial_box
+    in:
+      status: [1]
+      candies: [13]
+      keys: [[]]
+      containedBoxes: [[]]
+      initialBoxes: [0, 0]
+    out: 13
+  - name: initially_owned_child
+    in:
+      status: [1, 1]
+      candies: [8, 11]
+      keys: [[], []]
+      containedBoxes: [[1], []]
+      initialBoxes: [0, 1]
+    out: 19
+  - name: key_and_box_from_separate_initial_boxes
+    in:
+      status: [1, 1, 0]
+      candies: [4, 9, 16]
+      keys: [[2], [], []]
+      containedBoxes: [[], [2], []]
+      initialBoxes: [0, 1]
+    out: 29
+  - name: initially_held_closed_box_unlocked_later
+    in:
+      status: [0, 1, 0]
+      candies: [17, 6, 23]
+      keys: [[2], [0], []]
+      containedBoxes: [[2], [], []]
+      initialBoxes: [0, 1]
+    out: 46
+  - name: static_long_unlock_chain
+    in:
+      status:
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ]
+      candies:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+        ]
+      keys:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+        - [9]
+        - [10]
+        - [11]
+        - [12]
+        - [13]
+        - [14]
+        - [15]
+        - [16]
+        - [17]
+        - [18]
+        - [19]
+        - [20]
+        - [21]
+        - [22]
+        - [23]
+        - [24]
+        - [25]
+        - [26]
+        - [27]
+        - [28]
+        - [29]
+        - [30]
+        - [31]
+        - [32]
+        - [33]
+        - [34]
+        - [35]
+        - [36]
+        - [37]
+        - [38]
+        - [39]
+        - []
+      containedBoxes:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+        - [9]
+        - [10]
+        - [11]
+        - [12]
+        - [13]
+        - [14]
+        - [15]
+        - [16]
+        - [17]
+        - [18]
+        - [19]
+        - [20]
+        - [21]
+        - [22]
+        - [23]
+        - [24]
+        - [25]
+        - [26]
+        - [27]
+        - [28]
+        - [29]
+        - [30]
+        - [31]
+        - [32]
+        - [33]
+        - [34]
+        - [35]
+        - [36]
+        - [37]
+        - [38]
+        - [39]
+        - []
+      initialBoxes: [0]
+    out: 820
+  - name: static_wide_open_frontier
+    in:
+      status:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+      candies:
+        [
+          1000,
+          999,
+          998,
+          997,
+          996,
+          995,
+          994,
+          993,
+          992,
+          991,
+          990,
+          989,
+          988,
+          987,
+          986,
+          985,
+          984,
+          983,
+          982,
+          981,
+          980,
+          979,
+          978,
+          977,
+          976,
+          975,
+          974,
+          973,
+          972,
+          971,
+          970,
+          969,
+          968,
+          967,
+          966,
+          965,
+          964,
+          963,
+          962,
+          961,
+        ]
+      keys:
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+      containedBoxes:
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+          ]
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+        - []
+      initialBoxes: [0]
+    out: 39220
+  - name: generated_max_n_random_status_and_candies
+    seed: 129801
+    in:
+      status:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        elemType: "int"
+      candies:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+      keys:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 0
+            max: 8
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          distinct: true
+          elemType: "int"
+        elemType: "int"
+      containedBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 0
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          elemType: "int"
+        elemType: "int"
+      initialBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 999
+        distinct: true
+        elemType: "int"
+  - name: generated_max_n_all_closed_with_keys
+    seed: 129802
+    in:
+      status:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+        elemType: "int"
+      candies:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+      keys:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 8
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          distinct: true
+          elemType: "int"
+        elemType: "int"
+      containedBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 0
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          elemType: "int"
+        elemType: "int"
+      initialBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 999
+        distinct: true
+        elemType: "int"
+  - name: generated_max_n_all_open_empty_keys
+    seed: 129803
+    in:
+      status:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        elemType: "int"
+      candies:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+      keys:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 0
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          elemType: "int"
+        elemType: "int"
+      containedBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 0
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          elemType: "int"
+        elemType: "int"
+      initialBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 999
+        distinct: true
+        elemType: "int"
+  - name: generated_max_n_sparse_keys
+    seed: 129804
+    in:
+      status:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        elemType: "int"
+      candies:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+      keys:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 0
+            max: 1
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          distinct: true
+          elemType: "int"
+        elemType: "int"
+      containedBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 0
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          elemType: "int"
+        elemType: "int"
+      initialBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 999
+        distinct: true
+        elemType: "int"
+  - name: generated_max_n_dense_keys
+    seed: 129805
+    in:
+      status:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+        elemType: "int"
+      candies:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+      keys:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 32
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          distinct: true
+          elemType: "int"
+        elemType: "int"
+      containedBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 0
+          of:
+            gen: "int"
+            min: 0
+            max: 999
+          elemType: "int"
+        elemType: "int"
+      initialBoxes:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 999
+        distinct: true
+        elemType: "int"

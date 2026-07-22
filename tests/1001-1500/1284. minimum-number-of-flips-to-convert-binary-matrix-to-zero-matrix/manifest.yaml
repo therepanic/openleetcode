@@ -1,0 +1,393 @@
+entry:
+  id: 1284
+  title: "minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix"
+  params:
+    mat:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minFlips({mat})"
+    rust: "Solution::min_flips({mat})"
+    python3: "Solution().minFlips({mat})"
+    python2: "Solution().minFlips({mat})"
+    ruby: "min_flips({mat})"
+    java: "new Solution().minFlips({mat})"
+    csharp: "new Solution().MinFlips({mat})"
+    kotlin: "Solution().minFlips({mat})"
+    go: "minFlips({mat})"
+    dart: "Solution().minFlips({mat})"
+    swift: "Solution().minFlips({mat})"
+    typescript: "minFlips({mat})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minFlips(mat, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def minFlips(self, mat, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              rows, cols = len(mat), len(mat[0])
+              start = 0
+              for row in range(rows):
+                  for col in range(cols):
+                      start |= mat[row][col] << (row * cols + col)
+              moves = []
+              for row in range(rows):
+                  for col in range(cols):
+                      mask = 0
+                      for dr, dc in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+                          rr, cc = row + dr, col + dc
+                          if 0 <= rr < rows and 0 <= cc < cols:
+                              mask |= 1 << (rr * cols + cc)
+                      moves.append(mask)
+              queue = deque([(start, 0)])
+              seen = {start}
+              while queue:
+                  state, steps = queue.popleft()
+                  if state == 0:
+                      return result == steps
+                  for move in moves:
+                      nxt = state ^ move
+                      if nxt not in seen:
+                          seen.add(nxt)
+                          queue.append((nxt, steps + 1))
+              return result == -1
+
+seed: 1284
+
+tests:
+  - name: "example-one"
+    in:
+      mat:
+        - [0, 0]
+        - [0, 1]
+    out: 3
+  - name: "example-two"
+    in:
+      mat:
+        - [0]
+    out: 0
+  - name: "example-three-unreachable"
+    in:
+      mat:
+        - [1, 0, 0]
+        - [1, 0, 0]
+    out: -1
+  - name: "one-by-one-one"
+    in:
+      mat:
+        - [1]
+    out: 1
+  - name: "one-by-two-leading-one-unreachable"
+    in:
+      mat:
+        - [1, 0]
+    out: -1
+  - name: "one-by-two-all-ones"
+    in:
+      mat:
+        - [1, 1]
+    out: 1
+  - name: "one-by-three-middle"
+    in:
+      mat:
+        - [0, 1, 0]
+    out: 3
+  - name: "one-by-three-all-ones"
+    in:
+      mat:
+        - [1, 1, 1]
+    out: 1
+  - name: "two-by-two-single-corner"
+    in:
+      mat:
+        - [1, 0]
+        - [0, 0]
+    out: 3
+  - name: "two-by-two-all-ones"
+    in:
+      mat:
+        - [1, 1]
+        - [1, 1]
+    out: 4
+  - name: "two-by-two-main-diagonal"
+    in:
+      mat:
+        - [1, 0]
+        - [0, 1]
+    out: 2
+  - name: "two-by-two-anti-diagonal"
+    in:
+      mat:
+        - [0, 1]
+        - [1, 0]
+    out: 2
+  - name: "two-by-three-single-corner-unreachable"
+    in:
+      mat:
+        - [1, 0, 0]
+        - [0, 0, 0]
+    out: -1
+  - name: "two-by-three-corners"
+    in:
+      mat:
+        - [1, 0, 1]
+        - [1, 0, 1]
+    out: 2
+  - name: "two-by-three-center-column"
+    in:
+      mat:
+        - [0, 1, 0]
+        - [0, 1, 0]
+    out: 2
+  - name: "two-by-three-all-ones"
+    in:
+      mat:
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 2
+  - name: "two-by-three-asymmetric"
+    in:
+      mat:
+        - [1, 1, 0]
+        - [0, 0, 1]
+    out: 2
+  - name: "two-by-three-zero"
+    in:
+      mat:
+        - [0, 0, 0]
+        - [0, 0, 0]
+    out: 0
+  - name: "three-by-one-top"
+    in:
+      mat:
+        - [1]
+        - [0]
+        - [0]
+    out: 2
+  - name: "three-by-one-all-ones"
+    in:
+      mat:
+        - [1]
+        - [1]
+        - [1]
+    out: 1
+  - name: "three-by-two-single-corner-unreachable"
+    in:
+      mat:
+        - [1, 0]
+        - [0, 0]
+        - [0, 0]
+    out: -1
+  - name: "three-by-two-opposite-corners-unreachable"
+    in:
+      mat:
+        - [1, 0]
+        - [0, 0]
+        - [0, 1]
+    out: -1
+  - name: "three-by-two-middle-row"
+    in:
+      mat:
+        - [0, 0]
+        - [1, 1]
+        - [0, 0]
+    out: 2
+  - name: "three-by-two-all-ones"
+    in:
+      mat:
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 2
+  - name: "three-by-three-zero"
+    in:
+      mat:
+        - [0, 0, 0]
+        - [0, 0, 0]
+        - [0, 0, 0]
+    out: 0
+  - name: "three-by-three-single-corner"
+    in:
+      mat:
+        - [1, 0, 0]
+        - [0, 0, 0]
+        - [0, 0, 0]
+    out: 5
+  - name: "three-by-three-center"
+    in:
+      mat:
+        - [0, 0, 0]
+        - [0, 1, 0]
+        - [0, 0, 0]
+    out: 5
+  - name: "three-by-three-corners"
+    in:
+      mat:
+        - [1, 0, 1]
+        - [0, 0, 0]
+        - [1, 0, 1]
+    out: 4
+  - name: "three-by-three-cross"
+    in:
+      mat:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+    out: 1
+  - name: "three-by-three-border"
+    in:
+      mat:
+        - [1, 1, 1]
+        - [1, 0, 1]
+        - [1, 1, 1]
+    out: 8
+  - name: "three-by-three-all-ones"
+    in:
+      mat:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 5
+  - name: "three-by-three-checkerboard"
+    in:
+      mat:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 1]
+    out: 9
+  - name: "three-by-three-main-diagonal"
+    in:
+      mat:
+        - [1, 0, 0]
+        - [0, 1, 0]
+        - [0, 0, 1]
+    out: 3
+  - name: "three-by-three-horizontal-stripes"
+    in:
+      mat:
+        - [1, 1, 1]
+        - [0, 0, 0]
+        - [1, 1, 1]
+    out: 2
+  - name: "generated-one-by-three"
+    seed: 128401
+    in:
+      mat:
+        gen: "array"
+        len: 1
+        elemType: "int"
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 3
+          distinct: false
+          sorted: false
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated-two-by-two"
+    seed: 128402
+    in:
+      mat:
+        gen: "array"
+        len: 2
+        elemType: "int"
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 2
+          distinct: false
+          sorted: false
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated-two-by-three"
+    seed: 128403
+    in:
+      mat:
+        gen: "array"
+        len: 2
+        elemType: "int"
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 3
+          distinct: false
+          sorted: false
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated-three-by-one"
+    seed: 128404
+    in:
+      mat:
+        gen: "array"
+        len: 3
+        elemType: "int"
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 1
+          distinct: false
+          sorted: false
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated-three-by-two"
+    seed: 128405
+    in:
+      mat:
+        gen: "array"
+        len: 3
+        elemType: "int"
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 2
+          distinct: false
+          sorted: false
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated-three-by-three"
+    seed: 128406
+    in:
+      mat:
+        gen: "array"
+        len: 3
+        elemType: "int"
+        distinct: false
+        sorted: false
+        of:
+          gen: "array"
+          len: 3
+          distinct: false
+          sorted: false
+          of:
+            gen: "int"
+            min: 0
+            max: 1

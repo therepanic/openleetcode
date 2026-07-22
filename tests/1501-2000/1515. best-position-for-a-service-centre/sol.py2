@@ -1,0 +1,30 @@
+class Solution(object):
+    def getMinDistSum(self, positions):
+        """
+        :type positions: List[List[int]]
+        :rtype: float
+        """
+        from math import sqrt
+        
+        def fn(x, y):
+            return sum(sqrt((x-xx)**2 + (y-yy)**2) for xx, yy in positions)
+        
+        x = sum(p[0] for p in positions) / float(len(positions))
+        y = sum(p[1] for p in positions) / float(len(positions))
+        
+        ans = fn(x, y)
+        chg = 100.0
+        while chg > 1e-6:
+            zoom = True
+            for dx, dy in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
+                xx = x + chg * dx
+                yy = y + chg * dy
+                dd = fn(xx, yy)
+                if dd < ans:
+                    ans = dd
+                    x, y = xx, yy
+                    zoom = False
+                    break
+            if zoom:
+                chg /= 2
+        return ans

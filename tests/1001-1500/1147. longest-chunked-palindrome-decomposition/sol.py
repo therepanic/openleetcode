@@ -1,0 +1,19 @@
+class Solution:
+    def longestDecomposition(self, text: str) -> int:
+        (
+            i,
+            j,
+            n,
+            count,
+        ) = 0, len(text) - 1, 0, 0
+        while i <= j:
+            if text[i] == text[j]:
+                if text[i : i + n + 1] == text[j : j + n + 1]:
+                    count += 2
+                    i += n + 1
+                    j -= 1
+                    n = 0
+                    continue
+            j -= 1
+            n += 1
+        return count if i == j + 1 else count - 1

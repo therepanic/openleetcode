@@ -1,0 +1,416 @@
+entry:
+  id: 1305
+  title: "all-elements-in-two-binary-search-trees"
+  params:
+    root1:
+      type: tree_node
+    root2:
+      type: tree_node
+  call:
+    cpp: "Solution().getAllElements({root1}, {root2})"
+    rust: "Solution::get_all_elements({root1}, {root2})"
+    python3: "Solution().getAllElements({root1}, {root2})"
+    python2: "Solution().getAllElements({root1}, {root2})"
+    ruby: "get_all_elements({root1}, {root2})"
+    java: "new Solution().getAllElements({root1}, {root2})"
+    csharp: "new Solution().GetAllElements({root1}, {root2})"
+    kotlin: "Solution().getAllElements({root1}, {root2})"
+    go: "getAllElements({root1}, {root2})"
+    dart: "Solution().getAllElements({root1}, {root2})"
+    swift: "Solution().getAllElements({root1}, {root2})"
+    typescript: "getAllElements({root1}, {root2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 700
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().getAllElements(root1, root2, {result})"
+    checker: |
+      class Checker:
+          def getAllElements(self, root1, root2, result):
+              if not isinstance(result, list) or any(not isinstance(value, int) for value in result):
+                  return False
+              def inorder(values):
+                  if not values:
+                      return []
+                  nodes = [[values[0], None, None]]
+                  queue = [0]
+                  cursor = 1
+                  for parent in queue:
+                      if cursor == len(values):
+                          break
+                      left = values[cursor]
+                      cursor += 1
+                      if left is not None:
+                          nodes.append([left, None, None])
+                          nodes[parent][1] = len(nodes) - 1
+                          queue.append(len(nodes) - 1)
+                      if cursor == len(values):
+                          break
+                      right = values[cursor]
+                      cursor += 1
+                      if right is not None:
+                          nodes.append([right, None, None])
+                          nodes[parent][2] = len(nodes) - 1
+                          queue.append(len(nodes) - 1)
+                  def visit(index):
+                      if index is None:
+                          return []
+                      return visit(nodes[index][1]) + [nodes[index][0]] + visit(nodes[index][2])
+                  return visit(0)
+              return result == sorted(inorder(root1) + inorder(root2))
+
+seed: 130500
+
+tests:
+  - name: "example_one"
+    in:
+      root1: [2, 1, 4]
+      root2: [1, 0, 3]
+    out: [0, 1, 1, 2, 3, 4]
+  - name: "example_two"
+    in:
+      root1: [1, null, 8]
+      root2: [8, 1]
+    out: [1, 1, 8, 8]
+  - name: "both_empty"
+    in:
+      root1: []
+      root2: []
+    out: []
+  - name: "left_empty"
+    in:
+      root1: []
+      root2: [5]
+    out: [5]
+  - name: "right_empty"
+    in:
+      root1: [5]
+      root2: []
+    out: [5]
+  - name: "two_singletons"
+    in:
+      root1: [1]
+      root2: [2]
+    out: [1, 2]
+  - name: "duplicate_singletons"
+    in:
+      root1: [1]
+      root2: [1]
+    out: [1, 1]
+  - name: "negative_values"
+    in:
+      root1: [-2, -3, -1]
+      root2: [0, null, 2]
+    out: [-3, -2, -1, 0, 2]
+  - name: "balanced_overlapping"
+    in:
+      root1: [4, 2, 6, 1, 3, 5, 7]
+      root2: [8, 6, 10, 5, 7, 9, 11]
+    out: [1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11]
+  - name: "left_skewed"
+    in:
+      root1: [4, 3, null, 2, null, 1]
+      root2: [8, 7, null, 6, null, 5]
+    out: [1, 2, 3, 4, 5, 6, 7, 8]
+  - name: "right_skewed"
+    in:
+      root1: [1, null, 2, null, 3, null, 4]
+      root2: [5, null, 6, null, 7]
+    out: [1, 2, 3, 4, 5, 6, 7]
+  - name: "identical_trees"
+    in:
+      root1: [2, 1, 3]
+      root2: [2, 1, 3]
+    out: [1, 1, 2, 2, 3, 3]
+  - name: "all_negative"
+    in:
+      root1: [-5, -8, -2]
+      root2: [-4, -7, -1]
+    out: [-8, -7, -5, -4, -2, -1]
+  - name: "mixed_sign"
+    in:
+      root1: [0, -5, 5, -8, -2, 2, 8]
+      root2: [1, -3, 4]
+    out: [-8, -5, -3, -2, 0, 1, 2, 4, 5, 8]
+  - name: "duplicate_nodes"
+    in:
+      root1: [3, 2, 4, 1, 2]
+      root2: [3, 2, 4, 1, 2]
+    out: [1, 1, 2, 2, 2, 2, 3, 3, 4, 4]
+  - name: "nested_ranges"
+    in:
+      root1: [10, 5, 15, 2, 7, 12, 20]
+      root2: [11, 6, 16, 1, 8, 13, 21]
+    out: [1, 2, 5, 6, 7, 8, 10, 11, 12, 13, 15, 16, 20, 21]
+  - name: "alternating_chains"
+    in:
+      root1: [1, null, 3, null, 5]
+      root2: [2, null, 4, null, 6]
+    out: [1, 2, 3, 4, 5, 6]
+  - name: "extreme_separated"
+    in:
+      root1: [-100000, null, -99999]
+      root2: [99999, null, 100000]
+    out: [-100000, -99999, 99999, 100000]
+  - name: "first_unbalanced"
+    in:
+      root1: [8, 4, 12, 2, 6, null, 14, 1]
+      root2: [3, 1, 5]
+    out: [1, 1, 2, 3, 4, 5, 6, 8, 12, 14]
+  - name: "second_unbalanced"
+    in:
+      root1: [0]
+      root2: [8, 4, 12, 2, 6, 10, 14, null, 3]
+    out: [0, 2, 3, 4, 6, 8, 10, 12, 14]
+  - name: "repeated_boundaries"
+    in:
+      root1: [0, -1, 1]
+      root2: [0, -1, 1]
+    out: [-1, -1, 0, 0, 1, 1]
+  - name: "negative_duplicates"
+    in:
+      root1: [-1, -2, 0]
+      root2: [-1, -3, 1]
+    out: [-3, -2, -1, -1, 0, 1]
+  - name: "ten_nodes_total"
+    in:
+      root1: [5, 2, 8, 1, 3, 7, 9]
+      root2: [4, 0, 6]
+    out: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "dense_values"
+    in:
+      root1: [6, 3, 9, 2, 4, 8, 10, 1, null, null, 5]
+      root2: [7, 3, 11, 2, 5, 9, 12]
+    out: [1, 2, 2, 3, 3, 4, 5, 5, 6, 7, 8, 9, 9, 10, 11, 12]
+  - name: "alternating_signs"
+    in:
+      root1: [0, -4, 4, -6, -2, 2, 6]
+      root2: [1, -3, 5, -5, -1, 3, 7]
+    out: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+  - name: "large_balanced"
+    in:
+      root1: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+      root2: [15, 7, 23, 3, 11, 19, 27, 1, 5, 9, 13, 17, 21, 25, 29]
+    out:
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+      ]
+  - name: "extreme_values"
+    in:
+      root1: [0, -100000, 100000]
+      root2: [-1, -99999, 99999]
+    out: [-100000, -99999, -1, 0, 99999, 100000]
+  - name: "overlapping_duplicates"
+    in:
+      root1: [4, 2, 6, 2, 3, 5, 6]
+      root2: [4, 2, 6, 1, 3, 5, 7]
+    out: [1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7]
+  - name: "long_right_chains"
+    in:
+      root1: [1, null, 2, null, 3, null, 4, null, 5, null, 6]
+      root2: [0, null, 2, null, 4, null, 6, null, 8]
+    out: [0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 8]
+  - name: "long_left_chains"
+    in:
+      root1: [6, 5, null, 4, null, 3, null, 2, null, 1]
+      root2: [8, 7, null, 6, null, 5]
+    out: [1, 2, 3, 4, 5, 5, 6, 6, 7, 8]
+  - name: "one_tree_contains_other_range"
+    in:
+      root1: [50, 25, 75, 10, 30, 60, 90]
+      root2: [50, 40, 55, 35, 45, 52, 58]
+    out: [10, 25, 30, 35, 40, 45, 50, 50, 52, 55, 58, 60, 75, 90]
+  - name: "asymmetric_null_children"
+    in:
+      root1: [7, 3, 9, null, 5, 8, null, 4, 6]
+      root2: [10, 2, 12, 1, null, 11, 13]
+    out: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+  - name: "root_values_interleave"
+    in:
+      root1: [30, 10, 50, 5, 20, 40, 60]
+      root2: [35, 15, 55, 12, 25, 45, 65]
+    out: [5, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65]
+  - name: "deep_left_against_deep_right"
+    in:
+      root1: [0, -1, null, -2, null, -3, null, -4, null, -5]
+      root2: [1, null, 2, null, 3, null, 4, null, 5]
+    out: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+  - name: "duplicate_minimum_and_maximum"
+    in:
+      root1: [0, -100000, 100000]
+      root2: [0, -100000, 100000]
+    out: [-100000, -100000, 0, 0, 100000, 100000]
+  - name: "complete_thirty_one_nodes"
+    in:
+      root1:
+        [
+          16,
+          8,
+          24,
+          4,
+          12,
+          20,
+          28,
+          2,
+          6,
+          10,
+          14,
+          18,
+          22,
+          26,
+          30,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          19,
+          21,
+          23,
+          25,
+          27,
+          29,
+          31,
+        ]
+      root2: []
+    out:
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+      ]
+  - name: "two_complete_fifteen_node_trees"
+    in:
+      root1: [15, 7, 23, 3, 11, 19, 27, 1, 5, 9, 13, 17, 21, 25, 29]
+      root2: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30]
+    out:
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+      ]
+  - name: "large_value_spread"
+    in:
+      root1: [0, -50000, 50000, -75000, -25000, 25000, 75000]
+      root2: [-1, -99999, 99999, null, -50001, 1, null, null, -2, null, 50001]
+    out:
+      [
+        -99999,
+        -75000,
+        -50001,
+        -50000,
+        -25000,
+        -2,
+        -1,
+        0,
+        1,
+        25000,
+        50000,
+        50001,
+        75000,
+        99999,
+      ]
+  - name: "disjoint_negative_positive_complete"
+    in:
+      root1: [-4, -6, -2, -7, -5, -3, -1]
+      root2: [4, 2, 6, 1, 3, 5, 7]
+    out: [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+  - name: "sparse_internal_frontier"
+    in:
+      root1: [20, 10, 30, null, 15, 25, null, 12, 17]
+      root2: [18, 9, 27, 4, null, 22, 29]
+    out: [4, 9, 10, 12, 15, 17, 18, 20, 22, 25, 27, 29, 30]

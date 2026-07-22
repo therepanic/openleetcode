@@ -1,0 +1,10 @@
+class Solution(object):
+    def minSubsequence(self, nums):
+        s = sorted(nums)
+        v = []
+        l = len(nums)
+        while sum(v) <= sum(s[:l]):
+            l -= 1
+            v.append(s[l])
+
+        return v

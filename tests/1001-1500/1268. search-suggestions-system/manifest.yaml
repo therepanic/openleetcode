@@ -1,0 +1,525 @@
+entry:
+  id: 1268
+  title: "search-suggestions-system"
+  params:
+    products:
+      type: array
+      items:
+        type: string
+    searchWord:
+      type: string
+  call:
+    cpp: "Solution().suggestedProducts({products}, {searchWord})"
+    rust: "Solution::suggested_products({products}, {searchWord})"
+    python3: "Solution().suggestedProducts({products}, {searchWord})"
+    python2: "Solution().suggestedProducts({products}, {searchWord})"
+    ruby: "suggested_products({products}, {searchWord})"
+    java: "new Solution().suggestedProducts({products}, {searchWord})"
+    csharp: "new Solution().SuggestedProducts({products}, {searchWord})"
+    kotlin: "Solution().suggestedProducts({products}, {searchWord})"
+    go: "suggestedProducts({products}, {searchWord})"
+    dart: "Solution().suggestedProducts({products}, {searchWord})"
+    swift: "Solution().suggestedProducts({products}, {searchWord})"
+    typescript: "suggestedProducts({products}, {searchWord})"
+judge:
+  type: exact
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().suggestedProducts(products, searchWord, {result})"
+    checker: |
+      class Checker:
+          def suggestedProducts(self, products, searchWord, result):
+              if not isinstance(result, list) or len(result) != len(searchWord):
+                  return False
+              for index in range(1, len(searchWord) + 1):
+                  expected = sorted(
+                      product for product in products
+                      if product.startswith(searchWord[:index])
+                  )[:3]
+                  if result[index - 1] != expected:
+                      return False
+              return True
+seed: 1268
+tests:
+  - name: example_mouse
+    in:
+      products: ["mobile", "mouse", "moneypot", "monitor", "mousepad"]
+      searchWord: "mouse"
+    out:
+      - ["mobile", "moneypot", "monitor"]
+      - ["mobile", "moneypot", "monitor"]
+      - ["mouse", "mousepad"]
+      - ["mouse", "mousepad"]
+      - ["mouse", "mousepad"]
+  - name: example_single_product
+    in:
+      products: ["havana"]
+      searchWord: "havana"
+    out:
+      - ["havana"]
+      - ["havana"]
+      - ["havana"]
+      - ["havana"]
+      - ["havana"]
+      - ["havana"]
+  - name: no_matching_prefix
+    in:
+      products: ["bags", "baggage", "banner", "box", "cloths"]
+      searchWord: "toys"
+    out:
+      - []
+      - []
+      - []
+      - []
+  - name: one_exact_product
+    in:
+      products: ["apple"]
+      searchWord: "apple"
+    out:
+      - ["apple"]
+      - ["apple"]
+      - ["apple"]
+      - ["apple"]
+      - ["apple"]
+  - name: one_character_query
+    in:
+      products: ["a", "ab", "abc"]
+      searchWord: "a"
+    out:
+      - ["a", "ab", "abc"]
+  - name: product_then_missing_suffix
+    in:
+      products: ["car", "cart"]
+      searchWord: "care"
+    out:
+      - ["car", "cart"]
+      - ["car", "cart"]
+      - ["car", "cart"]
+      - []
+  - name: query_outgrows_short_product
+    in:
+      products: ["go", "gone"]
+      searchWord: "good"
+    out:
+      - ["go", "gone"]
+      - ["go", "gone"]
+      - []
+      - []
+  - name: exactly_three_unsorted_input
+    in:
+      products: ["zebra", "zeus", "zero"]
+      searchWord: "ze"
+    out:
+      - ["zebra", "zero", "zeus"]
+      - ["zebra", "zero", "zeus"]
+  - name: four_candidates_top_three
+    in:
+      products: ["cat", "cab", "can", "cap"]
+      searchWord: "ca"
+    out:
+      - ["cab", "can", "cap"]
+      - ["cab", "can", "cap"]
+  - name: lexical_prefix_order
+    in:
+      products: ["apple", "app", "application", "apply", "apt"]
+      searchWord: "app"
+    out:
+      - ["app", "apple", "application"]
+      - ["app", "apple", "application"]
+      - ["app", "apple", "application"]
+  - name: branch_after_first_character
+    in:
+      products: ["dog", "deer", "deal", "cat"]
+      searchWord: "de"
+    out:
+      - ["deal", "deer", "dog"]
+      - ["deal", "deer"]
+  - name: match_then_permanent_miss
+    in:
+      products: ["ant", "anchor", "angle", "bear"]
+      searchWord: "anx"
+    out:
+      - ["anchor", "angle", "ant"]
+      - ["anchor", "angle", "ant"]
+      - []
+  - name: common_prefix_many_depths
+    in:
+      products: ["star", "start", "stare", "stack", "stamp", "stand"]
+      searchWord: "star"
+    out:
+      - ["stack", "stamp", "stand"]
+      - ["stack", "stamp", "stand"]
+      - ["stack", "stamp", "stand"]
+      - ["star", "stare", "start"]
+  - name: initial_character_absent
+    in:
+      products: ["apple", "banana", "cherry"]
+      searchWord: "zoo"
+    out:
+      - []
+      - []
+      - []
+  - name: lowest_letter_and_short_prefixes
+    in:
+      products: ["a", "aa", "aaa", "aab", "b"]
+      searchWord: "aa"
+    out:
+      - ["a", "aa", "aaa"]
+      - ["aa", "aaa", "aab"]
+  - name: highest_letter_prefix
+    in:
+      products: ["z", "za", "zebra", "zoo", "zoom"]
+      searchWord: "zoo"
+    out:
+      - ["z", "za", "zebra"]
+      - ["zoo", "zoom"]
+      - ["zoo", "zoom"]
+  - name: identical_long_prefix_selection
+    in:
+      products: ["flower", "flow", "flight", "flock", "flute"]
+      searchWord: "flo"
+    out:
+      - ["flight", "flock", "flow"]
+      - ["flight", "flock", "flow"]
+      - ["flock", "flow", "flower"]
+  - name: input_sorting_required
+    in:
+      products: ["mop", "map", "moon", "milk", "mouse"]
+      searchWord: "m"
+    out:
+      - ["map", "milk", "moon"]
+  - name: one_match_among_many
+    in:
+      products: ["alpha", "beta", "gamma", "delta", "omega"]
+      searchWord: "ome"
+    out:
+      - ["omega"]
+      - ["omega"]
+      - ["omega"]
+  - name: complete_prefix_chain
+    in:
+      products: ["i", "in", "inn", "inner", "into"]
+      searchWord: "inner"
+    out:
+      - ["i", "in", "inn"]
+      - ["in", "inn", "inner"]
+      - ["inn", "inner"]
+      - ["inner"]
+      - ["inner"]
+  - name: absent_first_letter
+    in:
+      products: ["red", "green", "blue"]
+      searchWord: "yellow"
+    out:
+      - []
+      - []
+      - []
+      - []
+      - []
+      - []
+  - name: exact_three_refine
+    in:
+      products: ["train", "trap", "trace"]
+      searchWord: "tra"
+    out:
+      - ["trace", "train", "trap"]
+      - ["trace", "train", "trap"]
+      - ["trace", "train", "trap"]
+  - name: sparse_lexical_intervals
+    in:
+      products: ["az", "aa", "ab", "b", "baa"]
+      searchWord: "a"
+    out:
+      - ["aa", "ab", "az"]
+  - name: deeper_candidate_replacement
+    in:
+      products: ["preach", "prefix", "prepare", "present", "press", "pretty"]
+      searchWord: "pre"
+    out:
+      - ["preach", "prefix", "prepare"]
+      - ["preach", "prefix", "prepare"]
+      - ["preach", "prefix", "prepare"]
+  - name: later_character_miss
+    in:
+      products: ["table", "tablet", "tabby", "taco"]
+      searchWord: "tabs"
+    out:
+      - ["tabby", "table", "tablet"]
+      - ["tabby", "table", "tablet"]
+      - ["tabby", "table", "tablet"]
+      - []
+  - name: query_is_not_a_product
+    in:
+      products: ["code", "coder", "coding", "coffee"]
+      searchWord: "codex"
+    out:
+      - ["code", "coder", "coding"]
+      - ["code", "coder", "coding"]
+      - ["code", "coder", "coding"]
+      - ["code", "coder"]
+      - []
+  - name: single_letter_products
+    in:
+      products: ["a", "b", "c", "d"]
+      searchWord: "c"
+    out:
+      - ["c"]
+  - name: shared_prefix_beyond_three
+    in:
+      products: ["aaaa", "aaab", "aaac", "aaad", "aaae", "b"]
+      searchWord: "aaa"
+    out:
+      - ["aaaa", "aaab", "aaac"]
+      - ["aaaa", "aaab", "aaac"]
+      - ["aaaa", "aaab", "aaac"]
+  - name: search_ends_at_internal_node
+    in:
+      products: ["network", "net", "neutral", "new", "next"]
+      searchWord: "net"
+    out:
+      - ["net", "network", "neutral"]
+      - ["net", "network", "neutral"]
+      - ["net", "network"]
+  - name: alphabetical_not_length_order
+    in:
+      products: ["aaz", "aa", "aab", "aaaa"]
+      searchWord: "aa"
+    out:
+      - ["aa", "aaaa", "aab"]
+      - ["aa", "aaaa", "aab"]
+  - name: word_after_matching_prefix
+    in:
+      products: ["sun", "sunday", "sunny", "super", "supply"]
+      searchWord: "sunset"
+    out:
+      - ["sun", "sunday", "sunny"]
+      - ["sun", "sunday", "sunny"]
+      - ["sun", "sunday", "sunny"]
+      - []
+      - []
+      - []
+  - name: products_at_multiple_lengths
+    in:
+      products: ["x", "xy", "xyz", "xyzz", "xz"]
+      searchWord: "xyz"
+    out:
+      - ["x", "xy", "xyz"]
+      - ["xy", "xyz", "xyzz"]
+      - ["xyz", "xyzz"]
+  - name: only_later_lexical_words_match
+    in:
+      products: ["aardvark", "azure", "bake", "ball", "bat", "zebra"]
+      searchWord: "ba"
+    out:
+      - ["bake", "ball", "bat"]
+      - ["bake", "ball", "bat"]
+  - name: prefix_with_one_of_three_remaining
+    in:
+      products: ["plane", "planet", "plant", "plate", "play"]
+      searchWord: "platen"
+    out:
+      - ["plane", "planet", "plant"]
+      - ["plane", "planet", "plant"]
+      - ["plane", "planet", "plant"]
+      - ["plate"]
+      - ["plate"]
+      - []
+  - name: stress_many_transport_products
+    in:
+      products:
+        [
+          "tram",
+          "train",
+          "transact",
+          "transfer",
+          "transform",
+          "transit",
+          "translate",
+          "transmit",
+          "transparent",
+          "trap",
+          "travel",
+          "tree",
+          "triangle",
+          "truck",
+          "turtle",
+        ]
+      searchWord: "transformation"
+    out:
+      - ["train", "tram", "transact"]
+      - ["train", "tram", "transact"]
+      - ["train", "tram", "transact"]
+      - ["transact", "transfer", "transform"]
+      - ["transact", "transfer", "transform"]
+      - ["transfer", "transform"]
+      - ["transform"]
+      - ["transform"]
+      - ["transform"]
+      - []
+      - []
+      - []
+      - []
+      - []
+  - name: stress_deep_shared_prefix
+    in:
+      products:
+        [
+          "abcdefgha",
+          "abcdefghi",
+          "abcdefghj",
+          "abcdefghk",
+          "abcdefgzz",
+          "abcdefh",
+          "abcde",
+          "abcdx",
+          "abcz",
+          "ax",
+        ]
+      searchWord: "abcdefghj"
+    out:
+      - ["abcde", "abcdefgha", "abcdefghi"]
+      - ["abcde", "abcdefgha", "abcdefghi"]
+      - ["abcde", "abcdefgha", "abcdefghi"]
+      - ["abcde", "abcdefgha", "abcdefghi"]
+      - ["abcde", "abcdefgha", "abcdefghi"]
+      - ["abcdefgha", "abcdefghi", "abcdefghj"]
+      - ["abcdefgha", "abcdefghi", "abcdefghj"]
+      - ["abcdefgha", "abcdefghi", "abcdefghj"]
+      - ["abcdefghj"]
+  - name: stress_dense_book_catalog
+    in:
+      products:
+        [
+          "book",
+          "bookcase",
+          "bookend",
+          "bookkeeper",
+          "bookkeeping",
+          "booklet",
+          "bookmark",
+          "bookmobile",
+          "bookshelf",
+          "bookstore",
+          "boost",
+          "boot",
+          "border",
+          "bottle",
+        ]
+      searchWord: "bookkeeper"
+    out:
+      - ["book", "bookcase", "bookend"]
+      - ["book", "bookcase", "bookend"]
+      - ["book", "bookcase", "bookend"]
+      - ["book", "bookcase", "bookend"]
+      - ["bookkeeper", "bookkeeping"]
+      - ["bookkeeper", "bookkeeping"]
+      - ["bookkeeper", "bookkeeping"]
+      - ["bookkeeper", "bookkeeping"]
+      - ["bookkeeper"]
+      - ["bookkeeper"]
+  - name: stress_long_words_and_late_miss
+    in:
+      products:
+        [
+          "characteristically",
+          "characterization",
+          "characterize",
+          "characterless",
+          "charcoal",
+          "charge",
+          "chart",
+          "chase",
+        ]
+      searchWord: "characterizationz"
+    out:
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characteristically", "characterization", "characterize"]
+      - ["characterization", "characterize"]
+      - ["characterization"]
+      - ["characterization"]
+      - ["characterization"]
+      - ["characterization"]
+      - ["characterization"]
+      - []
+  - name: stress_international_prefixes
+    in:
+      products:
+        [
+          "integer",
+          "integral",
+          "integrate",
+          "integration",
+          "intellect",
+          "intelligence",
+          "intense",
+          "interest",
+          "internal",
+          "internet",
+          "international",
+          "interval",
+          "into",
+          "intricate",
+          "intro",
+        ]
+      searchWord: "international"
+    out:
+      - ["integer", "integral", "integrate"]
+      - ["integer", "integral", "integrate"]
+      - ["integer", "integral", "integrate"]
+      - ["integer", "integral", "integrate"]
+      - ["interest", "internal", "international"]
+      - ["internal", "international", "internet"]
+      - ["internal", "international"]
+      - ["international"]
+      - ["international"]
+      - ["international"]
+      - ["international"]
+      - ["international"]
+      - ["international"]
+  - name: stress_wide_prefix_catalog
+    in:
+      products:
+        [
+          "program",
+          "programmer",
+          "programming",
+          "progress",
+          "project",
+          "promise",
+          "promote",
+          "prompt",
+          "pronoun",
+          "proof",
+          "propel",
+          "proper",
+          "property",
+          "prose",
+          "protect",
+          "protein",
+          "proton",
+          "provide",
+        ]
+      searchWord: "programming"
+    out:
+      - ["program", "programmer", "programming"]
+      - ["program", "programmer", "programming"]
+      - ["program", "programmer", "programming"]
+      - ["program", "programmer", "programming"]
+      - ["program", "programmer", "programming"]
+      - ["program", "programmer", "programming"]
+      - ["program", "programmer", "programming"]
+      - ["programmer", "programming"]
+      - ["programming"]
+      - ["programming"]
+      - ["programming"]

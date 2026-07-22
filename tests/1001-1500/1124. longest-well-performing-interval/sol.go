@@ -12,9 +12,9 @@ func longestWPI(hours []int) int {
         
         if score > 0 {
             longestInterval = i + 1
-        } else if val, ok := seenAt[score-1]; ok {
-            if i - val > longestInterval {
-                longestInterval = i - val
+        } else if idx, ok := seenAt[score-1]; ok {
+            if i - idx > longestInterval {
+                longestInterval = i - idx
             }
         }
         

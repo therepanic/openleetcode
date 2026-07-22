@@ -1,0 +1,597 @@
+entry:
+  id: 1418
+  title: "display-table-of-food-orders-in-a-restaurant"
+  params:
+    orders:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+  call:
+    cpp: "Solution().displayTable({orders})"
+    rust: "Solution::display_table({orders})"
+    python3: "Solution().displayTable({orders})"
+    python2: "Solution().displayTable({orders})"
+    ruby: "display_table({orders})"
+    java: "new Solution().displayTable({orders})"
+    csharp: "new Solution().DisplayTable({orders})"
+    kotlin: "Solution().displayTable({orders})"
+    go: "displayTable({orders})"
+    dart: "Solution().displayTable({orders})"
+    swift: "Solution().displayTable({orders})"
+    typescript: "displayTable({orders})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().displayTable(orders, {result})"
+    checker: |
+      class Checker:
+          def displayTable(self, orders, result):
+              foods = sorted({order[2] for order in orders})
+              tables = {}
+              for _, table, food in orders:
+                  tables.setdefault(int(table), {})
+                  tables[int(table)][food] = tables[int(table)].get(food, 0) + 1
+              expected = [["Table"] + foods]
+              for table in sorted(tables):
+                  expected.append([str(table)] + [str(tables[table].get(food, 0)) for food in foods])
+              return result == expected
+
+seed: 1418
+
+tests:
+  - name: "example-one"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["David", "3", "Ceviche"]
+          - ["Corina", "10", "Beef Burrito"]
+          - ["David", "3", "Fried Chicken"]
+          - ["Carla", "5", "Water"]
+          - ["Carla", "5", "Ceviche"]
+          - ["Rous", "3", "Ceviche"]
+    out:
+      - ["Table", "Beef Burrito", "Ceviche", "Fried Chicken", "Water"]
+      - ["3", "0", "2", "1", "0"]
+      - ["5", "0", "1", "0", "1"]
+      - ["10", "1", "0", "0", "0"]
+  - name: "example-two"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["James", "12", "Fried Chicken"]
+          - ["Ratesh", "12", "Fried Chicken"]
+          - ["Amadeus", "12", "Fried Chicken"]
+          - ["Adam", "1", "Canadian Waffles"]
+          - ["Brianna", "1", "Canadian Waffles"]
+    out:
+      - ["Table", "Canadian Waffles", "Fried Chicken"]
+      - ["1", "2", "0"]
+      - ["12", "0", "3"]
+  - name: "example-three"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["Laura", "2", "Bean Burrito"]
+          - ["Jhon", "2", "Beef Burrito"]
+          - ["Melissa", "2", "Soda"]
+    out:
+      - ["Table", "Bean Burrito", "Beef Burrito", "Soda"]
+      - ["2", "1", "1", "1"]
+  - name: "single-order"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "Soup"]
+    out:
+      - ["Table", "Soup"]
+      - ["1", "1"]
+  - name: "same-table-different-foods"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "2", "Tea"]
+          - ["B", "2", "Coffee"]
+          - ["C", "2", "Cake"]
+    out:
+      - ["Table", "Cake", "Coffee", "Tea"]
+      - ["2", "1", "1", "1"]
+  - name: "same-food-different-tables"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "Pizza"]
+          - ["B", "3", "Pizza"]
+          - ["C", "2", "Pizza"]
+    out:
+      - ["Table", "Pizza"]
+      - ["1", "1"]
+      - ["2", "1"]
+      - ["3", "1"]
+  - name: "repeated-orders"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "4", "Rice"]
+          - ["B", "4", "Rice"]
+          - ["C", "4", "Rice"]
+          - ["D", "4", "Noodles"]
+    out:
+      - ["Table", "Noodles", "Rice"]
+      - ["4", "1", "3"]
+  - name: "numeric-table-order"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "10", "A"]
+          - ["B", "2", "B"]
+          - ["C", "1", "C"]
+    out:
+      - ["Table", "A", "B", "C"]
+      - ["1", "0", "0", "1"]
+      - ["2", "0", "1", "0"]
+      - ["10", "1", "0", "0"]
+  - name: "lexical-food-order"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "Zebra"]
+          - ["B", "1", "Apple"]
+          - ["C", "1", "Mango"]
+    out:
+      - ["Table", "Apple", "Mango", "Zebra"]
+      - ["1", "1", "1", "1"]
+  - name: "multiword-foods"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "5", "Beef Burrito"]
+          - ["B", "5", "Chicken Soup"]
+          - ["C", "6", "Apple Pie"]
+    out:
+      - ["Table", "Apple Pie", "Beef Burrito", "Chicken Soup"]
+      - ["5", "0", "1", "1"]
+      - ["6", "1", "0", "0"]
+  - name: "sparse-two-tables"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "A"]
+          - ["B", "100", "B"]
+    out:
+      - ["Table", "A", "B"]
+      - ["1", "1", "0"]
+      - ["100", "0", "1"]
+  - name: "three-food-counts"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "7", "X"]
+          - ["B", "7", "X"]
+          - ["C", "7", "Y"]
+          - ["D", "7", "Z"]
+          - ["E", "8", "Y"]
+    out:
+      - ["Table", "X", "Y", "Z"]
+      - ["7", "2", "1", "1"]
+      - ["8", "0", "1", "0"]
+  - name: "food-name-prefixes"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "3", "Rice"]
+          - ["B", "3", "Rice Bowl"]
+          - ["C", "3", "R"]
+    out:
+      - ["Table", "R", "Rice", "Rice Bowl"]
+      - ["3", "1", "1", "1"]
+  - name: "reverse-input-tables"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "9", "Soup"]
+          - ["B", "2", "Soup"]
+          - ["C", "5", "Soup"]
+    out:
+      - ["Table", "Soup"]
+      - ["2", "1"]
+      - ["5", "1"]
+      - ["9", "1"]
+  - name: "four-tables"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "4", "A"]
+          - ["B", "1", "B"]
+          - ["C", "3", "C"]
+          - ["D", "2", "D"]
+    out:
+      - ["Table", "A", "B", "C", "D"]
+      - ["1", "0", "1", "0", "0"]
+      - ["2", "0", "0", "0", "1"]
+      - ["3", "0", "0", "1", "0"]
+      - ["4", "1", "0", "0", "0"]
+  - name: "four-foods-one-table"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "11", "D"]
+          - ["B", "11", "B"]
+          - ["C", "11", "C"]
+          - ["D", "11", "A"]
+    out:
+      - ["Table", "A", "B", "C", "D"]
+      - ["11", "1", "1", "1", "1"]
+  - name: "zero-count-columns"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "Only One"]
+          - ["B", "2", "Only Two"]
+    out:
+      - ["Table", "Only One", "Only Two"]
+      - ["1", "1", "0"]
+      - ["2", "0", "1"]
+  - name: "repeated-foods-two-tables"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "12", "Fish"]
+          - ["B", "12", "Fish"]
+          - ["C", "3", "Fish"]
+          - ["D", "3", "Fish"]
+    out:
+      - ["Table", "Fish"]
+      - ["3", "2"]
+      - ["12", "2"]
+  - name: "large-table-number"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "500", "Meal"]
+          - ["B", "100", "Drink"]
+          - ["C", "500", "Dessert"]
+    out:
+      - ["Table", "Dessert", "Drink", "Meal"]
+      - ["100", "0", "1", "0"]
+      - ["500", "1", "0", "1"]
+  - name: "alphabetic-customers"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["Zoe", "1", "Tea"]
+          - ["Adam", "1", "Tea"]
+          - ["Mia", "2", "Coffee"]
+    out:
+      - ["Table", "Coffee", "Tea"]
+      - ["1", "0", "2"]
+      - ["2", "1", "0"]
+  - name: "food-space-order"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "2", "Hot Dog"]
+          - ["B", "2", "Hot Chocolate"]
+          - ["C", "2", "Hot Sauce"]
+    out:
+      - ["Table", "Hot Chocolate", "Hot Dog", "Hot Sauce"]
+      - ["2", "1", "1", "1"]
+  - name: "six-orders"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "A"]
+          - ["B", "1", "B"]
+          - ["C", "2", "A"]
+          - ["D", "2", "C"]
+          - ["E", "3", "B"]
+          - ["F", "3", "C"]
+    out:
+      - ["Table", "A", "B", "C"]
+      - ["1", "1", "1", "0"]
+      - ["2", "1", "0", "1"]
+      - ["3", "0", "1", "1"]
+  - name: "seven-orders"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "7", "Pasta"]
+          - ["B", "7", "Pasta"]
+          - ["C", "7", "Salad"]
+          - ["D", "8", "Pasta"]
+          - ["E", "8", "Salad"]
+          - ["F", "8", "Salad"]
+          - ["G", "8", "Water"]
+    out:
+      - ["Table", "Pasta", "Salad", "Water"]
+      - ["7", "2", "1", "0"]
+      - ["8", "1", "2", "1"]
+  - name: "ten-table"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "10", "Soup"]
+          - ["B", "10", "Soup"]
+          - ["C", "10", "Bread"]
+    out:
+      - ["Table", "Bread", "Soup"]
+      - ["10", "1", "2"]
+  - name: "leading-table-numbers"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "01", "A"]
+          - ["B", "1", "B"]
+          - ["C", "2", "C"]
+    out:
+      - ["Table", "A", "B", "C"]
+      - ["1", "1", "1", "0"]
+      - ["2", "0", "0", "1"]
+  - name: "many-foods"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "4", "Apple"]
+          - ["B", "4", "Banana"]
+          - ["C", "4", "Cherry"]
+          - ["D", "4", "Date"]
+          - ["E", "4", "Eclair"]
+          - ["F", "4", "Fig"]
+    out:
+      - ["Table", "Apple", "Banana", "Cherry", "Date", "Eclair", "Fig"]
+      - ["4", "1", "1", "1", "1", "1", "1"]
+  - name: "mixed-counts"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "2", "A"]
+          - ["B", "2", "A"]
+          - ["C", "2", "B"]
+          - ["D", "3", "B"]
+          - ["E", "3", "C"]
+          - ["F", "3", "C"]
+          - ["G", "3", "C"]
+    out:
+      - ["Table", "A", "B", "C"]
+      - ["2", "2", "1", "0"]
+      - ["3", "0", "1", "3"]
+  - name: "restaurant-menu"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "Burger"]
+          - ["B", "1", "Fries"]
+          - ["C", "2", "Burger"]
+          - ["D", "2", "Shake"]
+          - ["E", "3", "Fries"]
+    out:
+      - ["Table", "Burger", "Fries", "Shake"]
+      - ["1", "1", "1", "0"]
+      - ["2", "1", "0", "1"]
+      - ["3", "0", "1", "0"]
+  - name: "eight-orders"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "Soup"]
+          - ["B", "1", "Soup"]
+          - ["C", "1", "Tea"]
+          - ["D", "2", "Tea"]
+          - ["E", "2", "Cake"]
+          - ["F", "3", "Cake"]
+          - ["G", "3", "Cake"]
+          - ["H", "3", "Tea"]
+    out:
+      - ["Table", "Cake", "Soup", "Tea"]
+      - ["1", "0", "2", "1"]
+      - ["2", "1", "0", "1"]
+      - ["3", "2", "0", "1"]
+  - name: "case-sensitive-foods"
+    judge:
+      type: "ignore_order"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "4", "apple"]
+          - ["B", "4", "Apple"]
+          - ["C", "4", "APPLE"]
+    out:
+      - ["Table", "APPLE", "Apple", "apple"]
+      - ["4", "1", "1", "1"]
+  - name: "ten-food-columns"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "6", "A"]
+          - ["B", "6", "B"]
+          - ["C", "6", "C"]
+          - ["D", "6", "D"]
+          - ["E", "6", "E"]
+          - ["F", "6", "F"]
+          - ["G", "6", "G"]
+          - ["H", "6", "H"]
+          - ["I", "6", "I"]
+          - ["J", "6", "J"]
+    out:
+      - ["Table", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+      - ["6", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"]
+  - name: "maximum-style-table-set"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "100", "Noodles"]
+          - ["B", "20", "Sushi"]
+          - ["C", "3", "Curry"]
+          - ["D", "45", "Noodles"]
+          - ["E", "20", "Curry"]
+          - ["F", "100", "Sushi"]
+    out:
+      - ["Table", "Curry", "Noodles", "Sushi"]
+      - ["3", "1", "0", "0"]
+      - ["20", "1", "0", "1"]
+      - ["45", "0", "1", "0"]
+      - ["100", "0", "1", "1"]
+  - name: "single-food-many-tables"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "Water"]
+          - ["B", "2", "Water"]
+          - ["C", "3", "Water"]
+          - ["D", "4", "Water"]
+          - ["E", "5", "Water"]
+    out:
+      - ["Table", "Water"]
+      - ["1", "1"]
+      - ["2", "1"]
+      - ["3", "1"]
+      - ["4", "1"]
+      - ["5", "1"]
+  - name: "three-foods-repeated"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "9", "Rice"]
+          - ["B", "9", "Rice"]
+          - ["C", "9", "Beans"]
+          - ["D", "10", "Rice"]
+          - ["E", "10", "Beans"]
+          - ["F", "10", "Taco"]
+          - ["G", "10", "Taco"]
+    out:
+      - ["Table", "Beans", "Rice", "Taco"]
+      - ["9", "1", "2", "0"]
+      - ["10", "1", "1", "2"]
+  - name: "irregular-input-order"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "20", "Z"]
+          - ["B", "2", "A"]
+          - ["C", "11", "M"]
+          - ["D", "2", "Z"]
+          - ["E", "20", "A"]
+    out:
+      - ["Table", "A", "M", "Z"]
+      - ["2", "1", "0", "1"]
+      - ["11", "0", "1", "0"]
+      - ["20", "1", "0", "1"]
+
+  - name: "maximum-valid-table-number"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["Customer One", "500", "abcdefghijklmnopqrst"]
+          - ["Customer Two", "499", "abcdefghijklmnopqrs"]
+          - ["Customer Three", "500", "abcdefghijklmnopqrst"]
+    out:
+      - ["Table", "abcdefghijklmnopqrs", "abcdefghijklmnopqrst"]
+      - ["499", "1", "0"]
+      - ["500", "0", "2"]
+
+  - name: "maximum-single-cell-count"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "250", "Special"]
+          - ["B", "250", "Special"]
+          - ["C", "250", "Special"]
+          - ["D", "250", "Special"]
+          - ["E", "250", "Special"]
+          - ["F", "250", "Special"]
+          - ["G", "250", "Special"]
+          - ["H", "250", "Special"]
+          - ["I", "250", "Special"]
+          - ["J", "250", "Special"]
+    out:
+      - ["Table", "Special"]
+      - ["250", "10"]
+
+  - name: "customer-names-with-spaces"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A B", "6", "Tea"]
+          - ["Customer Name", "6", "Tea"]
+          - ["C", "7", "Cake"]
+    out:
+      - ["Table", "Cake", "Tea"]
+      - ["6", "0", "2"]
+      - ["7", "1", "0"]
+
+  - name: "twenty-character-food-boundary"
+    judge:
+      type: "ignore_order"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "1", "abcdefghijklmnopqrst"]
+          - ["B", "2", "abcdefghijklmnopqrsT"]
+          - ["C", "3", "abcdefghijklmnopqrsT"]
+    out:
+      - ["Table", "abcdefghijklmnopqrsT", "abcdefghijklmnopqrst"]
+      - ["1", "0", "1"]
+      - ["2", "1", "0"]
+      - ["3", "1", "0"]
+
+  - name: "adjacent-table-number-sorting"
+    in:
+      orders:
+        elemType: "string"
+        value:
+          - ["A", "100", "Meal"]
+          - ["B", "99", "Meal"]
+          - ["C", "101", "Drink"]
+          - ["D", "100", "Drink"]
+    out:
+      - ["Table", "Drink", "Meal"]
+      - ["99", "0", "1"]
+      - ["100", "1", "1"]
+      - ["101", "1", "0"]

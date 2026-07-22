@@ -1,0 +1,250 @@
+entry:
+  id: 1144
+  title: "decrease-elements-to-make-array-zigzag"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().movesToMakeZigzag({nums})"
+    rust: "Solution::moves_to_make_zigzag({nums})"
+    python3: "Solution().movesToMakeZigzag({nums})"
+    python2: "Solution().movesToMakeZigzag({nums})"
+    ruby: "moves_to_make_zigzag({nums})"
+    java: "new Solution().movesToMakeZigzag({nums})"
+    csharp: "new Solution().MovesToMakeZigzag({nums})"
+    kotlin: "Solution().movesToMakeZigzag({nums})"
+    go: "movesToMakeZigzag({nums})"
+    dart: "Solution().movesToMakeZigzag({nums})"
+    swift: "Solution().movesToMakeZigzag({nums})"
+    typescript: "movesToMakeZigzag({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().movesToMakeZigzag(nums, {result})"
+    checker: |
+      class Checker:
+          def movesToMakeZigzag(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool) or result < 0:
+                  return False
+              costs = []
+              for mode in (0, 1):
+                  total = 0
+                  for i, value in enumerate(nums):
+                      if i % 2 != mode:
+                          continue
+                      left = nums[i - 1] if i else 10**9
+                      right = nums[i + 1] if i + 1 < len(nums) else 10**9
+                      limit = min(left, right) - 1
+                      if value > limit:
+                          total += value - limit
+                  costs.append(total)
+              return result == min(costs)
+
+seed: 1144
+
+tests:
+  - name: "example_one"
+    in:
+      nums: [1, 2, 3]
+    out: 2
+  - name: "example_two"
+    in:
+      nums: [9, 6, 1, 6, 2]
+    out: 4
+  - name: "single_element"
+    in:
+      nums: [1]
+    out: 0
+  - name: "single_large"
+    in:
+      nums: [1000]
+    out: 0
+  - name: "already_even_valleys"
+    in:
+      nums: [5, 1, 5, 1, 5]
+    out: 0
+  - name: "already_odd_valleys"
+    in:
+      nums: [1, 5, 1, 5, 1]
+    out: 0
+  - name: "two_equal"
+    in:
+      nums: [4, 4]
+    out: 1
+  - name: "two_increasing"
+    in:
+      nums: [1, 2]
+    out: 0
+  - name: "two_decreasing"
+    in:
+      nums: [2, 1]
+    out: 0
+  - name: "three_equal"
+    in:
+      nums: [5, 5, 5]
+    out: 1
+  - name: "four_equal"
+    in:
+      nums: [7, 7, 7, 7]
+    out: 2
+  - name: "strict_increase"
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 4
+  - name: "strict_decrease"
+    in:
+      nums: [6, 5, 4, 3, 2, 1]
+    out: 4
+  - name: "alternating_plateau"
+    in:
+      nums: [2, 1, 2, 1, 2, 1]
+    out: 0
+  - name: "one_peak"
+    in:
+      nums: [1, 10, 1]
+    out: 0
+  - name: "one_valley"
+    in:
+      nums: [10, 1, 10]
+    out: 0
+  - name: "large_endpoints"
+    in:
+      nums: [1000, 1, 1000, 1, 1000]
+    out: 0
+  - name: "large_middle_peak"
+    in:
+      nums: [1, 1000, 1, 1000, 1]
+    out: 0
+  - name: "mixed_small"
+    in:
+      nums: [3, 3, 2, 4, 2]
+    out: 1
+  - name: "mixed_large"
+    in:
+      nums: [10, 8, 10, 8, 10, 8, 10]
+    out: 0
+  - name: "boundary_one_two"
+    in:
+      nums: [1, 1, 1, 2, 1]
+    out: 2
+  - name: "two_high_peaks"
+    in:
+      nums: [1, 9, 1, 9, 1, 9, 1]
+    out: 0
+  - name: "two_low_peaks"
+    in:
+      nums: [9, 1, 9, 1, 9, 1, 9]
+    out: 0
+  - name: "edge_tie_choice"
+    in:
+      nums: [8, 9, 8, 7]
+    out: 2
+  - name: "alternating_high_low"
+    in:
+      nums: [1000, 999, 1000, 999, 1000, 999]
+    out: 0
+  - name: "plateau_then_peak"
+    in:
+      nums: [4, 4, 4, 1, 4, 4, 4]
+    out: 2
+  - name: "descending_tail"
+    in:
+      nums: [1000, 999, 998, 997, 996, 995, 994, 993]
+    out: 6
+  - name: "repeated_minima"
+    in:
+      nums: [2, 1, 2, 2, 2, 1, 2, 2]
+    out: 2
+  - name: "single_spike"
+    in:
+      nums: [3, 3, 3, 1000, 3, 3, 3]
+    out: 4
+  - name: "minimum_values"
+    in:
+      nums: [1, 1, 2, 1, 2, 2, 1, 1, 2]
+    out: 4
+  - name: "equal_high_left_boundary"
+    in:
+      nums: [1000, 1000, 1]
+    out: 1
+  - name: "equal_high_right_boundary"
+    in:
+      nums: [1, 1000, 1000]
+    out: 1
+  - name: "center_tie_with_extreme_neighbors"
+    in:
+      nums: [1000, 1, 1, 1000]
+    out: 1001
+  - name: "adjacent_tie_between_peaks"
+    in:
+      nums: [1, 1000, 1, 1, 1000, 1]
+    out: 1001
+  - name: "generated_full_range_max_length"
+    seed: 11
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+  - name: "generated_low_domain_max_length"
+    seed: 22
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+  - name: "generated_high_domain_max_length"
+    seed: 33
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 998
+          max: 1000
+  - name: "generated_mid_domain_max_length"
+    seed: 44
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 450
+          max: 550
+  - name: "generated_binary_max_length"
+    seed: 55
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 2
+  - name: "generated_near_max_length"
+    seed: 66
+    in:
+      nums:
+        gen: "array"
+        len: 999
+        of:
+          gen: "int"
+          min: 1
+          max: 1000

@@ -1,0 +1,24 @@
+class Solution(object):
+    MOD = 10**9 + 7
+    
+    _is_prime = [False, False] + [True] * 99
+    for i in range(2, int(100**0.5) + 1):
+        if _is_prime[i]:
+            for j in range(i * i, 101, i):
+                _is_prime[j] = False
+    
+    _prefix_prime = [0] * 101
+    for i in range(2, 101):
+        _prefix_prime[i] = _prefix_prime[i - 1] + (1 if _is_prime[i] else 0)
+    
+    def numPrimeArrangements(self, n):
+        x = Solution._prefix_prime[n]
+        y = n - x
+        proX = proY = 1
+        
+        for i in range(2, x + 1):
+            proX = (proX * i) % Solution.MOD
+        for i in range(2, y + 1):
+            proY = (proY * i) % Solution.MOD
+        
+        return (proX * proY) % Solution.MOD

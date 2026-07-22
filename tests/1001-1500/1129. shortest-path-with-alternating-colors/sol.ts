@@ -5,16 +5,17 @@ function shortestAlternatingPaths(
 ): number[] {
   const ans: number[] = new Array(n).fill(-1);
   const graph: [number, number][][] = Array.from({ length: n }, () => []);
-  const q: [number, number][] = [[0, 0]]; // [node, prevColor]: 0-init, 1-red, 2-blue
 
   for (const [u, v] of redEdges) {
-    graph[u].push([v, 1]);
+    graph[u].push([v, 1]); // 1 = red
   }
   for (const [u, v] of blueEdges) {
-    graph[u].push([v, 2]);
+    graph[u].push([v, 2]); // 2 = blue
   }
 
+  const q: [number, number][] = [[0, 0]]; // [node, prevColor]: 0=init
   let step = 0;
+
   while (q.length > 0) {
     const size = q.length;
     for (let i = 0; i < size; i++) {

@@ -1,0 +1,24 @@
+class Solution(object):
+    def maxArea(self, h, w, horizontalCuts, verticalCuts):
+        """
+        :type h: int
+        :type w: int
+        :type horizontalCuts: List[int]
+        :type verticalCuts: List[int]
+        :rtype: int
+        """
+        MOD = 10**9 + 7
+
+        horizontalCuts.sort()
+        verticalCuts.sort()
+
+        # Include the edges in the cut list
+        max_h = max(horizontalCuts[0], h - horizontalCuts[-1])
+        for i in range(1, len(horizontalCuts)):
+            max_h = max(max_h, horizontalCuts[i] - horizontalCuts[i - 1])
+
+        max_v = max(verticalCuts[0], w - verticalCuts[-1])
+        for i in range(1, len(verticalCuts)):
+            max_v = max(max_v, verticalCuts[i] - verticalCuts[i - 1])
+
+        return (max_h * max_v) % MOD

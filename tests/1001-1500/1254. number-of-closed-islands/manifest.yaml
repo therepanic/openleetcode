@@ -1,0 +1,421 @@
+entry:
+  id: 1254
+  title: "number-of-closed-islands"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().closedIsland({grid})"
+    rust: "Solution::closed_island({grid})"
+    python3: "Solution().closedIsland({grid})"
+    python2: "Solution().closedIsland({grid})"
+    ruby: "closed_island({grid})"
+    java: "new Solution().closedIsland({grid})"
+    csharp: "new Solution().ClosedIsland({grid})"
+    kotlin: "Solution().closedIsland({grid})"
+    go: "closedIsland({grid})"
+    dart: "Solution().closedIsland({grid})"
+    swift: "Solution().closedIsland({grid})"
+    typescript: "closedIsland({grid})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().closedIsland(grid, {result})"
+    checker: |
+      class Checker:
+          def closedIsland(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(grid, list) or not grid or not grid[0]:
+                  return False
+              rows, cols = len(grid), len(grid[0])
+              if any(not isinstance(row, list) or len(row) != cols for row in grid):
+                  return False
+              if any(cell not in (0, 1) for row in grid for cell in row):
+                  return False
+              seen = set()
+              closed_count = 0
+              for row in range(rows):
+                  for col in range(cols):
+                      if grid[row][col] != 0 or (row, col) in seen:
+                          continue
+                      component = [(row, col)]
+                      seen.add((row, col))
+                      touches_border = False
+                      for r, c in component:
+                          if r == 0 or c == 0 or r == rows - 1 or c == cols - 1:
+                              touches_border = True
+                          for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                              nr, nc = r + dr, c + dc
+                              if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0 and (nr, nc) not in seen:
+                                  seen.add((nr, nc))
+                                  component.append((nr, nc))
+                      if not touches_border:
+                          closed_count += 1
+              return result == closed_count
+seed: 1254
+tests:
+  - name: "example_one"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 0]
+        - [1, 0, 0, 0, 0, 1, 1, 0]
+        - [1, 0, 1, 0, 1, 1, 1, 0]
+        - [1, 0, 0, 0, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 0]
+    out: 2
+  - name: "example_two"
+    in:
+      grid:
+        - [0, 0, 1, 0, 0]
+        - [0, 1, 0, 1, 0]
+        - [0, 1, 1, 1, 0]
+    out: 1
+  - name: "example_three"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 1, 1, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 1, 1, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 2
+  - name: "one_cell_water"
+    in:
+      grid:
+        - [1]
+    out: 0
+  - name: "one_cell_land"
+    in:
+      grid:
+        - [0]
+    out: 0
+  - name: "one_row_mixed"
+    in:
+      grid:
+        - [1, 0, 1, 0, 1]
+    out: 0
+  - name: "one_column_mixed"
+    in:
+      grid:
+        - [1]
+        - [0]
+        - [1]
+    out: 0
+  - name: "all_water"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 0
+  - name: "all_land"
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+    out: 0
+  - name: "enclosed_single_cell"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 0, 1]
+        - [1, 1, 1]
+    out: 1
+  - name: "enclosed_block"
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [1, 0, 0, 1]
+        - [1, 0, 0, 1]
+        - [1, 1, 1, 1]
+    out: 1
+  - name: "two_separate_cells"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+    out: 2
+  - name: "two_regions"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1]
+    out: 2
+  - name: "diagonal_not_connected"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+    out: 4
+  - name: "ring_with_water_center"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+    out: 1
+  - name: "border_land_only"
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 0]
+        - [0, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0]
+    out: 0
+  - name: "open_channel"
+    in:
+      grid:
+        - [1, 1, 1, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+    out: 0
+  - name: "narrow_closed_corridor"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 1
+  - name: "checkerboard_five"
+    in:
+      grid:
+        - [0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0]
+    out: 5
+  - name: "checkerboard_six"
+    in:
+      grid:
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1]
+    out: 8
+  - name: "nested_islands"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 1, 1, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 1, 1, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 2
+  - name: "four_disconnected_blocks"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1, 0, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 1, 0, 0, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+    out: 5
+  - name: "large_closed_rectangle"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 1
+  - name: "split_by_water"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 2
+  - name: "open_left_and_closed_right"
+    in:
+      grid:
+        - [0, 0, 1, 1, 1, 1]
+        - [0, 1, 1, 0, 0, 1]
+        - [1, 1, 1, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1]
+    out: 1
+  - name: "center_cross_water"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 1, 0, 0, 1]
+        - [1, 0, 1, 1, 1, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 2
+  - name: "alternating_enclosed_rows"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1]
+    out: 2
+  - name: "full_inner_land"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1]
+    out: 1
+  - name: "isolated_border_and_center"
+    in:
+      grid:
+        - [0, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 0, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [0, 1, 1, 1, 0]
+    out: 1
+  - name: "winding_closed_path"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 1, 1, 0, 0, 1]
+        - [1, 1, 0, 1, 1, 1, 0, 1]
+        - [1, 1, 0, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+    out: 1
+  - name: "vertical_closed_corridor"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 0, 1]
+        - [1, 0, 1]
+        - [1, 0, 1]
+        - [1, 1, 1]
+    out: 1
+  - name: "four_quadrants"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 4
+  - name: "diagonal_border_contact"
+    in:
+      grid:
+        - [0, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 0, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+    out: 5
+  - name: "open_component_near_closed_cell"
+    in:
+      grid:
+        - [1, 1, 0, 1, 1, 1]
+        - [1, 0, 0, 0, 1, 1]
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1, 1]
+    out: 2
+  - name: "nine_isolated_inner_cells"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 9
+  - name: "generated_dense_60_square"
+    seed: 1101
+    in:
+      grid:
+        gen: "array"
+        len: 60
+        of:
+          gen: "array"
+          len: 60
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_dense_80_square"
+    seed: 1102
+    in:
+      grid:
+        gen: "array"
+        len: 80
+        of:
+          gen: "array"
+          len: 80
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_dense_100_square"
+    seed: 1103
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_dense_100_by_80"
+    seed: 1104
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 80
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_dense_80_by_100"
+    seed: 1105
+    in:
+      grid:
+        gen: "array"
+        len: 80
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 0
+            max: 1

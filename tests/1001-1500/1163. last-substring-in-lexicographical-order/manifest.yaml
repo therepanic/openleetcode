@@ -1,0 +1,232 @@
+entry:
+  id: 1163
+  title: last-substring-in-lexicographical-order
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().lastSubstring({s})"
+    rust: "Solution::last_substring({s})"
+    python3: "Solution().lastSubstring({s})"
+    python2: "Solution().lastSubstring({s})"
+    ruby: "last_substring({s})"
+    java: "new Solution().lastSubstring({s})"
+    csharp: "new Solution().LastSubstring({s})"
+    kotlin: "Solution().lastSubstring({s})"
+    go: "lastSubstring({s})"
+    dart: "Solution().lastSubstring({s})"
+    swift: "Solution().lastSubstring({s})"
+    typescript: "lastSubstring({s})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().lastSubstring(s, {result})"
+    checker: |
+      class Checker:
+          def lastSubstring(self, s, result):
+              if type(s) is not str or type(result) is not str:
+                  return False
+              n = len(s)
+              m = len(result)
+              if m == 0 or m > n or s[n - m:] != result:
+                  return False
+
+              # Z-values compare the proposed suffix to every suffix of s.
+              combined = result + "#" + s
+              z = [0] * len(combined)
+              left = right = 0
+              for i in range(1, len(combined)):
+                  if i <= right:
+                      z[i] = min(right - i + 1, z[i - left])
+                  while i + z[i] < len(combined) and combined[z[i]] == combined[i + z[i]]:
+                      z[i] += 1
+                  if i + z[i] - 1 > right:
+                      left, right = i, i + z[i] - 1
+
+              for start in range(n):
+                  common = z[m + 1 + start]
+                  suffix_len = n - start
+                  if common == m:
+                      if suffix_len > m:
+                          return False
+                  elif common < suffix_len and result[common] < s[start + common]:
+                      return False
+              return True
+seed: 1163
+tests:
+  - name: example-abab
+    in:
+      s: abab
+    out: bab
+  - name: example-leetcode
+    in:
+      s: leetcode
+    out: tcode
+  - name: single-a
+    in:
+      s: a
+    out: a
+  - name: single-z
+    in:
+      s: z
+    out: z
+  - name: ascending
+    in:
+      s: abcdef
+    out: f
+  - name: descending
+    in:
+      s: fedcba
+    out: fedcba
+  - name: all-a
+    in:
+      s: aaaaaaaa
+    out: aaaaaaaa
+  - name: all-z
+    in:
+      s: zzzzzzzz
+    out: zzzzzzzz
+  - name: largest-at-start
+    in:
+      s: zabcdef
+    out: zabcdef
+  - name: largest-at-end
+    in:
+      s: abcdefz
+    out: z
+  - name: repeated-ab
+    in:
+      s: abababab
+    out: bababab
+  - name: repeated-ba
+    in:
+      s: babababa
+    out: babababa
+  - name: ties-long-prefix
+    in:
+      s: aazaaaz
+    out: zaaaz
+  - name: z-prefix-tie
+    in:
+      s: zzzazzzb
+    out: zzzb
+  - name: two-maxima
+    in:
+      s: azaz
+    out: zaz
+  - name: max-before-lower
+    in:
+      s: bzba
+    out: zba
+  - name: max-suffix-choice
+    in:
+      s: cabcabc
+    out: cabcabc
+  - name: alternating-three
+    in:
+      s: acacacb
+    out: cb
+  - name: near-equal-suffixes
+    in:
+      s: aaaaaabaaaaaac
+    out: c
+  - name: late-z
+    in:
+      s: bbbbbbbbbzbbbb
+    out: zbbbb
+  - name: mixed-alphabet
+    in:
+      s: qwertyuiopasdfghjklzxcvbnm
+    out: zxcvbnm
+  - name: z-and-y
+    in:
+      s: yzyzyzzzy
+    out: zzzy
+  - name: max-char-runs
+    in:
+      s: aaazaaazaaaz
+    out: zaaazaaaz
+  - name: suffix-contained
+    in:
+      s: abcabdabce
+    out: e
+  - name: many-candidates
+    in:
+      s: xaxxbxxcxxdxx
+    out: xxdxx
+  - name: palindrome
+    in:
+      s: abccbaabccba
+    out: ccbaabccba
+  - name: middle-maximum
+    in:
+      s: mnopzmnop
+    out: zmnop
+  - name: long-equal-blocks
+    in:
+      s: zzzzyzzzzxzzzz
+    out: zzzzyzzzzxzzzz
+  - name: final-maximal-run
+    in:
+      s: abcxyzxyz
+    out: zxyz
+  - name: late-maximum
+    in:
+      s: helloworldzhello
+    out: zhello
+  - name: b-after-long-a-prefix
+    in:
+      s: aaaaabaaaaa
+    out: baaaaa
+  - name: repeated-z-with-late-tiebreak
+    in:
+      s: azzzazzzb
+    out: zzzb
+  - name: dominant-run-before-smaller-run
+    in:
+      s: zazzzazzy
+    out: zzzazzy
+  - name: repeated-nonmaximum-pattern
+    in:
+      s: banana
+    out: nana
+  - name: generated-binary-50k
+    in:
+      s:
+        gen: str
+        len: 50000
+        alphabet: ab
+  - name: generated-small-alphabet-75k
+    in:
+      s:
+        gen: str
+        len: 75000
+        alphabet: abc
+  - name: generated-four-symbol-100k
+    in:
+      s:
+        gen: str
+        len: 100000
+        alphabet: admz
+  - name: generated-broad-alphabet-200k
+    in:
+      s:
+        gen: str
+        len: 200000
+        alphabet: abcxyz
+  - name: generated-near-maximum-399999
+    in:
+      s:
+        gen: str
+        len: 399999
+        alphabet: abcz
+  - name: generated-maximum-400k
+    in:
+      s:
+        gen: str
+        len: 400000
+        alphabet: amyz

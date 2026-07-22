@@ -1,0 +1,438 @@
+entry:
+  id: 1383
+  title: "maximum-performance-of-a-team"
+  params:
+    n:
+      type: int
+    speed:
+      type: array
+      items:
+        type: int
+    efficiency:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxPerformance({n}, {speed}, {efficiency}, {k})"
+    rust: "Solution::max_performance({n}, {speed}, {efficiency}, {k})"
+    python3: "Solution().maxPerformance({n}, {speed}, {efficiency}, {k})"
+    python2: "Solution().maxPerformance({n}, {speed}, {efficiency}, {k})"
+    ruby: "max_performance({n}, {speed}, {efficiency}, {k})"
+    java: "new Solution().maxPerformance({n}, {speed}, {efficiency}, {k})"
+    csharp: "new Solution().MaxPerformance({n}, {speed}, {efficiency}, {k})"
+    kotlin: "Solution().maxPerformance({n}, {speed}, {efficiency}, {k})"
+    go: "maxPerformance({n}, {speed}, {efficiency}, {k})"
+    dart: "Solution().maxPerformance({n}, {speed}, {efficiency}, {k})"
+    swift: "Solution().maxPerformance({n}, {speed}, {efficiency}, {k})"
+    typescript: "maxPerformance({n}, {speed}, {efficiency}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 500
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().maxPerformance(n, speed, efficiency, k, {result})"
+    checker: |
+      class Checker:
+          def maxPerformance(self, n, speed, efficiency, k, result):
+              if type(result) is not int:
+                  return False
+              if type(n) is not int or n < 2 or n > 100000:
+                  return False
+              if type(k) is not int or k < 1 or k > n:
+                  return False
+              if len(speed) != n or len(efficiency) != n:
+                  return False
+              if any(type(x) is not int or x < 1 or x > 100000 for x in speed):
+                  return False
+              if any(type(x) is not int or x < 1 or x > 100000000 for x in efficiency):
+                  return False
+              mod = 1000000007
+              if n <= 12:
+                  from itertools import combinations
+                  best = 0
+                  for size in range(1, k + 1):
+                      for chosen in combinations(range(n), size):
+                          total_speed = sum(speed[i] for i in chosen)
+                          team_efficiency = min(efficiency[i] for i in chosen)
+                          best = max(best, total_speed * team_efficiency)
+                  expected = best % mod
+              else:
+                  import heapq
+                  total_speed = 0
+                  weakest = []
+                  best = 0
+                  engineers = sorted(zip(efficiency, speed), key=lambda pair: pair[0], reverse=True)
+                  for team_efficiency, engineer_speed in engineers:
+                      heapq.heappush(weakest, engineer_speed)
+                      total_speed += engineer_speed
+                      if len(weakest) > k:
+                          total_speed -= heapq.heappop(weakest)
+                      candidate = total_speed * team_efficiency
+                      if candidate > best:
+                          best = candidate
+                  expected = best % mod
+              return result == expected
+seed: 1383
+tests:
+  - name: "example_1"
+    in:
+      n: 6
+      speed: [2, 10, 3, 1, 5, 8]
+      efficiency: [5, 4, 3, 9, 7, 2]
+      k: 2
+    out: 60
+  - name: "example_2"
+    in:
+      n: 6
+      speed: [2, 10, 3, 1, 5, 8]
+      efficiency: [5, 4, 3, 9, 7, 2]
+      k: 3
+    out: 68
+  - name: "example_3"
+    in:
+      n: 6
+      speed: [2, 10, 3, 1, 5, 8]
+      efficiency: [5, 4, 3, 9, 7, 2]
+      k: 4
+    out: 72
+  - name: "single_best"
+    in:
+      n: 2
+      speed: [1, 100]
+      efficiency: [100000000, 1]
+      k: 1
+    out: 100000000
+  - name: "single_low_efficiency"
+    in:
+      n: 3
+      speed: [10, 20, 30]
+      efficiency: [1, 2, 3]
+      k: 1
+    out: 90
+  - name: "all_engineers"
+    in:
+      n: 3
+      speed: [5, 6, 7]
+      efficiency: [4, 4, 4]
+      k: 3
+    out: 72
+  - name: "k_two_pair"
+    in:
+      n: 2
+      speed: [5, 6]
+      efficiency: [7, 8]
+      k: 2
+    out: 77
+  - name: "equal_speed"
+    in:
+      n: 4
+      speed: [5, 5, 5, 5]
+      efficiency: [1, 2, 3, 4]
+      k: 2
+    out: 30
+  - name: "equal_efficiency"
+    in:
+      n: 4
+      speed: [1, 2, 3, 4]
+      efficiency: [9, 9, 9, 9]
+      k: 3
+    out: 81
+  - name: "descending_efficiency"
+    in:
+      n: 5
+      speed: [10, 9, 8, 7, 6]
+      efficiency: [5, 4, 3, 2, 1]
+      k: 2
+    out: 76
+  - name: "ascending_efficiency"
+    in:
+      n: 5
+      speed: [10, 9, 8, 7, 6]
+      efficiency: [1, 2, 3, 4, 5]
+      k: 2
+    out: 52
+  - name: "large_values_pair"
+    in:
+      n: 2
+      speed: [100000, 100000]
+      efficiency: [100000000, 99999999]
+      k: 2
+    out: 999660007
+  - name: "modulo_single"
+    in:
+      n: 2
+      speed: [100000, 1]
+      efficiency: [100000000, 1]
+      k: 1
+    out: 999930007
+  - name: "zero_tradeoff"
+    in:
+      n: 4
+      speed: [8, 1, 1, 1]
+      efficiency: [1, 100, 99, 98]
+      k: 3
+    out: 294
+  - name: "high_speed_low_efficiency"
+    in:
+      n: 5
+      speed: [100, 1, 1, 1, 1]
+      efficiency: [1, 100, 100, 100, 100]
+      k: 2
+    out: 200
+  - name: "high_efficiency_low_speed"
+    in:
+      n: 5
+      speed: [1, 100, 100, 100, 100]
+      efficiency: [100000000, 1, 1, 1, 1]
+      k: 2
+    out: 100000000
+  - name: "duplicate_pairs"
+    in:
+      n: 4
+      speed: [2, 2, 3, 3]
+      efficiency: [4, 4, 5, 5]
+      k: 2
+    out: 30
+  - name: "k_one_mixed"
+    in:
+      n: 5
+      speed: [3, 20, 7, 8, 9]
+      efficiency: [10, 2, 8, 7, 6]
+      k: 1
+    out: 56
+  - name: "k_n_mixed"
+    in:
+      n: 5
+      speed: [3, 20, 7, 8, 9]
+      efficiency: [10, 2, 8, 7, 6]
+      k: 5
+    out: 162
+  - name: "tiny_1"
+    in:
+      n: 2
+      speed: [7, 3]
+      efficiency: [2, 9]
+      k: 2
+    out: 27
+  - name: "tiny_2"
+    in:
+      n: 2
+      speed: [99999, 100000]
+      efficiency: [99999, 100000]
+      k: 1
+    out: 999999937
+  - name: "tiny_3"
+    in:
+      n: 3
+      speed: [4, 5, 6]
+      efficiency: [6, 5, 4]
+      k: 2
+    out: 45
+  - name: "tiny_4"
+    in:
+      n: 3
+      speed: [4, 5, 6]
+      efficiency: [4, 5, 6]
+      k: 2
+    out: 55
+  - name: "tiny_5"
+    in:
+      n: 4
+      speed: [1, 10, 2, 9]
+      efficiency: [10, 1, 9, 2]
+      k: 2
+    out: 27
+  - name: "tiny_6"
+    in:
+      n: 4
+      speed: [10, 1, 2, 3]
+      efficiency: [2, 10, 9, 8]
+      k: 3
+    out: 48
+  - name: "tiny_7"
+    in:
+      n: 5
+      speed: [1, 2, 3, 4, 5]
+      efficiency: [5, 4, 3, 2, 1]
+      k: 3
+    out: 18
+  - name: "tiny_8"
+    in:
+      n: 5
+      speed: [5, 4, 3, 2, 1]
+      efficiency: [1, 2, 3, 4, 5]
+      k: 3
+    out: 18
+  - name: "tiny_9"
+    in:
+      n: 6
+      speed: [6, 5, 4, 3, 2, 1]
+      efficiency: [2, 2, 2, 2, 2, 2]
+      k: 4
+    out: 36
+  - name: "tiny_10"
+    in:
+      n: 6
+      speed: [1, 1, 1, 1, 1, 1]
+      efficiency: [1, 2, 3, 4, 5, 6]
+      k: 6
+    out: 12
+  - name: "minimum_efficiency_everywhere"
+    in:
+      n: 4
+      speed: [100000, 99999, 2, 1]
+      efficiency: [1, 1, 1, 1]
+      k: 4
+    out: 200002
+  - name: "minimum_speed_everywhere"
+    in:
+      n: 4
+      speed: [1, 1, 1, 1]
+      efficiency: [100000000, 99999999, 99999998, 99999997]
+      k: 4
+    out: 399999988
+  - name: "efficiency_tie_selection"
+    in:
+      n: 5
+      speed: [100, 90, 80, 70, 60]
+      efficiency: [7, 7, 7, 6, 6]
+      k: 3
+    out: 1890
+  - name: "best_team_is_not_k"
+    in:
+      n: 6
+      speed: [100, 1, 1, 1, 1, 1]
+      efficiency: [2, 100, 99, 98, 97, 96]
+      k: 6
+    out: 480
+  - name: "modulo_multi_engineer"
+    in:
+      n: 3
+      speed: [100000, 100000, 100000]
+      efficiency: [100000000, 99999999, 99999998]
+      k: 3
+    out: 999190007
+  - name: "generated_small"
+    seed: 101
+    in:
+      n: 8
+      speed:
+        gen: "array"
+        len: 8
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      efficiency:
+        gen: "array"
+        len: 8
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+      k:
+        gen: "int"
+        min: 1
+        max: 8
+  - name: "generated_medium"
+    seed: 202
+    in:
+      n: 20
+      speed:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+      efficiency:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 100000000
+      k:
+        gen: "int"
+        min: 1
+        max: 20
+  - name: "generated_large_a"
+    seed: 303
+    in:
+      n: 50000
+      speed:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+      efficiency:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000000
+      k: 25000
+  - name: "generated_large_b"
+    seed: 404
+    in:
+      n: 100000
+      speed:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+      efficiency:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000000
+      k: 100000
+  - name: "generated_boundary_k_one"
+    seed: 505
+    in:
+      n: 12
+      speed:
+        gen: "array"
+        len: 12
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+      efficiency:
+        gen: "array"
+        len: 12
+        of:
+          gen: "int"
+          min: 1
+          max: 100000000
+      k: 1
+  - name: "generated_boundary_all"
+    seed: 606
+    in:
+      n: 100
+      speed:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+      efficiency:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100000000
+      k: 100

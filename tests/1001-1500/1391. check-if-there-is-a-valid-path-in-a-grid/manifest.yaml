@@ -1,0 +1,422 @@
+entry:
+  id: 1391
+  title: "check-if-there-is-a-valid-path-in-a-grid"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().hasValidPath({grid})"
+    rust: "Solution::has_valid_path({grid})"
+    python3: "Solution().hasValidPath({grid})"
+    python2: "Solution().hasValidPath({grid})"
+    ruby: "has_valid_path({grid})"
+    java: "new Solution().hasValidPath({grid})"
+    csharp: "new Solution().HasValidPath({grid})"
+    kotlin: "Solution().hasValidPath({grid})"
+    go: "hasValidPath({grid})"
+    dart: "Solution().hasValidPath({grid})"
+    swift: "Solution().hasValidPath({grid})"
+    typescript: "hasValidPath({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 400
+
+oracle:
+  python3:
+    call: "Checker().hasValidPath(grid, {result})"
+    checker: |
+      class Checker:
+          def hasValidPath(self, grid, result):
+              if not isinstance(result, bool):
+                  return False
+              dirs = {
+                  1: ((0, -1), (0, 1)),
+                  2: ((-1, 0), (1, 0)),
+                  3: ((0, -1), (1, 0)),
+                  4: ((0, 1), (1, 0)),
+                  5: ((0, -1), (-1, 0)),
+                  6: ((0, 1), (-1, 0)),
+              }
+              m, n = len(grid), len(grid[0])
+              seen = {(0, 0)}
+              queue = [(0, 0)]
+              for r, c in queue:
+                  for dr, dc in dirs[grid[r][c]]:
+                      nr, nc = r + dr, c + dc
+                      if not (0 <= nr < m and 0 <= nc < n) or (nr, nc) in seen:
+                          continue
+                      if any(nr + bdr == r and nc + bdc == c for bdr, bdc in dirs[grid[nr][nc]]):
+                          seen.add((nr, nc))
+                          queue.append((nr, nc))
+              return result == ((m - 1, n - 1) in seen)
+
+seed: 1391001
+
+tests:
+  - name: "example_1"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 4, 3]
+          - [6, 5, 2]
+    out: true
+  - name: "example_2"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 1]
+          - [1, 2, 1]
+    out: false
+  - name: "example_3"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 2]
+    out: false
+  - name: "single_cell_1"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1]
+    out: true
+  - name: "single_cell_6"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [6]
+    out: true
+  - name: "horizontal_valid"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1]
+    out: true
+  - name: "horizontal_broken"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 1, 1]
+    out: false
+  - name: "vertical_valid"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2]
+          - [2]
+          - [2]
+    out: true
+  - name: "vertical_broken"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2]
+          - [1]
+          - [2]
+    out: false
+  - name: "two_by_two_valid"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 3]
+          - [6, 5]
+    out: true
+  - name: "two_by_two_dead_end"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 1]
+          - [2, 5]
+    out: false
+  - name: "turning_path"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 3, 4]
+          - [1, 2, 3]
+          - [1, 2, 2]
+    out: false
+  - name: "wrong_entry_connector"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 1]
+          - [6, 5]
+    out: true
+  - name: "left_down_path"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [3, 3, 4]
+          - [1, 2, 3]
+          - [1, 1, 1]
+    out: false
+  - name: "right_up_trap"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 5, 2]
+          - [1, 6, 3]
+    out: false
+  - name: "all_horizontal_rows"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1]
+          - [1, 1, 1]
+    out: false
+  - name: "all_vertical_columns"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 2]
+          - [2, 2]
+    out: false
+  - name: "closed_loop"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 3, 3, 4]
+          - [6, 1, 1, 5]
+          - [6, 1, 1, 5]
+          - [2, 4, 3, 2]
+    out: false
+  - name: "loop_not_target"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 3, 4]
+          - [6, 1, 5]
+          - [2, 4, 3]
+    out: false
+  - name: "three_by_three_valid"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 4, 3]
+          - [2, 2, 5]
+          - [2, 4, 3]
+    out: false
+  - name: "three_by_three_invalid"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 4, 3]
+          - [6, 1, 5]
+          - [2, 4, 3]
+    out: false
+  - name: "start_points_up"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5, 1]
+          - [2, 4]
+    out: false
+  - name: "start_points_left"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5, 1]
+          - [2, 3]
+    out: false
+  - name: "target_points_right"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 3]
+          - [1, 1]
+    out: false
+  - name: "target_points_down"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 4]
+          - [2, 5]
+    out: false
+  - name: "mixed_four_by_four"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 4, 3, 4]
+          - [2, 2, 5, 5]
+          - [2, 4, 3, 4]
+          - [2, 2, 5, 5]
+    out: false
+  - name: "isolated_start"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 5]
+          - [2, 4]
+    out: false
+  - name: "isolated_target"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 3]
+          - [1, 2]
+    out: true
+  - name: "all_type_three"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [3, 3, 3]
+          - [3, 3, 3]
+    out: false
+  - name: "all_type_four"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [4, 4]
+          - [4, 4]
+    out: false
+  - name: "all_type_five"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5, 5]
+          - [5, 5]
+    out: false
+  - name: "all_type_six"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [6, 6]
+          - [6, 6]
+    out: false
+  - name: "wide_valid_corridor"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1, 1, 1]
+    out: true
+  - name: "wide_broken_corridor"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 2, 1, 1, 1, 1]
+    out: false
+  - name: "tall_valid_corridor"
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+          - [2]
+    out: true
+  - name: "generated_small"
+    seed: 139101
+    in:
+      grid:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5
+        of:
+          gen: "array"
+          len:
+            gen: "int"
+            min: 1
+            max: 5
+          of:
+            gen: "int"
+            min: 1
+            max: 6
+  - name: "generated_medium"
+    seed: 139102
+    in:
+      grid:
+        gen: "array"
+        len: 8
+        of:
+          gen: "array"
+          len: 9
+          of:
+            gen: "int"
+            min: 1
+            max: 6
+  - name: "generated_rectangular"
+    seed: 139103
+    in:
+      grid:
+        gen: "array"
+        len: 12
+        of:
+          gen: "array"
+          len: 4
+          of:
+            gen: "int"
+            min: 1
+            max: 6
+  - name: "generated_large_square"
+    seed: 139104
+    in:
+      grid:
+        gen: "array"
+        len: 40
+        of:
+          gen: "array"
+          len: 40
+          of:
+            gen: "int"
+            min: 1
+            max: 6
+  - name: "generated_large_rectangle"
+    seed: 139105
+    in:
+      grid:
+        gen: "array"
+        len: 60
+        of:
+          gen: "array"
+          len: 30
+          of:
+            gen: "int"
+            min: 1
+            max: 6

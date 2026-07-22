@@ -1,0 +1,264 @@
+entry:
+  id: 1456
+  title: "maximum-number-of-vowels-in-a-substring-of-given-length"
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxVowels({s}, {k})"
+    rust: "Solution::max_vowels({s}, {k})"
+    python3: "Solution().maxVowels({s}, {k})"
+    python2: "Solution().maxVowels({s}, {k})"
+    ruby: "max_vowels({s}, {k})"
+    java: "new Solution().maxVowels({s}, {k})"
+    csharp: "new Solution().MaxVowels({s}, {k})"
+    kotlin: "Solution().maxVowels({s}, {k})"
+    go: "maxVowels({s}, {k})"
+    dart: "Solution().maxVowels({s}, {k})"
+    swift: "Solution().maxVowels({s}, {k})"
+    typescript: "maxVowels({s}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxVowels(s, k, {result})"
+    checker: |
+      class Checker:
+          def maxVowels(self, s, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              vowels = set("aeiou")
+              window = sum(ch in vowels for ch in s[:k])
+              expected = window
+              for right in range(k, len(s)):
+                  window += s[right] in vowels
+                  window -= s[right - k] in vowels
+                  expected = max(expected, window)
+              return result == expected
+
+seed: 1456
+
+tests:
+  - name: "example_one"
+    in:
+      s: "abciiidef"
+      k: 3
+    out: 3
+  - name: "example_two"
+    in:
+      s: "aeiou"
+      k: 2
+    out: 2
+  - name: "example_three"
+    in:
+      s: "leetcode"
+      k: 3
+    out: 2
+  - name: "single_vowel"
+    in:
+      s: "a"
+      k: 1
+    out: 1
+  - name: "single_consonant"
+    in:
+      s: "z"
+      k: 1
+    out: 0
+  - name: "all_vowels_full"
+    in:
+      s: "aeiou"
+      k: 5
+    out: 5
+  - name: "all_consonants_full"
+    in:
+      s: "bcdfg"
+      k: 5
+    out: 0
+  - name: "vowels_at_start"
+    in:
+      s: "aeiobcdf"
+      k: 4
+    out: 4
+  - name: "vowels_at_end"
+    in:
+      s: "bcdfaeiou"
+      k: 5
+    out: 5
+  - name: "one_vowel_window"
+    in:
+      s: "bcdaefg"
+      k: 3
+    out: 2
+  - name: "k_one_mixed"
+    in:
+      s: "xyzoua"
+      k: 1
+    out: 1
+  - name: "k_one_vowel"
+    in:
+      s: "qwerty"
+      k: 1
+    out: 1
+  - name: "k_one_none"
+    in:
+      s: "rhythms"
+      k: 1
+    out: 0
+  - name: "alternating_short"
+    in:
+      s: "abababab"
+      k: 4
+    out: 2
+  - name: "alternating_long"
+    in:
+      s: "aeaeaeae"
+      k: 5
+    out: 5
+  - name: "vowel_cluster_center"
+    in:
+      s: "xxaeioux"
+      k: 4
+    out: 4
+  - name: "overlapping_clusters"
+    in:
+      s: "aabaaaee"
+      k: 3
+    out: 3
+  - name: "only_y_consonant"
+    in:
+      s: "yyyyya"
+      k: 2
+    out: 1
+  - name: "repeated_single_vowel"
+    in:
+      s: "uuuuuu"
+      k: 3
+    out: 3
+  - name: "repeated_single_consonant"
+    in:
+      s: "kkkkkk"
+      k: 4
+    out: 0
+  - name: "long_k_near_length"
+    in:
+      s: "hellothere"
+      k: 9
+    out: 4
+  - name: "k_equals_length_mixed"
+    in:
+      s: "beautiful"
+      k: 9
+    out: 5
+  - name: "first_window_best"
+    in:
+      s: "aeiobbbbb"
+      k: 4
+    out: 4
+  - name: "last_window_best"
+    in:
+      s: "bbbbbaeiou"
+      k: 5
+    out: 5
+  - name: "middle_window_best"
+    in:
+      s: "bbbaeioubbb"
+      k: 5
+    out: 5
+  - name: "zero_vowel_large_window"
+    in:
+      s: "bcdfghjklmnpqrstvwxyz"
+      k: 10
+    out: 0
+  - name: "all_vowel_large_window"
+    in:
+      s: "aeiouaeiouaeiou"
+      k: 10
+    out: 10
+  - name: "vowels_case_is_lower_only"
+    in:
+      s: "aazzzze"
+      k: 2
+    out: 2
+  - name: "dense_mixed"
+    in:
+      s: "qaezzioxxu"
+      k: 5
+    out: 3
+  - name: "sparse_vowels"
+    in:
+      s: "abbbbbbbbbbbbbbbbbbbbbe"
+      k: 10
+    out: 1
+  - name: "periodic_pattern"
+    in:
+      s: "abcdeabcdeabcde"
+      k: 7
+    out: 4
+  - name: "sliding_transition"
+    in:
+      s: "abecid"
+      k: 3
+    out: 2
+  - name: "k_near_full_length"
+    in:
+      s: "aeiobcd"
+      k: 6
+    out: 4
+  - name: "short_all_vowel_window"
+    in:
+      s: "uoiea"
+      k: 3
+    out: 3
+  - name: "y_only_consonants"
+    in:
+      s: "yyyy"
+      k: 2
+    out: 0
+  - name: "generated_short_letters"
+    seed: 101
+    in:
+      s:
+        gen: "str"
+        len: 20
+        alphabet: "abefioux"
+      k: 7
+  - name: "generated_medium_letters"
+    seed: 202
+    in:
+      s:
+        gen: "str"
+        len: 500
+        alphabet: "abceiouxy"
+      k: 137
+  - name: "generated_long_letters"
+    seed: 303
+    in:
+      s:
+        gen: "str"
+        len: 10000
+        alphabet: "abcdeiou"
+      k: 999
+  - name: "generated_maximum_length"
+    seed: 404
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdeioux"
+      k: 50000
+  - name: "generated_maximum_window"
+    seed: 505
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdeioux"
+      k: 100000

@@ -1,0 +1,44 @@
+class Solution(object):
+    def minInteger(self, num, k):
+        """
+        :type num: str
+        :type k: int
+        :rtype: str
+        """
+        from collections import defaultdict, deque
+
+        n = len(num)
+        d = defaultdict(deque)
+        for i, ch in enumerate(num):
+            d[ch].append(i)
+
+        bit = [0] * (n + 1)
+
+        def update(i, val):
+            while i < len(bit):
+                bit[i] += val
+                i += i & -i
+
+        def query(i):
+            total = 0
+            while i:
+                total += bit[i]
+                i -= i & -i
+            return total
+
+        for i in range(1, n + 1):
+            update(i, 1)
+
+        res = []
+        for _ in range(n):
+            for v in "0123456789":
+                if d[v]:
+                    idx = d[v][0]
+                    cnt = query(idx)
+                    if cnt <= k:
+                        d[v].popleft()
+                        k -= cnt
+                        res.append(v)
+                        update(idx + 1, -1)
+                        break
+        return "".join(res)

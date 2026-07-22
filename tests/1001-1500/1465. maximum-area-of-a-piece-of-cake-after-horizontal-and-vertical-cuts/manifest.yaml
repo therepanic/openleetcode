@@ -1,0 +1,332 @@
+entry:
+  id: 1465
+  title: "maximum-area-of-a-piece-of-cake-after-horizontal-and-vertical-cuts"
+  params:
+    h:
+      type: int
+    w:
+      type: int
+    horizontalCuts:
+      type: array
+      items:
+        type: int
+    verticalCuts:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    rust: "Solution::max_area({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    python3: "Solution().maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    python2: "Solution().maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    ruby: "max_area({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    java: "new Solution().maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    csharp: "new Solution().MaxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    kotlin: "Solution().maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    go: "maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    dart: "Solution().maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    swift: "Solution().maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+    typescript: "maxArea({h}, {w}, {horizontalCuts}, {verticalCuts})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxArea(h, w, horizontalCuts, verticalCuts, {result})"
+    checker: |
+      class Checker:
+          def maxArea(self, h, w, horizontalCuts, verticalCuts, result):
+              hs = [0] + sorted(horizontalCuts) + [h]
+              vs = [0] + sorted(verticalCuts) + [w]
+              max_h = max(b - a for a, b in zip(hs, hs[1:]))
+              max_w = max(b - a for a, b in zip(vs, vs[1:]))
+              return result == (max_h * max_w) % (10 ** 9 + 7)
+
+seed: 1465
+
+tests:
+  - name: "example-one"
+    in:
+      h: 5
+      w: 4
+      horizontalCuts: [1, 2, 4]
+      verticalCuts: [1, 3]
+    out: 4
+  - name: "example-two"
+    in:
+      h: 5
+      w: 4
+      horizontalCuts: [3, 1]
+      verticalCuts: [1]
+    out: 6
+  - name: "example-three"
+    in:
+      h: 5
+      w: 4
+      horizontalCuts: [3]
+      verticalCuts: [3]
+    out: 9
+  - name: "minimal-cake"
+    in:
+      h: 2
+      w: 2
+      horizontalCuts: [1]
+      verticalCuts: [1]
+    out: 1
+  - name: "single-middle-cuts"
+    in:
+      h: 10
+      w: 10
+      horizontalCuts: [5]
+      verticalCuts: [5]
+    out: 25
+  - name: "edge-cuts"
+    in:
+      h: 10
+      w: 12
+      horizontalCuts: [1, 9]
+      verticalCuts: [1, 11]
+    out: 80
+  - name: "unsorted-cuts"
+    in:
+      h: 20
+      w: 15
+      horizontalCuts: [14, 2, 9]
+      verticalCuts: [11, 3, 7]
+    out: 28
+  - name: "equal-spacing"
+    in:
+      h: 12
+      w: 12
+      horizontalCuts: [3, 6, 9]
+      verticalCuts: [3, 6, 9]
+    out: 9
+  - name: "wide-horizontal-gap"
+    in:
+      h: 100
+      w: 20
+      horizontalCuts: [10, 20, 30, 40]
+      verticalCuts: [5, 10, 15]
+    out: 300
+  - name: "wide-vertical-gap"
+    in:
+      h: 20
+      w: 100
+      horizontalCuts: [5, 10, 15]
+      verticalCuts: [10, 20, 30, 40]
+    out: 300
+  - name: "first-gap-largest"
+    in:
+      h: 50
+      w: 50
+      horizontalCuts: [20, 30, 40]
+      verticalCuts: [20, 30, 40]
+    out: 400
+  - name: "last-gap-largest"
+    in:
+      h: 50
+      w: 50
+      horizontalCuts: [10, 20, 30]
+      verticalCuts: [10, 20, 30]
+    out: 400
+  - name: "middle-gap-largest"
+    in:
+      h: 50
+      w: 50
+      horizontalCuts: [10, 40]
+      verticalCuts: [10, 40]
+    out: 900
+  - name: "two-horizontal-cuts"
+    in:
+      h: 30
+      w: 40
+      horizontalCuts: [7, 23]
+      verticalCuts: [9, 31]
+    out: 352
+  - name: "dense-small-gaps"
+    in:
+      h: 25
+      w: 30
+      horizontalCuts: [1, 2, 3, 4, 5, 6]
+      verticalCuts: [1, 2, 3, 4, 5, 6]
+    out: 456
+  - name: "dense-near-end"
+    in:
+      h: 25
+      w: 30
+      horizontalCuts: [19, 20, 21, 22, 23]
+      verticalCuts: [24, 25, 26, 27, 28]
+    out: 456
+  - name: "large-balanced"
+    in:
+      h: 1000000000
+      w: 1000000000
+      horizontalCuts: [250000000, 500000000, 750000000]
+      verticalCuts: [200000000, 400000000, 600000000, 800000000]
+    out: 650000007
+  - name: "large-single-cuts"
+    in:
+      h: 1000000000
+      w: 999999999
+      horizontalCuts: [1]
+      verticalCuts: [999999998]
+    out: 72
+  - name: "large-edge-gaps"
+    in:
+      h: 999999999
+      w: 1000000000
+      horizontalCuts: [100, 200, 300]
+      verticalCuts: [999999700, 999999800]
+    out: 94556
+  - name: "modulo-product"
+    in:
+      h: 1000000000
+      w: 1000000000
+      horizontalCuts: [1]
+      verticalCuts: [1]
+    out: 64
+  - name: "prime-dimensions"
+    in:
+      h: 997
+      w: 991
+      horizontalCuts: [101, 307, 701]
+      verticalCuts: [89, 443, 887]
+    out: 174936
+  - name: "seven-by-eight"
+    in:
+      h: 7
+      w: 8
+      horizontalCuts: [1, 3, 6]
+      verticalCuts: [2, 5]
+    out: 9
+  - name: "many-horizontal"
+    in:
+      h: 60
+      w: 40
+      horizontalCuts: [2, 5, 9, 14, 20, 27, 35, 44, 52]
+      verticalCuts: [10, 30]
+    out: 180
+  - name: "many-vertical"
+    in:
+      h: 40
+      w: 60
+      horizontalCuts: [10, 30]
+      verticalCuts: [2, 5, 9, 14, 20, 27, 35, 44, 52]
+    out: 180
+  - name: "alternating-gaps"
+    in:
+      h: 100
+      w: 100
+      horizontalCuts: [1, 50, 51, 99]
+      verticalCuts: [2, 48, 52, 98]
+    out: 2254
+  - name: "asymmetric-gaps"
+    in:
+      h: 73
+      w: 86
+      horizontalCuts: [12, 13, 60]
+      verticalCuts: [4, 40, 41, 80]
+    out: 1833
+  - name: "cuts-near-center"
+    in:
+      h: 101
+      w: 103
+      horizontalCuts: [49, 50, 51]
+      verticalCuts: [50, 51, 52]
+    out: 2550
+  - name: "small-horizontal-large-vertical"
+    in:
+      h: 6
+      w: 1000
+      horizontalCuts: [1, 5]
+      verticalCuts: [1, 2, 3, 997, 998, 999]
+    out: 3976
+  - name: "large-horizontal-small-vertical"
+    in:
+      h: 1000
+      w: 6
+      horizontalCuts: [1, 2, 3, 997, 998, 999]
+      verticalCuts: [1, 5]
+    out: 3976
+  - name: "twenty-by-twenty-irregular"
+    in:
+      h: 20
+      w: 20
+      horizontalCuts: [2, 8, 9, 17]
+      verticalCuts: [1, 7, 15, 19]
+    out: 64
+  - name: "thirty-by-thirty-irregular"
+    in:
+      h: 30
+      w: 30
+      horizontalCuts: [3, 4, 15, 27]
+      verticalCuts: [2, 10, 11, 28]
+    out: 204
+  - name: "forty-by-fifty"
+    in:
+      h: 40
+      w: 50
+      horizontalCuts: [8, 16, 24, 32]
+      verticalCuts: [5, 15, 35, 45]
+    out: 160
+  - name: "large-random-gaps"
+    in:
+      h: 123456789
+      w: 987654321
+      horizontalCuts: [123, 456789, 45670000, 90000000]
+      verticalCuts: [12, 3456789, 40000000, 800000000]
+    out: 119465720
+  - name: "near-complete-horizontal"
+    in:
+      h: 15
+      w: 17
+      horizontalCuts: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+      verticalCuts: [4, 13]
+    out: 9
+  - name: "near-complete-vertical"
+    in:
+      h: 17
+      w: 15
+      horizontalCuts: [4, 13]
+      verticalCuts: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    out: 9
+  - name: "max-dimensions-staggered"
+    in:
+      h: 1000000000
+      w: 999999999
+      horizontalCuts: [123456789, 234567890, 765432109, 876543210]
+      verticalCuts: [111111111, 222222222, 777777777, 888888888]
+    out: 751714604
+  - name: "single-horizontal-many-vertical"
+    in:
+      h: 999999937
+      w: 1000000000
+      horizontalCuts: [499999968]
+      verticalCuts: [1, 250000000, 500000000, 750000000, 999999999]
+    out: 375000063
+  - name: "single-vertical-many-horizontal"
+    in:
+      h: 1000000000
+      w: 999999929
+      horizontalCuts: [1, 200000000, 400000000, 600000000, 800000000, 999999999]
+      verticalCuts: [499999964]
+    out: 300000056
+  - name: "dense-alternating-small"
+    in:
+      h: 101
+      w: 103
+      horizontalCuts: [1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 100]
+      verticalCuts: [2, 5, 9, 14, 20, 27, 35, 44, 54, 65, 77, 90, 102]
+    out: 169
+  - name: "large-prime-gap-pattern"
+    in:
+      h: 999999893
+      w: 999999883
+      horizontalCuts: [2, 999999891]
+      verticalCuts: [3, 999999880]
+    out: 15340

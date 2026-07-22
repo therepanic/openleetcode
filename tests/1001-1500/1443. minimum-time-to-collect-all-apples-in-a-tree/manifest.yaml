@@ -1,0 +1,556 @@
+entry:
+  id: 1443
+  title: minimum-time-to-collect-all-apples-in-a-tree
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    hasApple:
+      type: array
+      items:
+        type: bool
+  call:
+    cpp: "Solution().minTime({n}, {edges}, {hasApple})"
+    rust: "Solution::min_time({n}, {edges}, {hasApple})"
+    python3: "Solution().minTime({n}, {edges}, {hasApple})"
+    python2: "Solution().minTime({n}, {edges}, {hasApple})"
+    ruby: "min_time({n}, {edges}, {hasApple})"
+    java: "new Solution().minTime({n}, {edges}, {hasApple})"
+    csharp: "new Solution().MinTime({n}, {edges}, {hasApple})"
+    kotlin: "Solution().minTime({n}, {edges}, {hasApple})"
+    go: "minTime({n}, {edges}, {hasApple})"
+    dart: "Solution().minTime({n}, {edges}, {hasApple})"
+    swift: "Solution().minTime({n}, {edges}, {hasApple})"
+    typescript: "minTime({n}, {edges}, {hasApple})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minTime(n, edges, hasApple, {result})"
+    checker: |
+      class Checker:
+          def minTime(self, n, edges, hasApple, result):
+              if type(result) is not int:
+                  return False
+              graph = [[] for _ in range(n)]
+              for edge in edges:
+                  if len(edge) != 2:
+                      return False
+                  u, v = edge
+                  if not (0 <= u < n and 0 <= v < n and u != v):
+                      return False
+                  graph[u].append(v)
+                  graph[v].append(u)
+              parent = [-2] * n
+              parent[0] = -1
+              order = [0]
+              for u in order:
+                  for v in graph[u]:
+                      if v == parent[u]:
+                          continue
+                      if parent[v] != -2:
+                          return False
+                      parent[v] = u
+                      order.append(v)
+              if len(order) != n or len(hasApple) != n:
+                  return False
+              contains = list(hasApple)
+              cost = 0
+              for u in reversed(order[1:]):
+                  if contains[u]:
+                      cost += 2
+                      contains[parent[u]] = True
+              return result == cost
+seed: 1443
+tests:
+  - name: one-no-apple
+    in:
+      n: 1
+      edges: []
+      hasApple: [false]
+  - name: one-apple
+    in:
+      n: 1
+      edges: []
+      hasApple: [true]
+  - name: two-leaf
+    in:
+      n: 2
+      edges:
+        - [0, 1]
+      hasApple: [false, true]
+  - name: two-none
+    in:
+      n: 2
+      edges:
+        - [0, 1]
+      hasApple: [false, false]
+  - name: chain-three-leaf
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+      hasApple: [false, false, true]
+  - name: chain-three-middle
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+      hasApple: [false, true, false]
+  - name: star-three
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+      hasApple: [false, true, false, true]
+  - name: star-none
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+      hasApple: [false, false, false, false, false]
+  - name: chain-five-end
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      hasApple: [false, false, false, false, true]
+  - name: chain-five-middle
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      hasApple: [false, false, true, false, false]
+  - name: chain-five-both
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      hasApple: [false, true, false, false, true]
+  - name: balanced-seven
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+      hasApple: [false, false, false, true, false, false, true]
+  - name: balanced-all-leaves
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+      hasApple: [false, false, false, true, true, true, true]
+  - name: balanced-none
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+      hasApple: [false, false, false, false, false, false, false]
+  - name: internal-only
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+      hasApple: [false, true, false, false, false, true, false]
+  - name: branch-left
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [1, 3]
+        - [3, 4]
+        - [3, 5]
+      hasApple: [false, false, false, false, true, false]
+  - name: branch-right
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [2, 3]
+        - [2, 4]
+        - [4, 5]
+      hasApple: [false, false, false, false, false, true]
+  - name: apple-root
+    in:
+      n: 4
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [1, 3]
+      hasApple: [true, false, false, false]
+  - name: multiple-prune
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [6, 7]
+      hasApple: [false, false, false, true, false, false, false, true]
+  - name: deep-single
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      hasApple: [false, false, false, false, false, false, false, true]
+  - name: deep-two
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      hasApple: [false, false, true, false, false, false, false, true]
+  - name: wide-star
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+      hasApple: [false, true, false, true, false, true, false, true]
+  - name: all-apples-six
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [1, 3]
+        - [3, 4]
+        - [3, 5]
+      hasApple: [true, true, true, true, true, true]
+  - name: alternating-chain
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+      hasApple: [false, true, false, true, false, true, false, true, false]
+  - name: branch-pruned
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [6, 7]
+        - [6, 8]
+      hasApple: [false, false, false, false, true, false, false, false, true]
+  - name: two-branches
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [0, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+      hasApple: [false, false, false, true, false, false, false, false, true]
+  - name: ten-chain
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+      hasApple:
+        [false, false, false, false, false, false, false, false, false, true]
+  - name: ten-sparse
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [5, 8]
+        - [6, 9]
+      hasApple:
+        [false, false, false, false, false, false, false, true, false, true]
+  - name: eleven-branches
+    in:
+      n: 11
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 7]
+        - [4, 8]
+        - [5, 9]
+        - [6, 10]
+      hasApple:
+        [
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          false,
+          true,
+          false,
+          true,
+        ]
+  - name: twelve-chain
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+      hasApple:
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          true,
+        ]
+  - name: twelve-all
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+        - [0, 9]
+        - [0, 10]
+        - [0, 11]
+      hasApple:
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+        ]
+  - name: final-mixed
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [4, 7]
+        - [5, 8]
+        - [6, 9]
+      hasApple:
+        [false, false, false, true, false, false, true, false, true, false]
+  - name: final-left-deep
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [3, 5]
+        - [5, 6]
+        - [5, 7]
+        - [7, 8]
+      hasApple: [false, false, false, false, true, false, false, true, false]
+  - name: final-right-deep
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [2, 6]
+        - [6, 7]
+        - [7, 8]
+      hasApple: [false, false, false, false, false, true, false, false, true]
+  - name: final-branch-prune
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [6, 7]
+      hasApple: [false, false, false, false, true, false, false, true]
+  - name: official-example-one
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 6]
+      hasApple: [false, false, true, false, true, true, false]
+  - name: official-example-two
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 6]
+      hasApple: [false, false, true, false, false, true, false]
+  - name: official-example-three
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 6]
+      hasApple: [false, false, false, false, false, false, false]
+  - name: asymmetric-three-branches
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [4, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 8]
+        - [8, 9]
+      hasApple:
+        [false, false, false, false, false, true, false, true, false, true]
+  - name: only-deep-left
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [2, 8]
+        - [8, 9]
+      hasApple:
+        [false, false, false, false, false, false, false, true, false, false]

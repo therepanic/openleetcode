@@ -1,43 +1,42 @@
+import java.util.*;
+
 class Solution {
     public int[] shortestAlternatingPaths(int n, int[][] redEdges, int[][] blueEdges) {
-        int[] ans = new int[n];
-        Arrays.fill(ans, -1);
-        
-        List<List<int[]>> graph = new ArrayList<>();
+        List<List<Integer>> red = new ArrayList<>();
+        List<List<Integer>> blue = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            graph.add(new ArrayList<>());
+            red.add(new ArrayList<>());
+            blue.add(new ArrayList<>());
         }
-        
-        for (int[] edge : redEdges) {
-            graph.get(edge[0]).add(new int[]{edge[1], 1}); // 1-red
-        }
-        for (int[] edge : blueEdges) {
-            graph.get(edge[0]).add(new int[]{edge[1], 2}); // 2-blue
-        }
-        
-        Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{0, 0}); // {node, prevColor}
-        
-        int step = 0;
-        while (!q.isEmpty()) {
-            int size = q.size();
-            for (int i = 0; i < size; i++) {
-                int[] cur = q.poll();
-                int u = cur[0], prevColor = cur[1];
-                if (ans[u] == -1) {
-                    ans[u] = step;
-                }
-                List<int[]> neighbors = graph.get(u);
-                for (int j = 0; j < neighbors.size(); j++) {
-                    int[] pair = neighbors.get(j);
-                    int v = pair[0], edgeColor = pair[1];
-                    if (v == -1 || edgeColor == prevColor) continue;
-                    q.offer(new int[]{v, edgeColor});
-                    neighbors.set(j, new int[]{-1, edgeColor});
+        for (int[] edge : redEdges) red.get(edge[0]).add(edge[1]);
+        for (int[] edge : blueEdges) blue.get(edge[0]).add(edge[1]);
+
+        int[] answer = new int[n];
+        Arrays.fill(answer, -1);
+        boolean[][] seen = new boolean[n][2];
+        ArrayDeque<int[]> queue = new ArrayDeque<>();
+        queue.offer(new int[] {0, 0});
+        queue.offer(new int[] {0, 1});
+        seen[0][0] = seen[0][1] = true;
+        int distance = 0;
+
+        while (!queue.isEmpty()) {
+            for (int count = queue.size(); count > 0; count--) {
+                int[] state = queue.poll();
+                int node = state[0];
+                int lastColor = state[1];
+                if (answer[node] == -1) answer[node] = distance;
+                List<List<Integer>> nextGraph = lastColor == 0 ? blue : red;
+                int nextColor = 1 - lastColor;
+                for (int next : nextGraph.get(node)) {
+                    if (!seen[next][nextColor]) {
+                        seen[next][nextColor] = true;
+                        queue.offer(new int[] {next, nextColor});
+                    }
                 }
             }
-            step++;
+            distance++;
         }
-        return ans;
+        return answer;
     }
 }

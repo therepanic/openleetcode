@@ -1,21 +1,25 @@
 class Solution {
     fun shortestAlternatingPaths(n: Int, redEdges: Array<IntArray>, blueEdges: Array<IntArray>): IntArray {
         val ans = IntArray(n) { -1 }
-        val graph = Array(n) { mutableListOf<Pair<Int, Int>>() }
-        val q: java.util.Queue<Pair<Int, Int>> = java.util.LinkedList()
-        q.offer(Pair(0, 0)) // (node, prevColor): 0-init, 1-red, 2-blue
+        val graph = Array(n) { mutableListOf<IntArray>() }
         
-        for ((u, v) in redEdges) {
-            graph[u].add(Pair(v, 1))
+        for (e in redEdges) {
+            graph[e[0]].add(intArrayOf(e[1], 1)) // 1 = red
         }
-        for ((u, v) in blueEdges) {
-            graph[u].add(Pair(v, 2))
+        for (e in blueEdges) {
+            graph[e[0]].add(intArrayOf(e[1], 2)) // 2 = blue
         }
+        
+        val q: java.util.Queue<IntArray> = java.util.LinkedList()
+        q.offer(intArrayOf(0, 0)) // [node, prevColor]: 0=init
         
         var step = 0
         while (q.isNotEmpty()) {
-            repeat(q.size) {
-                val (u, prevColor) = q.poll()
+            val size = q.size
+            repeat(size) {
+                val cur = q.poll()
+                val u = cur[0]
+                val prevColor = cur[1]
                 if (ans[u] == -1) {
                     ans[u] = step
                 }
@@ -23,8 +27,8 @@ class Solution {
                 for (i in neighbors.indices) {
                     val (v, edgeColor) = neighbors[i]
                     if (v == -1 || edgeColor == prevColor) continue
-                    q.offer(Pair(v, edgeColor))
-                    neighbors[i] = Pair(-1, edgeColor)
+                    q.offer(intArrayOf(v, edgeColor))
+                    neighbors[i] = intArrayOf(-1, edgeColor)
                 }
             }
             step++

@@ -1,0 +1,31 @@
+class Solution(object):
+    def minDistance(self, houses, k):
+        n = len(houses)
+        houses.sort()
+        P = [0]
+        for h in houses:
+            P.append(P[-1] + h)
+        
+        G = [[0] * n for _ in range(n)]
+        for i in range(n):
+            for j in range(i, n):
+                mid = (i + j) // 2
+                count_left = mid - i + 1
+                count_right = j - mid
+                sum_left = P[mid + 1] - P[i]
+                sum_right = P[j + 1] - P[mid + 1]
+                G[i][j] = (houses[mid] * count_left - sum_left) + (sum_right - houses[mid] * count_right)
+        
+        dp = [[float('inf')] * (n + 1) for _ in range(k + 1)]
+        dp[0][0] = 0
+        
+        for m in range(1, k + 1):
+            for j in range(1, n + 1):
+                best = float('inf')
+                for i in range(j):
+                    candidate = dp[m-1][i] + G[i][j-1]
+                    if candidate < best:
+                        best = candidate
+                dp[m][j] = best
+        
+        return int(dp[k][n])

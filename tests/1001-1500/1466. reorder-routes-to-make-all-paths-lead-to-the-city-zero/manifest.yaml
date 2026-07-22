@@ -1,0 +1,726 @@
+entry:
+  id: 1466
+  title: "reorder-routes-to-make-all-paths-lead-to-the-city-zero"
+  params:
+    n:
+      type: int
+    connections:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minReorder({n}, {connections})"
+    rust: "Solution::min_reorder({n}, {connections})"
+    python3: "Solution().minReorder({n}, {connections})"
+    python2: "Solution().minReorder({n}, {connections})"
+    ruby: "min_reorder({n}, {connections})"
+    java: "new Solution().minReorder({n}, {connections})"
+    csharp: "new Solution().MinReorder({n}, {connections})"
+    kotlin: "Solution().minReorder({n}, {connections})"
+    go: "minReorder({n}, {connections})"
+    dart: "Solution().minReorder({n}, {connections})"
+    swift: "Solution().minReorder({n}, {connections})"
+    typescript: "minReorder({n}, {connections})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().minReorder(n, connections, {result})"
+    checker: |
+      class Checker:
+          def minReorder(self, n, connections, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              graph = [[] for _ in range(n)]
+              directed = set()
+              for a, b in connections:
+                  graph[a].append(b)
+                  graph[b].append(a)
+                  directed.add((a, b))
+              seen = {0}
+              stack = [0]
+              expected = 0
+              while stack:
+                  node = stack.pop()
+                  for nxt in graph[node]:
+                      if nxt not in seen:
+                          seen.add(nxt)
+                          expected += int((node, nxt) in directed)
+                          stack.append(nxt)
+              return len(seen) == n and result == expected
+
+seed: 1466
+
+tests:
+  - name: "example_one"
+    in:
+      n: 6
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 3]
+          - [2, 3]
+          - [4, 0]
+          - [4, 5]
+    out: 3
+  - name: "example_two"
+    in:
+      n: 5
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [1, 2]
+          - [3, 2]
+          - [3, 4]
+    out: 2
+  - name: "example_three"
+    in:
+      n: 3
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [2, 0]
+    out: 0
+  - name: "two_nodes_correct"
+    in:
+      n: 2
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+    out: 0
+  - name: "two_nodes_reverse"
+    in:
+      n: 2
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+    out: 1
+  - name: "star_all_inward"
+    in:
+      n: 7
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [2, 0]
+          - [3, 0]
+          - [4, 0]
+          - [5, 0]
+          - [6, 0]
+    out: 0
+  - name: "star_all_outward"
+    in:
+      n: 7
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [0, 4]
+          - [0, 5]
+          - [0, 6]
+    out: 6
+  - name: "chain_inward"
+    in:
+      n: 6
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [2, 1]
+          - [3, 2]
+          - [4, 3]
+          - [5, 4]
+    out: 0
+  - name: "chain_outward"
+    in:
+      n: 6
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+    out: 5
+  - name: "chain_alternating"
+    in:
+      n: 9
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+          - [2, 3]
+          - [4, 3]
+          - [4, 5]
+          - [6, 5]
+          - [6, 7]
+          - [8, 7]
+    out: 4
+  - name: "branching_inward"
+    in:
+      n: 8
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [2, 0]
+          - [3, 1]
+          - [4, 1]
+          - [5, 2]
+          - [6, 2]
+          - [7, 5]
+    out: 0
+  - name: "branching_outward"
+    in:
+      n: 8
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [1, 3]
+          - [1, 4]
+          - [2, 5]
+          - [2, 6]
+          - [5, 7]
+    out: 7
+  - name: "mixed_small_tree"
+    in:
+      n: 7
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 1]
+          - [1, 4]
+          - [5, 2]
+          - [6, 5]
+    out: 2
+  - name: "mixed_balanced_tree"
+    in:
+      n: 15
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 0]
+          - [3, 1]
+          - [1, 4]
+          - [5, 2]
+          - [2, 6]
+          - [7, 3]
+          - [4, 8]
+          - [9, 4]
+          - [5, 10]
+          - [11, 5]
+          - [6, 12]
+          - [13, 6]
+          - [14, 7]
+    out: 6
+  - name: "root_with_long_tail"
+    in:
+      n: 10
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+          - [2, 3]
+          - [4, 3]
+          - [5, 4]
+          - [5, 6]
+          - [7, 6]
+          - [8, 7]
+          - [9, 8]
+    out: 3
+  - name: "edge_order_irrelevant"
+    in:
+      n: 6
+      connections:
+        elemType: "int"
+        value:
+          - [4, 5]
+          - [2, 3]
+          - [0, 1]
+          - [4, 0]
+          - [1, 3]
+    out: 3
+  - name: "deep_left_branch"
+    in:
+      n: 12
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 1]
+          - [4, 3]
+          - [5, 4]
+          - [6, 5]
+          - [7, 6]
+          - [8, 7]
+          - [9, 8]
+          - [10, 9]
+          - [11, 10]
+    out: 1
+  - name: "deep_right_branch"
+    in:
+      n: 12
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [3, 2]
+          - [3, 4]
+          - [5, 4]
+          - [5, 6]
+          - [7, 6]
+          - [7, 8]
+          - [9, 8]
+          - [9, 10]
+          - [11, 10]
+    out: 6
+  - name: "ten_node_star_mixed"
+    in:
+      n: 10
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 0]
+          - [4, 0]
+          - [0, 5]
+          - [6, 0]
+          - [0, 7]
+          - [8, 0]
+          - [9, 0]
+    out: 3
+  - name: "fourteen_node_chain_mixed"
+    in:
+      n: 14
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+          - [2, 3]
+          - [4, 3]
+          - [4, 5]
+          - [6, 5]
+          - [6, 7]
+          - [8, 7]
+          - [8, 9]
+          - [10, 9]
+          - [10, 11]
+          - [12, 11]
+          - [12, 13]
+    out: 7
+  - name: "fifteen_node_three_branches"
+    in:
+      n: 15
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 1]
+          - [4, 1]
+          - [5, 2]
+          - [2, 6]
+          - [7, 3]
+          - [8, 3]
+          - [9, 5]
+          - [10, 6]
+          - [6, 11]
+          - [12, 7]
+          - [13, 10]
+          - [14, 11]
+    out: 3
+  - name: "twenty_node_chain"
+    in:
+      n: 20
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [3, 2]
+          - [3, 4]
+          - [5, 4]
+          - [5, 6]
+          - [7, 6]
+          - [7, 8]
+          - [9, 8]
+          - [9, 10]
+          - [11, 10]
+          - [11, 12]
+          - [13, 12]
+          - [13, 14]
+          - [15, 14]
+          - [15, 16]
+          - [17, 16]
+          - [17, 18]
+          - [19, 18]
+    out: 10
+  - name: "twenty_node_star"
+    in:
+      n: 20
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 0]
+          - [0, 3]
+          - [4, 0]
+          - [0, 5]
+          - [6, 0]
+          - [0, 7]
+          - [8, 0]
+          - [0, 9]
+          - [10, 0]
+          - [0, 11]
+          - [12, 0]
+          - [0, 13]
+          - [14, 0]
+          - [0, 15]
+          - [16, 0]
+          - [0, 17]
+          - [18, 0]
+          - [0, 19]
+    out: 10
+  - name: "twentyfive_balanced"
+    in:
+      n: 25
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 1]
+          - [1, 4]
+          - [5, 2]
+          - [2, 6]
+          - [7, 3]
+          - [3, 8]
+          - [9, 4]
+          - [4, 10]
+          - [11, 5]
+          - [5, 12]
+          - [13, 6]
+          - [6, 14]
+          - [15, 7]
+          - [7, 16]
+          - [17, 8]
+          - [8, 18]
+          - [19, 9]
+          - [9, 20]
+          - [21, 10]
+          - [10, 22]
+          - [23, 11]
+          - [11, 24]
+    out: 12
+  - name: "three_node_one_reversal"
+    in:
+      n: 3
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+    out: 1
+  - name: "four_node_path"
+    in:
+      n: 4
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [1, 2]
+          - [3, 2]
+    out: 1
+  - name: "five_node_star_mixed"
+    in:
+      n: 5
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 0]
+          - [0, 3]
+          - [4, 0]
+    out: 2
+  - name: "six_node_branch"
+    in:
+      n: 6
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 1]
+          - [4, 1]
+          - [5, 2]
+    out: 1
+  - name: "seven_node_binary"
+    in:
+      n: 7
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 0]
+          - [3, 1]
+          - [1, 4]
+          - [5, 2]
+          - [2, 6]
+    out: 3
+  - name: "eight_node_path"
+    in:
+      n: 8
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [1, 2]
+          - [3, 2]
+          - [3, 4]
+          - [5, 4]
+          - [5, 6]
+          - [7, 6]
+    out: 3
+  - name: "nine_node_hub_and_tail"
+    in:
+      n: 9
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 0]
+          - [0, 3]
+          - [4, 3]
+          - [3, 5]
+          - [6, 5]
+          - [5, 7]
+          - [8, 7]
+    out: 4
+  - name: "eleven_node_two_hubs"
+    in:
+      n: 11
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [2, 0]
+          - [0, 3]
+          - [4, 1]
+          - [1, 5]
+          - [6, 2]
+          - [2, 7]
+          - [8, 3]
+          - [3, 9]
+          - [10, 9]
+    out: 4
+  - name: "thirteen_node_comb"
+    in:
+      n: 13
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+          - [1, 3]
+          - [4, 1]
+          - [5, 3]
+          - [3, 6]
+          - [7, 6]
+          - [6, 8]
+          - [9, 8]
+          - [8, 10]
+          - [11, 10]
+          - [10, 12]
+    out: 6
+  - name: "sixteen_node_chain"
+    in:
+      n: 16
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+          - [2, 3]
+          - [4, 3]
+          - [4, 5]
+          - [6, 5]
+          - [6, 7]
+          - [8, 7]
+          - [8, 9]
+          - [10, 9]
+          - [10, 11]
+          - [12, 11]
+          - [12, 13]
+          - [14, 13]
+          - [14, 15]
+    out: 8
+  - name: "eighteen_node_star_mixed"
+    in:
+      n: 18
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 0]
+          - [4, 0]
+          - [0, 5]
+          - [6, 0]
+          - [0, 7]
+          - [8, 0]
+          - [9, 0]
+          - [0, 10]
+          - [11, 0]
+          - [0, 12]
+          - [13, 0]
+          - [0, 14]
+          - [15, 0]
+          - [0, 16]
+          - [17, 0]
+    out: 7
+  - name: "thirty_node_balanced"
+    in:
+      n: 30
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 0]
+          - [3, 1]
+          - [1, 4]
+          - [5, 2]
+          - [2, 6]
+          - [7, 3]
+          - [3, 8]
+          - [9, 4]
+          - [4, 10]
+          - [11, 5]
+          - [5, 12]
+          - [13, 6]
+          - [6, 14]
+          - [15, 7]
+          - [7, 16]
+          - [17, 8]
+          - [8, 18]
+          - [19, 9]
+          - [9, 20]
+          - [21, 10]
+          - [10, 22]
+          - [23, 11]
+          - [11, 24]
+          - [25, 12]
+          - [12, 26]
+          - [27, 13]
+          - [13, 28]
+          - [29, 14]
+    out: 14
+  - name: "forty_node_directed_outward"
+    in:
+      n: 40
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [0, 2]
+          - [0, 3]
+          - [0, 4]
+          - [0, 5]
+          - [0, 6]
+          - [0, 7]
+          - [0, 8]
+          - [0, 9]
+          - [0, 10]
+          - [0, 11]
+          - [0, 12]
+          - [0, 13]
+          - [0, 14]
+          - [0, 15]
+          - [0, 16]
+          - [0, 17]
+          - [0, 18]
+          - [0, 19]
+          - [0, 20]
+          - [0, 21]
+          - [0, 22]
+          - [0, 23]
+          - [0, 24]
+          - [0, 25]
+          - [0, 26]
+          - [0, 27]
+          - [0, 28]
+          - [0, 29]
+          - [0, 30]
+          - [0, 31]
+          - [0, 32]
+          - [0, 33]
+          - [0, 34]
+          - [0, 35]
+          - [0, 36]
+          - [0, 37]
+          - [0, 38]
+          - [0, 39]
+    out: 39
+  - name: "three_node_all_outward"
+    in:
+      n: 3
+      connections:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+    out: 2
+  - name: "six_node_two_branch_mixed"
+    in:
+      n: 6
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [0, 2]
+          - [3, 1]
+          - [4, 3]
+          - [5, 2]
+    out: 1
+  - name: "ten_node_all_inward"
+    in:
+      n: 10
+      connections:
+        elemType: "int"
+        value:
+          - [1, 0]
+          - [2, 1]
+          - [3, 1]
+          - [4, 2]
+          - [5, 2]
+          - [6, 3]
+          - [7, 3]
+          - [8, 4]
+          - [9, 4]
+    out: 0

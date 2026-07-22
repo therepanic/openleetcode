@@ -1,0 +1,290 @@
+entry:
+  id: 1240
+  title: tiling-a-rectangle-with-the-fewest-squares
+  params:
+    n:
+      type: int
+    m:
+      type: int
+  call:
+    cpp: "Solution().tilingRectangle({n}, {m})"
+    rust: "Solution::tiling_rectangle({n}, {m})"
+    python3: "Solution().tilingRectangle({n}, {m})"
+    python2: "Solution().tilingRectangle({n}, {m})"
+    ruby: "tiling_rectangle({n}, {m})"
+    java: "new Solution().tilingRectangle({n}, {m})"
+    csharp: "new Solution().TilingRectangle({n}, {m})"
+    kotlin: "Solution().tilingRectangle({n}, {m})"
+    go: "tilingRectangle({n}, {m})"
+    dart: "Solution().tilingRectangle({n}, {m})"
+    swift: "Solution().tilingRectangle({n}, {m})"
+    typescript: "tilingRectangle({n}, {m})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().tilingRectangle(n, m, {result})"
+    checker: |
+      class Checker:
+          def tilingRectangle(self, n, m, result):
+              if type(result) is not int or not (1 <= n <= 13 and 1 <= m <= 13):
+                  return False
+              width, height = sorted((n, m))
+              best = [width * height]
+              skyline = [0] * width
+
+              def search(used):
+                  if used >= best[0]:
+                      return
+                  level = min(skyline)
+                  if level == height:
+                      best[0] = used
+                      return
+                  start = skyline.index(level)
+                  end = start
+                  while end < width and skyline[end] == level:
+                      end += 1
+                  for side in range(min(end - start, height - level), 0, -1):
+                      for column in range(start, start + side):
+                          skyline[column] += side
+                      search(used + 1)
+                      for column in range(start, start + side):
+                          skyline[column] -= side
+
+              search(0)
+              return result == best[0]
+seed: 1240
+tests:
+  - name: unit-square
+    in:
+      n: 1
+      m: 1
+    out: 1
+  - name: horizontal-strip-maximum
+    in:
+      n: 1
+      m: 13
+    out: 13
+  - name: vertical-strip-maximum
+    in:
+      n: 13
+      m: 1
+    out: 13
+  - name: two-by-three-example
+    in:
+      n: 2
+      m: 3
+    out: 3
+  - name: two-by-four-half-squares
+    in:
+      n: 2
+      m: 4
+    out: 2
+  - name: two-by-five-remainder
+    in:
+      n: 2
+      m: 5
+    out: 4
+  - name: two-by-thirteen-strip-pattern
+    in:
+      n: 2
+      m: 13
+    out: 8
+  - name: three-by-four-coprime
+    in:
+      n: 3
+      m: 4
+    out: 4
+  - name: three-by-five-coprime
+    in:
+      n: 3
+      m: 5
+    out: 4
+  - name: three-by-six-equal-halves
+    in:
+      n: 3
+      m: 6
+    out: 2
+  - name: three-by-nine-thirds
+    in:
+      n: 3
+      m: 9
+    out: 3
+  - name: four-by-five-near-square
+    in:
+      n: 4
+      m: 5
+    out: 5
+  - name: four-by-twelve-thirds
+    in:
+      n: 4
+      m: 12
+    out: 3
+  - name: five-by-eight-example
+    in:
+      n: 5
+      m: 8
+    out: 5
+  - name: five-by-eleven-coprime
+    in:
+      n: 5
+      m: 11
+    out: 6
+  - name: five-by-thirteen-large-coprime
+    in:
+      n: 5
+      m: 13
+    out: 6
+  - name: six-by-seven-near-square
+    in:
+      n: 6
+      m: 7
+    out: 5
+  - name: six-by-eleven-large-coprime
+    in:
+      n: 6
+      m: 11
+    out: 6
+  - name: seven-by-eight-near-square
+    in:
+      n: 7
+      m: 8
+    out: 7
+  - name: seven-by-ten-coprime
+    in:
+      n: 7
+      m: 10
+    out: 6
+  - name: seven-by-thirteen-maximum-width
+    in:
+      n: 7
+      m: 13
+    out: 6
+  - name: eight-by-nine-near-square
+    in:
+      n: 8
+      m: 9
+    out: 7
+  - name: eight-by-twelve-common-divisor
+    in:
+      n: 8
+      m: 12
+    out: 3
+  - name: eight-by-thirteen-maximum-width
+    in:
+      n: 8
+      m: 13
+    out: 6
+  - name: nine-by-ten-near-square
+    in:
+      n: 9
+      m: 10
+    out: 6
+  - name: nine-by-twelve-common-divisor
+    in:
+      n: 9
+      m: 12
+    out: 4
+  - name: nine-by-thirteen-maximum-width
+    in:
+      n: 9
+      m: 13
+    out: 7
+  - name: ten-by-eleven-near-square
+    in:
+      n: 10
+      m: 11
+    out: 6
+  - name: ten-by-twelve-common-divisor
+    in:
+      n: 10
+      m: 12
+    out: 5
+  - name: ten-by-thirteen-maximum-width
+    in:
+      n: 10
+      m: 13
+    out: 7
+  - name: eleven-by-thirteen-example
+    in:
+      n: 11
+      m: 13
+    out: 6
+  - name: thirteen-by-eleven-example-reversed
+    in:
+      n: 13
+      m: 11
+    out: 6
+  - name: eleven-by-twelve-near-maximum
+    in:
+      n: 11
+      m: 12
+    out: 7
+  - name: twelve-by-thirteen-maximum-near-square
+    in:
+      n: 12
+      m: 13
+    out: 7
+  - name: maximum-square
+    in:
+      n: 13
+      m: 13
+    out: 1
+  - name: generated-large-both-dimensions
+    seed: 124001
+    in:
+      n:
+        gen: "int"
+        min: 8
+        max: 13
+      m:
+        gen: "int"
+        min: 8
+        max: 13
+  - name: generated-large-wide-rectangle
+    seed: 124002
+    in:
+      n:
+        gen: "int"
+        min: 8
+        max: 12
+      m:
+        gen: "int"
+        min: 13
+        max: 13
+  - name: generated-large-tall-rectangle
+    seed: 124003
+    in:
+      n:
+        gen: "int"
+        min: 13
+        max: 13
+      m:
+        gen: "int"
+        min: 8
+        max: 12
+  - name: generated-maximum-range
+    seed: 124004
+    in:
+      n:
+        gen: "int"
+        min: 10
+        max: 13
+      m:
+        gen: "int"
+        min: 10
+        max: 13
+  - name: generated-large-asymmetric
+    seed: 124005
+    in:
+      n:
+        gen: "int"
+        min: 7
+        max: 10
+      m:
+        gen: "int"
+        min: 11
+        max: 13

@@ -4,8 +4,8 @@ class Solution {
         var longestInterval = 0
         var seenAt = [0: -1]
         
-        for (i, h) in hours.enumerated() {
-            score += h > 8 ? 1 : -1
+        for i in 0..<hours.count {
+            score += hours[i] > 8 ? 1 : -1
             
             if score > 0 {
                 longestInterval = i + 1
