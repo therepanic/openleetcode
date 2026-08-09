@@ -10,7 +10,7 @@ from string import Template
 
 PROBLEMS_DIR = Path(__file__).parent / "generated_problems"
 OPENROUTER_URL = "https://openrouter.ai"
-DEFAULT_MODEL = "deepseek/deepseek-v4-pro"
+DEFAULT_MODEL = "deepseek/deepseek-v4-flash-latest"
 DEFAULT_CONCURRENCY = 10
 TARGET_LANGS = [
     "python",

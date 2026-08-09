@@ -17,7 +17,7 @@ from generate_prompt import (
 PROBLEMS_DIR = Path(__file__).parent / "generated_problems"
 GRAPHQL_URL = "https://leetcode.com/graphql"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "google/gemini-3.1-flash-lite"
+DEFAULT_MODEL = "deepseek/deepseek-v4-flash-latest"
 DEFAULT_CONCURRENCY = 10
 
 
