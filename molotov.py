@@ -66,7 +66,7 @@ $SNIPPETS
 $PYTHON_SOLUTION
 
 Task:
-Implement ALL languages in SNIPPETS except python3 using logic from PYTHON_SOLUTION.
+Implement ALL languages in INPUT except python3 using logic from PYTHON_SOLUTION.
 
 Rules:
 - no explanations
@@ -158,10 +158,6 @@ def process(folder, model, api_key):
     data = generate(prompt, model, api_key)
     raw = data["choices"][0]["message"]["content"].strip()
     blocks = parse_generated_blocks(raw)
-
-    missing = [lang for lang in langs if lang not in blocks]
-    if missing:
-        raise ValueError(f"Missing code blocks for languages: {', '.join(missing)}")
 
     for lang in langs:
         output_path(folder, lang).write_text(
