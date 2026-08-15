@@ -1,0 +1,364 @@
+entry:
+  id: 1568
+  title: "minimum-number-of-days-to-disconnect-island"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minDays({grid})"
+    rust: "Solution::min_days({grid})"
+    python3: "Solution().minDays({grid})"
+    python2: "Solution().minDays({grid})"
+    ruby: "min_days({grid})"
+    java: "new Solution().minDays({grid})"
+    csharp: "new Solution().MinDays({grid})"
+    kotlin: "Solution().minDays({grid})"
+    go: "minDays({grid})"
+    dart: "Solution().minDays({grid})"
+    swift: "Solution().minDays({grid})"
+    typescript: "minDays({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minDays(grid, {result})"
+    checker: |
+      class Checker:
+          def minDays(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              a = [row[:] for row in grid]
+              m, n = len(a), len(a[0])
+              def islands():
+                  seen = set()
+                  count = 0
+                  for r in range(m):
+                      for c in range(n):
+                          if a[r][c] == 1 and (r, c) not in seen:
+                              count += 1
+                              stack = [(r, c)]
+                              seen.add((r, c))
+                              while stack:
+                                  x, y = stack.pop()
+                                  for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                                      nx, ny = x + dx, y + dy
+                                      if 0 <= nx < m and 0 <= ny < n and a[nx][ny] == 1 and (nx, ny) not in seen:
+                                          seen.add((nx, ny))
+                                          stack.append((nx, ny))
+                  return count
+              if islands() != 1:
+                  expected = 0
+              else:
+                  expected = 2
+                  for r in range(m):
+                      for c in range(n):
+                          if a[r][c] == 1:
+                              a[r][c] = 0
+                              if islands() != 1:
+                                  expected = 1
+                              a[r][c] = 1
+                              if expected == 1:
+                                  break
+                      if expected == 1:
+                          break
+              return result == expected
+
+seed: 1568
+
+tests:
+  - name: example-block
+    in:
+      grid:
+        - [0, 1, 1, 0]
+        - [0, 1, 1, 0]
+        - [0, 0, 0, 0]
+    out: 2
+  - name: two-horizontal
+    in:
+      grid:
+        - [1, 1]
+    out: 2
+  - name: single-cell
+    in:
+      grid:
+        - [1]
+    out: 1
+  - name: single-water
+    in:
+      grid:
+        - [0]
+    out: 0
+  - name: separated-corners
+    in:
+      grid:
+        - [1, 0, 1]
+    out: 0
+  - name: horizontal-three
+    in:
+      grid:
+        - [1, 1, 1]
+    out: 1
+  - name: vertical-three
+    in:
+      grid:
+        - [1]
+        - [1]
+        - [1]
+    out: 1
+  - name: full-two-by-two
+    in:
+      grid:
+        - [1, 1]
+        - [1, 1]
+    out: 2
+  - name: line-with-gap
+    in:
+      grid:
+        - [1, 1, 0, 1]
+    out: 0
+  - name: diagonal-pair
+    in:
+      grid:
+        - [1, 0]
+        - [0, 1]
+    out: 0
+  - name: l-shape
+    in:
+      grid:
+        - [1, 0]
+        - [1, 1]
+    out: 1
+  - name: l-shape-four
+    in:
+      grid:
+        - [1, 0]
+        - [1, 1]
+        - [0, 1]
+    out: 1
+  - name: plus-shape
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+    out: 1
+  - name: hollow-ring
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 0, 1]
+        - [1, 1, 1]
+    out: 2
+  - name: two-by-three-full
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 2
+  - name: two-by-three-split
+    in:
+      grid:
+        - [1, 1, 0]
+        - [0, 1, 1]
+    out: 1
+  - name: two-islands
+    in:
+      grid:
+        - [1, 0, 0, 1]
+        - [1, 0, 0, 1]
+    out: 0
+  - name: bridge-one
+    in:
+      grid:
+        - [1, 0, 1]
+        - [1, 1, 1]
+    out: 1
+  - name: bridge-two
+    in:
+      grid:
+        - [1, 1, 0, 1, 1]
+        - [0, 1, 1, 1, 0]
+    out: 1
+  - name: sparse-connected
+    in:
+      grid:
+        - [1, 1, 0, 0]
+        - [0, 1, 1, 0]
+        - [0, 0, 1, 1]
+    out: 1
+  - name: sparse-disconnected
+    in:
+      grid:
+        - [1, 1, 0, 0]
+        - [0, 0, 0, 1]
+        - [1, 0, 0, 1]
+    out: 0
+  - name: solid-three-by-three
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 2
+  - name: cross-with-tail
+    in:
+      grid:
+        - [0, 1, 0, 0]
+        - [1, 1, 1, 0]
+        - [0, 1, 0, 1]
+        - [0, 0, 0, 1]
+    out: 0
+  - name: two-components-large
+    in:
+      grid:
+        - [1, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 1]
+        - [0, 0, 0, 0, 0]
+    out: 0
+  - name: narrow-zigzag
+    in:
+      grid:
+        - [1, 1, 0]
+        - [0, 1, 1]
+        - [1, 0, 1]
+    out: 0
+  - name: thick-zigzag
+    in:
+      grid:
+        - [1, 1, 0, 0]
+        - [0, 1, 1, 0]
+        - [0, 0, 1, 1]
+        - [0, 0, 0, 1]
+    out: 1
+  - name: four-by-four-full
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 2
+  - name: four-by-four-ring
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [1, 0, 0, 1]
+        - [1, 0, 0, 1]
+        - [1, 1, 1, 1]
+    out: 2
+  - name: five-horizontal
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+    out: 1
+  - name: five-vertical
+    in:
+      grid:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+    out: 1
+  - name: isolated-middle
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 0]
+        - [0, 0, 0, 0, 0]
+    out: 1
+  - name: disconnected-three
+    in:
+      grid:
+        - [1, 0, 1, 0, 1]
+        - [0, 0, 0, 0, 0]
+    out: 0
+  - name: one-cell-neck
+    in:
+      grid:
+        - [1, 1, 0, 0]
+        - [1, 1, 1, 1]
+        - [0, 0, 1, 1]
+    out: 1
+  - name: full-five-by-two
+    in:
+      grid:
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 2
+  - name: checkerboard
+    in:
+      grid:
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+    out: 0
+  - name: single-row-gap
+    in:
+      grid:
+        - [1, 1, 1, 0, 1, 1]
+    out: 0
+  - name: winding-one-component
+    in:
+      grid:
+        - [1, 1, 1, 0]
+        - [0, 0, 1, 0]
+        - [0, 1, 1, 1]
+        - [0, 1, 0, 0]
+    out: 1
+  - name: generated-square-stress
+    in:
+      grid:
+        gen: array
+        len: 30
+        of:
+          gen: array
+          len: 30
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+    seed: 1568001
+  - name: generated-rectangular-stress
+    in:
+      grid:
+        gen: array
+        len: 20
+        of:
+          gen: array
+          len: 30
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+    seed: 1568002
+  - name: generated-single-row-stress
+    in:
+      grid:
+        gen: array
+        len: 1
+        of:
+          gen: array
+          len: 30
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+    seed: 1568003

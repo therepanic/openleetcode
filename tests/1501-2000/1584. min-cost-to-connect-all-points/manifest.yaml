@@ -1,0 +1,412 @@
+entry:
+  id: 1584
+  title: "min-cost-to-connect-all-points"
+  params:
+    points:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minCostConnectPoints({points})"
+    rust: "Solution::min_cost_connect_points({points})"
+    python3: "Solution().minCostConnectPoints({points})"
+    python2: "Solution().minCostConnectPoints({points})"
+    ruby: "min_cost_connect_points({points})"
+    java: "new Solution().minCostConnectPoints({points})"
+    csharp: "new Solution().MinCostConnectPoints({points})"
+    kotlin: "Solution().minCostConnectPoints({points})"
+    go: "minCostConnectPoints({points})"
+    dart: "Solution().minCostConnectPoints({points})"
+    swift: "Solution().minCostConnectPoints({points})"
+    typescript: "minCostConnectPoints({points})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minCostConnectPoints(points, {result})"
+    checker: |
+      class Checker:
+          def minCostConnectPoints(self, points, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(points)
+              if n <= 0:
+                  return False
+              best = [10**30] * n
+              used = [False] * n
+              best[0] = 0
+              total = 0
+              for _ in range(n):
+                  u = -1
+                  for i in range(n):
+                      if not used[i] and (u == -1 or best[i] < best[u]):
+                          u = i
+                  used[u] = True
+                  total += best[u]
+                  for v in range(n):
+                      if not used[v]:
+                          d = abs(points[u][0] - points[v][0]) + abs(points[u][1] - points[v][1])
+                          if d < best[v]:
+                              best[v] = d
+              return result == total
+seed: 1584
+tests:
+  - name: example-one
+    in:
+      points:
+        - [0, 0]
+        - [2, 2]
+        - [3, 10]
+        - [5, 2]
+        - [7, 0]
+    out: 20
+  - name: example-two
+    in:
+      points:
+        - [3, 12]
+        - [-2, 5]
+        - [-4, 1]
+    out: 18
+  - name: two-horizontal
+    in:
+      points:
+        - [0, 0]
+        - [10, 0]
+    out: 10
+  - name: two-vertical
+    in:
+      points:
+        - [4, -3]
+        - [4, 8]
+    out: 11
+  - name: three-horizontal
+    in:
+      points:
+        - [-5, 2]
+        - [0, 2]
+        - [9, 2]
+    out: 14
+  - name: three-vertical
+    in:
+      points:
+        - [7, -9]
+        - [7, -2]
+        - [7, 6]
+    out: 15
+  - name: unit-square
+    in:
+      points:
+        - [0, 0]
+        - [0, 1]
+        - [1, 0]
+        - [1, 1]
+    out: 3
+  - name: rectangle
+    in:
+      points:
+        - [-3, -2]
+        - [-3, 4]
+        - [8, -2]
+        - [8, 4]
+    out: 23
+  - name: diagonal-three
+    in:
+      points:
+        - [-4, -4]
+        - [0, 0]
+        - [9, 9]
+    out: 26
+  - name: mixed-sign
+    in:
+      points:
+        - [-10, 5]
+        - [-3, -4]
+        - [2, 7]
+        - [11, -1]
+    out: 47
+  - name: duplicate-x
+    in:
+      points:
+        - [0, -10]
+        - [0, -1]
+        - [0, 4]
+        - [3, 4]
+        - [9, 4]
+    out: 23
+  - name: duplicate-y
+    in:
+      points:
+        - [-8, 0]
+        - [-2, 0]
+        - [5, 0]
+        - [5, 6]
+        - [12, 6]
+    out: 26
+  - name: negative-line
+    in:
+      points:
+        - [-20, -7]
+        - [-15, -7]
+        - [-1, -7]
+        - [13, -7]
+    out: 33
+  - name: positive-line
+    in:
+      points:
+        - [2, 11]
+        - [8, 11]
+        - [19, 11]
+        - [30, 11]
+        - [44, 11]
+    out: 42
+  - name: cross
+    in:
+      points:
+        - [0, 0]
+        - [0, 6]
+        - [0, -6]
+        - [6, 0]
+        - [-6, 0]
+    out: 24
+  - name: diamond
+    in:
+      points:
+        - [0, 5]
+        - [5, 0]
+        - [0, -5]
+        - [-5, 0]
+    out: 30
+  - name: close-cluster
+    in:
+      points:
+        - [100, 100]
+        - [101, 100]
+        - [100, 102]
+        - [103, 101]
+        - [102, 104]
+        - [105, 103]
+    out: 14
+  - name: far-cluster
+    in:
+      points:
+        - [-1000000, -1000000]
+        - [-999999, -1000000]
+        - [1000000, 1000000]
+        - [999999, 1000000]
+    out: 4000000
+  - name: staggered-six
+    in:
+      points:
+        - [0, 0]
+        - [2, 5]
+        - [5, 1]
+        - [8, 7]
+        - [12, 3]
+        - [15, 9]
+    out: 38
+  - name: zigzag-six
+    in:
+      points:
+        - [0, 0]
+        - [4, 10]
+        - [8, 0]
+        - [12, 10]
+        - [16, 0]
+        - [20, 10]
+    out: 46
+  - name: staircase
+    in:
+      points:
+        - [-3, -3]
+        - [-2, -1]
+        - [0, 0]
+        - [3, 1]
+        - [7, 3]
+        - [12, 6]
+    out: 24
+  - name: eight-horizontal
+    in:
+      points:
+        - [-7, 4]
+        - [-4, 4]
+        - [-1, 4]
+        - [2, 4]
+        - [6, 4]
+        - [11, 4]
+        - [17, 4]
+        - [24, 4]
+    out: 31
+  - name: eight-vertical
+    in:
+      points:
+        - [9, -20]
+        - [9, -14]
+        - [9, -9]
+        - [9, -1]
+        - [9, 4]
+        - [9, 12]
+        - [9, 19]
+        - [9, 27]
+    out: 47
+  - name: rectangle-border
+    in:
+      points:
+        - [0, 0]
+        - [10, 0]
+        - [20, 0]
+        - [0, 10]
+        - [20, 10]
+        - [0, 20]
+        - [10, 20]
+        - [20, 20]
+    out: 70
+  - name: central-point
+    in:
+      points:
+        - [-10, -10]
+        - [-10, 10]
+        - [10, -10]
+        - [10, 10]
+        - [0, 0]
+    out: 80
+  - name: asymmetric-five
+    in:
+      points:
+        - [-9, 2]
+        - [-2, 13]
+        - [4, -6]
+        - [17, 1]
+        - [21, 15]
+    out: 77
+  - name: large-coordinate-line
+    in:
+      points:
+        - [-1000000, 1000000]
+        - [-500000, 1000000]
+        - [0, 1000000]
+        - [500000, 1000000]
+        - [1000000, 1000000]
+    out: 2000000
+  - name: repeated-pattern
+    in:
+      points:
+        - [-6, -2]
+        - [-2, -6]
+        - [2, -2]
+        - [-2, 2]
+        - [2, 6]
+        - [6, 2]
+    out: 40
+  - name: nine-grid
+    in:
+      points:
+        - [0, 0]
+        - [0, 3]
+        - [0, 7]
+        - [4, 0]
+        - [4, 3]
+        - [4, 7]
+        - [9, 0]
+        - [9, 3]
+        - [9, 7]
+    out: 30
+  - name: ten-horizontal
+    in:
+      points:
+        - [-45, -3]
+        - [-36, -3]
+        - [-30, -3]
+        - [-22, -3]
+        - [-15, -3]
+        - [-9, -3]
+        - [-2, -3]
+        - [6, -3]
+        - [17, -3]
+        - [31, -3]
+    out: 76
+  - name: ten-vertical
+    in:
+      points:
+        - [4, -50]
+        - [4, -41]
+        - [4, -33]
+        - [4, -24]
+        - [4, -18]
+        - [4, -11]
+        - [4, -3]
+        - [4, 8]
+        - [4, 19]
+        - [4, 35]
+    out: 85
+  - name: twelve-line
+    in:
+      points:
+        - [0, 0]
+        - [1, 0]
+        - [3, 0]
+        - [6, 0]
+        - [10, 0]
+        - [15, 0]
+        - [21, 0]
+        - [28, 0]
+        - [36, 0]
+        - [45, 0]
+        - [55, 0]
+        - [66, 0]
+    out: 66
+  - name: negative-grid
+    in:
+      points:
+        - [-8, -8]
+        - [-8, -4]
+        - [-8, 0]
+        - [-3, -8]
+        - [-3, -4]
+        - [-3, 0]
+        - [2, -8]
+        - [2, -4]
+        - [2, 0]
+    out: 34
+  - name: fourteen-line
+    in:
+      points:
+        - [-30, 5]
+        - [-27, 5]
+        - [-21, 5]
+        - [-18, 5]
+        - [-10, 5]
+        - [-1, 5]
+        - [4, 5]
+        - [12, 5]
+        - [17, 5]
+        - [25, 5]
+        - [31, 5]
+        - [40, 5]
+        - [52, 5]
+        - [65, 5]
+    out: 95
+  - name: sixteen-line
+    in:
+      points:
+        - [-80, -2]
+        - [-70, -2]
+        - [-61, -2]
+        - [-50, -2]
+        - [-42, -2]
+        - [-31, -2]
+        - [-20, -2]
+        - [-9, -2]
+        - [0, -2]
+        - [8, -2]
+        - [19, -2]
+        - [29, -2]
+        - [40, -2]
+        - [52, -2]
+        - [63, -2]
+        - [75, -2]
+    out: 155

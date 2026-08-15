@@ -1,0 +1,254 @@
+entry:
+  id: 1567
+  title: "maximum-length-of-subarray-with-positive-product"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().getMaxLen({nums})"
+    rust: "Solution::get_max_len({nums})"
+    python3: "Solution().getMaxLen({nums})"
+    python2: "Solution().getMaxLen({nums})"
+    ruby: "get_max_len({nums})"
+    java: "new Solution().getMaxLen({nums})"
+    csharp: "new Solution().GetMaxLen({nums})"
+    kotlin: "Solution().getMaxLen({nums})"
+    go: "getMaxLen({nums})"
+    dart: "Solution().getMaxLen({nums})"
+    swift: "Solution().getMaxLen({nums})"
+    typescript: "getMaxLen({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().getMaxLen(nums, {result})"
+    checker: |
+      class Checker:
+          def getMaxLen(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              pos = neg = best = 0
+              for value in nums:
+                  if value == 0:
+                      pos = neg = 0
+                  elif value > 0:
+                      pos += 1
+                      neg = neg + 1 if neg else 0
+                  else:
+                      old_pos = pos
+                      pos = neg + 1 if neg else 0
+                      neg = old_pos + 1
+                  best = max(best, pos)
+              return result == best
+
+seed: 1567
+
+tests:
+  - name: example-all-positive
+    in:
+      nums: [1, -2, -3, 4]
+    out: 4
+  - name: example-zero-prefix
+    in:
+      nums: [0, 1, -2, -3, -4]
+    out: 3
+  - name: example-zero-suffix
+    in:
+      nums: [-1, -2, -3, 0, 1]
+    out: 2
+  - name: one-positive
+    in:
+      nums: [7]
+    out: 1
+  - name: one-negative
+    in:
+      nums: [-7]
+    out: 0
+  - name: one-zero
+    in:
+      nums: [0]
+    out: 0
+  - name: two-negative
+    in:
+      nums: [-1, -1]
+    out: 2
+  - name: two-positive
+    in:
+      nums: [2, 3]
+    out: 2
+  - name: positive-negative
+    in:
+      nums: [2, -3]
+    out: 1
+  - name: negative-positive
+    in:
+      nums: [-3, 2]
+    out: 1
+  - name: zero-separated-pair
+    in:
+      nums: [1, 0, -2, -4]
+    out: 2
+  - name: odd-negatives-prefix-drop
+    in:
+      nums: [-1, 2, -3, 4, -5]
+    out: 4
+  - name: odd-negatives-suffix-drop
+    in:
+      nums: [1, -2, 3, -4, 5, -6, 7]
+    out: 5
+  - name: alternating-signs
+    in:
+      nums: [1, -1, 1, -1, 1, -1]
+    out: 5
+  - name: alternating-start-negative
+    in:
+      nums: [-1, 1, -1, 1, -1, 1]
+    out: 5
+  - name: zeros-between-runs
+    in:
+      nums: [-1, 0, 1, -1, 0, -1, -1, 0]
+    out: 2
+  - name: all-negative-odd
+    in:
+      nums: [-1, -2, -3, -4, -5]
+    out: 4
+  - name: all-negative-even
+    in:
+      nums: [-1, -2, -3, -4, -5, -6]
+    out: 6
+  - name: all-zero
+    in:
+      nums: [0, 0, 0, 0]
+    out: 0
+  - name: negative-zero-pair
+    in:
+      nums: [-4, 0, -8]
+    out: 0
+  - name: mixed-short
+    in:
+      nums: [1, -2, 0, -3, 4, -5, -6]
+    out: 3
+  - name: positives-around-odd-run
+    in:
+      nums: [2, -1, -2, -3, 4]
+    out: 3
+  - name: negative-run-with-zero
+    in:
+      nums: [-1, -2, -3, 0, -4, -5]
+    out: 2
+  - name: values-near-int-limit
+    in:
+      nums: [1000000000, -1000000000, -999999999, 1]
+    out: 4
+  - name: minimum-values
+    in:
+      nums: [-1000000000, -1000000000, 0, -1000000000]
+    out: 2
+  - name: long-positive-block
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: 10
+  - name: long-odd-block
+    in:
+      nums: [-1, 2, 3, 4, -5, 6, 7, 8, 9]
+    out: 9
+  - name: zero-at-each-boundary
+    in:
+      nums: [0, -1, -2, 0, 3, -4, -5, 0]
+    out: 3
+  - name: best-middle-subarray
+    in:
+      nums: [-1, 0, 1, -2, -3, 4, 0, -5]
+    out: 4
+  - name: repeated-negative-pairs
+    in:
+      nums: [-1, -1, 0, -2, -2, -2, -2, 0]
+    out: 4
+  - name: isolated-negatives
+    in:
+      nums: [1, 1, -1, 1, 1, 0, 1, -1, 1]
+    out: 2
+  - name: signed-values
+    in:
+      nums: [9, -8, -7, 6, -5, 4, -3, -2, 1]
+    out: 7
+  - name: zero-after-even-run
+    in:
+      nums: [-2, 3, -4, 5, 0, -6, 7, -8]
+    out: 4
+  - name: zero-before-even-run
+    in:
+      nums: [0, -2, 3, -4, 5, -6]
+    out: 4
+  - name: all-positive-large-values
+    in:
+      nums: [1000000000, 999999999, 500000000, 1, 42]
+    out: 5
+  - name: generated-small-mixed
+    in:
+      nums:
+        gen: "array"
+        len: 23
+        of:
+          gen: "int"
+          min: -10
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-medium-mixed
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-large-binary-signs
+    in:
+      nums:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: -1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-near-limit-values
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-maximum-length
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"

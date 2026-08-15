@@ -1,0 +1,394 @@
+entry:
+  id: 1728
+  title: cat-and-mouse-ii
+  params:
+    grid:
+      type: array
+      items:
+        type: string
+    catJump:
+      type: int
+    mouseJump:
+      type: int
+  call:
+    cpp: "Solution().canMouseWin({grid}, {catJump}, {mouseJump})"
+    rust: "Solution::can_mouse_win({grid}, {catJump}, {mouseJump})"
+    python3: "Solution().canMouseWin({grid}, {catJump}, {mouseJump})"
+    python2: "Solution().canMouseWin({grid}, {catJump}, {mouseJump})"
+    ruby: "can_mouse_win({grid}, {catJump}, {mouseJump})"
+    java: "new Solution().canMouseWin({grid}, {catJump}, {mouseJump})"
+    csharp: "new Solution().CanMouseWin({grid}, {catJump}, {mouseJump})"
+    kotlin: "Solution().canMouseWin({grid}, {catJump}, {mouseJump})"
+    go: "canMouseWin({grid}, {catJump}, {mouseJump})"
+    dart: "Solution().canMouseWin({grid}, {catJump}, {mouseJump})"
+    swift: "Solution().canMouseWin({grid}, {catJump}, {mouseJump})"
+    typescript: "canMouseWin({grid}, {catJump}, {mouseJump})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().canMouseWin(grid, catJump, mouseJump, {result})"
+    checker: |
+      from functools import lru_cache
+      class Checker:
+          def canMouseWin(self, grid, catJump, mouseJump, result):
+              if not isinstance(result, bool):
+                  return False
+              h, w = len(grid), len(grid[0])
+              walls = set()
+              cat = mouse = food = None
+              for r, row in enumerate(grid):
+                  if not isinstance(row, str) or len(row) != w:
+                      return False
+                  for c, ch in enumerate(row):
+                      if ch == '#':
+                          walls.add((r, c))
+                      elif ch == 'C':
+                          cat = (r, c)
+                      elif ch == 'M':
+                          mouse = (r, c)
+                      elif ch == 'F':
+                          food = (r, c)
+              if cat is None or mouse is None or food is None:
+                  return False
+              dirs = ((1, 0), (-1, 0), (0, 1), (0, -1))
+              def moves(pos, jump):
+                  r, c = pos
+                  yield pos
+                  for dr, dc in dirs:
+                      for step in range(1, jump + 1):
+                          nr, nc = r + dr * step, c + dc * step
+                          if not (0 <= nr < h and 0 <= nc < w) or (nr, nc) in walls:
+                              break
+                          yield (nr, nc)
+              @lru_cache(None)
+              def win(cp, mp, turn):
+                  if cp == food or cp == mp or turn >= 2 * h * w:
+                      return False
+                  if mp == food:
+                      return True
+                  if turn % 2 == 0:
+                      return any(win(cp, np, turn + 1) for np in moves(mp, mouseJump))
+                  return all(win(np, mp, turn + 1) for np in moves(cp, catJump))
+              return result == win(cat, mouse, 0)
+
+seed: 1728
+
+tests:
+  - name: example-one
+    in:
+      grid:
+        - "####F"
+        - "#C..."
+        - "M...."
+      catJump: 1
+      mouseJump: 2
+  - name: example-two
+    in:
+      grid:
+        - "M.C...F"
+      catJump: 1
+      mouseJump: 4
+  - name: example-three
+    in:
+      grid:
+        - "M.C...F"
+      catJump: 1
+      mouseJump: 3
+  - name: adjacent-cat
+    in:
+      grid:
+        - "MC.F"
+      catJump: 1
+      mouseJump: 1
+  - name: mouse-one-step-food
+    in:
+      grid:
+        - "M.F.C"
+      catJump: 1
+      mouseJump: 2
+  - name: cat-one-step-food
+    in:
+      grid:
+        - "M.CF"
+      catJump: 1
+      mouseJump: 1
+  - name: blocked-row
+    in:
+      grid:
+        - "M#.."
+        - "..C#"
+        - "...F"
+      catJump: 2
+      mouseJump: 1
+  - name: narrow-column
+    in:
+      grid:
+        - "M"
+        - "."
+        - "C"
+        - "."
+        - "F"
+      catJump: 1
+      mouseJump: 2
+  - name: narrow-column-walls
+    in:
+      grid:
+        - "M"
+        - "."
+        - "#"
+        - "C"
+        - "."
+        - "F"
+      catJump: 2
+      mouseJump: 3
+  - name: open-square
+    in:
+      grid:
+        - "M.."
+        - "..."
+        - "C.F"
+      catJump: 1
+      mouseJump: 1
+  - name: open-square-long-jump
+    in:
+      grid:
+        - "M.."
+        - "..."
+        - "C.F"
+      catJump: 3
+      mouseJump: 3
+  - name: corner-maze
+    in:
+      grid:
+        - "M#..."
+        - ".##.#"
+        - "...C."
+        - "##.#."
+        - "...F."
+      catJump: 2
+      mouseJump: 2
+  - name: horizontal-wall
+    in:
+      grid:
+        - "M...F"
+        - "#####"
+        - "C...."
+      catJump: 2
+      mouseJump: 2
+  - name: vertical-wall
+    in:
+      grid:
+        - "M.#."
+        - "..#."
+        - "C.#F"
+        - "...."
+      catJump: 1
+      mouseJump: 3
+  - name: escape-around-wall
+    in:
+      grid:
+        - "M#..."
+        - "..#.."
+        - "..C.."
+        - "...#F"
+      catJump: 1
+      mouseJump: 2
+  - name: dense-maze
+    in:
+      grid:
+        - "M...#F"
+        - ".##..."
+        - "..C#.."
+        - "...#.."
+        - "#....."
+      catJump: 2
+      mouseJump: 3
+  - name: six-by-six-open
+    in:
+      grid:
+        - "M....."
+        - "......"
+        - "......"
+        - "...C.."
+        - "......"
+        - ".....F"
+      catJump: 2
+      mouseJump: 3
+  - name: six-by-six-blocked
+    in:
+      grid:
+        - "M..#.."
+        - ".#...."
+        - "...#.."
+        - "..C..."
+        - "....#."
+        - "..#..F"
+      catJump: 3
+      mouseJump: 2
+  - name: seven-wide
+    in:
+      grid:
+        - "M......"
+        - "......."
+        - "..C...."
+        - "......."
+        - "......F"
+      catJump: 2
+      mouseJump: 4
+  - name: seven-wide-cat-fast
+    in:
+      grid:
+        - "M......"
+        - "......."
+        - "..C...."
+        - "......."
+        - "......F"
+      catJump: 6
+      mouseJump: 1
+  - name: ring-corridor
+    in:
+      grid:
+        - "M....#"
+        - ".####."
+        - ".#C..F"
+        - ".####."
+        - "......"
+      catJump: 1
+      mouseJump: 2
+  - name: zigzag-corridor
+    in:
+      grid:
+        - "M#...."
+        - ".#C#.."
+        - "..#..F"
+        - "....#."
+        - "......"
+      catJump: 2
+      mouseJump: 1
+  - name: isolated-cat
+    in:
+      grid:
+        - "M...F"
+        - "####."
+        - "C####"
+        - "....."
+      catJump: 4
+      mouseJump: 1
+  - name: isolated-mouse
+    in:
+      grid:
+        - "M####"
+        - "....#"
+        - "..C.F"
+        - "....."
+      catJump: 2
+      mouseJump: 4
+  - name: equal-jumps
+    in:
+      grid:
+        - "M...."
+        - "..#.."
+        - "..C.."
+        - "..#.."
+        - "....F"
+      catJump: 2
+      mouseJump: 2
+  - name: mouse-maximum
+    in:
+      grid:
+        - "M.#...F"
+        - "..#...."
+        - "..C...."
+        - "......."
+      catJump: 1
+      mouseJump: 8
+  - name: cat-maximum
+    in:
+      grid:
+        - "M.....F"
+        - ".###..."
+        - "..C...."
+        - "......."
+      catJump: 8
+      mouseJump: 1
+  - name: three-by-eight
+    in:
+      grid:
+        - "M..#...."
+        - "...#C..F"
+        - "........"
+      catJump: 3
+      mouseJump: 4
+  - name: four-by-eight
+    in:
+      grid:
+        - "M......."
+        - ".###...."
+        - "....C#.."
+        - ".....F.."
+      catJump: 2
+      mouseJump: 3
+  - name: eight-by-eight-open
+    in:
+      grid:
+        - "M......."
+        - "........"
+        - "........"
+        - "........"
+        - "...C...."
+        - "........"
+        - "........"
+        - ".......F"
+      catJump: 4
+      mouseJump: 4
+  - name: eight-by-eight-maze
+    in:
+      grid:
+        - "M..#...."
+        - ".##.#..."
+        - "...#..#."
+        - "#..C...."
+        - "....##.."
+        - ".#....#."
+        - "...#...F"
+        - "........"
+      catJump: 3
+      mouseJump: 2
+  - name: food-near-mouse
+    in:
+      grid:
+        - "M.F...."
+        - "..#...."
+        - "..C...."
+      catJump: 2
+      mouseJump: 1
+  - name: food-near-cat
+    in:
+      grid:
+        - "M...."
+        - "..C.F"
+        - "....."
+      catJump: 1
+      mouseJump: 2
+  - name: forced-wait
+    in:
+      grid:
+        - "M#F"
+        - "..#"
+        - "C.."
+      catJump: 1
+      mouseJump: 1
+  - name: long-open-line
+    in:
+      grid:
+        - "M........F"
+        - "....C....."
+      catJump: 2
+      mouseJump: 5

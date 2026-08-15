@@ -1,0 +1,347 @@
+entry:
+  id: 1854
+  title: "maximum-population-year"
+  params:
+    logs:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maximumPopulation({logs})"
+    rust: "Solution::maximum_population({logs})"
+    python3: "Solution().maximumPopulation({logs})"
+    python2: "Solution().maximumPopulation({logs})"
+    ruby: "maximum_population({logs})"
+    java: "new Solution().maximumPopulation({logs})"
+    csharp: "new Solution().MaximumPopulation({logs})"
+    kotlin: "Solution().maximumPopulation({logs})"
+    go: "maximumPopulation({logs})"
+    dart: "Solution().maximumPopulation({logs})"
+    swift: "Solution().maximumPopulation({logs})"
+    typescript: "maximumPopulation({logs})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maximumPopulation(logs, {result})"
+    checker: |
+      class Checker:
+          def maximumPopulation(self, logs, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              best_year = None
+              best_count = -1
+              for year in range(1950, 2050):
+                  count = sum(birth <= year < death for birth, death in logs)
+                  if count > best_count:
+                      best_count = count
+                      best_year = year
+              return result == best_year
+
+seed: 1854
+
+tests:
+  - name: "example_one"
+    in:
+      logs:
+        - [1993, 1999]
+        - [2000, 2010]
+    out: 1993
+  - name: "example_two"
+    in:
+      logs:
+        - [1950, 1961]
+        - [1960, 1971]
+        - [1970, 1981]
+    out: 1960
+  - name: "single_short_life"
+    in:
+      logs:
+        - [1951, 1952]
+    out: 1951
+  - name: "single_last_year"
+    in:
+      logs:
+        - [2049, 2050]
+    out: 2049
+  - name: "same_births"
+    in:
+      logs:
+        - [2000, 2001]
+        - [2000, 2005]
+        - [2000, 2010]
+    out: 2000
+  - name: "death_boundary"
+    in:
+      logs:
+        - [2000, 2005]
+        - [2005, 2010]
+    out: 2000
+  - name: "overlap_at_one_year"
+    in:
+      logs:
+        - [1999, 2001]
+        - [2000, 2002]
+    out: 2000
+  - name: "earliest_tie"
+    in:
+      logs:
+        - [1950, 1960]
+        - [1955, 1965]
+        - [1960, 1970]
+    out: 1955
+  - name: "latest_tie_not_selected"
+    in:
+      logs:
+        - [2000, 2002]
+        - [2001, 2004]
+        - [2003, 2005]
+    out: 2001
+  - name: "nested_intervals"
+    in:
+      logs:
+        - [1950, 2050]
+        - [1960, 2040]
+        - [1970, 2030]
+        - [1980, 2020]
+    out: 1980
+  - name: "disjoint_periods"
+    in:
+      logs:
+        - [1950, 1955]
+        - [1960, 1965]
+        - [1970, 1975]
+        - [1980, 1985]
+    out: 1950
+  - name: "long_and_short"
+    in:
+      logs:
+        - [1950, 2050]
+        - [2000, 2001]
+        - [2000, 2001]
+        - [2049, 2050]
+    out: 2000
+  - name: "minimum_births"
+    in:
+      logs:
+        - [1950, 1951]
+        - [1950, 1960]
+        - [1951, 1961]
+    out: 1950
+  - name: "maximum_deaths"
+    in:
+      logs:
+        - [2040, 2050]
+        - [2041, 2050]
+        - [2042, 2050]
+    out: 2042
+  - name: "chain_overlap"
+    in:
+      logs:
+        - [1950, 1960]
+        - [1955, 1965]
+        - [1960, 1970]
+        - [1965, 1975]
+        - [1970, 1980]
+    out: 1955
+  - name: "three_way_peak"
+    in:
+      logs:
+        - [1990, 2000]
+        - [1992, 2002]
+        - [1994, 2004]
+        - [1996, 2006]
+        - [1998, 2008]
+    out: 1998
+  - name: "peak_at_first_year"
+    in:
+      logs:
+        - [1950, 2000]
+        - [1950, 1951]
+        - [1950, 1951]
+        - [1999, 2050]
+    out: 1950
+  - name: "peak_at_last_birth"
+    in:
+      logs:
+        - [1950, 2000]
+        - [1951, 2001]
+        - [1999, 2050]
+        - [1999, 2050]
+    out: 1999
+  - name: "equal_ranges"
+    in:
+      logs:
+        - [1980, 1990]
+        - [1980, 1990]
+        - [1980, 1990]
+        - [1980, 1990]
+    out: 1980
+  - name: "alternating_ranges"
+    in:
+      logs:
+        - [1950, 1960]
+        - [1960, 1970]
+        - [1955, 1965]
+        - [1965, 1975]
+        - [1970, 1980]
+        - [1975, 1985]
+    out: 1955
+  - name: "short_ranges"
+    in:
+      logs:
+        - [2001, 2002]
+        - [2002, 2003]
+        - [2003, 2004]
+        - [2002, 2004]
+    out: 2002
+  - name: "wide_year_span"
+    in:
+      logs:
+        - [1950, 2050]
+        - [1950, 1960]
+        - [2040, 2050]
+        - [2000, 2010]
+    out: 1950
+  - name: "late_cluster"
+    in:
+      logs:
+        - [2020, 2030]
+        - [2021, 2031]
+        - [2022, 2032]
+        - [2023, 2033]
+        - [2024, 2034]
+        - [2025, 2035]
+    out: 2025
+  - name: "early_cluster"
+    in:
+      logs:
+        - [1950, 1960]
+        - [1951, 1961]
+        - [1952, 1962]
+        - [1953, 1963]
+        - [1954, 1964]
+        - [1955, 1965]
+    out: 1955
+  - name: "peak_after_gap"
+    in:
+      logs:
+        - [1950, 1955]
+        - [1951, 1954]
+        - [1960, 1970]
+        - [1961, 1969]
+        - [1962, 1968]
+    out: 1962
+  - name: "two_peaks_earliest"
+    in:
+      logs:
+        - [1950, 1955]
+        - [1951, 1956]
+        - [1952, 1957]
+        - [2000, 2005]
+        - [2001, 2006]
+        - [2002, 2007]
+    out: 1952
+  - name: "death_year_excluded"
+    in:
+      logs:
+        - [1990, 1991]
+        - [1991, 1992]
+        - [1991, 1993]
+    out: 1991
+  - name: "mixed_centuries"
+    in:
+      logs:
+        - [1950, 2050]
+        - [1950, 1951]
+        - [2000, 2001]
+        - [2049, 2050]
+        - [2000, 2049]
+    out: 2000
+  - name: "peak_singleton_after_overlap"
+    in:
+      logs:
+        - [1950, 1960]
+        - [1955, 1965]
+        - [1960, 1970]
+        - [1965, 1975]
+    out: 1955
+  - name: "many_same_start"
+    in:
+      logs:
+        - [2010, 2011]
+        - [2010, 2012]
+        - [2010, 2013]
+        - [2010, 2014]
+        - [2011, 2015]
+        - [2012, 2016]
+    out: 2010
+  - name: "late_overlap"
+    in:
+      logs:
+        - [2030, 2040]
+        - [2035, 2045]
+        - [2036, 2046]
+        - [2037, 2047]
+        - [2038, 2048]
+        - [2039, 2049]
+    out: 2039
+  - name: "all_nonoverlap_boundary"
+    in:
+      logs:
+        - [1950, 1951]
+        - [1951, 1952]
+        - [1952, 1953]
+        - [1953, 1954]
+        - [1954, 1955]
+    out: 1950
+  - name: "peak_with_duplicate_intervals"
+    in:
+      logs:
+        - [1995, 2005]
+        - [1995, 2005]
+        - [1997, 2007]
+        - [1999, 2009]
+        - [2001, 2011]
+    out: 2001
+  - name: "balanced_overlap"
+    in:
+      logs:
+        - [1980, 1990]
+        - [1982, 1992]
+        - [1984, 1994]
+        - [1986, 1996]
+        - [1988, 1998]
+        - [1990, 2000]
+        - [1992, 2002]
+    out: 1988
+  - name: "max_count_at_boundary"
+    in:
+      logs:
+        - [2040, 2050]
+        - [2040, 2049]
+        - [2040, 2048]
+        - [2039, 2041]
+    out: 2040
+  - name: "full_constraint_count"
+    in:
+      logs:
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+        - [1950, 2050]
+    out: 1950

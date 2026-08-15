@@ -1,0 +1,38 @@
+class Solution(object):
+    def closestCost(self, baseCosts, toppingCosts, target):
+        """
+        :type baseCosts: List[int]
+        :type toppingCosts: List[int]
+        :type target: int
+        :rtype: int
+        """
+        import bisect
+        s = [0]
+        for i in toppingCosts:
+            ss = []
+            for j in s:
+                ss += [j, j+i, j+2*i]
+            s = ss
+        s.sort()
+        ans = 10**10
+        fans = 10**10
+        n = len(s)
+        for i in baseCosts:
+            j = target - i
+            x = bisect.bisect_left(s, j) - 1
+            x = max(x, 0)
+            ans1 = abs(j - s[x])
+            if ans1 < ans:
+                ans = ans1
+                fans = s[x] + i
+            elif ans1 == ans:
+                fans = min(fans, s[x] + i)
+            if x + 1 < n:
+                x += 1
+                ans1 = abs(j - s[x])
+                if ans1 < ans:
+                    ans = ans1
+                    fans = s[x] + i
+                elif ans1 == ans:
+                    fans = min(fans, s[x] + i)
+        return fans

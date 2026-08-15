@@ -1,0 +1,32 @@
+class Solution(object):
+    def numberOfGoodSubsets(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        from collections import Counter
+        MOD = 10**9 + 7
+        primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+        freq = Counter(nums)
+        arr = [x for x in set(nums) if x > 1]
+        n = len(arr)
+        
+        memo = {}
+        def rec(i, prod):
+            key = (i, prod)
+            if key in memo:
+                return memo[key]
+            if i == n:
+                return 1 if prod != 1 else 0
+            cnt = rec(i+1, prod)
+            next_prod = prod * arr[i]
+            ok = all(next_prod % (p*p) for p in primes)
+            if ok:
+                cnt += freq[arr[i]] * rec(i+1, next_prod)
+            memo[key] = cnt % MOD
+            return memo[key]
+        
+        ans = rec(0, 1)
+        ones = freq[1]
+        ans *= pow(2, ones, MOD)
+        return ans % MOD

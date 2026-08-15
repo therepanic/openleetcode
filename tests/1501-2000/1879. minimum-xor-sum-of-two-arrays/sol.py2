@@ -1,0 +1,22 @@
+class Solution(object):
+    def minimumXORSum(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: int
+        """
+        n = len(nums1)
+        full_mask = 1 << n
+        dp = [2147483647] * full_mask
+        dp[0] = 0
+        for mask in range(full_mask):
+            idx = bin(mask).count('1')
+            if idx >= n:
+                continue
+            for j in range(n):
+                if (mask & (1 << j)) == 0:
+                    next_mask = mask | (1 << j)
+                    cost = dp[mask] + (nums1[idx] ^ nums2[j])
+                    if cost < dp[next_mask]:
+                        dp[next_mask] = cost
+        return dp[full_mask - 1]

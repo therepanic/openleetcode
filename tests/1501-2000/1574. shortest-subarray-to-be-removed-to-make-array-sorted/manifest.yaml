@@ -1,0 +1,252 @@
+entry:
+  id: 1574
+  title: "shortest-subarray-to-be-removed-to-make-array-sorted"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().findLengthOfShortestSubarray({arr})"
+    rust: "Solution::find_length_of_shortest_subarray({arr})"
+    python3: "Solution().findLengthOfShortestSubarray({arr})"
+    python2: "Solution().findLengthOfShortestSubarray({arr})"
+    ruby: "find_length_of_shortest_subarray({arr})"
+    java: "new Solution().findLengthOfShortestSubarray({arr})"
+    csharp: "new Solution().FindLengthOfShortestSubarray({arr})"
+    kotlin: "Solution().findLengthOfShortestSubarray({arr})"
+    go: "findLengthOfShortestSubarray({arr})"
+    dart: "Solution().findLengthOfShortestSubarray({arr})"
+    swift: "Solution().findLengthOfShortestSubarray({arr})"
+    typescript: "findLengthOfShortestSubarray({arr})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().check(arr, {result})"
+    checker: |
+      class Checker:
+          def check(self, arr, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(arr)
+              right = n - 1
+              while right > 0 and arr[right - 1] <= arr[right]:
+                  right -= 1
+              if right == 0:
+                  return result == 0
+              best = right
+              left = 0
+              while left == 0 or (left < n and arr[left - 1] <= arr[left]):
+                  while right < n and arr[left] > arr[right]:
+                      right += 1
+                  best = min(best, right - left - 1)
+                  left += 1
+                  if left >= n:
+                      break
+              return result == best
+seed: 1574
+tests:
+  - name: example-one
+    in:
+      arr: [1, 2, 3, 10, 4, 2, 3, 5]
+    out: 3
+  - name: example-two
+    in:
+      arr: [5, 4, 3, 2, 1]
+    out: 4
+  - name: already-sorted
+    in:
+      arr: [1, 2, 3]
+    out: 0
+  - name: single-element
+    in:
+      arr: [7]
+    out: 0
+  - name: two-descending
+    in:
+      arr: [2, 1]
+    out: 1
+  - name: equal-values
+    in:
+      arr: [4, 4, 4, 4]
+    out: 0
+  - name: remove-prefix
+    in:
+      arr: [10, 1, 2, 3, 4]
+    out: 1
+  - name: remove-suffix
+    in:
+      arr: [1, 2, 3, 0]
+    out: 1
+  - name: valley
+    in:
+      arr: [1, 2, 0, 3, 4]
+    out: 1
+  - name: two-valleys
+    in:
+      arr: [1, 5, 2, 3, 0, 4]
+    out: 4
+  - name: late-drop
+    in:
+      arr: [1, 2, 3, 4, 8, 6, 7, 9]
+    out: 1
+  - name: early-drop
+    in:
+      arr: [1, 3, 2, 4, 5, 6]
+    out: 1
+  - name: bridge-equal
+    in:
+      arr: [1, 2, 6, 3, 4, 6]
+    out: 1
+  - name: descending-three
+    in:
+      arr: [3, 2, 1]
+    out: 2
+  - name: increasing-four
+    in:
+      arr: [0, 1, 2, 3]
+    out: 0
+  - name: zeroes
+    in:
+      arr: [0, 0, 1, 0, 0, 2]
+    out: 1
+  - name: large-values
+    in:
+      arr: [1000000000, 999999999, 1000000000]
+    out: 1
+  - name: repeated-drop
+    in:
+      arr: [1, 4, 3, 2, 5]
+    out: 2
+  - name: best-middle
+    in:
+      arr: [1, 2, 7, 3, 4, 5, 6, 8]
+    out: 1
+  - name: best-prefix-over-middle
+    in:
+      arr: [9, 1, 2, 3, 8, 10]
+    out: 1
+  - name: long-decreasing
+    in:
+      arr: [9, 8, 7, 6, 5, 4, 3]
+    out: 6
+  - name: plateau-then-drop
+    in:
+      arr: [2, 2, 2, 1, 2, 2]
+    out: 1
+  - name: alternating-small
+    in:
+      arr: [1, 0, 1, 0, 1]
+    out: 3
+  - name: sorted-negative-not-allowed
+    in:
+      arr: [0, 1, 1, 2, 2, 3]
+    out: 0
+  - name: remove-four-middle
+    in:
+      arr: [1, 2, 10, 9, 8, 7, 3, 4]
+    out: 4
+  - name: crossing-one
+    in:
+      arr: [1, 2, 5, 3, 4, 6]
+    out: 1
+  - name: crossing-two
+    in:
+      arr: [1, 4, 5, 2, 3, 6]
+    out: 2
+  - name: all-max
+    in:
+      arr: [1000000000, 1000000000]
+    out: 0
+  - name: min-values
+    in:
+      arr: [0, 0, 0, 0, 0]
+    out: 0
+  - name: one-kept-left
+    in:
+      arr: [5, 1, 0, 0]
+    out: 2
+  - name: one-kept-right
+    in:
+      arr: [3, 2, 1, 4]
+    out: 2
+  - name: nested-plateau
+    in:
+      arr: [1, 3, 3, 2, 2, 4]
+    out: 2
+  - name: sorted-with-spike
+    in:
+      arr: [1, 2, 3, 100, 4, 5, 6]
+    out: 1
+  - name: two-spikes
+    in:
+      arr: [1, 50, 2, 3, 40, 4, 5]
+    out: 4
+  - name: edge-spike
+    in:
+      arr: [0, 1000000000, 1]
+    out: 1
+  - name: generated-random-small
+    in:
+      arr:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-near-limit
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-large-low-range
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-large-values
+    in:
+      arr:
+        gen: "array"
+        len: 75000
+        of:
+          gen: "int"
+          min: 999999000
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-medium
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"

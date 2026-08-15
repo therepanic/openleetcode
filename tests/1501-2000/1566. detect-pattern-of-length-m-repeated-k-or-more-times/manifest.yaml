@@ -1,0 +1,354 @@
+entry:
+  id: 1566
+  title: "detect-pattern-of-length-m-repeated-k-or-more-times"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    m:
+      type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().containsPattern({arr}, {m}, {k})"
+    rust: "Solution::contains_pattern({arr}, {m}, {k})"
+    python3: "Solution().containsPattern({arr}, {m}, {k})"
+    python2: "Solution().containsPattern({arr}, {m}, {k})"
+    ruby: "contains_pattern({arr}, {m}, {k})"
+    java: "new Solution().containsPattern({arr}, {m}, {k})"
+    csharp: "new Solution().ContainsPattern({arr}, {m}, {k})"
+    kotlin: "Solution().containsPattern({arr}, {m}, {k})"
+    go: "containsPattern({arr}, {m}, {k})"
+    dart: "Solution().containsPattern({arr}, {m}, {k})"
+    swift: "Solution().containsPattern({arr}, {m}, {k})"
+    typescript: "containsPattern({arr}, {m}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().containsPattern(arr, m, k, {result})"
+    checker: |
+      class Checker:
+          def containsPattern(self, arr, m, k, result):
+              expected = False
+              for start in range(len(arr) - m * k + 1):
+                  ok = True
+                  for offset in range(m * (k - 1)):
+                      if arr[start + offset] != arr[start + offset + m]:
+                          ok = False
+                          break
+                  if ok:
+                      expected = True
+                      break
+              return result is expected
+
+seed: 1566
+
+tests:
+  - name: example-one
+    in:
+      arr: [1, 2, 4, 4, 4, 4]
+      m: 1
+      k: 3
+    out: true
+  - name: example-two
+    in:
+      arr: [1, 2, 1, 2, 1, 1, 1, 3]
+      m: 2
+      k: 2
+    out: true
+  - name: example-three
+    in:
+      arr: [1, 2, 1, 2, 1, 3]
+      m: 2
+      k: 3
+    out: false
+  - name: minimum-length-positive
+    in:
+      arr: [1, 1]
+      m: 1
+      k: 2
+    out: true
+  - name: minimum-length-negative
+    in:
+      arr: [1, 2]
+      m: 1
+      k: 2
+    out: false
+  - name: whole-array-repeat
+    in:
+      arr: [7, 8, 7, 8]
+      m: 2
+      k: 2
+    out: true
+  - name: whole-array-not-repeat
+    in:
+      arr: [7, 8, 8, 7]
+      m: 2
+      k: 2
+    out: false
+  - name: single-value-four
+    in:
+      arr: [5, 5, 5, 5, 5, 5]
+      m: 1
+      k: 6
+    out: true
+  - name: single-value-insufficient
+    in:
+      arr: [5, 5, 5, 5, 5]
+      m: 1
+      k: 6
+    out: false
+  - name: repeated-middle
+    in:
+      arr: [9, 3, 4, 3, 4, 3, 4, 8]
+      m: 2
+      k: 3
+    out: true
+  - name: repeated-prefix
+    in:
+      arr: [2, 3, 2, 3, 2, 3, 9]
+      m: 2
+      k: 3
+    out: true
+  - name: repeated-suffix
+    in:
+      arr: [9, 2, 3, 2, 3, 2, 3]
+      m: 2
+      k: 3
+    out: true
+  - name: mismatch-last-block
+    in:
+      arr: [1, 2, 1, 2, 1, 3]
+      m: 2
+      k: 3
+    out: false
+  - name: overlapping-looking-not-enough
+    in:
+      arr: [1, 1, 2, 1, 1, 3]
+      m: 2
+      k: 2
+    out: false
+  - name: block-length-three
+    in:
+      arr: [1, 2, 3, 1, 2, 3, 1, 2, 3]
+      m: 3
+      k: 3
+    out: true
+  - name: block-length-three-mismatch
+    in:
+      arr: [1, 2, 3, 1, 2, 4, 1, 2, 3]
+      m: 3
+      k: 3
+    out: false
+  - name: duplicate-values-block
+    in:
+      arr: [2, 2, 1, 2, 2, 1, 2, 2, 1]
+      m: 3
+      k: 3
+    out: true
+  - name: high-values
+    in:
+      arr: [100, 99, 100, 99, 100, 99]
+      m: 2
+      k: 3
+    out: true
+  - name: high-values-mismatch
+    in:
+      arr: [100, 99, 100, 98, 100, 99]
+      m: 2
+      k: 3
+    out: false
+  - name: m-larger-than-array
+    in:
+      arr: [1, 2, 3, 4]
+      m: 5
+      k: 2
+    out: false
+  - name: k-larger-than-array
+    in:
+      arr: [1, 1, 1, 1]
+      m: 1
+      k: 5
+    out: false
+  - name: exact-fit-three
+    in:
+      arr: [4, 5, 6, 4, 5, 6]
+      m: 3
+      k: 2
+    out: true
+  - name: exact-fit-false
+    in:
+      arr: [4, 5, 6, 4, 5, 7]
+      m: 3
+      k: 2
+    out: false
+  - name: later-valid-pattern
+    in:
+      arr: [1, 2, 3, 4, 8, 9, 8, 9, 8, 9]
+      m: 2
+      k: 3
+    out: true
+  - name: early-near-match-later-valid
+    in:
+      arr: [1, 2, 1, 3, 6, 7, 6, 7]
+      m: 2
+      k: 2
+    out: true
+  - name: all-distinct
+    in:
+      arr: [1, 2, 3, 4, 5, 6, 7, 8]
+      m: 1
+      k: 2
+    out: false
+  - name: alternating-single
+    in:
+      arr: [1, 2, 1, 2, 1, 2, 1, 2]
+      m: 1
+      k: 2
+    out: false
+  - name: alternating-pair
+    in:
+      arr: [1, 2, 1, 2, 1, 2, 1, 2]
+      m: 2
+      k: 4
+    out: true
+  - name: constant-pair
+    in:
+      arr: [3, 3, 3, 3, 3, 3, 3, 3]
+      m: 2
+      k: 4
+    out: true
+  - name: constant-triple
+    in:
+      arr: [3, 3, 3, 3, 3, 3, 3, 3]
+      m: 3
+      k: 2
+    out: true
+  - name: mixed-duplicate-no-pattern
+    in:
+      arr: [1, 1, 2, 2, 1, 1, 2, 3]
+      m: 2
+      k: 3
+    out: false
+  - name: pattern-after-noise
+    in:
+      arr: [8, 7, 6, 2, 4, 2, 4, 2, 4, 5]
+      m: 2
+      k: 3
+    out: true
+  - name: one-repeat-only
+    in:
+      arr: [1, 2, 1, 2, 3, 4]
+      m: 2
+      k: 3
+    out: false
+  - name: m-one-run-at-end
+    in:
+      arr: [1, 2, 3, 4, 4, 4, 4]
+      m: 1
+      k: 4
+    out: true
+  - name: m-one-run-below-k
+    in:
+      arr: [1, 2, 3, 4, 4, 4, 2]
+      m: 1
+      k: 4
+    out: false
+  - name: generator-constant
+    in:
+      arr:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 1
+        max: 10
+      k:
+        gen: "int"
+        min: 2
+        max: 5
+  - name: generator-binary
+    in:
+      arr:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 2
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 1
+        max: 10
+      k:
+        gen: "int"
+        min: 2
+        max: 5
+  - name: generator-small-values
+    in:
+      arr:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 5
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 1
+        max: 10
+      k:
+        gen: "int"
+        min: 2
+        max: 5
+  - name: generator-wide-values
+    in:
+      arr:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 1
+        max: 10
+      k:
+        gen: "int"
+        min: 2
+        max: 5
+  - name: generator-long-periodic-domain
+    in:
+      arr:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 1
+        max: 10
+      k:
+        gen: "int"
+        min: 2
+        max: 5

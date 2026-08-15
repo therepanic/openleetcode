@@ -1,0 +1,209 @@
+entry:
+  id: 1927
+  title: "sum-game"
+  params:
+    num:
+      type: string
+  call:
+    cpp: "Solution().sumGame({num})"
+    rust: "Solution::sum_game({num})"
+    python3: "Solution().sumGame({num})"
+    python2: "Solution().sumGame({num})"
+    ruby: "sum_game({num})"
+    java: "new Solution().sumGame({num})"
+    csharp: "new Solution().SumGame({num})"
+    kotlin: "Solution().sumGame({num})"
+    go: "sumGame({num})"
+    dart: "Solution().sumGame({num})"
+    swift: "Solution().sumGame({num})"
+    typescript: "sumGame({num})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().sumGame(num, {result})"
+    checker: |
+      class Checker:
+          def sumGame(self, num, result):
+              if not isinstance(num, str) or len(num) < 2 or len(num) % 2 != 0:
+                  return False
+              if any(ch != '?' and not ('0' <= ch <= '9') for ch in num):
+                  return False
+              if not isinstance(result, bool):
+                  return False
+              half = len(num) // 2
+              left = sum(int(ch) for ch in num[:half] if ch != '?')
+              right = sum(int(ch) for ch in num[half:] if ch != '?')
+              q_left = num[:half].count('?')
+              q_right = num[half:].count('?')
+              return result == ((left - right) * 2 != (q_right - q_left) * 9)
+
+seed: 1927
+
+tests:
+  - name: "example_equal"
+    in:
+      num: "5023"
+    out: false
+  - name: "example_one_question_pair"
+    in:
+      num: "25??"
+    out: true
+  - name: "example_balanced_questions"
+    in:
+      num: "?3295???"
+    out: false
+  - name: "minimum_equal"
+    in:
+      num: "00"
+    out: false
+  - name: "minimum_unequal"
+    in:
+      num: "09"
+    out: true
+  - name: "minimum_questions_left"
+    in:
+      num: "?0"
+    out: true
+  - name: "minimum_questions_right"
+    in:
+      num: "0?"
+    out: true
+  - name: "all_questions_two"
+    in:
+      num: "??"
+    out: false
+  - name: "all_questions_four"
+    in:
+      num: "????"
+    out: false
+  - name: "all_questions_six"
+    in:
+      num: "??????"
+    out: false
+  - name: "left_question_right_fixed"
+    in:
+      num: "?999"
+    out: true
+  - name: "right_question_left_fixed"
+    in:
+      num: "999?"
+    out: true
+  - name: "equal_fixed_halves"
+    in:
+      num: "123321"
+    out: false
+  - name: "unequal_fixed_halves"
+    in:
+      num: "123456"
+    out: true
+  - name: "same_question_count_nonzero_gap"
+    in:
+      num: "1?2?"
+    out: true
+  - name: "same_question_count_zero_gap"
+    in:
+      num: "1?1?"
+    out: false
+  - name: "two_left_questions"
+    in:
+      num: "??90"
+    out: false
+  - name: "two_right_questions"
+    in:
+      num: "90??"
+    out: false
+  - name: "two_each_questions"
+    in:
+      num: "??00"
+    out: true
+  - name: "question_spacing"
+    in:
+      num: "?1?2"
+    out: true
+  - name: "max_left_digits"
+    in:
+      num: "99990000"
+    out: true
+  - name: "max_right_digits"
+    in:
+      num: "00009999"
+    out: true
+  - name: "zero_vs_nines"
+    in:
+      num: "00009999"
+    out: true
+  - name: "alternating_digits"
+    in:
+      num: "09090909"
+    out: false
+  - name: "alternating_unequal"
+    in:
+      num: "09090999"
+    out: true
+  - name: "four_left_questions"
+    in:
+      num: "????9999"
+    out: true
+  - name: "four_right_questions"
+    in:
+      num: "9999????"
+    out: true
+  - name: "balanced_question_counts"
+    in:
+      num: "??99??99"
+    out: false
+  - name: "balanced_counts_gap_one"
+    in:
+      num: "??99??98"
+    out: true
+  - name: "long_equal_fixed"
+    in:
+      num: "12345678901234567890123456789012345678901234567890"
+    out: true
+  - name: "long_unequal_fixed"
+    in:
+      num: "12345678901234567890123456789012345678901234567899"
+    out: true
+  - name: "long_questions_balanced"
+    in:
+      num: "?????00000?????00000"
+    out: false
+  - name: "long_questions_left_heavy"
+    in:
+      num: "??????????0000000000"
+    out: true
+  - name: "long_questions_right_heavy"
+    in:
+      num: "0000000000??????????"
+    out: true
+  - name: "large_max_digits_equal"
+    in:
+      num: "999999999999999999999999999999999999999999999999999999999999"
+    out: false
+  - name: "large_zero_max_imbalance"
+    in:
+      num: "000000000000000000000000000000999999999999999999999999999999"
+    out: true
+  - name: "question_and_digit_mix_left"
+    in:
+      num: "?9?8?7?60000"
+    out: true
+  - name: "question_and_digit_mix_right"
+    in:
+      num: "0000?9?8?7?6"
+    out: true
+  - name: "near_cancellation"
+    in:
+      num: "?123456789?123456789"
+    out: false
+  - name: "near_cancellation_shifted"
+    in:
+      num: "?123456789?123456788"
+    out: true

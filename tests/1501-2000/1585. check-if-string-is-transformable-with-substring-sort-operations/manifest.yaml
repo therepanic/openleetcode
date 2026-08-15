@@ -1,0 +1,223 @@
+entry:
+  id: 1585
+  title: check-if-string-is-transformable-with-substring-sort-operations
+  params:
+    s:
+      type: string
+    t:
+      type: string
+  call:
+    cpp: "Solution().isTransformable({s}, {t})"
+    rust: "Solution::is_transformable({s}, {t})"
+    python3: "Solution().isTransformable({s}, {t})"
+    python2: "Solution().isTransformable({s}, {t})"
+    ruby: "is_transformable({s}, {t})"
+    java: "new Solution().isTransformable({s}, {t})"
+    csharp: "new Solution().IsTransformable({s}, {t})"
+    kotlin: "Solution().isTransformable({s}, {t})"
+    go: "isTransformable({s}, {t})"
+    dart: "Solution().isTransformable({s}, {t})"
+    swift: "Solution().isTransformable({s}, {t})"
+    typescript: "isTransformable({s}, {t})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().isTransformable(s, t, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def isTransformable(self, s, t, result):
+              if not isinstance(result, bool):
+                  return False
+              if len(s) != len(t) or sorted(s) != sorted(t):
+                  expected = False
+              else:
+                  positions = [deque() for _ in range(10)]
+                  for index, char in enumerate(s):
+                      positions[ord(char) - 48].append(index)
+                  expected = True
+                  for char in t:
+                      digit = ord(char) - 48
+                      if not positions[digit]:
+                          expected = False
+                          break
+                      index = positions[digit].popleft()
+                      for smaller in range(digit):
+                          if positions[smaller] and positions[smaller][0] < index:
+                              expected = False
+                              break
+                      if not expected:
+                          break
+              return result is expected
+
+seed: 1585
+
+tests:
+  - name: example-1
+    in:
+      s: "84532"
+      t: "34852"
+    out: true
+  - name: example-2
+    in:
+      s: "34521"
+      t: "23415"
+    out: true
+  - name: example-3
+    in:
+      s: "12345"
+      t: "12435"
+    out: false
+  - name: one-digit
+    in:
+      s: "7"
+      t: "7"
+    out: true
+  - name: equal-digits
+    in:
+      s: "000000"
+      t: "000000"
+    out: true
+  - name: same-order-distinct
+    in:
+      s: "0123456789"
+      t: "0123456789"
+    out: true
+  - name: descending-to-ascending
+    in:
+      s: "9876543210"
+      t: "0123456789"
+    out: true
+  - name: ascending-to-descending
+    in:
+      s: "0123456789"
+      t: "9876543210"
+    out: false
+  - name: duplicate-blocks
+    in:
+      s: "11223344"
+      t: "22113344"
+    out: false
+  - name: smaller-blocked
+    in:
+      s: "102"
+      t: "201"
+    out: false
+  - name: zero-before-one
+    in:
+      s: "102345"
+      t: "012345"
+    out: true
+  - name: zero-after-one
+    in:
+      s: "012345"
+      t: "102345"
+    out: false
+  - name: impossible-count
+    in:
+      s: "1234"
+      t: "1233"
+    out: false
+  - name: impossible-length
+    in:
+      s: "123"
+      t: "1234"
+    out: false
+  - name: repeated-zeroes
+    in:
+      s: "909090"
+      t: "000999"
+    out: true
+  - name: blocked-repeated-zeroes
+    in:
+      s: "000999"
+      t: "909090"
+    out: false
+  - name: alternating-low-high
+    in:
+      s: "91919191"
+      t: "11119999"
+    out: true
+  - name: alternating-high-low
+    in:
+      s: "19191919"
+      t: "99991111"
+    out: false
+  - name: equal-middle
+    in:
+      s: "505050"
+      t: "055500"
+    out: false
+  - name: all-nines
+    in:
+      s: "9999999999"
+      t: "9999999999"
+    out: true
+  - name: permutation-rotated
+    in:
+      s: "1234567890"
+      t: "9012345678"
+    out: false
+  - name: low-digit-bubble
+    in:
+      s: "3210123"
+      t: "0123321"
+    out: false
+  - name: high-digit-cannot-cross
+    in:
+      s: "0123321"
+      t: "3210123"
+    out: false
+  - name: sparse-digits
+    in:
+      s: "80604020"
+      t: "02468000"
+    out: false
+  - name: sparse-digits-valid
+    in:
+      s: "86420000"
+      t: "00002468"
+    out: true
+  - name: ten-with-duplicates
+    in:
+      s: "9081726354"
+      t: "0123457896"
+    out: true
+  - name: local-sort-valid
+    in:
+      s: "543210"
+      t: "453210"
+    out: true
+  - name: local-sort-invalid
+    in:
+      s: "453210"
+      t: "543210"
+    out: false
+  - name: repeated-3
+    in:
+      s: "333222111000"
+      t: "000111222333"
+    out: true
+  - name: reverse-repeated-3
+    in:
+      s: "000111222333"
+      t: "333222111000"
+    out: false
+  - name: mixed-valid
+    in:
+      s: "8453284512"
+      t: "3485284125"
+    out: true
+  - name: mixed-invalid
+    in:
+      s: "3485284125"
+      t: "8453284512"
+    out: false

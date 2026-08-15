@@ -1,0 +1,275 @@
+entry:
+  id: 1531
+  title: "string-compression-ii"
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().getLengthOfOptimalCompression({s}, {k})"
+    rust: "Solution::get_length_of_optimal_compression({s}, {k})"
+    python3: "Solution().getLengthOfOptimalCompression({s}, {k})"
+    python2: "Solution().getLengthOfOptimalCompression({s}, {k})"
+    ruby: "get_length_of_optimal_compression({s}, {k})"
+    java: "new Solution().getLengthOfOptimalCompression({s}, {k})"
+    csharp: "new Solution().GetLengthOfOptimalCompression({s}, {k})"
+    kotlin: "Solution().getLengthOfOptimalCompression({s}, {k})"
+    go: "getLengthOfOptimalCompression({s}, {k})"
+    dart: "Solution().getLengthOfOptimalCompression({s}, {k})"
+    swift: "Solution().getLengthOfOptimalCompression({s}, {k})"
+    typescript: "getLengthOfOptimalCompression({s}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().getLengthOfOptimalCompression(s, k, {result})"
+    checker: |
+      class Checker:
+          def getLengthOfOptimalCompression(self, s, k, result):
+              if not isinstance(s, str) or not isinstance(k, int):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(s)
+              if n < 1 or n > 100 or k < 0 or k > n:
+                  return False
+              if any(ch < 'a' or ch > 'z' for ch in s):
+                  return False
+              dp = [[10**9] * (k + 1) for _ in range(n + 1)]
+              dp[0][0] = 0
+              for i in range(1, n + 1):
+                  for deleted in range(k + 1):
+                      same = 0
+                      removed = 0
+                      for left in range(i, 0, -1):
+                          if s[left - 1] == s[i - 1]:
+                              same += 1
+                          else:
+                              removed += 1
+                          if deleted >= removed:
+                              digits = 0 if same == 1 else 1 if same < 10 else 2 if same < 100 else 3
+                              dp[i][deleted] = min(dp[i][deleted], dp[left - 1][deleted - removed] + 1 + digits)
+                      if deleted:
+                          dp[i][deleted] = min(dp[i][deleted], dp[i - 1][deleted - 1])
+              return result == dp[n][k]
+
+seed: 1531
+
+tests:
+  - name: single-keep
+    in:
+      s: "a"
+      k: 0
+    out: 1
+  - name: single-delete
+    in:
+      s: "a"
+      k: 1
+    out: 0
+  - name: pair-same
+    in:
+      s: "aa"
+      k: 0
+    out: 2
+  - name: pair-delete-one
+    in:
+      s: "aa"
+      k: 1
+    out: 1
+  - name: pair-different
+    in:
+      s: "ab"
+      k: 0
+    out: 2
+  - name: pair-different-delete
+    in:
+      s: "ab"
+      k: 1
+    out: 1
+  - name: triple-no-delete
+    in:
+      s: "aaa"
+      k: 0
+    out: 2
+  - name: triple-one-delete
+    in:
+      s: "aaa"
+      k: 1
+    out: 2
+  - name: triple-two-delete
+    in:
+      s: "aaa"
+      k: 2
+    out: 1
+  - name: official-example-one
+    in:
+      s: "aaabcccd"
+      k: 2
+    out: 4
+  - name: official-example-two
+    in:
+      s: "aabbaa"
+      k: 2
+    out: 2
+  - name: official-example-three
+    in:
+      s: "aaaaaaaaaaa"
+      k: 0
+    out: 3
+  - name: eleven-delete-one
+    in:
+      s: "aaaaaaaaaaa"
+      k: 1
+    out: 3
+  - name: eleven-delete-ten
+    in:
+      s: "aaaaaaaaaaa"
+      k: 10
+    out: 1
+  - name: three-pairs
+    in:
+      s: "aabbcc"
+      k: 0
+    out: 6
+  - name: three-pairs-one
+    in:
+      s: "aabbcc"
+      k: 1
+    out: 5
+  - name: three-pairs-two
+    in:
+      s: "aabbcc"
+      k: 2
+    out: 4
+  - name: three-pairs-three
+    in:
+      s: "aabbcc"
+      k: 3
+    out: 3
+  - name: alternating-no-delete
+    in:
+      s: "abababab"
+      k: 0
+    out: 8
+  - name: alternating-delete-three
+    in:
+      s: "abababab"
+      k: 3
+    out: 3
+  - name: alternating-delete-four
+    in:
+      s: "abababab"
+      k: 4
+    out: 2
+  - name: repeated-cycle
+    in:
+      s: "abcabcabc"
+      k: 2
+    out: 7
+  - name: repeated-cycle-delete-six
+    in:
+      s: "abcabcabc"
+      k: 6
+    out: 2
+  - name: bridge-runs-one
+    in:
+      s: "aabbbaa"
+      k: 1
+    out: 5
+  - name: bridge-runs-two
+    in:
+      s: "aabbbaa"
+      k: 2
+    out: 4
+  - name: bridge-runs-three
+    in:
+      s: "aabbbaa"
+      k: 3
+    out: 2
+  - name: two-long-runs
+    in:
+      s: "aaaaaaaaaabbbbbbbbbb"
+      k: 0
+    out: 6
+  - name: two-long-runs-delete-nine
+    in:
+      s: "aaaaaaaaaabbbbbbbbbb"
+      k: 9
+    out: 4
+  - name: two-long-runs-delete-ten
+    in:
+      s: "aaaaaaaaaabbbbbbbbbb"
+      k: 10
+    out: 3
+  - name: two-long-runs-delete-nineteen
+    in:
+      s: "aaaaaaaaaabbbbbbbbbb"
+      k: 19
+    out: 1
+  - name: delete-all
+    in:
+      s: "aaaaaaaaaabbbbbbbbbb"
+      k: 20
+    out: 0
+  - name: ninety-nine-and-one
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+      k: 0
+    out: 4
+  - name: ninety-nine-delete-one
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+      k: 1
+    out: 3
+  - name: two-fifty-runs-delete-forty-nine
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      k: 49
+    out: 4
+  - name: two-fifty-runs-delete-fifty
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      k: 50
+    out: 3
+  - name: generated-random-small
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "abc"
+      k: 0
+  - name: generated-random-quarter
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "abcd"
+      k: 25
+  - name: generated-random-half
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "abcde"
+      k: 50
+  - name: generated-broad-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "abcdefghij"
+      k: 75
+  - name: generated-max-deletion
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "ab"
+      k: 100

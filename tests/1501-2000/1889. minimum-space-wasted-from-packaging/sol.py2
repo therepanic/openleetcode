@@ -1,0 +1,36 @@
+class Solution(object):
+    def minWastedSpace(self, packages, boxes):
+        """
+        :type packages: List[int]
+        :type boxes: List[List[int]]
+        :rtype: int
+        """
+        import bisect
+        packages.sort()
+        n = len(packages)
+        total_package_sum = sum(packages)
+        
+        min_gross_area = float('inf')
+        
+        for supplier_boxes in boxes:
+            supplier_boxes.sort()
+            if supplier_boxes[-1] < packages[-1]:
+                continue
+            
+            gross_area = 0
+            low_idx = 0
+            
+            for b in supplier_boxes:
+                high_idx = bisect.bisect_right(packages, b, lo=low_idx)
+                count = high_idx - low_idx
+                if count > 0:
+                    gross_area += b * count
+                    low_idx = high_idx
+                if low_idx == n:
+                    break
+            
+            min_gross_area = min(min_gross_area, gross_area)
+        
+        if min_gross_area == float('inf'):
+            return -1
+        return (min_gross_area - total_package_sum) % (10**9 + 7)

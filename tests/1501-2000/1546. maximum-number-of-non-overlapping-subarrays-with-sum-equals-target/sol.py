@@ -1,0 +1,11 @@
+class Solution:
+    def maxNonOverlapping(self, nums, target):
+        num_of_subarrays, temp, visited = 0, 0, {0}
+        for i, num in enumerate(nums):
+            temp += num
+            prev = temp - target
+            if prev in visited:
+                visited = set()
+                num_of_subarrays += 1
+            visited.add(temp)
+        return num_of_subarrays

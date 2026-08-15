@@ -1,0 +1,451 @@
+entry:
+  id: 1627
+  title: "graph-connectivity-with-threshold"
+  params:
+    n:
+      type: int
+    threshold:
+      type: int
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().areConnected({n}, {threshold}, {queries})"
+    rust: "Solution::are_connected({n}, {threshold}, {queries})"
+    python3: "Solution().areConnected({n}, {threshold}, {queries})"
+    python2: "Solution().areConnected({n}, {threshold}, {queries})"
+    ruby: "are_connected({n}, {threshold}, {queries})"
+    java: "new Solution().areConnected({n}, {threshold}, {queries})"
+    csharp: "new Solution().AreConnected({n}, {threshold}, {queries})"
+    kotlin: "Solution().areConnected({n}, {threshold}, {queries})"
+    go: "areConnected({n}, {threshold}, {queries})"
+    dart: "Solution().areConnected({n}, {threshold}, {queries})"
+    swift: "Solution().areConnected({n}, {threshold}, {queries})"
+    typescript: "areConnected({n}, {threshold}, {queries})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().areConnected(n, threshold, queries, {result})"
+    checker: |
+      class Checker:
+          def areConnected(self, n, threshold, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              parent = list(range(n + 1))
+              size = [1] * (n + 1)
+              def find(x):
+                  while parent[x] != x:
+                      parent[x] = parent[parent[x]]
+                      x = parent[x]
+                  return x
+              def union(a, b):
+                  a, b = find(a), find(b)
+                  if a == b:
+                      return
+                  if size[a] < size[b]:
+                      a, b = b, a
+                  parent[b] = a
+                  size[a] += size[b]
+              for z in range(threshold + 1, n + 1):
+                  for multiple in range(2 * z, n + 1, z):
+                      union(z, multiple)
+              return all(bool(value) == (find(a) == find(b)) for value, (a, b) in zip(result, queries))
+seed: 1627
+tests:
+  - name: example-one
+    in:
+      n: 6
+      threshold: 2
+      queries:
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+    out: [false, false, true]
+  - name: example-two
+    in:
+      n: 6
+      threshold: 0
+      queries:
+        - [4, 5]
+        - [3, 4]
+        - [3, 2]
+        - [2, 6]
+        - [1, 3]
+    out: [true, true, true, true, true]
+  - name: example-three
+    in:
+      n: 5
+      threshold: 1
+      queries:
+        - [4, 5]
+        - [4, 5]
+        - [3, 2]
+        - [2, 3]
+        - [3, 4]
+    out: [false, false, false, false, false]
+  - name: threshold-at-n
+    in:
+      n: 5
+      threshold: 5
+      queries:
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [1, 5]
+    out: [false, false, false, false]
+  - name: threshold-n-minus-one
+    in:
+      n: 6
+      threshold: 5
+      queries:
+        - [5, 6]
+        - [1, 6]
+        - [2, 4]
+    out: [false, false, false]
+  - name: threshold-one
+    in:
+      n: 8
+      threshold: 1
+      queries:
+        - [2, 4]
+        - [2, 6]
+        - [4, 6]
+        - [3, 6]
+        - [5, 7]
+        - [1, 8]
+    out: [true, true, true, true, false, false]
+  - name: threshold-zero
+    in:
+      n: 4
+      threshold: 0
+      queries:
+        - [1, 2]
+        - [1, 4]
+        - [2, 3]
+        - [3, 4]
+    out: [true, true, true, true]
+  - name: prime-threshold
+    in:
+      n: 11
+      threshold: 3
+      queries:
+        - [4, 8]
+        - [5, 10]
+        - [6, 9]
+        - [7, 11]
+        - [8, 10]
+    out: [true, true, false, false, false]
+  - name: divisor-four-components
+    in:
+      n: 12
+      threshold: 3
+      queries:
+        - [4, 8]
+        - [4, 12]
+        - [6, 12]
+        - [5, 10]
+        - [8, 9]
+        - [3, 6]
+    out: [true, true, true, true, false, false]
+  - name: threshold-four
+    in:
+      n: 12
+      threshold: 4
+      queries:
+        - [5, 10]
+        - [6, 12]
+        - [7, 11]
+        - [8, 12]
+        - [9, 12]
+    out: [true, true, false, false, false]
+  - name: threshold-six
+    in:
+      n: 6
+      threshold: 2
+      queries:
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+    out: [false, false, true]
+  - name: threshold-seven
+    in:
+      n: 16
+      threshold: 7
+      queries:
+        - [8, 14]
+        - [9, 15]
+        - [10, 15]
+        - [12, 16]
+        - [14, 16]
+    out: [false, false, false, false, false]
+  - name: threshold-ten
+    in:
+      n: 20
+      threshold: 10
+      queries:
+        - [11, 12]
+        - [12, 18]
+        - [14, 20]
+        - [15, 20]
+        - [16, 20]
+    out: [false, false, false, false, false]
+  - name: repeated-and-reversed
+    in:
+      n: 18
+      threshold: 2
+      queries:
+        - [3, 6]
+        - [6, 3]
+        - [6, 9]
+        - [9, 6]
+        - [4, 12]
+        - [12, 4]
+    out: [true, true, true, true, true, true]
+  - name: isolated-primes
+    in:
+      n: 20
+      threshold: 10
+      queries:
+        - [11, 13]
+        - [13, 17]
+        - [17, 19]
+        - [1, 11]
+        - [2, 12]
+    out: [false, false, false, false, false]
+  - name: connected-by-chain
+    in:
+      n: 30
+      threshold: 1
+      queries:
+        - [6, 10]
+        - [10, 15]
+        - [6, 15]
+        - [14, 21]
+        - [14, 25]
+        - [1, 30]
+    out: [true, true, true, true, true, false]
+  - name: threshold-two-chain
+    in:
+      n: 24
+      threshold: 2
+      queries:
+        - [6, 10]
+        - [10, 15]
+        - [6, 15]
+        - [8, 12]
+        - [12, 18]
+        - [8, 18]
+    out: [true, true, true, true, true, true]
+  - name: threshold-three-chain
+    in:
+      n: 36
+      threshold: 3
+      queries:
+        - [8, 14]
+        - [16, 24]
+        - [8, 24]
+        - [10, 20]
+        - [20, 30]
+        - [10, 30]
+    out: [true, true, true, true, true, true]
+  - name: powers-of-two
+    in:
+      n: 32
+      threshold: 1
+      queries:
+        - [2, 4]
+        - [4, 8]
+        - [8, 14]
+        - [16, 32]
+        - [2, 32]
+        - [3, 6]
+    out: [true, true, true, true, true, true]
+  - name: high-threshold-multiples
+    in:
+      n: 50
+      threshold: 20
+      queries:
+        - [21, 42]
+        - [22, 44]
+        - [24, 48]
+        - [25, 50]
+        - [21, 44]
+    out: [true, true, true, true, false]
+  - name: threshold-half
+    in:
+      n: 40
+      threshold: 20
+      queries:
+        - [21, 40]
+        - [22, 33]
+        - [23, 39]
+        - [24, 36]
+        - [25, 35]
+        - [26, 39]
+    out: [false, false, false, false, false, false]
+  - name: small-n-two
+    in:
+      n: 3
+      threshold: 0
+      queries:
+        - [1, 2]
+        - [2, 3]
+        - [1, 3]
+    out: [true, true, true]
+  - name: small-n-max-threshold
+    in:
+      n: 3
+      threshold: 3
+      queries:
+        - [1, 2]
+        - [2, 3]
+        - [1, 3]
+    out: [false, false, false]
+  - name: threshold-equals-one
+    in:
+      n: 10
+      threshold: 1
+      queries:
+        - [2, 4]
+        - [3, 9]
+        - [4, 8]
+        - [5, 10]
+        - [6, 9]
+        - [7, 10]
+    out: [true, true, true, true, true, false]
+  - name: threshold-equals-two
+    in:
+      n: 10
+      threshold: 2
+      queries:
+        - [3, 6]
+        - [4, 8]
+        - [5, 10]
+        - [6, 9]
+        - [8, 10]
+        - [2, 4]
+    out: [true, true, true, true, false, false]
+  - name: threshold-equals-five
+    in:
+      n: 15
+      threshold: 5
+      queries:
+        - [6, 12]
+        - [7, 14]
+        - [8, 12]
+        - [9, 15]
+        - [10, 15]
+        - [12, 15]
+    out: [true, true, false, false, false, false]
+  - name: threshold-equals-eight
+    in:
+      n: 20
+      threshold: 8
+      queries:
+        - [9, 18]
+        - [10, 20]
+        - [12, 18]
+        - [14, 16]
+        - [16, 20]
+    out: [true, true, false, false, false]
+  - name: max-query-count-shape
+    in:
+      n: 30
+      threshold: 14
+      queries:
+        - [15, 30]
+        - [16, 24]
+        - [17, 30]
+        - [18, 27]
+        - [20, 30]
+        - [21, 28]
+        - [22, 24]
+    out: [true, false, false, false, false, false, false]
+  - name: divisor-five-components
+    in:
+      n: 25
+      threshold: 4
+      queries:
+        - [5, 10]
+        - [10, 15]
+        - [5, 15]
+        - [6, 12]
+        - [12, 18]
+        - [6, 18]
+    out: [true, true, true, true, true, true]
+  - name: large-small-threshold
+    in:
+      n: 100
+      threshold: 0
+      queries:
+        - [1, 100]
+        - [37, 89]
+        - [64, 99]
+        - [2, 97]
+        - [50, 75]
+    out: [true, true, true, true, true]
+  - name: large-high-threshold
+    in:
+      n: 100
+      threshold: 50
+      queries:
+        - [51, 100]
+        - [50, 100]
+        - [52, 99]
+        - [60, 90]
+        - [75, 100]
+    out: [false, false, false, false, false]
+  - name: n-one-hundred-threshold-one
+    in:
+      n: 100
+      threshold: 1
+      queries:
+        - [2, 98]
+        - [3, 99]
+        - [7, 91]
+        - [25, 75]
+        - [49, 98]
+        - [1, 100]
+    out: [true, true, true, true, true, false]
+  - name: n-one-hundred-threshold-ten
+    in:
+      n: 100
+      threshold: 10
+      queries:
+        - [11, 12]
+        - [12, 36]
+        - [14, 70]
+        - [15, 45]
+        - [16, 80]
+        - [21, 84]
+    out: [false, true, true, true, true, true]
+  - name: n-one-hundred-threshold-ninety
+    in:
+      n: 100
+      threshold: 90
+      queries:
+        - [91, 100]
+        - [92, 100]
+        - [95, 100]
+        - [99, 100]
+        - [90, 100]
+    out: [false, false, false, false, false]
+  - name: edge-multiples
+    in:
+      n: 60
+      threshold: 19
+      queries:
+        - [20, 40]
+        - [21, 42]
+        - [22, 44]
+        - [25, 50]
+        - [30, 60]
+        - [24, 48]
+    out: [true, true, true, true, true, true]

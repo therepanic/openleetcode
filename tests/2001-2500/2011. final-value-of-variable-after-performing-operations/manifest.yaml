@@ -1,0 +1,587 @@
+entry:
+  id: 2011
+  title: "final-value-of-variable-after-performing-operations"
+  params:
+    operations:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().finalValueAfterOperations({operations})"
+    rust: "Solution::final_value_after_operations({operations})"
+    python3: "Solution().finalValueAfterOperations({operations})"
+    python2: "Solution().finalValueAfterOperations({operations})"
+    ruby: "final_value_after_operations({operations})"
+    java: "new Solution().finalValueAfterOperations({operations})"
+    csharp: "new Solution().FinalValueAfterOperations({operations})"
+    kotlin: "Solution().finalValueAfterOperations({operations})"
+    go: "finalValueAfterOperations({operations})"
+    dart: "Solution().finalValueAfterOperations({operations})"
+    swift: "Solution().finalValueAfterOperations({operations})"
+    typescript: "finalValueAfterOperations({operations})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().finalValueAfterOperations(operations, {result})"
+    checker: |
+      class Checker:
+          def finalValueAfterOperations(self, operations, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(operations, list) or not operations:
+                  return False
+              if any(op not in ("++X", "X++", "--X", "X--") for op in operations):
+                  return False
+              expected = sum(1 if op[1] == "+" else -1 for op in operations)
+              return result == expected
+
+seed: 2011
+
+tests:
+  - name: "example_mixed"
+    in:
+      operations: ["--X", "X++", "X++"]
+    out: 1
+  - name: "example_all_increment"
+    in:
+      operations: ["++X", "++X", "X++"]
+    out: 3
+  - name: "example_balanced"
+    in:
+      operations: ["X++", "++X", "--X", "X--"]
+    out: 0
+  - name: "single_prefix_increment"
+    in:
+      operations: ["++X"]
+    out: 1
+  - name: "single_postfix_increment"
+    in:
+      operations: ["X++"]
+    out: 1
+  - name: "single_prefix_decrement"
+    in:
+      operations: ["--X"]
+    out: -1
+  - name: "single_postfix_decrement"
+    in:
+      operations: ["X--"]
+    out: -1
+  - name: "two_same_prefix_increments"
+    in:
+      operations: ["++X", "++X"]
+    out: 2
+  - name: "two_same_postfix_decrements"
+    in:
+      operations: ["X--", "X--"]
+    out: -2
+  - name: "one_of_each"
+    in:
+      operations: ["++X", "X++", "--X", "X--"]
+    out: 0
+  - name: "alternating_increments_decrements"
+    in:
+      operations: ["++X", "--X", "X++", "X--", "++X", "X--"]
+    out: 0
+  - name: "mostly_increments"
+    in:
+      operations: ["++X", "X++", "++X", "X++", "--X"]
+    out: 3
+  - name: "mostly_decrements"
+    in:
+      operations: ["--X", "X--", "--X", "X--", "X++"]
+    out: -3
+  - name: "prefix_only_balanced"
+    in:
+      operations: ["++X", "--X", "++X", "--X", "++X", "--X"]
+    out: 0
+  - name: "postfix_only_positive"
+    in:
+      operations: ["X++", "X++", "X++", "X++", "X++"]
+    out: 5
+  - name: "postfix_only_negative"
+    in:
+      operations: ["X--", "X--", "X--", "X--", "X--"]
+    out: -5
+  - name: "alternating_prefixes"
+    in:
+      operations: ["++X", "--X", "++X", "--X", "++X", "--X", "++X"]
+    out: 1
+  - name: "alternating_postfixes"
+    in:
+      operations: ["X++", "X--", "X++", "X--", "X++", "X--", "X++", "X--"]
+    out: 0
+  - name: "negative_then_recover"
+    in:
+      operations: ["--X", "X--", "--X", "++X", "X++", "++X", "X++"]
+    out: 1
+  - name: "positive_then_fall"
+    in:
+      operations: ["++X", "X++", "++X", "X--", "--X", "X--"]
+    out: 0
+  - name: "long_cycle"
+    in:
+      operations:
+        ["++X", "X++", "--X", "X--", "X++", "++X", "X--", "--X", "++X", "X++"]
+    out: 2
+  - name: "all_four_repeated_twice"
+    in:
+      operations: ["++X", "X++", "--X", "X--", "++X", "X++", "--X", "X--"]
+    out: 0
+  - name: "three_increments_one_decrement"
+    in:
+      operations: ["++X", "X++", "++X", "X--"]
+    out: 2
+  - name: "one_increment_three_decrements"
+    in:
+      operations: ["--X", "X--", "--X", "X++"]
+    out: -2
+  - name: "prefix_increment_postfix_decrement"
+    in:
+      operations: ["++X", "X--", "++X", "X--", "++X"]
+    out: 1
+  - name: "prefix_decrement_postfix_increment"
+    in:
+      operations: ["--X", "X++", "--X", "X++", "--X"]
+    out: -1
+  - name: "ten_balanced"
+    in:
+      operations:
+        ["++X", "--X", "X++", "X--", "++X", "--X", "X++", "X--", "++X", "--X"]
+    out: 0
+  - name: "ten_positive"
+    in:
+      operations:
+        ["++X", "X++", "++X", "X++", "++X", "X++", "++X", "X++", "++X", "X++"]
+    out: 10
+  - name: "ten_negative"
+    in:
+      operations:
+        ["--X", "X--", "--X", "X--", "--X", "X--", "--X", "X--", "--X", "X--"]
+    out: -10
+  - name: "eleven_positive_one_negative"
+    in:
+      operations:
+        [
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "--X",
+          "++X",
+        ]
+    out: 10
+  - name: "eleven_negative_one_positive"
+    in:
+      operations:
+        [
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "X++",
+          "--X",
+        ]
+    out: -10
+  - name: "twenty_mixed"
+    in:
+      operations:
+        [
+          "++X",
+          "X++",
+          "--X",
+          "X--",
+          "++X",
+          "++X",
+          "X--",
+          "X++",
+          "--X",
+          "++X",
+          "X++",
+          "X++",
+          "--X",
+          "X--",
+          "++X",
+          "X++",
+          "--X",
+          "--X",
+          "++X",
+          "X++",
+        ]
+    out: 4
+  - name: "twenty_one_balanced"
+    in:
+      operations:
+        [
+          "++X",
+          "X++",
+          "--X",
+          "X--",
+          "++X",
+          "X++",
+          "--X",
+          "X--",
+          "++X",
+          "X++",
+          "--X",
+          "X--",
+          "++X",
+          "X++",
+          "--X",
+          "X--",
+          "++X",
+          "X++",
+          "--X",
+          "X--",
+          "++X",
+          "--X",
+        ]
+    out: 0
+  - name: "twenty_five_positive"
+    in:
+      operations:
+        [
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+        ]
+    out: 25
+  - name: "twenty_five_negative"
+    in:
+      operations:
+        [
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+        ]
+    out: -25
+  - name: "fifty_balanced"
+    in:
+      operations:
+        [
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+          "X++",
+          "X--",
+          "++X",
+          "--X",
+        ]
+    out: 0
+  - name: "ninety_nine_positive"
+    in:
+      operations:
+        [
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+          "++X",
+          "X++",
+        ]
+    out: 96
+  - name: "one_hundred_maximum_all_decrements"
+    in:
+      operations:
+        [
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+          "--X",
+          "X--",
+        ]
+    out: -104

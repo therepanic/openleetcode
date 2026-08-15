@@ -1,0 +1,317 @@
+entry:
+  id: 1594
+  title: "maximum-non-negative-product-in-a-matrix"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxProductPath({grid})"
+    rust: "Solution::max_product_path({grid})"
+    python3: "Solution().maxProductPath({grid})"
+    python2: "Solution().maxProductPath({grid})"
+    ruby: "max_product_path({grid})"
+    java: "new Solution().maxProductPath({grid})"
+    csharp: "new Solution().MaxProductPath({grid})"
+    kotlin: "Solution().maxProductPath({grid})"
+    go: "maxProductPath({grid})"
+    dart: "Solution().maxProductPath({grid})"
+    swift: "Solution().maxProductPath({grid})"
+    typescript: "maxProductPath({grid})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().maxProductPath(grid, {result})"
+    checker: |
+      class Checker:
+          def maxProductPath(self, grid, result):
+              r, c = len(grid), len(grid[0])
+              lo = [[0] * c for _ in range(r)]
+              hi = [[0] * c for _ in range(r)]
+              lo[0][0] = hi[0][0] = grid[0][0]
+              for j in range(1, c):
+                  v = hi[0][j - 1] * grid[0][j]
+                  lo[0][j] = hi[0][j] = v
+              for i in range(1, r):
+                  v = hi[i - 1][0] * grid[i][0]
+                  lo[i][0] = hi[i][0] = v
+              for i in range(1, r):
+                  for j in range(1, c):
+                      x = grid[i][j]
+                      vals = (lo[i - 1][j] * x, hi[i - 1][j] * x,
+                              lo[i][j - 1] * x, hi[i][j - 1] * x)
+                      lo[i][j], hi[i][j] = min(vals), max(vals)
+              expected = hi[-1][-1] % (10 ** 9 + 7) if hi[-1][-1] >= 0 else -1
+              return result == expected
+seed: 1594
+tests:
+  - name: example-negative
+    in:
+      grid:
+        - [-1, -2, -3]
+        - [-2, -3, -3]
+        - [-3, -3, -2]
+    out: -1
+  - name: example-eight
+    in:
+      grid:
+        - [1, -2, 1]
+        - [1, -2, 1]
+        - [3, -4, 1]
+    out: 8
+  - name: example-zero
+    in:
+      grid:
+        - [1, 3]
+        - [0, -4]
+    out: 0
+  - name: one-cell-positive
+    in:
+      grid:
+        - [4]
+    out: 4
+  - name: one-cell-negative
+    in:
+      grid:
+        - [-4]
+    out: -1
+  - name: one-cell-zero
+    in:
+      grid:
+        - [0]
+    out: 0
+  - name: positive-row
+    in:
+      grid:
+        - [1, 2, 3, 4, 2]
+    out: 48
+  - name: negative-row-even
+    in:
+      grid:
+        - [-1, -2, -3, -4]
+    out: 24
+  - name: negative-row-odd
+    in:
+      grid:
+        - [-1, -2, -3]
+    out: -1
+  - name: positive-column
+    in:
+      grid:
+        - [2]
+        - [3]
+        - [4]
+        - [1]
+    out: 24
+  - name: zero-blocked
+    in:
+      grid:
+        - [1, -1, 1]
+        - [-1, 0, -1]
+        - [1, -1, 1]
+    out: 1
+  - name: all-zeros
+    in:
+      grid:
+        - [0, 0]
+        - [0, 0]
+    out: 0
+  - name: all-ones
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 1
+  - name: all-negative-even
+    in:
+      grid:
+        - [-1, -1]
+        - [-1, -1]
+    out: -1
+  - name: all-negative-odd
+    in:
+      grid:
+        - [-1, -1, -1]
+        - [-1, -1, -1]
+    out: 1
+  - name: choose-negative-pair
+    in:
+      grid:
+        - [1, -2, -3]
+        - [2, -3, -4]
+        - [1, -2, -1]
+    out: 24
+  - name: zero-and-negatives
+    in:
+      grid:
+        - [-2, 0, -2]
+        - [-3, -4, -3]
+    out: 72
+  - name: mixed-small
+    in:
+      grid:
+        - [-1, 2, -1]
+        - [3, -4, 2]
+        - [-2, 1, -3]
+    out: -1
+  - name: max-positive-cells
+    in:
+      grid:
+        - [4, 4, 4]
+        - [4, 4, 4]
+        - [4, 4, 4]
+    out: 1024
+  - name: min-negative-cells
+    in:
+      grid:
+        - [-4, -4]
+        - [-4, -4]
+        - [-4, -4]
+    out: 256
+  - name: negative-choice
+    in:
+      grid:
+        - [2, -1, -2, 3]
+        - [-3, -4, 2, -1]
+        - [2, -2, -3, 4]
+    out: 576
+  - name: narrow-three
+    in:
+      grid:
+        - [-2]
+        - [3]
+        - [-4]
+    out: 24
+  - name: wide-mixed
+    in:
+      grid:
+        - [1, -1, 2, -2, 3, -3]
+    out: -1
+  - name: path-zero
+    in:
+      grid:
+        - [-4, -3, -2]
+        - [-2, 0, -4]
+        - [-1, -2, -3]
+    out: 0
+  - name: positive-versus-negative
+    in:
+      grid:
+        - [-1, -2]
+        - [3, -4]
+    out: 12
+  - name: mixed-four
+    in:
+      grid:
+        - [3, -2, 1, -1]
+        - [-1, -3, -4, 2]
+        - [2, -2, 3, -4]
+        - [-1, 1, -2, 4]
+    out: 3456
+  - name: alternating
+    in:
+      grid:
+        - [-1, 1, -1, 1]
+        - [1, -1, 1, -1]
+        - [-1, 1, -1, 1]
+        - [1, -1, 1, -1]
+    out: 1
+  - name: zeros-and-fours
+    in:
+      grid:
+        - [4, 0, 4]
+        - [4, 4, 4]
+        - [0, 4, 4]
+    out: 1024
+  - name: asymmetric-five
+    in:
+      grid:
+        - [-2, 3, -1, 2, -4]
+        - [1, -3, 4, -2, 1]
+        - [-4, 2, -2, 3, -1]
+    out: 432
+  - name: large-positive
+    in:
+      grid:
+        - [4, 4, 4, 4, 4]
+        - [4, 4, 4, 4, 4]
+        - [4, 4, 4, 4, 4]
+        - [4, 4, 4, 4, 4]
+        - [4, 4, 4, 4, 4]
+    out: 262144
+  - name: large-negative-mix
+    in:
+      grid:
+        - [-4, -3, -2, -1, 0]
+        - [1, 2, 3, 4, -4]
+        - [-1, -2, -3, -4, 0]
+        - [4, 3, 2, 1, -1]
+        - [-2, -3, -4, 0, 4]
+    out: 4608
+  - name: six-by-four
+    in:
+      grid:
+        - [2, -2, 2, -2]
+        - [-2, 2, -2, 2]
+        - [2, -2, 2, -2]
+        - [-2, 2, -2, 2]
+        - [2, -2, 2, -2]
+        - [-2, 2, -2, 2]
+    out: 512
+  - name: seven-by-three
+    in:
+      grid:
+        - [1, -2, 3]
+        - [-4, 1, -2]
+        - [3, -4, 1]
+        - [-2, 3, -4]
+        - [1, -2, 3]
+        - [-4, 1, -2]
+        - [3, -4, 1]
+    out: 3456
+  - name: fifteen-by-one
+    in:
+      grid:
+        - [4]
+        - [-4]
+        - [4]
+        - [-4]
+        - [4]
+        - [-4]
+        - [4]
+        - [-4]
+        - [4]
+        - [-4]
+        - [4]
+        - [-4]
+        - [4]
+        - [-4]
+        - [4]
+    out: -1
+  - name: fifteen-by-fifteen-ones
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 1

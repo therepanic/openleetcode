@@ -1,0 +1,236 @@
+entry:
+  id: 1935
+  title: "maximum-number-of-words-you-can-type"
+  params:
+    broken:
+      type: string
+    text:
+      type: string
+  call:
+    cpp: "Solution().canBeTypedWords({text}, {broken})"
+    rust: "Solution::can_be_typed_words({text}, {broken})"
+    python3: "Solution().canBeTypedWords({text}, {broken})"
+    python2: "Solution().canBeTypedWords({text}, {broken})"
+    ruby: "can_be_typed_words({text}, {broken})"
+    java: "new Solution().canBeTypedWords({text}, {broken})"
+    csharp: "new Solution().CanBeTypedWords({text}, {broken})"
+    kotlin: "Solution().canBeTypedWords({text}, {broken})"
+    go: "canBeTypedWords({text}, {broken})"
+    dart: "Solution().canBeTypedWords({text}, {broken})"
+    swift: "Solution().canBeTypedWords({text}, {broken})"
+    typescript: "canBeTypedWords({text}, {broken})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().canBeTypedWords(text, broken, {result})"
+    checker: |
+      class Checker:
+          def canBeTypedWords(self, text, broken, result):
+              if not isinstance(text, str) or not isinstance(broken, str):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              broken = set(broken)
+              expected = sum(1 for word in text.split(" ") if all(ch not in broken for ch in word))
+              return result == expected
+
+seed: 1935
+
+tests:
+  - name: "example_1"
+    in:
+      text: "hello world"
+      broken: "ad"
+    out: 1
+  - name: "example_2"
+    in:
+      text: "leet code"
+      broken: "lt"
+    out: 1
+  - name: "example_3"
+    in:
+      text: "leet code"
+      broken: "e"
+    out: 0
+  - name: "empty_broken"
+    in:
+      text: "a bb ccc dddd"
+      broken: ""
+    out: 4
+  - name: "all_letters_broken"
+    in:
+      text: "a bb ccc dddd"
+      broken: "abcdefghijklmnopqrstuvwxyz"
+    out: 0
+  - name: "one_word_typable"
+    in:
+      text: "keyboard"
+      broken: "xz"
+    out: 1
+  - name: "one_word_blocked"
+    in:
+      text: "keyboard"
+      broken: "b"
+    out: 0
+  - name: "first_word_blocked"
+    in:
+      text: "bad cab dab"
+      broken: "b"
+    out: 0
+  - name: "last_word_blocked"
+    in:
+      text: "ace bed dog"
+      broken: "g"
+    out: 2
+  - name: "alternating_words"
+    in:
+      text: "aa bb cc dd ee"
+      broken: "bd"
+    out: 3
+  - name: "single_character_words"
+    in:
+      text: "a b c d e"
+      broken: "bd"
+    out: 3
+  - name: "repeated_broken_character"
+    in:
+      text: "aaaa aaab baaa"
+      broken: "a"
+    out: 0
+  - name: "repeated_working_character"
+    in:
+      text: "bbbb bbb bb"
+      broken: "a"
+    out: 3
+  - name: "mixed_case_patterns"
+    in:
+      text: "abc def ghi jkl"
+      broken: "cfj"
+    out: 1
+  - name: "broken_only_unused"
+    in:
+      text: "abc def ghi"
+      broken: "jkl"
+    out: 3
+  - name: "vowels_broken"
+    in:
+      text: "alpha beta crypt rhythm"
+      broken: "aeiou"
+    out: 2
+  - name: "consonants_broken"
+    in:
+      text: "one two three four"
+      broken: "tn"
+    out: 1
+  - name: "all_words_share_letter"
+    in:
+      text: "cat coat cart trace"
+      broken: "c"
+    out: 0
+  - name: "long_words"
+    in:
+      text: "abcdefghij klmnopqrst uvwxyz"
+      broken: "fpz"
+    out: 0
+  - name: "long_words_one_survives"
+    in:
+      text: "abcdefghij klmnopqrst uvwxy"
+      broken: "fpz"
+    out: 1
+  - name: "spaces_separate_words"
+    in:
+      text: "ab cd ef gh"
+      broken: "x"
+    out: 4
+  - name: "distinct_broken_letters"
+    in:
+      text: "hello help helium"
+      broken: "hp"
+    out: 0
+  - name: "only_first_letter_broken"
+    in:
+      text: "apple banana cherry"
+      broken: "abc"
+    out: 0
+  - name: "only_last_letter_broken"
+    in:
+      text: "apple banana cherry"
+      broken: "ey"
+    out: 1
+  - name: "middle_letter_broken"
+    in:
+      text: "apple banana cherry"
+      broken: "p"
+    out: 2
+  - name: "two_typable_two_blocked"
+    in:
+      text: "dog cat fish bird"
+      broken: "cf"
+    out: 2
+  - name: "alphabet_words"
+    in:
+      text: "abc mno xyz"
+      broken: "d"
+    out: 3
+  - name: "alphabet_words_blocked"
+    in:
+      text: "abc mno xyz"
+      broken: "mo"
+    out: 2
+  - name: "empty_word_impossible_not_allowed"
+    in:
+      text: "z"
+      broken: ""
+    out: 1
+  - name: "every_word_has_different_failure"
+    in:
+      text: "ab cd ef gh ij"
+      broken: "acegi"
+    out: 0
+  - name: "single_word_length_ten_thousand_boundary"
+    in:
+      text:
+        gen: "str"
+        len: 10000
+        alphabet: "a"
+      broken: "b"
+    out: 1
+  - name: "single_word_length_nine_thousand"
+    in:
+      text:
+        gen: "str"
+        len: 9000
+        alphabet: "z"
+      broken: "a"
+    out: 1
+  - name: "single_word_blocked_large"
+    in:
+      text:
+        gen: "str"
+        len: 10000
+        alphabet: "q"
+      broken: "q"
+    out: 0
+  - name: "single_word_mixed_large"
+    in:
+      text:
+        gen: "str"
+        len: 7777
+        alphabet: "ab"
+      broken: "c"
+    out: 1
+  - name: "single_word_mixed_blocked_large"
+    in:
+      text:
+        gen: "str"
+        len: 8888
+        alphabet: "abc"
+      broken: "c"
+    out: 0

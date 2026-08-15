@@ -1,0 +1,31 @@
+class Solution(object):
+    def validPath(self, n, edges, source, destination):
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :type source: int
+        :type destination: int
+        :rtype: bool
+        """
+        if source == destination:
+            return True
+        graph = {}
+        for u, v in edges:
+            if u not in graph:
+                graph[u] = []
+            if v not in graph:
+                graph[v] = []
+            graph[u].append(v)
+            graph[v].append(u)
+        from collections import deque
+        queue = deque([source])
+        visited = {source}
+        while queue:
+            node = queue.popleft()
+            if node == destination:
+                return True
+            for neighbor in graph.get(node, []):
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+        return False

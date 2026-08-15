@@ -1,0 +1,224 @@
+entry:
+  id: 1869
+  title: "longer-contiguous-segments-of-ones-than-zeros"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().checkZeroOnes({s})"
+    rust: "Solution::check_zero_ones({s})"
+    python3: "Solution().checkZeroOnes({s})"
+    python2: "Solution().checkZeroOnes({s})"
+    ruby: "check_zero_ones({s})"
+    java: "new Solution().checkZeroOnes({s})"
+    csharp: "new Solution().CheckZeroOnes({s})"
+    kotlin: "Solution().checkZeroOnes({s})"
+    go: "checkZeroOnes({s})"
+    dart: "Solution().checkZeroOnes({s})"
+    swift: "Solution().checkZeroOnes({s})"
+    typescript: "checkZeroOnes({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().checkZeroOnes(s, {result})"
+    checker: |
+      class Checker:
+          def checkZeroOnes(self, s, result):
+              if not isinstance(result, bool):
+                  return False
+              best = {'0': 0, '1': 0}
+              current = {'0': 0, '1': 0}
+              previous = None
+              for ch in s:
+                  if ch not in ('0', '1'):
+                      return False
+                  if ch == previous:
+                      current[ch] += 1
+                  else:
+                      current[ch] = 1
+                      previous = ch
+                  if current[ch] > best[ch]:
+                      best[ch] = current[ch]
+              return result == (best['1'] > best['0'])
+
+seed: 1869
+
+tests:
+  - name: "example-1"
+    in:
+      s: "1101"
+    out: true
+  - name: "example-2-equal-runs"
+    in:
+      s: "111000"
+    out: false
+  - name: "example-3-longer-zero-run"
+    in:
+      s: "110100010"
+    out: false
+  - name: "single-zero"
+    in:
+      s: "0"
+    out: false
+  - name: "single-one"
+    in:
+      s: "1"
+    out: true
+  - name: "all-zeros"
+    in:
+      s: "0000000000"
+    out: false
+  - name: "all-ones"
+    in:
+      s: "1111111111"
+    out: true
+  - name: "alternating-even"
+    in:
+      s: "0101010101"
+    out: false
+  - name: "alternating-start-one"
+    in:
+      s: "1010101010"
+    out: false
+  - name: "one-run-two-zero-runs"
+    in:
+      s: "001100"
+    out: false
+  - name: "one-run-three-zero-runs"
+    in:
+      s: "00011100"
+    out: false
+  - name: "one-run-four"
+    in:
+      s: "01011110"
+    out: true
+  - name: "zero-run-four"
+    in:
+      s: "10100001"
+    out: false
+  - name: "ties-after-prefix"
+    in:
+      s: "1110111"
+    out: true
+  - name: "late-long-one-run"
+    in:
+      s: "0001011111"
+    out: true
+  - name: "late-long-zero-run"
+    in:
+      s: "1110100000"
+    out: false
+  - name: "one-run-length-five"
+    in:
+      s: "001111101"
+    out: true
+  - name: "zero-run-length-five"
+    in:
+      s: "110000011"
+    out: false
+  - name: "equal-long-runs-separated"
+    in:
+      s: "111110000011111"
+    out: false
+  - name: "one-longer-by-one"
+    in:
+      s: "000011111"
+    out: true
+  - name: "zero-longer-by-one"
+    in:
+      s: "111100000"
+    out: false
+  - name: "many-short-runs"
+    in:
+      s: "001011001010"
+    out: false
+  - name: "one-run-middle"
+    in:
+      s: "010111010"
+    out: true
+  - name: "zero-run-middle"
+    in:
+      s: "101000101"
+    out: false
+  - name: "two-one-runs-tie-zero"
+    in:
+      s: "110001100"
+    out: false
+  - name: "one-run-six"
+    in:
+      s: "0101111110"
+    out: true
+  - name: "zero-run-six"
+    in:
+      s: "1010000001"
+    out: false
+  - name: "max-length-all-one"
+    in:
+      s: "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    out: true
+  - name: "max-length-all-zero"
+    in:
+      s: "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    out: false
+  - name: "max-length-balanced"
+    in:
+      s: "1111111111111111111111111111111111111111111111111100000000000000000000000000000000000000000000000000"
+    out: false
+  - name: "max-length-balanced-late"
+    in:
+      s: "0000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111"
+    out: false
+  - name: "generated-short"
+    seed: 101
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        alphabet: "01"
+  - name: "generated-medium"
+    seed: 202
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 21
+          max: 60
+        alphabet: "01"
+  - name: "generated-boundary-length"
+    seed: 303
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "01"
+  - name: "generated-one-biased"
+    seed: 404
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 80
+          max: 100
+        alphabet: "0111"
+  - name: "generated-zero-biased"
+    seed: 505
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 80
+          max: 100
+        alphabet: "0001"

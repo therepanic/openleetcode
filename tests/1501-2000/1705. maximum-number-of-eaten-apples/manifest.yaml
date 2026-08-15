@@ -1,0 +1,266 @@
+entry:
+  id: 1705
+  title: "maximum-number-of-eaten-apples"
+  params:
+    apples:
+      type: array
+      items:
+        type: int
+    days:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().eatenApples({apples}, {days})"
+    rust: "Solution::eaten_apples({apples}, {days})"
+    python3: "Solution().eatenApples({apples}, {days})"
+    python2: "Solution().eatenApples({apples}, {days})"
+    ruby: "eaten_apples({apples}, {days})"
+    java: "new Solution().eatenApples({apples}, {days})"
+    csharp: "new Solution().EatenApples({apples}, {days})"
+    kotlin: "Solution().eatenApples({apples}, {days})"
+    go: "eatenApples({apples}, {days})"
+    dart: "Solution().eatenApples({apples}, {days})"
+    swift: "Solution().eatenApples({apples}, {days})"
+    typescript: "eatenApples({apples}, {days})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().eatenApples(apples, days, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def eatenApples(self, apples, days, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(apples, list) or not isinstance(days, list):
+                  return False
+              if len(apples) != len(days):
+                  return False
+              heap = []
+              answer = 0
+              day = 0
+              while heap or day < len(apples):
+                  if day < len(apples) and apples[day] > 0:
+                      heapq.heappush(heap, (day + days[day], apples[day]))
+                  while heap and heap[0][0] <= day:
+                      heapq.heappop(heap)
+                  if heap:
+                      expire, count = heapq.heappop(heap)
+                      answer += 1
+                      if count > 1:
+                          heapq.heappush(heap, (expire, count - 1))
+                  day += 1
+              return result == answer
+
+seed: 1705
+
+tests:
+  - name: "example_one"
+    in:
+      apples: [1, 2, 3, 5, 2]
+      days: [3, 2, 1, 4, 2]
+    out: 7
+  - name: "example_two"
+    in:
+      apples: [3, 0, 0, 0, 0, 2]
+      days: [3, 0, 0, 0, 0, 2]
+    out: 5
+  - name: "single_apple"
+    in:
+      apples: [1]
+      days: [1]
+    out: 1
+  - name: "single_empty_day"
+    in:
+      apples: [0]
+      days: [0]
+    out: 0
+  - name: "all_empty"
+    in:
+      apples: [0, 0, 0]
+      days: [0, 0, 0]
+    out: 0
+  - name: "same_day_rot"
+    in:
+      apples: [5]
+      days: [1]
+    out: 1
+  - name: "long_lived_single_batch"
+    in:
+      apples: [5]
+      days: [5]
+    out: 5
+  - name: "one_per_day"
+    in:
+      apples: [2, 2, 2]
+      days: [1, 1, 1]
+    out: 3
+  - name: "overlapping_batches"
+    in:
+      apples: [1, 1, 1]
+      days: [3, 3, 3]
+    out: 3
+  - name: "only_first_day"
+    in:
+      apples: [10, 0, 0, 0]
+      days: [1, 0, 0, 0]
+    out: 1
+  - name: "late_short_batch"
+    in:
+      apples: [1, 0, 0, 5]
+      days: [5, 0, 0, 1]
+    out: 2
+  - name: "mixed_expiration"
+    in:
+      apples: [2, 1, 0, 3]
+      days: [2, 1, 0, 3]
+    out: 5
+  - name: "early_long_lived"
+    in:
+      apples: [1, 2, 0, 0, 4]
+      days: [10, 2, 0, 0, 2]
+    out: 5
+  - name: "gapped_growth"
+    in:
+      apples: [0, 4, 0, 2]
+      days: [0, 4, 0, 2]
+    out: 4
+  - name: "uniform_two_days"
+    in:
+      apples: [1, 1, 1, 1, 1]
+      days: [2, 2, 2, 2, 2]
+    out: 5
+  - name: "alternating_batches"
+    in:
+      apples: [2, 0, 3, 0, 4]
+      days: [2, 0, 3, 0, 4]
+    out: 8
+  - name: "large_first_batch"
+    in:
+      apples: [100, 0, 0]
+      days: [100, 0, 0]
+    out: 100
+  - name: "large_middle_batch"
+    in:
+      apples: [0, 100, 0]
+      days: [0, 100, 0]
+    out: 100
+  - name: "increasing_expiration"
+    in:
+      apples: [1, 2, 3, 4, 5, 6]
+      days: [1, 2, 3, 4, 5, 6]
+    out: 11
+  - name: "decreasing_batches"
+    in:
+      apples: [5, 4, 3, 2, 1]
+      days: [5, 4, 3, 2, 1]
+    out: 5
+  - name: "sparse_long_lived"
+    in:
+      apples: [1, 0, 2, 0, 3, 0]
+      days: [6, 0, 6, 0, 6, 0]
+    out: 6
+  - name: "short_followup"
+    in:
+      apples: [7, 1, 0, 0, 8]
+      days: [2, 1, 0, 0, 2]
+    out: 4
+  - name: "long_final_batch"
+    in:
+      apples: [2, 3, 4, 0, 0, 5]
+      days: [3, 3, 3, 0, 0, 10]
+    out: 10
+  - name: "repeated_gaps"
+    in:
+      apples: [1, 1, 0, 1, 1, 0, 1]
+      days: [7, 7, 0, 7, 7, 0, 7]
+    out: 5
+  - name: "early_expiry"
+    in:
+      apples: [4, 0, 0, 0, 0, 0]
+      days: [2, 0, 0, 0, 0, 0]
+    out: 2
+  - name: "delayed_start"
+    in:
+      apples: [0, 0, 4, 0, 0, 0]
+      days: [0, 0, 4, 0, 0, 0]
+    out: 4
+  - name: "first_batch_priority"
+    in:
+      apples: [3, 3, 3]
+      days: [10, 1, 1]
+    out: 5
+  - name: "middle_batch_priority"
+    in:
+      apples: [3, 3, 3]
+      days: [1, 10, 1]
+    out: 5
+  - name: "last_batch_priority"
+    in:
+      apples: [3, 3, 3]
+      days: [1, 1, 10]
+    out: 5
+  - name: "varied_counts"
+    in:
+      apples: [2, 1, 4, 1, 3]
+      days: [4, 2, 5, 1, 3]
+    out: 7
+  - name: "two_short_batches"
+    in:
+      apples: [20, 0, 0, 10]
+      days: [2, 0, 0, 2]
+    out: 4
+  - name: "alternating_lifetimes"
+    in:
+      apples: [1, 5, 1, 5]
+      days: [100, 1, 100, 1]
+    out: 4
+  - name: "even_sparse"
+    in:
+      apples: [0, 2, 0, 2, 0, 2]
+      days: [0, 2, 0, 2, 0, 2]
+    out: 6
+  - name: "mixed_tail"
+    in:
+      apples: [6, 1, 2, 0, 4, 3]
+      days: [3, 1, 2, 0, 5, 3]
+    out: 9
+  - name: "late_huge_lifetime"
+    in:
+      apples: [50, 0, 0, 0, 1]
+      days: [1, 0, 0, 0, 100]
+    out: 2
+  - name: "long_zero_run"
+    in:
+      apples: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      days: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    out: 0
+  - name: "maximum_single_batch"
+    in:
+      apples: [20000]
+      days: [20000]
+    out: 20000
+  - name: "daily_short_lived_batches"
+    in:
+      apples: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      days: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 10
+  - name: "long_batch_after_empty_prefix"
+    in:
+      apples: [0, 0, 0, 5]
+      days: [0, 0, 0, 10]
+    out: 5
+  - name: "competing_expirations"
+    in:
+      apples: [3, 3]
+      days: [2, 10]
+    out: 5

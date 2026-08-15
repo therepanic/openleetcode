@@ -1,0 +1,309 @@
+entry:
+  id: 1625
+  title: "lexicographically-smallest-string-after-applying-operations"
+  params:
+    s:
+      type: string
+    a:
+      type: int
+    b:
+      type: int
+  call:
+    cpp: "Solution().findLexSmallestString({s}, {a}, {b})"
+    rust: "Solution::find_lex_smallest_string({s}, {a}, {b})"
+    python3: "Solution().findLexSmallestString({s}, {a}, {b})"
+    python2: "Solution().findLexSmallestString({s}, {a}, {b})"
+    ruby: "find_lex_smallest_string({s}, {a}, {b})"
+    java: "new Solution().findLexSmallestString({s}, {a}, {b})"
+    csharp: "new Solution().FindLexSmallestString({s}, {a}, {b})"
+    kotlin: "Solution().findLexSmallestString({s}, {a}, {b})"
+    go: "findLexSmallestString({s}, {a}, {b})"
+    dart: "Solution().findLexSmallestString({s}, {a}, {b})"
+    swift: "Solution().findLexSmallestString({s}, {a}, {b})"
+    typescript: "findLexSmallestString({s}, {a}, {b})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().findLexSmallestString(s, a, b, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def findLexSmallestString(self, s, a, b, result):
+              if not isinstance(result, str) or len(result) != len(s):
+                  return False
+              if any(ch < '0' or ch > '9' for ch in result):
+                  return False
+              n = len(s)
+              seen = {s}
+              queue = deque([s])
+              while queue:
+                  cur = queue.popleft()
+                  chars = list(cur)
+                  for i in range(1, n, 2):
+                      chars[i] = str((ord(chars[i]) - 48 + a) % 10)
+                  nxt = ''.join(chars)
+                  if nxt not in seen:
+                      seen.add(nxt)
+                      queue.append(nxt)
+                  nxt = cur[n - b:] + cur[:n - b]
+                  if nxt not in seen:
+                      seen.add(nxt)
+                      queue.append(nxt)
+              return result == min(seen)
+
+seed: 1625
+
+tests:
+  - name: example-1
+    in:
+      s: "5525"
+      a: 9
+      b: 2
+  - name: example-2
+    in:
+      s: "74"
+      a: 5
+      b: 1
+  - name: example-3
+    in:
+      s: "0011"
+      a: 4
+      b: 2
+  - name: two-digits-no-change
+    in:
+      s: "98"
+      a: 9
+      b: 1
+  - name: two-digits-zero
+    in:
+      s: "00"
+      a: 1
+      b: 1
+  - name: two-digits-max
+    in:
+      s: "99"
+      a: 9
+      b: 1
+  - name: four-rotate-one
+    in:
+      s: "1234"
+      a: 1
+      b: 1
+  - name: four-rotate-three
+    in:
+      s: "9876"
+      a: 8
+      b: 3
+  - name: four-even-rotation
+    in:
+      s: "0009"
+      a: 1
+      b: 2
+  - name: four-add-cycle
+    in:
+      s: "0909"
+      a: 5
+      b: 2
+  - name: six-small
+    in:
+      s: "123456"
+      a: 2
+      b: 1
+  - name: six-large-add
+    in:
+      s: "987654"
+      a: 9
+      b: 5
+  - name: six-rotation-gcd
+    in:
+      s: "314159"
+      a: 3
+      b: 3
+  - name: six-odd-rotation
+    in:
+      s: "271828"
+      a: 7
+      b: 5
+  - name: eight-repeated
+    in:
+      s: "55555555"
+      a: 5
+      b: 4
+  - name: eight-alternating
+    in:
+      s: "01010101"
+      a: 9
+      b: 3
+  - name: eight-distinct
+    in:
+      s: "01234567"
+      a: 4
+      b: 7
+  - name: eight-high-digits
+    in:
+      s: "99887766"
+      a: 6
+      b: 2
+  - name: ten-palindrome
+    in:
+      s: "1234543210"
+      a: 1
+      b: 5
+  - name: ten-random
+    in:
+      s: "9081726354"
+      a: 8
+      b: 3
+  - name: ten-zero-heavy
+    in:
+      s: "1000000000"
+      a: 5
+      b: 9
+  - name: twelve-cycle
+    in:
+      s: "314159265358"
+      a: 2
+      b: 6
+  - name: twelve-rotation-one
+    in:
+      s: "987654321098"
+      a: 7
+      b: 1
+  - name: twelve-rotation-eleven
+    in:
+      s: "246813579135"
+      a: 9
+      b: 11
+  - name: fourteen-alternating
+    in:
+      s: "90909090909090"
+      a: 3
+      b: 7
+  - name: fourteen-random
+    in:
+      s: "27182818284590"
+      a: 4
+      b: 5
+  - name: sixteen-distinct
+    in:
+      s: "0123456789012345"
+      a: 5
+      b: 8
+  - name: sixteen-repeated-block
+    in:
+      s: "3141314131413141"
+      a: 6
+      b: 15
+  - name: eighteen-high
+    in:
+      s: "999999999999999999"
+      a: 1
+      b: 9
+  - name: twenty-mixed
+    in:
+      s: "90817263549081726354"
+      a: 8
+      b: 7
+  - name: twenty-two-periodic
+    in:
+      s: "1231231231231231231231"
+      a: 3
+      b: 10
+  - name: twenty-four-random
+    in:
+      s: "864209753186420975318642"
+      a: 7
+      b: 11
+  - name: thirty-two-long
+    in:
+      s: "98765432100123456789876543210012"
+      a: 9
+      b: 13
+  - name: forty-eight-long
+    in:
+      s: "31415926535897932384626433832795028841971693993751"
+      a: 2
+      b: 17
+  - name: hundred-boundary
+    in:
+      s: "0123456789"
+      a: 1
+      b: 1
+  - name: generated-medium
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "0123456789"
+      a:
+        gen: "int"
+        min: 1
+        max: 9
+      b:
+        gen: "int"
+        min: 1
+        max: 99
+  - name: generated-medium-2
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "0123456789"
+      a:
+        gen: "int"
+        min: 1
+        max: 9
+      b:
+        gen: "int"
+        min: 1
+        max: 99
+  - name: generated-medium-3
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "0123456789"
+      a:
+        gen: "int"
+        min: 1
+        max: 9
+      b:
+        gen: "int"
+        min: 1
+        max: 99
+  - name: generated-medium-4
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "0123456789"
+      a:
+        gen: "int"
+        min: 1
+        max: 9
+      b:
+        gen: "int"
+        min: 1
+        max: 99
+  - name: generated-medium-5
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "0123456789"
+      a:
+        gen: "int"
+        min: 1
+        max: 9
+      b:
+        gen: "int"
+        min: 1
+        max: 99

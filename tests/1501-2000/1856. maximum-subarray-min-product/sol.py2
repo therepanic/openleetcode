@@ -1,0 +1,30 @@
+class Solution(object):
+    def maxSumMinProduct(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = len(nums)
+        prefix = [0] * (n + 1)
+        for i in range(n):
+            prefix[i+1] = prefix[i] + nums[i]
+        
+        left_bound = [-1] * n
+        right_bound = [n] * n
+        stack = []
+        for i in range(n):
+            while stack and nums[stack[-1]] > nums[i]:
+                right_bound[stack.pop()] = i
+            stack.append(i)
+        stack = []
+        for i in range(n-1, -1, -1):
+            while stack and nums[stack[-1]] > nums[i]:
+                left_bound[stack.pop()] = i
+            stack.append(i)
+        
+        max_prod = 0
+        for i in range(n):
+            l, r = left_bound[i], right_bound[i]
+            total = prefix[r] - prefix[l+1]
+            max_prod = max(max_prod, nums[i] * total)
+        return max_prod % (10**9 + 7)

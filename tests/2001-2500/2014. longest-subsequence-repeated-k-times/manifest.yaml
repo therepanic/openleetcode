@@ -1,0 +1,267 @@
+entry:
+  id: 2014
+  title: "longest-subsequence-repeated-k-times"
+  params:
+    s:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().longestSubsequenceRepeatedK({s}, {k})"
+    rust: "Solution::longest_subsequence_repeated_k({s}, {k})"
+    python3: "Solution().longestSubsequenceRepeatedK({s}, {k})"
+    python2: "Solution().longestSubsequenceRepeatedK({s}, {k})"
+    ruby: "longest_subsequence_repeated_k({s}, {k})"
+    java: "new Solution().longestSubsequenceRepeatedK({s}, {k})"
+    csharp: "new Solution().LongestSubsequenceRepeatedK({s}, {k})"
+    kotlin: "Solution().longestSubsequenceRepeatedK({s}, {k})"
+    go: "longestSubsequenceRepeatedK({s}, {k})"
+    dart: "Solution().longestSubsequenceRepeatedK({s}, {k})"
+    swift: "Solution().longestSubsequenceRepeatedK({s}, {k})"
+    typescript: "longestSubsequenceRepeatedK({s}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().longestSubsequenceRepeatedK(s, k, {result})"
+    checker: |
+      class Checker:
+          def longestSubsequenceRepeatedK(self, s, k, result):
+              if not isinstance(result, str):
+                  return False
+              def repeated(candidate):
+                  if not candidate:
+                      return True
+                  pos = 0
+                  completed = 0
+                  for ch in s:
+                      if ch == candidate[pos]:
+                          pos += 1
+                          if pos == len(candidate):
+                              pos = 0
+                              completed += 1
+                              if completed == k:
+                                  return True
+                  return False
+              if not repeated(result):
+                  return False
+              best = result
+              counts = {ch: s.count(ch) // k for ch in set(s)}
+              limit = min(len(s) // k, 8)
+              candidates = [""]
+              best_candidate = ""
+              for _ in range(limit):
+                  candidates = [prefix + ch for prefix in candidates for ch in "abcdefghijklmnopqrstuvwxyz" if repeated(prefix + ch)]
+                  if not candidates:
+                      break
+                  best_candidate = max(candidates, key=lambda x: (len(x), x))
+              expected = best_candidate
+              return result == expected
+
+seed: 2014
+
+tests:
+  - name: "example_letsleetcode"
+    in:
+      s: "letsleetcode"
+      k: 2
+    out: "let"
+  - name: "example_bb"
+    in:
+      s: "bb"
+      k: 2
+    out: "b"
+  - name: "example_ab"
+    in:
+      s: "ab"
+      k: 2
+    out: ""
+  - name: "single_repeated_letter"
+    in:
+      s: "aaaaaa"
+      k: 3
+    out: "aa"
+  - name: "lexicographic_tie"
+    in:
+      s: "ababab"
+      k: 2
+    out: "ba"
+  - name: "descending_letters"
+    in:
+      s: "zyxzyx"
+      k: 2
+    out: "zyx"
+  - name: "no_character_enough"
+    in:
+      s: "abc"
+      k: 3
+    out: ""
+  - name: "two_distinct_pairs"
+    in:
+      s: "aabb"
+      k: 2
+    out: "b"
+  - name: "lexicographically_larger_pair"
+    in:
+      s: "zzayzay"
+      k: 2
+    out: "zay"
+  - name: "repeated_noncontiguous"
+    in:
+      s: "baxbax"
+      k: 2
+    out: "bax"
+  - name: "interleaved_letters"
+    in:
+      s: "abcabcabc"
+      k: 3
+    out: "abc"
+  - name: "same_counts_order_matters"
+    in:
+      s: "acbacb"
+      k: 2
+    out: "acb"
+  - name: "large_k_one_letter"
+    in:
+      s: ""
+      k: 2
+    out: ""
+  - name: "alternating"
+    in:
+      s: "abababab"
+      k: 4
+    out: "ab"
+  - name: "four_letter_blocks"
+    in:
+      s: "abcdabcd"
+      k: 2
+    out: "abcd"
+  - name: "lexicographic_choice"
+    in:
+      s: "cabacaba"
+      k: 2
+    out: "caba"
+  - name: "sparse_high_letter"
+    in:
+      s: "azazaz"
+      k: 3
+    out: "az"
+  - name: "duplicates_break_order"
+    in:
+      s: "aababa"
+      k: 2
+    out: "ba"
+  - name: "minimum_length"
+    in:
+      s: "aa"
+      k: 2
+    out: "a"
+  - name: "long_uniform"
+    in:
+      s: "bbbbbbbbbbbbbbbbbbbb"
+      k: 5
+    out: "bbbb"
+  - name: "long_pattern"
+    in:
+      s: "xyzxyzxyzxyz"
+      k: 4
+    out: "xyz"
+  - name: "many_unused_letters"
+    in:
+      s: "qwertyqwerty"
+      k: 2
+    out: "qwerty"
+  - name: "reverse_pattern"
+    in:
+      s: "cbacba"
+      k: 2
+    out: "cba"
+  - name: "mixed_runs"
+    in:
+      s: "aaabbbccc"
+      k: 3
+    out: "c"
+  - name: "five_repetitions"
+    in:
+      s: "abcabcabcabcabc"
+      k: 5
+    out: "abc"
+  - name: "only_one_repeatable"
+    in:
+      s: "abac"
+      k: 2
+    out: "a"
+  - name: "high_frequency_tail"
+    in:
+      s: "abczzzzabc"
+      k: 2
+    out: "abc"
+  - name: "alternating_three"
+    in:
+      s: "abcabc"
+      k: 2
+    out: "abc"
+  - name: "large_uniform_two"
+    in:
+      s: "cccccccccccccccccccccccc"
+      k: 2
+    out: "cccccccccccc"
+  - name: "four_repetitions"
+    in:
+      s: "abcdabcdabcdabcd"
+      k: 4
+    out: "abcd"
+  - name: "empty_result_large_k"
+    in:
+      s: "abcdefghijklmnop"
+      k: 16
+    out: ""
+  - name: "generator_small"
+    seed: 101
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 2
+          max: 15
+        alphabet: "abc"
+      k: 2
+  - name: "generator_medium"
+    seed: 102
+    in:
+      s:
+        gen: "str"
+        len: 31
+        alphabet: "abcd"
+      k: 4
+  - name: "generator_uniform_stress"
+    seed: 103
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "a"
+      k: 125
+  - name: "generator_binary_stress"
+    seed: 104
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "ab"
+      k: 125
+  - name: "generator_large_k_stress"
+    seed: 105
+    in:
+      s:
+        gen: "str"
+        len: 1999
+        alphabet: "abcde"
+      k: 250

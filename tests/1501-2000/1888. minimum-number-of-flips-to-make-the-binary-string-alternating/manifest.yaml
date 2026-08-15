@@ -1,0 +1,228 @@
+entry:
+  id: 1888
+  title: "minimum-number-of-flips-to-make-the-binary-string-alternating"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().minFlips({s})"
+    rust: "Solution::min_flips({s})"
+    python3: "Solution().minFlips({s})"
+    python2: "Solution().minFlips({s})"
+    ruby: "min_flips({s})"
+    java: "new Solution().minFlips({s})"
+    csharp: "new Solution().MinFlips({s})"
+    kotlin: "Solution().minFlips({s})"
+    go: "minFlips({s})"
+    dart: "Solution().minFlips({s})"
+    swift: "Solution().minFlips({s})"
+    typescript: "minFlips({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(s, {result})"
+    checker: |
+      class Checker:
+          def check(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(s)
+              doubled = s + s
+              mismatches0 = 0
+              best = n
+              for i, ch in enumerate(doubled):
+                  if ch != ('0' if i % 2 == 0 else '1'):
+                      mismatches0 += 1
+                  if i >= n:
+                      left = i - n
+                      if doubled[left] != ('0' if left % 2 == 0 else '1'):
+                          mismatches0 -= 1
+                  if i >= n - 1:
+                      best = min(best, mismatches0, n - mismatches0)
+              return result == best
+
+seed: 1888
+
+tests:
+  - name: single-zero
+    in:
+      s: "0"
+    out: 0
+  - name: single-one
+    in:
+      s: "1"
+    out: 0
+  - name: two-zeroes
+    in:
+      s: "00"
+    out: 1
+  - name: already-even-zero-first
+    in:
+      s: "01"
+    out: 0
+  - name: already-even-one-first
+    in:
+      s: "10"
+    out: 0
+  - name: two-ones
+    in:
+      s: "11"
+    out: 1
+  - name: odd-three-zeroes
+    in:
+      s: "000"
+    out: 1
+  - name: odd-tail-one
+    in:
+      s: "001"
+    out: 0
+  - name: odd-alternating
+    in:
+      s: "010"
+    out: 0
+  - name: odd-two-tail-ones
+    in:
+      s: "011"
+    out: 0
+  - name: odd-leading-one
+    in:
+      s: "100"
+    out: 0
+  - name: odd-one-middle
+    in:
+      s: "101"
+    out: 0
+  - name: odd-two-leading-ones
+    in:
+      s: "110"
+    out: 0
+  - name: odd-three-ones
+    in:
+      s: "111"
+    out: 1
+  - name: four-zeroes
+    in:
+      s: "0000"
+    out: 2
+  - name: one-at-end
+    in:
+      s: "0001"
+    out: 1
+  - name: two-blocks
+    in:
+      s: "0011"
+    out: 2
+  - name: alternating-four
+    in:
+      s: "0101"
+    out: 0
+  - name: mirrored-blocks
+    in:
+      s: "0110"
+    out: 2
+  - name: three-tail-ones
+    in:
+      s: "0111"
+    out: 1
+  - name: leading-zero-run
+    in:
+      s: "1000"
+    out: 1
+  - name: alternating-rotation
+    in:
+      s: "1001"
+    out: 2
+  - name: alternating-four-other-phase
+    in:
+      s: "1010"
+    out: 0
+  - name: one-mismatch-from-phase
+    in:
+      s: "1011"
+    out: 1
+  - name: zero-block-middle
+    in:
+      s: "1100"
+    out: 2
+  - name: three-leading-ones
+    in:
+      s: "1101"
+    out: 1
+  - name: one-trailing-zero
+    in:
+      s: "1110"
+    out: 1
+  - name: four-ones
+    in:
+      s: "1111"
+    out: 2
+  - name: five-zeroes
+    in:
+      s: "00000"
+    out: 2
+  - name: isolated-middle-one
+    in:
+      s: "00100"
+    out: 1
+  - name: uneven-five-block
+    in:
+      s: "00111"
+    out: 1
+  - name: one-followed-by-four-zeroes
+    in:
+      s: "01000"
+    out: 1
+  - name: four-trailing-ones
+    in:
+      s: "01111"
+    out: 1
+  - name: example-one
+    in:
+      s: "111000"
+    out: 2
+  - name: example-three
+    in:
+      s: "1110"
+    out: 1
+  - name: gen-small-binary
+    in:
+      s:
+        gen: "str"
+        len: 17
+        alphabet: "01"
+    seed: 188801
+  - name: gen-medium-binary
+    in:
+      s:
+        gen: "str"
+        len: 101
+        alphabet: "01"
+    seed: 188802
+  - name: gen-large-binary
+    in:
+      s:
+        gen: "str"
+        len: 10000
+        alphabet: "01"
+    seed: 188803
+  - name: gen-near-maximum-binary
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "01"
+    seed: 188804
+  - name: gen-maximum-binary
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "01"
+    seed: 188805

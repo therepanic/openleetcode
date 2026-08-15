@@ -1,0 +1,435 @@
+entry:
+  id: 1857
+  title: "largest-color-value-in-a-directed-graph"
+  params:
+    colors:
+      type: string
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().largestPathValue({colors}, {edges})"
+    rust: "Solution::largest_path_value({colors}, {edges})"
+    python3: "Solution().largestPathValue({colors}, {edges})"
+    python2: "Solution().largestPathValue({colors}, {edges})"
+    ruby: "largest_path_value({colors}, {edges})"
+    java: "new Solution().largestPathValue({colors}, {edges})"
+    csharp: "new Solution().LargestPathValue({colors}, {edges})"
+    kotlin: "Solution().largestPathValue({colors}, {edges})"
+    go: "largestPathValue({colors}, {edges})"
+    dart: "Solution().largestPathValue({colors}, {edges})"
+    swift: "Solution().largestPathValue({colors}, {edges})"
+    typescript: "largestPathValue({colors}, {edges})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().largestPathValue(colors, edges, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def largestPathValue(self, colors, edges, result):
+              n = len(colors)
+              graph = [[] for _ in range(n)]
+              indegree = [0] * n
+              for edge in edges:
+                  u, v = edge
+                  graph[u].append(v)
+                  indegree[v] += 1
+              queue = deque(i for i in range(n) if indegree[i] == 0)
+              counts = [[0] * 26 for _ in range(n)]
+              processed = 0
+              best = 0
+              while queue:
+                  u = queue.popleft()
+                  processed += 1
+                  color = ord(colors[u]) - 97
+                  counts[u][color] += 1
+                  best = max(best, max(counts[u]))
+                  for v in graph[u]:
+                      for c in range(26):
+                          if counts[u][c] > counts[v][c]:
+                              counts[v][c] = counts[u][c]
+                      indegree[v] -= 1
+                      if indegree[v] == 0:
+                          queue.append(v)
+              expected = -1 if processed != n else best
+              return result == expected
+
+seed: 1857
+
+tests:
+  - name: example-one
+    in:
+      colors: "abaca"
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 3
+  - name: self-loop
+    in:
+      colors: "a"
+      edges:
+        - [0, 0]
+    out: -1
+  - name: single-node
+    in:
+      colors: "z"
+      edges: []
+    out: 1
+  - name: empty-edges
+    in:
+      colors: "abcxyz"
+      edges: []
+    out: 1
+  - name: same-color-chain
+    in:
+      colors: "aaaaa"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 5
+  - name: alternating-chain
+    in:
+      colors: "abababa"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+    out: 4
+  - name: branching
+    in:
+      colors: "aabbc"
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+    out: 2
+  - name: merge-paths
+    in:
+      colors: "abcba"
+      edges:
+        - [0, 2]
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+    out: 2
+  - name: disconnected-cycle
+    in:
+      colors: "abcde"
+      edges:
+        - [0, 1]
+        - [2, 3]
+        - [3, 2]
+    out: -1
+  - name: cycle-three
+    in:
+      colors: "abc"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+    out: -1
+  - name: duplicate-edges
+    in:
+      colors: "aba"
+      edges:
+        - [0, 1]
+        - [0, 1]
+        - [1, 2]
+    out: 2
+  - name: all-colors
+    in:
+      colors: "abcdefghijklmnopqrstuvwxyz"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+        - [24, 25]
+    out: 1
+  - name: repeated-a-with-detour
+    in:
+      colors: "abacada"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+    out: 4
+  - name: reverse-numbering
+    in:
+      colors: "aaaa"
+      edges:
+        - [3, 2]
+        - [2, 1]
+        - [1, 0]
+    out: 4
+  - name: isolated-heavy-node
+    in:
+      colors: "zzzzabc"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+    out: 4
+  - name: two-components
+    in:
+      colors: "aabbcc"
+      edges:
+        - [0, 1]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+    out: 2
+  - name: diamond-heavy
+    in:
+      colors: "abacaba"
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 6]
+    out: 4
+  - name: late-cycle
+    in:
+      colors: "abcdefa"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 3]
+        - [5, 6]
+    out: -1
+  - name: long-single-color-branch
+    in:
+      colors: "aaaaaaaaab"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+    out: 9
+  - name: wide-source
+    in:
+      colors: "abcdefghi"
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+    out: 1
+  - name: multiple-incoming
+    in:
+      colors: "aabaa"
+      edges:
+        - [0, 3]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+    out: 3
+  - name: self-loop-with-tail
+    in:
+      colors: "abc"
+      edges:
+        - [0, 0]
+        - [0, 1]
+        - [1, 2]
+    out: -1
+  - name: two-cycles
+    in:
+      colors: "abcd"
+      edges:
+        - [0, 1]
+        - [1, 0]
+        - [2, 3]
+        - [3, 2]
+    out: -1
+  - name: all-zigzag
+    in:
+      colors: "zzxyzzx"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+    out: 4
+  - name: maximum-letter
+    in:
+      colors: "zzzzz"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 5
+  - name: no-path-between-nodes
+    in:
+      colors: "aabbccdd"
+      edges:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+    out: 2
+  - name: nested-merge
+    in:
+      colors: "abcaa"
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+    out: 3
+  - name: cycle-self-last
+    in:
+      colors: "abcde"
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 4]
+    out: -1
+  - name: sparse-large-shape
+    in:
+      colors: "abcabcabcabc"
+      edges:
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+        - [4, 7]
+        - [5, 8]
+        - [6, 9]
+        - [7, 10]
+        - [8, 11]
+    out: 4
+  - name: all-edges-dag
+    in:
+      colors: "aabbcc"
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 4]
+        - [3, 5]
+        - [4, 5]
+    out: 2
+  - name: generator-small
+    in:
+      colors:
+        gen: str
+        len: 100
+        alphabet: "abc"
+      edges: []
+    judge:
+      type: exact
+    seed: 185701
+  - name: generator-medium
+    in:
+      colors:
+        gen: str
+        len: 1000
+        alphabet: "abcde"
+      edges: []
+    judge:
+      type: exact
+    seed: 185702
+  - name: generator-large
+    in:
+      colors:
+        gen: str
+        len: 10000
+        alphabet: "amz"
+      edges: []
+    judge:
+      type: exact
+    seed: 185703
+  - name: generator-max-letters
+    in:
+      colors:
+        gen: str
+        len: 50000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+      edges: []
+    judge:
+      type: exact
+    seed: 185704
+  - name: generator-maximum
+    in:
+      colors:
+        gen: str
+        len: 100000
+        alphabet: "az"
+      edges: []
+    judge:
+      type: exact
+    seed: 185705

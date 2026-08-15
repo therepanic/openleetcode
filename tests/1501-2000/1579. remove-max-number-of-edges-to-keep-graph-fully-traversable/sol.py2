@@ -1,0 +1,54 @@
+class Solution(object):
+    def maxNumEdgesToRemove(self, n, edges):
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :rtype: int
+        """
+        edges.sort(key=lambda x: x[0], reverse=True)
+        parentA = list(range(n + 1))
+        parentB = list(range(n + 1))
+        rankA = [0] * (n + 1)
+        rankB = [0] * (n + 1)
+
+        def find(parent, x):
+            if parent[x] != x:
+                parent[x] = find(parent, parent[x])
+            return parent[x]
+
+        def union(parent, rank, x, y):
+            root_x = find(parent, x)
+            root_y = find(parent, y)
+            if root_x == root_y:
+                return False
+            if rank[root_x] < rank[root_y]:
+                parent[root_x] = root_y
+            elif rank[root_x] > rank[root_y]:
+                parent[root_y] = root_x
+            else:
+                parent[root_x] = root_y
+                rank[root_y] += 1
+            return True
+
+        removed = 0
+        alice_edges = 0
+        bob_edges = 0
+        for e in edges:
+            if e[0] == 3:
+                if union(parentA, rankA, e[1], e[2]):
+                    union(parentB, rankB, e[1], e[2])
+                    alice_edges += 1
+                    bob_edges += 1
+                else:
+                    removed += 1
+            elif e[0] == 2:
+                if union(parentB, rankB, e[1], e[2]):
+                    bob_edges += 1
+                else:
+                    removed += 1
+            else:
+                if union(parentA, rankA, e[1], e[2]):
+                    alice_edges += 1
+                else:
+                    removed += 1
+        return removed if bob_edges == n - 1 and alice_edges == n - 1 else -1

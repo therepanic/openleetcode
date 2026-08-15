@@ -1,0 +1,28 @@
+class Solution(object):
+    def minSkips(self, dist, speed, hoursBefore):
+        """
+        :type dist: List[int]
+        :type speed: int
+        :type hoursBefore: int
+        :rtype: int
+        """
+        inf = 10**30
+        n = len(dist)
+        dp = [inf] * (n + 1)
+        dp[0] = 0
+        for i, d in enumerate(dist):
+            nxt = [inf] * (n + 1)
+            for skips in range(i + 2):
+                if dp[skips] >= inf:
+                    continue
+                nxt[skips + 1] = min(nxt[skips + 1], dp[skips] + d)
+                arrival = dp[skips] + d
+                if i != n - 1:
+                    arrival = ((arrival + speed - 1) // speed) * speed
+                nxt[skips] = min(nxt[skips], arrival)
+            dp = nxt
+        limit = hoursBefore * speed
+        for skips, arrival in enumerate(dp):
+            if arrival <= limit:
+                return skips
+        return -1

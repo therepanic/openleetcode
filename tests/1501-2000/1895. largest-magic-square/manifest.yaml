@@ -1,0 +1,348 @@
+entry:
+  id: 1895
+  title: "largest-magic-square"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().largestMagicSquare({grid})"
+    rust: "Solution::largest_magic_square({grid})"
+    python3: "Solution().largestMagicSquare({grid})"
+    python2: "Solution().largestMagicSquare({grid})"
+    ruby: "largest_magic_square({grid})"
+    java: "new Solution().largestMagicSquare({grid})"
+    csharp: "new Solution().LargestMagicSquare({grid})"
+    kotlin: "Solution().largestMagicSquare({grid})"
+    go: "largestMagicSquare({grid})"
+    dart: "Solution().largestMagicSquare({grid})"
+    swift: "Solution().largestMagicSquare({grid})"
+    typescript: "largestMagicSquare({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().largestMagicSquare(grid, {result})"
+    checker: |
+      class Checker:
+          def largestMagicSquare(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              m = len(grid)
+              n = len(grid[0]) if m else 0
+              best = 1
+              for k in range(2, min(m, n) + 1):
+                  for i in range(m - k + 1):
+                      for j in range(n - k + 1):
+                          rows = [sum(grid[x][j:j + k]) for x in range(i, i + k)]
+                          s = rows[0]
+                          if any(v != s for v in rows):
+                              continue
+                          if any(sum(grid[x][y] for x in range(i, i + k)) != s for y in range(j, j + k)):
+                              continue
+                          if sum(grid[i + d][j + d] for d in range(k)) != s:
+                              continue
+                          if sum(grid[i + d][j + k - 1 - d] for d in range(k)) != s:
+                              continue
+                          best = max(best, k)
+              return result == best
+
+seed: 1895001
+
+tests:
+  - name: "example_one"
+    in:
+      grid:
+        - [7, 1, 4, 5, 6]
+        - [2, 5, 1, 6, 4]
+        - [1, 5, 4, 3, 2]
+        - [1, 2, 7, 3, 4]
+    out: 3
+  - name: "example_two"
+    in:
+      grid:
+        - [5, 1, 3, 1]
+        - [9, 3, 3, 1]
+        - [1, 3, 3, 8]
+    out: 2
+  - name: "single_cell"
+    in:
+      grid:
+        - [1]
+    out: 1
+  - name: "single_row"
+    in:
+      grid:
+        - [1, 2, 3, 4, 5]
+    out: 1
+  - name: "single_column"
+    in:
+      grid:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+    out: 1
+  - name: "constant_two"
+    in:
+      grid:
+        - [7, 7]
+        - [7, 7]
+    out: 2
+  - name: "constant_three"
+    in:
+      grid:
+        - [4, 4, 4]
+        - [4, 4, 4]
+        - [4, 4, 4]
+    out: 3
+  - name: "constant_four_by_two"
+    in:
+      grid:
+        - [9, 9]
+        - [9, 9]
+        - [9, 9]
+        - [9, 9]
+    out: 2
+  - name: "constant_two_by_four"
+    in:
+      grid:
+        - [6, 6, 6, 6]
+        - [6, 6, 6, 6]
+    out: 2
+  - name: "constant_five"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 5
+  - name: "constant_six_by_three"
+    in:
+      grid:
+        - [2, 2, 2]
+        - [2, 2, 2]
+        - [2, 2, 2]
+        - [2, 2, 2]
+        - [2, 2, 2]
+        - [2, 2, 2]
+    out: 3
+  - name: "zero_not_allowed_but_positive"
+    in:
+      grid:
+        - [1000000, 1000000]
+        - [1000000, 1000000]
+    out: 2
+  - name: "nonmagic_two"
+    in:
+      grid:
+        - [1, 2]
+        - [3, 4]
+    out: 1
+  - name: "nonmagic_three"
+    in:
+      grid:
+        - [1, 2, 3]
+        - [4, 5, 6]
+        - [7, 8, 9]
+    out: 1
+  - name: "magic_three_with_noise"
+    in:
+      grid:
+        - [8, 1, 6, 20]
+        - [3, 5, 7, 21]
+        - [4, 9, 2, 22]
+        - [30, 31, 32, 33]
+    out: 3
+  - name: "magic_two_in_corner"
+    in:
+      grid:
+        - [1, 1, 8]
+        - [1, 1, 9]
+        - [7, 6, 5]
+    out: 2
+  - name: "magic_two_bottom_right"
+    in:
+      grid:
+        - [9, 8, 7]
+        - [6, 2, 3]
+        - [5, 4, 2]
+    out: 1
+  - name: "magic_three_offset"
+    in:
+      grid:
+        - [50, 50, 50, 50]
+        - [50, 2, 7, 6]
+        - [50, 9, 5, 1]
+        - [50, 4, 3, 8]
+    out: 3
+  - name: "negative_not_in_constraints"
+    in:
+      grid:
+        - [1, 1000000, 1]
+        - [1000000, 1, 1000000]
+        - [1, 1000000, 1]
+    out: 1
+  - name: "four_magic"
+    in:
+      grid:
+        - [16, 2, 3, 13]
+        - [5, 11, 10, 8]
+        - [9, 7, 6, 12]
+        - [4, 14, 15, 1]
+    out: 4
+  - name: "four_magic_with_border"
+    in:
+      grid:
+        - [99, 99, 99, 99, 99]
+        - [99, 16, 2, 3, 13]
+        - [99, 5, 11, 10, 8]
+        - [99, 9, 7, 6, 12]
+        - [99, 4, 14, 15, 1]
+    out: 4
+  - name: "five_magic_with_border"
+    in:
+      grid:
+        - [99, 99, 99, 99, 99, 99]
+        - [99, 1, 1, 1, 1, 99]
+        - [99, 1, 1, 1, 1, 99]
+        - [99, 1, 1, 1, 1, 99]
+        - [99, 1, 1, 1, 1, 99]
+        - [99, 99, 99, 99, 99, 99]
+    out: 4
+  - name: "large_constant_six"
+    in:
+      grid:
+        - [3, 3, 3, 3, 3, 3]
+        - [3, 3, 3, 3, 3, 3]
+        - [3, 3, 3, 3, 3, 3]
+        - [3, 3, 3, 3, 3, 3]
+        - [3, 3, 3, 3, 3, 3]
+        - [3, 3, 3, 3, 3, 3]
+    out: 6
+  - name: "large_constant_seven"
+    in:
+      grid:
+        - [5, 5, 5, 5, 5, 5, 5]
+        - [5, 5, 5, 5, 5, 5, 5]
+        - [5, 5, 5, 5, 5, 5, 5]
+        - [5, 5, 5, 5, 5, 5, 5]
+        - [5, 5, 5, 5, 5, 5, 5]
+        - [5, 5, 5, 5, 5, 5, 5]
+        - [5, 5, 5, 5, 5, 5, 5]
+    out: 7
+  - name: "rectangular_three_by_five"
+    in:
+      grid:
+        - [2, 2, 2, 2, 2]
+        - [2, 2, 2, 2, 2]
+        - [2, 2, 2, 2, 2]
+    out: 3
+  - name: "rectangular_five_by_three"
+    in:
+      grid:
+        - [8, 8, 8]
+        - [8, 8, 8]
+        - [8, 8, 8]
+        - [8, 8, 8]
+        - [8, 8, 8]
+    out: 3
+  - name: "all_distinct_small"
+    in:
+      grid:
+        - [1, 2, 4]
+        - [8, 16, 32]
+        - [64, 128, 256]
+    out: 1
+  - name: "diagonal_equal_only"
+    in:
+      grid:
+        - [5, 1, 5]
+        - [1, 5, 1]
+        - [5, 1, 5]
+    out: 1
+  - name: "two_equal_rows_not_square"
+    in:
+      grid:
+        - [2, 2, 2]
+        - [2, 2, 2]
+        - [1, 1, 4]
+    out: 2
+  - name: "max_value_single"
+    in:
+      grid:
+        - [1000000]
+    out: 1
+  - name: "max_value_rectangular"
+    in:
+      grid:
+        - [1000000, 1000000, 1000000]
+        - [1000000, 1000000, 1000000]
+    out: 2
+  - name: "mixed_four_by_five"
+    in:
+      grid:
+        - [1, 1, 1, 2, 3]
+        - [1, 1, 1, 4, 5]
+        - [1, 1, 1, 6, 7]
+        - [8, 9, 10, 11, 12]
+    out: 3
+  - name: "mixed_five_by_four"
+    in:
+      grid:
+        - [1, 1, 1, 8]
+        - [1, 1, 1, 9]
+        - [1, 1, 1, 10]
+        - [2, 3, 4, 5]
+        - [6, 7, 8, 9]
+    out: 3
+  - name: "constant_eight"
+    in:
+      grid:
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+        - [12, 12, 12, 12, 12, 12, 12, 12]
+    out: 8
+  - name: "constant_nine_by_four"
+    in:
+      grid:
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+        - [13, 13, 13, 13]
+    out: 4
+  - name: "constant_ten"
+    in:
+      grid:
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+        - [14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+    out: 10

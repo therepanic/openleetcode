@@ -1,0 +1,442 @@
+entry:
+  id: 1834
+  title: "single-threaded-cpu"
+  params:
+    tasks:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().getOrder({tasks})"
+    rust: "Solution::get_order({tasks})"
+    python3: "Solution().getOrder({tasks})"
+    python2: "Solution().getOrder({tasks})"
+    ruby: "get_order({tasks})"
+    java: "new Solution().getOrder({tasks})"
+    csharp: "new Solution().GetOrder({tasks})"
+    kotlin: "Solution().getOrder({tasks})"
+    go: "getOrder({tasks})"
+    dart: "Solution().getOrder({tasks})"
+    swift: "Solution().getOrder({tasks})"
+    typescript: "getOrder({tasks})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 10000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().getOrder(tasks, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def getOrder(self, tasks, result):
+              indexed = sorted((t[0], t[1], i) for i, t in enumerate(tasks))
+              heap = []
+              expected = []
+              now = 0
+              i = 0
+              while i < len(indexed) or heap:
+                  if not heap and now < indexed[i][0]:
+                      now = indexed[i][0]
+                  while i < len(indexed) and indexed[i][0] <= now:
+                      _, duration, index = indexed[i]
+                      heapq.heappush(heap, (duration, index))
+                      i += 1
+                  duration, index = heapq.heappop(heap)
+                  expected.append(index)
+                  now += duration
+              return result == expected
+
+seed: 1834
+
+tests:
+  - name: example-one
+    in:
+      tasks:
+        - [1, 2]
+        - [2, 4]
+        - [3, 2]
+        - [4, 1]
+    out: [0, 2, 3, 1]
+  - name: example-two
+    in:
+      tasks:
+        - [7, 10]
+        - [7, 12]
+        - [7, 5]
+        - [7, 4]
+        - [7, 2]
+    out: [4, 3, 2, 0, 1]
+  - name: one-task
+    in:
+      tasks:
+        - [1, 1]
+    out: [0]
+  - name: equal-arrivals-index-tie
+    in:
+      tasks:
+        - [1, 3]
+        - [1, 3]
+        - [1, 3]
+        - [1, 3]
+    out: [0, 1, 2, 3]
+  - name: equal-duration-late-arrivals
+    in:
+      tasks:
+        - [1, 2]
+        - [2, 2]
+        - [3, 2]
+        - [4, 2]
+    out: [0, 1, 2, 3]
+  - name: idle-gap
+    in:
+      tasks:
+        - [5, 2]
+        - [20, 1]
+        - [30, 3]
+    out: [0, 1, 2]
+  - name: arrival-during-long-task
+    in:
+      tasks:
+        - [1, 10]
+        - [2, 1]
+        - [3, 2]
+        - [4, 1]
+    out: [0, 1, 3, 2]
+  - name: shortest-arrives-first
+    in:
+      tasks:
+        - [1, 1]
+        - [1, 5]
+        - [1, 2]
+    out: [0, 2, 1]
+  - name: later-shortest-available
+    in:
+      tasks:
+        - [1, 5]
+        - [1, 4]
+        - [2, 1]
+    out: [1, 2, 0]
+  - name: chain-no-idle
+    in:
+      tasks:
+        - [1, 2]
+        - [3, 2]
+        - [5, 2]
+        - [7, 2]
+        - [9, 2]
+    out: [0, 1, 2, 3, 4]
+  - name: same-arrival-varied
+    in:
+      tasks:
+        - [4, 9]
+        - [4, 1]
+        - [4, 7]
+        - [4, 3]
+        - [4, 5]
+    out: [1, 3, 4, 2, 0]
+  - name: zero-overlap-by-large-gaps
+    in:
+      tasks:
+        - [2, 8]
+        - [100, 9]
+        - [1000, 1]
+        - [10000, 2]
+    out: [0, 1, 2, 3]
+  - name: duplicate-arrival-duration-index
+    in:
+      tasks:
+        - [2, 2]
+        - [2, 1]
+        - [2, 2]
+        - [2, 1]
+        - [2, 3]
+    out: [1, 3, 0, 2, 4]
+  - name: cascading-choice
+    in:
+      tasks:
+        - [1, 8]
+        - [2, 7]
+        - [3, 6]
+        - [4, 1]
+        - [5, 2]
+        - [6, 3]
+    out: [0, 3, 4, 5, 2, 1]
+  - name: large-processing-values
+    in:
+      tasks:
+        - [1, 1000000000]
+        - [2, 999999999]
+        - [3, 1]
+        - [1000000000, 2]
+    out: [0, 2, 3, 1]
+  - name: large-enqueue-values
+    in:
+      tasks:
+        - [1000000000, 5]
+        - [1000000000, 1]
+        - [1000000000, 3]
+    out: [1, 2, 0]
+  - name: all-arrive-after-first-finishes
+    in:
+      tasks:
+        - [1, 3]
+        - [2, 2]
+        - [3, 1]
+        - [4, 1]
+    out: [0, 2, 3, 1]
+  - name: first-task-not-index-zero
+    in:
+      tasks:
+        - [5, 9]
+        - [1, 4]
+        - [1, 2]
+        - [1, 7]
+    out: [2, 1, 3, 0]
+  - name: many-ties
+    in:
+      tasks:
+        - [1, 2]
+        - [1, 1]
+        - [1, 2]
+        - [2, 1]
+        - [2, 2]
+        - [3, 1]
+    out: [1, 3, 5, 0, 2, 4]
+  - name: staggered-short-jobs
+    in:
+      tasks:
+        - [1, 9]
+        - [2, 8]
+        - [3, 7]
+        - [4, 6]
+        - [5, 5]
+        - [6, 1]
+    out: [0, 5, 4, 3, 2, 1]
+  - name: negative-not-allowed-boundary
+    in:
+      tasks:
+        - [1, 1]
+        - [1, 1000000000]
+    out: [0, 1]
+  - name: late-task-becomes-available
+    in:
+      tasks:
+        - [10, 10]
+        - [10, 1]
+        - [11, 1]
+        - [12, 1]
+        - [13, 1]
+    out: [1, 2, 3, 4, 0]
+  - name: repeated-same-time
+    in:
+      tasks:
+        - [6, 6]
+        - [6, 5]
+        - [6, 4]
+        - [6, 3]
+        - [6, 2]
+        - [6, 1]
+    out: [5, 4, 3, 2, 1, 0]
+  - name: alternating-arrivals
+    in:
+      tasks:
+        - [1, 4]
+        - [2, 3]
+        - [10, 2]
+        - [11, 1]
+        - [20, 5]
+        - [20, 1]
+    out: [0, 1, 2, 3, 5, 4]
+  - name: all-processing-one
+    in:
+      tasks:
+        - [1, 1]
+        - [100, 1]
+        - [200, 1]
+        - [300, 1]
+        - [400, 1]
+    out: [0, 1, 2, 3, 4]
+  - name: priority-changes
+    in:
+      tasks:
+        - [1, 6]
+        - [1, 5]
+        - [4, 1]
+        - [5, 2]
+        - [6, 3]
+        - [7, 4]
+    out: [1, 2, 3, 4, 5, 0]
+  - name: exact-finish-boundary
+    in:
+      tasks:
+        - [2, 3]
+        - [5, 1]
+        - [5, 2]
+        - [6, 1]
+    out: [0, 1, 3, 2]
+  - name: two-independent-batches
+    in:
+      tasks:
+        - [1, 2]
+        - [1, 4]
+        - [1, 3]
+        - [20, 2]
+        - [20, 1]
+        - [20, 3]
+    out: [0, 2, 1, 4, 3, 5]
+  - name: all-max-values
+    in:
+      tasks:
+        - [1000000000, 1000000000]
+        - [1000000000, 999999999]
+        - [1000000000, 999999998]
+    out: [2, 1, 0]
+  - name: thirty-small-tasks
+    in:
+      tasks:
+        - [1, 3]
+        - [1, 1]
+        - [1, 2]
+        - [2, 3]
+        - [2, 1]
+        - [3, 2]
+        - [3, 1]
+        - [4, 3]
+        - [4, 2]
+        - [5, 1]
+        - [5, 3]
+        - [6, 2]
+        - [6, 1]
+        - [7, 3]
+        - [7, 2]
+        - [8, 1]
+        - [8, 3]
+        - [9, 2]
+        - [9, 1]
+        - [10, 3]
+        - [10, 2]
+        - [11, 1]
+        - [11, 3]
+        - [12, 2]
+        - [12, 1]
+        - [13, 3]
+        - [13, 2]
+        - [14, 1]
+        - [14, 3]
+        - [14, 2]
+    out:
+      [
+        1,
+        4,
+        6,
+        2,
+        9,
+        12,
+        15,
+        18,
+        5,
+        21,
+        24,
+        27,
+        8,
+        11,
+        14,
+        17,
+        20,
+        23,
+        26,
+        29,
+        0,
+        3,
+        7,
+        10,
+        13,
+        16,
+        19,
+        22,
+        25,
+        28,
+      ]
+  - name: generated-random-small
+    in:
+      tasks:
+        gen: "array"
+        len: 25
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 50
+          elemType: "int"
+    judge:
+      type: "exact"
+  - name: generated-random-medium
+    in:
+      tasks:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+    judge:
+      type: "exact"
+  - name: generated-maximal
+    in:
+      tasks:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+          elemType: "int"
+    judge:
+      type: "exact"
+  - name: generated-equal-arrivals
+    in:
+      tasks:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+          elemType: "int"
+    judge:
+      type: "exact"
+  - name: generated-wide-gaps
+    in:
+      tasks:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+          elemType: "int"
+    judge:
+      type: "exact"

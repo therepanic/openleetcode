@@ -1,0 +1,42 @@
+class Solution(object):
+    def waysToSplit(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        MOD = 10**9 + 7
+        n = len(nums)
+        prefix = [0] * n
+        prefix[0] = nums[0]
+        
+        for i in range(1, n):
+            prefix[i] = prefix[i - 1] + nums[i]
+        
+        res = 0
+        for i in range(n - 2):
+            left = prefix[i]
+            j = self.lower_bound(prefix, 2 * left, i + 1, n - 1)
+            k = self.upper_bound(prefix, (prefix[-1] + left) // 2, j, n - 1)
+            
+            if j < k:
+                res = (res + k - j) % MOD
+                
+        return res
+    
+    def lower_bound(self, arr, target, lo, hi):
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if arr[mid] < target:
+                lo = mid + 1
+            else:
+                hi = mid
+        return lo
+    
+    def upper_bound(self, arr, target, lo, hi):
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if arr[mid] <= target:
+                lo = mid + 1
+            else:
+                hi = mid
+        return lo

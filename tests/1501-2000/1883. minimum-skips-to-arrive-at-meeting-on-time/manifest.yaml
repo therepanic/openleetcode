@@ -1,0 +1,377 @@
+entry:
+  id: 1883
+  title: minimum-skips-to-arrive-at-meeting-on-time
+  params:
+    dist:
+      type: array
+      items:
+        type: int
+    speed:
+      type: int
+    hoursBefore:
+      type: int
+  call:
+    cpp: "Solution().minSkips({dist}, {speed}, {hoursBefore})"
+    rust: "Solution::min_skips({dist}, {speed}, {hoursBefore})"
+    python3: "Solution().minSkips({dist}, {speed}, {hoursBefore})"
+    python2: "Solution().minSkips({dist}, {speed}, {hoursBefore})"
+    ruby: "min_skips({dist}, {speed}, {hoursBefore})"
+    java: "new Solution().minSkips({dist}, {speed}, {hoursBefore})"
+    csharp: "new Solution().MinSkips({dist}, {speed}, {hoursBefore})"
+    kotlin: "Solution().minSkips({dist}, {speed}, {hoursBefore})"
+    go: "minSkips({dist}, {speed}, {hoursBefore})"
+    dart: "Solution().minSkips({dist}, {speed}, {hoursBefore})"
+    swift: "Solution().minSkips({dist}, {speed}, {hoursBefore})"
+    typescript: "minSkips({dist}, {speed}, {hoursBefore})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().minSkips(dist, speed, hoursBefore, {result})"
+    checker: |
+      class Checker:
+          def minSkips(self, dist, speed, hoursBefore, result):
+              n = len(dist)
+              inf = 10**30
+              dp = [inf] * (n + 1)
+              dp[0] = 0
+              for i, d in enumerate(dist):
+                  ndp = [inf] * (n + 1)
+                  for k in range(i + 2):
+                      if dp[k] >= inf:
+                          continue
+                      skip = dp[k] + d
+                      if skip < ndp[k + 1]:
+                          ndp[k + 1] = skip
+                      if i == n - 1:
+                          noskip = dp[k] + d
+                      else:
+                          noskip = ((dp[k] + d + speed - 1) // speed) * speed
+                      if noskip < ndp[k]:
+                          ndp[k] = noskip
+                  dp = ndp
+              want = -1
+              for k, value in enumerate(dp):
+                  if value <= hoursBefore * speed:
+                      want = k
+                      break
+              return result == want
+seed: 1883
+tests:
+  - name: example-one
+    in:
+      dist: [1, 3, 2]
+      speed: 4
+      hoursBefore: 2
+    out: 1
+  - name: example-two
+    in:
+      dist: [7, 3, 5, 5]
+      speed: 2
+      hoursBefore: 10
+    out: 2
+  - name: example-three-impossible
+    in:
+      dist: [7, 3, 5, 5]
+      speed: 1
+      hoursBefore: 10
+    out: -1
+  - name: one-road-exact
+    in:
+      dist: [10]
+      speed: 5
+      hoursBefore: 2
+    out: 0
+  - name: one-road-fraction
+    in:
+      dist: [11]
+      speed: 5
+      hoursBefore: 2
+    out: -1
+  - name: two-roads-no-skip
+    in:
+      dist: [4, 4]
+      speed: 4
+      hoursBefore: 2
+    out: 0
+  - name: two-roads-one-skip
+    in:
+      dist: [5, 5]
+      speed: 4
+      hoursBefore: 3
+    out: 1
+  - name: impossible-even-all-skips
+    in:
+      dist: [100, 100]
+      speed: 10
+      hoursBefore: 19
+    out: -1
+  - name: all-integer-segments
+    in:
+      dist: [3, 6, 9, 12]
+      speed: 3
+      hoursBefore: 10
+    out: 0
+  - name: exact-deadline-after-skips
+    in:
+      dist: [7, 3, 5, 5]
+      speed: 2
+      hoursBefore: 10
+    out: 2
+  - name: tiny-speed
+    in:
+      dist: [1, 1, 1]
+      speed: 1
+      hoursBefore: 3
+    out: 0
+  - name: tiny-speed-tight
+    in:
+      dist: [1, 1, 1]
+      speed: 1
+      hoursBefore: 2
+    out: -1
+  - name: repeated-remainders
+    in:
+      dist: [1, 1, 1, 1, 1]
+      speed: 3
+      hoursBefore: 2
+    out: 3
+  - name: large-speed
+    in:
+      dist: [100000, 99999, 1]
+      speed: 1000000
+      hoursBefore: 1
+    out: 2
+  - name: large-road-impossible
+    in:
+      dist: [100000, 100000, 100000]
+      speed: 1
+      hoursBefore: 299999
+    out: -1
+  - name: large-road-possible
+    in:
+      dist: [100000, 100000, 100000]
+      speed: 1
+      hoursBefore: 300000
+    out: 0
+  - name: skip-every-rest
+    in:
+      dist: [6, 6, 6, 6]
+      speed: 5
+      hoursBefore: 5
+    out: 3
+  - name: fractional-chain
+    in:
+      dist: [2, 2, 2, 2]
+      speed: 3
+      hoursBefore: 3
+    out: 2
+  - name: fractional-chain-tight
+    in:
+      dist: [2, 2, 2, 2]
+      speed: 3
+      hoursBefore: 2
+    out: -1
+  - name: mixed-small
+    in:
+      dist: [1, 4, 2, 7, 3]
+      speed: 5
+      hoursBefore: 4
+    out: 2
+  - name: mixed-large-speed
+    in:
+      dist: [99999, 1, 99998, 2]
+      speed: 99999
+      hoursBefore: 3
+    out: 1
+  - name: deadline-one-hour
+    in:
+      dist: [1, 1, 1, 1]
+      speed: 2
+      hoursBefore: 1
+    out: -1
+  - name: deadline-two-hours
+    in:
+      dist: [3, 1, 3, 1]
+      speed: 2
+      hoursBefore: 4
+    out: 2
+  - name: many-exact-roads
+    in:
+      dist: [10, 20, 30, 40, 50, 60]
+      speed: 10
+      hoursBefore: 21
+    out: 0
+  - name: many-fractional-roads
+    in:
+      dist: [1, 2, 3, 4, 5, 6]
+      speed: 7
+      hoursBefore: 4
+    out: 2
+  - name: minimum-n
+    in:
+      dist: [100000, 1]
+      speed: 100000
+      hoursBefore: 2
+    out: 0
+  - name: impossible-one-hour-budget
+    in:
+      dist: [2, 2]
+      speed: 1
+      hoursBefore: 3
+    out: -1
+  - name: alternating-remainders
+    in:
+      dist: [4, 1, 4, 1, 4, 1]
+      speed: 3
+      hoursBefore: 6
+    out: 3
+  - name: near-boundary
+    in:
+      dist: [9, 9, 9]
+      speed: 10
+      hoursBefore: 3
+    out: 0
+  - name: exact-total-fraction
+    in:
+      dist: [1, 2, 3]
+      speed: 2
+      hoursBefore: 3
+    out: 2
+  - name: high-road-count-static
+    in:
+      dist: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      speed: 6
+      hoursBefore: 4
+    out: 16
+  - name: stress-static-1000
+    in:
+      dist:
+        [
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+          100000,
+          99999,
+        ]
+      speed: 1000000
+      hoursBefore: 3
+    out: 27
+  - name: generated-random-small
+    in:
+      dist:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: 1
+          max: 100
+        elemType: int
+      speed:
+        gen: int
+        min: 1
+        max: 100
+      hoursBefore:
+        gen: int
+        min: 1
+        max: 100
+  - name: generated-medium
+    in:
+      dist:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: 1
+          max: 100000
+        elemType: int
+      speed:
+        gen: int
+        min: 1
+        max: 1000000
+      hoursBefore:
+        gen: int
+        min: 1
+        max: 1000
+  - name: generated-large-one
+    in:
+      dist:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: 1
+          max: 100000
+        elemType: int
+      speed:
+        gen: int
+        min: 1
+        max: 1000000
+      hoursBefore:
+        gen: int
+        min: 1
+        max: 10000000
+  - name: generated-large-two
+    in:
+      dist:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: 99900
+          max: 100000
+        elemType: int
+      speed:
+        gen: int
+        min: 1
+        max: 1000000
+      hoursBefore:
+        gen: int
+        min: 100
+        max: 10000000
+  - name: generated-boundary
+    in:
+      dist:
+        gen: array
+        len: 999
+        of:
+          gen: int
+          min: 1
+          max: 100000
+        elemType: int
+      speed:
+        gen: int
+        min: 999999
+        max: 1000000
+      hoursBefore:
+        gen: int
+        min: 1
+        max: 1000

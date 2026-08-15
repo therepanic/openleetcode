@@ -1,0 +1,401 @@
+entry:
+  id: 1743
+  title: "restore-the-array-from-adjacent-pairs"
+  params:
+    adjacentPairs:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().restoreArray({adjacentPairs})"
+    rust: "Solution::restore_array({adjacentPairs})"
+    python3: "Solution().restoreArray({adjacentPairs})"
+    python2: "Solution().restoreArray({adjacentPairs})"
+    ruby: "restore_array({adjacentPairs})"
+    java: "new Solution().restoreArray({adjacentPairs})"
+    csharp: "new Solution().RestoreArray({adjacentPairs})"
+    kotlin: "Solution().restoreArray({adjacentPairs})"
+    go: "restoreArray({adjacentPairs})"
+    dart: "Solution().restoreArray({adjacentPairs})"
+    swift: "Solution().restoreArray({adjacentPairs})"
+    typescript: "restoreArray({adjacentPairs})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(adjacentPairs, {result})"
+    checker: |
+      class Checker:
+          def check(self, adjacentPairs, result):
+              if not isinstance(result, list):
+                  return False
+              if len(result) != len(adjacentPairs) + 1:
+                  return False
+              if len(set(result)) != len(result):
+                  return False
+              expected = {}
+              for pair in adjacentPairs:
+                  if not isinstance(pair, list) or len(pair) != 2:
+                      return False
+                  a, b = pair
+                  expected.setdefault(frozenset((a, b)), 0)
+                  expected[frozenset((a, b))] += 1
+              actual = {}
+              for i in range(1, len(result)):
+                  key = frozenset((result[i - 1], result[i]))
+                  actual[key] = actual.get(key, 0) + 1
+              return actual == expected
+
+seed: 1743
+
+tests:
+  - name: example-1
+    in:
+      adjacentPairs:
+        - [2, 1]
+        - [3, 4]
+        - [3, 2]
+  - name: example-2
+    in:
+      adjacentPairs:
+        - [4, -2]
+        - [1, 4]
+        - [-3, 1]
+  - name: example-3
+    in:
+      adjacentPairs:
+        - [100000, -100000]
+  - name: two-negative
+    in:
+      adjacentPairs:
+        - [-7, -9]
+  - name: three-increasing
+    in:
+      adjacentPairs:
+        - [2, 1]
+        - [2, 3]
+  - name: three-decreasing
+    in:
+      adjacentPairs:
+        - [-1, -2]
+        - [-3, -2]
+  - name: shuffled-four
+    in:
+      adjacentPairs:
+        - [20, 30]
+        - [10, 20]
+        - [30, 40]
+  - name: alternating-sign
+    in:
+      adjacentPairs:
+        - [-2, 3]
+        - [5, -2]
+        - [3, -7]
+  - name: duplicate-magnitude
+    in:
+      adjacentPairs:
+        - [1, -1]
+        - [2, 1]
+        - [-1, -2]
+  - name: five-shuffled
+    in:
+      adjacentPairs:
+        - [8, 7]
+        - [5, 6]
+        - [9, 8]
+        - [6, 7]
+  - name: endpoint-zero
+    in:
+      adjacentPairs:
+        - [4, 0]
+        - [0, -3]
+        - [8, 4]
+        - [5, 8]
+  - name: six-permutation
+    in:
+      adjacentPairs:
+        - [3, 4]
+        - [1, 2]
+        - [5, 6]
+        - [2, 3]
+        - [4, 5]
+  - name: large-values
+    in:
+      adjacentPairs:
+        - [99999, 100000]
+        - [-100000, -99999]
+        - [0, 99999]
+        - [-99999, -1]
+        - [-1, 0]
+  - name: seven-shuffled
+    in:
+      adjacentPairs:
+        - [40, 50]
+        - [10, 20]
+        - [60, 70]
+        - [30, 40]
+        - [20, 30]
+        - [50, 60]
+  - name: powers
+    in:
+      adjacentPairs:
+        - [16, 8]
+        - [1, 2]
+        - [4, 8]
+        - [2, 4]
+  - name: mixed-seven
+    in:
+      adjacentPairs:
+        - [-10, 11]
+        - [7, -3]
+        - [11, 7]
+        - [-3, 0]
+        - [0, 4]
+        - [4, 9]
+  - name: eight-shuffled
+    in:
+      adjacentPairs:
+        - [6, 7]
+        - [2, 3]
+        - [0, 1]
+        - [4, 5]
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+  - name: negatives-eight
+    in:
+      adjacentPairs:
+        - [-5, -6]
+        - [-1, -2]
+        - [-7, -8]
+        - [-3, -4]
+        - [-2, -3]
+        - [-6, -7]
+        - [-4, -5]
+  - name: sparse-values
+    in:
+      adjacentPairs:
+        - [100, 1000]
+        - [-500, 0]
+        - [1000, 5000]
+        - [0, 100]
+  - name: nine-reordered
+    in:
+      adjacentPairs:
+        - [4, 5]
+        - [7, 8]
+        - [1, 2]
+        - [0, 1]
+        - [6, 7]
+        - [3, 4]
+        - [2, 3]
+        - [5, 6]
+  - name: zigzag-signs
+    in:
+      adjacentPairs:
+        - [6, -5]
+        - [-3, 4]
+        - [2, -3]
+        - [-5, 2]
+        - [4, -1]
+  - name: ten-consecutive
+    in:
+      adjacentPairs:
+        - [8, 9]
+        - [1, 2]
+        - [6, 7]
+        - [3, 4]
+        - [0, 1]
+        - [9, 10]
+        - [2, 3]
+        - [5, 6]
+        - [4, 5]
+        - [7, 8]
+  - name: ten-negative-consecutive
+    in:
+      adjacentPairs:
+        - [-8, -9]
+        - [-1, -2]
+        - [-6, -7]
+        - [-3, -4]
+        - [-9, -10]
+        - [-2, -3]
+        - [-5, -6]
+        - [-4, -5]
+        - [-7, -8]
+  - name: repeated-zero-neighbors
+    in:
+      adjacentPairs:
+        - [2, 0]
+        - [-1, -2]
+        - [0, 1]
+        - [1, -1]
+  - name: eleven-reordered
+    in:
+      adjacentPairs:
+        - [9, 10]
+        - [2, 3]
+        - [7, 8]
+        - [0, 1]
+        - [5, 6]
+        - [10, 11]
+        - [1, 2]
+        - [6, 7]
+        - [3, 4]
+        - [4, 5]
+        - [8, 9]
+  - name: min-max-chain
+    in:
+      adjacentPairs:
+        - [-100000, -99999]
+        - [99998, 99999]
+        - [-99999, 0]
+        - [0, 99998]
+  - name: alternating-large
+    in:
+      adjacentPairs:
+        - [100000, -99999]
+        - [99997, 100000]
+        - [-99999, 99998]
+        - [99998, -100000]
+  - name: twelve-shuffled
+    in:
+      adjacentPairs:
+        - [10, 11]
+        - [3, 4]
+        - [8, 9]
+        - [0, 1]
+        - [6, 7]
+        - [1, 2]
+        - [11, 12]
+        - [4, 5]
+        - [9, 10]
+        - [2, 3]
+        - [5, 6]
+        - [7, 8]
+  - name: arithmetic-gap
+    in:
+      adjacentPairs:
+        - [42, 63]
+        - [-21, 0]
+        - [84, 105]
+        - [0, 21]
+        - [63, 84]
+        - [21, 42]
+  - name: alternating-endpoints
+    in:
+      adjacentPairs:
+        - [5, 6]
+        - [1, 2]
+        - [7, 8]
+        - [3, 4]
+        - [0, 1]
+        - [6, 7]
+        - [2, 3]
+        - [4, 5]
+  - name: thirteen-chain
+    in:
+      adjacentPairs:
+        - [11, 12]
+        - [2, 3]
+        - [7, 8]
+        - [0, 1]
+        - [5, 6]
+        - [9, 10]
+        - [1, 2]
+        - [12, 13]
+        - [3, 4]
+        - [8, 9]
+        - [4, 5]
+        - [6, 7]
+        - [10, 11]
+  - name: mixed-range-chain
+    in:
+      adjacentPairs:
+        - [500, 1000]
+        - [-2000, -1000]
+        - [0, 500]
+        - [1000, 2000]
+        - [-1000, 0]
+  - name: fourteen-shuffled
+    in:
+      adjacentPairs:
+        - [12, 13]
+        - [4, 5]
+        - [9, 10]
+        - [0, 1]
+        - [6, 7]
+        - [13, 14]
+        - [2, 3]
+        - [10, 11]
+        - [1, 2]
+        - [7, 8]
+        - [5, 6]
+        - [3, 4]
+        - [8, 9]
+        - [11, 12]
+  - name: fifteen-signed
+    in:
+      adjacentPairs:
+        - [-7, -6]
+        - [2, 3]
+        - [-1, 0]
+        - [6, 7]
+        - [-4, -3]
+        - [0, 1]
+        - [4, 5]
+        - [-6, -5]
+        - [1, 2]
+        - [5, 6]
+        - [-3, -2]
+        - [-5, -4]
+        - [-2, -1]
+        - [3, 4]
+  - name: sixteen-chain
+    in:
+      adjacentPairs:
+        - [14, 15]
+        - [2, 3]
+        - [8, 9]
+        - [0, 1]
+        - [6, 7]
+        - [12, 13]
+        - [4, 5]
+        - [10, 11]
+        - [1, 2]
+        - [7, 8]
+        - [3, 4]
+        - [9, 10]
+        - [5, 6]
+        - [11, 12]
+        - [13, 14]
+  - name: twenty-sparse
+    in:
+      adjacentPairs:
+        - [170, 180]
+        - [20, 30]
+        - [90, 100]
+        - [0, 10]
+        - [150, 160]
+        - [60, 70]
+        - [110, 120]
+        - [30, 40]
+        - [180, 190]
+        - [10, 20]
+        - [100, 110]
+        - [40, 50]
+        - [160, 170]
+        - [70, 80]
+        - [120, 130]
+        - [50, 60]
+        - [140, 150]
+        - [80, 90]
+        - [130, 140]

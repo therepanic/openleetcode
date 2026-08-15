@@ -1,0 +1,643 @@
+entry:
+  id: 1697
+  title: "checking-existence-of-edge-length-limited-paths"
+  params:
+    n:
+      type: int
+    edgeList:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    rust: "Solution::distance_limited_paths_exist({n}, {edgeList}, {queries})"
+    python3: "Solution().distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    python2: "Solution().distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    ruby: "distance_limited_paths_exist({n}, {edgeList}, {queries})"
+    java: "new Solution().distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    csharp: "new Solution().DistanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    kotlin: "Solution().distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    go: "distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    dart: "Solution().distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    swift: "Solution().distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+    typescript: "distanceLimitedPathsExist({n}, {edgeList}, {queries})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(n, edgeList, queries, {result})"
+    checker: |
+      class Checker:
+          def check(self, n, edgeList, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              parent = list(range(n))
+              rank = [0] * n
+              def find(x):
+                  while parent[x] != x:
+                      parent[x] = parent[parent[x]]
+                      x = parent[x]
+                  return x
+              def union(a, b):
+                  a, b = find(a), find(b)
+                  if a == b:
+                      return
+                  if rank[a] < rank[b]:
+                      a, b = b, a
+                  parent[b] = a
+                  if rank[a] == rank[b]:
+                      rank[a] += 1
+              def valid_edge(edge):
+                  return (isinstance(edge, list) and len(edge) == 3 and
+                          all(isinstance(x, int) and not isinstance(x, bool) for x in edge) and
+                          0 <= edge[0] < n and 0 <= edge[1] < n and edge[0] != edge[1] and
+                          1 <= edge[2] <= 10**9)
+
+              def valid_query(query):
+                  return (isinstance(query, list) and len(query) == 3 and
+                          all(isinstance(x, int) and not isinstance(x, bool) for x in query) and
+                          0 <= query[0] < n and 0 <= query[1] < n and query[0] != query[1] and
+                          1 <= query[2] <= 10**9)
+
+              if not all(valid_edge(edge) for edge in edgeList):
+                  return False
+              if not all(valid_query(query) for query in queries):
+                  return False
+
+              ordered_edges = sorted(edgeList, key=lambda edge: edge[2])
+              ordered_queries = sorted(enumerate(queries), key=lambda item: item[1][2])
+              expected = [False] * len(queries)
+              edge_index = 0
+              for query_index, (p, q, limit) in ordered_queries:
+                  while (edge_index < len(ordered_edges) and
+                         ordered_edges[edge_index][2] < limit):
+                      u, v, _ = ordered_edges[edge_index]
+                      union(u, v)
+                      edge_index += 1
+                  expected[query_index] = find(p) == find(q)
+              return all(isinstance(actual, bool) and actual == wanted
+                         for actual, wanted in zip(result, expected))
+
+seed: 1697
+
+tests:
+  - name: example-overlapping-edges
+    in:
+      n: 3
+      edgeList:
+        - [0, 1, 2]
+        - [1, 2, 4]
+        - [2, 0, 8]
+        - [1, 0, 16]
+      queries:
+        - [0, 1, 2]
+        - [0, 2, 5]
+  - name: example-chain
+    in:
+      n: 5
+      edgeList:
+        - [0, 1, 10]
+        - [1, 2, 5]
+        - [2, 3, 9]
+        - [3, 4, 13]
+      queries:
+        - [0, 4, 14]
+        - [1, 4, 13]
+  - name: two-nodes-threshold
+    in:
+      n: 3
+      edgeList:
+        - [0, 1, 1]
+        - [1, 2, 2]
+      queries:
+        - [0, 1, 1]
+        - [0, 1, 2]
+        - [0, 2, 3]
+        - [0, 2, 2]
+  - name: disconnected-components
+    in:
+      n: 6
+      edgeList:
+        - [0, 1, 3]
+        - [1, 2, 7]
+        - [3, 4, 2]
+      queries:
+        - [0, 2, 8]
+        - [0, 2, 7]
+        - [0, 3, 100]
+        - [3, 4, 2]
+        - [3, 4, 3]
+        - [4, 5, 100]
+  - name: parallel-edges
+    in:
+      n: 4
+      edgeList:
+        - [0, 1, 100]
+        - [0, 1, 4]
+        - [1, 2, 8]
+        - [2, 3, 9]
+        - [0, 3, 50]
+      queries:
+        - [0, 1, 4]
+        - [0, 1, 5]
+        - [0, 3, 10]
+        - [0, 3, 9]
+  - name: all-equal-weights
+    in:
+      n: 5
+      edgeList:
+        - [0, 1, 6]
+        - [1, 2, 6]
+        - [2, 3, 6]
+        - [3, 4, 6]
+      queries:
+        - [0, 4, 6]
+        - [0, 4, 7]
+        - [1, 3, 7]
+        - [0, 2, 5]
+  - name: cycles-and-shortcut
+    in:
+      n: 7
+      edgeList:
+        - [0, 1, 9]
+        - [1, 2, 4]
+        - [2, 0, 8]
+        - [2, 3, 2]
+        - [3, 4, 12]
+        - [4, 5, 1]
+        - [5, 6, 20]
+        - [0, 6, 30]
+      queries:
+        - [0, 3, 3]
+        - [0, 3, 4]
+        - [0, 4, 13]
+        - [0, 5, 13]
+        - [0, 6, 21]
+        - [0, 6, 20]
+  - name: min-distance
+    in:
+      n: 4
+      edgeList:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+      queries:
+        - [0, 1, 1]
+        - [0, 1, 2]
+        - [0, 3, 2]
+        - [0, 3, 3]
+  - name: max-distance
+    in:
+      n: 5
+      edgeList:
+        - [0, 1, 999999999]
+        - [1, 2, 999999999]
+        - [2, 3, 1000000000]
+        - [3, 4, 1]
+      queries:
+        - [0, 1, 999999999]
+        - [0, 1, 1000000000]
+        - [0, 4, 1000000000]
+        - [0, 4, 999999999]
+        - [2, 4, 2]
+  - name: many-queries
+    in:
+      n: 8
+      edgeList:
+        - [0, 1, 2]
+        - [1, 2, 5]
+        - [2, 3, 8]
+        - [3, 4, 11]
+        - [4, 5, 14]
+        - [5, 6, 17]
+        - [6, 7, 20]
+      queries:
+        - [0, 7, 1]
+        - [0, 7, 2]
+        - [0, 7, 3]
+        - [0, 7, 8]
+        - [0, 7, 21]
+        - [1, 5, 12]
+        - [1, 5, 15]
+        - [2, 6, 18]
+        - [2, 6, 20]
+        - [3, 7, 21]
+  - name: isolated-endpoints
+    in:
+      n: 10
+      edgeList:
+        - [1, 2, 3]
+        - [2, 3, 4]
+        - [4, 5, 5]
+        - [6, 7, 6]
+        - [7, 8, 7]
+      queries:
+        - [0, 1, 100]
+        - [1, 3, 5]
+        - [1, 3, 4]
+        - [4, 5, 5]
+        - [4, 5, 6]
+        - [6, 8, 8]
+        - [0, 9, 1000000000]
+  - name: dense-small-graph
+    in:
+      n: 6
+      edgeList:
+        - [0, 1, 9]
+        - [0, 2, 2]
+        - [0, 3, 15]
+        - [1, 2, 7]
+        - [1, 4, 3]
+        - [2, 3, 6]
+        - [2, 5, 10]
+        - [3, 4, 4]
+        - [4, 5, 8]
+        - [0, 5, 20]
+      queries:
+        - [0, 5, 3]
+        - [0, 5, 4]
+        - [0, 3, 5]
+        - [1, 5, 9]
+        - [1, 5, 8]
+        - [3, 5, 9]
+  - name: repeated-query-pairs
+    in:
+      n: 5
+      edgeList:
+        - [0, 1, 10]
+        - [1, 2, 1]
+        - [2, 3, 10]
+        - [3, 4, 1]
+      queries:
+        - [0, 2, 2]
+        - [0, 2, 11]
+        - [0, 2, 10]
+        - [2, 4, 2]
+        - [2, 4, 11]
+        - [0, 4, 11]
+  - name: alternating-thresholds
+    in:
+      n: 9
+      edgeList:
+        - [0, 1, 3]
+        - [1, 2, 12]
+        - [2, 3, 5]
+        - [3, 4, 20]
+        - [4, 5, 7]
+        - [5, 6, 30]
+        - [6, 7, 9]
+        - [7, 8, 40]
+      queries:
+        - [0, 8, 4]
+        - [0, 8, 13]
+        - [0, 8, 21]
+        - [0, 8, 31]
+        - [0, 8, 41]
+        - [1, 7, 13]
+        - [2, 6, 10]
+  - name: mixed-large-limits
+    in:
+      n: 12
+      edgeList:
+        - [0, 1, 999999999]
+        - [1, 2, 1000000000]
+        - [2, 3, 500000000]
+        - [3, 4, 1]
+        - [5, 6, 2]
+        - [6, 7, 1000000000]
+        - [8, 9, 42]
+        - [9, 10, 43]
+        - [10, 11, 44]
+      queries:
+        - [0, 4, 500000001]
+        - [0, 4, 500000000]
+        - [0, 2, 1000000000]
+        - [0, 2, 1000000000]
+        - [5, 7, 1000000000]
+        - [5, 7, 1000000000]
+        - [8, 11, 44]
+        - [8, 11, 45]
+  - name: singleton-components
+    in:
+      n: 7
+      edgeList:
+        - [0, 1, 2]
+        - [2, 3, 4]
+        - [4, 5, 6]
+      queries:
+        - [0, 1, 3]
+        - [0, 2, 100]
+        - [2, 3, 4]
+        - [2, 3, 5]
+        - [4, 6, 7]
+  - name: direct-edge-versus-path
+    in:
+      n: 5
+      edgeList:
+        - [0, 4, 20]
+        - [0, 1, 3]
+        - [1, 2, 3]
+        - [2, 3, 3]
+        - [3, 4, 3]
+      queries:
+        - [0, 4, 3]
+        - [0, 4, 4]
+        - [0, 4, 20]
+        - [0, 4, 21]
+  - name: duplicate-identical-edges
+    in:
+      n: 4
+      edgeList:
+        - [0, 1, 5]
+        - [0, 1, 5]
+        - [1, 2, 5]
+        - [2, 3, 5]
+      queries:
+        - [0, 3, 5]
+        - [0, 3, 6]
+        - [1, 3, 6]
+        - [0, 2, 5]
+  - name: reverse-endpoints
+    in:
+      n: 6
+      edgeList:
+        - [5, 4, 1]
+        - [4, 3, 2]
+        - [3, 2, 3]
+        - [2, 1, 4]
+        - [1, 0, 5]
+      queries:
+        - [5, 0, 6]
+        - [0, 5, 5]
+        - [4, 1, 5]
+        - [3, 0, 4]
+  - name: low-limit-isolation
+    in:
+      n: 8
+      edgeList:
+        - [0, 1, 2]
+        - [1, 2, 3]
+        - [2, 3, 4]
+        - [3, 4, 5]
+        - [4, 5, 6]
+        - [5, 6, 7]
+        - [6, 7, 8]
+      queries:
+        - [0, 7, 1]
+        - [0, 7, 2]
+        - [0, 7, 3]
+        - [0, 7, 4]
+        - [0, 7, 5]
+        - [0, 7, 9]
+  - name: star-graph
+    in:
+      n: 8
+      edgeList:
+        - [0, 1, 10]
+        - [0, 2, 20]
+        - [0, 3, 30]
+        - [0, 4, 40]
+        - [0, 5, 50]
+        - [0, 6, 60]
+        - [0, 7, 70]
+      queries:
+        - [1, 2, 21]
+        - [1, 2, 20]
+        - [3, 7, 31]
+        - [3, 7, 30]
+        - [5, 6, 61]
+  - name: cycle-only
+    in:
+      n: 6
+      edgeList:
+        - [0, 1, 9]
+        - [1, 2, 8]
+        - [2, 3, 7]
+        - [3, 4, 6]
+        - [4, 5, 5]
+        - [5, 0, 4]
+      queries:
+        - [0, 3, 8]
+        - [0, 3, 7]
+        - [0, 3, 6]
+        - [1, 4, 7]
+        - [1, 4, 6]
+  - name: bridge-threshold
+    in:
+      n: 8
+      edgeList:
+        - [0, 1, 1]
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [3, 4, 100]
+      queries:
+        - [0, 3, 2]
+        - [4, 7, 2]
+        - [0, 7, 100]
+        - [0, 7, 101]
+        - [2, 5, 100]
+  - name: unsorted-input
+    in:
+      n: 6
+      edgeList:
+        - [4, 5, 9]
+        - [0, 2, 2]
+        - [3, 4, 1]
+        - [1, 3, 8]
+        - [2, 5, 7]
+      queries:
+        - [0, 5, 8]
+        - [0, 5, 7]
+        - [1, 5, 9]
+        - [0, 4, 3]
+        - [1, 2, 9]
+  - name: all-pairs-small
+    in:
+      n: 4
+      edgeList:
+        - [0, 1, 2]
+        - [1, 2, 4]
+        - [2, 3, 6]
+        - [0, 3, 10]
+      queries:
+        - [0, 1, 2]
+        - [0, 1, 3]
+        - [0, 2, 5]
+        - [0, 2, 4]
+        - [0, 3, 7]
+        - [0, 3, 10]
+        - [1, 3, 7]
+        - [1, 3, 6]
+  - name: equal-limit-batch
+    in:
+      n: 7
+      edgeList:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 9]
+        - [3, 4, 10]
+        - [4, 5, 9]
+        - [5, 6, 10]
+      queries:
+        - [0, 3, 10]
+        - [0, 3, 11]
+        - [3, 6, 10]
+        - [3, 6, 11]
+        - [0, 6, 10]
+        - [0, 6, 11]
+  - name: sparse-high-node-ids
+    in:
+      n: 20
+      edgeList:
+        - [19, 0, 2]
+        - [18, 19, 4]
+        - [17, 18, 6]
+        - [10, 11, 1]
+        - [11, 12, 1]
+      queries:
+        - [0, 17, 7]
+        - [0, 17, 6]
+        - [10, 12, 2]
+        - [10, 12, 1]
+        - [0, 10, 100]
+  - name: one-edge-graph
+    in:
+      n: 9
+      edgeList:
+        - [3, 8, 123456789]
+      queries:
+        - [3, 8, 123456789]
+        - [3, 8, 123456790]
+        - [0, 1, 1000000000]
+        - [3, 0, 1000000000]
+  - name: descending-weights
+    in:
+      n: 7
+      edgeList:
+        - [0, 1, 70]
+        - [1, 2, 60]
+        - [2, 3, 50]
+        - [3, 4, 40]
+        - [4, 5, 30]
+        - [5, 6, 20]
+      queries:
+        - [0, 6, 71]
+        - [0, 6, 70]
+        - [1, 6, 61]
+        - [1, 6, 60]
+        - [2, 5, 31]
+        - [2, 5, 30]
+  - name: multiple-components-with-duplicates
+    in:
+      n: 10
+      edgeList:
+        - [0, 1, 4]
+        - [0, 1, 9]
+        - [2, 3, 3]
+        - [3, 4, 8]
+        - [5, 6, 2]
+        - [6, 7, 7]
+        - [7, 8, 5]
+      queries:
+        - [0, 1, 5]
+        - [0, 1, 4]
+        - [2, 4, 9]
+        - [2, 4, 8]
+        - [5, 8, 6]
+        - [5, 8, 5]
+        - [0, 8, 100]
+  - name: query-order-sensitive
+    in:
+      n: 6
+      edgeList:
+        - [0, 1, 5]
+        - [1, 2, 10]
+        - [2, 3, 15]
+        - [3, 4, 20]
+        - [4, 5, 25]
+      queries:
+        - [0, 5, 26]
+        - [0, 1, 5]
+        - [2, 5, 26]
+        - [0, 3, 16]
+        - [1, 4, 21]
+        - [3, 5, 25]
+  - name: shortcut-beats-heavy-chain
+    in:
+      n: 8
+      edgeList:
+        - [0, 1, 100]
+        - [1, 2, 100]
+        - [2, 3, 100]
+        - [3, 4, 100]
+        - [4, 5, 100]
+        - [5, 6, 100]
+        - [6, 7, 100]
+        - [0, 7, 1]
+      queries:
+        - [0, 7, 1]
+        - [0, 7, 2]
+        - [0, 6, 100]
+        - [0, 6, 101]
+        - [1, 7, 2]
+  - name: tight-small-limits
+    in:
+      n: 5
+      edgeList:
+        - [0, 1, 1]
+        - [1, 2, 2]
+        - [2, 3, 3]
+        - [3, 4, 4]
+      queries:
+        - [0, 4, 1]
+        - [0, 4, 2]
+        - [0, 4, 3]
+        - [0, 4, 4]
+        - [0, 4, 5]
+  - name: high-limit-disconnected
+    in:
+      n: 10
+      edgeList:
+        - [0, 1, 1000000000]
+        - [2, 3, 999999999]
+        - [4, 5, 100]
+        - [6, 7, 200]
+      queries:
+        - [0, 1, 999999999]
+        - [0, 1, 1000000000]
+        - [2, 3, 1000000000]
+        - [4, 5, 101]
+        - [6, 7, 200]
+        - [0, 9, 999999999]
+  - name: nonconsecutive-node-components
+    in:
+      n: 11
+      edgeList:
+        - [0, 10, 11]
+        - [10, 5, 12]
+        - [5, 2, 13]
+        - [1, 7, 1]
+        - [7, 9, 2]
+      queries:
+        - [0, 2, 14]
+        - [0, 2, 13]
+        - [1, 9, 2]
+        - [1, 9, 3]
+        - [0, 1, 1000000000]

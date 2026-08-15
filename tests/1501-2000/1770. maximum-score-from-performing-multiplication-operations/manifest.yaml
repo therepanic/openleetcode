@@ -1,0 +1,274 @@
+entry:
+  id: 1770
+  title: "maximum-score-from-performing-multiplication-operations"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    multipliers:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maximumScore({nums}, {multipliers})"
+    rust: "Solution::maximum_score({nums}, {multipliers})"
+    python3: "Solution().maximumScore({nums}, {multipliers})"
+    python2: "Solution().maximumScore({nums}, {multipliers})"
+    ruby: "maximum_score({nums}, {multipliers})"
+    java: "new Solution().maximumScore({nums}, {multipliers})"
+    csharp: "new Solution().MaximumScore({nums}, {multipliers})"
+    kotlin: "Solution().maximumScore({nums}, {multipliers})"
+    go: "maximumScore({nums}, {multipliers})"
+    dart: "Solution().maximumScore({nums}, {multipliers})"
+    swift: "Solution().maximumScore({nums}, {multipliers})"
+    typescript: "maximumScore({nums}, {multipliers})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maximumScore(nums, multipliers, {result})"
+    checker: |
+      class Checker:
+          def maximumScore(self, nums, multipliers, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(nums)
+              m = len(multipliers)
+              if m < 1 or m > n:
+                  return False
+              dp = [0] * (m + 1)
+              for i in range(m - 1, -1, -1):
+                  nxt = [0] * (m + 1)
+                  for left in range(i, -1, -1):
+                      right = i - left
+                      front = multipliers[i] * nums[left] + dp[right]
+                      back = multipliers[i] * nums[n - 1 - right] + dp[right + 1]
+                      nxt[right] = max(front, back)
+                  dp = nxt
+              return result == dp[0]
+
+seed: 1770
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 2, 3]
+      multipliers: [3, 2, 1]
+    out: 14
+  - name: example-two
+    in:
+      nums: [-5, -3, -3, -2, 7, 1]
+      multipliers: [-10, -5, 3, 4, 6]
+    out: 102
+  - name: single-positive
+    in:
+      nums: [7]
+      multipliers: [9]
+    out: 63
+  - name: single-negative
+    in:
+      nums: [-7]
+      multipliers: [9]
+    out: -63
+  - name: one-operation-front
+    in:
+      nums: [5, -100, 6]
+      multipliers: [2]
+    out: 12
+  - name: one-operation-negative-multiplier
+    in:
+      nums: [-8, 3, 9]
+      multipliers: [-4]
+    out: 32
+  - name: all-equal
+    in:
+      nums: [4, 4, 4, 4]
+      multipliers: [1, 2, 3]
+    out: 24
+  - name: all-zero
+    in:
+      nums: [0, 0, 0, 0]
+      multipliers: [1000, -1000, 7]
+    out: 0
+  - name: all-positive-increasing
+    in:
+      nums: [1, 2, 3, 4, 5]
+      multipliers: [1, 2, 3, 4]
+    out: 36
+  - name: all-positive-decreasing
+    in:
+      nums: [1, 2, 3, 4, 5]
+      multipliers: [4, 3, 2, 1]
+    out: 40
+  - name: all-negative
+    in:
+      nums: [-1, -2, -3, -4, -5]
+      multipliers: [4, 3, 2, 1]
+    out: -20
+  - name: alternating-signs
+    in:
+      nums: [-10, 9, -8, 7, -6, 5]
+      multipliers: [3, -2, 4, -1]
+    out: 79
+  - name: extremes-positive
+    in:
+      nums: [1000, -1, -2, -3, 1000]
+      multipliers: [1000, 1000, 1000]
+    out: 1999000
+  - name: extremes-negative
+    in:
+      nums: [-1000, 1, 2, 3, -1000]
+      multipliers: [1000, 1000, 1000]
+    out: -995000
+  - name: take-all-ascending
+    in:
+      nums: [2, 5, 1, 4]
+      multipliers: [3, 2, 4, 1]
+    out: 37
+  - name: take-all-descending
+    in:
+      nums: [2, 5, 1, 4]
+      multipliers: [-3, 2, -4, 1]
+    out: 4
+  - name: duplicate-extremes
+    in:
+      nums: [8, 1, 8, 1, 8]
+      multipliers: [5, -5, 5]
+    out: 75
+  - name: multiplier-zero-middle
+    in:
+      nums: [10, -10, 3, 7]
+      multipliers: [2, 0, 3]
+    out: 44
+  - name: negative-zero-positive
+    in:
+      nums: [-5, 0, 5]
+      multipliers: [-2, 0, 2]
+    out: 20
+  - name: close-choices
+    in:
+      nums: [4, 3, 2, 1]
+      multipliers: [1, 10, 1]
+    out: 44
+  - name: large-multiplier-signs
+    in:
+      nums: [-12, 11, -10, 9, -8, 7]
+      multipliers: [-1000, 999, -998, 997]
+    out: 41942
+  - name: m-two
+    in:
+      nums: [5, -4, 3, -2, 1]
+      multipliers: [7, -6]
+    out: 59
+  - name: m-three
+    in:
+      nums: [9, -8, 7, -6, 5, -4]
+      multipliers: [-3, 4, -5]
+    out: 88
+  - name: m-near-n
+    in:
+      nums: [6, 1, 9, -2, 8, 3, -7]
+      multipliers: [2, -3, 4, -5, 6, -7]
+    out: 152
+  - name: symmetric-values
+    in:
+      nums: [-2, -1, 0, 1, 2]
+      multipliers: [5, 4, 3, 2]
+    out: 12
+  - name: repeated-multipliers
+    in:
+      nums: [3, 9, 1, 8, 2]
+      multipliers: [4, 4, 4]
+    out: 56
+  - name: negative-repeated-multipliers
+    in:
+      nums: [-3, -9, -1, -8, -2]
+      multipliers: [-4, -4, -4]
+    out: 56
+  - name: cancellation
+    in:
+      nums: [100, -100, 50, -50]
+      multipliers: [1, 1, -1]
+    out: 150
+  - name: small-values
+    in:
+      nums: [-2, -1, 1, 2]
+      multipliers: [-2, -1, 1]
+    out: 7
+  - name: boundary-values
+    in:
+      nums: [-1000, -999, 999, 1000]
+      multipliers: [-1000, 999, -998]
+    out: 2996002
+  - name: generated-large-positive
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      multipliers: [1000]
+  - name: generated-large-negative
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      multipliers: [-1000]
+  - name: generated-long-two-ops
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      multipliers: [997, -991]
+  - name: generated-long-three-ops
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      multipliers: [-1000, 999, 998]
+  - name: generated-long-five-ops
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      multipliers: [1000, -1000, 999, -999, 998]

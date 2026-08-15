@@ -1,0 +1,231 @@
+entry:
+  id: 1824
+  title: "minimum-sideway-jumps"
+  params:
+    obstacles:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minSideJumps({obstacles})"
+    rust: "Solution::min_side_jumps({obstacles})"
+    python3: "Solution().minSideJumps({obstacles})"
+    python2: "Solution().minSideJumps({obstacles})"
+    ruby: "min_side_jumps({obstacles})"
+    java: "new Solution().minSideJumps({obstacles})"
+    csharp: "new Solution().MinSideJumps({obstacles})"
+    kotlin: "Solution().minSideJumps({obstacles})"
+    go: "minSideJumps({obstacles})"
+    dart: "Solution().minSideJumps({obstacles})"
+    swift: "Solution().minSideJumps({obstacles})"
+    typescript: "minSideJumps({obstacles})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minSideJumps(obstacles, {result})"
+    checker: |
+      class Checker:
+          def minSideJumps(self, obstacles, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(obstacles, list) or len(obstacles) < 2:
+                  return False
+              if obstacles[0] != 0 or obstacles[-1] != 0:
+                  return False
+              dp = [1, 0, 1]
+              inf = 10 ** 9
+              for obstacle in obstacles[1:]:
+                  if obstacle not in (0, 1, 2, 3):
+                      return False
+                  for lane in range(3):
+                      if obstacle == lane + 1:
+                          dp[lane] = inf
+                  for lane in range(3):
+                      if obstacle != lane + 1:
+                          dp[lane] = min(dp[lane], min(dp[(lane + 1) % 3], dp[(lane + 2) % 3]) + 1)
+              return result == min(dp)
+
+seed: 1824
+
+tests:
+  - name: "example_one"
+    in:
+      obstacles: [0, 1, 2, 3, 0]
+    out: 2
+  - name: "example_two"
+    in:
+      obstacles: [0, 1, 1, 3, 3, 0]
+    out: 0
+  - name: "example_three"
+    in:
+      obstacles: [0, 2, 1, 0, 3, 0]
+    out: 2
+  - name: "empty_road"
+    in:
+      obstacles: [0, 0]
+    out: 0
+  - name: "single_lane_one"
+    in:
+      obstacles: [0, 1, 0]
+    out: 0
+  - name: "single_lane_two"
+    in:
+      obstacles: [0, 2, 0]
+    out: 1
+  - name: "single_lane_three"
+    in:
+      obstacles: [0, 3, 0]
+    out: 0
+  - name: "all_clear_short"
+    in:
+      obstacles: [0, 0, 0, 0]
+    out: 0
+  - name: "repeat_lane_one"
+    in:
+      obstacles: [0, 1, 0, 1, 0]
+    out: 0
+  - name: "repeat_lane_two"
+    in:
+      obstacles: [0, 2, 0, 2, 0]
+    out: 1
+  - name: "repeat_lane_three"
+    in:
+      obstacles: [0, 3, 0, 3, 0]
+    out: 0
+  - name: "three_points_lane_one_two"
+    in:
+      obstacles: [0, 1, 2, 0]
+    out: 1
+  - name: "three_points_lane_two_three"
+    in:
+      obstacles: [0, 2, 3, 0]
+    out: 1
+  - name: "three_points_lane_three_two"
+    in:
+      obstacles: [0, 3, 2, 0]
+    out: 1
+  - name: "forced_three_jumps_a"
+    in:
+      obstacles: [0, 1, 2, 3, 1, 0]
+    out: 3
+  - name: "forced_three_jumps_b"
+    in:
+      obstacles: [0, 3, 2, 1, 3, 0]
+    out: 3
+  - name: "alternating_low"
+    in:
+      obstacles: [0, 1, 2, 1, 2, 0]
+    out: 1
+  - name: "alternating_high"
+    in:
+      obstacles: [0, 2, 3, 2, 3, 0]
+    out: 1
+  - name: "safe_lane_one"
+    in:
+      obstacles: [0, 3, 1, 3, 1, 0]
+    out: 0
+  - name: "mixed_switches_one"
+    in:
+      obstacles: [0, 1, 3, 2, 1, 0]
+    out: 2
+  - name: "mixed_switches_two"
+    in:
+      obstacles: [0, 2, 1, 3, 2, 0]
+    out: 3
+  - name: "mixed_switches_three"
+    in:
+      obstacles: [0, 3, 2, 1, 3, 0]
+    out: 3
+  - name: "duplicate_obstacles_one"
+    in:
+      obstacles: [0, 1, 1, 2, 2, 3, 0]
+    out: 2
+  - name: "duplicate_obstacles_two"
+    in:
+      obstacles: [0, 3, 3, 2, 2, 1, 0]
+    out: 2
+  - name: "periodic_pattern_one"
+    in:
+      obstacles: [0, 1, 2, 3, 0, 1, 2, 0]
+    out: 3
+  - name: "periodic_pattern_two"
+    in:
+      obstacles: [0, 2, 3, 1, 0, 2, 3, 0]
+    out: 3
+  - name: "periodic_pattern_three"
+    in:
+      obstacles: [0, 3, 1, 2, 0, 3, 1, 0]
+    out: 2
+  - name: "deep_switches_one"
+    in:
+      obstacles: [0, 1, 2, 1, 3, 2, 1, 0]
+    out: 4
+  - name: "deep_switches_two"
+    in:
+      obstacles: [0, 2, 3, 2, 1, 3, 2, 0]
+    out: 4
+  - name: "deep_switches_three"
+    in:
+      obstacles: [0, 3, 1, 3, 2, 1, 3, 0]
+    out: 3
+  - name: "zero_gaps_one"
+    in:
+      obstacles: [0, 1, 0, 2, 0, 3, 0, 1, 0]
+    out: 2
+  - name: "zero_gaps_two"
+    in:
+      obstacles: [0, 2, 0, 3, 0, 1, 0, 2, 0]
+    out: 2
+  - name: "zero_gaps_three"
+    in:
+      obstacles: [0, 3, 0, 1, 0, 2, 0, 3, 0]
+    out: 1
+  - name: "long_forced_one"
+    in:
+      obstacles: [0, 1, 2, 3, 1, 2, 3, 1, 0]
+    out: 6
+  - name: "long_forced_two"
+    in:
+      obstacles: [0, 3, 2, 1, 3, 2, 1, 3, 0]
+    out: 6
+  - name: "long_mixed_one"
+    in:
+      obstacles: [0, 1, 3, 1, 2, 3, 2, 1, 0]
+    out: 3
+  - name: "long_mixed_two"
+    in:
+      obstacles: [0, 2, 1, 2, 3, 1, 3, 2, 0]
+    out: 4
+  - name: "long_mixed_three"
+    in:
+      obstacles: [0, 3, 2, 3, 1, 2, 1, 3, 0]
+    out: 4
+  - name: "stress_all_clear_a"
+    in:
+      obstacles:
+        gen: "array"
+        len: 500000
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+        elemType: "int"
+    out: 0
+  - name: "stress_all_clear_b"
+    in:
+      obstacles:
+        gen: "array"
+        len: 499999
+        of:
+          gen: "int"
+          min: 0
+          max: 0
+        elemType: "int"
+    out: 0

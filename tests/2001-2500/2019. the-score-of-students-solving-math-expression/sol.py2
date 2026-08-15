@@ -1,0 +1,36 @@
+class Solution(object):
+    def scoreOfStudents(self, s, answers):
+        """
+        :type s: str
+        :type answers: List[int]
+        :rtype: int
+        """
+        memo = {}
+        def fn(lo, hi):
+            key = (lo, hi)
+            if key in memo:
+                return memo[key]
+            if lo + 1 == hi:
+                result = set([int(s[lo])])
+                memo[key] = result
+                return result
+            ans = set()
+            for mid in range(lo + 1, hi, 2):
+                for x in fn(lo, mid):
+                    for y in fn(mid + 1, hi):
+                        if s[mid] == '+' and x + y <= 1000:
+                            ans.add(x + y)
+                        elif s[mid] == '*' and x * y <= 1000:
+                            ans.add(x * y)
+            memo[key] = ans
+            return ans
+        
+        target = eval(s)
+        cand = fn(0, len(s))
+        ans = 0
+        for x in answers:
+            if x == target:
+                ans += 5
+            elif x in cand:
+                ans += 2
+        return ans

@@ -1,0 +1,295 @@
+entry:
+  id: 1931
+  title: "painting-a-grid-with-three-different-colors"
+  params:
+    m:
+      type: int
+    n:
+      type: int
+  call:
+    cpp: "Solution().colorTheGrid({m}, {n})"
+    rust: "Solution::color_the_grid({m}, {n})"
+    python3: "Solution().colorTheGrid({m}, {n})"
+    python2: "Solution().colorTheGrid({m}, {n})"
+    ruby: "color_the_grid({m}, {n})"
+    java: "new Solution().colorTheGrid({m}, {n})"
+    csharp: "new Solution().ColorTheGrid({m}, {n})"
+    kotlin: "Solution().colorTheGrid({m}, {n})"
+    go: "colorTheGrid({m}, {n})"
+    dart: "Solution().colorTheGrid({m}, {n})"
+    swift: "Solution().colorTheGrid({m}, {n})"
+    typescript: "colorTheGrid({m}, {n})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().colorTheGrid(m, n, {result})"
+    checker: |
+      class Checker:
+          MOD = 1000000007
+
+          def colorTheGrid(self, m, n, result):
+              if not isinstance(m, int) or not isinstance(n, int):
+                  return False
+              if not (1 <= m <= 5 and 1 <= n <= 1000):
+                  return False
+              if not isinstance(result, int) or not (0 <= result < self.MOD):
+                  return False
+              rows = []
+              for mask in range(3 ** m):
+                  x = mask
+                  row = []
+                  ok = True
+                  for i in range(m):
+                      row.append(x % 3)
+                      x //= 3
+                      if i and row[i] == row[i - 1]:
+                          ok = False
+                  if ok:
+                      rows.append(tuple(row))
+              ways = [1] * len(rows)
+              for _ in range(1, n):
+                  nxt = []
+                  for current in rows:
+                      total = 0
+                      for previous, count in zip(rows, ways):
+                          if all(a != b for a, b in zip(previous, current)):
+                              total += count
+                      nxt.append(total % self.MOD)
+                  ways = nxt
+              return sum(ways) % self.MOD == result
+
+seed: 1931
+
+tests:
+  - name: "one_by_one"
+    in:
+      m: 1
+      n: 1
+    out: 3
+  - name: "one_by_two"
+    in:
+      m: 1
+      n: 2
+    out: 6
+  - name: "one_by_three"
+    in:
+      m: 1
+      n: 3
+    out: 12
+  - name: "one_by_ten"
+    in:
+      m: 1
+      n: 10
+    out: 1536
+  - name: "one_by_max_columns"
+    in:
+      m: 1
+      n: 1000
+    out: 32634808
+  - name: "two_by_one"
+    in:
+      m: 2
+      n: 1
+    out: 6
+  - name: "two_by_two"
+    in:
+      m: 2
+      n: 2
+    out: 18
+  - name: "two_by_three"
+    in:
+      m: 2
+      n: 3
+    out: 54
+  - name: "two_by_ten"
+    in:
+      m: 2
+      n: 10
+    out: 118098
+  - name: "two_by_max_columns"
+    in:
+      m: 2
+      n: 1000
+    out: 113776386
+  - name: "three_by_one"
+    in:
+      m: 3
+      n: 1
+    out: 12
+  - name: "three_by_two"
+    in:
+      m: 3
+      n: 2
+    out: 54
+  - name: "three_by_three"
+    in:
+      m: 3
+      n: 3
+    out: 246
+  - name: "three_by_five"
+    in:
+      m: 3
+      n: 5
+    out: 5118
+  - name: "three_by_ten"
+    in:
+      m: 3
+      n: 10
+    out: 10107954
+  - name: "three_by_hundred"
+    in:
+      m: 3
+      n: 100
+    out: 905790447
+  - name: "three_by_max_columns"
+    in:
+      m: 3
+      n: 1000
+    out: 650420578
+  - name: "four_by_one"
+    in:
+      m: 4
+      n: 1
+    out: 24
+  - name: "four_by_two"
+    in:
+      m: 4
+      n: 2
+    out: 162
+  - name: "four_by_three"
+    in:
+      m: 4
+      n: 3
+    out: 1122
+  - name: "four_by_five"
+    in:
+      m: 4
+      n: 5
+    out: 54450
+  - name: "four_by_ten"
+    in:
+      m: 4
+      n: 10
+    out: 896895828
+  - name: "four_by_fifty"
+    in:
+      m: 4
+      n: 50
+    out: 101279711
+  - name: "four_by_max_columns"
+    in:
+      m: 4
+      n: 1000
+    out: 281273229
+  - name: "five_by_one"
+    in:
+      m: 5
+      n: 1
+    out: 48
+  - name: "five_by_two"
+    in:
+      m: 5
+      n: 2
+    out: 486
+  - name: "five_by_three"
+    in:
+      m: 5
+      n: 3
+    out: 5118
+  - name: "example_five_by_five"
+    in:
+      m: 5
+      n: 5
+    out: 580986
+  - name: "five_by_ten"
+    in:
+      m: 5
+      n: 10
+    out: 796884854
+  - name: "five_by_twenty"
+    in:
+      m: 5
+      n: 20
+    out: 679216699
+  - name: "five_by_hundred"
+    in:
+      m: 5
+      n: 100
+    out: 714933866
+  - name: "five_by_five_hundred"
+    in:
+      m: 5
+      n: 500
+    out: 859596253
+  - name: "five_by_999"
+    in:
+      m: 5
+      n: 999
+    out: 719222548
+  - name: "five_by_max_columns"
+    in:
+      m: 5
+      n: 1000
+    out: 408208448
+  - name: "generated_small"
+    seed: 193101
+    in:
+      m:
+        gen: "int"
+        min: 1
+        max: 5
+      n:
+        gen: "int"
+        min: 1
+        max: 20
+  - name: "generated_medium"
+    seed: 193102
+    in:
+      m:
+        gen: "int"
+        min: 2
+        max: 5
+      n:
+        gen: "int"
+        min: 20
+        max: 200
+  - name: "generated_wide"
+    seed: 193103
+    in:
+      m:
+        gen: "int"
+        min: 1
+        max: 3
+      n:
+        gen: "int"
+        min: 800
+        max: 1000
+  - name: "generated_tall"
+    seed: 193104
+    in:
+      m:
+        gen: "int"
+        min: 4
+        max: 5
+      n:
+        gen: "int"
+        min: 400
+        max: 1000
+  - name: "generated_boundary"
+    seed: 193105
+    in:
+      m:
+        gen: "int"
+        min: 1
+        max: 5
+      n:
+        gen: "int"
+        min: 990
+        max: 1000

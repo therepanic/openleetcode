@@ -1,0 +1,341 @@
+entry:
+  id: 1659
+  title: maximize-grid-happiness
+  params:
+    m:
+      type: int
+    n:
+      type: int
+    introvertsCount:
+      type: int
+    extrovertsCount:
+      type: int
+  call:
+    cpp: "Solution().getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    rust: "Solution::get_max_grid_happiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    python3: "Solution().getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    python2: "Solution().getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    ruby: "get_max_grid_happiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    java: "new Solution().getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    csharp: "new Solution().GetMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    kotlin: "Solution().getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    go: "getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    dart: "Solution().getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    swift: "Solution().getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+    typescript: "getMaxGridHappiness({m}, {n}, {introvertsCount}, {extrovertsCount})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(m, n, introvertsCount, extrovertsCount, {result})"
+    checker: |
+      from functools import lru_cache
+      class Checker:
+          def check(self, m, n, introvertsCount, extrovertsCount, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if n > m:
+                  m, n = n, m
+              rows = []
+              for mask in range(3 ** n):
+                  x = mask
+                  row = []
+                  for _ in range(n):
+                      row.append(x % 3)
+                      x //= 3
+                  rows.append(tuple(row))
+              def stats(row):
+                  h = ii = ee = 0
+                  for i, v in enumerate(row):
+                      if v == 1:
+                          h += 120
+                          ii += 1
+                          if i and row[i - 1]: h -= 30
+                          if i + 1 < n and row[i + 1]: h -= 30
+                      elif v == 2:
+                          h += 40
+                          ee += 1
+                          if i and row[i - 1]: h += 20
+                          if i + 1 < n and row[i + 1]: h += 20
+                  return h, ii, ee
+              st = {r: stats(r) for r in rows}
+              def between(a, b):
+                  s = 0
+                  for u, v in zip(a, b):
+                      if u and v:
+                          s += -30 if u == 1 else 20
+                          s += -30 if v == 1 else 20
+                  return s
+              @lru_cache(None)
+              def dp(r, ic, ec, prev):
+                  if r == m:
+                      return 0
+                  best = 0
+                  for row in rows:
+                      h, ii, ee = st[row]
+                      if ii <= ic and ee <= ec:
+                          best = max(best, h + between(prev, row) + dp(r + 1, ic - ii, ec - ee, row))
+                  return best
+              return result == dp(0, introvertsCount, extrovertsCount, (0,) * n)
+
+seed: 1659
+
+tests:
+  - name: example-1
+    in:
+      m: 2
+      n: 3
+      introvertsCount: 1
+      extrovertsCount: 2
+  - name: example-2
+    in:
+      m: 3
+      n: 1
+      introvertsCount: 2
+      extrovertsCount: 1
+  - name: example-3
+    in:
+      m: 2
+      n: 2
+      introvertsCount: 4
+      extrovertsCount: 0
+  - name: empty-grid-quotas
+    in:
+      m: 1
+      n: 1
+      introvertsCount: 0
+      extrovertsCount: 0
+  - name: one-introvert
+    in:
+      m: 1
+      n: 1
+      introvertsCount: 1
+      extrovertsCount: 0
+  - name: one-extrovert
+    in:
+      m: 1
+      n: 1
+      introvertsCount: 0
+      extrovertsCount: 1
+  - name: single-cell-both
+    in:
+      m: 1
+      n: 1
+      introvertsCount: 1
+      extrovertsCount: 1
+  - name: one-row-two-introverts
+    in:
+      m: 1
+      n: 2
+      introvertsCount: 2
+      extrovertsCount: 0
+  - name: one-row-two-extroverts
+    in:
+      m: 1
+      n: 2
+      introvertsCount: 0
+      extrovertsCount: 2
+  - name: one-row-mixed
+    in:
+      m: 1
+      n: 3
+      introvertsCount: 1
+      extrovertsCount: 2
+  - name: one-column-mixed
+    in:
+      m: 4
+      n: 1
+      introvertsCount: 2
+      extrovertsCount: 2
+  - name: square-2-empty
+    in:
+      m: 2
+      n: 2
+      introvertsCount: 0
+      extrovertsCount: 0
+  - name: square-2-intros
+    in:
+      m: 2
+      n: 2
+      introvertsCount: 2
+      extrovertsCount: 0
+  - name: square-2-extros
+    in:
+      m: 2
+      n: 2
+      introvertsCount: 0
+      extrovertsCount: 2
+  - name: square-2-balanced
+    in:
+      m: 2
+      n: 2
+      introvertsCount: 2
+      extrovertsCount: 2
+  - name: square-2-capacity
+    in:
+      m: 2
+      n: 2
+      introvertsCount: 4
+      extrovertsCount: 4
+  - name: rectangle-2x3-empty
+    in:
+      m: 2
+      n: 3
+      introvertsCount: 0
+      extrovertsCount: 0
+  - name: rectangle-2x3-intros
+    in:
+      m: 2
+      n: 3
+      introvertsCount: 3
+      extrovertsCount: 0
+  - name: rectangle-2x3-extros
+    in:
+      m: 2
+      n: 3
+      introvertsCount: 0
+      extrovertsCount: 3
+  - name: rectangle-2x3-balanced
+    in:
+      m: 2
+      n: 3
+      introvertsCount: 3
+      extrovertsCount: 3
+  - name: rectangle-2x4-intros
+    in:
+      m: 2
+      n: 4
+      introvertsCount: 4
+      extrovertsCount: 0
+  - name: rectangle-2x4-extros
+    in:
+      m: 2
+      n: 4
+      introvertsCount: 0
+      extrovertsCount: 4
+  - name: rectangle-2x4-mixed
+    in:
+      m: 2
+      n: 4
+      introvertsCount: 2
+      extrovertsCount: 4
+  - name: rectangle-3x3-sparse
+    in:
+      m: 3
+      n: 3
+      introvertsCount: 1
+      extrovertsCount: 1
+  - name: rectangle-3x3-intros
+    in:
+      m: 3
+      n: 3
+      introvertsCount: 6
+      extrovertsCount: 0
+  - name: rectangle-3x3-extros
+    in:
+      m: 3
+      n: 3
+      introvertsCount: 0
+      extrovertsCount: 6
+  - name: rectangle-3x3-balanced
+    in:
+      m: 3
+      n: 3
+      introvertsCount: 4
+      extrovertsCount: 4
+  - name: rectangle-3x4-mixed
+    in:
+      m: 3
+      n: 4
+      introvertsCount: 5
+      extrovertsCount: 1
+  - name: rectangle-3x4-reverse
+    in:
+      m: 3
+      n: 4
+      introvertsCount: 1
+      extrovertsCount: 5
+  - name: rectangle-4x3-balanced
+    in:
+      m: 4
+      n: 3
+      introvertsCount: 6
+      extrovertsCount: 6
+  - name: rectangle-4x4-sparse
+    in:
+      m: 4
+      n: 4
+      introvertsCount: 2
+      extrovertsCount: 2
+  - name: rectangle-4x4-balanced
+    in:
+      m: 4
+      n: 4
+      introvertsCount: 6
+      extrovertsCount: 6
+  - name: generated-5x1
+    in:
+      m: 5
+      n: 1
+      introvertsCount:
+        gen: int
+        min: 0
+        max: 5
+      extrovertsCount:
+        gen: int
+        min: 0
+        max: 5
+  - name: generated-5x2
+    in:
+      m: 5
+      n: 2
+      introvertsCount:
+        gen: int
+        min: 0
+        max: 6
+      extrovertsCount:
+        gen: int
+        min: 0
+        max: 6
+  - name: generated-5x3-intro
+    in:
+      m: 5
+      n: 3
+      introvertsCount:
+        gen: int
+        min: 0
+        max: 6
+      extrovertsCount:
+        gen: int
+        min: 0
+        max: 6
+  - name: generated-5x3-extro
+    in:
+      m: 5
+      n: 3
+      introvertsCount:
+        gen: int
+        min: 0
+        max: 6
+      extrovertsCount:
+        gen: int
+        min: 0
+        max: 6
+  - name: generated-5x4
+    in:
+      m: 5
+      n: 4
+      introvertsCount:
+        gen: int
+        min: 0
+        max: 6
+      extrovertsCount:
+        gen: int
+        min: 0
+        max: 6

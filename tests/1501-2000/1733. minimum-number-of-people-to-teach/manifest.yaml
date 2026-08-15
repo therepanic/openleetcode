@@ -1,0 +1,574 @@
+entry:
+  id: 1733
+  title: "minimum-number-of-people-to-teach"
+  params:
+    n:
+      type: int
+    languages:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    friendships:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minimumTeachings({n}, {languages}, {friendships})"
+    rust: "Solution::minimum_teachings({n}, {languages}, {friendships})"
+    python3: "Solution().minimumTeachings({n}, {languages}, {friendships})"
+    python2: "Solution().minimumTeachings({n}, {languages}, {friendships})"
+    ruby: "minimum_teachings({n}, {languages}, {friendships})"
+    java: "new Solution().minimumTeachings({n}, {languages}, {friendships})"
+    csharp: "new Solution().MinimumTeachings({n}, {languages}, {friendships})"
+    kotlin: "Solution().minimumTeachings({n}, {languages}, {friendships})"
+    go: "minimumTeachings({n}, {languages}, {friendships})"
+    dart: "Solution().minimumTeachings({n}, {languages}, {friendships})"
+    swift: "Solution().minimumTeachings({n}, {languages}, {friendships})"
+    typescript: "minimumTeachings({n}, {languages}, {friendships})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().minimumTeachings(n, languages, friendships, {result})"
+    checker: |
+      class Checker:
+          def minimumTeachings(self, n, languages, friendships, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              known = [set(row) for row in languages]
+              involved = set()
+              for a, b in friendships:
+                  a -= 1
+                  b -= 1
+                  if known[a].isdisjoint(known[b]):
+                      involved.add(a)
+                      involved.add(b)
+              expected = len(involved)
+              if involved:
+                  expected = min(sum(lang not in known[user] for user in involved)
+                                 for lang in range(1, n + 1))
+              else:
+                  expected = 0
+              return result == expected
+
+seed: 17331733
+
+tests:
+  - name: example-one
+    in:
+      n: 2
+      languages:
+        - [1]
+        - [2]
+        - [1, 2]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+  - name: example-two
+    in:
+      n: 3
+      languages:
+        - [2]
+        - [1, 3]
+        - [1, 2]
+        - [3]
+      friendships:
+        - [1, 4]
+        - [1, 2]
+        - [3, 4]
+        - [2, 3]
+  - name: minimum-two-users
+    in:
+      n: 3
+      languages:
+        - [2]
+        - [1]
+      friendships:
+        - [1, 2]
+  - name: already-compatible
+    in:
+      n: 3
+      languages:
+        - [1]
+        - [1, 2]
+        - [2, 3]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+  - name: one-conflicting-pair
+    in:
+      n: 4
+      languages:
+        - [1]
+        - [2]
+      friendships:
+        - [1, 2]
+  - name: same-teaching-language
+    in:
+      n: 4
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+  - name: best-existing-language
+    in:
+      n: 3
+      languages:
+        - [1]
+        - [2]
+        - [2]
+        - [3]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+  - name: no-friendships
+    in:
+      n: 5
+      languages:
+        - [1]
+        - [2]
+        - [3]
+      friendships:
+        - [1, 2]
+  - name: isolated-compatible-user
+    in:
+      n: 3
+      languages:
+        - [1]
+        - [2]
+        - [1, 2]
+        - [3]
+      friendships:
+        - [1, 2]
+  - name: chain-conflicts
+    in:
+      n: 3
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [1, 2]
+        - [2, 3]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+  - name: complete-three
+    in:
+      n: 3
+      languages:
+        - [1]
+        - [2]
+        - [3]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+  - name: complete-four-with-pairs
+    in:
+      n: 4
+      languages:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [1, 4]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 3]
+        - [2, 4]
+        - [3, 4]
+  - name: duplicate-single-language
+    in:
+      n: 2
+      languages:
+        - [1]
+        - [1]
+        - [2]
+        - [2]
+      friendships:
+        - [1, 3]
+        - [2, 4]
+  - name: one-user-knows-all
+    in:
+      n: 5
+      languages:
+        - [1, 2, 3, 4, 5]
+        - [1]
+        - [2]
+        - [3]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+  - name: language-five-optimal
+    in:
+      n: 5
+      languages:
+        - [1, 5]
+        - [2, 5]
+        - [3]
+        - [4]
+        - [5]
+      friendships:
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+  - name: two-disconnected-conflicts
+    in:
+      n: 4
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [1, 2]
+        - [3, 4]
+      friendships:
+        - [1, 2]
+        - [3, 4]
+  - name: overlapping-conflicts
+    in:
+      n: 4
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [1, 4]
+        - [2, 4]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [1, 5]
+  - name: mixed-compatible-and-bad
+    in:
+      n: 6
+      languages:
+        - [1, 2]
+        - [2, 3]
+        - [4]
+        - [5]
+        - [4, 6]
+        - [1, 6]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+  - name: all-pairs-already-good
+    in:
+      n: 3
+      languages:
+        - [1, 2]
+        - [2, 3]
+        - [1, 3]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+  - name: minimum-zero-with-unused-language
+    in:
+      n: 500
+      languages:
+        - [1]
+        - [1]
+      friendships:
+        - [1, 2]
+  - name: n-two-all-conflict
+    in:
+      n: 2
+      languages:
+        - [1]
+        - [2]
+        - [1]
+        - [2]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+  - name: repeated-optimal-language
+    in:
+      n: 6
+      languages:
+        - [1]
+        - [2]
+        - [1, 3]
+        - [4]
+        - [1, 5]
+        - [6]
+      friendships:
+        - [1, 2]
+        - [2, 4]
+        - [4, 6]
+        - [1, 6]
+  - name: dense-five
+    in:
+      n: 5
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 4]
+        - [3, 5]
+        - [4, 5]
+  - name: six-language-cycle
+    in:
+      n: 6
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [1, 6]
+  - name: varied-language-sets
+    in:
+      n: 7
+      languages:
+        - [1, 2, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [1, 6]
+        - [2, 7]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+  - name: two-user-max-language
+    in:
+      n: 500
+      languages:
+        - [500]
+        - [1]
+      friendships:
+        - [1, 2]
+  - name: ten-users-sparse
+    in:
+      n: 10
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+  - name: ten-users-dense
+    in:
+      n: 10
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+        - [9]
+        - [10]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [4, 5]
+        - [4, 6]
+        - [5, 6]
+  - name: users-with-many-languages
+    in:
+      n: 8
+      languages:
+        - [1, 2, 3, 4]
+        - [2, 3, 5, 6]
+        - [1, 4, 7, 8]
+        - [3, 5, 7]
+        - [2, 4, 6, 8]
+        - [1, 3, 5, 7]
+        - [2, 4, 6, 8]
+        - [1, 2, 7, 8]
+      friendships:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+  - name: three-disjoint-pairs
+    in:
+      n: 6
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+      friendships:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+  - name: all-users-share-fallback
+    in:
+      n: 4
+      languages:
+        - [1, 2]
+        - [2, 3]
+        - [1, 3]
+        - [1, 2, 3]
+        - [4]
+      friendships:
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+  - name: twelve-users
+    in:
+      n: 12
+      languages:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+        - [5]
+        - [6]
+        - [7]
+        - [8]
+        - [9]
+        - [10]
+        - [11]
+        - [12]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+  - name: mixed-equal-sets
+    in:
+      n: 5
+      languages:
+        - [1, 2]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [1, 5]
+      friendships:
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+  - name: maximal-n-small-m
+    in:
+      n: 500
+      languages:
+        - [1, 250, 500]
+        - [2, 251, 500]
+        - [3, 252]
+        - [4, 253]
+        - [5, 254]
+      friendships:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+  - name: thirteen-overlapping
+    in:
+      n: 13
+      languages:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [1, 13]
+      friendships:
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [4, 6]
+        - [5, 7]
+        - [6, 8]
+        - [7, 9]
+        - [8, 10]
+        - [9, 11]
+        - [10, 12]
+        - [11, 13]

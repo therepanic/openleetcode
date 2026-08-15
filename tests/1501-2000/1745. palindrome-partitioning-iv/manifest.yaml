@@ -1,0 +1,224 @@
+entry:
+  id: 1745
+  title: "palindrome-partitioning-iv"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().checkPartitioning({s})"
+    rust: "Solution::check_partitioning({s})"
+    python3: "Solution().checkPartitioning({s})"
+    python2: "Solution().checkPartitioning({s})"
+    ruby: "check_partitioning({s})"
+    java: "new Solution().checkPartitioning({s})"
+    csharp: "new Solution().CheckPartitioning({s})"
+    kotlin: "Solution().checkPartitioning({s})"
+    go: "checkPartitioning({s})"
+    dart: "Solution().checkPartitioning({s})"
+    swift: "Solution().checkPartitioning({s})"
+    typescript: "checkPartitioning({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().checkPartitioning(s, {result})"
+    checker: |
+      class Checker:
+          def checkPartitioning(self, s, result):
+              if not isinstance(result, bool):
+                  return False
+              n = len(s)
+              pal = [[False] * n for _ in range(n)]
+              for i in range(n):
+                  pal[i][i] = True
+              for length in range(2, n + 1):
+                  for left in range(n - length + 1):
+                      right = left + length - 1
+                      pal[left][right] = s[left] == s[right] and (length == 2 or pal[left + 1][right - 1])
+              expected = False
+              for first_end in range(n - 2):
+                  if not pal[0][first_end]:
+                      continue
+                  for second_end in range(first_end + 1, n - 1):
+                      if pal[first_end + 1][second_end] and pal[second_end + 1][n - 1]:
+                          expected = True
+                          break
+                  if expected:
+                      break
+              return result == expected
+
+seed: 17451745
+
+tests:
+  - name: example-one
+    in:
+      s: "abcbdd"
+    out: true
+  - name: example-two
+    in:
+      s: "bcbddxy"
+    out: false
+  - name: minimum-three-equal
+    in:
+      s: "aaa"
+    out: true
+  - name: minimum-three-distinct
+    in:
+      s: "abc"
+    out: true
+  - name: three-palindrome-blocks
+    in:
+      s: "aabbcc"
+    out: true
+  - name: three-letter-palindrome
+    in:
+      s: "aba"
+    out: true
+  - name: pair-and-singleton
+    in:
+      s: "aab"
+    out: true
+  - name: singleton-pair
+    in:
+      s: "abb"
+    out: true
+  - name: all-equal-four
+    in:
+      s: "aaaa"
+    out: true
+  - name: all-equal-five
+    in:
+      s: "aaaaa"
+    out: true
+  - name: no-two-letter-split
+    in:
+      s: "abcd"
+    out: false
+  - name: alternating-four
+    in:
+      s: "abab"
+    out: false
+  - name: alternating-five
+    in:
+      s: "ababa"
+    out: true
+  - name: nested-palindrome
+    in:
+      s: "abacaba"
+    out: true
+  - name: mirrored-with-center
+    in:
+      s: "aabbaa"
+    out: true
+  - name: mirrored-six-no-split
+    in:
+      s: "abccba"
+    out: true
+  - name: example-like-negative
+    in:
+      s: "abcdef"
+    out: false
+  - name: separated-pairs
+    in:
+      s: "aabbccdd"
+    out: false
+  - name: double-prefix-with-singletons
+    in:
+      s: "aabc"
+    out: true
+  - name: palindrome-prefix
+    in:
+      s: "abaef"
+    out: true
+  - name: palindrome-suffix
+    in:
+      s: "efaba"
+    out: true
+  - name: long-middle-palindrome
+    in:
+      s: "aabccbaa"
+    out: true
+  - name: overlapping-options
+    in:
+      s: "abacdcaba"
+    out: true
+  - name: repeated-two-symbols
+    in:
+      s: "abababab"
+    out: false
+  - name: repeated-three-symbols
+    in:
+      s: "abcabcabc"
+    out: false
+  - name: blocks-with-center
+    in:
+      s: "aaabaaa"
+    out: true
+  - name: near-palindrome
+    in:
+      s: "abccbx"
+    out: true
+  - name: many-singletons-with-pair
+    in:
+      s: "abcdefghijjk"
+    out: false
+  - name: three-long-blocks
+    in:
+      s: "abccbaefggfehijjih"
+    out: true
+  - name: palindromic-whole-string
+    in:
+      s: "racecar"
+    out: true
+  - name: whole-palindrome-seven
+    in:
+      s: "abccbaa"
+    out: true
+  - name: mixed-letters
+    in:
+      s: "cabbaefgg"
+    out: false
+  - name: no-repeated-letter
+    in:
+      s: "abcdefghijkl"
+    out: false
+  - name: repeated-prefix-and-suffix
+    in:
+      s: "aabxxbaa"
+    out: true
+  - name: generated-binary-medium
+    in:
+      s:
+        gen: "str"
+        len: 257
+        alphabet: "ab"
+  - name: generated-small-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "abc"
+  - name: generated-medium-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 1500
+        alphabet: "abcdef"
+  - name: generated-full-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 1999
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-maximum
+    in:
+      s:
+        gen: "str"
+        len: 2000
+        alphabet: "ab"

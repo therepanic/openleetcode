@@ -1,0 +1,225 @@
+entry:
+  id: 1525
+  title: "number-of-good-ways-to-split-a-string"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().numSplits({s})"
+    rust: "Solution::num_splits({s})"
+    python3: "Solution().numSplits({s})"
+    python2: "Solution().numSplits({s})"
+    ruby: "num_splits({s})"
+    java: "new Solution().numSplits({s})"
+    csharp: "new Solution().NumSplits({s})"
+    kotlin: "Solution().numSplits({s})"
+    go: "numSplits({s})"
+    dart: "Solution().numSplits({s})"
+    swift: "Solution().numSplits({s})"
+    typescript: "numSplits({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().numSplits(s, {result})"
+    checker: |
+      class Checker:
+          def numSplits(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(s, str) or not (1 <= len(s) <= 100000):
+                  return False
+              if any(c < 'a' or c > 'z' for c in s):
+                  return False
+              from collections import Counter
+              left = set()
+              right = Counter(s)
+              expected = 0
+              for c in s[:-1]:
+                  left.add(c)
+                  right[c] -= 1
+                  if right[c] == 0:
+                      del right[c]
+                  if len(left) == len(right):
+                      expected += 1
+              return result == expected
+
+seed: 1525
+
+tests:
+  - name: two-equal
+    in:
+      s: "aa"
+    out: 1
+  - name: two-different
+    in:
+      s: "ab"
+    out: 1
+  - name: three-same
+    in:
+      s: "aaa"
+    out: 2
+  - name: repeated-prefix
+    in:
+      s: "aab"
+    out: 1
+  - name: alternating-three
+    in:
+      s: "aba"
+    out: 0
+  - name: three-distinct
+    in:
+      s: "abc"
+    out: 0
+  - name: four-distinct
+    in:
+      s: "abcd"
+    out: 1
+  - name: all-same-four
+    in:
+      s: "aaaa"
+    out: 3
+  - name: first-repeat
+    in:
+      s: "aabc"
+    out: 0
+  - name: two-pairs
+    in:
+      s: "aacc"
+    out: 1
+  - name: late-repeat
+    in:
+      s: "aaca"
+    out: 0
+  - name: example-one
+    in:
+      s: "aacaba"
+    out: 2
+  - name: repeated-alphabet
+    in:
+      s: "abcabc"
+    out: 1
+  - name: long-tail-repeat
+    in:
+      s: "aaaaab"
+    out: 1
+  - name: alternating-six
+    in:
+      s: "ababab"
+    out: 3
+  - name: asymmetric-seven
+    in:
+      s: "abacaba"
+    out: 0
+  - name: three-pairs
+    in:
+      s: "aabbcc"
+    out: 1
+  - name: all-distinct-five
+    in:
+      s: "abcde"
+    out: 0
+  - name: six-distinct-pairs
+    in:
+      s: "aabbccddeeff"
+    out: 1
+  - name: all-z-six
+    in:
+      s: "zzzzzz"
+    out: 5
+  - name: six-unique-word
+    in:
+      s: "qwerty"
+    out: 1
+  - name: alphabet-forward
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+    out: 1
+  - name: alphabet-repeated
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+    out: 1
+  - name: fifty-a-then-b
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: 1
+  - name: alternating-hundred
+    in:
+      s: "abababababababababababababababababababababababababababababababababababababababababababababababababab"
+    out: 97
+  - name: abc-cycle-hundred
+    in:
+      s: "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabca"
+    out: 95
+  - name: balanced-pairs
+    in:
+      s: "aabbccddeeffgghhiijjkkllmmnn"
+    out: 1
+  - name: five-cycle
+    in:
+      s: "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde"
+    out: 91
+  - name: four-block-hundred
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccccccccccccccccddddddddddddddddddddddddd"
+    out: 1
+  - name: single-character
+    in:
+      s: "a"
+    out: 0
+  - name: mirrored-six
+    in:
+      s: "aabbaa"
+    out: 1
+  - name: repeated-triple
+    in:
+      s: "abcabcabc"
+    out: 4
+  - name: alternating-eight
+    in:
+      s: "abababab"
+    out: 5
+  - name: mirrored-three-symbols
+    in:
+      s: "abccba"
+    out: 1
+  - name: mixed-six
+    in:
+      s: "aabbaba"
+    out: 3
+  - name: generated-short
+    in:
+      s:
+        gen: "str"
+        len: 1
+        alphabet: "abcz"
+  - name: generated-medium
+    in:
+      s:
+        gen: "str"
+        len: 257
+        alphabet: "abcdef"
+  - name: generated-large-binary
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "ab"
+  - name: generated-large-lowercase
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklm"
+  - name: generated-large-full-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

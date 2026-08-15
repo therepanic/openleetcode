@@ -1,0 +1,227 @@
+entry:
+  id: 1960
+  title: "maximum-product-of-the-length-of-two-palindromic-substrings"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().maxProduct({s})"
+    rust: "Solution::max_product({s})"
+    python3: "Solution().maxProduct({s})"
+    python2: "Solution().maxProduct({s})"
+    ruby: "max_product({s})"
+    java: "new Solution().maxProduct({s})"
+    csharp: "new Solution().MaxProduct({s})"
+    kotlin: "Solution().maxProduct({s})"
+    go: "maxProduct({s})"
+    dart: "Solution().maxProduct({s})"
+    swift: "Solution().maxProduct({s})"
+    typescript: "maxProduct({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxProduct(s, {result})"
+    checker: |
+      class Checker:
+          def maxProduct(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(s)
+              if n < 2 or n > 100000 or any(c < 'a' or c > 'z' for c in s):
+                  return False
+              d = [0] * n
+              left_center = 0
+              right_center = -1
+              for i in range(n):
+                  radius = 1 if i > right_center else min(d[left_center + right_center - i], right_center - i + 1)
+                  while i - radius >= 0 and i + radius < n and s[i - radius] == s[i + radius]:
+                      radius += 1
+                  d[i] = radius
+                  if i + radius - 1 > right_center:
+                      left_center = i - radius + 1
+                      right_center = i + radius - 1
+              ending = [0] * n
+              starting = [0] * n
+              for i, radius in enumerate(d):
+                  length = 2 * radius - 1
+                  ending[i + radius - 1] = max(ending[i + radius - 1], length)
+                  starting[i - radius + 1] = max(starting[i - radius + 1], length)
+              for i in range(n - 2, -1, -1):
+                  ending[i] = max(ending[i], ending[i + 1] - 2)
+              for i in range(1, n):
+                  ending[i] = max(ending[i], ending[i - 1])
+                  starting[i] = max(starting[i], starting[i - 1] - 2)
+              for i in range(n - 2, -1, -1):
+                  starting[i] = max(starting[i], starting[i + 1])
+              expected = max(ending[i] * starting[i + 1] for i in range(n - 1))
+              return result == expected
+
+seed: 19601960
+
+tests:
+  - name: "two_different"
+    in:
+      s: "ab"
+    out: 1
+  - name: "two_equal"
+    in:
+      s: "aa"
+    out: 1
+  - name: "single_center"
+    in:
+      s: "aba"
+    out: 1
+  - name: "short_run"
+    in:
+      s: "aaa"
+    out: 1
+  - name: "example_one"
+    in:
+      s: "ababbb"
+    out: 9
+  - name: "example_two"
+    in:
+      s: "zaaaxbbby"
+    out: 9
+  - name: "no_long_palindromes"
+    in:
+      s: "abcde"
+    out: 1
+  - name: "two_pairs"
+    in:
+      s: "aabb"
+    out: 1
+  - name: "even_palindrome_only"
+    in:
+      s: "abba"
+    out: 1
+  - name: "classic_long"
+    in:
+      s: "racecar"
+    out: 5
+  - name: "even_run"
+    in:
+      s: "aaaaaa"
+    out: 9
+  - name: "odd_run"
+    in:
+      s: "aaaaaaa"
+    out: 9
+  - name: "overlapping_candidates"
+    in:
+      s: "abababa"
+    out: 9
+  - name: "two_long_palindromes"
+    in:
+      s: "abcbaabcba"
+    out: 25
+  - name: "alternating_long"
+    in:
+      s: "abababababababababab"
+    out: 99
+  - name: "large_uniform"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 625
+  - name: "large_alternating"
+    in:
+      s: "ababababababababababababababababababababababababab"
+    out: 625
+  - name: "mixed_center"
+    in:
+      s: "abacaba"
+    out: 9
+  - name: "two_five_palindromes"
+    in:
+      s: "xyzyxabcba"
+    out: 25
+  - name: "nested_palindrome"
+    in:
+      s: "aabaa"
+    out: 3
+  - name: "nested_separated"
+    in:
+      s: "aaabaaa"
+    out: 9
+  - name: "even_block_boundary"
+    in:
+      s: "abcddcbaefg"
+    out: 1
+  - name: "uniform_blocks"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbb"
+    out: 441
+  - name: "all_distinct"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+    out: 1
+  - name: "one_long_palindrome"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 2499
+  - name: "repeated_triplet"
+    in:
+      s: "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+    out: 1
+  - name: "edge_letter_left"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+    out: 2401
+  - name: "edge_letter_right"
+    in:
+      s: "xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 2401
+  - name: "two_even_blocks"
+    in:
+      s: "abccbaabccba"
+    out: 1
+  - name: "word_palindromes"
+    in:
+      s: "civiclevel"
+    out: 25
+  - name: "two_odd_words"
+    in:
+      s: "noonmadam"
+    out: 5
+  - name: "generated_uniform"
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "a"
+    seed: 19601
+  - name: "generated_binary"
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "ab"
+    seed: 19602
+  - name: "generated_small_alphabet"
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "abc"
+    seed: 19603
+  - name: "generated_full_alphabet"
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+    seed: 19604
+  - name: "generated_repeated_pattern"
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "abcd"
+    seed: 19605

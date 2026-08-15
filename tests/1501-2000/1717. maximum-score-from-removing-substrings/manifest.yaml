@@ -1,0 +1,317 @@
+entry:
+  id: 1717
+  title: maximum-score-from-removing-substrings
+  params:
+    s:
+      type: string
+    x:
+      type: int
+    y:
+      type: int
+  call:
+    cpp: "Solution().maximumGain({s}, {x}, {y})"
+    rust: "Solution::maximum_gain({s}, {x}, {y})"
+    python3: "Solution().maximumGain({s}, {x}, {y})"
+    python2: "Solution().maximumGain({s}, {x}, {y})"
+    ruby: "maximum_gain({s}, {x}, {y})"
+    java: "new Solution().maximumGain({s}, {x}, {y})"
+    csharp: "new Solution().MaximumGain({s}, {x}, {y})"
+    kotlin: "Solution().maximumGain({s}, {x}, {y})"
+    go: "maximumGain({s}, {x}, {y})"
+    dart: "Solution().maximumGain({s}, {x}, {y})"
+    swift: "Solution().maximumGain({s}, {x}, {y})"
+    typescript: "maximumGain({s}, {x}, {y})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maximumGain(s, x, y, {result})"
+    checker: |
+      class Checker:
+          def maximumGain(self, s, x, y, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if x >= y:
+                  first, second = 'a', 'b'
+                  high, low = x, y
+              else:
+                  first, second = 'b', 'a'
+                  high, low = y, x
+              pending_first = 0
+              pending_second = 0
+              expected = 0
+              for ch in s:
+                  if ch == first:
+                      pending_first += 1
+                  elif ch == second:
+                      if pending_first:
+                          pending_first -= 1
+                          expected += high
+                      else:
+                          pending_second += 1
+                  else:
+                      expected += min(pending_first, pending_second) * low
+                      pending_first = 0
+                      pending_second = 0
+              expected += min(pending_first, pending_second) * low
+              return result == expected
+
+seed: 1717
+
+tests:
+  - name: example-one
+    in:
+      s: "cdbcbbaaabab"
+      x: 4
+      y: 5
+    out: 19
+  - name: example-two
+    in:
+      s: "aabbaaxybbaabb"
+      x: 5
+      y: 4
+    out: 20
+  - name: single-a
+    in:
+      s: "a"
+      x: 1
+      y: 1
+    out: 0
+  - name: single-other
+    in:
+      s: "z"
+      x: 10000
+      y: 1
+    out: 0
+  - name: one-ab
+    in:
+      s: "ab"
+      x: 7
+      y: 3
+    out: 7
+  - name: one-ba
+    in:
+      s: "ba"
+      x: 7
+      y: 3
+    out: 3
+  - name: reverse-price
+    in:
+      s: "ab"
+      x: 3
+      y: 7
+    out: 3
+  - name: alternating
+    in:
+      s: "abababab"
+      x: 4
+      y: 9
+    out: 31
+  - name: reverse-alternating
+    in:
+      s: "babababa"
+      x: 4
+      y: 9
+    out: 36
+  - name: all-a
+    in:
+      s: "aaaaaaaaaa"
+      x: 10
+      y: 20
+    out: 0
+  - name: all-b
+    in:
+      s: "bbbbbbbbbb"
+      x: 10
+      y: 20
+    out: 0
+  - name: all-separators
+    in:
+      s: "cccccccc"
+      x: 1
+      y: 10000
+    out: 0
+  - name: separated-pairs
+    in:
+      s: "abxabxab"
+      x: 8
+      y: 2
+    out: 24
+  - name: separated-reverse-pairs
+    in:
+      s: "baxybaxyba"
+      x: 8
+      y: 2
+    out: 6
+  - name: mixed-blocks
+    in:
+      s: "aabbababbaba"
+      x: 10
+      y: 1
+    out: 51
+  - name: equal-prices
+    in:
+      s: "bbaababbab"
+      x: 6
+      y: 6
+    out: 24
+  - name: max-prices
+    in:
+      s: "abababababab"
+      x: 10000
+      y: 10000
+    out: 60000
+  - name: low-prices
+    in:
+      s: "bbaabb"
+      x: 1
+      y: 1
+    out: 2
+  - name: nested-ab
+    in:
+      s: "aaabbb"
+      x: 9
+      y: 4
+    out: 27
+  - name: nested-ba
+    in:
+      s: "bbbaaa"
+      x: 9
+      y: 4
+    out: 12
+  - name: crossover
+    in:
+      s: "babababxabab"
+      x: 11
+      y: 2
+    out: 55
+  - name: crossover-reverse
+    in:
+      s: "abababaxbaba"
+      x: 2
+      y: 11
+    out: 55
+  - name: noise-between
+    in:
+      s: "acbdabcdbdab"
+      x: 13
+      y: 5
+    out: 26
+  - name: long-run
+    in:
+      s: "aaaaabbbbbababab"
+      x: 17
+      y: 19
+    out: 142
+  - name: digit-noise
+    in:
+      s: "xyabuvwbayzab"
+      x: 4
+      y: 12
+    out: 20
+  - name: minimum-score
+    in:
+      s: "zzabzzba"
+      x: 1
+      y: 1
+    out: 2
+  - name: maximum-score
+    in:
+      s: "ababab"
+      x: 10000
+      y: 1
+    out: 30000
+  - name: imbalance-left
+    in:
+      s: "aaaaabb"
+      x: 5
+      y: 8
+    out: 10
+  - name: imbalance-right
+    in:
+      s: "bbbba"
+      x: 5
+      y: 8
+    out: 8
+  - name: repeated-separators
+    in:
+      s: "abcccbaccab"
+      x: 7
+      y: 11
+    out: 25
+  - name: generator-balanced
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abc"
+      x:
+        gen: "int"
+        min: 1
+        max: 10000
+      y:
+        gen: "int"
+        min: 1
+        max: 10000
+  - name: generator-binary
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "ab"
+      x:
+        gen: "int"
+        min: 1
+        max: 10000
+      y:
+        gen: "int"
+        min: 1
+        max: 10000
+  - name: generator-separators
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abxyz"
+      x:
+        gen: "int"
+        min: 1
+        max: 10000
+      y:
+        gen: "int"
+        min: 1
+        max: 10000
+  - name: generator-heavy-a
+    in:
+      s:
+        gen: "str"
+        len: 75000
+        alphabet: "aaabc"
+      x:
+        gen: "int"
+        min: 1
+        max: 10000
+      y:
+        gen: "int"
+        min: 1
+        max: 10000
+  - name: generator-heavy-b
+    in:
+      s:
+        gen: "str"
+        len: 75001
+        alphabet: "bbbac"
+      x:
+        gen: "int"
+        min: 1
+        max: 10000
+      y:
+        gen: "int"
+        min: 1
+        max: 10000

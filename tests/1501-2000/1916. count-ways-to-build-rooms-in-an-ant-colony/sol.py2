@@ -1,0 +1,56 @@
+class Solution(object):
+
+    def waysToBuildRooms(self, prevRoom):
+
+        """
+
+        :type prevRoom: List[int]
+
+        :rtype: int
+
+        """
+
+        from collections import defaultdict
+
+        def comb(n, k):
+            if k < 0 or k > n:
+                return 0
+            k = min(k, n - k)
+            value = 1
+            for i in range(1, k + 1):
+                value = value * (n - k + i) // i
+            return value
+
+        MOD = 1000000007
+
+        tree = defaultdict(list)
+
+        for i, p in enumerate(prevRoom):
+
+            if p >= 0:
+
+                tree[p].append(i)
+
+        def dfs(node):
+
+            if not tree[node]:
+
+                return 1, 1
+
+            total_size = 0
+
+            ways = 1
+
+            for child in tree[node]:
+
+                child_size, child_ways = dfs(child)
+
+                total_size += child_size
+
+                ways = ways * comb(total_size, child_size) % MOD
+
+                ways = ways * child_ways % MOD
+
+            return total_size + 1, ways
+
+        return dfs(0)[1]

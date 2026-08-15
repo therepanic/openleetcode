@@ -1,0 +1,18 @@
+import heapq
+
+class Solution(object):
+    def maxAverageRatio(self, classes, extraStudents):
+        """
+        :type classes: List[List[int]]
+        :type extraStudents: int
+        :rtype: float
+        """
+        def gain(p, t):
+            return float(p + 1) / (t + 1) - float(p) / t
+        pq = [(-gain(p, t), p, t) for p, t in classes]
+        heapq.heapify(pq)
+        for _ in range(extraStudents):
+            g, p, t = heapq.heappop(pq)
+            p, t = p + 1, t + 1
+            heapq.heappush(pq, (-gain(p, t), p, t))
+        return sum(float(p) / t for _, p, t in pq) / len(classes)

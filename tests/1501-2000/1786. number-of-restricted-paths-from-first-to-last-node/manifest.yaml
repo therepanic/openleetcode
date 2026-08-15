@@ -1,0 +1,609 @@
+entry:
+  id: 1786
+  title: "number-of-restricted-paths-from-first-to-last-node"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().countRestrictedPaths({n}, {edges})"
+    rust: "Solution::count_restricted_paths({n}, {edges})"
+    python3: "Solution().countRestrictedPaths({n}, {edges})"
+    python2: "Solution().countRestrictedPaths({n}, {edges})"
+    ruby: "count_restricted_paths({n}, {edges})"
+    java: "new Solution().countRestrictedPaths({n}, {edges})"
+    csharp: "new Solution().CountRestrictedPaths({n}, {edges})"
+    kotlin: "Solution().countRestrictedPaths({n}, {edges})"
+    go: "countRestrictedPaths({n}, {edges})"
+    dart: "Solution().countRestrictedPaths({n}, {edges})"
+    swift: "Solution().countRestrictedPaths({n}, {edges})"
+    typescript: "countRestrictedPaths({n}, {edges})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 10000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(n, edges, {result})"
+    checker: |
+      import heapq
+      class Checker:
+          def check(self, n, edges, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if n < 1 or len(edges) < n - 1:
+                  return False
+              graph = [[] for _ in range(n + 1)]
+              seen = set()
+              for edge in edges:
+                  if not isinstance(edge, list) or len(edge) != 3:
+                      return False
+                  u, v, w = edge
+                  if not (1 <= u <= n and 1 <= v <= n and u != v and 1 <= w <= 100000):
+                      return False
+                  key = (min(u, v), max(u, v))
+                  if key in seen:
+                      return False
+                  seen.add(key)
+                  graph[u].append((v, w))
+                  graph[v].append((u, w))
+              dist = [10**30] * (n + 1)
+              dist[n] = 0
+              heap = [(0, n)]
+              while heap:
+                  d, u = heapq.heappop(heap)
+                  if d != dist[u]:
+                      continue
+                  for v, w in graph[u]:
+                      nd = d + w
+                      if nd < dist[v]:
+                          dist[v] = nd
+                          heapq.heappush(heap, (nd, v))
+              if any(dist[i] >= 10**30 for i in range(1, n + 1)):
+                  return False
+              dp = [0] * (n + 1)
+              dp[n] = 1
+              for u in sorted(range(1, n + 1), key=lambda x: dist[x]):
+                  for v, _ in graph[u]:
+                      if dist[u] > dist[v]:
+                          dp[u] = (dp[u] + dp[v]) % 1000000007
+              return result == dp[1]
+
+seed: 1786
+
+tests:
+  - name: example-one
+    in:
+      n: 5
+      edges:
+        - [1, 2, 3]
+        - [1, 3, 3]
+        - [2, 3, 1]
+        - [1, 4, 2]
+        - [5, 2, 2]
+        - [3, 5, 1]
+        - [5, 4, 10]
+  - name: example-two
+    in:
+      n: 7
+      edges:
+        - [1, 3, 1]
+        - [4, 1, 2]
+        - [7, 3, 4]
+        - [2, 5, 3]
+        - [5, 6, 1]
+        - [6, 7, 2]
+        - [7, 5, 3]
+        - [2, 6, 4]
+  - name: single-node
+    in:
+      n: 1
+      edges: []
+  - name: single-edge
+    in:
+      n: 2
+      edges:
+        - [1, 2, 7]
+  - name: chain-three
+    in:
+      n: 3
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 1]
+  - name: chain-four
+    in:
+      n: 4
+      edges:
+        - [1, 2, 4]
+        - [2, 3, 3]
+        - [3, 4, 2]
+  - name: weighted-chain
+    in:
+      n: 5
+      edges:
+        - [1, 2, 10]
+        - [2, 3, 1]
+        - [3, 4, 20]
+        - [4, 5, 2]
+  - name: direct-shortcut
+    in:
+      n: 4
+      edges:
+        - [1, 2, 1]
+        - [2, 4, 1]
+        - [1, 3, 5]
+        - [3, 4, 1]
+        - [1, 4, 10]
+  - name: equal-distance-branch
+    in:
+      n: 4
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 1]
+        - [2, 4, 1]
+        - [3, 4, 1]
+  - name: triangle
+    in:
+      n: 3
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [1, 3, 1]
+  - name: diamond
+    in:
+      n: 5
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 1]
+        - [2, 4, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [2, 5, 5]
+        - [3, 5, 5]
+  - name: unequal-branch
+    in:
+      n: 5
+      edges:
+        - [1, 2, 2]
+        - [1, 3, 4]
+        - [2, 4, 2]
+        - [3, 4, 1]
+        - [4, 5, 2]
+  - name: zero-restricted-branch
+    in:
+      n: 5
+      edges:
+        - [1, 2, 1]
+        - [2, 5, 10]
+        - [1, 3, 5]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [2, 3, 1]
+  - name: six-cycle
+    in:
+      n: 6
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 1, 1]
+  - name: cycle-with-chord
+    in:
+      n: 6
+      edges:
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+        - [4, 5, 2]
+        - [5, 6, 2]
+        - [6, 1, 2]
+        - [1, 4, 1]
+  - name: star
+    in:
+      n: 6
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [1, 4, 3]
+        - [1, 5, 4]
+        - [1, 6, 5]
+  - name: star-to-last
+    in:
+      n: 6
+      edges:
+        - [1, 2, 1]
+        - [2, 6, 1]
+        - [1, 3, 1]
+        - [3, 6, 1]
+        - [1, 4, 1]
+        - [4, 6, 1]
+        - [1, 5, 10]
+        - [5, 6, 1]
+  - name: complete-four
+    in:
+      n: 4
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [1, 4, 3]
+        - [2, 3, 1]
+        - [2, 4, 2]
+        - [3, 4, 1]
+  - name: complete-five
+    in:
+      n: 5
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [1, 4, 3]
+        - [1, 5, 4]
+        - [2, 3, 1]
+        - [2, 4, 2]
+        - [2, 5, 3]
+        - [3, 4, 1]
+        - [3, 5, 2]
+        - [4, 5, 1]
+  - name: layered-1
+    in:
+      n: 7
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 1]
+        - [2, 4, 1]
+        - [2, 5, 1]
+        - [3, 6, 1]
+        - [3, 7, 1]
+        - [4, 7, 3]
+        - [5, 6, 3]
+  - name: layered-2
+    in:
+      n: 8
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [2, 4, 1]
+        - [2, 5, 2]
+        - [3, 5, 1]
+        - [3, 6, 2]
+        - [4, 7, 1]
+        - [5, 7, 1]
+        - [5, 8, 2]
+        - [6, 8, 1]
+        - [7, 8, 1]
+  - name: tie-distances
+    in:
+      n: 6
+      edges:
+        - [1, 2, 3]
+        - [1, 3, 3]
+        - [2, 4, 2]
+        - [3, 4, 2]
+        - [4, 5, 1]
+        - [4, 6, 1]
+        - [5, 6, 1]
+  - name: large-weight-chain
+    in:
+      n: 6
+      edges:
+        - [1, 2, 100000]
+        - [2, 3, 99999]
+        - [3, 4, 100000]
+        - [4, 5, 99998]
+        - [5, 6, 100000]
+  - name: large-weight-shortcut
+    in:
+      n: 5
+      edges:
+        - [1, 2, 100000]
+        - [2, 5, 100000]
+        - [1, 3, 99999]
+        - [3, 4, 1]
+        - [4, 5, 99999]
+  - name: seven-chain-chords
+    in:
+      n: 7
+      edges:
+        - [1, 2, 2]
+        - [2, 3, 2]
+        - [3, 4, 2]
+        - [4, 5, 2]
+        - [5, 6, 2]
+        - [6, 7, 2]
+        - [1, 4, 5]
+        - [2, 5, 5]
+        - [3, 6, 5]
+        - [4, 7, 5]
+  - name: eight-grid-like
+    in:
+      n: 8
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 1]
+        - [2, 4, 1]
+        - [3, 4, 1]
+        - [3, 5, 2]
+        - [4, 6, 2]
+        - [5, 6, 1]
+        - [5, 7, 1]
+        - [6, 8, 1]
+        - [7, 8, 1]
+  - name: ten-chain
+    in:
+      n: 10
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 2]
+        - [3, 4, 3]
+        - [4, 5, 4]
+        - [5, 6, 5]
+        - [6, 7, 6]
+        - [7, 8, 7]
+        - [8, 9, 8]
+        - [9, 10, 9]
+        - [1, 10, 100]
+  - name: ten-many-branches
+    in:
+      n: 10
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [1, 4, 3]
+        - [2, 5, 1]
+        - [2, 6, 2]
+        - [3, 6, 1]
+        - [3, 7, 2]
+        - [4, 7, 1]
+        - [4, 8, 2]
+        - [5, 9, 1]
+        - [6, 9, 1]
+        - [6, 10, 2]
+        - [7, 10, 1]
+        - [8, 10, 1]
+  - name: eleven-ladder
+    in:
+      n: 11
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+        - [10, 11, 1]
+        - [1, 6, 2]
+        - [2, 7, 2]
+        - [3, 8, 2]
+        - [4, 9, 2]
+        - [5, 10, 2]
+  - name: twelve-balanced
+    in:
+      n: 12
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [2, 4, 1]
+        - [2, 5, 2]
+        - [3, 5, 1]
+        - [3, 6, 2]
+        - [4, 7, 1]
+        - [5, 7, 1]
+        - [5, 8, 2]
+        - [6, 8, 1]
+        - [7, 9, 1]
+        - [8, 9, 1]
+        - [8, 10, 2]
+        - [9, 11, 1]
+        - [10, 11, 1]
+        - [10, 12, 2]
+        - [11, 12, 1]
+  - name: thirteen-dense
+    in:
+      n: 13
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [1, 4, 3]
+        - [2, 5, 1]
+        - [2, 6, 2]
+        - [3, 6, 1]
+        - [3, 7, 2]
+        - [4, 7, 1]
+        - [4, 8, 2]
+        - [5, 9, 1]
+        - [6, 9, 1]
+        - [6, 10, 2]
+        - [7, 10, 1]
+        - [7, 11, 2]
+        - [8, 11, 1]
+        - [9, 12, 1]
+        - [10, 12, 1]
+        - [10, 13, 2]
+        - [11, 13, 1]
+        - [12, 13, 1]
+  - name: fourteen-long
+    in:
+      n: 14
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+        - [10, 11, 1]
+        - [11, 12, 1]
+        - [12, 13, 1]
+        - [13, 14, 1]
+        - [1, 7, 10]
+        - [4, 10, 10]
+        - [7, 14, 10]
+  - name: fifteen-two-routes
+    in:
+      n: 15
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 1]
+        - [2, 4, 1]
+        - [3, 5, 1]
+        - [4, 6, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [7, 9, 1]
+        - [8, 10, 1]
+        - [9, 11, 1]
+        - [10, 12, 1]
+        - [11, 13, 1]
+        - [12, 14, 1]
+        - [13, 15, 1]
+        - [14, 15, 1]
+        - [1, 15, 100]
+  - name: sixteen-mixed
+    in:
+      n: 16
+      edges:
+        - [1, 2, 2]
+        - [1, 3, 3]
+        - [2, 4, 2]
+        - [2, 5, 3]
+        - [3, 5, 2]
+        - [3, 6, 3]
+        - [4, 7, 2]
+        - [5, 7, 2]
+        - [5, 8, 3]
+        - [6, 8, 2]
+        - [7, 9, 2]
+        - [8, 9, 2]
+        - [8, 10, 3]
+        - [9, 11, 2]
+        - [10, 11, 2]
+        - [10, 12, 3]
+        - [11, 13, 2]
+        - [12, 13, 2]
+        - [12, 14, 3]
+        - [13, 15, 2]
+        - [14, 15, 2]
+        - [15, 16, 1]
+  - name: seventeen-heavy-weights
+    in:
+      n: 17
+      edges:
+        - [1, 2, 100000]
+        - [2, 3, 1]
+        - [3, 4, 100000]
+        - [4, 5, 1]
+        - [5, 6, 100000]
+        - [6, 7, 1]
+        - [7, 8, 100000]
+        - [8, 9, 1]
+        - [9, 10, 100000]
+        - [10, 11, 1]
+        - [11, 12, 100000]
+        - [12, 13, 1]
+        - [13, 14, 100000]
+        - [14, 15, 1]
+        - [15, 16, 100000]
+        - [16, 17, 1]
+        - [1, 17, 100000]
+  - name: eighteen-wide
+    in:
+      n: 18
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 1]
+        - [1, 4, 1]
+        - [2, 5, 1]
+        - [2, 6, 1]
+        - [3, 6, 1]
+        - [3, 7, 1]
+        - [4, 7, 1]
+        - [4, 8, 1]
+        - [5, 9, 1]
+        - [6, 9, 1]
+        - [6, 10, 1]
+        - [7, 10, 1]
+        - [7, 11, 1]
+        - [8, 11, 1]
+        - [9, 12, 1]
+        - [10, 12, 1]
+        - [10, 13, 1]
+        - [11, 13, 1]
+        - [12, 14, 1]
+        - [13, 14, 1]
+        - [14, 15, 1]
+        - [14, 16, 1]
+        - [15, 17, 1]
+        - [16, 17, 1]
+        - [17, 18, 1]
+  - name: nineteen-ladder
+    in:
+      n: 19
+      edges:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+        - [10, 11, 1]
+        - [11, 12, 1]
+        - [12, 13, 1]
+        - [13, 14, 1]
+        - [14, 15, 1]
+        - [15, 16, 1]
+        - [16, 17, 1]
+        - [17, 18, 1]
+        - [18, 19, 1]
+        - [1, 10, 3]
+        - [10, 19, 3]
+  - name: twenty-balanced
+    in:
+      n: 20
+      edges:
+        - [1, 2, 1]
+        - [1, 3, 1]
+        - [2, 4, 1]
+        - [2, 5, 1]
+        - [3, 6, 1]
+        - [3, 7, 1]
+        - [4, 8, 1]
+        - [5, 8, 1]
+        - [5, 9, 1]
+        - [6, 9, 1]
+        - [6, 10, 1]
+        - [7, 10, 1]
+        - [8, 11, 1]
+        - [9, 11, 1]
+        - [9, 12, 1]
+        - [10, 12, 1]
+        - [11, 13, 1]
+        - [12, 13, 1]
+        - [13, 14, 1]
+        - [13, 15, 1]
+        - [14, 16, 1]
+        - [15, 17, 1]
+        - [16, 18, 1]
+        - [17, 18, 1]
+        - [18, 19, 1]
+        - [18, 20, 1]
+        - [19, 20, 1]

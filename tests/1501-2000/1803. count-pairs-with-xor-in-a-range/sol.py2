@@ -1,0 +1,39 @@
+
+class Solution(object):
+    def countPairs(self, nums, low, high):
+        def count_less(limit):
+            if limit <= 0:
+                return 0
+            children = [[-1, -1]]
+            counts = [0]
+            total = 0
+            for value in nums:
+                node = 0
+                for bit in xrange(15, -1, -1):
+                    value_bit = (value >> bit) & 1
+                    limit_bit = (limit >> bit) & 1
+                    if limit_bit:
+                        same = children[node][value_bit]
+                        if same != -1:
+                            total += counts[same]
+                        node = children[node][1 - value_bit]
+                    else:
+                        node = children[node][value_bit]
+                    if node == -1:
+                        break
+
+                node = 0
+                counts[node] += 1
+                for bit in xrange(15, -1, -1):
+                    value_bit = (value >> bit) & 1
+                    child = children[node][value_bit]
+                    if child == -1:
+                        child = len(children)
+                        children[node][value_bit] = child
+                        children.append([-1, -1])
+                        counts.append(0)
+                    node = child
+                    counts[node] += 1
+            return total
+
+        return count_less(high + 1) - count_less(low)

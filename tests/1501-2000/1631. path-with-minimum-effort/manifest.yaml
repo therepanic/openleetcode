@@ -1,0 +1,378 @@
+entry:
+  id: 1631
+  title: path-with-minimum-effort
+  params:
+    heights:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minimumEffortPath({heights})"
+    rust: "Solution::minimum_effort_path({heights})"
+    python3: "Solution().minimumEffortPath({heights})"
+    python2: "Solution().minimumEffortPath({heights})"
+    ruby: "minimum_effort_path({heights})"
+    java: "new Solution().minimumEffortPath({heights})"
+    csharp: "new Solution().MinimumEffortPath({heights})"
+    kotlin: "Solution().minimumEffortPath({heights})"
+    go: "minimumEffortPath({heights})"
+    dart: "Solution().minimumEffortPath({heights})"
+    swift: "Solution().minimumEffortPath({heights})"
+    typescript: "minimumEffortPath({heights})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minimumEffortPath(heights, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def minimumEffortPath(self, heights, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              rows = len(heights)
+              cols = len(heights[0])
+              best = [[10**18] * cols for _ in range(rows)]
+              best[0][0] = 0
+              heap = [(0, 0, 0)]
+              while heap:
+                  effort, r, c = heapq.heappop(heap)
+                  if effort != best[r][c]:
+                      continue
+                  if r == rows - 1 and c == cols - 1:
+                      return effort == result
+                  for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                      nr, nc = r + dr, c + dc
+                      if 0 <= nr < rows and 0 <= nc < cols:
+                          candidate = max(effort, abs(heights[r][c] - heights[nr][nc]))
+                          if candidate < best[nr][nc]:
+                              best[nr][nc] = candidate
+                              heapq.heappush(heap, (candidate, nr, nc))
+              return False
+
+seed: 1631
+
+tests:
+  - name: example-1
+    in:
+      heights:
+        - [1, 2, 2]
+        - [3, 8, 2]
+        - [5, 3, 5]
+    out: 2
+  - name: example-2
+    in:
+      heights:
+        - [1, 2, 3]
+        - [3, 8, 4]
+        - [5, 3, 5]
+    out: 1
+  - name: example-3
+    in:
+      heights:
+        - [1, 2, 1, 1, 1]
+        - [1, 2, 1, 2, 1]
+        - [1, 2, 1, 2, 1]
+        - [1, 2, 1, 2, 1]
+        - [1, 1, 1, 2, 1]
+    out: 0
+  - name: single-cell
+    in:
+      heights:
+        - [999999]
+    out: 0
+  - name: one-row-increasing
+    in:
+      heights:
+        - [1, 4, 9, 16, 25]
+  - name: one-row-valley
+    in:
+      heights:
+        - [100, 1, 100, 2, 100]
+  - name: one-column
+    in:
+      heights:
+        - [7]
+        - [3]
+        - [8]
+        - [2]
+        - [9]
+  - name: flat-rectangle
+    in:
+      heights:
+        - [42, 42, 42, 42]
+        - [42, 42, 42, 42]
+        - [42, 42, 42, 42]
+  - name: high-barrier-center
+    in:
+      heights:
+        - [1, 1, 1, 1]
+        - [1, 1000000, 1000000, 1]
+        - [1, 1, 1, 1]
+  - name: low-corridor
+    in:
+      heights:
+        - [100, 1, 100, 100]
+        - [100, 1, 100, 100]
+        - [100, 1, 1, 1]
+        - [100, 100, 100, 1]
+  - name: checkerboard
+    in:
+      heights:
+        - [1, 100, 1, 100, 1]
+        - [100, 1, 100, 1, 100]
+        - [1, 100, 1, 100, 1]
+        - [100, 1, 100, 1, 100]
+        - [1, 100, 1, 100, 1]
+  - name: diagonal-low
+    in:
+      heights:
+        - [5, 100, 100, 100]
+        - [100, 5, 100, 100]
+        - [100, 100, 5, 100]
+        - [100, 100, 100, 5]
+  - name: negative-direction-gradient
+    in:
+      heights:
+        - [1000, 900, 800, 700]
+        - [901, 801, 701, 601]
+        - [802, 702, 602, 502]
+  - name: large-jump-avoidable
+    in:
+      heights:
+        - [1, 1000000, 2]
+        - [2, 3, 4]
+        - [3, 4, 5]
+  - name: narrow-zigzag
+    in:
+      heights:
+        - [10, 20]
+        - [11, 19]
+        - [12, 18]
+        - [13, 17]
+        - [14, 16]
+        - [15, 15]
+  - name: two-by-two-cross
+    in:
+      heights:
+        - [1, 100]
+        - [2, 3]
+  - name: two-by-three
+    in:
+      heights:
+        - [10, 1, 10]
+        - [10, 1, 10]
+  - name: prime-heights
+    in:
+      heights:
+        - [2, 3, 5, 7]
+        - [11, 13, 17, 19]
+        - [23, 29, 31, 37]
+  - name: repeated-trap
+    in:
+      heights:
+        - [8, 8, 50, 8, 8]
+        - [8, 50, 50, 50, 8]
+        - [8, 8, 8, 8, 8]
+  - name: monotone-grid
+    in:
+      heights:
+        - [1, 2, 3, 4, 5]
+        - [2, 3, 4, 5, 6]
+        - [3, 4, 5, 6, 7]
+        - [4, 5, 6, 7, 8]
+        - [5, 6, 7, 8, 9]
+  - name: alternating-rows
+    in:
+      heights:
+        - [1, 2, 3, 4, 5, 6]
+        - [12, 11, 10, 9, 8, 7]
+        - [13, 14, 15, 16, 17, 18]
+        - [24, 23, 22, 21, 20, 19]
+  - name: extreme-corners
+    in:
+      heights:
+        - [1, 500000, 500000]
+        - [500000, 500000, 1]
+        - [500000, 500000, 1]
+  - name: narrow-highway
+    in:
+      heights:
+        - [1000000, 999999, 999998, 999997, 999996, 999995, 999994]
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [999994, 999995, 999996, 999997, 999998, 999999, 1000000]
+  - name: five-by-five-random
+    in:
+      heights:
+        - [17, 3, 29, 11, 44]
+        - [8, 26, 14, 35, 5]
+        - [31, 9, 22, 18, 40]
+        - [6, 27, 12, 33, 21]
+        - [19, 2, 38, 15, 47]
+  - name: six-by-six-random
+    in:
+      heights:
+        - [91, 12, 47, 3, 88, 25]
+        - [34, 76, 5, 63, 19, 54]
+        - [8, 42, 99, 21, 67, 10]
+        - [73, 16, 58, 4, 81, 36]
+        - [27, 65, 13, 94, 49, 2]
+        - [55, 7, 39, 84, 18, 70]
+  - name: seven-by-three
+    in:
+      heights:
+        - [1, 50, 2]
+        - [3, 49, 4]
+        - [5, 48, 6]
+        - [7, 47, 8]
+        - [9, 46, 10]
+        - [11, 45, 12]
+        - [13, 14, 15]
+  - name: three-by-seven
+    in:
+      heights:
+        - [1, 3, 5, 7, 9, 11, 13]
+        - [2, 100, 2, 100, 2, 100, 2]
+        - [4, 6, 8, 10, 12, 14, 16]
+  - name: eight-by-eight
+    in:
+      heights:
+        - [1, 2, 3, 4, 5, 6, 7, 8]
+        - [8, 7, 6, 5, 4, 3, 2, 1]
+        - [1, 2, 3, 4, 5, 6, 7, 8]
+        - [8, 7, 6, 5, 4, 3, 2, 1]
+        - [1, 2, 3, 4, 5, 6, 7, 8]
+        - [8, 7, 6, 5, 4, 3, 2, 1]
+        - [1, 2, 3, 4, 5, 6, 7, 8]
+        - [8, 7, 6, 5, 4, 3, 2, 1]
+  - name: nine-by-two
+    in:
+      heights:
+        - [100, 1]
+        - [99, 2]
+        - [98, 3]
+        - [97, 4]
+        - [96, 5]
+        - [95, 6]
+        - [94, 7]
+        - [93, 8]
+        - [9, 92]
+  - name: ten-by-ten
+    in:
+      heights:
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        - [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        - [4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        - [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        - [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        - [7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+        - [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+        - [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+        - [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+  - name: ten-by-ten-peaks
+    in:
+      heights:
+        - [1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1000000, 1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1000000, 1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000, 1, 1000000]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: ten-by-one-extremes
+    in:
+      heights:
+        - [1]
+        - [1000000]
+        - [2]
+        - [999999]
+        - [3]
+        - [999998]
+        - [4]
+        - [999997]
+        - [5]
+        - [999996]
+  - name: one-by-ten-extremes
+    in:
+      heights:
+        - [1, 1000000, 2, 999999, 3, 999998, 4, 999997, 5, 999996]
+  - name: mixed-low-high
+    in:
+      heights:
+        - [500000, 500001, 1, 2, 3, 4]
+        - [500000, 500001, 1, 1000000, 1000000, 5]
+        - [500000, 500001, 1, 2, 3, 6]
+        - [500000, 500001, 1, 2, 3, 7]
+  - name: winding-corridor
+    in:
+      heights:
+        - [4, 4, 100, 100, 100, 100]
+        - [100, 4, 4, 4, 4, 100]
+        - [100, 100, 100, 100, 4, 100]
+        - [100, 100, 100, 100, 4, 4]
+        - [100, 100, 100, 100, 100, 4]
+  - name: large-values-close
+    in:
+      heights:
+        - [999990, 999991, 999992, 999993]
+        - [999989, 999988, 999987, 999986]
+        - [999985, 999984, 999983, 999982]
+        - [999981, 999980, 999979, 1000000]
+  - name: generated-single-row
+    in:
+      heights:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: 1
+          max: 1000000
+  - name: generated-single-column
+    in:
+      heights:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 1
+          of:
+            gen: int
+            min: 1
+            max: 1000000
+  - name: generated-medium-grid
+    in:
+      heights:
+        gen: array
+        len: 50
+        of:
+          gen: array
+          len: 50
+          of:
+            gen: int
+            min: 1
+            max: 1000000
+  - name: generated-max-grid
+    in:
+      heights:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 1
+            max: 1000000

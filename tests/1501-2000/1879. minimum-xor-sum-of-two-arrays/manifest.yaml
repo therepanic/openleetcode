@@ -1,0 +1,447 @@
+entry:
+  id: 1879
+  title: "minimum-xor-sum-of-two-arrays"
+  params:
+    nums1:
+      type: array
+      items:
+        type: int
+    nums2:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minimumXORSum({nums1}, {nums2})"
+    rust: "Solution::minimum_xor_sum({nums1}, {nums2})"
+    python3: "Solution().minimumXORSum({nums1}, {nums2})"
+    python2: "Solution().minimumXORSum({nums1}, {nums2})"
+    ruby: "minimum_xor_sum({nums1}, {nums2})"
+    java: "new Solution().minimumXORSum({nums1}, {nums2})"
+    csharp: "new Solution().MinimumXORSum({nums1}, {nums2})"
+    kotlin: "Solution().minimumXORSum({nums1}, {nums2})"
+    go: "minimumXORSum({nums1}, {nums2})"
+    dart: "Solution().minimumXORSum({nums1}, {nums2})"
+    swift: "Solution().minimumXORSum({nums1}, {nums2})"
+    typescript: "minimumXORSum({nums1}, {nums2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(nums1, nums2, {result})"
+    checker: |
+      class Checker:
+          def check(self, nums1, nums2, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(nums1)
+              if n != len(nums2) or n < 1 or n > 14:
+                  return False
+              if any(not isinstance(x, int) or x < 0 or x > 10000000 for x in nums1 + nums2):
+                  return False
+              dp = [10**30] * (1 << n)
+              dp[0] = 0
+              for mask in range(1 << n):
+                  i = mask.bit_count()
+                  if i == n:
+                      continue
+                  for j in range(n):
+                      if not (mask >> j) & 1:
+                          nxt = mask | (1 << j)
+                          value = dp[mask] + (nums1[i] ^ nums2[j])
+                          if value < dp[nxt]:
+                              dp[nxt] = value
+              return result == dp[-1]
+
+seed: 1879
+
+tests:
+  - name: example-one
+    in:
+      nums1: [1, 2]
+      nums2: [2, 3]
+  - name: example-two
+    in:
+      nums1: [1, 0, 3]
+      nums2: [5, 3, 4]
+  - name: one-equal
+    in:
+      nums1: [0]
+      nums2: [0]
+    out: 0
+  - name: one-large
+    in:
+      nums1: [10000000]
+      nums2: [0]
+  - name: two-equal-values
+    in:
+      nums1: [7, 7]
+      nums2: [7, 7]
+    out: 0
+  - name: two-reversed
+    in:
+      nums1: [0, 15]
+      nums2: [15, 0]
+  - name: duplicates-one-side
+    in:
+      nums1: [1, 2, 4, 8]
+      nums2: [0, 0, 0, 0]
+  - name: powers-of-two
+    in:
+      nums1: [1, 2, 4, 8]
+      nums2: [8, 4, 2, 1]
+  - name: all-max
+    in:
+      nums1: [10000000, 10000000]
+      nums2: [10000000, 10000000]
+    out: 0
+  - name: zero-and-max
+    in:
+      nums1: [0, 0, 10000000, 10000000]
+      nums2: [0, 10000000, 0, 10000000]
+  - name: close-values
+    in:
+      nums1: [10, 11, 12]
+      nums2: [13, 14, 15]
+  - name: high-bit-values
+    in:
+      nums1: [8388608, 4194304, 2097152]
+      nums2: [2097152, 8388608, 4194304]
+  - name: mixed-small
+    in:
+      nums1: [3, 5, 9, 17, 33]
+      nums2: [2, 6, 10, 18, 34]
+  - name: repeated-pattern
+    in:
+      nums1: [1, 3, 1, 3, 1, 3]
+      nums2: [0, 2, 4, 6, 8, 10]
+  - name: six-zeroes
+    in:
+      nums1: [0, 0, 0, 0, 0, 0]
+      nums2: [1, 2, 4, 8, 16, 32]
+  - name: seven-distinct
+    in:
+      nums1: [2, 7, 19, 31, 63, 127, 255]
+      nums2: [1, 8, 18, 32, 62, 128, 254]
+  - name: eight-balanced
+    in:
+      nums1: [5, 12, 25, 40, 77, 101, 256, 999]
+      nums2: [1000, 255, 102, 76, 41, 24, 13, 4]
+  - name: nine-duplicates
+    in:
+      nums1: [4, 4, 4, 9, 9, 9, 15, 15, 15]
+      nums2: [0, 1, 2, 8, 10, 11, 14, 16, 31]
+  - name: ten-random-small
+    in:
+      nums1: [6, 23, 41, 58, 77, 91, 104, 128, 201, 255]
+      nums2: [3, 19, 44, 52, 80, 87, 111, 130, 199, 260]
+  - name: eleven-high
+    in:
+      nums1:
+        [
+          10000000,
+          9999999,
+          9999998,
+          7777777,
+          7000000,
+          6000000,
+          5000000,
+          4000000,
+          3000000,
+          2000000,
+          1000000,
+        ]
+      nums2:
+        [
+          0,
+          1,
+          2,
+          2222222,
+          3333333,
+          4444444,
+          5555555,
+          6666666,
+          7777778,
+          8888888,
+          9999990,
+        ]
+  - name: twelve-bit-patterns
+    in:
+      nums1: [0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047]
+      nums2: [2047, 1023, 511, 255, 127, 63, 31, 15, 7, 3, 1, 0]
+  - name: thirteen-mixed
+    in:
+      nums1: [12, 34, 56, 78, 90, 123, 456, 789, 1024, 2048, 4096, 8192, 16384]
+      nums2: [16385, 8191, 4095, 2049, 1023, 790, 455, 124, 89, 79, 55, 33, 11]
+  - name: fourteen-full
+    in:
+      nums1:
+        [
+          0,
+          17,
+          42,
+          99,
+          128,
+          257,
+          511,
+          1025,
+          2049,
+          4097,
+          8193,
+          16385,
+          32769,
+          65537,
+        ]
+      nums2:
+        [
+          65536,
+          32768,
+          16384,
+          8192,
+          4096,
+          2048,
+          1024,
+          512,
+          256,
+          129,
+          100,
+          43,
+          16,
+          1,
+        ]
+  - name: same-multiset
+    in:
+      nums1: [12, 3, 999, 0, 42]
+      nums2: [42, 999, 0, 3, 12]
+  - name: alternating-bits
+    in:
+      nums1: [43690, 21845, 13107, 52428]
+      nums2: [65535, 0, 43690, 21845]
+  - name: near-limit-fourteen
+    in:
+      nums1:
+        [
+          9999999,
+          9999998,
+          9999997,
+          9999996,
+          9999995,
+          9999994,
+          9999993,
+          9999992,
+          9999991,
+          9999990,
+          9999989,
+          9999988,
+          9999987,
+          9999986,
+        ]
+      nums2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+  - name: asymmetric-three
+    in:
+      nums1: [1023, 2047, 4095]
+      nums2: [1024, 2048, 4096]
+  - name: many-zero-two
+    in:
+      nums1: [0, 0, 10000000, 1, 1, 9999999]
+      nums2: [0, 10000000, 9999999, 1, 0, 1]
+  - name: medium-duplicates
+    in:
+      nums1: [100, 100, 200, 200, 300, 300, 400, 400]
+      nums2: [101, 201, 301, 401, 99, 199, 299, 399]
+  - name: sparse-large
+    in:
+      nums1: [0, 10000000, 524288, 8388607, 1234567]
+      nums2: [9999999, 1, 524287, 8388608, 7654321]
+  - name: twelve-repeated
+    in:
+      nums1: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+      nums2: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+  - name: thirteen-zero-max
+    in:
+      nums1:
+        [
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+        ]
+      nums2:
+        [
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+          0,
+          10000000,
+        ]
+  - name: fourteen-repeated-blocks
+    in:
+      nums1: [1, 2, 3, 1, 2, 3, 100, 200, 300, 100, 200, 300, 999, 1000]
+      nums2: [3, 2, 1, 300, 200, 100, 3, 2, 1, 300, 200, 100, 1000, 999]
+  - name: alternating-small
+    in:
+      nums1: [2, 8, 2, 8, 2, 8, 2]
+      nums2: [1, 7, 3, 9, 5, 11, 13]
+  - name: fifteen-not-allowed
+    in:
+      nums1:
+        [
+          31,
+          63,
+          127,
+          255,
+          511,
+          1023,
+          2047,
+          4095,
+          8191,
+          16383,
+          32767,
+          65535,
+          131071,
+          262143,
+        ]
+      nums2:
+        [
+          0,
+          31,
+          63,
+          127,
+          255,
+          511,
+          1023,
+          2047,
+          4095,
+          8191,
+          16383,
+          32767,
+          65535,
+          131071,
+        ]
+  - name: generated-random-1
+    in:
+      nums1:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 10000000
+        distinct: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 10000000
+        distinct: false
+        elemType: "int"
+    seed: 187901
+  - name: generated-random-2
+    in:
+      nums1:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 10000000
+        distinct: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 10000000
+        distinct: false
+        elemType: "int"
+    seed: 187902
+  - name: generated-small-values
+    in:
+      nums1:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 63
+        distinct: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 63
+        distinct: false
+        elemType: "int"
+    seed: 187903
+  - name: generated-duplicates
+    in:
+      nums1:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 7
+        distinct: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 7
+        distinct: false
+        elemType: "int"
+    seed: 187904
+  - name: generated-boundary
+    in:
+      nums1:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 9990000
+          max: 10000000
+        distinct: false
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        distinct: false
+        elemType: "int"
+    seed: 187905

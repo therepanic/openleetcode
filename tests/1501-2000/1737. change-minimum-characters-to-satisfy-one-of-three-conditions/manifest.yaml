@@ -1,0 +1,251 @@
+entry:
+  id: 1737
+  title: "change-minimum-characters-to-satisfy-one-of-three-conditions"
+  params:
+    a:
+      type: string
+    b:
+      type: string
+  call:
+    cpp: "Solution().minCharacters({a}, {b})"
+    rust: "Solution::min_characters({a}, {b})"
+    python3: "Solution().minCharacters({a}, {b})"
+    python2: "Solution().minCharacters({a}, {b})"
+    ruby: "min_characters({a}, {b})"
+    java: "new Solution().minCharacters({a}, {b})"
+    csharp: "new Solution().MinCharacters({a}, {b})"
+    kotlin: "Solution().minCharacters({a}, {b})"
+    go: "minCharacters({a}, {b})"
+    dart: "Solution().minCharacters({a}, {b})"
+    swift: "Solution().minCharacters({a}, {b})"
+    typescript: "minCharacters({a}, {b})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minCharacters(a, b, {result})"
+    checker: |
+      class Checker:
+          def minCharacters(self, a, b, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              fa = [0] * 26
+              fb = [0] * 26
+              for ch in a:
+                  fa[ord(ch) - 97] += 1
+              for ch in b:
+                  fb[ord(ch) - 97] += 1
+              expected = len(a) + len(b)
+              pa = pb = 0
+              for i in range(25):
+                  pa += fa[i]
+                  pb += fb[i]
+                  expected = min(expected, len(a) - pa + pb, len(b) - pb + pa)
+              for i in range(26):
+                  expected = min(expected, len(a) - fa[i] + len(b) - fb[i])
+              return result == expected
+seed: 1737
+tests:
+  - name: example-1
+    in:
+      a: "aba"
+      b: "caa"
+    out: 2
+  - name: example-2
+    in:
+      a: "dabadd"
+      b: "cda"
+    out: 3
+  - name: single-already-ordered
+    in:
+      a: "a"
+      b: "b"
+    out: 0
+  - name: equal-singletons
+    in:
+      a: "a"
+      b: "a"
+    out: 0
+  - name: reverse-singletons
+    in:
+      a: "z"
+      b: "a"
+    out: 0
+  - name: disjoint-ranges
+    in:
+      a: "abc"
+      b: "def"
+    out: 0
+  - name: touching-ranges
+    in:
+      a: "abc"
+      b: "cde"
+    out: 1
+  - name: uniform-adjacent
+    in:
+      a: "aaa"
+      b: "bbb"
+    out: 0
+  - name: same-uniform-letter
+    in:
+      a: "zzz"
+      b: "zzz"
+    out: 0
+  - name: opposite-extremes
+    in:
+      a: "az"
+      b: "za"
+    out: 2
+  - name: long-uniform-adjacent
+    in:
+      a: "aaaa"
+      b: "bbbb"
+    out: 0
+  - name: alternating-overlap
+    in:
+      a: "abab"
+      b: "baba"
+    out: 4
+  - name: mixed-overlap
+    in:
+      a: "abcxyz"
+      b: "defuvw"
+    out: 3
+  - name: middle-disjoint
+    in:
+      a: "mnop"
+      b: "qrst"
+    out: 0
+  - name: one-outlier
+    in:
+      a: "azzz"
+      b: "baaa"
+    out: 1
+  - name: ten-uniform-low-high
+    in:
+      a: "aaaaaaaaaa"
+      b: "bbbbbbbbbb"
+    out: 0
+  - name: ten-equal-uniform
+    in:
+      a: "aaaaaaaaaa"
+      b: "aaaaaaaaaa"
+    out: 0
+  - name: mostly-low-vs-low
+    in:
+      a: "abcde"
+      b: "aaaaa"
+    out: 1
+  - name: high-vs-low
+    in:
+      a: "zzzzz"
+      b: "abcde"
+    out: 0
+  - name: keyboard-mix
+    in:
+      a: "qwerty"
+      b: "asdfgh"
+    out: 2
+  - name: repeated-common-letters
+    in:
+      a: "leetcode"
+      b: "practice"
+    out: 6
+  - name: adjacent-singletons
+    in:
+      a: "x"
+      b: "y"
+    out: 0
+  - name: reverse-adjacent-singletons
+    in:
+      a: "b"
+      b: "a"
+    out: 0
+  - name: two-extremes-same
+    in:
+      a: "az"
+      b: "az"
+    out: 2
+  - name: identical-three
+    in:
+      a: "abc"
+      b: "abc"
+    out: 3
+  - name: near-uniform
+    in:
+      a: "aaab"
+      b: "bbbc"
+    out: 1
+  - name: fully-separated-high
+    in:
+      a: "abc"
+      b: "xyz"
+    out: 0
+  - name: fully-separated-middle
+    in:
+      a: "mnopq"
+      b: "abcde"
+    out: 0
+  - name: alternating-nearby
+    in:
+      a: "zazaza"
+      b: "ybybyb"
+    out: 3
+  - name: reversed-alphabet
+    in:
+      a: "abcdef"
+      b: "fedcba"
+    out: 6
+  - name: generated-uniform-large
+    in:
+      a:
+        gen: "str"
+        len: 100000
+        alphabet: "abc"
+      b:
+        gen: "str"
+        len: 100000
+        alphabet: "xyz"
+  - name: generated-binary-large
+    in:
+      a:
+        gen: "str"
+        len: 99999
+        alphabet: "az"
+      b:
+        gen: "str"
+        len: 99999
+        alphabet: "mn"
+  - name: generated-full-alphabet
+    in:
+      a:
+        gen: "str"
+        len: 50000
+        alphabet: "amz"
+      b:
+        gen: "str"
+        len: 50000
+        alphabet: "bny"
+  - name: generated-low-skew
+    in:
+      a:
+        gen: "str"
+        len: 75000
+        alphabet: "abcd"
+      b:
+        gen: "str"
+        len: 75000
+        alphabet: "cdef"
+  - name: generated-high-skew
+    in:
+      a:
+        gen: "str"
+        len: 60000
+        alphabet: "vwxyz"
+      b:
+        gen: "str"
+        len: 60000
+        alphabet: "abcde"

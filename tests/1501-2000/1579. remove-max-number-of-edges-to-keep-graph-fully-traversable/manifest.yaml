@@ -1,0 +1,575 @@
+entry:
+  id: 1579
+  title: "remove-max-number-of-edges-to-keep-graph-fully-traversable"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxNumEdgesToRemove({n}, {edges})"
+    rust: "Solution::max_num_edges_to_remove({n}, {edges})"
+    python3: "Solution().maxNumEdgesToRemove({n}, {edges})"
+    python2: "Solution().maxNumEdgesToRemove({n}, {edges})"
+    ruby: "max_num_edges_to_remove({n}, {edges})"
+    java: "new Solution().maxNumEdgesToRemove({n}, {edges})"
+    csharp: "new Solution().MaxNumEdgesToRemove({n}, {edges})"
+    kotlin: "Solution().maxNumEdgesToRemove({n}, {edges})"
+    go: "maxNumEdgesToRemove({n}, {edges})"
+    dart: "Solution().maxNumEdgesToRemove({n}, {edges})"
+    swift: "Solution().maxNumEdgesToRemove({n}, {edges})"
+    typescript: "maxNumEdgesToRemove({n}, {edges})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxNumEdgesToRemove(n, edges, {result})"
+    checker: |
+      class Checker:
+          def maxNumEdgesToRemove(self, n, edges, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              def run(kind):
+                  parent = list(range(n + 1))
+                  size = [1] * (n + 1)
+                  used = 0
+                  def find(x):
+                      while parent[x] != x:
+                          parent[x] = parent[parent[x]]
+                          x = parent[x]
+                      return x
+                  for typ, a, b in edges:
+                      if typ != kind and typ != 3:
+                          continue
+                      ra, rb = find(a), find(b)
+                      if ra != rb:
+                          if size[ra] < size[rb]:
+                              ra, rb = rb, ra
+                          parent[rb] = ra
+                          size[ra] += size[rb]
+                          used += 1
+                  return used
+              alice = run(1)
+              bob = run(2)
+              expected = len(edges) - (alice + bob - sum(1 for e in edges if e[0] == 3 and e[1] != e[2]))
+              # Recompute the minimum retained edges using the standard two-DSU pass.
+              pa = list(range(n + 1))
+              pb = list(range(n + 1))
+              def root(p, x):
+                  while p[x] != x:
+                      p[x] = p[p[x]]
+                      x = p[x]
+                  return x
+              ca = cb = kept = 0
+              for typ, a, b in sorted(edges, reverse=True):
+                  if typ == 3:
+                      ra, rb = root(pa, a), root(pa, b)
+                      if ra != rb:
+                          pa[rb] = ra
+                          pb[root(pb, b)] = root(pb, a)
+                          ca += 1
+                          cb += 1
+                          kept += 1
+                  elif typ == 1:
+                      ra, rb = root(pa, a), root(pa, b)
+                      if ra != rb:
+                          pa[rb] = ra
+                          ca += 1
+                          kept += 1
+                  else:
+                      ra, rb = root(pb, a), root(pb, b)
+                      if ra != rb:
+                          pb[rb] = ra
+                          cb += 1
+                          kept += 1
+              expected = len(edges) - kept if ca == n - 1 and cb == n - 1 else -1
+              return result == expected
+
+seed: 1579001
+
+tests:
+  - name: example-one
+    in:
+      n: 4
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [1, 1, 3]
+        - [1, 2, 4]
+        - [1, 1, 2]
+        - [2, 3, 4]
+    out: 2
+  - name: example-two
+    in:
+      n: 4
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [1, 1, 4]
+        - [2, 1, 4]
+    out: 0
+  - name: example-three
+    in:
+      n: 4
+      edges:
+        - [3, 2, 3]
+        - [1, 1, 2]
+        - [2, 3, 4]
+    out: -1
+  - name: smallest-graph
+    in:
+      n: 2
+      edges:
+        - [3, 1, 2]
+    out: 0
+  - name: smallest-three-duplicates
+    in:
+      n: 2
+      edges:
+        - [3, 1, 2]
+        - [2, 1, 2]
+        - [1, 1, 2]
+    out: 2
+  - name: alice-only-impossible
+    in:
+      n: 3
+      edges:
+        - [2, 1, 2]
+        - [2, 2, 3]
+    out: -1
+  - name: bob-only-impossible
+    in:
+      n: 3
+      edges:
+        - [1, 1, 2]
+        - [1, 2, 3]
+    out: -1
+  - name: all-shared-tree
+    in:
+      n: 5
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+    out: 0
+  - name: all-shared-cycle
+    in:
+      n: 4
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 1, 4]
+    out: 1
+  - name: all-shared-complete-four
+    in:
+      n: 4
+      edges:
+        - [3, 1, 2]
+        - [3, 1, 3]
+        - [3, 1, 4]
+        - [3, 2, 3]
+        - [3, 2, 4]
+        - [3, 3, 4]
+    out: 3
+  - name: shared-backbone-with-private
+    in:
+      n: 5
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [1, 3, 4]
+        - [2, 4, 5]
+        - [1, 1, 5]
+        - [2, 1, 4]
+    out: 0
+  - name: private-parallel-types
+    in:
+      n: 3
+      edges:
+        - [1, 1, 2]
+        - [1, 2, 3]
+        - [2, 1, 2]
+        - [2, 2, 3]
+    out: 0
+  - name: redundant-private-edge
+    in:
+      n: 3
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [1, 1, 2]
+        - [2, 2, 3]
+    out: 2
+  - name: shared-bridge-private-completion
+    in:
+      n: 6
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 4, 5]
+        - [1, 3, 4]
+        - [2, 3, 4]
+        - [1, 5, 6]
+        - [2, 5, 6]
+        - [3, 1, 6]
+    out: 2
+  - name: disconnected-shared-components
+    in:
+      n: 6
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 4, 5]
+        - [1, 3, 4]
+        - [2, 3, 4]
+    out: -1
+  - name: duplicate-cycle-by-all-types
+    in:
+      n: 3
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 1, 3]
+        - [1, 1, 2]
+        - [2, 1, 2]
+        - [1, 2, 3]
+        - [2, 2, 3]
+    out: 5
+  - name: six-node-shared-star
+    in:
+      n: 6
+      edges:
+        - [3, 1, 2]
+        - [3, 1, 3]
+        - [3, 1, 4]
+        - [3, 1, 5]
+        - [3, 1, 6]
+    out: 0
+  - name: six-node-star-redundancy
+    in:
+      n: 6
+      edges:
+        - [3, 1, 2]
+        - [3, 1, 3]
+        - [3, 1, 4]
+        - [3, 1, 5]
+        - [3, 1, 6]
+        - [1, 2, 3]
+        - [2, 2, 3]
+        - [1, 4, 5]
+        - [2, 4, 5]
+    out: 4
+  - name: type-three-late-connection
+    in:
+      n: 5
+      edges:
+        - [1, 1, 2]
+        - [1, 2, 3]
+        - [2, 1, 2]
+        - [2, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 1, 5]
+    out: 2
+  - name: type-three-connects-private-parts
+    in:
+      n: 5
+      edges:
+        - [1, 1, 2]
+        - [1, 2, 3]
+        - [2, 3, 4]
+        - [2, 4, 5]
+        - [3, 1, 5]
+        - [3, 2, 4]
+    out: 0
+  - name: seven-node-tree-mixed
+    in:
+      n: 7
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [1, 3, 4]
+        - [1, 4, 5]
+        - [2, 3, 6]
+        - [2, 6, 7]
+        - [3, 1, 7]
+    out: -1
+  - name: seven-node-many-redundancies
+    in:
+      n: 7
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [1, 1, 3]
+        - [1, 2, 5]
+        - [2, 1, 4]
+        - [2, 3, 7]
+    out: 4
+  - name: eight-node-shared-path
+    in:
+      n: 8
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+    out: 0
+  - name: eight-node-cycle-and-private
+    in:
+      n: 8
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [3, 1, 8]
+        - [1, 1, 4]
+        - [2, 5, 8]
+    out: 3
+  - name: nine-node-shared-tree-private-leaves
+    in:
+      n: 9
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [1, 5, 6]
+        - [1, 6, 7]
+        - [2, 5, 8]
+        - [2, 8, 9]
+        - [3, 1, 9]
+    out: -1
+  - name: ten-node-complete-backbone
+    in:
+      n: 10
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [3, 8, 9]
+        - [3, 9, 10]
+        - [1, 1, 10]
+        - [1, 2, 9]
+        - [2, 1, 9]
+        - [2, 2, 10]
+    out: 4
+  - name: ten-node-impossible-alice
+    in:
+      n: 10
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [3, 8, 9]
+        - [2, 1, 10]
+    out: -1
+  - name: ten-node-impossible-bob
+    in:
+      n: 10
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [3, 8, 9]
+        - [1, 1, 10]
+    out: -1
+  - name: dense-three-node
+    in:
+      n: 3
+      edges:
+        - [1, 1, 2]
+        - [1, 1, 3]
+        - [1, 2, 3]
+        - [2, 1, 2]
+        - [2, 1, 3]
+        - [2, 2, 3]
+        - [3, 1, 2]
+        - [3, 1, 3]
+        - [3, 2, 3]
+    out: 7
+  - name: shared-triangle-with-private
+    in:
+      n: 4
+      edges:
+        - [3, 1, 2]
+        - [3, 1, 3]
+        - [3, 2, 3]
+        - [1, 3, 4]
+        - [2, 3, 4]
+        - [1, 1, 4]
+        - [2, 1, 4]
+    out: 3
+  - name: chain-private-cross-links
+    in:
+      n: 6
+      edges:
+        - [1, 1, 2]
+        - [1, 2, 3]
+        - [1, 3, 4]
+        - [1, 4, 5]
+        - [1, 5, 6]
+        - [2, 1, 2]
+        - [2, 2, 3]
+        - [2, 3, 4]
+        - [2, 4, 5]
+        - [2, 5, 6]
+        - [3, 1, 3]
+        - [3, 4, 6]
+    out: 4
+  - name: shared-tree-with-all-private-chords
+    in:
+      n: 8
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [1, 1, 3]
+        - [1, 2, 5]
+        - [1, 4, 8]
+        - [2, 1, 4]
+        - [2, 3, 6]
+        - [2, 5, 8]
+    out: 6
+  - name: eleven-node-shared-components-connected
+    in:
+      n: 11
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 7, 8]
+        - [3, 8, 9]
+        - [1, 3, 4]
+        - [1, 6, 7]
+        - [1, 9, 10]
+        - [1, 10, 11]
+        - [2, 3, 4]
+        - [2, 6, 7]
+        - [2, 9, 10]
+        - [2, 10, 11]
+    out: 0
+  - name: twelve-node-shared-cycle
+    in:
+      n: 12
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [3, 8, 9]
+        - [3, 9, 10]
+        - [3, 10, 11]
+        - [3, 11, 12]
+        - [3, 1, 12]
+        - [1, 1, 6]
+        - [2, 7, 12]
+    out: 3
+  - name: twelve-node-minimal-mixed
+    in:
+      n: 12
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [1, 6, 7]
+        - [1, 7, 8]
+        - [1, 8, 9]
+        - [2, 9, 10]
+        - [2, 10, 11]
+        - [2, 11, 12]
+    out: -1
+  - name: fourteen-node-heavy
+    in:
+      n: 14
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [3, 8, 9]
+        - [3, 9, 10]
+        - [3, 10, 11]
+        - [3, 11, 12]
+        - [3, 12, 13]
+        - [3, 13, 14]
+        - [1, 1, 7]
+        - [1, 2, 9]
+        - [1, 4, 12]
+        - [2, 1, 8]
+        - [2, 3, 11]
+        - [2, 5, 14]
+    out: 6
+  - name: fifteen-node-three-backbones
+    in:
+      n: 15
+      edges:
+        - [3, 1, 2]
+        - [3, 2, 3]
+        - [3, 3, 4]
+        - [3, 4, 5]
+        - [3, 5, 6]
+        - [3, 6, 7]
+        - [3, 7, 8]
+        - [3, 8, 9]
+        - [3, 9, 10]
+        - [3, 10, 11]
+        - [3, 11, 12]
+        - [3, 12, 13]
+        - [3, 13, 14]
+        - [3, 14, 15]
+        - [1, 1, 5]
+        - [1, 6, 10]
+        - [1, 11, 15]
+        - [2, 1, 6]
+        - [2, 5, 11]
+        - [2, 10, 15]
+        - [3, 1, 15]
+    out: 7

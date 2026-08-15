@@ -1,0 +1,378 @@
+entry:
+  id: 1926
+  title: "nearest-exit-from-entrance-in-maze"
+  params:
+    maze:
+      type: array
+      items:
+        type: array
+        items:
+          type: char
+    entrance:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().nearestExit({maze}, {entrance})"
+    rust: "Solution::nearest_exit({maze}, {entrance})"
+    python3: "Solution().nearestExit({maze}, {entrance})"
+    python2: "Solution().nearestExit({maze}, {entrance})"
+    ruby: "nearest_exit({maze}, {entrance})"
+    java: "new Solution().nearestExit({maze}, {entrance})"
+    csharp: "new Solution().NearestExit({maze}, {entrance})"
+    kotlin: "Solution().nearestExit({maze}, {entrance})"
+    go: "nearestExit({maze}, {entrance})"
+    dart: "Solution().nearestExit({maze}, {entrance})"
+    swift: "Solution().nearestExit({maze}, {entrance})"
+    typescript: "nearestExit({maze}, {entrance})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().nearestExit(maze, entrance, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def nearestExit(self, maze, entrance, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              rows = len(maze)
+              cols = len(maze[0])
+              start = (entrance[0], entrance[1])
+              queue = deque([(start[0], start[1], 0)])
+              seen = {start}
+              while queue:
+                  r, c, distance = queue.popleft()
+                  for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                      nr, nc = r + dr, c + dc
+                      if nr < 0 or nr >= rows or nc < 0 or nc >= cols:
+                          continue
+                      if (nr, nc) in seen or maze[nr][nc] != '.':
+                          continue
+                      if nr == 0 or nr == rows - 1 or nc == 0 or nc == cols - 1:
+                          return result == distance + 1
+                      seen.add((nr, nc))
+                      queue.append((nr, nc, distance + 1))
+              return result == -1
+
+seed: 1926
+
+tests:
+  - name: "example-one"
+    in:
+      maze:
+        - ["+", "+", ".", "+"]
+        - [".", ".", ".", "+"]
+        - ["+", "+", "+", "."]
+      entrance: [1, 2]
+    out: 1
+  - name: "example-two"
+    in:
+      maze:
+        - ["+", "+", "+"]
+        - [".", ".", "."]
+        - ["+", "+", "+"]
+      entrance: [1, 0]
+    out: 2
+  - name: "example-three"
+    in:
+      maze:
+        - [".", "+"]
+      entrance: [0, 0]
+    out: -1
+  - name: "one-by-two-entrance-border"
+    in:
+      maze:
+        - [".", "."]
+      entrance: [0, 0]
+    out: 1
+  - name: "one-by-three-middle"
+    in:
+      maze:
+        - ["+", ".", "."]
+      entrance: [0, 1]
+    out: 1
+  - name: "one-by-three-blocked"
+    in:
+      maze:
+        - ["+", ".", "+"]
+      entrance: [0, 1]
+    out: -1
+  - name: "two-by-two-from-corner"
+    in:
+      maze:
+        - [".", "+"]
+        - [".", "."]
+      entrance: [0, 0]
+    out: 1
+  - name: "two-by-two-isolated"
+    in:
+      maze:
+        - [".", "+"]
+        - ["+", "+"]
+      entrance: [0, 0]
+    out: -1
+  - name: "entrance-border-not-counted"
+    in:
+      maze:
+        - [".", ".", "."]
+        - ["+", "+", "."]
+        - ["+", "+", "."]
+      entrance: [0, 0]
+    out: 1
+  - name: "nearest-up"
+    in:
+      maze:
+        - ["+", ".", "+"]
+        - ["+", ".", "+"]
+        - ["+", ".", "+"]
+      entrance: [2, 1]
+    out: 2
+  - name: "nearest-down"
+    in:
+      maze:
+        - ["+", ".", "+"]
+        - ["+", ".", "+"]
+        - ["+", ".", "+"]
+      entrance: [0, 1]
+    out: 2
+  - name: "nearest-left"
+    in:
+      maze:
+        - [".", ".", ".", "+"]
+        - ["+", "+", ".", "+"]
+        - ["+", "+", ".", "+"]
+      entrance: [0, 2]
+    out: 1
+  - name: "nearest-right"
+    in:
+      maze:
+        - ["+", ".", ".", "."]
+        - ["+", ".", "+", "+"]
+        - ["+", ".", "+", "+"]
+      entrance: [0, 1]
+    out: 1
+  - name: "straight-three"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "+"]
+        - [".", ".", ".", ".", "."]
+        - ["+", "+", "+", "+", "+"]
+      entrance: [1, 2]
+    out: 2
+  - name: "straight-four-to-left"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "+", "+"]
+        - [".", ".", ".", ".", ".", "+"]
+        - ["+", "+", "+", "+", "+", "+"]
+      entrance: [1, 4]
+    out: 4
+  - name: "straight-four-to-right"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "+", "+"]
+        - ["+", ".", ".", ".", ".", "."]
+        - ["+", "+", "+", "+", "+", "+"]
+      entrance: [1, 1]
+    out: 4
+  - name: "detour-around-wall"
+    in:
+      maze:
+        - ["+", ".", "+", ".", "+"]
+        - [".", ".", ".", ".", "."]
+        - ["+", "+", "+", "+", "+"]
+      entrance: [1, 2]
+    out: 2
+  - name: "blocked-center"
+    in:
+      maze:
+        - ["+", ".", "+", ".", "+"]
+        - ["+", ".", "+", ".", "+"]
+        - ["+", ".", "+", ".", "+"]
+        - ["+", "+", "+", "+", "+"]
+      entrance: [1, 1]
+    out: 1
+  - name: "long-zigzag"
+    in:
+      maze:
+        - ["+", ".", ".", ".", "+", "+"]
+        - ["+", "+", "+", ".", "+", "+"]
+        - ["+", "+", ".", ".", ".", "+"]
+        - ["+", "+", ".", "+", "+", "+"]
+        - ["+", ".", ".", "+", "+", "+"]
+      entrance: [3, 2]
+    out: 1
+  - name: "enclosed-pocket"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "+"]
+        - ["+", ".", ".", ".", "+"]
+        - ["+", ".", ".", ".", "+"]
+        - ["+", "+", "+", "+", "+"]
+      entrance: [2, 2]
+    out: -1
+  - name: "open-square"
+    in:
+      maze:
+        - [".", ".", ".", "."]
+        - [".", ".", ".", "."]
+        - [".", ".", ".", "."]
+        - [".", ".", ".", "."]
+      entrance: [1, 1]
+    out: 1
+  - name: "open-square-center"
+    in:
+      maze:
+        - [".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", "."]
+      entrance: [2, 2]
+    out: 2
+  - name: "single-open-cell"
+    in:
+      maze:
+        - ["+"]
+      entrance: [0, 0]
+    out: -1
+  - name: "single-cell-open"
+    in:
+      maze:
+        - ["."]
+      entrance: [0, 0]
+    out: -1
+  - name: "three-by-three-ring"
+    in:
+      maze:
+        - [".", ".", "."]
+        - [".", "+", "."]
+        - [".", ".", "."]
+      entrance: [1, 1]
+    out: 1
+  - name: "three-by-three-corridor"
+    in:
+      maze:
+        - ["+", ".", "+"]
+        - [".", ".", "."]
+        - ["+", ".", "+"]
+      entrance: [1, 1]
+    out: 1
+  - name: "no-exit-inner-component"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "+", "+"]
+        - ["+", ".", ".", ".", ".", "+"]
+        - ["+", ".", "+", "+", ".", "+"]
+        - ["+", ".", ".", ".", ".", "+"]
+        - ["+", "+", "+", "+", "+", "+"]
+      entrance: [1, 1]
+    out: -1
+  - name: "border-exit-behind-detour"
+    in:
+      maze:
+        - ["+", "+", ".", "+", "+"]
+        - ["+", ".", ".", ".", "+"]
+        - ["+", ".", "+", ".", "+"]
+        - [".", ".", "+", ".", "+"]
+        - ["+", "+", "+", ".", "+"]
+      entrance: [1, 2]
+    out: 1
+  - name: "wide-maze"
+    in:
+      maze:
+        - ["+", ".", ".", ".", ".", ".", "+", "."]
+        - ["+", "+", "+", "+", ".", "+", "+", "."]
+        - [".", ".", ".", ".", ".", "+", ".", "."]
+      entrance: [1, 4]
+    out: 1
+  - name: "deep-nine-by-nine"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "+", "+", "+", "+", "+"]
+        - ["+", ".", ".", ".", ".", ".", ".", ".", "+"]
+        - ["+", ".", "+", "+", "+", "+", "+", ".", "+"]
+        - ["+", ".", "+", ".", ".", ".", "+", ".", "+"]
+        - ["+", ".", "+", ".", "+", ".", "+", ".", "+"]
+        - ["+", ".", "+", ".", ".", ".", "+", ".", "+"]
+        - ["+", ".", "+", "+", "+", "+", "+", ".", "+"]
+        - ["+", ".", ".", ".", ".", ".", ".", ".", "+"]
+        - ["+", "+", "+", "+", "+", "+", "+", "+", "+"]
+      entrance: [4, 3]
+    out: -1
+  - name: "many-exits-near"
+    in:
+      maze:
+        - [".", ".", ".", ".", "."]
+        - [".", "+", "+", "+", "."]
+        - [".", "+", ".", "+", "."]
+        - [".", "+", ".", "+", "."]
+        - [".", ".", ".", ".", "."]
+      entrance: [2, 2]
+    out: 2
+  - name: "large-open-eight"
+    in:
+      maze:
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+      entrance: [3, 3]
+    out: 3
+  - name: "large-open-edge-entrance"
+    in:
+      maze:
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+        - [".", ".", ".", ".", ".", ".", ".", "."]
+      entrance: [0, 4]
+    out: 1
+  - name: "long-horizontal-corridor"
+    in:
+      maze:
+        - ["+", ".", ".", ".", ".", ".", ".", ".", ".", ".", "+"]
+        - ["+", "+", "+", "+", "+", ".", "+", "+", "+", "+", "+"]
+        - ["+", "+", "+", "+", "+", ".", "+", "+", "+", "+", "+"]
+      entrance: [2, 5]
+    out: 2
+  - name: "large-enclosed"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+"]
+        - ["+", ".", ".", ".", ".", ".", ".", ".", ".", "+"]
+        - ["+", ".", "+", "+", "+", "+", "+", "+", ".", "+"]
+        - ["+", ".", "+", ".", ".", ".", "+", "+", ".", "+"]
+        - ["+", ".", "+", ".", "+", ".", "+", "+", ".", "+"]
+        - ["+", ".", "+", ".", ".", ".", "+", "+", ".", "+"]
+        - ["+", ".", "+", "+", "+", "+", "+", "+", ".", "+"]
+        - ["+", ".", ".", ".", ".", ".", ".", ".", ".", "+"]
+        - ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+"]
+      entrance: [4, 3]
+    out: -1
+  - name: "final-corner-exit"
+    in:
+      maze:
+        - ["+", "+", "+", "+", "."]
+        - ["+", ".", ".", ".", "."]
+        - ["+", ".", "+", "+", "+"]
+        - ["+", ".", ".", ".", "+"]
+        - [".", "+", "+", "+", "+"]
+      entrance: [1, 1]
+    out: 3

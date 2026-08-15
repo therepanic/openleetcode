@@ -1,0 +1,247 @@
+entry:
+  id: 1792
+  title: "maximum-average-pass-ratio"
+  params:
+    classes:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    extraStudents:
+      type: int
+  call:
+    cpp: "Solution().maxAverageRatio({classes}, {extraStudents})"
+    rust: "Solution::max_average_ratio({classes}, {extraStudents})"
+    python3: "Solution().maxAverageRatio({classes}, {extraStudents})"
+    python2: "Solution().maxAverageRatio({classes}, {extraStudents})"
+    ruby: "max_average_ratio({classes}, {extraStudents})"
+    java: "new Solution().maxAverageRatio({classes}, {extraStudents})"
+    csharp: "new Solution().MaxAverageRatio({classes}, {extraStudents})"
+    kotlin: "Solution().maxAverageRatio({classes}, {extraStudents})"
+    go: "maxAverageRatio({classes}, {extraStudents})"
+    dart: "Solution().maxAverageRatio({classes}, {extraStudents})"
+    swift: "Solution().maxAverageRatio({classes}, {extraStudents})"
+    typescript: "maxAverageRatio({classes}, {extraStudents})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxAverageRatio(classes, extraStudents, {result})"
+    checker: |
+      import heapq
+      import math
+
+      class Checker:
+          def maxAverageRatio(self, classes, extraStudents, result):
+              def gain(p, t):
+                  return (p + 1) / float(t + 1) - p / float(t)
+              heap = [(-gain(p, t), p, t) for p, t in classes]
+              heapq.heapify(heap)
+              for _ in range(extraStudents):
+                  _, p, t = heapq.heappop(heap)
+                  p += 1
+                  t += 1
+                  heapq.heappush(heap, (-gain(p, t), p, t))
+              expected = sum(p / float(t) for _, p, t in heap) / len(classes)
+              try:
+                  actual = float(result)
+              except (TypeError, ValueError):
+                  return False
+              return math.isfinite(actual) and abs(actual - expected) <= 1e-5
+
+seed: 1792
+
+tests:
+  - name: example-one
+    in:
+      classes: [[1, 2], [3, 5], [2, 2]]
+      extraStudents: 2
+  - name: example-two
+    in:
+      classes: [[2, 4], [3, 9], [4, 5], [2, 10]]
+      extraStudents: 4
+  - name: one-class
+    in:
+      classes: [[1, 2]]
+      extraStudents: 1
+  - name: one-class-full
+    in:
+      classes: [[1, 1]]
+      extraStudents: 100000
+  - name: all-already-perfect
+    in:
+      classes: [[1, 1], [2, 2], [100000, 100000]]
+      extraStudents: 37
+  - name: all-half
+    in:
+      classes: [[1, 2], [2, 4], [50, 100], [500, 1000]]
+      extraStudents: 4
+  - name: equal-small
+    in:
+      classes: [[1, 3], [1, 3], [1, 3]]
+      extraStudents: 3
+  - name: one-nearly-perfect
+    in:
+      classes: [[99999, 100000], [1, 100000], [2, 100000]]
+      extraStudents: 5
+  - name: zero-gain-perfect-mix
+    in:
+      classes: [[5, 5], [1, 10], [9, 10]]
+      extraStudents: 1
+  - name: smallest-ratios
+    in:
+      classes: [[1, 100000], [1, 99999], [2, 100000]]
+      extraStudents: 10
+  - name: large-extra-small-classes
+    in:
+      classes: [[1, 2], [1, 3], [2, 5]]
+      extraStudents: 100000
+  - name: large-totals
+    in:
+      classes: [[50000, 100000], [75000, 100000], [99998, 100000]]
+      extraStudents: 100000
+  - name: varied-ratios
+    in:
+      classes: [[3, 4], [4, 10], [7, 13], [10, 11], [1, 7]]
+      extraStudents: 9
+  - name: many-perfect
+    in:
+      classes: [[1, 1], [2, 2], [3, 3], [4, 5], [1, 6]]
+      extraStudents: 8
+  - name: tie-gains
+    in:
+      classes: [[1, 2], [2, 4], [3, 6], [4, 8]]
+      extraStudents: 6
+  - name: alternating
+    in:
+      classes: [[1, 10], [9, 10], [2, 3], [3, 9], [8, 9], [4, 20]]
+      extraStudents: 12
+  - name: two-classes
+    in:
+      classes: [[1, 5], [4, 7]]
+      extraStudents: 2
+  - name: exact-total-bound
+    in:
+      classes: [[99999, 100000], [1, 1]]
+      extraStudents: 99999
+  - name: many-classes
+    in:
+      classes:
+        [
+          [1, 2],
+          [2, 3],
+          [3, 4],
+          [4, 5],
+          [5, 6],
+          [6, 7],
+          [7, 8],
+          [8, 9],
+          [9, 10],
+          [10, 11],
+        ]
+      extraStudents: 25
+  - name: sparse-large
+    in:
+      classes: [[1, 100000], [99999, 100000], [50000, 50001], [25000, 99999]]
+      extraStudents: 100
+  - name: dense-small
+    in:
+      classes: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9]]
+      extraStudents: 1
+  - name: one-extra
+    in:
+      classes: [[1, 100], [50, 100], [99, 100], [2, 3]]
+      extraStudents: 1
+  - name: huge-single
+    in:
+      classes: [[50000, 100000]]
+      extraStudents: 100000
+  - name: huge-perfect-and-poor
+    in:
+      classes: [[100000, 100000], [1, 100000]]
+      extraStudents: 100000
+  - name: repeated-pairs
+    in:
+      classes: [[2, 5], [2, 5], [2, 5], [2, 5], [2, 5]]
+      extraStudents: 15
+  - name: close-gains
+    in:
+      classes: [[49, 100], [50, 101], [51, 102], [52, 103]]
+      extraStudents: 20
+  - name: low-pass-variety
+    in:
+      classes: [[1, 2], [1, 4], [1, 8], [1, 16], [1, 32]]
+      extraStudents: 16
+  - name: high-pass-variety
+    in:
+      classes: [[8, 9], [17, 19], [26, 29], [35, 39], [44, 49]]
+      extraStudents: 11
+  - name: maximum-class-count
+    in:
+      classes:
+        [
+          [1, 100000],
+          [2, 100000],
+          [3, 100000],
+          [4, 100000],
+          [5, 100000],
+          [6, 100000],
+          [7, 100000],
+          [8, 100000],
+          [9, 100000],
+          [10, 100000],
+        ]
+      extraStudents: 100000
+  - name: mixed-perfect
+    in:
+      classes: [[10, 10], [1, 2], [20, 30], [30, 31], [5, 100]]
+      extraStudents: 33
+  - name: generator-small
+    in:
+      classes: [[1, 4], [2, 7], [5, 9], [8, 10]]
+      extraStudents:
+        gen: "int"
+        min: 1
+        max: 100
+  - name: generator-medium
+    in:
+      classes: [[1, 100], [25, 100], [50, 100], [75, 100], [99, 100]]
+      extraStudents:
+        gen: "int"
+        min: 1
+        max: 1000
+  - name: generator-perfect-mix
+    in:
+      classes: [[1, 1], [1, 10], [10, 20], [999, 1000]]
+      extraStudents:
+        gen: "int"
+        min: 1
+        max: 10000
+  - name: generator-large
+    in:
+      classes:
+        [
+          [1, 100000],
+          [25000, 100000],
+          [50000, 100000],
+          [75000, 100000],
+          [99999, 100000],
+        ]
+      extraStudents:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: generator-balanced
+    in:
+      classes: [[3, 7], [12, 25], [40, 81], [60, 101], [90, 151], [500, 1001]]
+      extraStudents:
+        gen: "int"
+        min: 1
+        max: 100000

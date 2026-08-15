@@ -1,0 +1,387 @@
+entry:
+  id: 1536
+  title: "minimum-swaps-to-arrange-a-binary-grid"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minSwaps({grid})"
+    rust: "Solution::min_swaps({grid})"
+    python3: "Solution().minSwaps({grid})"
+    python2: "Solution().minSwaps({grid})"
+    ruby: "min_swaps({grid})"
+    java: "new Solution().minSwaps({grid})"
+    csharp: "new Solution().MinSwaps({grid})"
+    kotlin: "Solution().minSwaps({grid})"
+    go: "minSwaps({grid})"
+    dart: "Solution().minSwaps({grid})"
+    swift: "Solution().minSwaps({grid})"
+    typescript: "minSwaps({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minSwaps(grid, {result})"
+    checker: |
+      class Checker:
+          def minSwaps(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(grid)
+              zeros = []
+              for row in grid:
+                  count = 0
+                  for value in reversed(row):
+                      if value == 0:
+                          count += 1
+                      else:
+                          break
+                  zeros.append(count)
+              swaps = 0
+              for i in range(n):
+                  needed = n - i - 1
+                  j = i
+                  while j < n and zeros[j] < needed:
+                      j += 1
+                  if j == n:
+                      return result == -1
+                  swaps += j - i
+                  value = zeros.pop(j)
+                  zeros.insert(i, value)
+              return result == swaps
+
+seed: 1536
+
+tests:
+  - name: single-zero
+    in:
+      grid:
+        - [0]
+    out: 0
+  - name: single-one
+    in:
+      grid:
+        - [1]
+    out: 0
+  - name: all-zero-two
+    in:
+      grid:
+        - [0, 0]
+        - [0, 0]
+    out: 0
+  - name: impossible-all-one-two
+    in:
+      grid:
+        - [1, 1]
+        - [1, 1]
+    out: -1
+  - name: already-valid-two
+    in:
+      grid:
+        - [1, 0]
+        - [1, 1]
+    out: 0
+  - name: one-swap-two
+    in:
+      grid:
+        - [0, 1]
+        - [1, 0]
+    out: 1
+  - name: official-example-one
+    in:
+      grid:
+        - [0, 0, 1]
+        - [1, 1, 0]
+        - [1, 0, 0]
+    out: 3
+  - name: official-example-two
+    in:
+      grid:
+        - [0, 1, 1, 0]
+        - [0, 1, 1, 0]
+        - [0, 1, 1, 0]
+        - [0, 1, 1, 0]
+    out: -1
+  - name: official-example-three
+    in:
+      grid:
+        - [1, 0, 0]
+        - [1, 1, 0]
+        - [1, 1, 1]
+    out: 0
+  - name: zero-suffix-three
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 1, 0]
+        - [1, 1, 1]
+    out: 0
+  - name: insufficient-suffix-three
+    in:
+      grid:
+        - [0, 0, 0, 1]
+        - [0, 0, 1, 1]
+        - [0, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: -1
+  - name: no-required-suffix-four
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [0, 1, 1, 1]
+        - [0, 0, 1, 1]
+        - [0, 0, 0, 1]
+    out: -1
+  - name: cyclic-three
+    in:
+      grid:
+        - [0, 1, 0]
+        - [0, 0, 1]
+        - [1, 0, 0]
+    out: 2
+  - name: diagonal-ones-three
+    in:
+      grid:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [0, 0, 1]
+    out: -1
+  - name: already-valid-four
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [1, 0, 0, 0]
+        - [1, 1, 0, 0]
+        - [1, 1, 1, 0]
+    out: 0
+  - name: shifted-valid-four
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 1]
+        - [0, 0, 1, 1]
+        - [0, 1, 1, 1]
+    out: -1
+  - name: late-zero-four
+    in:
+      grid:
+        - [0, 0, 1, 0]
+        - [0, 1, 1, 0]
+        - [1, 1, 1, 0]
+        - [1, 1, 1, 1]
+    out: -1
+  - name: nontrivial-three
+    in:
+      grid:
+        - [0, 0, 0]
+        - [1, 0, 1]
+        - [1, 1, 0]
+    out: 1
+  - name: five-step-order
+    in:
+      grid:
+        - [0, 0, 0, 0, 1]
+        - [0, 0, 0, 1, 1]
+        - [0, 0, 1, 1, 1]
+        - [0, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: -1
+  - name: five-near-valid
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 1]
+        - [0, 0, 0, 1, 1]
+        - [0, 0, 1, 1, 1]
+        - [0, 1, 1, 1, 1]
+    out: -1
+  - name: four-rotation
+    in:
+      grid:
+        - [0, 1, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+        - [1, 0, 0, 0]
+    out: 3
+  - name: descending-valid-four
+    in:
+      grid:
+        - [1, 0, 0, 0]
+        - [1, 1, 0, 0]
+        - [1, 1, 1, 0]
+        - [1, 1, 1, 1]
+    out: 0
+  - name: six-already-valid
+    in:
+      grid:
+        - [0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 1]
+        - [0, 0, 0, 0, 1, 1]
+        - [0, 0, 0, 1, 1, 1]
+        - [0, 0, 1, 1, 1, 1]
+        - [0, 1, 1, 1, 1, 1]
+    out: -1
+  - name: six-all-ones-bottom
+    in:
+      grid:
+        - [0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 1]
+        - [0, 0, 0, 0, 1, 1]
+        - [0, 0, 0, 1, 1, 1]
+        - [0, 0, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1]
+    out: -1
+  - name: four-mixed-a
+    in:
+      grid:
+        - [0, 0, 1, 1]
+        - [0, 1, 0, 1]
+        - [1, 0, 0, 1]
+        - [1, 1, 1, 0]
+    out: -1
+  - name: three-mixed-a
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 1, 1]
+        - [1, 0, 1]
+    out: -1
+  - name: four-mixed-b
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [0, 1, 0, 1]
+        - [1, 1, 0, 0]
+        - [1, 0, 1, 0]
+    out: 2
+  - name: five-mixed-a
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+        - [0, 1, 0, 0, 1]
+        - [1, 0, 1, 0, 0]
+        - [1, 1, 0, 1, 0]
+        - [1, 1, 1, 0, 1]
+    out: -1
+  - name: four-mixed-c
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 1, 1, 0]
+        - [1, 1, 1, 0]
+    out: -1
+  - name: four-mixed-d
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 1]
+        - [0, 0, 1, 0]
+        - [0, 1, 1, 0]
+    out: -1
+  - name: three-sparse
+    in:
+      grid:
+        - [0, 0, 0]
+        - [1, 0, 0]
+        - [0, 1, 0]
+    out: 0
+  - name: five-subdiagonal
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+        - [0, 1, 0, 0, 0]
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 1, 0]
+    out: 0
+  - name: three-reverse-diagonal
+    in:
+      grid:
+        - [0, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 0]
+    out: 3
+  - name: four-last-row-zeros
+    in:
+      grid:
+        - [1, 1, 0, 0]
+        - [1, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 1]
+    out: 1
+  - name: generated-two
+    in:
+      grid:
+        gen: "array"
+        len: 2
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+          elemType: "int"
+  - name: generated-three
+    in:
+      grid:
+        gen: "array"
+        len: 3
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+          elemType: "int"
+  - name: generated-five
+    in:
+      grid:
+        gen: "array"
+        len: 5
+        of:
+          gen: "array"
+          len: 5
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+          elemType: "int"
+  - name: generated-twenty
+    in:
+      grid:
+        gen: "array"
+        len: 20
+        of:
+          gen: "array"
+          len: 20
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+          elemType: "int"
+  - name: generated-max-size
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        of:
+          gen: "array"
+          len: 200
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+          elemType: "int"

@@ -1,0 +1,247 @@
+entry:
+  id: 1827
+  title: "minimum-operations-to-make-the-array-increasing"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minOperations({nums})"
+    rust: "Solution::min_operations({nums})"
+    python3: "Solution().minOperations({nums})"
+    python2: "Solution().minOperations({nums})"
+    ruby: "min_operations({nums})"
+    java: "new Solution().minOperations({nums})"
+    csharp: "new Solution().MinOperations({nums})"
+    kotlin: "Solution().minOperations({nums})"
+    go: "minOperations({nums})"
+    dart: "Solution().minOperations({nums})"
+    swift: "Solution().minOperations({nums})"
+    typescript: "minOperations({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minOperations(nums, {result})"
+    checker: |
+      class Checker:
+          def minOperations(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(nums, list) or not (1 <= len(nums) <= 5000):
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) or x < 1 or x > 10000 for x in nums):
+                  return False
+              current = nums[0]
+              expected = 0
+              for value in nums[1:]:
+                  current = max(current + 1, value)
+                  expected += current - value
+              return result == expected
+
+seed: 1827
+
+tests:
+  - name: "example_equal_three"
+    in:
+      nums: [1, 1, 1]
+    out: 3
+  - name: "example_mixed"
+    in:
+      nums: [1, 5, 2, 4, 1]
+    out: 14
+  - name: "example_single"
+    in:
+      nums: [8]
+    out: 0
+  - name: "already_increasing"
+    in:
+      nums: [1, 2, 3, 4, 5]
+    out: 0
+  - name: "strict_decrease"
+    in:
+      nums: [5, 4, 3, 2, 1]
+    out: 20
+  - name: "two_equal"
+    in:
+      nums: [7, 7]
+    out: 1
+  - name: "two_increasing"
+    in:
+      nums: [9999, 10000]
+    out: 0
+  - name: "two_decreasing"
+    in:
+      nums: [10000, 1]
+    out: 10000
+  - name: "all_ones_four"
+    in:
+      nums: [1, 1, 1, 1]
+    out: 6
+  - name: "all_ones_ten"
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 45
+  - name: "constant_five"
+    in:
+      nums: [5, 5, 5, 5, 5]
+    out: 10
+  - name: "plateau_then_jump"
+    in:
+      nums: [2, 2, 2, 10]
+    out: 3
+  - name: "jump_then_plateau"
+    in:
+      nums: [2, 10, 10, 10]
+    out: 3
+  - name: "late_low"
+    in:
+      nums: [1, 2, 3, 1]
+    out: 3
+  - name: "low_after_large"
+    in:
+      nums: [1, 100, 1]
+    out: 100
+  - name: "alternating_low_high"
+    in:
+      nums: [1, 10, 1, 10, 1]
+    out: 24
+  - name: "alternating_high_low"
+    in:
+      nums: [10, 1, 10, 1, 10, 1]
+    out: 42
+  - name: "minimum_values"
+    in:
+      nums: [1, 2]
+    out: 0
+  - name: "maximum_values_equal"
+    in:
+      nums: [10000, 10000]
+    out: 1
+  - name: "maximum_values_three"
+    in:
+      nums: [10000, 10000, 10000]
+    out: 3
+  - name: "large_gap"
+    in:
+      nums: [1, 10000, 1]
+    out: 10000
+  - name: "interleaved"
+    in:
+      nums: [3, 1, 4, 1, 5, 1]
+    out: 18
+  - name: "descending_four"
+    in:
+      nums: [4, 3, 2, 1]
+    out: 12
+  - name: "one_drop"
+    in:
+      nums: [1, 2, 8, 3, 4]
+    out: 12
+  - name: "already_high_start"
+    in:
+      nums: [100, 101, 102]
+    out: 0
+  - name: "repeated_boundary"
+    in:
+      nums: [9998, 9998, 9998, 9998]
+    out: 6
+  - name: "small_wave"
+    in:
+      nums: [2, 1, 2, 1, 2]
+    out: 12
+  - name: "long_ramp_after_drop"
+    in:
+      nums: [1, 2, 3, 4, 1, 2, 3]
+    out: 12
+  - name: "large_first"
+    in:
+      nums: [10000, 1, 1, 1]
+    out: 30003
+  - name: "single_max"
+    in:
+      nums: [10000]
+    out: 0
+  - name: "strict_steps"
+    in:
+      nums: [2, 4, 6, 8, 10]
+    out: 0
+  - name: "duplicate_middle"
+    in:
+      nums: [1, 3, 3, 5]
+    out: 1
+  - name: "multiple_duplicate_blocks"
+    in:
+      nums: [1, 1, 3, 3, 5, 5]
+    out: 3
+  - name: "decrease_at_end"
+    in:
+      nums: [4, 5, 6, 1]
+    out: 6
+  - name: "large_monotone_values"
+    in:
+      nums: [9990, 9991, 9992, 9993, 9994]
+    out: 0
+  - name: "generated_small"
+    seed: 1001
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 50
+  - name: "generated_medium"
+    seed: 1002
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 300
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+  - name: "generated_large"
+    seed: 1003
+    in:
+      nums:
+        gen: "array"
+        len: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+  - name: "generated_large_low_range"
+    seed: 1004
+    in:
+      nums:
+        gen: "array"
+        len: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 5
+  - name: "generated_large_high_range"
+    seed: 1005
+    in:
+      nums:
+        gen: "array"
+        len: 5000
+        of:
+          gen: "int"
+          min: 9990
+          max: 10000

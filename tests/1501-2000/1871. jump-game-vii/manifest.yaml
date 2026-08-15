@@ -1,0 +1,367 @@
+entry:
+  id: 1871
+  title: "jump-game-vii"
+  params:
+    s:
+      type: string
+    minJump:
+      type: int
+    maxJump:
+      type: int
+  call:
+    cpp: "Solution().canReach({s}, {minJump}, {maxJump})"
+    rust: "Solution::can_reach({s}, {minJump}, {maxJump})"
+    python3: "Solution().canReach({s}, {minJump}, {maxJump})"
+    python2: "Solution().canReach({s}, {minJump}, {maxJump})"
+    ruby: "can_reach({s}, {minJump}, {maxJump})"
+    java: "new Solution().canReach({s}, {minJump}, {maxJump})"
+    csharp: "new Solution().CanReach({s}, {minJump}, {maxJump})"
+    kotlin: "Solution().canReach({s}, {minJump}, {maxJump})"
+    go: "canReach({s}, {minJump}, {maxJump})"
+    dart: "Solution().canReach({s}, {minJump}, {maxJump})"
+    swift: "Solution().canReach({s}, {minJump}, {maxJump})"
+    typescript: "canReach({s}, {minJump}, {maxJump})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().canReach(s, minJump, maxJump, {result})"
+    checker: |
+      class Checker:
+          def canReach(self, s, minJump, maxJump, result):
+              n = len(s)
+              reachable = [False] * n
+              reachable[0] = True
+              window = 0
+              for i in range(1, n):
+                  if i >= minJump and reachable[i - minJump]:
+                      window += 1
+                  if i > maxJump and reachable[i - maxJump - 1]:
+                      window -= 1
+                  reachable[i] = s[i] == '0' and window > 0
+              return result is reachable[-1]
+
+seed: 1871
+
+tests:
+  - name: example-1
+    in:
+      s: "011010"
+      minJump: 2
+      maxJump: 3
+    out: true
+  - name: example-2
+    in:
+      s: "01101110"
+      minJump: 2
+      maxJump: 3
+    out: false
+  - name: shortest-reachable
+    in:
+      s: "00"
+      minJump: 1
+      maxJump: 1
+    out: true
+  - name: shortest-blocked
+    in:
+      s: "01"
+      minJump: 1
+      maxJump: 1
+    out: false
+  - name: exact-long-jump
+    in:
+      s: "00001"
+      minJump: 4
+      maxJump: 4
+    out: false
+  - name: exact-long-jump-zero
+    in:
+      s: "00000"
+      minJump: 4
+      maxJump: 4
+    out: true
+  - name: max-window
+    in:
+      s: "0000000"
+      minJump: 1
+      maxJump: 6
+    out: true
+  - name: first-gap
+    in:
+      s: "0100"
+      minJump: 1
+      maxJump: 2
+    out: true
+  - name: delayed-path
+    in:
+      s: "0010010"
+      minJump: 2
+      maxJump: 3
+    out: true
+  - name: isolated-landing
+    in:
+      s: "0011100"
+      minJump: 2
+      maxJump: 3
+    out: false
+  - name: blocked-middle
+    in:
+      s: "000111000"
+      minJump: 2
+      maxJump: 3
+    out: false
+  - name: ones-before-end
+    in:
+      s: "0000110"
+      minJump: 1
+      maxJump: 2
+    out: false
+  - name: only-one-step
+    in:
+      s: "001"
+      minJump: 1
+      maxJump: 2
+    out: false
+  - name: one-step-around-block
+    in:
+      s: "0001000"
+      minJump: 2
+      maxJump: 2
+    out: true
+  - name: two-step-chain
+    in:
+      s: "00010001"
+      minJump: 2
+      maxJump: 3
+    out: false
+  - name: two-step-chain-zero-end
+    in:
+      s: "00010000"
+      minJump: 2
+      maxJump: 3
+    out: true
+  - name: narrow-window
+    in:
+      s: "001010000"
+      minJump: 2
+      maxJump: 3
+    out: true
+  - name: narrow-window-fail
+    in:
+      s: "001011000"
+      minJump: 2
+      maxJump: 3
+    out: true
+  - name: jump-over-ones
+    in:
+      s: "0111100"
+      minJump: 2
+      maxJump: 6
+    out: true
+  - name: cannot-cross-gap
+    in:
+      s: "00111100"
+      minJump: 2
+      maxJump: 3
+    out: false
+  - name: many-options
+    in:
+      s: "0101010100"
+      minJump: 2
+      maxJump: 4
+    out: true
+  - name: parity-trap
+    in:
+      s: "000100001"
+      minJump: 2
+      maxJump: 2
+    out: false
+  - name: parity-path
+    in:
+      s: "000100000"
+      minJump: 2
+      maxJump: 2
+    out: true
+  - name: large-window-blocked
+    in:
+      s: "0011111110"
+      minJump: 2
+      maxJump: 8
+    out: false
+  - name: landing-at-max
+    in:
+      s: "011110001"
+      minJump: 3
+      maxJump: 5
+    out: false
+  - name: landing-at-max-zero
+    in:
+      s: "011110000"
+      minJump: 3
+      maxJump: 5
+    out: true
+  - name: dense-zeros
+    in:
+      s: "00100100100"
+      minJump: 2
+      maxJump: 4
+    out: true
+  - name: dense-ones
+    in:
+      s: "00111111111"
+      minJump: 1
+      maxJump: 10
+    out: false
+  - name: start-window-too-short
+    in:
+      s: "01100"
+      minJump: 3
+      maxJump: 3
+    out: false
+  - name: start-window-reaches-end
+    in:
+      s: "01100"
+      minJump: 2
+      maxJump: 4
+    out: true
+  - name: one-available-landing
+    in:
+      s: "001111000"
+      minJump: 3
+      maxJump: 5
+    out: false
+  - name: one-available-landing-blocked
+    in:
+      s: "001111001"
+      minJump: 3
+      maxJump: 5
+    out: false
+  - name: alternating-tight
+    in:
+      s: "0010010010010"
+      minJump: 3
+      maxJump: 4
+    out: true
+  - name: alternating-tight-fail
+    in:
+      s: "0010010010011"
+      minJump: 3
+      maxJump: 4
+    out: false
+  - name: exact-single-hop
+    in:
+      s: "000000"
+      minJump: 5
+      maxJump: 5
+    out: true
+  - name: exact-single-hop-blocked
+    in:
+      s: "000001"
+      minJump: 5
+      maxJump: 5
+    out: false
+  - name: long-chain
+    in:
+      s: "0001000100010000"
+      minJump: 2
+      maxJump: 4
+    out: true
+  - name: long-chain-blocked-end
+    in:
+      s: "0001000100010001"
+      minJump: 2
+      maxJump: 4
+    out: false
+  - name: max-jump-skip
+    in:
+      s: "011111111110"
+      minJump: 2
+      maxJump: 11
+    out: true
+  - name: max-jump-insufficient
+    in:
+      s: "011111111111"
+      minJump: 2
+      maxJump: 10
+    out: false
+  - name: gen-random-small
+    in:
+      s:
+        gen: "str"
+        len: 64
+        alphabet: "0"
+      minJump:
+        gen: "int"
+        min: 1
+        max: 16
+      maxJump:
+        gen: "int"
+        min: 17
+        max: 63
+    seed: 18711
+  - name: gen-random-medium
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "0"
+      minJump:
+        gen: "int"
+        min: 1
+        max: 250
+      maxJump:
+        gen: "int"
+        min: 251
+        max: 999
+    seed: 18712
+  - name: gen-large-dense
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "0"
+      minJump:
+        gen: "int"
+        min: 1
+        max: 1000
+      maxJump:
+        gen: "int"
+        min: 1001
+        max: 99999
+    seed: 18713
+  - name: gen-large-narrow
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "0"
+      minJump:
+        gen: "int"
+        min: 40000
+        max: 49999
+      maxJump:
+        gen: "int"
+        min: 50000
+        max: 99998
+    seed: 18714
+  - name: gen-boundary
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "0"
+      minJump:
+        gen: "int"
+        min: 99998
+        max: 99998
+      maxJump:
+        gen: "int"
+        min: 99999
+        max: 99999
+    seed: 18715

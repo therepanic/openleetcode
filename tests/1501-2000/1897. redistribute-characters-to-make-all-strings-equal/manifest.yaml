@@ -1,0 +1,246 @@
+entry:
+  id: 1897
+  title: "redistribute-characters-to-make-all-strings-equal"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().makeEqual({words})"
+    rust: "Solution::make_equal({words})"
+    python3: "Solution().makeEqual({words})"
+    python2: "Solution().makeEqual({words})"
+    ruby: "make_equal({words})"
+    java: "new Solution().makeEqual({words})"
+    csharp: "new Solution().MakeEqual({words})"
+    kotlin: "Solution().makeEqual({words})"
+    go: "makeEqual({words})"
+    dart: "Solution().makeEqual({words})"
+    swift: "Solution().makeEqual({words})"
+    typescript: "makeEqual({words})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().makeEqual(words, {result})"
+    checker: |
+      class Checker:
+          def makeEqual(self, words, result):
+              if not isinstance(result, bool):
+                  return False
+              total = [0] * 26
+              for word in words:
+                  for ch in word:
+                      total[ord(ch) - 97] += 1
+              n = len(words)
+              expected = all(count % n == 0 for count in total)
+              return result == expected
+
+seed: 1897
+
+tests:
+  - name: example-true
+    in:
+      words: ["abc", "aabc", "bc"]
+    out: true
+  - name: example-false
+    in:
+      words: ["ab", "a"]
+    out: false
+  - name: single-word
+    in:
+      words: ["leetcode"]
+    out: true
+  - name: two-identical
+    in:
+      words: ["aa", "aa"]
+    out: true
+  - name: two-different-same-count
+    in:
+      words: ["ab", "ba"]
+    out: true
+  - name: missing-character
+    in:
+      words: ["a", "b"]
+    out: false
+  - name: uneven-count
+    in:
+      words: ["a", "aa", "aaa"]
+    out: true
+  - name: uneven-count-false
+    in:
+      words: ["a", "a", "aa"]
+    out: false
+  - name: repeated-one-letter
+    in:
+      words: ["aaaa", "", "aaaa"]
+    out: false
+  - name: balanced-one-letter
+    in:
+      words: ["aaa", "a", "aa"]
+    out: true
+  - name: all-alphabet-equal
+    in:
+      words: ["abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz"]
+    out: true
+  - name: alphabet-three-way
+    in:
+      words: ["abc", "bca", "cab"]
+    out: true
+  - name: alphabet-four-way-false
+    in:
+      words: ["abc", "abc", "abc", "ab"]
+    out: false
+  - name: one-character-three
+    in:
+      words: ["x", "x", "x"]
+    out: true
+  - name: one-character-mixed
+    in:
+      words: ["x", "x", "y"]
+    out: false
+  - name: empty-string-invalid-balance
+    in:
+      words: ["ab", "", "ab"]
+    out: false
+  - name: empty-string-balanced
+    in:
+      words: ["", "", ""]
+    out: true
+  - name: duplicate-permutations
+    in:
+      words: ["aabb", "baba", "abba", "baab"]
+    out: true
+  - name: duplicate-permutations-false
+    in:
+      words: ["aabb", "baba", "abba", "baa"]
+    out: false
+  - name: three-letters-four-words
+    in:
+      words: ["ab", "bc", "cd", "da"]
+    out: false
+  - name: three-letters-four-words-false
+    in:
+      words: ["ab", "bc", "cd", "db"]
+    out: false
+  - name: two-long-balanced
+    in:
+      words: ["aabbccddeeff", "ffeeddccbbaa"]
+    out: true
+  - name: two-long-unbalanced
+    in:
+      words: ["aabbccddeeff", "ffeeddccbb"]
+    out: true
+  - name: three-long-balanced
+    in:
+      words: ["aaaabbbb", "bbbbaaaa", "aabbbbaa"]
+    out: true
+  - name: three-long-unbalanced
+    in:
+      words: ["aaaabbbb", "bbbbaaaa", "aabbbba"]
+    out: false
+  - name: many-identical
+    in:
+      words:
+        ["abc", "abc", "abc", "abc", "abc", "abc", "abc", "abc", "abc", "abc"]
+    out: true
+  - name: many-identical-one-extra
+    in:
+      words:
+        ["abc", "abc", "abc", "abc", "abc", "abc", "abc", "abc", "abc", "ab"]
+    out: false
+  - name: counts-divisible-by-five
+    in:
+      words:
+        ["aaaaabbbbb", "ababababab", "bbaaaabbaa", "aabbaabbaa", "bbaaabaaaa"]
+    out: false
+  - name: counts-not-divisible-by-five
+    in:
+      words:
+        ["aaaaabbbbb", "ababababab", "bbaaaabbaa", "aabbaabbaa", "bbaaabaaa"]
+    out: false
+  - name: ten-single-letter
+    in:
+      words: ["q", "q", "q", "q", "q", "q", "q", "q", "q", "q"]
+    out: true
+  - name: ten-single-letter-one-other
+    in:
+      words: ["q", "q", "q", "q", "q", "q", "q", "q", "q", "r"]
+    out: false
+  - name: five-balanced-symbols
+    in:
+      words: ["abcde", "bcdea", "cdeab", "deabc", "eabcd"]
+    out: true
+  - name: large-static-balanced
+    in:
+      words:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ]
+    out: true
+  - name: large-static-unbalanced
+    in:
+      words:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ]
+    out: false
+  - name: gen-small-random
+    in:
+      words:
+        gen: array
+        len: 7
+        of:
+          gen: str
+          len: 8
+          alphabet: "abc"
+    seed: 189701
+  - name: gen-medium-random
+    in:
+      words:
+        gen: array
+        len: 25
+        of:
+          gen: str
+          len: 40
+          alphabet: "abcdef"
+    seed: 189702
+  - name: gen-max-words
+    in:
+      words:
+        gen: array
+        len: 100
+        of:
+          gen: str
+          len: 100
+          alphabet: "abcd"
+    seed: 189703
+  - name: gen-max-length
+    in:
+      words:
+        gen: array
+        len: 2
+        of:
+          gen: str
+          len: 100
+          alphabet: "xyz"
+    seed: 189704
+  - name: gen-full-alphabet
+    in:
+      words:
+        gen: array
+        len: 64
+        of:
+          gen: str
+          len: 75
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+    seed: 189705

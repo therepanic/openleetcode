@@ -1,0 +1,380 @@
+entry:
+  id: 2008
+  title: "maximum-earnings-from-taxi"
+  params:
+    n:
+      type: int
+    rides:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxTaxiEarnings({n}, {rides})"
+    rust: "Solution::max_taxi_earnings({n}, {rides})"
+    python3: "Solution().maxTaxiEarnings({n}, {rides})"
+    python2: "Solution().maxTaxiEarnings({n}, {rides})"
+    ruby: "max_taxi_earnings({n}, {rides})"
+    java: "new Solution().maxTaxiEarnings({n}, {rides})"
+    csharp: "new Solution().MaxTaxiEarnings({n}, {rides})"
+    kotlin: "Solution().maxTaxiEarnings({n}, {rides})"
+    go: "maxTaxiEarnings({n}, {rides})"
+    dart: "Solution().maxTaxiEarnings({n}, {rides})"
+    swift: "Solution().maxTaxiEarnings({n}, {rides})"
+    typescript: "maxTaxiEarnings({n}, {rides})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxTaxiEarnings(n, rides, {result})"
+    checker: |
+      class Checker:
+          def maxTaxiEarnings(self, n, rides, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              best = [0] * (n + 1)
+              by_end = [[] for _ in range(n + 1)]
+              for start, end, tip in rides:
+                  if not (1 <= start < end <= n and tip >= 1):
+                      return False
+                  by_end[end].append((start, end - start + tip))
+              for end in range(1, n + 1):
+                  best[end] = best[end - 1]
+                  for start, profit in by_end[end]:
+                      best[end] = max(best[end], best[start] + profit)
+              return result == best[n]
+
+seed: 2008
+
+tests:
+  - name: "example_1"
+    in:
+      n: 5
+      rides:
+        - [2, 5, 4]
+        - [1, 5, 1]
+    out: 7
+  - name: "example_2"
+    in:
+      n: 20
+      rides:
+        - [1, 6, 1]
+        - [3, 10, 2]
+        - [10, 12, 3]
+        - [11, 12, 2]
+        - [12, 15, 2]
+        - [13, 18, 1]
+    out: 20
+  - name: "single_minimal"
+    in:
+      n: 2
+      rides:
+        - [1, 2, 1]
+    out: 2
+  - name: "single_large_tip"
+    in:
+      n: 2
+      rides:
+        - [1, 2, 100]
+    out: 101
+  - name: "adjacent_rides"
+    in:
+      n: 3
+      rides:
+        - [1, 2, 1]
+        - [2, 3, 1]
+    out: 4
+  - name: "overlap_selects_two"
+    in:
+      n: 3
+      rides:
+        - [1, 3, 1]
+        - [1, 2, 100]
+        - [2, 3, 100]
+    out: 202
+  - name: "no_overlap_longer"
+    in:
+      n: 10
+      rides:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+    out: 18
+  - name: "many_short_beats_long"
+    in:
+      n: 10
+      rides:
+        - [1, 10, 1]
+        - [1, 2, 100]
+        - [2, 3, 100]
+        - [3, 4, 100]
+        - [4, 5, 100]
+        - [5, 6, 100]
+        - [6, 7, 100]
+        - [7, 8, 100]
+        - [8, 9, 100]
+    out: 808
+  - name: "overlapping_windows"
+    in:
+      n: 10
+      rides:
+        - [1, 5, 10]
+        - [2, 6, 10]
+        - [3, 7, 10]
+        - [4, 8, 10]
+        - [5, 9, 10]
+        - [6, 10, 10]
+    out: 28
+  - name: "touching_zero_tip"
+    in:
+      n: 8
+      rides:
+        - [1, 4, 1]
+        - [4, 8, 1]
+    out: 9
+  - name: "long_ride_with_tip"
+    in:
+      n: 8
+      rides:
+        - [1, 4, 1]
+        - [4, 8, 1]
+        - [1, 8, 100]
+    out: 107
+  - name: "same_start"
+    in:
+      n: 6
+      rides:
+        - [1, 2, 1]
+        - [1, 3, 2]
+        - [1, 4, 3]
+        - [1, 5, 4]
+        - [1, 6, 5]
+    out: 10
+  - name: "same_end"
+    in:
+      n: 6
+      rides:
+        - [1, 6, 1]
+        - [2, 6, 100]
+        - [3, 6, 100]
+        - [4, 6, 100]
+        - [5, 6, 100]
+    out: 104
+  - name: "three_chain"
+    in:
+      n: 7
+      rides:
+        - [1, 3, 5]
+        - [3, 5, 5]
+        - [5, 7, 5]
+        - [1, 7, 1]
+    out: 21
+  - name: "unsorted_input"
+    in:
+      n: 7
+      rides:
+        - [2, 4, 10]
+        - [4, 6, 10]
+        - [1, 2, 1]
+        - [6, 7, 1]
+    out: 28
+  - name: "best_chain_vs_direct"
+    in:
+      n: 10
+      rides:
+        - [1, 3, 1]
+        - [3, 6, 2]
+        - [6, 10, 3]
+        - [1, 10, 2]
+    out: 15
+  - name: "duplicate_rides"
+    in:
+      n: 10
+      rides:
+        - [1, 2, 1]
+        - [1, 2, 2]
+        - [1, 2, 3]
+        - [2, 5, 4]
+        - [2, 5, 5]
+        - [5, 10, 6]
+    out: 23
+  - name: "dense_overlaps"
+    in:
+      n: 15
+      rides:
+        - [1, 5, 1]
+        - [2, 6, 2]
+        - [3, 7, 3]
+        - [4, 8, 4]
+        - [5, 9, 5]
+        - [6, 10, 6]
+        - [7, 11, 7]
+        - [8, 12, 8]
+        - [9, 13, 9]
+        - [10, 14, 10]
+        - [11, 15, 11]
+    out: 33
+  - name: "large_direct"
+    in:
+      n: 100
+      rides:
+        - [1, 100, 1]
+    out: 100
+  - name: "large_two_segments"
+    in:
+      n: 100
+      rides:
+        - [1, 2, 100000]
+        - [2, 100, 100000]
+    out: 200099
+  - name: "two_touching_segments"
+    in:
+      n: 100
+      rides:
+        - [1, 50, 1]
+        - [50, 100, 1]
+    out: 101
+  - name: "four_equal_segments"
+    in:
+      n: 100
+      rides:
+        - [1, 25, 10]
+        - [25, 50, 10]
+        - [50, 75, 10]
+        - [75, 100, 10]
+    out: 139
+  - name: "nested_high_tip"
+    in:
+      n: 10
+      rides:
+        - [1, 10, 1]
+        - [2, 9, 100]
+        - [3, 8, 100]
+        - [4, 7, 100]
+    out: 107
+  - name: "mixed_six"
+    in:
+      n: 12
+      rides:
+        - [1, 4, 2]
+        - [4, 7, 3]
+        - [7, 12, 4]
+        - [1, 6, 1]
+        - [6, 12, 1]
+    out: 20
+  - name: "unit_chain_ten"
+    in:
+      n: 12
+      rides:
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+        - [10, 11, 1]
+        - [11, 12, 1]
+    out: 20
+  - name: "three_equal_blocks"
+    in:
+      n: 9
+      rides:
+        - [1, 3, 10]
+        - [3, 6, 10]
+        - [6, 9, 10]
+        - [1, 9, 1]
+    out: 38
+  - name: "alternative_paths"
+    in:
+      n: 9
+      rides:
+        - [1, 2, 1]
+        - [2, 9, 1]
+        - [1, 4, 5]
+        - [4, 9, 5]
+    out: 18
+  - name: "two_high_routes"
+    in:
+      n: 20
+      rides:
+        - [1, 2, 1]
+        - [2, 20, 1]
+        - [1, 10, 50]
+        - [10, 20, 50]
+    out: 119
+  - name: "five_medium_routes"
+    in:
+      n: 30
+      rides:
+        - [1, 10, 1]
+        - [10, 20, 2]
+        - [20, 30, 3]
+        - [1, 15, 10]
+        - [15, 30, 10]
+    out: 49
+  - name: "late_big_tip"
+    in:
+      n: 50
+      rides:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [5, 6, 1]
+        - [6, 7, 1]
+        - [7, 8, 1]
+        - [8, 9, 1]
+        - [9, 10, 1]
+        - [10, 50, 100]
+    out: 158
+  - name: "three_quarters"
+    in:
+      n: 50
+      rides:
+        - [1, 25, 1]
+        - [25, 50, 1]
+        - [1, 50, 20]
+    out: 69
+  - name: "maximum_single_ride"
+    in:
+      n: 1000
+      rides:
+        - [1, 1000, 100000]
+    out: 100999
+  - name: "large_composed"
+    in:
+      n: 1000
+      rides:
+        - [1, 500, 1]
+        - [500, 1000, 1]
+        - [1, 250, 100]
+        - [250, 750, 100]
+        - [750, 1000, 100]
+    out: 1299
+  - name: "final_short_ride"
+    in:
+      n: 10
+      rides:
+        - [1, 2, 1]
+    out: 2
+  - name: "final_full_ride"
+    in:
+      n: 5
+      rides:
+        - [1, 5, 1]
+    out: 5

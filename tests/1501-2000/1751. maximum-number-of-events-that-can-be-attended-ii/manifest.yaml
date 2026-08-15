@@ -1,0 +1,432 @@
+entry:
+  id: 1751
+  title: "maximum-number-of-events-that-can-be-attended-ii"
+  params:
+    events:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxValue({events}, {k})"
+    rust: "Solution::max_value({events}, {k})"
+    python3: "Solution().maxValue({events}, {k})"
+    python2: "Solution().maxValue({events}, {k})"
+    ruby: "max_value({events}, {k})"
+    java: "new Solution().maxValue({events}, {k})"
+    csharp: "new Solution().MaxValue({events}, {k})"
+    kotlin: "Solution().maxValue({events}, {k})"
+    go: "maxValue({events}, {k})"
+    dart: "Solution().maxValue({events}, {k})"
+    swift: "Solution().maxValue({events}, {k})"
+    typescript: "maxValue({events}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxValue(events, k, {result})"
+    checker: |
+      from bisect import bisect_left
+
+      class Checker:
+          def maxValue(self, events, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(events, list) or not isinstance(k, int) or isinstance(k, bool):
+                  return False
+              if not 1 <= k <= len(events):
+                  return False
+              es = []
+              for event in events:
+                  if not isinstance(event, list) or len(event) != 3:
+                      return False
+                  start, end, value = event
+                  if any(not isinstance(x, int) or isinstance(x, bool) for x in event):
+                      return False
+                  if not (1 <= start <= end <= 1000000000 and 1 <= value <= 1000000):
+                      return False
+                  es.append((start, end, value))
+              es.sort(key=lambda event: event[1])
+              n = len(es)
+              ends = [event[1] for event in es]
+              previous = [bisect_left(ends, start, 0, i) for i, (start, _, _) in enumerate(es)]
+              best_without_current = [0] * (n + 1)
+              for used in range(1, k + 1):
+                  best_with_limit = [0] * (n + 1)
+                  for i, (_, _, value) in enumerate(es, 1):
+                      best_with_limit[i] = max(
+                          best_with_limit[i - 1],
+                          best_without_current[previous[i - 1]] + value,
+                      )
+                  best_without_current = best_with_limit
+              return result == best_without_current[n]
+
+seed: 1751
+
+tests:
+  - name: example-one
+    in:
+      events:
+        - [1, 2, 4]
+        - [3, 4, 3]
+        - [2, 3, 1]
+      k: 2
+    out: 7
+  - name: example-two
+    in:
+      events:
+        - [1, 2, 4]
+        - [3, 4, 3]
+        - [2, 3, 10]
+      k: 2
+    out: 10
+  - name: example-three
+    in:
+      events:
+        - [1, 1, 1]
+        - [2, 2, 2]
+        - [3, 3, 3]
+        - [4, 4, 4]
+      k: 3
+    out: 9
+  - name: one-event
+    in:
+      events:
+        - [1, 1, 100]
+      k: 1
+    out: 100
+  - name: k-one
+    in:
+      events:
+        - [1, 2, 5]
+        - [2, 3, 100]
+        - [4, 5, 7]
+      k: 1
+    out: 100
+  - name: all-overlap
+    in:
+      events:
+        - [1, 10, 4]
+        - [2, 9, 20]
+        - [3, 8, 7]
+        - [1, 10, 19]
+      k: 4
+    out: 20
+  - name: all-compatible
+    in:
+      events:
+        - [1, 1, 2]
+        - [2, 2, 4]
+        - [3, 3, 6]
+        - [4, 4, 8]
+      k: 4
+    out: 20
+  - name: inclusive-boundary
+    in:
+      events:
+        - [1, 2, 50]
+        - [2, 2, 100]
+        - [3, 3, 4]
+      k: 2
+    out: 104
+  - name: boundary-chain
+    in:
+      events:
+        - [1, 1, 10]
+        - [1, 2, 20]
+        - [2, 3, 30]
+        - [3, 4, 40]
+        - [5, 5, 50]
+      k: 3
+    out: 110
+  - name: choose-two-gaps
+    in:
+      events:
+        - [1, 2, 8]
+        - [4, 5, 9]
+        - [7, 8, 10]
+        - [2, 6, 30]
+      k: 2
+    out: 40
+  - name: negative-looking-days
+    in:
+      events:
+        - [1, 1000000000, 1]
+        - [1, 1, 999999]
+        - [2, 2, 999998]
+      k: 2
+    out: 1999997
+  - name: large-values
+    in:
+      events:
+        - [1, 1, 1000000]
+        - [2, 2, 1000000]
+        - [3, 3, 999999]
+      k: 3
+    out: 2999999
+  - name: duplicate-events
+    in:
+      events:
+        - [2, 5, 7]
+        - [2, 5, 8]
+        - [2, 5, 20]
+        - [6, 7, 3]
+      k: 2
+    out: 23
+  - name: nested-intervals
+    in:
+      events:
+        - [1, 10, 100]
+        - [2, 9, 60]
+        - [3, 8, 70]
+        - [11, 11, 5]
+      k: 2
+    out: 105
+  - name: sort-by-end-needed
+    in:
+      events:
+        - [8, 9, 10]
+        - [1, 3, 5]
+        - [4, 7, 20]
+        - [2, 5, 100]
+      k: 2
+    out: 110
+  - name: zero-gap-choice
+    in:
+      events:
+        - [1, 1, 1]
+        - [2, 4, 2]
+        - [5, 5, 3]
+        - [6, 9, 4]
+      k: 2
+    out: 7
+  - name: one-day-conflicts
+    in:
+      events:
+        - [5, 5, 11]
+        - [5, 5, 12]
+        - [6, 6, 13]
+        - [7, 7, 14]
+      k: 2
+    out: 27
+  - name: skip-low-value
+    in:
+      events:
+        - [1, 2, 1]
+        - [3, 4, 100]
+        - [5, 6, 1]
+        - [1, 6, 101]
+      k: 3
+    out: 102
+  - name: three-disjoint
+    in:
+      events:
+        - [1, 2, 10]
+        - [4, 5, 20]
+        - [7, 8, 30]
+        - [10, 11, 40]
+      k: 3
+    out: 90
+  - name: long-and-short
+    in:
+      events:
+        - [1, 10, 40]
+        - [1, 3, 15]
+        - [4, 6, 16]
+        - [7, 10, 17]
+        - [11, 12, 1]
+      k: 3
+    out: 48
+  - name: same-starts
+    in:
+      events:
+        - [1, 1, 2]
+        - [1, 2, 5]
+        - [1, 3, 9]
+        - [4, 4, 10]
+      k: 2
+    out: 19
+  - name: same-ends
+    in:
+      events:
+        - [1, 4, 2]
+        - [2, 4, 100]
+        - [3, 4, 3]
+        - [5, 6, 4]
+      k: 2
+    out: 104
+  - name: k-larger-than-useful
+    in:
+      events:
+        - [1, 2, 4]
+        - [2, 3, 9]
+        - [4, 5, 8]
+      k: 3
+    out: 17
+  - name: sparse-days
+    in:
+      events:
+        - [1, 100, 4]
+        - [101, 200, 8]
+        - [201, 300, 16]
+        - [150, 250, 100]
+      k: 2
+    out: 104
+  - name: huge-day-values
+    in:
+      events:
+        - [999999990, 999999991, 12]
+        - [999999992, 999999999, 13]
+        - [1, 999999989, 20]
+      k: 2
+    out: 33
+  - name: six-events
+    in:
+      events:
+        - [1, 2, 3]
+        - [3, 4, 20]
+        - [5, 6, 4]
+        - [2, 5, 30]
+        - [7, 8, 5]
+        - [9, 10, 40]
+      k: 3
+    out: 75
+  - name: alternating-overlaps
+    in:
+      events:
+        - [1, 4, 10]
+        - [2, 2, 5]
+        - [3, 5, 20]
+        - [6, 7, 8]
+        - [5, 6, 50]
+      k: 2
+    out: 60
+  - name: best-three-of-four
+    in:
+      events:
+        - [1, 1, 10]
+        - [2, 2, 20]
+        - [3, 3, 30]
+        - [4, 4, 40]
+      k: 3
+    out: 90
+  - name: exact-two-required-not
+    in:
+      events:
+        - [1, 10, 100]
+        - [2, 2, 1]
+        - [11, 11, 2]
+        - [12, 12, 3]
+      k: 4
+    out: 105
+  - name: large-disjoint-chain
+    in:
+      events:
+        - [1, 2, 100]
+        - [4, 5, 101]
+        - [7, 8, 102]
+        - [10, 11, 103]
+        - [13, 14, 104]
+        - [16, 17, 105]
+        - [19, 20, 106]
+        - [22, 23, 107]
+        - [25, 26, 108]
+        - [28, 29, 109]
+        - [31, 32, 110]
+        - [34, 35, 111]
+        - [37, 38, 112]
+        - [40, 41, 113]
+        - [43, 44, 114]
+        - [46, 47, 115]
+        - [49, 50, 116]
+        - [52, 53, 117]
+        - [55, 56, 118]
+        - [58, 59, 119]
+      k: 10
+    out: 1145
+  - name: large-overlapping-window
+    in:
+      events:
+        - [1, 100, 1000]
+        - [2, 101, 999]
+        - [3, 102, 998]
+        - [4, 103, 997]
+        - [5, 104, 996]
+        - [6, 105, 995]
+        - [7, 106, 994]
+        - [8, 107, 993]
+        - [9, 108, 992]
+        - [10, 109, 991]
+        - [11, 110, 990]
+        - [12, 111, 989]
+        - [13, 112, 988]
+        - [14, 113, 987]
+        - [15, 114, 986]
+        - [16, 115, 985]
+        - [17, 116, 984]
+        - [18, 117, 983]
+        - [19, 118, 982]
+        - [20, 119, 981]
+      k: 20
+    out: 1000
+  - name: high-day-chain
+    in:
+      events:
+        - [999999900, 999999901, 10]
+        - [999999902, 999999903, 20]
+        - [999999904, 999999905, 30]
+        - [999999906, 999999907, 40]
+        - [999999908, 999999909, 50]
+        - [999999910, 999999911, 60]
+        - [999999912, 999999913, 70]
+        - [999999914, 999999915, 80]
+        - [999999916, 999999917, 90]
+        - [999999918, 999999919, 100]
+      k: 5
+    out: 400
+  - name: many-identical-intervals
+    in:
+      events:
+        - [100, 200, 1]
+        - [100, 200, 2]
+        - [100, 200, 3]
+        - [100, 200, 4]
+        - [100, 200, 5]
+        - [100, 200, 6]
+        - [100, 200, 7]
+        - [100, 200, 8]
+        - [100, 200, 9]
+        - [201, 201, 100]
+      k: 2
+    out: 109
+  - name: mixed-large-values
+    in:
+      events:
+        - [1, 50, 1000000]
+        - [51, 100, 999999]
+        - [101, 150, 999998]
+        - [25, 75, 200000]
+        - [76, 125, 300000]
+        - [126, 175, 400000]
+        - [176, 200, 500000]
+      k: 3
+    out: 2999997
+  - name: choose-best-two-separated
+    in:
+      events:
+        - [1, 10, 50]
+        - [11, 20, 60]
+        - [21, 30, 70]
+        - [5, 15, 200]
+        - [16, 25, 1]
+      k: 2
+    out: 270

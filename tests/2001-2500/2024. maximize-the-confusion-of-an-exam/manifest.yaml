@@ -1,0 +1,264 @@
+entry:
+  id: 2024
+  title: "maximize-the-confusion-of-an-exam"
+  params:
+    answerKey:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxConsecutiveAnswers({answerKey}, {k})"
+    rust: "Solution::max_consecutive_answers({answerKey}, {k})"
+    python3: "Solution().maxConsecutiveAnswers({answerKey}, {k})"
+    python2: "Solution().maxConsecutiveAnswers({answerKey}, {k})"
+    ruby: "max_consecutive_answers({answerKey}, {k})"
+    java: "new Solution().maxConsecutiveAnswers({answerKey}, {k})"
+    csharp: "new Solution().MaxConsecutiveAnswers({answerKey}, {k})"
+    kotlin: "Solution().maxConsecutiveAnswers({answerKey}, {k})"
+    go: "maxConsecutiveAnswers({answerKey}, {k})"
+    dart: "Solution().maxConsecutiveAnswers({answerKey}, {k})"
+    swift: "Solution().maxConsecutiveAnswers({answerKey}, {k})"
+    typescript: "maxConsecutiveAnswers({answerKey}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxConsecutiveAnswers(answerKey, k, {result})"
+    checker: |
+      class Checker:
+          def maxConsecutiveAnswers(self, answerKey, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              best = 0
+              for target in ("T", "F"):
+                  left = 0
+                  changes = 0
+                  for right, ch in enumerate(answerKey):
+                      if ch != target:
+                          changes += 1
+                      while changes > k:
+                          if answerKey[left] != target:
+                              changes -= 1
+                          left += 1
+                      best = max(best, right - left + 1)
+              return result == best
+
+seed: 2024
+
+tests:
+  - name: example-1
+    in:
+      answerKey: "TTFF"
+      k: 2
+    out: 4
+  - name: example-2
+    in:
+      answerKey: "TFFT"
+      k: 1
+    out: 3
+  - name: example-3
+    in:
+      answerKey: "TTFTTFTT"
+      k: 1
+    out: 5
+  - name: one-t
+    in:
+      answerKey: "T"
+      k: 1
+    out: 1
+  - name: one-f
+    in:
+      answerKey: "F"
+      k: 1
+    out: 1
+  - name: two-opposite-k1
+    in:
+      answerKey: "TF"
+      k: 1
+    out: 2
+  - name: all-t
+    in:
+      answerKey: "TTTTTTTT"
+      k: 1
+    out: 8
+  - name: all-f
+    in:
+      answerKey: "FFFFFFFF"
+      k: 3
+    out: 8
+  - name: alternating-short
+    in:
+      answerKey: "TFTFTF"
+      k: 1
+    out: 3
+  - name: alternating-k2
+    in:
+      answerKey: "TFTFTFTF"
+      k: 2
+    out: 5
+  - name: alternating-kall
+    in:
+      answerKey: "TFTFTFTF"
+      k: 8
+    out: 8
+  - name: single-mismatch-middle
+    in:
+      answerKey: "TTTFTTT"
+      k: 1
+    out: 7
+  - name: two-mismatches
+    in:
+      answerKey: "TTFTFTTT"
+      k: 1
+    out: 5
+  - name: long-t-run
+    in:
+      answerKey: "TTTTTFTTTTT"
+      k: 1
+    out: 11
+  - name: long-f-run
+    in:
+      answerKey: "FFFFFTFFFFF"
+      k: 1
+    out: 11
+  - name: balanced-k1
+    in:
+      answerKey: "TTFFTTFF"
+      k: 1
+    out: 3
+  - name: balanced-k2
+    in:
+      answerKey: "TTFFTTFF"
+      k: 2
+    out: 6
+  - name: alternating-nine
+    in:
+      answerKey: "TFTFTFTFT"
+      k: 3
+    out: 7
+  - name: mostly-t
+    in:
+      answerKey: "TTTTFTTFTTTT"
+      k: 2
+    out: 12
+  - name: mostly-f
+    in:
+      answerKey: "FFFFTFFTFFFF"
+      k: 2
+    out: 12
+  - name: runs-k1
+    in:
+      answerKey: "TTFFFTTFFF"
+      k: 1
+    out: 4
+  - name: runs-k3
+    in:
+      answerKey: "TTFFFTTFFF"
+      k: 3
+    out: 9
+  - name: short-blocks
+    in:
+      answerKey: "TFFTTFTTFF"
+      k: 2
+    out: 6
+  - name: sparse-t
+    in:
+      answerKey: "FTFFFFTFFFFF"
+      k: 1
+    out: 10
+  - name: sparse-f
+    in:
+      answerKey: "TFT"
+      k: 1
+    out: 3
+  - name: alternating-twelve
+    in:
+      answerKey: "TFTFTFTFTFTF"
+      k: 4
+    out: 9
+  - name: k-near-length
+    in:
+      answerKey: "TFTFFTTF"
+      k: 7
+    out: 8
+  - name: alternating-sixteen-k5
+    in:
+      answerKey: "TFTFTFTFTFTFTFTF"
+      k: 5
+    out: 11
+  - name: alternating-sixteen-k6
+    in:
+      answerKey: "TFTFTFTFTFTFTFTF"
+      k: 6
+    out: 13
+  - name: two-runs
+    in:
+      answerKey: "TTTTFFFFFFFF"
+      k: 2
+    out: 10
+  - name: three-runs
+    in:
+      answerKey: "TTTFFF"
+      k: 1
+    out: 4
+  - name: repeated-pattern
+    in:
+      answerKey: "TTFTTFTTFTTFT"
+      k: 2
+    out: 8
+  - name: long-alternating-static
+    in:
+      answerKey: "TFTFTFTFTFTFTFTFTFTF"
+      k: 2
+    out: 5
+  - name: boundary-k-one
+    in:
+      answerKey: "FFTTFFTTFFTT"
+      k: 1
+    out: 3
+  - name: boundary-k-length
+    in:
+      answerKey: "FTFTTFTF"
+      k: 8
+    out: 8
+  - name: generated-balanced
+    in:
+      answerKey:
+        gen: "str"
+        len: 50000
+        alphabet: "TF"
+      k: 1
+  - name: generated-k-quarter
+    in:
+      answerKey:
+        gen: "str"
+        len: 50000
+        alphabet: "TF"
+      k: 12500
+  - name: generated-k-half
+    in:
+      answerKey:
+        gen: "str"
+        len: 50000
+        alphabet: "TF"
+      k: 25000
+  - name: generated-k-large
+    in:
+      answerKey:
+        gen: "str"
+        len: 50000
+        alphabet: "TF"
+      k: 40000
+  - name: generated-k-max
+    in:
+      answerKey:
+        gen: "str"
+        len: 50000
+        alphabet: "TF"
+      k: 50000

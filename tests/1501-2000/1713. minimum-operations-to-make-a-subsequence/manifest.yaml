@@ -1,0 +1,312 @@
+entry:
+  id: 1713
+  title: "minimum-operations-to-make-a-subsequence"
+  params:
+    target:
+      type: array
+      items:
+        type: int
+    arr:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minOperations({target}, {arr})"
+    rust: "Solution::min_operations({target}, {arr})"
+    python3: "Solution().minOperations({target}, {arr})"
+    python2: "Solution().minOperations({target}, {arr})"
+    ruby: "min_operations({target}, {arr})"
+    java: "new Solution().minOperations({target}, {arr})"
+    csharp: "new Solution().MinOperations({target}, {arr})"
+    kotlin: "Solution().minOperations({target}, {arr})"
+    go: "minOperations({target}, {arr})"
+    dart: "Solution().minOperations({target}, {arr})"
+    swift: "Solution().minOperations({target}, {arr})"
+    typescript: "minOperations({target}, {arr})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(target, arr, {result})"
+    checker: |
+      from bisect import bisect_left
+      class Checker:
+          def check(self, target, arr, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              pos = {value: i for i, value in enumerate(target)}
+              lis = []
+              for value in arr:
+                  if value in pos:
+                      x = pos[value]
+                      i = bisect_left(lis, x)
+                      if i == len(lis):
+                          lis.append(x)
+                      else:
+                          lis[i] = x
+              return result == len(target) - len(lis)
+
+seed: 1713
+
+tests:
+  - name: example-one
+    in:
+      target: [5, 1, 3]
+      arr: [9, 4, 2, 3, 4]
+    out: 2
+  - name: example-two
+    in:
+      target: [6, 4, 8, 1, 3, 2]
+      arr: [4, 7, 6, 2, 3, 8, 6, 1]
+    out: 3
+  - name: exact-target
+    in:
+      target: [1, 2, 3, 4]
+      arr: [1, 2, 3, 4]
+    out: 0
+  - name: no-target-values
+    in:
+      target: [1, 2, 3]
+      arr: [4, 5, 6, 7]
+    out: 3
+  - name: one-missing
+    in:
+      target: [1, 2, 3, 4]
+      arr: [1, 2, 4]
+    out: 1
+  - name: reverse-order
+    in:
+      target: [1, 2, 3, 4, 5]
+      arr: [5, 4, 3, 2, 1]
+    out: 4
+  - name: target-one-present
+    in:
+      target: [42]
+      arr: [7, 42, 7]
+    out: 0
+  - name: target-one-absent
+    in:
+      target: [42]
+      arr: [7, 8, 9]
+    out: 1
+  - name: duplicate-match
+    in:
+      target: [1, 2, 3]
+      arr: [1, 1, 1, 2, 2, 3, 3]
+    out: 0
+  - name: duplicate-breaks-order
+    in:
+      target: [1, 2, 3]
+      arr: [3, 3, 2, 2, 1, 1]
+    out: 2
+  - name: alternating-noise
+    in:
+      target: [10, 20, 30, 40, 50]
+      arr: [99, 10, 98, 30, 97, 50]
+    out: 2
+  - name: subsequence-with-gaps
+    in:
+      target: [8, 6, 7, 5, 3, 0, 9]
+      arr: [8, 100, 6, 101, 7, 5, 3, 0, 9]
+    out: 0
+  - name: one-increasing-chain
+    in:
+      target: [2, 4, 6, 8, 10]
+      arr: [2, 6, 10]
+    out: 2
+  - name: best-chain-middle
+    in:
+      target: [1, 2, 3, 4, 5, 6]
+      arr: [2, 3, 4, 5]
+    out: 2
+  - name: large-values
+    in:
+      target: [1, 1000000000, 999999999]
+      arr: [1000000000, 1, 999999999]
+    out: 1
+  - name: large-values-in-order
+    in:
+      target: [999999997, 999999998, 999999999, 1000000000]
+      arr: [999999997, 999999998, 999999999, 1000000000]
+    out: 0
+  - name: all-but-first
+    in:
+      target: [4, 8, 15, 16, 23, 42]
+      arr: [8, 15, 16, 23, 42]
+    out: 1
+  - name: all-but-last
+    in:
+      target: [4, 8, 15, 16, 23, 42]
+      arr: [4, 8, 15, 16, 23]
+    out: 1
+  - name: interleaved-repeats
+    in:
+      target: [1, 3, 5, 7]
+      arr: [1, 5, 3, 7, 5, 1]
+    out: 1
+  - name: sparse-values
+    in:
+      target: [100, 200, 300, 400]
+      arr: [200, 400, 100, 300]
+    out: 2
+  - name: repeated-single-match
+    in:
+      target: [2, 4, 6, 8]
+      arr: [6, 6, 6, 6]
+    out: 3
+  - name: matching-prefix
+    in:
+      target: [3, 1, 4, 2, 5]
+      arr: [3, 1, 4, 5]
+    out: 1
+  - name: matching-suffix
+    in:
+      target: [3, 1, 4, 2, 5]
+      arr: [1, 4, 2, 5]
+    out: 1
+  - name: target-order-permutation
+    in:
+      target: [7, 2, 9, 1, 6]
+      arr: [2, 9, 1, 6]
+    out: 1
+  - name: noisy-permutation
+    in:
+      target: [7, 2, 9, 1, 6]
+      arr: [6, 50, 2, 9, 60, 7, 1]
+    out: 2
+  - name: repeated-noise
+    in:
+      target: [11, 22, 33, 44]
+      arr: [0, 11, 0, 22, 0, 33, 0, 44, 0]
+    out: 0
+  - name: two-targets
+    in:
+      target: [10, 20, 30, 40]
+      arr: [20, 40]
+    out: 2
+  - name: two-targets-wrong-order
+    in:
+      target: [10, 20, 30, 40]
+      arr: [40, 20]
+    out: 3
+  - name: long-small-domain
+    in:
+      target: [1, 2, 3, 4, 5, 6, 7, 8]
+      arr: [8, 1, 8, 2, 8, 3, 8, 4, 8, 5, 8, 6, 8, 7, 8]
+    out: 0
+  - name: singleton-array
+    in:
+      target: [9]
+      arr: [9]
+    out: 0
+  - name: singleton-miss
+    in:
+      target: [9]
+      arr: [1]
+    out: 1
+  - name: generated-distinct-medium
+    in:
+      target:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        elemType: "int"
+      arr:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+  - name: generated-distinct-large
+    in:
+      target:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        elemType: "int"
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+  - name: generated-distinct-large-two
+    in:
+      target:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        elemType: "int"
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+  - name: generated-small-random
+    in:
+      target:
+        gen: "array"
+        len: 50
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: true
+        elemType: "int"
+      arr:
+        gen: "array"
+        len: 80
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+  - name: generated-small-random-two
+    in:
+      target:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: true
+        elemType: "int"
+      arr:
+        gen: "array"
+        len: 200
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        elemType: "int"

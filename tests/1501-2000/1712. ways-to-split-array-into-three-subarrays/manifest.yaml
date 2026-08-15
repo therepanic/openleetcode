@@ -1,0 +1,237 @@
+entry:
+  id: 1712
+  title: "ways-to-split-array-into-three-subarrays"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().waysToSplit({nums})"
+    rust: "Solution::ways_to_split({nums})"
+    python3: "Solution().waysToSplit({nums})"
+    python2: "Solution().waysToSplit({nums})"
+    ruby: "ways_to_split({nums})"
+    java: "new Solution().waysToSplit({nums})"
+    csharp: "new Solution().WaysToSplit({nums})"
+    kotlin: "Solution().waysToSplit({nums})"
+    go: "waysToSplit({nums})"
+    dart: "Solution().waysToSplit({nums})"
+    swift: "Solution().waysToSplit({nums})"
+    typescript: "waysToSplit({nums})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().waysToSplit(nums, {result})"
+    checker: |
+      from bisect import bisect_left, bisect_right
+
+      class Checker:
+          def waysToSplit(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if len(nums) < 3 or any(not isinstance(x, int) or x < 0 for x in nums):
+                  return False
+              prefix = []
+              total = 0
+              for value in nums:
+                  total += value
+                  prefix.append(total)
+              expected = 0
+              end = len(nums) - 1
+              for left_end in range(len(nums) - 2):
+                  left = prefix[left_end]
+                  first = bisect_left(prefix, 2 * left, left_end + 1, end)
+                  last = bisect_right(prefix, (total + left) // 2, first, end)
+                  expected = (expected + max(0, last - first)) % 1000000007
+              return result == expected
+seed: 17121712
+tests:
+  - name: example-one
+    in:
+      nums: [1, 1, 1]
+    out: 1
+  - name: example-two
+    in:
+      nums: [1, 2, 2, 2, 5, 0]
+    out: 3
+  - name: example-three
+    in:
+      nums: [3, 2, 1]
+    out: 0
+  - name: all-zero-three
+    in:
+      nums: [0, 0, 0]
+    out: 1
+  - name: all-zero-five
+    in:
+      nums: [0, 0, 0, 0, 0]
+    out: 6
+  - name: all-ones
+    in:
+      nums: [1, 1, 1, 1, 1, 1]
+    out: 3
+  - name: increasing
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 5
+  - name: decreasing
+    in:
+      nums: [6, 5, 4, 3, 2, 1]
+    out: 0
+  - name: one-large-value
+    in:
+      nums: [10000, 0, 0]
+    out: 0
+  - name: equal-large-values
+    in:
+      nums: [10000, 10000, 10000, 10000, 10000]
+    out: 2
+  - name: sparse-nonzero
+    in:
+      nums: [0, 1, 0, 1, 0, 1, 0]
+    out: 6
+  - name: alternating-zero
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1, 0]
+    out: 4
+  - name: balanced-seven
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1]
+    out: 4
+  - name: left-heavy
+    in:
+      nums: [10, 0, 0, 0, 0, 0]
+    out: 0
+  - name: right-heavy
+    in:
+      nums: [0, 0, 0, 0, 0, 10]
+    out: 10
+  - name: repeated-blocks
+    in:
+      nums: [5, 5, 0, 5, 5, 0, 5, 5]
+    out: 7
+  - name: all-equal-large
+    in:
+      nums: [10000, 0, 10000, 0, 10000, 0, 10000]
+    out: 4
+  - name: many-zeros
+    in:
+      nums: [0, 0, 1, 0, 0, 1, 0, 0, 1]
+    out: 16
+  - name: minimum-four
+    in:
+      nums: [2, 2, 2, 2]
+    out: 1
+  - name: short-five
+    in:
+      nums: [1, 2, 3, 4, 5]
+    out: 3
+  - name: short-six-unbalanced
+    in:
+      nums: [5, 1, 1, 1, 1, 5]
+    out: 0
+  - name: powers-of-two
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64]
+    out: 15
+  - name: plateau-with-gaps
+    in:
+      nums: [3, 3, 3, 0, 3, 3, 3, 0, 3]
+    out: 5
+  - name: leading-zeros
+    in:
+      nums: [0, 0, 1, 2, 3, 4, 5]
+    out: 10
+  - name: trailing-zeros
+    in:
+      nums: [1, 2, 3, 4, 5, 0, 0]
+    out: 3
+  - name: symmetric-ends
+    in:
+      nums: [4, 1, 1, 1, 1, 4]
+    out: 1
+  - name: modulo-pattern
+    in:
+      nums: [7, 0, 0, 7, 0, 0, 7, 0, 0]
+    out: 9
+  - name: max-elements
+    in:
+      nums: [10000, 10000, 10000, 10000, 10000, 10000, 10000]
+    out: 4
+  - name: uneven-balanced
+    in:
+      nums: [2, 0, 2, 0, 2, 0, 2]
+    out: 4
+  - name: isolated-middle
+    in:
+      nums: [0, 0, 0, 9, 0, 0, 0]
+    out: 3
+  - name: varied-small
+    in:
+      nums: [1, 3, 2, 0, 4, 1, 2, 0, 3]
+    out: 4
+  - name: generator-minimum
+    in:
+      nums:
+        gen: "array"
+        len: 3
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-short
+    in:
+      nums:
+        gen: "array"
+        len: 17
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-medium
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-large
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-maximum
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"

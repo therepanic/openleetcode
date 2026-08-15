@@ -1,0 +1,379 @@
+entry:
+  id: 1807
+  title: "evaluate-the-bracket-pairs-of-a-string"
+  params:
+    s:
+      type: string
+    knowledge:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+  call:
+    cpp: "Solution().evaluate({s}, {knowledge})"
+    rust: "Solution::evaluate({s}, {knowledge})"
+    python3: "Solution().evaluate({s}, {knowledge})"
+    python2: "Solution().evaluate({s}, {knowledge})"
+    ruby: "evaluate({s}, {knowledge})"
+    java: "new Solution().evaluate({s}, java.util.Arrays.stream({knowledge}).map(a -> java.util.Arrays.asList(a)).collect(java.util.stream.Collectors.toList()))"
+    csharp: "new Solution().Evaluate({s}, {knowledge})"
+    kotlin: "Solution().evaluate({s}, {knowledge}.map { it.toList() })"
+    go: "evaluate({s}, {knowledge})"
+    dart: "Solution().evaluate({s}, {knowledge})"
+    swift: "Solution().evaluate({s}, {knowledge})"
+    typescript: "evaluate({s}, {knowledge})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().evaluate(s, knowledge, {result})"
+    checker: |
+      class Checker:
+          def evaluate(self, s, knowledge, result):
+              if not isinstance(result, str):
+                  return False
+              values = {pair[0]: pair[1] for pair in knowledge}
+              expected = []
+              i = 0
+              while i < len(s):
+                  if s[i] != '(':
+                      expected.append(s[i])
+                      i += 1
+                      continue
+                  j = s.index(')', i + 1)
+                  expected.append(values.get(s[i + 1:j], '?'))
+                  i = j + 1
+              return result == ''.join(expected)
+
+seed: 1807
+
+tests:
+  - name: example-one
+    in:
+      s: "(name)is(age)yearsold"
+      knowledge:
+        - ["name", "bob"]
+        - ["age", "two"]
+    out: "bobistwoyearsold"
+    judge:
+      type: "exact"
+  - name: example-two-unknown
+    in:
+      s: "hi(name)"
+      knowledge:
+        - ["a", "b"]
+    out: "hi?"
+    judge:
+      type: "exact"
+  - name: example-three-repeated
+    in:
+      s: "(a)(a)(a)aaa"
+      knowledge:
+        - ["a", "yes"]
+    out: "yesyesyesaaa"
+    judge:
+      type: "exact"
+  - name: plain-text
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+      knowledge: []
+    out: "abcdefghijklmnopqrstuvwxyz"
+    judge:
+      type: "exact"
+  - name: one-known
+    in:
+      s: "(a)"
+      knowledge:
+        - ["a", "x"]
+    out: "x"
+    judge:
+      type: "exact"
+  - name: one-unknown
+    in:
+      s: "(missing)"
+      knowledge: []
+    out: "?"
+    judge:
+      type: "exact"
+  - name: empty-knowledge
+    in:
+      s: "hello(world)"
+      knowledge: []
+    out: "hello?"
+    judge:
+      type: "exact"
+  - name: known-value-empty-impossible
+    in:
+      s: "x(a)y"
+      knowledge:
+        - ["a", "z"]
+    out: "xzy"
+    judge:
+      type: "exact"
+  - name: adjacent-known
+    in:
+      s: "(a)(b)(c)"
+      knowledge:
+        - ["a", "one"]
+        - ["b", "two"]
+        - ["c", "three"]
+    out: "onetwothree"
+    judge:
+      type: "exact"
+  - name: adjacent-unknown
+    in:
+      s: "(a)(b)(c)"
+      knowledge:
+        - ["b", "x"]
+    out: "?x?"
+    judge:
+      type: "exact"
+  - name: punctuation-free-letters
+    in:
+      s: "a(b)c(d)e"
+      knowledge:
+        - ["b", "bb"]
+        - ["d", "dd"]
+    out: "abbcdde"
+    judge:
+      type: "exact"
+  - name: repeated-known-and-unknown
+    in:
+      s: "(x)a(x)(y)b(y)"
+      knowledge:
+        - ["x", "value"]
+    out: "valueavalue?b?"
+    judge:
+      type: "exact"
+  - name: key-prefixes
+    in:
+      s: "(a)(ab)(abc)"
+      knowledge:
+        - ["a", "1"]
+        - ["ab", "22"]
+        - ["abc", "333"]
+    judge:
+      type: "exact"
+  - name: key-case-sensitive-lowercase
+    in:
+      s: "(a)(aa)(aaa)"
+      knowledge:
+        - ["aa", "middle"]
+    out: "?middle?"
+    judge:
+      type: "exact"
+  - name: values-long
+    in:
+      s: "start(a)middle(b)end"
+      knowledge:
+        - ["a", "abcdefghij"]
+        - ["b", "zyxwvutsrq"]
+    out: "startabcdefghijmiddlezyxwvutsrqend"
+    judge:
+      type: "exact"
+  - name: all-unknown-between-text
+    in:
+      s: "a(one)b(two)c(three)d"
+      knowledge: []
+    out: "a?b?c?d"
+    judge:
+      type: "exact"
+  - name: zero-length-text-around
+    in:
+      s: "(a)z"
+      knowledge:
+        - ["a", "q"]
+    out: "qz"
+    judge:
+      type: "exact"
+  - name: many-pairs
+    in:
+      s: "(a)a(a)a(a)a(a)a(a)"
+      knowledge:
+        - ["a", "r"]
+    out: "rarararar"
+    judge:
+      type: "exact"
+  - name: value-question-character
+    in:
+      s: "(a)(b)"
+      knowledge:
+        - ["a", "?"]
+        - ["b", "ok"]
+    out: "?ok"
+    judge:
+      type: "exact"
+  - name: values-repeat-letters
+    in:
+      s: "(aa)xx(bb)"
+      knowledge:
+        - ["aa", "aaaa"]
+        - ["bb", "bbbb"]
+    out: "aaaaxxbbbb"
+    judge:
+      type: "exact"
+  - name: unknown-key-similar
+    in:
+      s: "(cat)(cats)(ca)"
+      knowledge:
+        - ["cat", "animal"]
+    out: "animal??"
+    judge:
+      type: "exact"
+  - name: text-letters-not-evaluated
+    in:
+      s: "a(b)ba(b)"
+      knowledge:
+        - ["b", "B"]
+    out: "aBbaB"
+    judge:
+      type: "exact"
+  - name: alternating
+    in:
+      s: "(a)x(b)y(c)z(d)"
+      knowledge:
+        - ["a", "1"]
+        - ["c", "3"]
+    out: "1x?y3z?"
+    judge:
+      type: "exact"
+  - name: long-key
+    in:
+      s: "(abcdefghij)"
+      knowledge:
+        - ["abcdefghij", "value"]
+    out: "value"
+    judge:
+      type: "exact"
+  - name: long-key-unknown
+    in:
+      s: "x(abcdefghij)y"
+      knowledge: []
+    out: "x?y"
+    judge:
+      type: "exact"
+  - name: large-value-many-occurrences
+    in:
+      s: "(a)(a)(a)(a)(a)(a)(a)(a)"
+      knowledge:
+        - ["a", "abcdefghij"]
+    out: "abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"
+    judge:
+      type: "exact"
+  - name: mixed-known
+    in:
+      s: "pre(a)mid(unknown)post(b)"
+      knowledge:
+        - ["a", "left"]
+        - ["b", "right"]
+    out: "preleftmid?postright"
+    judge:
+      type: "exact"
+  - name: one-character-each
+    in:
+      s: "(a)(b)(c)(d)(e)"
+      knowledge:
+        - ["a", "1"]
+        - ["c", "3"]
+        - ["e", "5"]
+    out: "1?3?5"
+    judge:
+      type: "exact"
+  - name: duplicate-lookup
+    in:
+      s: "(key)key(key)"
+      knowledge:
+        - ["key", "v"]
+    out: "vkeyv"
+    judge:
+      type: "exact"
+  - name: all-text-after
+    in:
+      s: "(a)abcdefghijklmnopqrstuvwxyz"
+      knowledge:
+        - ["a", "done"]
+    out: "doneabcdefghijklmnopqrstuvwxyz"
+    judge:
+      type: "exact"
+  - name: all-text-before
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz(a)"
+      knowledge:
+        - ["a", "done"]
+    out: "abcdefghijklmnopqrstuvwxyzdone"
+    judge:
+      type: "exact"
+  - name: unknown-with-known-prefix
+    in:
+      s: "(ab)(abc)(abcd)"
+      knowledge:
+        - ["abc", "ok"]
+    out: "?ok?"
+    judge:
+      type: "exact"
+  - name: large-plain-static
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      knowledge: []
+    out: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    judge:
+      type: "exact"
+  - name: large-unknown-static
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(longkey)bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      knowledge: []
+    out: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    judge:
+      type: "exact"
+  - name: generated-plain-1
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abc"
+      knowledge: []
+    judge:
+      type: "exact"
+  - name: generated-plain-2
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "xy"
+      knowledge: []
+    judge:
+      type: "exact"
+  - name: generated-plain-3
+    in:
+      s:
+        gen: "str"
+        len: 75000
+        alphabet: "mnop"
+      knowledge: []
+    judge:
+      type: "exact"
+  - name: generated-plain-4
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "qr"
+      knowledge: []
+    judge:
+      type: "exact"
+  - name: generated-plain-5
+    in:
+      s:
+        gen: "str"
+        len: 25000
+        alphabet: "uvw"
+      knowledge: []
+    judge:
+      type: "exact"

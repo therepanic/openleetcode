@@ -1,0 +1,316 @@
+entry:
+  id: 1674
+  title: "minimum-moves-to-make-array-complementary"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    limit:
+      type: int
+  call:
+    cpp: "Solution().minMoves({nums}, {limit})"
+    rust: "Solution::min_moves({nums}, {limit})"
+    python3: "Solution().minMoves({nums}, {limit})"
+    python2: "Solution().minMoves({nums}, {limit})"
+    ruby: "min_moves({nums}, {limit})"
+    java: "new Solution().minMoves({nums}, {limit})"
+    csharp: "new Solution().MinMoves({nums}, {limit})"
+    kotlin: "Solution().minMoves({nums}, {limit})"
+    go: "minMoves({nums}, {limit})"
+    dart: "Solution().minMoves({nums}, {limit})"
+    swift: "Solution().minMoves({nums}, {limit})"
+    typescript: "minMoves({nums}, {limit})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minMoves(nums, limit, {result})"
+    checker: |
+      class Checker:
+          def minMoves(self, nums, limit, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              diff = [0] * (2 * limit + 2)
+              for i in range(len(nums) // 2):
+                  a = nums[i]
+                  b = nums[-1 - i]
+                  diff[2] += 2
+                  diff[2 * limit + 1] -= 2
+                  diff[min(a, b) + 1] -= 1
+                  diff[max(a, b) + limit + 1] += 1
+                  diff[a + b] -= 1
+                  diff[a + b + 1] += 1
+              cur = 0
+              expected = len(nums)
+              for s in range(2, 2 * limit + 1):
+                  cur += diff[s]
+                  expected = min(expected, cur)
+              return result == expected
+
+seed: 1674
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 2, 4, 3]
+      limit: 4
+    out: 1
+  - name: example-two
+    in:
+      nums: [1, 2, 2, 1]
+      limit: 2
+    out: 2
+  - name: example-three
+    in:
+      nums: [1, 2, 1, 2]
+      limit: 2
+    out: 0
+  - name: two-equal
+    in:
+      nums: [5, 5]
+      limit: 5
+    out: 0
+  - name: two-extremes
+    in:
+      nums: [1, 10]
+      limit: 10
+    out: 0
+  - name: two-low
+    in:
+      nums: [1, 1]
+      limit: 10
+    out: 0
+  - name: two-high
+    in:
+      nums: [10, 10]
+      limit: 10
+    out: 0
+  - name: two-different-limit-two
+    in:
+      nums: [1, 2]
+      limit: 2
+    out: 0
+  - name: four-already
+    in:
+      nums: [1, 3, 3, 1]
+      limit: 3
+    out: 2
+  - name: four-mixed
+    in:
+      nums: [1, 1, 4, 4]
+      limit: 4
+    out: 0
+  - name: four-two-sums
+    in:
+      nums: [1, 4, 2, 3]
+      limit: 4
+    out: 1
+  - name: four-all-low
+    in:
+      nums: [1, 1, 1, 1]
+      limit: 4
+    out: 0
+  - name: four-opposite
+    in:
+      nums: [1, 4, 4, 1]
+      limit: 4
+    out: 2
+  - name: six-already
+    in:
+      nums: [1, 2, 3, 3, 2, 1]
+      limit: 3
+    out: 2
+  - name: six-varied
+    in:
+      nums: [1, 1, 2, 3, 4, 4]
+      limit: 4
+    out: 0
+  - name: six-conflicting
+    in:
+      nums: [1, 2, 1, 4, 3, 4]
+      limit: 4
+    out: 0
+  - name: eight-small
+    in:
+      nums: [1, 1, 1, 2, 2, 1, 1, 1]
+      limit: 2
+    out: 2
+  - name: eight-balanced
+    in:
+      nums: [1, 2, 3, 4, 4, 3, 2, 1]
+      limit: 4
+    out: 4
+  - name: eight-repeated
+    in:
+      nums: [2, 2, 2, 2, 3, 3, 3, 3]
+      limit: 3
+    out: 0
+  - name: ten-boundary
+    in:
+      nums: [1, 10, 1, 10, 10, 1, 10, 1, 10, 1]
+      limit: 10
+    out: 4
+  - name: ten-mixed
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      limit: 10
+    out: 0
+  - name: ten-ones
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      limit: 10
+    out: 0
+  - name: twelve-low-limit
+    in:
+      nums: [1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 1, 2]
+      limit: 2
+    out: 2
+  - name: twelve-varied
+    in:
+      nums: [1, 6, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1]
+      limit: 6
+    out: 6
+  - name: twenty-three
+    in:
+      nums:
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+        ]
+      limit: 12
+    out: 12
+  - name: twenty-four-conflict
+    in:
+      nums:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+        ]
+      limit: 12
+    out: 0
+  - name: max-values-small-n
+    in:
+      nums: [100000, 99999]
+      limit: 100000
+    out: 0
+  - name: max-limit-four
+    in:
+      nums: [99999, 1, 50000, 100000]
+      limit: 100000
+    out: 2
+  - name: large-regular
+    in:
+      nums: [1, 100000, 1, 100000, 1, 100000, 100000, 1, 100000, 1, 100000, 1]
+      limit: 100000
+    out: 6
+  - name: large-noncomplementary
+    in:
+      nums: [1, 1, 1, 1, 100000, 100000, 100000, 100000]
+      limit: 100000
+    out: 0
+  - name: generated-small
+    in:
+      nums:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+        elemType: "int"
+      limit: 20
+  - name: generated-medium
+    in:
+      nums:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 50
+        elemType: "int"
+      limit: 50
+  - name: generated-large-one
+    in:
+      nums:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      limit: 100000
+  - name: generated-large-two
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      limit: 100000
+  - name: generated-large-three
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      limit: 100000

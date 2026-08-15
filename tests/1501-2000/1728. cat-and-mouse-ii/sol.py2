@@ -1,0 +1,59 @@
+class Solution(object):
+    def canMouseWin(self, grid, catJump, mouseJump):
+        """
+        :type grid: List[str]
+        :type catJump: int
+        :type mouseJump: int
+        :rtype: bool
+        """
+        m, n = len(grid), len(grid[0])
+        walls = set()
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == "F":
+                    food = i * n + j
+                elif grid[i][j] == "C":
+                    cat = i * n + j
+                elif grid[i][j] == "M":
+                    mouse = i * n + j
+                elif grid[i][j] == "#":
+                    walls.add(i * n + j)
+        
+        memo = {}
+        def fn(cat, mouse, turn):
+            key = (cat * m * n + mouse) * (m * n * 2) + turn
+            if key in memo:
+                return memo[key]
+            if cat == food or cat == mouse or turn >= m*n*2:
+                memo[key] = False
+                return False
+            if mouse == food:
+                memo[key] = True
+                return True
+            
+            if turn % 2 == 0:  # mouse turn
+                x, y = divmod(mouse, n)
+                for dx, dy in [(-1,0),(0,1),(1,0),(0,-1)]:
+                    for jump in range(mouseJump+1):
+                        xx, yy = x + jump*dx, y + jump*dy
+                        if not (0 <= xx < m and 0 <= yy < n) or xx * n + yy in walls:
+                            break
+                        if fn(cat, xx * n + yy, turn+1):
+                            memo[key] = True
+                            return True
+                memo[key] = False
+                return False
+            else:  # cat turn
+                x, y = divmod(cat, n)
+                for dx, dy in [(-1,0),(0,1),(1,0),(0,-1)]:
+                    for jump in range(catJump+1):
+                        xx, yy = x + jump*dx, y + jump*dy
+                        if not (0 <= xx < m and 0 <= yy < n) or xx * n + yy in walls:
+                            break
+                        if not fn(xx * n + yy, mouse, turn+1):
+                            memo[key] = False
+                            return False
+                memo[key] = True
+                return True
+        
+        return fn(cat, mouse, 0)

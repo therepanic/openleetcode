@@ -1,0 +1,268 @@
+entry:
+  id: 1861
+  title: "rotating-the-box"
+  params:
+    boxGrid:
+      type: array
+      items:
+        type: array
+        items:
+          type: char
+  call:
+    cpp: "Solution().rotateTheBox({boxGrid})"
+    rust: "Solution::rotate_the_box({boxGrid})"
+    python3: "Solution().rotateTheBox({boxGrid})"
+    python2: "Solution().rotateTheBox({boxGrid})"
+    ruby: "rotate_the_box({boxGrid})"
+    java: "new Solution().rotateTheBox({boxGrid})"
+    csharp: "new Solution().RotateTheBox({boxGrid})"
+    kotlin: "Solution().rotateTheBox({boxGrid})"
+    go: "rotateTheBox({boxGrid})"
+    dart: "Solution().rotateTheBox({boxGrid})"
+    swift: "Solution().rotateTheBox({boxGrid})"
+    typescript: "rotateTheBox({boxGrid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().rotateTheBox(boxGrid, {result})"
+    checker: |
+      class Checker:
+          def rotateTheBox(self, boxGrid, result):
+              if not isinstance(boxGrid, list) or not boxGrid or not isinstance(result, list):
+                  return False
+              m = len(boxGrid)
+              n = len(boxGrid[0])
+              if n == 0 or len(result) != n or any(not isinstance(row, list) or len(row) != m for row in result):
+                  return False
+              expected = [['.' for _ in range(m)] for _ in range(n)]
+              for i, row in enumerate(boxGrid):
+                  if not isinstance(row, list) or len(row) != n:
+                      return False
+                  bottom = n - 1
+                  for j in range(n - 1, -1, -1):
+                      if row[j] == '#':
+                          expected[bottom][m - 1 - i] = '#'
+                          bottom -= 1
+                      elif row[j] == '*':
+                          expected[j][m - 1 - i] = '*'
+                          bottom = j - 1
+                      elif row[j] != '.':
+                          return False
+              return result == expected
+
+seed: 1861
+
+tests:
+  - name: single-stone
+    in:
+      boxGrid:
+        - ["#"]
+  - name: single-empty
+    in:
+      boxGrid:
+        - ["."]
+  - name: single-obstacle
+    in:
+      boxGrid:
+        - ["*"]
+  - name: horizontal-stone-empty
+    in:
+      boxGrid:
+        - ["#", "."]
+  - name: horizontal-empty-stone
+    in:
+      boxGrid:
+        - [".", "#"]
+  - name: obstacle-stone
+    in:
+      boxGrid:
+        - ["*", "#"]
+  - name: stone-obstacle
+    in:
+      boxGrid:
+        - ["#", "*"]
+  - name: alternating-row
+    in:
+      boxGrid:
+        - ["#", ".", "#", ".", "#"]
+  - name: all-empty-row
+    in:
+      boxGrid:
+        - [".", ".", ".", ".", "."]
+  - name: all-stones-row
+    in:
+      boxGrid:
+        - ["#", "#", "#", "#", "#"]
+  - name: separated-obstacles
+    in:
+      boxGrid:
+        - ["*", ".", "*", ".", "*"]
+  - name: stone-obstacle-gap
+    in:
+      boxGrid:
+        - ["#", ".", "*", ".", "#", "."]
+  - name: two-identical-rows
+    in:
+      boxGrid:
+        - ["#", "#", "*", "."]
+        - ["#", "#", "*", "."]
+  - name: mixed-two-rows
+    in:
+      boxGrid:
+        - ["#", ".", "*", "."]
+        - [".", "#", ".", "#"]
+  - name: opposing-stones
+    in:
+      boxGrid:
+        - ["#", "#", ".", "."]
+        - [".", ".", "#", "#"]
+  - name: wide-obstacle-row
+    in:
+      boxGrid:
+        - ["*", "#", ".", "#", "*"]
+  - name: two-rows-separated
+    in:
+      boxGrid:
+        - ["#", ".", ".", "#"]
+        - ["*", "#", ".", "."]
+  - name: obstacle-middle-wide
+    in:
+      boxGrid:
+        - ["#", ".", "*", ".", "#", "."]
+  - name: three-by-three-cross
+    in:
+      boxGrid:
+        - ["#", ".", "#"]
+        - [".", "*", "."]
+        - ["#", ".", "#"]
+  - name: official-example-three
+    in:
+      boxGrid:
+        - ["#", "#", "*", ".", "*", "."]
+        - ["#", "#", "#", "*", ".", "."]
+        - ["#", "#", "#", ".", "#", "."]
+  - name: checkerboard-four
+    in:
+      boxGrid:
+        - [".", "#", ".", "#"]
+        - ["#", ".", "#", "."]
+        - [".", "#", ".", "#"]
+        - ["#", ".", "#", "."]
+  - name: two-wide-mixed
+    in:
+      boxGrid:
+        - ["#", ".", "*", ".", "#"]
+        - [".", "#", ".", "#", "."]
+  - name: four-by-four-corners
+    in:
+      boxGrid:
+        - ["#", ".", ".", "#"]
+        - [".", "*", "*", "."]
+        - [".", "*", "*", "."]
+        - ["#", ".", ".", "#"]
+  - name: dense-three-by-four
+    in:
+      boxGrid:
+        - ["#", "#", "#", "."]
+        - ["#", "*", "#", "#"]
+        - [".", "#", ".", "*"]
+  - name: sparse-five-by-three
+    in:
+      boxGrid:
+        - ["#", ".", "."]
+        - [".", "*", "."]
+        - [".", ".", "#"]
+        - ["*", ".", "."]
+        - ["#", ".", "#"]
+  - name: full-obstacle-column
+    in:
+      boxGrid:
+        - ["*", "*", "*"]
+        - ["#", ".", "#"]
+        - [".", "#", "."]
+  - name: six-by-two-pattern
+    in:
+      boxGrid:
+        - ["#", "."]
+        - [".", "#"]
+        - ["*", "."]
+        - ["#", "#"]
+        - [".", "*"]
+        - ["#", "."]
+  - name: tall-empty
+    in:
+      boxGrid:
+        - [".", "."]
+        - [".", "."]
+        - [".", "."]
+        - [".", "."]
+        - [".", "."]
+  - name: tall-dense
+    in:
+      boxGrid:
+        - ["#", "#"]
+        - ["#", "*"]
+        - ["*", "#"]
+        - ["#", "."]
+        - [".", "#"]
+  - name: five-by-five-border
+    in:
+      boxGrid:
+        - ["#", "#", "#", "#", "#"]
+        - ["#", ".", ".", ".", "#"]
+        - ["#", ".", "*", ".", "#"]
+        - ["#", ".", ".", ".", "#"]
+        - ["#", "#", "#", "#", "#"]
+  - name: five-by-six-mixed
+    in:
+      boxGrid:
+        - ["#", ".", "#", ".", "*", "."]
+        - [".", "#", ".", "#", ".", "#"]
+        - ["*", ".", "*", ".", "#", "."]
+        - ["#", "#", ".", ".", "#", "#"]
+        - [".", ".", "#", "*", ".", "."]
+  - name: rectangular-three-by-seven
+    in:
+      boxGrid:
+        - ["#", ".", "#", "*", ".", "#", "."]
+        - [".", "#", ".", ".", "*", ".", "#"]
+        - ["#", "#", ".", "#", ".", ".", "*"]
+  - name: rectangular-seven-by-three
+    in:
+      boxGrid:
+        - ["#", ".", "#"]
+        - [".", "*", "."]
+        - ["#", "#", "."]
+        - [".", ".", "#"]
+        - ["*", "#", "*"]
+        - ["#", ".", "."]
+        - [".", "#", "#"]
+  - name: long-single-row
+    in:
+      boxGrid:
+        - ["#", ".", "#", ".", "*", ".", "#", "#", ".", "*"]
+  - name: long-two-row
+    in:
+      boxGrid:
+        - ["#", ".", "*", ".", "#", ".", "#", ".", "*", "."]
+        - [".", "#", ".", "#", ".", "#", ".", "#", ".", "#"]
+  - name: all-obstacles
+    in:
+      boxGrid:
+        - ["*", "*", "*", "*"]
+        - ["*", "*", "*", "*"]
+        - ["*", "*", "*", "*"]
+  - name: maximum-small-pattern
+    in:
+      boxGrid:
+        - ["#", ".", "*", "#", ".", "*", "#", "."]
+        - [".", "#", ".", "*", "#", ".", "*", "#"]
+        - ["#", "#", ".", ".", "#", "#", ".", "."]
+        - ["*", ".", "#", ".", "*", ".", "#", "."]

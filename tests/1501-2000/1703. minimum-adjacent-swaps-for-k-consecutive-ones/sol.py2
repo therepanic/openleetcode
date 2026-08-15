@@ -1,0 +1,34 @@
+class Solution(object):
+    def minMoves(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: int
+        """
+        idx = []
+        for i, val in enumerate(nums):
+            if val == 1:
+                idx.append(i)
+        A = []
+        for i, val in enumerate(idx):
+            A.append(val - i)
+        n = len(idx)
+        prefix = [0] * n
+        if n > 0:
+            prefix[0] = A[0]
+            for i in range(1, n):
+                prefix[i] = prefix[i-1] + A[i]
+        def cost(l, r):
+            mid = (l + r) // 2
+            med = A[mid]
+            left_sum = prefix[mid] - (prefix[l-1] if l > 0 else 0)
+            right_sum = prefix[r] - prefix[mid]
+            return (med * (mid - l + 1) - left_sum) + (right_sum - med * (r - mid))
+        ans = float('inf')
+        l = 0
+        for r in range(n):
+            while r - l + 1 > k:
+                l += 1
+            if r - l + 1 == k:
+                ans = min(ans, cost(l, r))
+        return ans

@@ -1,0 +1,248 @@
+entry:
+  id: 1856
+  title: "maximum-subarray-min-product"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxSumMinProduct({nums})"
+    rust: "Solution::max_sum_min_product({nums})"
+    python3: "Solution().maxSumMinProduct({nums})"
+    python2: "Solution().maxSumMinProduct({nums})"
+    ruby: "max_sum_min_product({nums})"
+    java: "new Solution().maxSumMinProduct({nums})"
+    csharp: "new Solution().MaxSumMinProduct({nums})"
+    kotlin: "Solution().maxSumMinProduct({nums})"
+    go: "maxSumMinProduct({nums})"
+    dart: "Solution().maxSumMinProduct({nums})"
+    swift: "Solution().maxSumMinProduct({nums})"
+    typescript: "maxSumMinProduct({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxSumMinProduct(nums, {result})"
+    checker: |
+      class Checker:
+          def maxSumMinProduct(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(nums)
+              prefix = [0]
+              for value in nums:
+                  prefix.append(prefix[-1] + value)
+              stack = []
+              best = 0
+              for i in range(n + 1):
+                  current = nums[i] if i < n else 0
+                  while stack and (i == n or nums[stack[-1]] > current):
+                      j = stack.pop()
+                      left = stack[-1] + 1 if stack else 0
+                      total = prefix[i] - prefix[left]
+                      best = max(best, nums[j] * total)
+                  stack.append(i)
+              return result == best % 1000000007
+
+seed: 1856
+
+tests:
+  - name: "example_one"
+    in:
+      nums: [1, 2, 3, 2]
+    out: 14
+  - name: "example_two"
+    in:
+      nums: [2, 3, 3, 1, 2]
+    out: 18
+  - name: "example_three"
+    in:
+      nums: [3, 1, 5, 6, 4, 2]
+    out: 60
+  - name: "single_one"
+    in:
+      nums: [1]
+    out: 1
+  - name: "single_max"
+    in:
+      nums: [10000000]
+    out: 999300007
+  - name: "two_increasing"
+    in:
+      nums: [2, 5]
+    out: 25
+  - name: "two_decreasing"
+    in:
+      nums: [5, 2]
+    out: 25
+  - name: "equal_values"
+    in:
+      nums: [7, 7, 7, 7]
+    out: 196
+  - name: "all_ones"
+    in:
+      nums: [1, 1, 1, 1, 1, 1]
+    out: 6
+  - name: "valley_center"
+    in:
+      nums: [10, 10, 1, 10, 10]
+    out: 200
+  - name: "low_at_edge"
+    in:
+      nums: [1, 100, 100]
+    out: 20000
+  - name: "high_at_edge"
+    in:
+      nums: [100, 100, 1]
+    out: 20000
+  - name: "alternating"
+    in:
+      nums: [2, 9, 2, 9, 2]
+    out: 81
+  - name: "nested_plateaus"
+    in:
+      nums: [4, 4, 2, 2, 3, 3]
+    out: 36
+  - name: "strict_increase"
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 60
+  - name: "strict_decrease"
+    in:
+      nums: [6, 5, 4, 3, 2, 1]
+    out: 60
+  - name: "large_uniform"
+    in:
+      nums: [10000000, 10000000, 10000000]
+    out: 997900007
+  - name: "large_mixed"
+    in:
+      nums: [9999999, 10000000, 9999998, 10000000]
+    out: 887200013
+  - name: "isolated_peak"
+    in:
+      nums: [1, 1, 100, 1, 1]
+    out: 10000
+  - name: "two_plateaus"
+    in:
+      nums: [3, 3, 1, 3, 3]
+    out: 18
+  - name: "multiple_minima"
+    in:
+      nums: [5, 2, 2, 5]
+    out: 28
+  - name: "short_peak"
+    in:
+      nums: [2, 8, 8, 2]
+    out: 128
+  - name: "deep_valley"
+    in:
+      nums: [9, 8, 7, 1, 7, 8, 9]
+    out: 168
+  - name: "small_range"
+    in:
+      nums: [1, 2, 1, 2, 1]
+    out: 7
+  - name: "prime_values"
+    in:
+      nums: [2, 3, 5, 7, 11]
+    out: 126
+  - name: "wide_middle_minimum"
+    in:
+      nums: [8, 8, 8, 2, 8, 8, 8]
+    out: 192
+  - name: "single_dominant"
+    in:
+      nums: [2, 2, 50, 2, 2]
+    out: 2500
+  - name: "modulo_boundary"
+    in:
+      nums: [10000000, 10000000, 10000000, 10000000, 10000000]
+    out: 996500007
+  - name: "many_small_then_large"
+    in:
+      nums: [1, 1, 1, 1, 9, 9, 9]
+    out: 243
+  - name: "large_then_small"
+    in:
+      nums: [9, 9, 9, 1, 1, 1, 1]
+    out: 243
+  - name: "balanced"
+    in:
+      nums: [4, 2, 4, 2, 4, 2, 4]
+    out: 44
+  - name: "mixed_small"
+    in:
+      nums: [6, 1, 5, 2, 4, 3]
+    out: 36
+  - name: "repeated_low"
+    in:
+      nums: [10, 2, 10, 2, 10]
+    out: 100
+  - name: "near_max_values"
+    in:
+      nums: [9999990, 9999991, 9999992]
+    out: 427900277
+  - name: "generated_small"
+    seed: 101
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10000000
+  - name: "generated_medium"
+    seed: 102
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000000
+  - name: "generated_large_a"
+    seed: 103
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000000
+  - name: "generated_large_b"
+    seed: 104
+    in:
+      nums:
+        gen: "array"
+        len: 75000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000000
+  - name: "generated_maximum"
+    seed: 105
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000000

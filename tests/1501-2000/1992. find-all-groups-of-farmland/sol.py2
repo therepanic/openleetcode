@@ -1,0 +1,30 @@
+class Solution(object):
+    def findFarmland(self, land):
+        """
+        :type land: List[List[int]]
+        :rtype: List[List[int]]
+        """
+        n = len(land)
+        m = len(land[0])
+        visited = [[False]*m for _ in range(n)]
+        directions = [[-1,0],[0,1],[1,0],[0,-1]]
+        
+        def dfs(r, c, maxr, maxc):
+            visited[r][c] = True
+            maxr[0] = max(maxr[0], r)
+            maxc[0] = max(maxc[0], c)
+            for dr, dc in directions:
+                nr, nc = r+dr, c+dc
+                if 0 <= nr < n and 0 <= nc < m:
+                    if not visited[nr][nc] and land[nr][nc] == 1:
+                        dfs(nr, nc, maxr, maxc)
+        
+        res = []
+        for i in range(n):
+            for j in range(m):
+                if land[i][j] == 1 and not visited[i][j]:
+                    maxr = [i]
+                    maxc = [j]
+                    dfs(i, j, maxr, maxc)
+                    res.append([i, j, maxr[0], maxc[0]])
+        return res

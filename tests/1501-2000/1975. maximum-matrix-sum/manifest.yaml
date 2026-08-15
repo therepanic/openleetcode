@@ -1,0 +1,397 @@
+entry:
+  id: 1975
+  title: "maximum-matrix-sum"
+  params:
+    matrix:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxMatrixSum({matrix})"
+    rust: "Solution::max_matrix_sum({matrix})"
+    python3: "Solution().maxMatrixSum({matrix})"
+    python2: "Solution().maxMatrixSum({matrix})"
+    ruby: "max_matrix_sum({matrix})"
+    java: "new Solution().maxMatrixSum({matrix})"
+    csharp: "new Solution().MaxMatrixSum({matrix})"
+    kotlin: "Solution().maxMatrixSum({matrix})"
+    go: "maxMatrixSum({matrix})"
+    dart: "Solution().maxMatrixSum({matrix})"
+    swift: "Solution().maxMatrixSum({matrix})"
+    typescript: "maxMatrixSum({matrix})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maxMatrixSum(matrix, {result})"
+    checker: |
+      class Checker:
+          def maxMatrixSum(self, matrix, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(matrix, list) or not matrix:
+                  return False
+              n = len(matrix)
+              if any(not isinstance(row, list) or len(row) != n for row in matrix):
+                  return False
+              values = [v for row in matrix for v in row]
+              if any(not isinstance(v, int) or isinstance(v, bool) for v in values):
+                  return False
+              expected = sum(abs(v) for v in values)
+              if sum(v < 0 for v in values) % 2:
+                  expected -= 2 * min(abs(v) for v in values)
+              return result == expected
+
+seed: 1975
+
+tests:
+  - name: "example_one"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [1, -1]
+          - [-1, 1]
+    out: 4
+  - name: "example_two"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [-1, -2, -3]
+          - [1, 2, 3]
+    out: 16
+  - name: "all_positive_two"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 4]
+    out: 10
+  - name: "one_negative_even_cells"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, 2]
+          - [3, 4]
+    out: 8
+  - name: "one_negative_odd_cells"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-9, 2]
+          - [3, 4]
+    out: 14
+  - name: "all_negative_four"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, -2]
+          - [-3, -4]
+    out: 10
+  - name: "all_negative_nine"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, -2, -3]
+          - [-4, -5, -6]
+          - [-7, -8, -9]
+    out: 43
+  - name: "zeros_only"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 0]
+    out: 0
+  - name: "mixed_zero_odd_negative"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-5, 0]
+          - [0, 0]
+    out: 5
+  - name: "mixed_zero_even_negative"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-5, 0]
+          - [-7, 0]
+    out: 12
+  - name: "minimum_abs_is_zero"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-8, -3]
+          - [-2, 0]
+    out: 13
+  - name: "duplicate_magnitudes"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-6, 6]
+          - [-6, 6]
+    out: 24
+  - name: "negative_minimum_not_first"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [8, -1, -7]
+          - [2, -9, 3]
+          - [4, 5, -6]
+    out: 45
+  - name: "checkerboard_signs"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [1, -2, 3]
+          - [-4, 5, -6]
+          - [7, -8, 9]
+    out: 45
+  - name: "three_by_three_one_negative"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [10, 20, 30]
+          - [40, -50, 60]
+          - [70, 80, 90]
+    out: 430
+  - name: "three_by_three_two_negatives"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-10, 20, 30]
+          - [40, -50, 60]
+          - [70, 80, 90]
+    out: 450
+  - name: "four_by_four_balanced"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [1, -2, 3, -4]
+          - [-5, 6, -7, 8]
+          - [9, -10, 11, -12]
+          - [-13, 14, -15, 16]
+    out: 136
+  - name: "four_by_four_all_negative"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, -2, -3, -4]
+          - [-5, -6, -7, -8]
+          - [-9, -10, -11, -12]
+          - [-13, -14, -15, -16]
+    out: 136
+  - name: "large_values_even_negative"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [100000, -100000]
+          - [-99999, 99998]
+    out: 399997
+  - name: "large_values_odd_negative_zero"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-100000, 99999, 0]
+          - [99998, 99997, 99996]
+          - [99995, 99994, 99993]
+    out: 799972
+  - name: "negative_one_is_minimum"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-100, -50]
+          - [-25, 1]
+    out: 174
+  - name: "positive_one_is_minimum"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-100, -50]
+          - [-25, 1]
+    out: 174
+  - name: "repeated_rows"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [3, -3, 3]
+          - [3, -3, 3]
+          - [3, -3, 3]
+    out: 21
+  - name: "single_magnitude_negative"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-42, 7]
+          - [8, 9]
+    out: 52
+  - name: "odd_negative_without_zero"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-4, 5, 6]
+          - [7, 8, 9]
+          - [10, 11, 12]
+    out: 64
+  - name: "five_by_five_positive"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5]
+          - [6, 7, 8, 9, 10]
+          - [11, 12, 13, 14, 15]
+          - [16, 17, 18, 19, 20]
+          - [21, 22, 23, 24, 25]
+    out: 325
+  - name: "five_by_five_odd_negatives"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, 2, 3, 4, 5]
+          - [6, -7, 8, 9, 10]
+          - [11, 12, -13, 14, 15]
+          - [16, 17, 18, 19, 20]
+          - [21, 22, 23, 24, 25]
+    out: 323
+  - name: "five_by_five_even_negatives"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, 2, 3, 4, 5]
+          - [6, -7, 8, 9, 10]
+          - [11, 12, 13, 14, 15]
+          - [16, 17, 18, 19, 20]
+          - [21, 22, 23, 24, 25]
+    out: 325
+  - name: "alternating_large_four"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [100000, -100000, 100000, -100000]
+          - [-100000, 100000, -100000, 100000]
+          - [100000, -100000, 100000, -100000]
+          - [-100000, 100000, -100000, 100000]
+    out: 1600000
+  - name: "all_min_value_three"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-100000, -100000, -100000]
+          - [-100000, -100000, -100000]
+          - [-100000, -100000, -100000]
+    out: 700000
+  - name: "near_zero_values"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, 1, -1]
+          - [1, -1, 1]
+          - [-1, 1, -1]
+    out: 7
+  - name: "six_by_six_mixed"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-1, 2, -3, 4, -5, 6]
+          - [7, -8, 9, -10, 11, -12]
+          - [13, 14, -15, 16, 17, 18]
+          - [-19, 20, 21, -22, 23, 24]
+          - [25, -26, 27, 28, -29, 30]
+          - [31, 32, -33, 34, 35, -36]
+    out: 664
+  - name: "seven_by_seven_zero_border"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [0, 0, 0, 0, 0, 0, 0]
+          - [0, -2, 3, -4, 5, -6, 0]
+          - [0, 7, -8, 9, -10, 11, 0]
+          - [0, -12, 13, -14, 15, -16, 0]
+          - [0, 17, -18, 19, -20, 21, 0]
+          - [0, -22, 23, -24, 25, -26, 0]
+          - [0, 0, 0, 0, 0, 0, 0]
+    out: 350
+  - name: "eight_by_eight_constant"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+    out: 1088
+  - name: "eight_by_eight_one_negative"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+          - [17, 17, 17, 17, 17, 17, 17, 17]
+    out: 1054
+  - name: "nine_by_nine_sparse_negatives"
+    in:
+      matrix:
+        elemType: "int"
+        value:
+          - [-9, 0, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 8, 0, 0, 0, 0, 0, 0, 0]
+          - [0, 0, -7, 0, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 6, 0, 0, 0, 0, 0]
+          - [0, 0, 0, 0, -5, 0, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 4, 0, 0, 0]
+          - [0, 0, 0, 0, 0, 0, -3, 0, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 2, 0]
+          - [0, 0, 0, 0, 0, 0, 0, 0, -1]
+    out: 45

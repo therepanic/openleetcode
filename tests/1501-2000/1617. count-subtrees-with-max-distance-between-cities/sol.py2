@@ -1,0 +1,52 @@
+class Solution(object):
+    def countSubgraphsForEachDiameter(self, n, edges):
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :rtype: List[int]
+        """
+        from collections import deque
+        
+        graph = [[] for _ in range(n)]
+        for u, v in edges:
+            u -= 1
+            v -= 1
+            graph[u].append(v)
+            graph[v].append(u)
+        answer = [0] * (n - 1)
+        for mask in range(1, 1 << n):
+            if mask & (mask - 1) == 0:
+                continue
+            b = mask & -mask
+            s = (b.bit_length() - 1)
+            seen = [False] * n
+            seen[s] = True
+            cnt = 1
+            q = deque([s])
+            while q:
+                u = q.popleft()
+                for v in graph[u]:
+                    if (mask >> v) & 1 and not seen[v]:
+                        seen[v] = True
+                        cnt += 1
+                        q.append(v)
+            if cnt != bin(mask).count('1'):
+                continue
+            def bfs(start):
+                d = [-1] * n
+                d[start] = 0
+                q = deque([start])
+                last = start
+                while q:
+                    u = q.popleft()
+                    last = u
+                    for v in graph[u]:
+                        if (mask >> v) & 1 and d[v] == -1:
+                            d[v] = d[u] + 1
+                            q.append(v)
+                return last, d[last]
+            a, _ = bfs(s)
+            _, diam = bfs(a)
+            if diam >= 1:
+                answer[diam - 1] += 1
+        return answer

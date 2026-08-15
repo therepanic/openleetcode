@@ -1,0 +1,42 @@
+class Solution(object):
+    def stoneGameV(self, stoneValue):
+        """
+        :type stoneValue: List[int]
+        :rtype: int
+        """
+        from bisect import bisect_left
+        
+        sv = [0]
+        for value in stoneValue:
+            sv.append(sv[-1] + value)
+        
+        memo = {}
+        def helper(fro, to):
+            if to - fro == 1:
+                return 0
+            key = (fro, to)
+            if key in memo:
+                return memo[key]
+            
+            mid = bisect_left(sv, (sv[to] + sv[fro]) // 2)
+            
+            dist = 0
+            res = 0
+            explore_more = True
+            while explore_more:
+                explore_more = False
+                for i in [mid - dist, mid + dist]:
+                    if fro < i <= to:
+                        left = sv[i] - sv[fro]
+                        right = sv[to] - sv[i]
+                        if res // 2 <= left <= right:
+                            res = max(res, left + helper(fro, i))
+                            explore_more = True
+                        if left >= right >= res // 2:
+                            res = max(res, right + helper(i, to))
+                            explore_more = True
+                dist += 1
+            memo[key] = res
+            return res
+        
+        return helper(0, len(stoneValue))

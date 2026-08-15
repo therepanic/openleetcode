@@ -1,0 +1,38 @@
+class Solution(object):
+    def visiblePoints(self, points, angle, location):
+        """
+        :type points: List[List[int]]
+        :type angle: int
+        :type location: List[int]
+        :rtype: int
+        """
+        import math
+        
+        same = 0
+        angles = []
+        x0, y0 = location
+        
+        for x, y in points:
+            dx = x - x0
+            dy = y - y0
+            if dx == 0 and dy == 0:
+                same += 1
+                continue
+            ang = math.degrees(math.atan2(dy, dx))
+            angles.append(ang)
+        
+        if not angles:
+            return same
+        
+        angles.sort()
+        full = angles + [a + 360 for a in angles]
+        n = len(angles)
+        
+        max_vis = 0
+        j = 0
+        for i in range(n):
+            while j < len(full) and full[j] - full[i] <= angle:
+                j += 1
+            max_vis = max(max_vis, j - i)
+        
+        return max_vis + same

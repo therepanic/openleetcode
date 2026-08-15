@@ -1,0 +1,20 @@
+class Solution(object):
+    def connectTwoGroups(self, cost):
+        """
+        :type cost: List[List[int]]
+        :rtype: int
+        """
+        m, n = len(cost), len(cost[0])
+        mn = [min(cost[i][j] for i in range(m)) for j in range(n)]
+        memo = {}
+        def fn(i, mask):
+            key = (i, mask)
+            if key in memo:
+                return memo[key]
+            if i == m:
+                result = sum(mn[j] for j in range(n) if not (mask & (1 << j)))
+            else:
+                result = min(cost[i][j] + fn(i+1, mask | (1 << j)) for j in range(n))
+            memo[key] = result
+            return result
+        return fn(0, 0)

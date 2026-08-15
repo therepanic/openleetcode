@@ -1,0 +1,278 @@
+entry:
+  id: 1638
+  title: "count-substrings-that-differ-by-one-character"
+  params:
+    s:
+      type: string
+    t:
+      type: string
+  call:
+    cpp: "Solution().countSubstrings({s}, {t})"
+    rust: "Solution::count_substrings({s}, {t})"
+    python3: "Solution().countSubstrings({s}, {t})"
+    python2: "Solution().countSubstrings({s}, {t})"
+    ruby: "count_substrings({s}, {t})"
+    java: "new Solution().countSubstrings({s}, {t})"
+    csharp: "new Solution().CountSubstrings({s}, {t})"
+    kotlin: "Solution().countSubstrings({s}, {t})"
+    go: "countSubstrings({s}, {t})"
+    dart: "Solution().countSubstrings({s}, {t})"
+    swift: "Solution().countSubstrings({s}, {t})"
+    typescript: "countSubstrings({s}, {t})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().countSubstrings(s, t, {result})"
+    checker: |
+      class Checker:
+          def countSubstrings(self, s, t, result):
+              expected = 0
+              for i in range(len(s)):
+                  for j in range(len(t)):
+                      differences = 0
+                      k = 0
+                      while i + k < len(s) and j + k < len(t):
+                          if s[i + k] != t[j + k]:
+                              differences += 1
+                          if differences > 1:
+                              break
+                          if differences == 1:
+                              expected += 1
+                          k += 1
+              return isinstance(result, int) and not isinstance(result, bool) and result == expected
+
+seed: 1638
+
+tests:
+  - name: example-aba-baba
+    in:
+      s: "aba"
+      t: "baba"
+    out: 6
+  - name: example-ab-bb
+    in:
+      s: "ab"
+      t: "bb"
+    out: 3
+  - name: one-equal-character
+    in:
+      s: "a"
+      t: "a"
+    out: 0
+  - name: one-different-character
+    in:
+      s: "a"
+      t: "b"
+    out: 1
+  - name: one-character-t-longer
+    in:
+      s: "a"
+      t: "ab"
+    out: 1
+  - name: one-character-s-longer
+    in:
+      s: "ab"
+      t: "a"
+    out: 1
+  - name: identical-two-strings
+    in:
+      s: "abc"
+      t: "abc"
+    out: 6
+  - name: all-a-identical
+    in:
+      s: "aaa"
+      t: "aaaa"
+    out: 0
+  - name: all-a-versus-b
+    in:
+      s: "aaa"
+      t: "bbb"
+    out: 9
+  - name: alternating-equal
+    in:
+      s: "abab"
+      t: "abab"
+    out: 8
+  - name: alternating-shifted
+    in:
+      s: "abab"
+      t: "baba"
+    out: 8
+  - name: repeated-pattern
+    in:
+      s: "abcabc"
+      t: "bcabca"
+    out: 24
+  - name: disjoint-alphabet
+    in:
+      s: "abc"
+      t: "xyz"
+    out: 9
+  - name: one-mismatch-at-start
+    in:
+      s: "xbc"
+      t: "abc"
+    out: 9
+  - name: one-mismatch-at-end
+    in:
+      s: "abx"
+      t: "abc"
+    out: 9
+  - name: mismatch-middle
+    in:
+      s: "axc"
+      t: "abc"
+    out: 10
+  - name: mismatch-and-overlap
+    in:
+      s: "aaaaab"
+      t: "baaaaa"
+    out: 30
+  - name: short-s-inside-t
+    in:
+      s: "cat"
+      t: "concatenate"
+    out: 30
+  - name: short-t-inside-s
+    in:
+      s: "concatenate"
+      t: "cat"
+    out: 30
+  - name: four-distinct
+    in:
+      s: "abcd"
+      t: "efgh"
+    out: 16
+  - name: same-prefix-different-suffix
+    in:
+      s: "abca"
+      t: "abcb"
+    out: 15
+  - name: same-suffix-different-prefix
+    in:
+      s: "xabc"
+      t: "yabc"
+    out: 16
+  - name: repeated-single-mismatch
+    in:
+      s: "aab"
+      t: "aba"
+    out: 6
+  - name: nested-overlaps
+    in:
+      s: "aaaa"
+      t: "aaab"
+    out: 10
+  - name: length-five-disjoint
+    in:
+      s: "abcde"
+      t: "vwxyz"
+    out: 25
+  - name: length-five-shift
+    in:
+      s: "abcde"
+      t: "bcdef"
+    out: 21
+  - name: duplicate-blocks
+    in:
+      s: "ababab"
+      t: "ababac"
+    out: 30
+  - name: long-equal-block
+    in:
+      s: "aaaaaaaaaa"
+      t: "aaaaaaaaab"
+    out: 55
+  - name: long-different-block
+    in:
+      s: "aaaaaaaaaa"
+      t: "bbbbbbbbbb"
+    out: 100
+  - name: long-shifted-block
+    in:
+      s: "ababababab"
+      t: "bababababa"
+    out: 50
+  - name: mixed-lowercase
+    in:
+      s: "qwerty"
+      t: "qazwsx"
+    out: 37
+  - name: repeated-mixed
+    in:
+      s: "abcabcabc"
+      t: "abcabcabd"
+    out: 72
+  - name: unequal-long-pattern
+    in:
+      s: "abcdefghijklmnopqrst"
+      t: "bcdefghijklmnopqrstuv"
+    out: 401
+  - name: maximal-equal
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      t: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 0
+  - name: maximal-single-difference
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+      t: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 820
+  - name: generated-small
+    in:
+      s:
+        gen: "str"
+        len: 17
+        alphabet: "abc"
+      t:
+        gen: "str"
+        len: 19
+        alphabet: "abc"
+  - name: generated-medium
+    in:
+      s:
+        gen: "str"
+        len: 41
+        alphabet: "abcd"
+      t:
+        gen: "str"
+        len: 37
+        alphabet: "abcd"
+  - name: generated-large-one
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "abcde"
+      t:
+        gen: "str"
+        len: 100
+        alphabet: "abcde"
+  - name: generated-large-two
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "ab"
+      t:
+        gen: "str"
+        len: 97
+        alphabet: "ab"
+  - name: generated-large-three
+    in:
+      s:
+        gen: "str"
+        len: 83
+        alphabet: "xyz"
+      t:
+        gen: "str"
+        len: 100
+        alphabet: "xyz"

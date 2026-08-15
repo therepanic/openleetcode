@@ -1,0 +1,373 @@
+entry:
+  id: 1559
+  title: "detect-cycles-in-2d-grid"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: char
+  call:
+    cpp: "Solution().containsCycle({grid})"
+    rust: "Solution::contains_cycle({grid})"
+    python3: "Solution().containsCycle({grid})"
+    python2: "Solution().containsCycle({grid})"
+    ruby: "contains_cycle({grid})"
+    java: "new Solution().containsCycle({grid})"
+    csharp: "new Solution().ContainsCycle({grid})"
+    kotlin: "Solution().containsCycle({grid})"
+    go: "containsCycle({grid})"
+    dart: "Solution().containsCycle({grid})"
+    swift: "Solution().containsCycle({grid})"
+    typescript: "containsCycle({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().containsCycle(grid, {result})"
+    checker: |
+      from collections import deque
+      class Checker:
+          def containsCycle(self, grid, result):
+              if not isinstance(result, bool):
+                  return False
+              rows = len(grid)
+              cols = len(grid[0]) if rows else 0
+              seen = [[False] * cols for _ in range(rows)]
+              for sr in range(rows):
+                  for sc in range(cols):
+                      if seen[sr][sc]:
+                          continue
+                      seen[sr][sc] = True
+                      queue = deque([(sr, sc, -1, -1)])
+                      while queue:
+                          r, c, pr, pc = queue.popleft()
+                          for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                              nr, nc = r + dr, c + dc
+                              if nr < 0 or nr >= rows or nc < 0 or nc >= cols:
+                                  continue
+                              if grid[nr][nc] != grid[r][c] or (nr == pr and nc == pc):
+                                  continue
+                              if seen[nr][nc]:
+                                  return result is True
+                              seen[nr][nc] = True
+                              queue.append((nr, nc, r, c))
+              return result is False
+
+seed: 15591559
+
+tests:
+  - name: example-one
+    in:
+      grid:
+        - ["a", "a", "a", "a"]
+        - ["a", "b", "b", "a"]
+        - ["a", "b", "b", "a"]
+        - ["a", "a", "a", "a"]
+    out: true
+  - name: example-two
+    in:
+      grid:
+        - ["c", "c", "c", "a"]
+        - ["c", "d", "c", "c"]
+        - ["c", "c", "e", "c"]
+        - ["f", "c", "c", "c"]
+    out: true
+  - name: example-three
+    in:
+      grid:
+        - ["a", "b", "b"]
+        - ["b", "z", "b"]
+        - ["b", "b", "a"]
+    out: false
+  - name: one-cell
+    in:
+      grid:
+        - ["a"]
+    out: false
+  - name: one-row-two
+    in:
+      grid:
+        - ["a", "a"]
+    out: false
+  - name: one-row-four
+    in:
+      grid:
+        - ["a", "a", "a", "a"]
+    out: false
+  - name: one-column-four
+    in:
+      grid:
+        - ["b"]
+        - ["b"]
+        - ["b"]
+        - ["b"]
+    out: false
+  - name: two-by-two-cycle
+    in:
+      grid:
+        - ["a", "a"]
+        - ["a", "a"]
+    out: true
+  - name: two-by-three-cycle
+    in:
+      grid:
+        - ["a", "a", "a"]
+        - ["a", "a", "a"]
+    out: true
+  - name: checkerboard
+    in:
+      grid:
+        - ["a", "b", "a", "b"]
+        - ["b", "a", "b", "a"]
+        - ["a", "b", "a", "b"]
+    out: false
+  - name: isolated-center
+    in:
+      grid:
+        - ["a", "b", "a"]
+        - ["b", "a", "b"]
+        - ["a", "b", "a"]
+    out: false
+  - name: ring-around-center
+    in:
+      grid:
+        - ["a", "a", "a"]
+        - ["a", "b", "a"]
+        - ["a", "a", "a"]
+    out: true
+  - name: hollow-two-by-four
+    in:
+      grid:
+        - ["a", "a", "a", "a"]
+        - ["a", "b", "b", "a"]
+    out: false
+  - name: separated-pairs
+    in:
+      grid:
+        - ["a", "a", "b", "b"]
+        - ["c", "c", "d", "d"]
+        - ["e", "e", "f", "f"]
+    out: false
+  - name: horizontal-loop
+    in:
+      grid:
+        - ["x", "x", "x"]
+        - ["x", "y", "x"]
+        - ["x", "x", "x"]
+    out: true
+  - name: narrow-corner
+    in:
+      grid:
+        - ["a", "a", "b"]
+        - ["a", "b", "b"]
+        - ["c", "c", "b"]
+    out: false
+  - name: five-by-five-border
+    in:
+      grid:
+        - ["a", "a", "a", "a", "a"]
+        - ["a", "b", "b", "b", "a"]
+        - ["a", "b", "c", "b", "a"]
+        - ["a", "b", "b", "b", "a"]
+        - ["a", "a", "a", "a", "a"]
+    out: true
+  - name: five-by-five-diagonal
+    in:
+      grid:
+        - ["a", "b", "c", "d", "e"]
+        - ["b", "c", "d", "e", "a"]
+        - ["c", "d", "e", "a", "b"]
+        - ["d", "e", "a", "b", "c"]
+        - ["e", "a", "b", "c", "d"]
+    out: false
+  - name: large-uniform-three
+    in:
+      grid:
+        - ["z", "z", "z"]
+        - ["z", "z", "z"]
+        - ["z", "z", "z"]
+    out: true
+  - name: mixed-four-by-four
+    in:
+      grid:
+        - ["a", "b", "c", "d"]
+        - ["a", "b", "c", "d"]
+        - ["e", "f", "g", "h"]
+        - ["e", "f", "g", "h"]
+    out: false
+  - name: cycle-in-left-block
+    in:
+      grid:
+        - ["a", "a", "b", "c"]
+        - ["a", "a", "d", "e"]
+        - ["f", "g", "h", "i"]
+        - ["j", "k", "l", "m"]
+    out: true
+  - name: cycle-in-right-block
+    in:
+      grid:
+        - ["a", "b", "c", "c"]
+        - ["d", "e", "c", "c"]
+        - ["f", "g", "h", "i"]
+    out: true
+  - name: no-cycle-two-by-five
+    in:
+      grid:
+        - ["a", "b", "c", "d", "e"]
+        - ["f", "g", "h", "i", "j"]
+    out: false
+  - name: all-b-three-by-four
+    in:
+      grid:
+        - ["b", "b", "b", "b"]
+        - ["b", "b", "b", "b"]
+        - ["b", "b", "b", "b"]
+    out: true
+  - name: serpentine-no-cycle
+    in:
+      grid:
+        - ["a", "a", "b", "b"]
+        - ["c", "c", "d", "d"]
+        - ["e", "e", "f", "f"]
+        - ["g", "g", "h", "h"]
+    out: false
+  - name: two-colour-stripes
+    in:
+      grid:
+        - ["a", "a", "a", "a", "a"]
+        - ["b", "b", "b", "b", "b"]
+        - ["a", "a", "a", "a", "a"]
+        - ["b", "b", "b", "b", "b"]
+    out: false
+  - name: single-cycle-island
+    in:
+      grid:
+        - ["a", "b", "c", "d", "e"]
+        - ["f", "g", "g", "h", "i"]
+        - ["j", "g", "g", "k", "l"]
+        - ["m", "n", "o", "p", "q"]
+    out: true
+  - name: touching-different-regions
+    in:
+      grid:
+        - ["a", "a", "b", "b"]
+        - ["a", "c", "c", "b"]
+        - ["d", "c", "c", "e"]
+        - ["d", "d", "e", "e"]
+    out: true
+  - name: no-cycle-lowercase
+    in:
+      grid:
+        - ["a", "b", "c", "d", "e", "f"]
+        - ["g", "h", "i", "j", "k", "l"]
+        - ["m", "n", "o", "p", "q", "r"]
+    out: false
+  - name: repeated-l-shaped
+    in:
+      grid:
+        - ["a", "a", "b", "b"]
+        - ["a", "c", "c", "b"]
+        - ["a", "c", "c", "b"]
+        - ["d", "d", "e", "e"]
+    out: true
+  - name: full-six-by-two
+    in:
+      grid:
+        - ["q", "q"]
+        - ["q", "q"]
+        - ["q", "q"]
+        - ["q", "q"]
+        - ["q", "q"]
+        - ["q", "q"]
+    out: true
+  - name: alternating-rows
+    in:
+      grid:
+        - ["a", "b", "a", "b", "a"]
+        - ["b", "a", "b", "a", "b"]
+        - ["a", "b", "a", "b", "a"]
+        - ["b", "a", "b", "a", "b"]
+    out: false
+  - name: cycle-at-edge
+    in:
+      grid:
+        - ["r", "r", "r", "s"]
+        - ["r", "t", "r", "s"]
+        - ["r", "r", "r", "s"]
+        - ["u", "v", "w", "x"]
+    out: true
+  - name: isolated-duplicates
+    in:
+      grid:
+        - ["a", "b", "a", "b"]
+        - ["c", "d", "c", "d"]
+        - ["a", "b", "a", "b"]
+    out: false
+  - name: generated-small
+    in:
+      grid:
+        gen: "array"
+        len: 2
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "char"
+            variety: ["a", "b", "c"]
+          elemType: "string"
+  - name: generated-medium
+    in:
+      grid:
+        gen: "array"
+        len: 5
+        of:
+          gen: "array"
+          len: 7
+          of:
+            gen: "char"
+            variety: ["a", "b", "c", "d"]
+          elemType: "string"
+  - name: generated-wide
+    in:
+      grid:
+        gen: "array"
+        len: 3
+        of:
+          gen: "array"
+          len: 40
+          of:
+            gen: "char"
+            variety: ["a", "b"]
+          elemType: "string"
+  - name: generated-large
+    in:
+      grid:
+        gen: "array"
+        len: 40
+        of:
+          gen: "array"
+          len: 40
+          of:
+            gen: "char"
+            variety: ["a", "b", "c", "d", "e"]
+          elemType: "string"
+  - name: generated-stress
+    in:
+      grid:
+        gen: "array"
+        len: 200
+        of:
+          gen: "array"
+          len: 200
+          of:
+            gen: "char"
+            variety: ["a", "b", "c", "d", "e", "f"]
+          elemType: "string"

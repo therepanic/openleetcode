@@ -1,0 +1,302 @@
+entry:
+  id: 1639
+  title: "number-of-ways-to-form-a-target-string-given-a-dictionary"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+    target:
+      type: string
+  call:
+    cpp: "Solution().numWays({words}, {target})"
+    rust: "Solution::num_ways({words}, {target})"
+    python3: "Solution().numWays({words}, {target})"
+    python2: "Solution().numWays({words}, {target})"
+    ruby: "num_ways({words}, {target})"
+    java: "new Solution().numWays({words}, {target})"
+    csharp: "new Solution().NumWays({words}, {target})"
+    kotlin: "Solution().numWays({words}, {target})"
+    go: "numWays({words}, {target})"
+    dart: "Solution().numWays({words}, {target})"
+    swift: "Solution().numWays({words}, {target})"
+    typescript: "numWays({words}, {target})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().numWays(words, target, {result})"
+    checker: |
+      class Checker:
+          def numWays(self, words, target, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              if not words or not target or any(len(w) != len(words[0]) for w in words):
+                  return False
+              counts = [[0] * 26 for _ in range(len(words[0]))]
+              for word in words:
+                  for i, ch in enumerate(word):
+                      counts[i][ord(ch) - 97] += 1
+              dp = [0] * (len(target) + 1)
+              dp[0] = 1
+              for column in counts:
+                  for j in range(len(target) - 1, -1, -1):
+                      dp[j + 1] = (dp[j + 1] + dp[j] * column[ord(target[j]) - 97]) % mod
+              return result == dp[len(target)]
+
+seed: 1639
+
+tests:
+  - name: example-one
+    in:
+      words: ["acca", "bbbb", "caca"]
+      target: "aba"
+    out: 6
+  - name: example-two
+    in:
+      words: ["abba", "baab"]
+      target: "bab"
+    out: 4
+  - name: one-word-exact
+    in:
+      words: ["abcd"]
+      target: "abcd"
+    out: 1
+  - name: one-word-impossible-order
+    in:
+      words: ["abcd"]
+      target: "dcba"
+    out: 0
+  - name: one-word-subsequence
+    in:
+      words: ["abcde"]
+      target: "ace"
+    out: 1
+  - name: repeated-single-character
+    in:
+      words: ["aaaa", "aaaa", "aaaa"]
+      target: "aaa"
+    out: 108
+  - name: repeated-character-full-width
+    in:
+      words: ["aaa", "aaa"]
+      target: "aaa"
+    out: 8
+  - name: impossible-letter
+    in:
+      words: ["abc", "abc"]
+      target: "abd"
+    out: 0
+  - name: target-longer-than-word
+    in:
+      words: ["ab", "ab"]
+      target: "aba"
+    out: 0
+  - name: single-character-match
+    in:
+      words: ["a", "b", "a", "c"]
+      target: "a"
+    out: 2
+  - name: single-character-miss
+    in:
+      words: ["a", "b", "c"]
+      target: "z"
+    out: 0
+  - name: two-columns-two-letters
+    in:
+      words: ["aa", "ab", "ba", "bb"]
+      target: "ab"
+    out: 4
+  - name: two-columns-same-letter
+    in:
+      words: ["aa", "aa", "ba"]
+      target: "aa"
+    out: 6
+  - name: choice-at-first-column
+    in:
+      words: ["ab", "ac", "db"]
+      target: "ab"
+    out: 4
+  - name: choice-at-second-column
+    in:
+      words: ["aa", "ba", "ca"]
+      target: "aa"
+    out: 3
+  - name: all-columns-required
+    in:
+      words: ["abc", "abc", "abc"]
+      target: "abc"
+    out: 27
+  - name: duplicate-word-counts
+    in:
+      words: ["abc", "abc", "abd", "abd"]
+      target: "abd"
+    out: 32
+  - name: alternating-target
+    in:
+      words: ["abab", "baba"]
+      target: "aba"
+    out: 4
+  - name: no-increasing-match
+    in:
+      words: ["ba", "ba", "ab"]
+      target: "ba"
+    out: 4
+  - name: length-three-mixed
+    in:
+      words: ["abc", "bac", "cba", "acb"]
+      target: "ac"
+    out: 8
+  - name: target-single-from-four-columns
+    in:
+      words: ["aaaa", "baaa", "aaba"]
+      target: "a"
+    out: 10
+  - name: target-two-from-four-columns
+    in:
+      words: ["aaaa", "baaa", "aaba"]
+      target: "aa"
+    out: 37
+  - name: target-three-from-four-columns
+    in:
+      words: ["aaaa", "baaa", "aaba"]
+      target: "aaa"
+    out: 60
+  - name: target-four-from-four-columns
+    in:
+      words: ["aaaa", "baaa", "aaba"]
+      target: "aaaa"
+    out: 36
+  - name: sparse-letter
+    in:
+      words: ["azaz", "zaza", "azza"]
+      target: "zz"
+    out: 13
+  - name: repeated-target-with-gaps
+    in:
+      words: ["aaaaa", "aaaaa"]
+      target: "aaa"
+    out: 80
+  - name: many-identical-words
+    in:
+      words: ["abcd", "abcd", "abcd", "abcd", "abcd"]
+      target: "bd"
+    out: 25
+  - name: mixed-counts
+    in:
+      words: ["aabb", "abab", "bbaa", "baab"]
+      target: "ab"
+    out: 29
+  - name: impossible-after-prefix
+    in:
+      words: ["abc", "bbc", "cbc"]
+      target: "acd"
+    out: 0
+  - name: target-uses-last-column
+    in:
+      words: ["aaab", "baab", "cabb"]
+      target: "ab"
+    out: 22
+  - name: alphabet-boundary
+    in:
+      words: ["azaz", "zaza", "zzzz"]
+      target: "az"
+    out: 12
+  - name: generator-short-one
+    in:
+      words: ["acca", "bbbb", "caca"]
+      target:
+        gen: "str"
+        len: 1
+        alphabet: "abc"
+  - name: generator-short-two
+    in:
+      words: ["acca", "bbbb", "caca"]
+      target:
+        gen: "str"
+        len: 2
+        alphabet: "abc"
+  - name: generator-short-three
+    in:
+      words: ["acca", "bbbb", "caca"]
+      target:
+        gen: "str"
+        len: 3
+        alphabet: "abc"
+  - name: generator-full-width
+    in:
+      words: ["acca", "bbbb", "caca"]
+      target:
+        gen: "str"
+        len: 4
+        alphabet: "abc"
+  - name: generator-rare-alphabet
+    in:
+      words: ["azaz", "zaza", "azza"]
+      target:
+        gen: "str"
+        len: 2
+        alphabet: "az"
+  - name: generator-medium-dictionary
+    in:
+      words:
+        gen: array
+        len: 25
+        of:
+          gen: str
+          len: 40
+          alphabet: "abc"
+      target:
+        gen: str
+        len: 20
+        alphabet: "abc"
+    seed: 163901
+  - name: generator-wide-dictionary
+    in:
+      words:
+        gen: array
+        len: 1000
+        of:
+          gen: str
+          len: 100
+          alphabet: "abcd"
+      target:
+        gen: str
+        len: 50
+        alphabet: "abcd"
+    seed: 163902
+  - name: generator-long-columns
+    in:
+      words:
+        gen: array
+        len: 20
+        of:
+          gen: str
+          len: 1000
+          alphabet: "xyz"
+      target:
+        gen: str
+        len: 500
+        alphabet: "xyz"
+    seed: 163903
+  - name: generator-max-shape
+    in:
+      words:
+        gen: array
+        len: 1000
+        of:
+          gen: str
+          len: 1000
+          alphabet: "ab"
+      target:
+        gen: str
+        len: 1000
+        alphabet: "ab"
+    seed: 163904

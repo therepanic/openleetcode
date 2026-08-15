@@ -1,0 +1,318 @@
+entry:
+  id: 1900
+  title: "the-earliest-and-latest-rounds-where-players-compete"
+  params:
+    n:
+      type: int
+    firstPlayer:
+      type: int
+    secondPlayer:
+      type: int
+  call:
+    cpp: "Solution().earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    rust: "Solution::earliest_and_latest({n}, {firstPlayer}, {secondPlayer})"
+    python3: "Solution().earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    python2: "Solution().earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    ruby: "earliest_and_latest({n}, {firstPlayer}, {secondPlayer})"
+    java: "new Solution().earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    csharp: "new Solution().EarliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    kotlin: "Solution().earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    go: "earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    dart: "Solution().earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    swift: "Solution().earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+    typescript: "earliestAndLatest({n}, {firstPlayer}, {secondPlayer})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().check(n, firstPlayer, secondPlayer, {result})"
+    checker: |
+      from functools import lru_cache
+
+      class Checker:
+          def check(self, n, firstPlayer, secondPlayer, result):
+              if not isinstance(result, list) or len(result) != 2:
+                  return False
+              @lru_cache(None)
+              def solve(size, a, b):
+                  if a + b == size + 1:
+                      return (1, 1)
+                  if a > b:
+                      a, b = b, a
+                  if size <= 4:
+                      return (2, 2)
+                  m = (size + 1) // 2
+                  lo, hi = 10**9, -1
+                  if a - 1 > size - b:
+                      a, b = size + 1 - b, size + 1 - a
+                  if b * 2 <= size + 1:
+                      left = a - 1
+                      gap = b - a - 1
+                      for i in range(left + 1):
+                          for j in range(gap + 1):
+                              x, y = solve(m, i + 1, i + j + 2)
+                              lo = min(lo, x + 1)
+                              hi = max(hi, y + 1)
+                  else:
+                      mirror = size + 1 - b
+                      left = a - 1
+                      gap = mirror - a - 1
+                      right = b - mirror - 1
+                      for i in range(left + 1):
+                          for j in range(gap + 1):
+                              offset = i + j + 1 + (right + 1) // 2 + 1
+                              x, y = solve(m, i + 1, offset)
+                              lo = min(lo, x + 1)
+                              hi = max(hi, y + 1)
+                  return lo, hi
+              return result == list(solve(n, firstPlayer, secondPlayer))
+
+seed: 1900
+
+tests:
+  - name: "n3-first-pair"
+    in:
+      n: 3
+      firstPlayer: 1
+      secondPlayer: 2
+    out: [2, 2]
+  - name: "n3-outer-pair"
+    in:
+      n: 3
+      firstPlayer: 1
+      secondPlayer: 3
+    out: [1, 1]
+  - name: "n3-last-pair"
+    in:
+      n: 3
+      firstPlayer: 2
+      secondPlayer: 3
+    out: [2, 2]
+  - name: "n4-left-adjacent"
+    in:
+      n: 4
+      firstPlayer: 1
+      secondPlayer: 2
+    out: [2, 2]
+  - name: "n4-inner-pair"
+    in:
+      n: 4
+      firstPlayer: 1
+      secondPlayer: 3
+    out: [2, 2]
+  - name: "n4-opposite"
+    in:
+      n: 4
+      firstPlayer: 1
+      secondPlayer: 4
+    out: [1, 1]
+  - name: "n4-middle-opponents"
+    in:
+      n: 4
+      firstPlayer: 2
+      secondPlayer: 3
+    out: [1, 1]
+  - name: "n5-left-edge"
+    in:
+      n: 5
+      firstPlayer: 1
+      secondPlayer: 2
+    out: [3, 3]
+  - name: "n5-left-middle"
+    in:
+      n: 5
+      firstPlayer: 1
+      secondPlayer: 3
+    out: [2, 3]
+  - name: "n5-left-four"
+    in:
+      n: 5
+      firstPlayer: 1
+      secondPlayer: 4
+    out: [2, 2]
+  - name: "n5-outer"
+    in:
+      n: 5
+      firstPlayer: 1
+      secondPlayer: 5
+    out: [1, 1]
+  - name: "n5-two-three"
+    in:
+      n: 5
+      firstPlayer: 2
+      secondPlayer: 3
+    out: [3, 3]
+  - name: "n5-two-four"
+    in:
+      n: 5
+      firstPlayer: 2
+      secondPlayer: 4
+    out: [1, 1]
+  - name: "n5-two-five"
+    in:
+      n: 5
+      firstPlayer: 2
+      secondPlayer: 5
+    out: [2, 2]
+  - name: "n5-middle-four"
+    in:
+      n: 5
+      firstPlayer: 3
+      secondPlayer: 4
+    out: [3, 3]
+  - name: "n5-middle-last"
+    in:
+      n: 5
+      firstPlayer: 3
+      secondPlayer: 5
+    out: [2, 3]
+  - name: "n6-left-two"
+    in:
+      n: 6
+      firstPlayer: 1
+      secondPlayer: 2
+    out: [3, 3]
+  - name: "n6-left-three"
+    in:
+      n: 6
+      firstPlayer: 1
+      secondPlayer: 3
+    out: [2, 3]
+  - name: "n6-left-four"
+    in:
+      n: 6
+      firstPlayer: 1
+      secondPlayer: 4
+    out: [2, 3]
+  - name: "n6-outer"
+    in:
+      n: 6
+      firstPlayer: 1
+      secondPlayer: 6
+    out: [1, 1]
+  - name: "n6-two-three"
+    in:
+      n: 6
+      firstPlayer: 2
+      secondPlayer: 3
+    out: [3, 3]
+  - name: "n6-two-five"
+    in:
+      n: 6
+      firstPlayer: 2
+      secondPlayer: 5
+    out: [1, 1]
+  - name: "n6-three-four"
+    in:
+      n: 6
+      firstPlayer: 3
+      secondPlayer: 4
+    out: [1, 1]
+  - name: "n7-outer"
+    in:
+      n: 7
+      firstPlayer: 1
+      secondPlayer: 7
+    out: [1, 1]
+  - name: "n7-two-three"
+    in:
+      n: 7
+      firstPlayer: 2
+      secondPlayer: 3
+    out: [2, 3]
+  - name: "n7-two-six"
+    in:
+      n: 7
+      firstPlayer: 2
+      secondPlayer: 6
+    out: [1, 1]
+  - name: "n7-three-five"
+    in:
+      n: 7
+      firstPlayer: 3
+      secondPlayer: 5
+    out: [1, 1]
+  - name: "n7-three-six"
+    in:
+      n: 7
+      firstPlayer: 3
+      secondPlayer: 6
+    out: [3, 3]
+  - name: "n7-middle-pair"
+    in:
+      n: 7
+      firstPlayer: 4
+      secondPlayer: 5
+    out: [2, 3]
+  - name: "n8-outer"
+    in:
+      n: 8
+      firstPlayer: 1
+      secondPlayer: 8
+    out: [1, 1]
+  - name: "n8-two-seven"
+    in:
+      n: 8
+      firstPlayer: 2
+      secondPlayer: 7
+    out: [1, 1]
+  - name: "n8-three-six"
+    in:
+      n: 8
+      firstPlayer: 3
+      secondPlayer: 6
+    out: [1, 1]
+  - name: "n8-middle"
+    in:
+      n: 8
+      firstPlayer: 4
+      secondPlayer: 5
+    out: [1, 1]
+  - name: "example-one"
+    in:
+      n: 11
+      firstPlayer: 2
+      secondPlayer: 4
+    out: [3, 4]
+  - name: "n11-middle-range"
+    in:
+      n: 11
+      firstPlayer: 3
+      secondPlayer: 9
+    out: [1, 1]
+  - name: "n11-central"
+    in:
+      n: 11
+      firstPlayer: 5
+      secondPlayer: 7
+    out: [1, 1]
+  - name: "n16-near-edges"
+    in:
+      n: 16
+      firstPlayer: 2
+      secondPlayer: 15
+    out: [1, 1]
+  - name: "n16-inner-symmetric"
+    in:
+      n: 16
+      firstPlayer: 4
+      secondPlayer: 13
+    out: [1, 1]
+  - name: "n20-symmetric"
+    in:
+      n: 20
+      firstPlayer: 7
+      secondPlayer: 14
+    out: [1, 1]
+  - name: "n28-large"
+    in:
+      n: 28
+      firstPlayer: 9
+      secondPlayer: 20
+    out: [1, 1]

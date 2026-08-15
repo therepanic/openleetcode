@@ -1,0 +1,473 @@
+entry:
+  id: 1921
+  title: eliminate-maximum-number-of-monsters
+  params:
+    dist:
+      type: array
+      items:
+        type: int
+    speed:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().eliminateMaximum({dist}, {speed})"
+    rust: "Solution::eliminate_maximum({dist}, {speed})"
+    python3: "Solution().eliminateMaximum({dist}, {speed})"
+    python2: "Solution().eliminateMaximum({dist}, {speed})"
+    ruby: "eliminate_maximum({dist}, {speed})"
+    java: "new Solution().eliminateMaximum({dist}, {speed})"
+    csharp: "new Solution().EliminateMaximum({dist}, {speed})"
+    kotlin: "Solution().eliminateMaximum({dist}, {speed})"
+    go: "eliminateMaximum({dist}, {speed})"
+    dart: "Solution().eliminateMaximum({dist}, {speed})"
+    swift: "Solution().eliminateMaximum({dist}, {speed})"
+    typescript: "eliminateMaximum({dist}, {speed})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(dist, speed, {result})"
+    checker: |
+      class Checker:
+          def check(self, dist, speed, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if len(dist) != len(speed) or not dist:
+                  return False
+              arrival = sorted((d + s - 1) // s for d, s in zip(dist, speed))
+              expected = len(arrival)
+              for minute, time in enumerate(arrival):
+                  if time <= minute:
+                      expected = minute
+                      break
+              return result == expected
+
+seed: 1921
+
+tests:
+  - name: example-one
+    in:
+      dist: [1, 3, 4]
+      speed: [1, 1, 1]
+    out: 3
+    judge:
+      type: exact
+  - name: example-two
+    in:
+      dist: [1, 1, 2, 3]
+      speed: [1, 1, 1, 1]
+    out: 1
+    judge:
+      type: exact
+  - name: example-three
+    in:
+      dist: [3, 2, 4]
+      speed: [5, 3, 2]
+    out: 1
+    judge:
+      type: exact
+  - name: single-monster
+    in:
+      dist: [1]
+      speed: [1]
+    out: 1
+    judge:
+      type: exact
+  - name: single-arrives-after-minute
+    in:
+      dist: [2]
+      speed: [1]
+    out: 1
+    judge:
+      type: exact
+  - name: equal-arrival-times
+    in:
+      dist: [5, 10, 15, 20]
+      speed: [1, 2, 3, 4]
+    out: 4
+    judge:
+      type: exact
+  - name: all-arrive-at-one
+    in:
+      dist: [1, 2, 3, 4, 5]
+      speed: [1, 2, 3, 4, 5]
+    out: 1
+    judge:
+      type: exact
+  - name: strictly-safe
+    in:
+      dist: [1, 3, 6, 10, 15]
+      speed: [1, 1, 1, 1, 1]
+    out: 5
+    judge:
+      type: exact
+  - name: immediate-zero-arrival-slot
+    in:
+      dist: [1, 100, 100]
+      speed: [100000, 1, 1]
+    out: 3
+    judge:
+      type: exact
+  - name: fast-first
+    in:
+      dist: [10, 1, 2]
+      speed: [1, 10, 1]
+    out: 3
+    judge:
+      type: exact
+  - name: slow-first-order-independent
+    in:
+      dist: [100, 1, 50, 2]
+      speed: [1, 1, 1, 1]
+    out: 4
+    judge:
+      type: exact
+  - name: duplicate-distances
+    in:
+      dist: [9, 9, 9, 9]
+      speed: [1, 2, 3, 4]
+    out: 4
+    judge:
+      type: exact
+  - name: duplicate-speeds
+    in:
+      dist: [2, 4, 6, 8]
+      speed: [2, 2, 2, 2]
+    out: 4
+    judge:
+      type: exact
+  - name: ceiling-boundary
+    in:
+      dist: [2, 3, 4, 5]
+      speed: [2, 2, 2, 2]
+    out: 2
+    judge:
+      type: exact
+  - name: reverse-input
+    in:
+      dist: [100, 1, 50, 2, 25]
+      speed: [1, 1, 1, 1, 1]
+    out: 5
+    judge:
+      type: exact
+  - name: all-max-speed
+    in:
+      dist: [100000, 99999, 50000]
+      speed: [100000, 100000, 100000]
+    out: 1
+    judge:
+      type: exact
+  - name: all-max-distance-slow
+    in:
+      dist: [100000, 100000, 100000]
+      speed: [1, 1, 1]
+    out: 3
+    judge:
+      type: exact
+  - name: powers-of-two
+    in:
+      dist: [1, 2, 4, 8, 16, 32]
+      speed: [1, 1, 1, 1, 1, 1]
+    out: 6
+    judge:
+      type: exact
+  - name: one-too-early
+    in:
+      dist: [1, 2, 3, 100]
+      speed: [1, 1, 1, 1]
+    out: 4
+    judge:
+      type: exact
+  - name: mixed-ceilings
+    in:
+      dist: [3, 5, 7, 9, 11, 13]
+      speed: [2, 2, 3, 4, 5, 6]
+    out: 3
+    judge:
+      type: exact
+  - name: two-monsters-safe
+    in:
+      dist: [2, 3]
+      speed: [1, 1]
+    out: 2
+    judge:
+      type: exact
+  - name: two-monsters-tie
+    in:
+      dist: [1, 1]
+      speed: [1, 1]
+    out: 1
+    judge:
+      type: exact
+  - name: increasing-speeds
+    in:
+      dist: [10, 20, 30, 40, 50]
+      speed: [1, 2, 3, 4, 5]
+    out: 5
+    judge:
+      type: exact
+  - name: decreasing-speeds
+    in:
+      dist: [10, 20, 30, 40, 50]
+      speed: [5, 4, 3, 2, 1]
+    out: 5
+    judge:
+      type: exact
+  - name: large-time-gaps
+    in:
+      dist: [100, 200, 300, 400, 500]
+      speed: [1, 1, 1, 1, 1]
+    out: 5
+    judge:
+      type: exact
+  - name: many-short-arrivals
+    in:
+      dist: [1, 2, 3, 4, 5, 6, 7, 8]
+      speed: [8, 7, 6, 5, 4, 3, 2, 1]
+    out: 1
+    judge:
+      type: exact
+  - name: exact-minute-three
+    in:
+      dist: [3, 100, 100, 100]
+      speed: [1, 1, 1, 1]
+    out: 4
+    judge:
+      type: exact
+  - name: exact-minute-four-loss
+    in:
+      dist: [5, 100, 100, 100, 100]
+      speed: [1, 1, 1, 1, 1]
+    out: 5
+    judge:
+      type: exact
+  - name: varied-small
+    in:
+      dist: [4, 6, 9, 10, 12]
+      speed: [3, 2, 4, 3, 5]
+    out: 3
+    judge:
+      type: exact
+  - name: high-values-mixed
+    in:
+      dist: [99999, 99998, 99997, 99996]
+      speed: [99999, 50000, 33333, 25000]
+    out: 4
+    judge:
+      type: exact
+  - name: twelve-balanced
+    in:
+      dist: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]
+      speed: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 12
+    judge:
+      type: exact
+  - name: twelve-rapid
+    in:
+      dist: [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+      speed: [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4]
+    out: 1
+    judge:
+      type: exact
+  - name: twenty-safe
+    in:
+      dist:
+        [
+          100,
+          200,
+          300,
+          400,
+          500,
+          600,
+          700,
+          800,
+          900,
+          1000,
+          1100,
+          1200,
+          1300,
+          1400,
+          1500,
+          1600,
+          1700,
+          1800,
+          1900,
+          2000,
+        ]
+      speed: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 20
+    judge:
+      type: exact
+  - name: twenty-equal-arrival
+    in:
+      dist:
+        [
+          100,
+          200,
+          300,
+          400,
+          500,
+          600,
+          700,
+          800,
+          900,
+          1000,
+          1100,
+          1200,
+          1300,
+          1400,
+          1500,
+          1600,
+          1700,
+          1800,
+          1900,
+          2000,
+        ]
+      speed:
+        [
+          100,
+          200,
+          300,
+          400,
+          500,
+          600,
+          700,
+          800,
+          900,
+          1000,
+          1100,
+          1200,
+          1300,
+          1400,
+          1500,
+          1600,
+          1700,
+          1800,
+          1900,
+          2000,
+        ]
+    out: 1
+    judge:
+      type: exact
+  - name: generator-small
+    in:
+      dist:
+        gen: "array"
+        len: 50
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+      speed:
+        gen: "array"
+        len: 50
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+    judge:
+      type: exact
+    seed: 192101
+  - name: generator-medium
+    in:
+      dist:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        elemType: "int"
+      speed:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        elemType: "int"
+    judge:
+      type: exact
+    seed: 192102
+  - name: generator-large
+    in:
+      dist:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        elemType: "int"
+      speed:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        elemType: "int"
+    judge:
+      type: exact
+    seed: 192103
+  - name: generator-max
+    in:
+      dist:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        elemType: "int"
+      speed:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        elemType: "int"
+    judge:
+      type: exact
+    seed: 192104
+  - name: generator-extreme-values
+    in:
+      dist:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 99990
+          max: 100000
+        distinct: false
+        elemType: "int"
+      speed:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        elemType: "int"
+    judge:
+      type: exact
+    seed: 192105

@@ -1,0 +1,49 @@
+class Solution(object):
+    def maximizeXor(self, nums, queries):
+        left=[-1]
+        right=[-1]
+        def insert(num):
+            node=0
+            for i in range(30,-1,-1):
+                bit=(num>>i)&1
+                if bit:
+                    if right[node] == -1:
+                        right[node] = len(left); left.append(-1); right.append(-1)
+                    node = right[node]
+                else:
+                    if left[node] == -1:
+                        left[node] = len(left); left.append(-1); right.append(-1)
+                    node = left[node]
+        
+        def maxor(num):
+            if left[0] == -1 and right[0] == -1:
+                return -1
+            node=0
+            ans=0
+            for i in range(30,-1,-1):
+                bit=(num>>i)&1
+                if bit and left[node] != -1:
+                    ans|=(1<<i)
+                    node=left[node]
+                elif not bit and right[node] != -1:
+                    ans|=(1<<i)
+                    node=right[node]
+                else:
+                    node=right[node] if bit else left[node]
+            return ans
+
+        nums.sort()
+        q=[]
+        for i,(x,m) in enumerate(queries):
+            q.append((m,x,i))
+        
+        q.sort()
+        res=[-1]*len(queries)
+        idx=0
+        n=len(nums)
+        for m,x,i in q:
+            while idx<n and nums[idx]<=m:
+                insert(nums[idx])
+                idx+=1
+            res[i]=maxor(x)
+        return res

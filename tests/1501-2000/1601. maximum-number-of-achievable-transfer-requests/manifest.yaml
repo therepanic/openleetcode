@@ -1,0 +1,600 @@
+entry:
+  id: 1601
+  title: "maximum-number-of-achievable-transfer-requests"
+  params:
+    n:
+      type: int
+    requests:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maximumRequests({n}, {requests})"
+    rust: "Solution::maximum_requests({n}, {requests})"
+    python3: "Solution().maximumRequests({n}, {requests})"
+    python2: "Solution().maximumRequests({n}, {requests})"
+    ruby: "maximum_requests({n}, {requests})"
+    java: "new Solution().maximumRequests({n}, {requests})"
+    csharp: "new Solution().MaximumRequests({n}, {requests})"
+    kotlin: "Solution().maximumRequests({n}, {requests})"
+    go: "maximumRequests({n}, {requests})"
+    dart: "Solution().maximumRequests({n}, {requests})"
+    swift: "Solution().maximumRequests({n}, {requests})"
+    typescript: "maximumRequests({n}, {requests})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maximumRequests(n, requests, {result})"
+    checker: |
+      class Checker:
+          def maximumRequests(self, n, requests, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not (1 <= n <= 20) or not (1 <= len(requests) <= 16):
+                  return False
+              best = 0
+              for mask in range(1 << len(requests)):
+                  balance = [0] * n
+                  count = 0
+                  for i, pair in enumerate(requests):
+                      if (mask >> i) & 1:
+                          a, b = pair
+                          balance[a] -= 1
+                          balance[b] += 1
+                          count += 1
+                  if all(value == 0 for value in balance):
+                      best = max(best, count)
+              return result == best
+
+seed: 1601
+
+tests:
+  - name: "example_one"
+    in:
+      n: 5
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [0, 1]
+          - [1, 2]
+          - [2, 0]
+          - [3, 4]
+    out: 5
+  - name: "example_two"
+    in:
+      n: 3
+      requests:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 2]
+          - [2, 1]
+    out: 3
+  - name: "example_three"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 3]
+          - [3, 1]
+          - [1, 2]
+          - [2, 0]
+    out: 4
+  - name: "single_unbalanced"
+    in:
+      n: 2
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+    out: 0
+  - name: "single_swap"
+    in:
+      n: 2
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+    out: 2
+  - name: "single_self_request"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 0]
+    out: 1
+  - name: "open_chain"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+    out: 0
+  - name: "three_cycle"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 0]
+    out: 3
+  - name: "two_disjoint_swaps"
+    in:
+      n: 5
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [2, 3]
+          - [3, 2]
+    out: 4
+  - name: "six_cycle"
+    in:
+      n: 6
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 0]
+    out: 6
+  - name: "duplicate_direction"
+    in:
+      n: 3
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [0, 1]
+          - [1, 0]
+          - [2, 2]
+    out: 3
+  - name: "cycle_with_self"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [0, 1]
+          - [1, 2]
+          - [2, 0]
+          - [3, 3]
+    out: 4
+  - name: "two_cycles_and_self"
+    in:
+      n: 5
+      requests:
+        elemType: "int"
+        value:
+          - [0, 2]
+          - [2, 0]
+          - [1, 3]
+          - [3, 1]
+          - [4, 4]
+    out: 5
+  - name: "cycle_and_self_pair"
+    in:
+      n: 6
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [2, 3]
+          - [3, 4]
+          - [4, 2]
+          - [5, 5]
+    out: 6
+  - name: "many_swaps"
+    in:
+      n: 7
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [1, 2]
+          - [2, 1]
+          - [3, 4]
+          - [4, 3]
+          - [5, 6]
+          - [6, 5]
+    out: 8
+  - name: "two_cycles_and_open_edge"
+    in:
+      n: 8
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 0]
+          - [3, 4]
+          - [4, 5]
+          - [5, 3]
+          - [6, 7]
+    out: 6
+  - name: "four_requests_each_way"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [0, 1]
+          - [1, 0]
+          - [2, 3]
+          - [3, 2]
+    out: 6
+  - name: "cycle_with_extra_pair"
+    in:
+      n: 5
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 0]
+          - [0, 2]
+          - [2, 0]
+    out: 7
+  - name: "self_requests_and_swap"
+    in:
+      n: 3
+      requests:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [0, 1]
+          - [1, 0]
+    out: 5
+  - name: "ten_cycle"
+    in:
+      n: 10
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [7, 8]
+          - [8, 9]
+          - [9, 0]
+    out: 10
+  - name: "swaps_and_self_requests"
+    in:
+      n: 6
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [2, 2]
+          - [3, 4]
+          - [4, 3]
+          - [5, 5]
+    out: 6
+  - name: "mixed_cycles"
+    in:
+      n: 5
+      requests:
+        elemType: "int"
+        value:
+          - [0, 4]
+          - [4, 0]
+          - [1, 3]
+          - [3, 1]
+          - [2, 2]
+          - [0, 2]
+          - [2, 0]
+    out: 7
+  - name: "overlapping_cycles"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 2]
+          - [2, 1]
+          - [1, 0]
+          - [0, 3]
+          - [3, 0]
+    out: 5
+  - name: "reverse_cycle"
+    in:
+      n: 6
+      requests:
+        elemType: "int"
+        value:
+          - [0, 5]
+          - [5, 4]
+          - [4, 3]
+          - [3, 2]
+          - [2, 1]
+          - [1, 0]
+    out: 6
+  - name: "self_requests_with_swap"
+    in:
+      n: 7
+      requests:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 5]
+          - [5, 4]
+          - [6, 6]
+    out: 7
+  - name: "three_swaps_and_self"
+    in:
+      n: 8
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [2, 3]
+          - [3, 2]
+          - [4, 5]
+          - [5, 6]
+          - [6, 4]
+          - [7, 7]
+    out: 8
+  - name: "three_disjoint_cycles"
+    in:
+      n: 9
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 0]
+          - [4, 5]
+          - [5, 4]
+          - [6, 7]
+          - [7, 8]
+          - [8, 6]
+    out: 9
+  - name: "reverse_ten_cycle"
+    in:
+      n: 10
+      requests:
+        elemType: "int"
+        value:
+          - [0, 9]
+          - [9, 8]
+          - [8, 7]
+          - [7, 6]
+          - [6, 5]
+          - [5, 4]
+          - [4, 3]
+          - [3, 2]
+          - [2, 1]
+          - [1, 0]
+    out: 10
+  - name: "cycle_with_chord"
+    in:
+      n: 3
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 0]
+          - [0, 2]
+    out: 3
+  - name: "cycle_and_extra_edge"
+    in:
+      n: 5
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [2, 3]
+          - [3, 4]
+          - [4, 2]
+          - [0, 4]
+    out: 5
+  - name: "two_cycles_with_cross_swap"
+    in:
+      n: 6
+      requests:
+        elemType: "int"
+        value:
+          - [0, 2]
+          - [2, 4]
+          - [4, 0]
+          - [1, 3]
+          - [3, 5]
+          - [5, 1]
+          - [0, 1]
+          - [1, 0]
+    out: 8
+  - name: "self_requests_and_partial_swap"
+    in:
+      n: 4
+      requests:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [0, 1]
+          - [1, 0]
+          - [2, 3]
+    out: 6
+  - name: "two_four_cycles"
+    in:
+      n: 8
+      requests:
+        elemType: "int"
+        value:
+          - [0, 2]
+          - [2, 4]
+          - [4, 6]
+          - [6, 0]
+          - [1, 3]
+          - [3, 5]
+          - [5, 7]
+          - [7, 1]
+    out: 8
+  - name: "four_swaps_and_open_request"
+    in:
+      n: 10
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 0]
+          - [2, 3]
+          - [3, 2]
+          - [4, 5]
+          - [5, 4]
+          - [6, 7]
+          - [7, 6]
+          - [8, 9]
+    out: 8
+  - name: "maximum_n_open_chain"
+    in:
+      n: 20
+      requests:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [7, 8]
+          - [8, 9]
+          - [9, 10]
+          - [10, 11]
+          - [11, 12]
+          - [12, 13]
+          - [13, 14]
+          - [14, 15]
+          - [15, 16]
+    out: 0
+  - name: "maximum_n_self_and_swaps"
+    in:
+      n: 20
+      requests:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [4, 4]
+          - [5, 5]
+          - [6, 6]
+          - [7, 7]
+          - [8, 8]
+          - [9, 9]
+          - [10, 11]
+          - [11, 10]
+          - [12, 13]
+          - [13, 12]
+          - [14, 15]
+          - [15, 14]
+    out: 16
+  - name: "generated_small"
+    seed: 16011
+    in:
+      n: 20
+      requests:
+        gen: "array"
+        len: 16
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 19
+        elemType: "int"
+  - name: "generated_medium"
+    seed: 16012
+    in:
+      n: 20
+      requests:
+        gen: "array"
+        len: 16
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 19
+        elemType: "int"
+  - name: "generated_duplicates"
+    seed: 16013
+    in:
+      n: 20
+      requests:
+        gen: "array"
+        len: 16
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 19
+        elemType: "int"
+  - name: "generated_boundary_buildings"
+    seed: 16014
+    in:
+      n: 20
+      requests:
+        gen: "array"
+        len: 16
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 19
+        elemType: "int"

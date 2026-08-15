@@ -1,0 +1,36 @@
+class Solution:
+    def countRestrictedPaths(self, n: int, edges: List[List[int]]) -> int:
+        mod = 10**9 + 7
+        graph = {}
+        for u, v, w in edges:
+            if u not in graph:
+                graph[u] = []
+            graph[u].append((v, w))
+            if v not in graph:
+                graph[v] = []
+            graph[v].append((u, w))
+
+        dist = [float("inf")] * (n + 1)
+        dist[n] = 0
+        heap = []
+        heapq.heappush(heap, (0, n))
+
+        while heap:
+            curr_dist, node = heapq.heappop(heap)
+            if curr_dist > dist[node]:
+                continue
+            for next_node, weight in graph.get(node, []):
+                new_dist = weight + curr_dist
+                if new_dist < dist[next_node]:
+                    dist[next_node] = new_dist
+                    heapq.heappush(heap, (new_dist, next_node))
+
+        dp = [0] * (n + 1)
+        dp[n] = 1
+        nodes = list(range(1, n + 1))
+        nodes.sort(key=lambda x: dist[x])
+        for u in nodes:
+            for v, w in graph.get(u, []):
+                if dist[u] > dist[v]:
+                    dp[u] = (dp[u] + dp[v]) % mod
+        return dp[1]

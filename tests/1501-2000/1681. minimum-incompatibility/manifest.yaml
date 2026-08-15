@@ -1,0 +1,270 @@
+entry:
+  id: 1681
+  title: minimum-incompatibility
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().minimumIncompatibility({nums}, {k})"
+    rust: "Solution::minimum_incompatibility({nums}, {k})"
+    python3: "Solution().minimumIncompatibility({nums}, {k})"
+    python2: "Solution().minimumIncompatibility({nums}, {k})"
+    ruby: "minimum_incompatibility({nums}, {k})"
+    java: "new Solution().minimumIncompatibility({nums}, {k})"
+    csharp: "new Solution().MinimumIncompatibility({nums}, {k})"
+    kotlin: "Solution().minimumIncompatibility({nums}, {k})"
+    go: "minimumIncompatibility({nums}, {k})"
+    dart: "Solution().minimumIncompatibility({nums}, {k})"
+    swift: "Solution().minimumIncompatibility({nums}, {k})"
+    typescript: "minimumIncompatibility({nums}, {k})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(nums, k, {result})"
+    checker: |
+      from functools import lru_cache
+      class Checker:
+          def check(self, nums, k, result):
+              n = len(nums)
+              size = n // k
+              valid = {}
+              for mask in range(1 << n):
+                  if mask.bit_count() != size:
+                      continue
+                  values = [nums[i] for i in range(n) if (mask >> i) & 1]
+                  if len(set(values)) == size:
+                      valid[mask] = max(values) - min(values)
+              inf = 10 ** 9
+              @lru_cache(None)
+              def solve(rem):
+                  if rem == 0:
+                      return 0
+                  first = (rem & -rem).bit_length() - 1
+                  best = inf
+                  for mask, cost in valid.items():
+                      if (mask & rem) == mask and ((mask >> first) & 1):
+                          best = min(best, cost + solve(rem ^ mask))
+                  return best
+              expected = solve((1 << n) - 1)
+              expected = -1 if expected == inf else expected
+              return isinstance(result, int) and result == expected
+
+seed: 1681
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 2, 1, 4]
+      k: 2
+    out: 4
+  - name: example-two
+    in:
+      nums: [6, 3, 8, 1, 3, 1, 2, 2]
+      k: 4
+    out: 6
+  - name: example-three-impossible
+    in:
+      nums: [5, 3, 3, 6, 3, 3]
+      k: 3
+    out: -1
+  - name: duplicate-single-group
+    in:
+      nums: [1, 1]
+      k: 1
+    out: -1
+  - name: one-group-distinct
+    in:
+      nums: [1, 2]
+      k: 1
+    out: 1
+  - name: singleton-groups
+    in:
+      nums: [1, 2]
+      k: 2
+    out: 0
+  - name: paired-duplicates
+    in:
+      nums: [1, 1, 2, 2]
+      k: 2
+    out: 2
+  - name: four-two-groups
+    in:
+      nums: [1, 2, 3, 4]
+      k: 2
+    out: 2
+  - name: all-singletons
+    in:
+      nums: [1, 2, 3, 4]
+      k: 4
+    out: 0
+  - name: impossible-many-duplicates
+    in:
+      nums: [1, 1, 1, 1]
+      k: 2
+    out: -1
+  - name: duplicate-four-singletons
+    in:
+      nums: [1, 1, 1, 1]
+      k: 4
+    out: 0
+  - name: mixed-six
+    in:
+      nums: [1, 2, 1, 2, 3, 3]
+      k: 3
+    out: 4
+  - name: six-two-groups
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      k: 2
+    out: 4
+  - name: six-three-groups
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      k: 3
+    out: 3
+  - name: six-singletons
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      k: 6
+    out: 0
+  - name: shuffled-eight
+    in:
+      nums: [1, 4, 2, 7, 3, 6, 5, 8]
+      k: 4
+    out: 4
+  - name: one-duplicate-six
+    in:
+      nums: [1, 1, 2, 3, 4, 5]
+      k: 2
+    out: 6
+  - name: paired-values-six
+    in:
+      nums: [2, 2, 3, 3, 4, 4]
+      k: 3
+    out: 4
+  - name: repeated-eight
+    in:
+      nums: [1, 2, 2, 3, 3, 4, 4, 5]
+      k: 4
+    out: 4
+  - name: repeated-middle-eight
+    in:
+      nums: [1, 2, 3, 3, 4, 5, 5, 6]
+      k: 4
+    out: 5
+  - name: pairs-eight
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 4]
+      k: 4
+    out: 4
+  - name: gap-eight
+    in:
+      nums: [1, 2, 3, 4, 4, 5, 6, 7]
+      k: 4
+    out: 4
+  - name: one-repeat-eight
+    in:
+      nums: [1, 2, 2, 3, 4, 5, 6, 7]
+      k: 4
+    out: 4
+  - name: low-repeat-eight
+    in:
+      nums: [1, 1, 2, 3, 4, 5, 6, 7]
+      k: 4
+    out: 5
+  - name: high-repeat-eight
+    in:
+      nums: [1, 2, 3, 4, 5, 5, 6, 7]
+      k: 4
+    out: 5
+  - name: eight-two-groups
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8]
+      k: 2
+    out: 6
+  - name: spaced-eight
+    in:
+      nums: [1, 3, 5, 7, 9, 11, 13, 15]
+      k: 4
+    out: 8
+  - name: duplicate-low-eight
+    in:
+      nums: [4, 4, 5, 6, 7, 8, 9, 10]
+      k: 4
+    out: 5
+  - name: nine-three-groups
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      k: 3
+    out: 6
+  - name: triple-pairs
+    in:
+      nums: [1, 1, 1, 2, 2, 2, 3, 3, 3]
+      k: 3
+    out: 6
+  - name: generated-sixteen-k-four
+    in:
+      nums:
+        gen: array
+        len: 16
+        of:
+          gen: int
+          min: 1
+          max: 16
+        elemType: int
+      k: 4
+  - name: generated-sixteen-k-two
+    in:
+      nums:
+        gen: array
+        len: 16
+        of:
+          gen: int
+          min: 1
+          max: 16
+        elemType: int
+      k: 2
+  - name: generated-twelve-k-three
+    in:
+      nums:
+        gen: array
+        len: 12
+        of:
+          gen: int
+          min: 1
+          max: 12
+        elemType: int
+      k: 3
+  - name: generated-fifteen-k-five
+    in:
+      nums:
+        gen: array
+        len: 15
+        of:
+          gen: int
+          min: 1
+          max: 15
+        elemType: int
+      k: 5
+  - name: generated-sixteen-k-eight
+    in:
+      nums:
+        gen: array
+        len: 16
+        of:
+          gen: int
+          min: 1
+          max: 16
+        elemType: int
+      k: 8

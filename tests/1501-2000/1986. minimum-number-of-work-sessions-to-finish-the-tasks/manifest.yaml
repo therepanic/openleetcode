@@ -1,0 +1,381 @@
+entry:
+  id: 1986
+  title: "minimum-number-of-work-sessions-to-finish-the-tasks"
+  params:
+    tasks:
+      type: array
+      items:
+        type: int
+    sessionTime:
+      type: int
+  call:
+    cpp: "Solution().minSessions({tasks}, {sessionTime})"
+    rust: "Solution::min_sessions({tasks}, {sessionTime})"
+    python3: "Solution().minSessions({tasks}, {sessionTime})"
+    python2: "Solution().minSessions({tasks}, {sessionTime})"
+    ruby: "min_sessions({tasks}, {sessionTime})"
+    java: "new Solution().minSessions({tasks}, {sessionTime})"
+    csharp: "new Solution().MinSessions({tasks}, {sessionTime})"
+    kotlin: "Solution().minSessions({tasks}, {sessionTime})"
+    go: "minSessions({tasks}, {sessionTime})"
+    dart: "Solution().minSessions({tasks}, {sessionTime})"
+    swift: "Solution().minSessions({tasks}, {sessionTime})"
+    typescript: "minSessions({tasks}, {sessionTime})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(tasks, sessionTime, {result})"
+    checker: |
+      class Checker:
+          def check(self, tasks, sessionTime, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(tasks)
+              sums = [0] * (1 << n)
+              for mask in range(1, 1 << n):
+                  bit = mask & -mask
+                  i = bit.bit_length() - 1
+                  sums[mask] = sums[mask ^ bit] + tasks[i]
+              dp = [n + 1] * (1 << n)
+              dp[0] = 0
+              for mask in range(1, 1 << n):
+                  sub = mask
+                  while sub:
+                      if sums[sub] <= sessionTime:
+                          rest = mask ^ sub
+                          cand = dp[rest] + 1
+                          if cand < dp[mask]:
+                              dp[mask] = cand
+                      sub = (sub - 1) & mask
+              return result == dp[-1]
+
+seed: 1986
+
+tests:
+  - name: example-one
+    in:
+      tasks: [1, 2, 3]
+      sessionTime: 3
+    out: 2
+    judge:
+      type: "exact"
+  - name: example-two
+    in:
+      tasks: [3, 1, 3, 1, 1]
+      sessionTime: 8
+    out: 2
+    judge:
+      type: "exact"
+  - name: example-three
+    in:
+      tasks: [1, 2, 3, 4, 5]
+      sessionTime: 15
+    out: 1
+    judge:
+      type: "exact"
+  - name: single-task
+    in:
+      tasks: [7]
+      sessionTime: 7
+    out: 1
+    judge:
+      type: "exact"
+  - name: two-tasks-fit
+    in:
+      tasks: [4, 5]
+      sessionTime: 9
+    out: 1
+    judge:
+      type: "exact"
+  - name: two-tasks-do-not-fit
+    in:
+      tasks: [4, 5]
+      sessionTime: 5
+    out: 2
+    judge:
+      type: "exact"
+  - name: all-ones
+    in:
+      tasks: [1, 1, 1, 1, 1, 1]
+      sessionTime: 3
+    out: 2
+    judge:
+      type: "exact"
+  - name: all-maximal
+    in:
+      tasks: [10, 10, 10, 10]
+      sessionTime: 10
+    out: 4
+    judge:
+      type: "exact"
+  - name: exact-total
+    in:
+      tasks: [2, 3, 4, 6]
+      sessionTime: 15
+    out: 1
+    judge:
+      type: "exact"
+  - name: tight-pairs
+    in:
+      tasks: [6, 6, 6, 6, 4, 4, 4, 4]
+      sessionTime: 10
+    out: 4
+    judge:
+      type: "exact"
+  - name: mixed-three
+    in:
+      tasks: [8, 7, 6, 5, 4, 3]
+      sessionTime: 10
+    out: 4
+    judge:
+      type: "exact"
+  - name: four-equal-fit
+    in:
+      tasks: [3, 3, 3, 3]
+      sessionTime: 6
+    out: 2
+    judge:
+      type: "exact"
+  - name: awkward-packing
+    in:
+      tasks: [9, 5, 5, 5, 4, 4]
+      sessionTime: 10
+    out: 4
+    judge:
+      type: "exact"
+  - name: many-small-one-large
+    in:
+      tasks: [10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      sessionTime: 10
+    out: 2
+    judge:
+      type: "exact"
+  - name: session-six
+    in:
+      tasks: [2, 2, 2, 2, 2, 2, 2]
+      sessionTime: 6
+    out: 3
+    judge:
+      type: "exact"
+  - name: session-seven
+    in:
+      tasks: [1, 2, 3, 4, 5, 6]
+      sessionTime: 7
+    out: 3
+    judge:
+      type: "exact"
+  - name: duplicate-heavy
+    in:
+      tasks: [2, 2, 2, 3, 3, 3, 4, 4]
+      sessionTime: 8
+    out: 3
+    judge:
+      type: "exact"
+  - name: no-combination
+    in:
+      tasks: [5, 6, 7, 8]
+      sessionTime: 8
+    out: 4
+    judge:
+      type: "exact"
+  - name: exact-packing
+    in:
+      tasks: [5, 5, 5, 5, 5, 5]
+      sessionTime: 10
+    out: 3
+    judge:
+      type: "exact"
+  - name: seven-tasks
+    in:
+      tasks: [1, 4, 2, 8, 3, 7, 5]
+      sessionTime: 10
+    out: 3
+    judge:
+      type: "exact"
+  - name: eight-tasks
+    in:
+      tasks: [1, 1, 2, 2, 3, 3, 4, 4]
+      sessionTime: 7
+    out: 3
+    judge:
+      type: "exact"
+  - name: nine-tasks
+    in:
+      tasks: [2, 4, 6, 8, 1, 3, 5, 7, 9]
+      sessionTime: 15
+    out: 3
+    judge:
+      type: "exact"
+  - name: ten-tasks
+    in:
+      tasks: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      sessionTime: 15
+    out: 4
+    judge:
+      type: "exact"
+  - name: eleven-tasks
+    in:
+      tasks: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+      sessionTime: 5
+    out: 4
+    judge:
+      type: "exact"
+  - name: twelve-tasks
+    in:
+      tasks: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+      sessionTime: 15
+    out: 4
+    judge:
+      type: "exact"
+  - name: thirteen-varied
+    in:
+      tasks: [1, 10, 2, 9, 3, 8, 4, 7, 5, 6, 1, 2, 3]
+      sessionTime: 15
+    out: 5
+    judge:
+      type: "exact"
+  - name: fourteen-minimum
+    in:
+      tasks: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      sessionTime: 3
+    out: 5
+    judge:
+      type: "exact"
+  - name: fourteen-maximal
+    in:
+      tasks: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+      sessionTime: 10
+    out: 14
+    judge:
+      type: "exact"
+  - name: broad-capacity
+    in:
+      tasks: [7, 7, 1, 1, 1, 1, 1, 1, 1, 1]
+      sessionTime: 15
+    out: 2
+    judge:
+      type: "exact"
+  - name: exact-three-bins
+    in:
+      tasks: [8, 7, 5, 5, 4, 3, 3, 2]
+      sessionTime: 15
+    out: 3
+    judge:
+      type: "exact"
+  - name: balanced-four-bins
+    in:
+      tasks: [6, 5, 4, 3, 6, 5, 4, 3]
+      sessionTime: 10
+    out: 4
+    judge:
+      type: "exact"
+  - name: large-balanced
+    in:
+      tasks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4]
+      sessionTime: 15
+    out: 5
+    judge:
+      type: "exact"
+  - name: large-repeated
+    in:
+      tasks: [2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3]
+      sessionTime: 8
+    out: 5
+    judge:
+      type: "exact"
+  - name: edge-session-two
+    in:
+      tasks: [1, 1, 1, 1, 1, 1, 1]
+      sessionTime: 2
+    out: 4
+    judge:
+      type: "exact"
+  - name: edge-session-fifteen
+    in:
+      tasks: [5, 5, 5, 5, 5, 5, 5, 5, 5]
+      sessionTime: 15
+    out: 3
+    judge:
+      type: "exact"
+  - name: generated-small
+    in:
+      tasks:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        elemType: "int"
+      sessionTime: 15
+    judge:
+      type: "exact"
+    seed: 19861
+  - name: generated-dense
+    in:
+      tasks:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 6
+          max: 10
+        distinct: false
+        elemType: "int"
+      sessionTime: 15
+    judge:
+      type: "exact"
+    seed: 19862
+  - name: generated-ones-heavy
+    in:
+      tasks:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 1
+          max: 4
+        distinct: false
+        elemType: "int"
+      sessionTime: 7
+    judge:
+      type: "exact"
+    seed: 19863
+  - name: generated-mixed
+    in:
+      tasks:
+        gen: "array"
+        len: 13
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        elemType: "int"
+      sessionTime: 10
+    judge:
+      type: "exact"
+    seed: 19864
+  - name: generated-tight
+    in:
+      tasks:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 8
+          max: 10
+        distinct: false
+        elemType: "int"
+      sessionTime: 10
+    judge:
+      type: "exact"
+    seed: 19865

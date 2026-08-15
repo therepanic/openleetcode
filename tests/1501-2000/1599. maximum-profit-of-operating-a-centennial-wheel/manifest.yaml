@@ -1,0 +1,368 @@
+entry:
+  id: 1599
+  title: "maximum-profit-of-operating-a-centennial-wheel"
+  params:
+    customers:
+      type: array
+      items:
+        type: int
+    boardingCost:
+      type: int
+    runningCost:
+      type: int
+  call:
+    cpp: "Solution().minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    rust: "Solution::min_operations_max_profit({customers}, {boardingCost}, {runningCost})"
+    python3: "Solution().minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    python2: "Solution().minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    ruby: "min_operations_max_profit({customers}, {boardingCost}, {runningCost})"
+    java: "new Solution().minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    csharp: "new Solution().MinOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    kotlin: "Solution().minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    go: "minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    dart: "Solution().minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    swift: "Solution().minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+    typescript: "minOperationsMaxProfit({customers}, {boardingCost}, {runningCost})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().minOperationsMaxProfit(customers, boardingCost, runningCost, {result})"
+    checker: |
+      class Checker:
+          def minOperationsMaxProfit(self, customers, boardingCost, runningCost, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              waiting = 0
+              profit = 0
+              best_profit = 0
+              expected = -1
+              index = 0
+              rotations = 0
+              while index < len(customers) or waiting > 0:
+                  if index < len(customers):
+                      waiting += customers[index]
+                  boarded = min(4, waiting)
+                  waiting -= boarded
+                  rotations += 1
+                  profit += boarded * boardingCost - runningCost
+                  if profit > best_profit:
+                      best_profit = profit
+                      expected = rotations
+                  index += 1
+              return result == expected
+
+seed: 1599
+
+tests:
+  - name: example-one
+    in:
+      customers: [8, 3]
+      boardingCost: 5
+      runningCost: 6
+    out: 3
+  - name: example-two
+    in:
+      customers: [10, 9, 6]
+      boardingCost: 6
+      runningCost: 4
+    out: 7
+  - name: example-three-no-profit
+    in:
+      customers: [3, 4, 0, 5, 1]
+      boardingCost: 1
+      runningCost: 92
+    out: -1
+  - name: one-customer-profitable
+    in:
+      customers: [1]
+      boardingCost: 10
+      runningCost: 1
+    out: 1
+  - name: one-empty-arrival
+    in:
+      customers: [0]
+      boardingCost: 10
+      runningCost: 1
+    out: -1
+  - name: one-customer-unprofitable
+    in:
+      customers: [4]
+      boardingCost: 5
+      runningCost: 20
+    out: -1
+  - name: one-full-gondola
+    in:
+      customers: [20]
+      boardingCost: 5
+      runningCost: 1
+    out: 5
+  - name: sparse-small-arrivals
+    in:
+      customers: [1, 1, 1, 1]
+      boardingCost: 2
+      runningCost: 1
+    out: 4
+  - name: repeated-full-gondolas
+    in:
+      customers: [4, 4, 4, 4]
+      boardingCost: 5
+      runningCost: 10
+    out: 4
+  - name: backlog-then-idle
+    in:
+      customers: [8, 0, 0]
+      boardingCost: 5
+      runningCost: 6
+    out: 2
+  - name: idle-before-arrival
+    in:
+      customers: [0, 0, 10]
+      boardingCost: 5
+      runningCost: 6
+    out: 5
+  - name: steady-small-backlog
+    in:
+      customers: [2, 2, 2, 2, 2]
+      boardingCost: 5
+      runningCost: 3
+    out: 5
+  - name: maximum-boarding-minimum-running
+    in:
+      customers: [50]
+      boardingCost: 100
+      runningCost: 1
+    out: 13
+  - name: maximum-running-no-profit
+    in:
+      customers: [50]
+      boardingCost: 1
+      runningCost: 100
+    out: -1
+  - name: increasing-arrivals
+    in:
+      customers: [1, 2, 3, 4, 5]
+      boardingCost: 4
+      runningCost: 4
+    out: 5
+  - name: initial-backlog-with-idle-tail
+    in:
+      customers: [5, 0, 0, 0, 0]
+      boardingCost: 10
+      runningCost: 1
+    out: 2
+  - name: alternating-arrivals
+    in:
+      customers: [0, 5, 0, 5, 0]
+      boardingCost: 10
+      runningCost: 2
+    out: 5
+  - name: profitable-bursts
+    in:
+      customers: [7, 1, 7]
+      boardingCost: 8
+      runningCost: 7
+    out: 4
+  - name: large-second-arrival
+    in:
+      customers: [2, 10, 0, 0]
+      boardingCost: 6
+      runningCost: 5
+    out: 4
+  - name: six-steady-arrivals
+    in:
+      customers: [3, 3, 3, 3, 3, 3]
+      boardingCost: 7
+      runningCost: 8
+    out: 6
+  - name: two-large-arrivals
+    in:
+      customers: [9, 9]
+      boardingCost: 5
+      runningCost: 5
+    out: 5
+  - name: delayed-single-profit
+    in:
+      customers: [6, 0, 0, 0, 0, 0]
+      boardingCost: 5
+      runningCost: 5
+    out: 2
+  - name: profitable-final-arrival
+    in:
+      customers: [1, 0, 0, 0, 0, 1]
+      boardingCost: 5
+      runningCost: 4
+    out: 1
+  - name: three-heavy-arrivals
+    in:
+      customers: [10, 10, 10]
+      boardingCost: 3
+      runningCost: 5
+    out: 8
+  - name: alternating-low-profit
+    in:
+      customers: [0, 1, 0, 1, 0, 1]
+      boardingCost: 20
+      runningCost: 10
+    out: -1
+  - name: small-backlog
+    in:
+      customers: [4, 1, 0]
+      boardingCost: 5
+      runningCost: 5
+    out: 1
+  - name: four-customer-backlog
+    in:
+      customers: [12, 0, 0, 0]
+      boardingCost: 6
+      runningCost: 7
+    out: 3
+  - name: low-fare-steady
+    in:
+      customers: [2, 2, 2]
+      boardingCost: 1
+      runningCost: 1
+    out: 3
+  - name: repeated-overflow
+    in:
+      customers: [40, 40, 40, 40]
+      boardingCost: 9
+      runningCost: 20
+    out: 40
+  - name: burst-with-gaps
+    in:
+      customers: [1, 50, 1]
+      boardingCost: 7
+      runningCost: 6
+    out: 14
+  - name: all-empty
+    in:
+      customers: [0, 0, 0, 0, 0]
+      boardingCost: 100
+      runningCost: 1
+    out: -1
+  - name: descending-arrivals
+    in:
+      customers: [5, 4, 3, 2, 1]
+      boardingCost: 3
+      runningCost: 4
+    out: 4
+  - name: long-initial-backlog
+    in:
+      customers: [15, 0, 0, 0, 0]
+      boardingCost: 4
+      runningCost: 3
+    out: 4
+  - name: five-full-rotations
+    in:
+      customers: [6, 6, 6, 6, 6]
+      boardingCost: 4
+      runningCost: 4
+    out: 8
+  - name: mixed-bursts
+    in:
+      customers: [3, 0, 7, 0, 2]
+      boardingCost: 6
+      runningCost: 5
+    out: 5
+  - name: generated-short
+    in:
+      customers:
+        gen: "array"
+        len: 17
+        of:
+          gen: "int"
+          min: 0
+          max: 50
+        elemType: "int"
+      boardingCost:
+        gen: "int"
+        min: 1
+        max: 100
+      runningCost:
+        gen: "int"
+        min: 1
+        max: 100
+    seed: 159901
+  - name: generated-medium
+    in:
+      customers:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 50
+        elemType: "int"
+      boardingCost:
+        gen: "int"
+        min: 1
+        max: 100
+      runningCost:
+        gen: "int"
+        min: 1
+        max: 100
+    seed: 159902
+  - name: generated-large-one
+    in:
+      customers:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 50
+        elemType: "int"
+      boardingCost:
+        gen: "int"
+        min: 1
+        max: 100
+      runningCost:
+        gen: "int"
+        min: 1
+        max: 100
+    seed: 159903
+  - name: generated-large-two
+    in:
+      customers:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 50
+        elemType: "int"
+      boardingCost:
+        gen: "int"
+        min: 1
+        max: 100
+      runningCost:
+        gen: "int"
+        min: 1
+        max: 100
+    seed: 159904
+  - name: generated-boundary-values
+    in:
+      customers:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 50
+        elemType: "int"
+      boardingCost:
+        gen: "int"
+        min: 1
+        max: 100
+      runningCost:
+        gen: "int"
+        min: 1
+        max: 100
+    seed: 159905

@@ -1,0 +1,281 @@
+entry:
+  id: 1760
+  title: "minimum-limit-of-balls-in-a-bag"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    maxOperations:
+      type: int
+  call:
+    cpp: "Solution().minimumSize({nums}, {maxOperations})"
+    rust: "Solution::minimum_size({nums}, {maxOperations})"
+    python3: "Solution().minimumSize({nums}, {maxOperations})"
+    python2: "Solution().minimumSize({nums}, {maxOperations})"
+    ruby: "minimum_size({nums}, {maxOperations})"
+    java: "new Solution().minimumSize({nums}, {maxOperations})"
+    csharp: "new Solution().MinimumSize({nums}, {maxOperations})"
+    kotlin: "Solution().minimumSize({nums}, {maxOperations})"
+    go: "minimumSize({nums}, {maxOperations})"
+    dart: "Solution().minimumSize({nums}, {maxOperations})"
+    swift: "Solution().minimumSize({nums}, {maxOperations})"
+    typescript: "minimumSize({nums}, {maxOperations})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minimumSize(nums, maxOperations, {result})"
+    checker: |
+      class Checker:
+          def minimumSize(self, nums, maxOperations, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not nums or any(not isinstance(x, int) or x < 1 for x in nums):
+                  return False
+              if not isinstance(maxOperations, int) or maxOperations < 0:
+                  return False
+              lo, hi = 1, max(nums)
+              while lo < hi:
+                  mid = (lo + hi) // 2
+                  needed = sum((x - 1) // mid for x in nums)
+                  if needed <= maxOperations:
+                      hi = mid
+                  else:
+                      lo = mid + 1
+              return result == lo
+
+seed: 1760
+
+tests:
+  - name: example-single
+    in:
+      nums: [9]
+      maxOperations: 2
+    out: 3
+  - name: example-multiple
+    in:
+      nums: [2, 4, 8, 2]
+      maxOperations: 4
+    out: 2
+  - name: no-operations
+    in:
+      nums: [7, 17]
+      maxOperations: 0
+    out: 17
+  - name: billion-one-operation
+    in:
+      nums: [1000000000]
+      maxOperations: 1
+    out: 500000000
+  - name: one-ball-no-operation
+    in:
+      nums: [1]
+      maxOperations: 1
+    out: 1
+  - name: one-ball-many-operations
+    in:
+      nums: [1]
+      maxOperations: 1000000000
+    out: 1
+  - name: equal-bags
+    in:
+      nums: [10, 10, 10, 10]
+      maxOperations: 4
+    out: 5
+  - name: exact-halves
+    in:
+      nums: [8, 8]
+      maxOperations: 2
+    out: 4
+  - name: operations-less-than-needed
+    in:
+      nums: [5, 5]
+      maxOperations: 1
+    out: 5
+  - name: operations-split-one-bag
+    in:
+      nums: [100, 1, 1]
+      maxOperations: 3
+    out: 25
+  - name: many-small-one-large
+    in:
+      nums: [1, 1, 1, 1, 50]
+      maxOperations: 4
+    out: 10
+  - name: all-odd
+    in:
+      nums: [3, 5, 7, 9]
+      maxOperations: 4
+    out: 4
+  - name: zero-effective-ops
+    in:
+      nums: [2, 3, 4]
+      maxOperations: 1
+    out: 3
+  - name: enough-for-one-each
+    in:
+      nums: [2, 2, 2, 2]
+      maxOperations: 4
+    out: 1
+  - name: powers-of-two
+    in:
+      nums: [16, 8, 4, 2]
+      maxOperations: 7
+    out: 4
+  - name: mixed-extremes
+    in:
+      nums: [1, 1000, 2, 999]
+      maxOperations: 10
+    out: 167
+  - name: single-large-three-ops
+    in:
+      nums: [100]
+      maxOperations: 3
+    out: 25
+  - name: single-large-seven-ops
+    in:
+      nums: [100]
+      maxOperations: 7
+    out: 13
+  - name: exact-target-three
+    in:
+      nums: [10, 10, 10]
+      maxOperations: 6
+    out: 4
+  - name: skewed-small-budget
+    in:
+      nums: [11, 23, 47, 95]
+      maxOperations: 2
+    out: 47
+  - name: skewed-large-budget
+    in:
+      nums: [11, 23, 47, 95]
+      maxOperations: 30
+    out: 6
+  - name: repeated-large
+    in:
+      nums: [1000000000, 1000000000]
+      maxOperations: 3
+    out: 500000000
+  - name: large-with-many-ops
+    in:
+      nums: [1000000000]
+      maxOperations: 999999999
+    out: 1
+  - name: upper-bound-result
+    in:
+      nums: [999999999, 1000000000]
+      maxOperations: 0
+    out: 1000000000
+  - name: alternating-values
+    in:
+      nums: [6, 1, 6, 1, 6, 1]
+      maxOperations: 6
+    out: 2
+  - name: one-operation-bottleneck
+    in:
+      nums: [3, 100, 3]
+      maxOperations: 1
+    out: 50
+  - name: balanced-budget
+    in:
+      nums: [20, 30, 40, 50]
+      maxOperations: 10
+    out: 10
+  - name: near-power-boundary
+    in:
+      nums: [31, 32, 33]
+      maxOperations: 3
+    out: 17
+  - name: duplicate-odd-values
+    in:
+      nums: [15, 15, 15]
+      maxOperations: 5
+    out: 8
+  - name: large-array-uniform
+    in:
+      nums: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+      maxOperations: 90
+    out: 10
+  - name: large-array-varied
+    in:
+      nums: [100000000, 99999999, 88888888, 77777777, 66666666]
+      maxOperations: 100
+    out: 4166667
+  - name: generated-random-small
+    in:
+      nums:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+      maxOperations:
+        gen: "int"
+        min: 0
+        max: 2000
+  - name: generated-random-medium
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+      maxOperations:
+        gen: "int"
+        min: 1
+        max: 1000000
+  - name: generated-large-uniform
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1000000000
+          max: 1000000000
+        elemType: "int"
+      maxOperations:
+        gen: "int"
+        min: 1
+        max: 1000000000
+  - name: generated-large-varied
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        elemType: "int"
+      maxOperations:
+        gen: "int"
+        min: 1
+        max: 1000000000
+  - name: generated-large-small-values
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+      maxOperations:
+        gen: "int"
+        min: 0
+        max: 1000000000

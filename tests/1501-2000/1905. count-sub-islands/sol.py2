@@ -1,0 +1,30 @@
+class Solution(object):
+    def countSubIslands(self, grid1, grid2):
+        """
+        :type grid1: List[List[int]]
+        :type grid2: List[List[int]]
+        :rtype: int
+        """
+        m, n = len(grid1), len(grid1[0])
+        
+        def dfs(i, j):
+            if not (0 <= i < m and 0 <= j < n):
+                return
+            if not grid2[i][j]:
+                return
+            if not grid1[i][j]:
+                state[0] = False
+            grid2[i][j] = 0
+            for r, c in [(i+1, j), (i-1, j), (i, j+1), (i, j-1)]:
+                if 0 <= r < m and 0 <= c < n and grid2[r][c]:
+                    dfs(r, c)
+        
+        res = 0
+        for i in range(m):
+            for j in range(n):
+                state = [True]
+                if grid2[i][j]:
+                    dfs(i, j)
+                    if state[0]:
+                        res += 1
+        return res

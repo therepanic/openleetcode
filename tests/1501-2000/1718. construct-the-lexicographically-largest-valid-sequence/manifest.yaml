@@ -1,0 +1,265 @@
+entry:
+  id: 1718
+  title: "construct-the-lexicographically-largest-valid-sequence"
+  params:
+    n:
+      type: int
+  call:
+    cpp: "Solution().constructDistancedSequence({n})"
+    rust: "Solution::construct_distanced_sequence({n})"
+    python3: "Solution().constructDistancedSequence({n})"
+    python2: "Solution().constructDistancedSequence({n})"
+    ruby: "construct_distanced_sequence({n})"
+    java: "new Solution().constructDistancedSequence({n})"
+    csharp: "new Solution().ConstructDistancedSequence({n})"
+    kotlin: "Solution().constructDistancedSequence({n})"
+    go: "constructDistancedSequence({n})"
+    dart: "Solution().constructDistancedSequence({n})"
+    swift: "Solution().constructDistancedSequence({n})"
+    typescript: "constructDistancedSequence({n})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(n, {result})"
+    checker: |
+      class Checker:
+          def check(self, n, result):
+              if not isinstance(result, list) or len(result) != 2 * n - 1:
+                  return False
+              expected_counts = {1: 1}
+              expected_counts.update({i: 2 for i in range(2, n + 1)})
+              counts = {}
+              for value in result:
+                  if not isinstance(value, int) or value < 1 or value > n:
+                      return False
+                  counts[value] = counts.get(value, 0) + 1
+              if counts != expected_counts:
+                  return False
+              positions = {}
+              for index, value in enumerate(result):
+                  positions.setdefault(value, []).append(index)
+              if len(positions[1]) != 1:
+                  return False
+              for value in range(2, n + 1):
+                  if len(positions[value]) != 2 or positions[value][1] - positions[value][0] != value:
+                      return False
+
+              best = [0] * (2 * n - 1)
+              used = [False] * (n + 1)
+
+              def search(index):
+                  while index < len(best) and best[index] != 0:
+                      index += 1
+                  if index == len(best):
+                      return True
+                  for value in range(n, 0, -1):
+                      if used[value]:
+                          continue
+                      if value == 1:
+                          best[index] = 1
+                          used[1] = True
+                          if search(index + 1):
+                              return True
+                          used[1] = False
+                          best[index] = 0
+                      elif index + value < len(best) and best[index + value] == 0:
+                          best[index] = value
+                          best[index + value] = value
+                          used[value] = True
+                          if search(index + 1):
+                              return True
+                          used[value] = False
+                          best[index] = 0
+                          best[index + value] = 0
+                  return False
+
+              if not search(0):
+                  return False
+              return result == best
+
+seed: 1718
+
+tests:
+  - name: minimum-n
+    in:
+      n: 2
+  - name: example-three
+    in:
+      n: 3
+  - name: example-five
+    in:
+      n: 5
+  - name: n-four
+    in:
+      n: 4
+  - name: n-six
+    in:
+      n: 6
+  - name: n-seven
+    in:
+      n: 7
+  - name: n-eight
+    in:
+      n: 8
+  - name: n-nine
+    in:
+      n: 9
+  - name: n-ten
+    in:
+      n: 10
+  - name: n-eleven
+    in:
+      n: 11
+  - name: n-twelve
+    in:
+      n: 12
+  - name: n-thirteen
+    in:
+      n: 13
+  - name: n-fourteen
+    in:
+      n: 14
+  - name: n-fifteen
+    in:
+      n: 15
+  - name: n-sixteen
+    in:
+      n: 16
+  - name: n-seventeen
+    in:
+      n: 17
+  - name: n-eighteen
+    in:
+      n: 18
+  - name: n-nineteen
+    in:
+      n: 19
+  - name: maximum-n
+    in:
+      n: 20
+  - name: generated-small-a
+    in:
+      n:
+        gen: "int"
+        min: 2
+        max: 5
+    seed: 1721
+  - name: generated-small-b
+    in:
+      n:
+        gen: "int"
+        min: 6
+        max: 9
+    seed: 1722
+  - name: generated-medium-a
+    in:
+      n:
+        gen: "int"
+        min: 10
+        max: 13
+    seed: 1723
+  - name: generated-medium-b
+    in:
+      n:
+        gen: "int"
+        min: 14
+        max: 17
+    seed: 1724
+  - name: generated-large
+    in:
+      n:
+        gen: "int"
+        min: 18
+        max: 20
+    seed: 1725
+  - name: generated-singleton-two
+    in:
+      n:
+        gen: "int"
+        min: 2
+        max: 2
+    seed: 1731
+  - name: generated-singleton-four
+    in:
+      n:
+        gen: "int"
+        min: 4
+        max: 4
+    seed: 1732
+  - name: generated-singleton-six
+    in:
+      n:
+        gen: "int"
+        min: 6
+        max: 6
+    seed: 1733
+  - name: generated-singleton-eight
+    in:
+      n:
+        gen: "int"
+        min: 8
+        max: 8
+    seed: 1734
+  - name: generated-singleton-ten
+    in:
+      n:
+        gen: "int"
+        min: 10
+        max: 10
+    seed: 1735
+  - name: generated-singleton-twelve
+    in:
+      n:
+        gen: "int"
+        min: 12
+        max: 12
+    seed: 1736
+  - name: generated-singleton-fourteen
+    in:
+      n:
+        gen: "int"
+        min: 14
+        max: 14
+    seed: 1737
+  - name: generated-singleton-sixteen
+    in:
+      n:
+        gen: "int"
+        min: 16
+        max: 16
+    seed: 1738
+  - name: generated-singleton-eighteen
+    in:
+      n:
+        gen: "int"
+        min: 18
+        max: 18
+    seed: 1739
+  - name: generated-singleton-twenty
+    in:
+      n:
+        gen: "int"
+        min: 20
+        max: 20
+    seed: 1740
+  - name: generated-full-range-a
+    in:
+      n:
+        gen: "int"
+        min: 2
+        max: 20
+    seed: 1741
+  - name: generated-full-range-b
+    in:
+      n:
+        gen: "int"
+        min: 2
+        max: 20
+    seed: 1742

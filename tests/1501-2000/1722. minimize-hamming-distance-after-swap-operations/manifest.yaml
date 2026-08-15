@@ -1,0 +1,485 @@
+entry:
+  id: 1722
+  title: "minimize-hamming-distance-after-swap-operations"
+  params:
+    source:
+      type: array
+      items:
+        type: int
+    target:
+      type: array
+      items:
+        type: int
+    allowedSwaps:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    rust: "Solution::minimum_hamming_distance({source}, {target}, {allowedSwaps})"
+    python3: "Solution().minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    python2: "Solution().minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    ruby: "minimum_hamming_distance({source}, {target}, {allowedSwaps})"
+    java: "new Solution().minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    csharp: "new Solution().MinimumHammingDistance({source}, {target}, {allowedSwaps})"
+    kotlin: "Solution().minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    go: "minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    dart: "Solution().minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    swift: "Solution().minimumHammingDistance({source}, {target}, {allowedSwaps})"
+    typescript: "minimumHammingDistance({source}, {target}, {allowedSwaps})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minimumHammingDistance(source, target, allowedSwaps, {result})"
+    checker: |
+      class Checker:
+          def minimumHammingDistance(self, source, target, allowedSwaps, result):
+              n = len(source)
+              if len(target) != n or not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              parent = list(range(n))
+              def find(x):
+                  while parent[x] != x:
+                      parent[x] = parent[parent[x]]
+                      x = parent[x]
+                  return x
+              for edge in allowedSwaps:
+                  if not isinstance(edge, list) or len(edge) != 2:
+                      return False
+                  a, b = edge
+                  if not isinstance(a, int) or not isinstance(b, int) or a < 0 or b < 0 or a >= n or b >= n or a == b:
+                      return False
+                  ra, rb = find(a), find(b)
+                  if ra != rb:
+                      parent[ra] = rb
+              from collections import Counter
+              source_counts = {}
+              target_counts = {}
+              for i, value in enumerate(source):
+                  source_counts.setdefault(find(i), Counter())[value] += 1
+              for i, value in enumerate(target):
+                  target_counts.setdefault(find(i), Counter())[value] += 1
+              expected = 0
+              for root, counts in target_counts.items():
+                  available = source_counts.get(root, Counter())
+                  expected += sum(max(0, count - available[value]) for value, count in counts.items())
+              return result == expected
+seed: 1722
+tests:
+  - name: example-one
+    in:
+      source: [1, 2, 3, 4]
+      target: [2, 1, 4, 5]
+      allowedSwaps:
+        - [0, 1]
+        - [2, 3]
+    out: 1
+  - name: example-two-no-swaps
+    in:
+      source: [1, 2, 3, 4]
+      target: [1, 3, 2, 4]
+      allowedSwaps: []
+    out: 2
+  - name: example-three-connected
+    in:
+      source: [5, 1, 2, 4, 3]
+      target: [1, 5, 4, 2, 3]
+      allowedSwaps:
+        - [0, 4]
+        - [4, 2]
+        - [1, 3]
+        - [1, 4]
+    out: 0
+  - name: singleton-match
+    in:
+      source: [7]
+      target: [7]
+      allowedSwaps: []
+    out: 0
+  - name: singleton-mismatch
+    in:
+      source: [7]
+      target: [8]
+      allowedSwaps: []
+    out: 1
+  - name: duplicate-values
+    in:
+      source: [1, 1, 2, 2]
+      target: [2, 1, 1, 2]
+      allowedSwaps:
+        - [0, 2]
+        - [1, 3]
+    out: 0
+  - name: disconnected-components
+    in:
+      source: [1, 2, 3, 4, 5, 6]
+      target: [2, 1, 4, 3, 6, 5]
+      allowedSwaps:
+        - [0, 1]
+        - [2, 3]
+    out: 2
+  - name: redundant-swaps
+    in:
+      source: [4, 3, 2, 1]
+      target: [1, 2, 3, 4]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [0, 3]
+        - [1, 2]
+    out: 0
+  - name: chain-partial-match
+    in:
+      source: [1, 2, 3, 4, 5]
+      target: [5, 4, 3, 2, 1]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+    out: 4
+  - name: isolated-mismatch
+    in:
+      source: [1, 2, 3, 4, 5]
+      target: [2, 1, 3, 5, 4]
+      allowedSwaps:
+        - [0, 1]
+    out: 2
+  - name: all-equal
+    in:
+      source: [9, 9, 9, 9, 9]
+      target: [9, 9, 9, 9, 9]
+      allowedSwaps: []
+    out: 0
+  - name: all-different-no-swaps
+    in:
+      source: [1, 2, 3, 4, 5]
+      target: [5, 4, 3, 2, 1]
+      allowedSwaps: []
+    out: 4
+  - name: two-components-balance
+    in:
+      source: [1, 2, 2, 1, 3, 4, 4, 3]
+      target: [2, 1, 1, 2, 4, 3, 3, 4]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+    out: 0
+  - name: bridge-enables-match
+    in:
+      source: [10, 20, 30, 40]
+      target: [30, 10, 40, 20]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+    out: 0
+  - name: values-at-limit
+    in:
+      source: [100000, 1, 99999]
+      target: [1, 99999, 100000]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+    out: 0
+  - name: no-self-loop-assumption
+    in:
+      source: [1, 2, 3]
+      target: [3, 2, 1]
+      allowedSwaps:
+        - [0, 2]
+    out: 0
+  - name: component-cannot-cross
+    in:
+      source: [1, 2, 3, 4]
+      target: [3, 2, 1, 4]
+      allowedSwaps:
+        - [0, 1]
+    out: 2
+  - name: repeated-edge
+    in:
+      source: [8, 7, 6, 5]
+      target: [7, 8, 5, 6]
+      allowedSwaps:
+        - [0, 1]
+        - [0, 1]
+        - [2, 3]
+        - [2, 3]
+    out: 0
+  - name: one-way-looking-chain
+    in:
+      source: [1, 2, 3, 4, 5, 6]
+      target: [6, 5, 4, 3, 2, 1]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 2
+  - name: balanced-multiset-but-separated
+    in:
+      source: [1, 2, 3, 1, 2, 3]
+      target: [2, 1, 3, 2, 3, 1]
+      allowedSwaps:
+        - [0, 1]
+        - [3, 4]
+    out: 2
+  - name: complete-graph-small
+    in:
+      source: [1, 2, 3, 4, 5]
+      target: [5, 4, 3, 2, 1]
+      allowedSwaps:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 3]
+        - [2, 4]
+        - [3, 4]
+    out: 0
+  - name: alternating-components
+    in:
+      source: [1, 2, 1, 2, 3, 4, 3, 4]
+      target: [2, 1, 2, 1, 4, 3, 4, 3]
+      allowedSwaps:
+        - [0, 2]
+        - [1, 3]
+        - [4, 6]
+        - [5, 7]
+    out: 8
+  - name: one-value-deficit
+    in:
+      source: [1, 1, 2, 3]
+      target: [1, 2, 2, 3]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+    out: 1
+  - name: isolated-equal-amid-mismatch
+    in:
+      source: [1, 2, 3, 4, 5, 6, 7]
+      target: [7, 2, 6, 5, 4, 3, 1]
+      allowedSwaps:
+        - [0, 6]
+        - [2, 5]
+        - [3, 4]
+    out: 0
+  - name: sparse-edges
+    in:
+      source: [1, 2, 3, 4, 5, 6, 7, 8]
+      target: [2, 3, 4, 1, 6, 5, 8, 7]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+    out: 2
+  - name: all-singletons
+    in:
+      source: [1, 2, 3, 4, 5, 6]
+      target: [6, 5, 4, 3, 2, 1]
+      allowedSwaps: []
+    out: 6
+  - name: pairwise-duplicates
+    in:
+      source: [1, 1, 2, 2, 3, 3]
+      target: [2, 2, 3, 3, 1, 1]
+      allowedSwaps:
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+    out: 0
+  - name: nested-component
+    in:
+      source: [5, 4, 3, 2, 1, 0]
+      target: [0, 1, 2, 3, 4, 5]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 2
+  - name: same-component-wrong-multiplicity
+    in:
+      source: [1, 1, 1, 2, 2, 3]
+      target: [1, 2, 2, 2, 1, 3]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+    out: 1
+  - name: mixed-isolated-values
+    in:
+      source: [10, 20, 30, 40, 50, 60]
+      target: [20, 10, 60, 40, 30, 50]
+      allowedSwaps:
+        - [0, 1]
+        - [2, 5]
+    out: 2
+  - name: large-value-duplicates
+    in:
+      source: [100000, 100000, 99999, 99999, 1, 1]
+      target: [99999, 99999, 1, 1, 100000, 100000]
+      allowedSwaps:
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+    out: 0
+  - name: component-size-three
+    in:
+      source: [1, 2, 3, 4, 5, 6, 7]
+      target: [3, 1, 2, 5, 4, 7, 6]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+    out: 0
+  - name: component-size-three-deficit
+    in:
+      source: [1, 2, 3, 4, 5, 6, 7]
+      target: [3, 1, 4, 5, 2, 7, 6]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+    out: 4
+  - name: max-small-chain
+    in:
+      source: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      target: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+    out: 8
+  - name: stress-long-valid-chain
+    in:
+      source: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      target: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      allowedSwaps:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+    out: 0
+  - name: generated-no-swaps-small
+    in:
+      source:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      target:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      allowedSwaps: []
+  - name: generated-no-swaps-medium
+    in:
+      source:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      target:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      allowedSwaps: []
+  - name: generated-no-swaps-large
+    in:
+      source:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      target:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      allowedSwaps: []
+  - name: generated-no-swaps-stress
+    in:
+      source:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      target:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      allowedSwaps: []
+  - name: generated-no-swaps-maximum
+    in:
+      source:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      target:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      allowedSwaps: []

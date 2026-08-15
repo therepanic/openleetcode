@@ -1,0 +1,352 @@
+entry:
+  id: 1776
+  title: "car-fleet-ii"
+  params:
+    cars:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().getCollisionTimes({cars})"
+    rust: "Solution::get_collision_times({cars})"
+    python3: "Solution().getCollisionTimes({cars})"
+    python2: "Solution().getCollisionTimes({cars})"
+    ruby: "get_collision_times({cars})"
+    java: "new Solution().getCollisionTimes({cars})"
+    csharp: "new Solution().GetCollisionTimes({cars})"
+    kotlin: "Solution().getCollisionTimes({cars})"
+    go: "getCollisionTimes({cars})"
+    dart: "Solution().getCollisionTimes({cars})"
+    swift: "Solution().getCollisionTimes({cars})"
+    typescript: "getCollisionTimes({cars})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().getCollisionTimes(cars, {result})"
+    checker: |
+      class Checker:
+          def getCollisionTimes(self, cars, result):
+              if not isinstance(result, list) or len(result) != len(cars):
+                  return False
+              n = len(cars)
+              expected = [-1.0] * n
+              stack = []
+              for i in range(n - 1, -1, -1):
+                  p, s = cars[i]
+                  while stack:
+                      j = stack[-1]
+                      q, t = cars[j]
+                      if s <= t:
+                          stack.pop()
+                          continue
+                      hit = (q - p) / float(s - t)
+                      if expected[j] < 0 or hit <= expected[j] + 1e-12:
+                          break
+                      stack.pop()
+                  if stack:
+                      j = stack[-1]
+                      q, t = cars[j]
+                      expected[i] = (q - p) / float(s - t)
+                  stack.append(i)
+              for got, want in zip(result, expected):
+                  if not isinstance(got, (int, float)) or isinstance(got, bool):
+                      return False
+                  if want < 0:
+                      if got != -1 and got != -1.0:
+                          return False
+                  elif abs(float(got) - want) > 1e-5:
+                      return False
+              return True
+
+seed: 1776
+
+tests:
+  - name: example-one
+    in:
+      cars:
+        - [1, 2]
+        - [2, 1]
+        - [4, 3]
+        - [7, 2]
+  - name: example-two
+    in:
+      cars:
+        - [3, 4]
+        - [5, 4]
+        - [6, 3]
+        - [9, 1]
+  - name: two-collide
+    in:
+      cars:
+        - [1, 10]
+        - [11, 1]
+  - name: two-never-collide
+    in:
+      cars:
+        - [1, 1]
+        - [2, 10]
+  - name: equal-speeds
+    in:
+      cars:
+        - [1, 5]
+        - [4, 5]
+        - [9, 5]
+  - name: one-fast-car
+    in:
+      cars:
+        - [10, 100]
+  - name: increasing-speeds
+    in:
+      cars:
+        - [1, 1]
+        - [3, 2]
+        - [6, 3]
+        - [10, 4]
+  - name: decreasing-speeds
+    in:
+      cars:
+        - [1, 8]
+        - [2, 6]
+        - [3, 4]
+        - [4, 2]
+  - name: chain-collisions
+    in:
+      cars:
+        - [0, 10]
+        - [10, 8]
+        - [20, 6]
+        - [30, 4]
+        - [40, 2]
+  - name: alternating
+    in:
+      cars:
+        - [1, 10]
+        - [5, 2]
+        - [9, 9]
+        - [14, 3]
+        - [20, 8]
+        - [27, 1]
+  - name: delayed-fleet
+    in:
+      cars:
+        - [2, 12]
+        - [8, 5]
+        - [15, 4]
+        - [23, 10]
+        - [31, 2]
+  - name: collision-at-one
+    in:
+      cars:
+        - [1, 3]
+        - [3, 1]
+        - [8, 2]
+  - name: fractional-times
+    in:
+      cars:
+        - [1, 7]
+        - [4, 2]
+        - [10, 1]
+  - name: large-gaps
+    in:
+      cars:
+        - [1, 1000000]
+        - [500000, 1]
+        - [1000000, 999999]
+  - name: max-speeds
+    in:
+      cars:
+        - [1, 1000000]
+        - [2, 999999]
+        - [3, 1]
+        - [1000000, 500000]
+  - name: close-positions
+    in:
+      cars:
+        - [1, 100]
+        - [2, 99]
+        - [3, 98]
+        - [4, 1]
+  - name: many-equal-fleets
+    in:
+      cars:
+        - [1, 4]
+        - [3, 4]
+        - [5, 2]
+        - [8, 2]
+        - [12, 1]
+  - name: rightmost-fast
+    in:
+      cars:
+        - [2, 8]
+        - [6, 3]
+        - [11, 9]
+        - [18, 1]
+  - name: rightmost-slow
+    in:
+      cars:
+        - [2, 8]
+        - [6, 3]
+        - [11, 2]
+        - [18, 1]
+  - name: alternating-extremes
+    in:
+      cars:
+        - [1, 100]
+        - [100, 1]
+        - [200, 100]
+        - [300, 1]
+        - [400, 100]
+  - name: six-cars
+    in:
+      cars:
+        - [1, 6]
+        - [4, 2]
+        - [8, 5]
+        - [13, 3]
+        - [19, 7]
+        - [26, 1]
+  - name: seven-cars
+    in:
+      cars:
+        - [3, 9]
+        - [7, 1]
+        - [12, 8]
+        - [18, 2]
+        - [25, 7]
+        - [33, 3]
+        - [42, 1]
+  - name: large-values
+    in:
+      cars:
+        - [1, 999999]
+        - [250000, 500000]
+        - [500000, 250000]
+        - [750000, 100000]
+        - [1000000, 1]
+  - name: no-early-hit
+    in:
+      cars:
+        - [1, 2]
+        - [2, 100]
+        - [20, 3]
+        - [30, 4]
+  - name: fleet-replacement
+    in:
+      cars:
+        - [1, 20]
+        - [5, 5]
+        - [10, 4]
+        - [20, 3]
+        - [35, 1]
+  - name: equal-distance
+    in:
+      cars:
+        - [1, 10]
+        - [11, 9]
+        - [21, 8]
+        - [31, 7]
+  - name: mixed-small
+    in:
+      cars:
+        - [1, 1]
+        - [2, 3]
+        - [4, 2]
+        - [7, 6]
+        - [11, 1]
+  - name: dense-seven
+    in:
+      cars:
+        - [10, 20]
+        - [11, 1]
+        - [12, 19]
+        - [13, 2]
+        - [14, 18]
+        - [15, 3]
+        - [16, 17]
+  - name: sparse-seven
+    in:
+      cars:
+        - [1, 17]
+        - [100, 2]
+        - [1000, 16]
+        - [10000, 3]
+        - [100000, 15]
+        - [500000, 4]
+        - [1000000, 1]
+  - name: eight-cars
+    in:
+      cars:
+        - [1, 8]
+        - [4, 7]
+        - [9, 1]
+        - [15, 6]
+        - [22, 2]
+        - [30, 5]
+        - [39, 3]
+        - [49, 1]
+  - name: same-position-gap-one
+    in:
+      cars:
+        - [1, 100]
+        - [2, 1]
+        - [3, 100]
+        - [4, 1]
+        - [5, 100]
+  - name: descending-large
+    in:
+      cars:
+        - [100, 1000]
+        - [1000, 900]
+        - [10000, 800]
+        - [100000, 700]
+        - [1000000, 1]
+  - name: nine-cars
+    in:
+      cars:
+        - [2, 9]
+        - [5, 4]
+        - [9, 8]
+        - [14, 3]
+        - [20, 7]
+        - [27, 2]
+        - [35, 6]
+        - [44, 1]
+        - [54, 5]
+  - name: ten-cars
+    in:
+      cars:
+        - [1, 10]
+        - [3, 1]
+        - [6, 9]
+        - [10, 2]
+        - [15, 8]
+        - [21, 3]
+        - [28, 7]
+        - [36, 4]
+        - [45, 6]
+        - [55, 1]
+  - name: all-fast-front
+    in:
+      cars:
+        - [1, 1000]
+        - [100, 999]
+        - [200, 998]
+        - [300, 997]
+        - [400, 1]
+  - name: terminal-fleet
+    in:
+      cars:
+        - [1, 50]
+        - [10, 4]
+        - [20, 3]
+        - [30, 2]
+        - [40, 1]

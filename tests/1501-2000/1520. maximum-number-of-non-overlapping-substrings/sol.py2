@@ -1,0 +1,34 @@
+class Solution(object):
+    def maxNumOfSubstrings(self, s):
+        n = len(s)
+        first = [n] * 26
+        last = [0] * 26
+        for index, char in enumerate(s):
+            letter = ord(char) - ord('a')
+            first[letter] = min(first[letter], index)
+            last[letter] = index
+
+        answer = []
+        previous_end = -1
+        for start in xrange(n):
+            if first[ord(s[start]) - ord('a')] != start:
+                continue
+            end = last[ord(s[start]) - ord('a')]
+            index = start
+            valid = True
+            while index <= end:
+                letter = ord(s[index]) - ord('a')
+                if first[letter] < start:
+                    valid = False
+                    break
+                end = max(end, last[letter])
+                index += 1
+            if not valid:
+                continue
+            value = s[start:end + 1]
+            if start > previous_end:
+                answer.append(value)
+            else:
+                answer[-1] = value
+            previous_end = end
+        return answer

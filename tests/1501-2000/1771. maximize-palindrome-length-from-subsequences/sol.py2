@@ -1,0 +1,30 @@
+class Solution(object):
+    def longestPalindrome(self, word1, word2):
+        """
+        :type word1: str
+        :type word2: str
+        :rtype: int
+        """
+        word = word1 + word2
+        n = len(word)
+        
+        memo = [[-1] * len(word) for _ in range(len(word))]
+        def fn(lo, hi):
+            if memo[lo][hi] != -1:
+                return memo[lo][hi]
+            if lo >= hi:
+                value = int(lo == hi)
+            elif word[lo] == word[hi]:
+                value = 2 + fn(lo+1, hi-1)
+            else:
+                value = max(fn(lo+1, hi), fn(lo, hi-1))
+            memo[lo][hi] = value
+            return value
+        
+        ans = 0
+        for x in set(word1):
+            i = word1.find(x)
+            j = word2.rfind(x)
+            if i != -1 and j != -1:
+                ans = max(ans, fn(i, j + len(word1)))
+        return ans

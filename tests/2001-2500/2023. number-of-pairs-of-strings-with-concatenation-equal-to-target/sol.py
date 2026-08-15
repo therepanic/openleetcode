@@ -1,0 +1,24 @@
+from collections import Counter
+
+
+class Solution(object):
+    def numOfPairs(self, nums, target):
+        """
+        :type nums: List[str]
+        :type target: str
+        :rtype: int
+        """
+        num_2_freq = Counter(nums)
+
+        total_cnt = 0
+
+        for num in nums:
+            if target.startswith(num):
+                remain = target[len(num) :]
+
+                if remain == num:
+                    total_cnt += num_2_freq[remain] - 1
+                else:
+                    total_cnt += num_2_freq[remain]
+
+        return total_cnt

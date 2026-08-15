@@ -1,0 +1,380 @@
+entry:
+  id: 2018
+  title: "check-if-word-can-be-placed-in-crossword"
+  params:
+    board:
+      type: array
+      items:
+        type: array
+        items:
+          type: char
+    word:
+      type: string
+  call:
+    cpp: "Solution().placeWordInCrossword({board}, {word})"
+    rust: "Solution::place_word_in_crossword({board}, {word})"
+    python3: "Solution().placeWordInCrossword({board}, {word})"
+    python2: "Solution().placeWordInCrossword({board}, {word})"
+    ruby: "place_word_in_crossword({board}, {word})"
+    java: "new Solution().placeWordInCrossword({board}, {word})"
+    csharp: "new Solution().PlaceWordInCrossword({board}, {word})"
+    kotlin: "Solution().placeWordInCrossword({board}, {word})"
+    go: "placeWordInCrossword({board}, {word})"
+    dart: "Solution().placeWordInCrossword({board}, {word})"
+    swift: "Solution().placeWordInCrossword({board}, {word})"
+    typescript: "placeWordInCrossword({board}, {word})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().placeWordInCrossword(board, word, {result})"
+    checker: |
+      class Checker:
+          def placeWordInCrossword(self, board, word, result):
+              if not isinstance(result, bool):
+                  return False
+              m = len(board)
+              n = len(board[0]) if m else 0
+              def fits(chars):
+                  if len(chars) != len(word):
+                      return False
+                  return all(a == ' ' or a == b for a, b in zip(chars, word))
+              possible = False
+              for row in board:
+                  start = 0
+                  for i in range(n + 1):
+                      if i == n or row[i] == '#':
+                          segment = row[start:i]
+                          possible = possible or fits(segment) or fits(segment[::-1])
+                          start = i + 1
+              for col in range(n):
+                  start = 0
+                  for i in range(m + 1):
+                      if i == m or board[i][col] == '#':
+                          segment = [board[j][col] for j in range(start, i)]
+                          possible = possible or fits(segment) or fits(segment[::-1])
+                          start = i + 1
+              return result == possible
+
+seed: 2018
+
+tests:
+  - name: "example_vertical"
+    in:
+      board:
+        - ["#", " ", "#"]
+        - [" ", " ", "#"]
+        - ["#", "c", " "]
+      word: "abc"
+    out: true
+  - name: "example_blocked_boundary"
+    in:
+      board:
+        - [" ", "#", "a"]
+        - [" ", "#", "c"]
+        - [" ", "#", "a"]
+      word: "ac"
+    out: false
+  - name: "example_reverse_horizontal"
+    in:
+      board:
+        - ["#", " ", "#"]
+        - [" ", " ", "#"]
+        - ["#", " ", "c"]
+      word: "ca"
+    out: true
+  - name: "single_empty_cell"
+    in:
+      board:
+        - [" "]
+      word: "a"
+    out: true
+  - name: "single_matching_cell"
+    in:
+      board:
+        - ["z"]
+      word: "z"
+    out: true
+  - name: "single_mismatch_cell"
+    in:
+      board:
+        - ["z"]
+      word: "a"
+    out: false
+  - name: "single_blocked_cell"
+    in:
+      board:
+        - ["#"]
+      word: "a"
+    out: false
+  - name: "horizontal_all_empty"
+    in:
+      board:
+        - [" ", " ", " ", " "]
+      word: "code"
+    out: true
+  - name: "horizontal_reverse_match"
+    in:
+      board:
+        - ["e", "d", "o", "c"]
+      word: "code"
+    out: true
+  - name: "horizontal_wrong_letters"
+    in:
+      board:
+        - ["c", "o", "x", "e"]
+      word: "code"
+    out: false
+  - name: "horizontal_split_by_block"
+    in:
+      board:
+        - [" ", " ", "#", " ", " "]
+      word: "ab"
+    out: true
+  - name: "horizontal_boundary_extra_cell"
+    in:
+      board:
+        - [" ", "a", "b", " "]
+      word: "ab"
+    out: false
+  - name: "horizontal_exact_segment_with_letters"
+    in:
+      board:
+        - ["#", "c", " ", "d", "#"]
+      word: "cad"
+    out: true
+  - name: "horizontal_partial_match"
+    in:
+      board:
+        - ["#", "c", " ", "x", "#"]
+      word: "cat"
+    out: false
+  - name: "vertical_all_empty"
+    in:
+      board:
+        - [" "]
+        - [" "]
+        - [" "]
+      word: "sun"
+    out: true
+  - name: "vertical_reverse_match"
+    in:
+      board:
+        - ["n"]
+        - ["u"]
+        - ["s"]
+      word: "sun"
+    out: true
+  - name: "vertical_wrong_letter"
+    in:
+      board:
+        - ["s"]
+        - ["x"]
+        - ["n"]
+      word: "sun"
+    out: false
+  - name: "vertical_split_by_block"
+    in:
+      board:
+        - [" ", "#"]
+        - [" ", "#"]
+        - ["#", " "]
+      word: "go"
+    out: true
+  - name: "vertical_extra_above"
+    in:
+      board:
+        - [" "]
+        - ["a"]
+        - ["b"]
+        - [" "]
+      word: "ab"
+    out: false
+  - name: "vertical_exact_letters"
+    in:
+      board:
+        - ["#", "c"]
+        - ["#", "a"]
+        - ["#", "t"]
+      word: "cat"
+    out: true
+  - name: "vertical_repeated_letters"
+    in:
+      board:
+        - ["#", "a", "#"]
+        - ["#", " ", "#"]
+        - ["#", "a", "#"]
+      word: "aaa"
+    out: true
+  - name: "two_dimensional_choice"
+    in:
+      board:
+        - ["#", "#", "#", "#", "#"]
+        - ["#", " ", " ", " ", "#"]
+        - ["#", "#", "#", "#", "#"]
+      word: "yes"
+    out: true
+  - name: "two_dimensional_no_fit"
+    in:
+      board:
+        - ["#", "#", "#", "#"]
+        - ["#", " ", " ", "#"]
+        - ["#", "#", "#", "#"]
+      word: "abc"
+    out: false
+  - name: "letter_matches_forward"
+    in:
+      board:
+        - ["#", "h", "e", " ", "#"]
+      word: "hello"
+    out: false
+  - name: "letter_matches_reverse"
+    in:
+      board:
+        - ["#", "o", "l", "l", "e", "h", "#"]
+      word: "hello"
+    out: true
+  - name: "isolated_letter_segment"
+    in:
+      board:
+        - ["a", "#", " ", "#", "b"]
+      word: "a"
+    out: true
+  - name: "word_longer_than_all_segments"
+    in:
+      board:
+        - [" ", "#", " ", "#", " "]
+      word: "aa"
+    out: false
+  - name: "full_row_letters"
+    in:
+      board:
+        - ["a", "b", "c", "d", "e"]
+      word: "abcde"
+    out: true
+  - name: "full_column_letters"
+    in:
+      board:
+        - ["a", "#"]
+        - ["b", "#"]
+        - ["c", "#"]
+      word: "abc"
+    out: true
+  - name: "full_row_mismatch"
+    in:
+      board:
+        - ["a", "b", "x", "d", "e"]
+      word: "abcde"
+    out: false
+  - name: "adjacent_parallel_letters_allowed"
+    in:
+      board:
+        - ["#", " ", " ", "#"]
+        - ["#", "a", "b", "#"]
+        - ["#", " ", " ", "#"]
+      word: "ab"
+    out: true
+  - name: "parallel_neighbor_does_not_break_horizontal"
+    in:
+      board:
+        - ["#", " ", " ", "#"]
+        - ["#", "x", "y", "#"]
+        - ["#", " ", " ", "#"]
+      word: "xy"
+    out: true
+  - name: "blocked_crossing"
+    in:
+      board:
+        - ["#", " ", "#"]
+        - [" ", "#", " "]
+        - ["#", " ", "#"]
+      word: "aa"
+    out: false
+  - name: "long_static_row"
+    in:
+      board:
+        - ["#", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#"]
+      word: "abcdefghi"
+    out: true
+  - name: "long_static_column"
+    in:
+      board:
+        - ["#"]
+        - [" "]
+        - [" "]
+        - [" "]
+        - [" "]
+        - [" "]
+        - [" "]
+        - [" "]
+        - [" "]
+        - [" "]
+        - ["#"]
+      word: "abcdefghi"
+    out: true
+  - name: "generated_short_word"
+    in:
+      board:
+        - [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 10
+        alphabet: "abcd"
+    seed: 20181
+  - name: "generated_short_word_2"
+    in:
+      board:
+        - [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 10
+        alphabet: "xy"
+    seed: 20182
+  - name: "generated_short_word_3"
+    in:
+      board:
+        - [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 10
+        alphabet: "mno"
+    seed: 20183
+  - name: "generated_short_word_4"
+    in:
+      board:
+        - [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 10
+        alphabet: "az"
+    seed: 20184
+  - name: "generated_short_word_5"
+    in:
+      board:
+        - [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 10
+        alphabet: "qrst"
+    seed: 20185

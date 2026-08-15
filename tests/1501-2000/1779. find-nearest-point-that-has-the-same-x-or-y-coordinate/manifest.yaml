@@ -1,0 +1,379 @@
+entry:
+  id: 1779
+  title: "find-nearest-point-that-has-the-same-x-or-y-coordinate"
+  params:
+    x:
+      type: int
+    y:
+      type: int
+    points:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().nearestValidPoint({x}, {y}, {points})"
+    rust: "Solution::nearest_valid_point({x}, {y}, {points})"
+    python3: "Solution().nearestValidPoint({x}, {y}, {points})"
+    python2: "Solution().nearestValidPoint({x}, {y}, {points})"
+    ruby: "nearest_valid_point({x}, {y}, {points})"
+    java: "new Solution().nearestValidPoint({x}, {y}, {points})"
+    csharp: "new Solution().NearestValidPoint({x}, {y}, {points})"
+    kotlin: "Solution().nearestValidPoint({x}, {y}, {points})"
+    go: "nearestValidPoint({x}, {y}, {points})"
+    dart: "Solution().nearestValidPoint({x}, {y}, {points})"
+    swift: "Solution().nearestValidPoint({x}, {y}, {points})"
+    typescript: "nearestValidPoint({x}, {y}, {points})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(x, y, points, {result})"
+    checker: |
+      class Checker:
+          def check(self, x, y, points, result):
+              best = -1
+              best_distance = None
+              for i, point in enumerate(points):
+                  a, b = point
+                  if a == x or b == y:
+                      distance = abs(x - a) + abs(y - b)
+                      if best_distance is None or distance < best_distance:
+                          best_distance = distance
+                          best = i
+              return result == best
+
+seed: 1779
+tests:
+  - name: example-1
+    in:
+      x: 3
+      y: 4
+      points:
+        - [1, 2]
+        - [3, 1]
+        - [2, 4]
+        - [2, 3]
+        - [4, 4]
+    out: 2
+  - name: example-2-same-location
+    in:
+      x: 3
+      y: 4
+      points:
+        - [3, 4]
+    out: 0
+  - name: example-3-none
+    in:
+      x: 3
+      y: 4
+      points:
+        - [2, 3]
+    out: -1
+  - name: vertical-nearest
+    in:
+      x: 5
+      y: 5
+      points:
+        - [5, 10]
+        - [1, 5]
+        - [5, 6]
+        - [5, 7]
+    out: 2
+  - name: horizontal-nearest
+    in:
+      x: 7
+      y: 8
+      points:
+        - [1, 8]
+        - [6, 8]
+        - [9, 8]
+        - [7, 1]
+    out: 1
+  - name: tie-keeps-first
+    in:
+      x: 5
+      y: 5
+      points:
+        - [3, 5]
+        - [5, 7]
+        - [5, 3]
+        - [7, 5]
+    out: 0
+  - name: invalid-before-valid
+    in:
+      x: 4
+      y: 6
+      points:
+        - [1, 1]
+        - [2, 6]
+        - [4, 10]
+    out: 1
+  - name: valid-at-last
+    in:
+      x: 9
+      y: 2
+      points:
+        - [1, 1]
+        - [3, 4]
+        - [8, 7]
+        - [9, 10]
+    out: 3
+  - name: duplicate-points
+    in:
+      x: 6
+      y: 6
+      points:
+        - [2, 6]
+        - [2, 6]
+        - [6, 9]
+        - [2, 1]
+    out: 2
+  - name: all-invalid
+    in:
+      x: 10
+      y: 10
+      points:
+        - [1, 1]
+        - [2, 3]
+        - [9, 8]
+    out: -1
+  - name: all-valid-horizontal
+    in:
+      x: 1
+      y: 9
+      points:
+        - [10, 9]
+        - [2, 9]
+        - [1, 1]
+        - [8, 9]
+    out: 1
+  - name: all-valid-vertical
+    in:
+      x: 9
+      y: 1
+      points:
+        - [9, 10]
+        - [9, 2]
+        - [3, 1]
+        - [9, 4]
+    out: 1
+  - name: coordinate-one
+    in:
+      x: 1
+      y: 1
+      points:
+        - [1, 10000]
+        - [9999, 1]
+        - [2, 2]
+    out: 1
+  - name: coordinate-maximum
+    in:
+      x: 10000
+      y: 10000
+      points:
+        - [9999, 9999]
+        - [10000, 1]
+        - [1, 10000]
+    out: 1
+  - name: zero-distance-later
+    in:
+      x: 8
+      y: 3
+      points:
+        - [8, 7]
+        - [4, 3]
+        - [8, 3]
+    out: 2
+  - name: mixed-near-far
+    in:
+      x: 50
+      y: 50
+      points:
+        - [1, 50]
+        - [50, 49]
+        - [50, 100]
+        - [100, 50]
+    out: 1
+  - name: horizontal-beats-vertical
+    in:
+      x: 20
+      y: 30
+      points:
+        - [20, 35]
+        - [17, 30]
+        - [20, 24]
+    out: 1
+  - name: vertical-beats-horizontal
+    in:
+      x: 20
+      y: 30
+      points:
+        - [25, 30]
+        - [20, 27]
+        - [20, 40]
+    out: 1
+  - name: equal-distance-different-lines
+    in:
+      x: 10
+      y: 20
+      points:
+        - [7, 20]
+        - [10, 23]
+        - [14, 20]
+    out: 0
+  - name: negative-free-lower-bound
+    in:
+      x: 2
+      y: 3
+      points:
+        - [1, 3]
+        - [2, 1]
+        - [1, 1]
+    out: 0
+  - name: many-invalid-interspersed
+    in:
+      x: 12
+      y: 15
+      points:
+        - [1, 1]
+        - [2, 2]
+        - [12, 20]
+        - [4, 5]
+        - [9, 15]
+        - [6, 7]
+    out: 4
+  - name: first-point-valid
+    in:
+      x: 30
+      y: 40
+      points:
+        - [30, 45]
+        - [1, 40]
+        - [30, 35]
+    out: 0
+  - name: last-point-zero
+    in:
+      x: 30
+      y: 40
+      points:
+        - [1, 1]
+        - [2, 2]
+        - [30, 40]
+    out: 2
+  - name: repeated-ties
+    in:
+      x: 5
+      y: 5
+      points:
+        - [4, 5]
+        - [5, 4]
+        - [6, 5]
+        - [5, 6]
+        - [4, 5]
+    out: 0
+  - name: one-point-invalid
+    in:
+      x: 9999
+      y: 9999
+      points:
+        - [9998, 9998]
+    out: -1
+  - name: one-point-horizontal
+    in:
+      x: 9999
+      y: 9999
+      points:
+        - [1, 9999]
+    out: 0
+  - name: one-point-vertical
+    in:
+      x: 9999
+      y: 9999
+      points:
+        - [9999, 1]
+    out: 0
+  - name: large-coordinate-tie
+    in:
+      x: 5000
+      y: 5000
+      points:
+        - [4990, 5000]
+        - [5000, 5010]
+        - [5010, 5000]
+    out: 0
+  - name: closest-among-duplicates
+    in:
+      x: 100
+      y: 200
+      points:
+        - [100, 250]
+        - [50, 200]
+        - [100, 201]
+        - [99, 200]
+    out: 2
+  - name: invalid-same-neither
+    in:
+      x: 7
+      y: 11
+      points:
+        - [6, 10]
+        - [8, 12]
+        - [1, 1]
+        - [7, 11]
+    out: 3
+  - name: broad-mixed-set
+    in:
+      x: 400
+      y: 700
+      points:
+        - [100, 700]
+        - [400, 900]
+        - [399, 700]
+        - [401, 700]
+        - [400, 699]
+    out: 2
+  - name: exact-tie-after-invalid
+    in:
+      x: 42
+      y: 73
+      points:
+        - [1, 2]
+        - [42, 80]
+        - [35, 73]
+        - [42, 66]
+    out: 1
+  - name: closest-at-maximum-bound
+    in:
+      x: 10000
+      y: 9999
+      points:
+        - [1, 9999]
+        - [10000, 10000]
+        - [9999, 9999]
+    out: 1
+  - name: late-better-than-early
+    in:
+      x: 500
+      y: 600
+      points:
+        - [500, 1000]
+        - [1, 600]
+        - [500, 601]
+    out: 2
+  - name: early-tie-beats-late
+    in:
+      x: 500
+      y: 600
+      points:
+        - [500, 601]
+        - [499, 600]
+        - [500, 599]
+    out: 0

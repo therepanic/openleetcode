@@ -1,0 +1,331 @@
+entry:
+  id: 1642
+  title: "furthest-building-you-can-reach"
+  params:
+    heights:
+      type: array
+      items:
+        type: int
+    bricks:
+      type: int
+    ladders:
+      type: int
+  call:
+    cpp: "Solution().furthestBuilding({heights}, {bricks}, {ladders})"
+    rust: "Solution::furthest_building({heights}, {bricks}, {ladders})"
+    python3: "Solution().furthestBuilding({heights}, {bricks}, {ladders})"
+    python2: "Solution().furthestBuilding({heights}, {bricks}, {ladders})"
+    ruby: "furthest_building({heights}, {bricks}, {ladders})"
+    java: "new Solution().furthestBuilding({heights}, {bricks}, {ladders})"
+    csharp: "new Solution().FurthestBuilding({heights}, {bricks}, {ladders})"
+    kotlin: "Solution().furthestBuilding({heights}, {bricks}, {ladders})"
+    go: "furthestBuilding({heights}, {bricks}, {ladders})"
+    dart: "Solution().furthestBuilding({heights}, {bricks}, {ladders})"
+    swift: "Solution().furthestBuilding({heights}, {bricks}, {ladders})"
+    typescript: "furthestBuilding({heights}, {bricks}, {ladders})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().furthestBuilding(heights, bricks, ladders, {result})"
+    checker: |
+      import heapq
+      class Checker:
+          def furthestBuilding(self, heights, bricks, ladders, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              heap = []
+              remaining = bricks
+              answer = len(heights) - 1
+              for i in range(1, len(heights)):
+                  climb = heights[i] - heights[i - 1]
+                  if climb <= 0:
+                      continue
+                  heapq.heappush(heap, climb)
+                  if len(heap) > ladders:
+                      remaining -= heapq.heappop(heap)
+                      if remaining < 0:
+                          answer = i - 1
+                          break
+              return result == answer
+seed: 1642
+tests:
+  - name: example-one
+    in:
+      heights: [4, 2, 7, 6, 9, 14, 12]
+      bricks: 5
+      ladders: 1
+    out: 4
+  - name: example-two
+    in:
+      heights: [4, 12, 2, 7, 3, 18, 20, 3, 19]
+      bricks: 10
+      ladders: 2
+    out: 7
+  - name: example-three
+    in:
+      heights: [14, 3, 19, 3]
+      bricks: 17
+      ladders: 0
+    out: 3
+  - name: single-building
+    in:
+      heights: [9]
+      bricks: 0
+      ladders: 0
+    out: 0
+  - name: all-descending
+    in:
+      heights: [10, 9, 8, 7, 6, 5]
+      bricks: 0
+      ladders: 0
+    out: 5
+  - name: equal-heights
+    in:
+      heights: [7, 7, 7, 7, 7]
+      bricks: 0
+      ladders: 0
+    out: 4
+  - name: no-resources
+    in:
+      heights: [1, 2, 3]
+      bricks: 0
+      ladders: 0
+    out: 0
+  - name: one-ladder
+    in:
+      heights: [1, 5, 2, 6]
+      bricks: 0
+      ladders: 1
+    out: 2
+  - name: bricks-exact
+    in:
+      heights: [1, 4, 2, 6]
+      bricks: 7
+      ladders: 0
+    out: 3
+  - name: bricks-one-short
+    in:
+      heights: [1, 4, 2, 6]
+      bricks: 6
+      ladders: 0
+    out: 2
+  - name: ladder-saves-largest
+    in:
+      heights: [1, 6, 2, 10]
+      bricks: 5
+      ladders: 1
+    out: 3
+  - name: ladder-saves-early
+    in:
+      heights: [1, 10, 11]
+      bricks: 1
+      ladders: 1
+    out: 2
+  - name: ladders-more-than-climbs
+    in:
+      heights: [1, 4, 2, 8]
+      bricks: 0
+      ladders: 3
+    out: 3
+  - name: zero-bricks-many-ladders
+    in:
+      heights: [2, 100, 1, 99, 3]
+      bricks: 0
+      ladders: 2
+    out: 4
+  - name: alternating-small
+    in:
+      heights: [5, 6, 5, 6, 5, 6]
+      bricks: 2
+      ladders: 0
+    out: 4
+  - name: large-climb-first
+    in:
+      heights: [1, 1000000, 2]
+      bricks: 999998
+      ladders: 0
+    out: 0
+  - name: large-climb-ladder
+    in:
+      heights: [1, 1000000, 2]
+      bricks: 0
+      ladders: 1
+    out: 2
+  - name: delayed-large-climb
+    in:
+      heights: [1, 2, 3, 1000, 4]
+      bricks: 2
+      ladders: 1
+    out: 4
+  - name: several-equal-climbs
+    in:
+      heights: [3, 8, 13, 18, 23]
+      bricks: 10
+      ladders: 1
+    out: 3
+  - name: descending-then-climb
+    in:
+      heights: [20, 10, 9, 15, 14, 30]
+      bricks: 10
+      ladders: 1
+    out: 5
+  - name: alternating-large
+    in:
+      heights: [1, 50, 2, 49, 3, 48, 4]
+      bricks: 47
+      ladders: 2
+    out: 6
+  - name: all-resources
+    in:
+      heights: [1, 100, 2, 200, 3]
+      bricks: 0
+      ladders: 4
+    out: 4
+  - name: exact-ladder-count
+    in:
+      heights: [1, 5, 10, 15]
+      bricks: 0
+      ladders: 3
+    out: 3
+  - name: zero-ladder-flat
+    in:
+      heights: [5, 4, 4, 3, 3]
+      bricks: 0
+      ladders: 0
+    out: 4
+  - name: mixed-tiny
+    in:
+      heights: [3, 1, 2, 1, 4, 2]
+      bricks: 2
+      ladders: 0
+    out: 3
+  - name: mixed-tiny-ladder
+    in:
+      heights: [3, 1, 2, 1, 4, 2]
+      bricks: 0
+      ladders: 1
+    out: 3
+  - name: expensive-climb-choice
+    in:
+      heights: [1, 2, 100, 3, 4]
+      bricks: 3
+      ladders: 1
+    out: 4
+  - name: many-downs
+    in:
+      heights: [100, 1, 2, 1, 3, 1, 4]
+      bricks: 3
+      ladders: 0
+    out: 5
+  - name: high-bricks
+    in:
+      heights: [1000000, 999999, 1000000]
+      bricks: 1
+      ladders: 0
+    out: 2
+  - name: high-ladder-count
+    in:
+      heights: [1, 100, 1, 100, 1, 100]
+      bricks: 0
+      ladders: 5
+    out: 5
+  - name: repeated-plateaus
+    in:
+      heights: [2, 2, 5, 5, 3, 8, 8, 9]
+      bricks: 5
+      ladders: 1
+    out: 7
+  - name: generator-random-small
+    in:
+      heights:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: 1
+          max: 1000
+        elemType: int
+      bricks:
+        gen: int
+        min: 0
+        max: 10000
+      ladders:
+        gen: int
+        min: 0
+        max: 100
+  - name: generator-medium
+    in:
+      heights:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: 1
+          max: 100000
+        elemType: int
+      bricks:
+        gen: int
+        min: 0
+        max: 1000000
+      ladders:
+        gen: int
+        min: 0
+        max: 1000
+  - name: generator-large
+    in:
+      heights:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 1
+          max: 1000000
+        elemType: int
+      bricks:
+        gen: int
+        min: 0
+        max: 1000000000
+      ladders:
+        gen: int
+        min: 0
+        max: 100000
+  - name: generator-large-low-bricks
+    in:
+      heights:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 1
+          max: 1000000
+        elemType: int
+      bricks:
+        gen: int
+        min: 0
+        max: 1000
+      ladders:
+        gen: int
+        min: 0
+        max: 20
+  - name: generator-large-many-ladders
+    in:
+      heights:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 1000000
+        elemType: int
+      bricks:
+        gen: int
+        min: 0
+        max: 100000
+      ladders:
+        gen: int
+        min: 0
+        max: 50000

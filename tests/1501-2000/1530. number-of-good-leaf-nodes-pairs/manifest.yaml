@@ -1,0 +1,234 @@
+entry:
+  id: 1530
+  title: "number-of-good-leaf-nodes-pairs"
+  params:
+    root:
+      type: tree_node
+    distance:
+      type: int
+  call:
+    cpp: "Solution().countPairs({root}, {distance})"
+    rust: "Solution::count_pairs({root}, {distance})"
+    python3: "Solution().countPairs({root}, {distance})"
+    python2: "Solution().countPairs({root}, {distance})"
+    ruby: "count_pairs({root}, {distance})"
+    java: "new Solution().countPairs({root}, {distance})"
+    csharp: "new Solution().CountPairs({root}, {distance})"
+    kotlin: "Solution().countPairs({root}, {distance})"
+    go: "countPairs({root}, {distance})"
+    dart: "Solution().countPairs({root}, {distance})"
+    swift: "Solution().countPairs({root}, {distance})"
+    typescript: "countPairs({root}, {distance})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().countPairs(root, distance, {result})"
+    checker: |
+      class Checker:
+          def countPairs(self, root, distance, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+
+              def dfs(node):
+                  if node is None:
+                      return [], 0
+                  left_distances, left_pairs = dfs(node.left)
+                  right_distances, right_pairs = dfs(node.right)
+                  if node.left is None and node.right is None:
+                      return [0], left_pairs + right_pairs
+                  pairs = left_pairs + right_pairs
+                  for left in left_distances:
+                      for right in right_distances:
+                          if left + right <= distance:
+                              pairs += 1
+                  distances = [d + 1 for d in left_distances + right_distances]
+                  return [d for d in distances if d < distance], pairs
+
+              _, expected = dfs(root)
+              return result == expected
+
+seed: 1530
+
+tests:
+  - name: single-distance-one
+    in:
+      root: [1]
+      distance: 1
+    out: 0
+  - name: single-distance-ten
+    in:
+      root: [1]
+      distance: 10
+    out: 0
+  - name: two-nodes-distance-one
+    in:
+      root: [1, 2]
+      distance: 1
+    out: 0
+  - name: two-nodes-distance-two
+    in:
+      root: [1, 2]
+      distance: 2
+    out: 0
+  - name: three-nodes-distance-one
+    in:
+      root: [1, 2, 3]
+      distance: 1
+    out: 0
+  - name: three-nodes-distance-two
+    in:
+      root: [1, 2, 3]
+      distance: 2
+    out: 1
+  - name: three-nodes-distance-three
+    in:
+      root: [1, 2, 3]
+      distance: 3
+    out: 1
+  - name: five-left-distance-two
+    in:
+      root: [1, 2, 3, 4, 5]
+      distance: 2
+    out: 1
+  - name: five-left-distance-three
+    in:
+      root: [1, 2, 3, 4, 5]
+      distance: 3
+    out: 3
+  - name: five-left-distance-four
+    in:
+      root: [1, 2, 3, 4, 5]
+      distance: 4
+    out: 3
+  - name: five-left-distance-ten
+    in:
+      root: [1, 2, 3, 4, 5]
+      distance: 10
+    out: 3
+  - name: perfect-seven-distance-two
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      distance: 2
+    out: 2
+  - name: perfect-seven-distance-three
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      distance: 3
+    out: 2
+  - name: perfect-seven-distance-four
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      distance: 4
+    out: 6
+  - name: perfect-seven-distance-ten
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      distance: 10
+    out: 6
+  - name: left-chain-with-gaps-wide
+    in:
+      root: [1, 2, null, 3, null, 4]
+      distance: 10
+    out: 0
+  - name: left-chain-with-gaps-short
+    in:
+      root: [1, 2, null, 3, null, 4]
+      distance: 2
+    out: 0
+  - name: right-chain-four-distance-three
+    in:
+      root: [1, null, 2, null, 3, null, 4]
+      distance: 3
+    out: 0
+  - name: right-chain-four-distance-four
+    in:
+      root: [1, null, 2, null, 3, null, 4]
+      distance: 4
+    out: 0
+  - name: sparse-left-two-leaves
+    in:
+      root: [1, 2, null, null, 3]
+      distance: 3
+    out: 0
+  - name: sparse-left-two-leaves-wide
+    in:
+      root: [1, 2, null, null, 3]
+      distance: 4
+    out: 0
+  - name: sparse-right-two-leaves
+    in:
+      root: [1, null, 2, 3, null, null, 4]
+      distance: 3
+    out: 0
+  - name: sparse-right-two-leaves-wide
+    in:
+      root: [1, null, 2, 3, null, null, 4]
+      distance: 4
+    out: 0
+  - name: four-leaf-unbalanced-three
+    in:
+      root: [1, 2, 3, 4, null, null, 5, 6]
+      distance: 3
+    out: 0
+  - name: four-leaf-unbalanced-four
+    in:
+      root: [1, 2, 3, 4, null, null, 5, 6]
+      distance: 4
+    out: 0
+  - name: mixed-seven-three
+    in:
+      root: [1, 2, 3, 4, 5, 6, null, 7]
+      distance: 3
+    out: 1
+  - name: mixed-seven-four
+    in:
+      root: [1, 2, 3, 4, 5, 6, null, 7]
+      distance: 4
+    out: 2
+  - name: mixed-five-distance-four
+    in:
+      root: [1, 2, 3, null, 4, null, 5, null, 6]
+      distance: 4
+    out: 0
+  - name: mixed-five-distance-five
+    in:
+      root: [1, 2, 3, null, 4, null, 5, null, 6]
+      distance: 5
+    out: 1
+  - name: perfect-fifteen-distance-two
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      distance: 2
+    out: 4
+  - name: perfect-fifteen-distance-three
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      distance: 3
+    out: 4
+  - name: perfect-fifteen-distance-four
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      distance: 4
+    out: 12
+  - name: deep-left-distance-five
+    in:
+      root: [1, 2, 3, 4, null, 5, null, 6, null, 7]
+      distance: 5
+    out: 0
+  - name: deep-left-distance-six
+    in:
+      root: [1, 2, 3, 4, null, 5, null, 6, null, 7]
+      distance: 6
+    out: 1
+  - name: condition-example-three
+    in:
+      root: [7, 1, 4, 6, null, 5, 3, null, null, null, null, null, 2]
+      distance: 3
+    out: 1

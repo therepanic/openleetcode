@@ -1,0 +1,245 @@
+entry:
+  id: 2019
+  title: "the-score-of-students-solving-math-expression"
+  params:
+    s:
+      type: string
+    answers:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().scoreOfStudents({s}, {answers})"
+    rust: "Solution::score_of_students({s}, {answers})"
+    python3: "Solution().scoreOfStudents({s}, {answers})"
+    python2: "Solution().scoreOfStudents({s}, {answers})"
+    ruby: "score_of_students({s}, {answers})"
+    java: "new Solution().scoreOfStudents({s}, {answers})"
+    csharp: "new Solution().ScoreOfStudents({s}, {answers})"
+    kotlin: "Solution().scoreOfStudents({s}, {answers})"
+    go: "scoreOfStudents({s}, {answers})"
+    dart: "Solution().scoreOfStudents({s}, {answers})"
+    swift: "Solution().scoreOfStudents({s}, {answers})"
+    typescript: "scoreOfStudents({s}, {answers})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().scoreOfStudents(s, answers, {result})"
+    checker: |
+      from functools import lru_cache
+
+      class Checker:
+          def scoreOfStudents(self, s, answers, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              values = [int(s[i]) for i in range(0, len(s), 2)]
+              ops = [s[i] for i in range(1, len(s), 2)]
+
+              @lru_cache(None)
+              def solve(lo, hi):
+                  if lo == hi:
+                      return {values[lo]}
+                  out = set()
+                  for mid in range(lo, hi):
+                      for left in solve(lo, mid):
+                          for right in solve(mid + 1, hi):
+                              value = left + right if ops[mid] == "+" else left * right
+                              if value <= 1000:
+                                  out.add(value)
+                  return out
+
+              correct = values[0]
+              for i, op in enumerate(ops):
+                  if op == "*":
+                      correct *= values[i + 1]
+                  else:
+                      correct += values[i + 1]
+              possible = solve(0, len(values) - 1)
+              expected = sum(5 if x == correct else 2 if x in possible else 0 for x in answers)
+              return result == expected
+
+seed: 2019
+
+tests:
+  - name: "example_one"
+    in:
+      s: "7+3*1*2"
+      answers: [20, 13, 42]
+    out: 7
+  - name: "example_two"
+    in:
+      s: "3+5*2"
+      answers: [13, 0, 10, 13, 13, 16, 16]
+    out: 19
+  - name: "example_three"
+    in:
+      s: "6+0*1"
+      answers: [12, 9, 6, 4, 8, 6]
+    out: 10
+  - name: "single_add"
+    in:
+      s: "1+2"
+      answers: [3, 0, 1, 2]
+    out: 5
+  - name: "single_multiply"
+    in:
+      s: "8*9"
+      answers: [72, 71, 0]
+    out: 5
+  - name: "zero_product"
+    in:
+      s: "6+0*1"
+      answers: [6, 6, 0, 7]
+    out: 10
+  - name: "all_additions"
+    in:
+      s: "1+2+3+4+5"
+      answers: [15, 10, 0, 15, 14]
+    out: 10
+  - name: "all_multiplications"
+    in:
+      s: "1*2*3*4*5"
+      answers: [120, 119, 0, 24]
+    out: 5
+  - name: "mixed_one"
+    in:
+      s: "2+3*4+5"
+      answers: [19, 25, 45, 0, 14]
+    out: 9
+  - name: "mixed_two"
+    in:
+      s: "9*1+2*3"
+      answers: [15, 33, 27, 0, 11]
+    out: 7
+  - name: "nested_alternatives"
+    in:
+      s: "1+2*3+4"
+      answers: [11, 21, 13, 15, 10]
+    out: 11
+  - name: "large_sum"
+    in:
+      s: "9+9+9+9+9+9+9+9"
+      answers: [72, 0, 71, 72]
+    out: 10
+  - name: "large_product"
+    in:
+      s: "2*2*2*2*2*2*2*2"
+      answers: [256, 255, 128, 0]
+    out: 5
+  - name: "leading_zero"
+    in:
+      s: "0+1*2+3"
+      answers: [5, 6, 3, 0]
+    out: 5
+  - name: "zero_addition"
+    in:
+      s: "4*0+7*2"
+      answers: [14, 0, 28, 7]
+    out: 5
+  - name: "ones"
+    in:
+      s: "1+1*1+1"
+      answers: [3, 4, 2, 0]
+    out: 7
+  - name: "many_students"
+    in:
+      s: "2+3*4"
+      answers: [14, 14, 14, 20, 20, 20, 99, 0, 12, 12]
+    out: 21
+  - name: "ambiguous_a"
+    in:
+      s: "2*3+4*5"
+      answers: [26, 50, 46, 70, 10]
+    out: 11
+  - name: "ambiguous_b"
+    in:
+      s: "1+2+3*4"
+      answers: [15, 24, 21, 10, 0]
+    out: 9
+  - name: "alternating_short"
+    in:
+      s: "3*2+1*4"
+      answers: [10, 24, 13, 8]
+    out: 5
+  - name: "alternating_long"
+    in:
+      s: "1+2*3+4*5+6"
+      answers: [33, 51, 45, 105, 0]
+    out: 7
+  - name: "max_target"
+    in:
+      s: "9*9+9*1"
+      answers: [90, 810, 810, 99, 0]
+    out: 5
+  - name: "all_zero"
+    in:
+      s: "0*0+0*0"
+      answers: [0, 1, 2, 0]
+    out: 10
+  - name: "all_nines_product"
+    in:
+      s: "9*9*9"
+      answers: [729, 81, 0, 729]
+    out: 10
+  - name: "four_operands"
+    in:
+      s: "5+4*3+2"
+      answers: [19, 27, 45, 17, 0]
+    out: 7
+  - name: "five_operands"
+    in:
+      s: "5*4+3*2+1"
+      answers: [27, 31, 50, 41, 0]
+    out: 5
+  - name: "six_operands"
+    in:
+      s: "2+4*2+3*1"
+      answers: [13, 21, 18, 0, 10]
+    out: 5
+  - name: "repeated_zero"
+    in:
+      s: "7*0+8*0+9"
+      answers: [9, 0, 16, 72, 17]
+    out: 7
+  - name: "small_values"
+    in:
+      s: "1+2*1+2"
+      answers: [5, 6, 7, 4, 0]
+    out: 7
+  - name: "balanced_expression"
+    in:
+      s: "3*3+2*2+1"
+      answers: [14, 25, 19, 23, 0]
+    out: 7
+  - name: "deep_expression"
+    in:
+      s: "1+2*3+4*5+6*7+8"
+      answers: [69, 105, 153, 41, 0]
+    out: 2
+  - name: "duplicate_correct"
+    in:
+      s: "4+5*2"
+      answers: [14, 14, 14, 19, 19, 0]
+    out: 15
+  - name: "duplicate_wrong"
+    in:
+      s: "2+6*3"
+      answers: [24, 24, 24, 8, 0]
+    out: 6
+  - name: "boundary_answer"
+    in:
+      s: "9*9+9"
+      answers: [90, 99, 81, 1000, 0]
+    out: 5
+  - name: "long_valid_expression"
+    in:
+      s: "1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1"
+      answers: [16, 15, 0, 16]
+    out: 10

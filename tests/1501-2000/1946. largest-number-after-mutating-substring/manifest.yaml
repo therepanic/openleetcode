@@ -1,0 +1,280 @@
+entry:
+  id: 1946
+  title: "largest-number-after-mutating-substring"
+  params:
+    num:
+      type: string
+    change:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maximumNumber({num}, {change})"
+    rust: "Solution::maximum_number({num}, {change})"
+    python3: "Solution().maximumNumber({num}, {change})"
+    python2: "Solution().maximumNumber({num}, {change})"
+    ruby: "maximum_number({num}, {change})"
+    java: "new Solution().maximumNumber({num}, {change})"
+    csharp: "new Solution().MaximumNumber({num}, {change})"
+    kotlin: "Solution().maximumNumber({num}, {change})"
+    go: "maximumNumber({num}, {change})"
+    dart: "Solution().maximumNumber({num}, {change})"
+    swift: "Solution().maximumNumber({num}, {change})"
+    typescript: "maximumNumber({num}, {change})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maximumNumber(num, change, {result})"
+    checker: |
+      class Checker:
+          def maximumNumber(self, num, change, result):
+              if not isinstance(result, str) or len(result) != len(num):
+                  return False
+              expected = list(num)
+              active = False
+              for i, ch in enumerate(num):
+                  d = ord(ch) - 48
+                  mapped = str(change[d])
+                  if change[d] > d:
+                      expected[i] = mapped
+                      active = True
+                  elif change[d] == d or not active:
+                      continue
+                  else:
+                      break
+              return result == ''.join(expected)
+
+seed: 1946
+
+tests:
+  - name: "example-1"
+    in:
+      num: "132"
+      change: [9, 8, 5, 0, 3, 6, 4, 2, 6, 8]
+  - name: "example-2"
+    in:
+      num: "021"
+      change: [9, 4, 3, 5, 7, 2, 1, 9, 0, 6]
+  - name: "example-3"
+    in:
+      num: "5"
+      change: [1, 4, 7, 5, 3, 2, 5, 6, 9, 4]
+  - name: "single-increase"
+    in:
+      num: "0"
+      change: [9, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "single-decrease"
+    in:
+      num: "9"
+      change: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "all-identity"
+    in:
+      num: "0123456789"
+      change: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "increase-prefix-stop"
+    in:
+      num: "12345"
+      change: [0, 2, 3, 3, 4, 5, 6, 7, 8, 9]
+  - name: "increase-middle"
+    in:
+      num: "9876543210"
+      change: [0, 1, 2, 9, 4, 5, 6, 7, 8, 9]
+  - name: "decrease-before-increase"
+    in:
+      num: "53124"
+      change: [0, 0, 0, 9, 0, 0, 0, 0, 0, 0]
+  - name: "equal-then-increase"
+    in:
+      num: "112233"
+      change: [0, 1, 2, 9, 4, 5, 6, 7, 8, 9]
+  - name: "increase-run"
+    in:
+      num: "11111"
+      change: [0, 8, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "stop-after-run"
+    in:
+      num: "11211"
+      change: [0, 8, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "zero-leading"
+    in:
+      num: "000123"
+      change: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "zero-leading-stop"
+    in:
+      num: "00123"
+      change: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "only-last"
+    in:
+      num: "9998"
+      change: [0, 0, 0, 0, 0, 0, 0, 0, 0, 9]
+  - name: "only-first"
+    in:
+      num: "8999"
+      change: [0, 0, 0, 0, 0, 0, 0, 0, 9, 0]
+  - name: "strictly-decreasing-map"
+    in:
+      num: "9876543210"
+      change: [0, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+  - name: "strictly-increasing-map"
+    in:
+      num: "0123456789"
+      change: [1, 2, 3, 4, 5, 6, 7, 8, 9, 9]
+  - name: "mixed-one"
+    in:
+      num: "4050607080"
+      change: [7, 1, 2, 8, 9, 0, 6, 7, 8, 9]
+  - name: "mixed-two"
+    in:
+      num: "2468013579"
+      change: [0, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "mixed-three"
+    in:
+      num: "3141592653589793"
+      change: [9, 0, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "repeated-boundary"
+    in:
+      num: "333444455555"
+      change: [0, 1, 2, 4, 4, 5, 6, 7, 8, 9]
+  - name: "map-to-nine"
+    in:
+      num: "1234567890"
+      change: [9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
+  - name: "map-to-zero"
+    in:
+      num: "0123456789"
+      change: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "alternating"
+    in:
+      num: "0101010101"
+      change: [2, 3, 0, 1, 4, 5, 6, 7, 8, 9]
+  - name: "late-start"
+    in:
+      num: "999001234"
+      change: [8, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "late-stop"
+    in:
+      num: "123999001"
+      change: [9, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+  - name: "length-20"
+    in:
+      num: "01234567890123456789"
+      change: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  - name: "length-30"
+    in:
+      num: "111222333444555666777888999000"
+      change: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  - name: "all-nines"
+    in:
+      num: "9999999999"
+      change: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "all-zeros"
+    in:
+      num: "0000000000"
+      change: [9, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "one-improving-digit"
+    in:
+      num: "5555555555"
+      change: [0, 1, 2, 3, 4, 9, 6, 7, 8, 9]
+  - name: "improvement-after-equal"
+    in:
+      num: "777888"
+      change: [0, 1, 2, 3, 4, 5, 6, 7, 9, 9]
+  - name: "improvement-after-worse"
+    in:
+      num: "8172"
+      change: [0, 1, 2, 3, 4, 5, 6, 9, 8, 9]
+  - name: "large-static"
+    in:
+      num: "99999999999999999999999999999999999999999999999999"
+      change: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "large-static-increase"
+    in:
+      num: "00000000000000000000000000000000000000000000000000"
+      change: [9, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "generated-short"
+    in:
+      num:
+        gen: "str"
+        len: 128
+        alphabet: "0123456789"
+      change:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        elemType: "int"
+    seed: 194601
+  - name: "generated-medium"
+    in:
+      num:
+        gen: "str"
+        len: 1000
+        alphabet: "0123456789"
+      change:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        elemType: "int"
+    seed: 194602
+  - name: "generated-large"
+    in:
+      num:
+        gen: "str"
+        len: 100000
+        alphabet: "0123456789"
+      change:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        elemType: "int"
+    seed: 194603
+  - name: "generated-large-biased"
+    in:
+      num:
+        gen: "str"
+        len: 100000
+        alphabet: "0189"
+      change:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        elemType: "int"
+    seed: 194604
+  - name: "generated-long-low-digits"
+    in:
+      num:
+        gen: "str"
+        len: 50000
+        alphabet: "0123"
+      change:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 0
+          max: 9
+        distinct: false
+        elemType: "int"
+    seed: 194605

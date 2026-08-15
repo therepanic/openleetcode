@@ -1,0 +1,329 @@
+entry:
+  id: 1803
+  title: "count-pairs-with-xor-in-a-range"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    low:
+      type: int
+    high:
+      type: int
+  call:
+    cpp: "Solution().countPairs({nums}, {low}, {high})"
+    rust: "Solution::count_pairs({nums}, {low}, {high})"
+    python3: "Solution().countPairs({nums}, {low}, {high})"
+    python2: "Solution().countPairs({nums}, {low}, {high})"
+    ruby: "count_pairs({nums}, {low}, {high})"
+    java: "new Solution().countPairs({nums}, {low}, {high})"
+    csharp: "new Solution().CountPairs({nums}, {low}, {high})"
+    kotlin: "Solution().countPairs({nums}, {low}, {high})"
+    go: "countPairs({nums}, {low}, {high})"
+    dart: "Solution().countPairs({nums}, {low}, {high})"
+    swift: "Solution().countPairs({nums}, {low}, {high})"
+    typescript: "countPairs({nums}, {low}, {high})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().countPairs(nums, low, high, {result})"
+    checker: |
+      class Checker:
+          def countPairs(self, nums, low, high, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              bits = max(1, max(max(nums).bit_length(), (high + 1).bit_length()))
+              def count_less(bound):
+                  if bound <= 0:
+                      return 0
+                  child = [[-1, -1]]
+                  counts = [0]
+                  total = 0
+                  for value in nums:
+                      node = 0
+                      for bit in range(bits - 1, -1, -1):
+                          v = (value >> bit) & 1
+                          b = (bound >> bit) & 1
+                          if b:
+                              same = child[node][v]
+                              if same != -1:
+                                  total += counts[same]
+                              node = child[node][1 - v]
+                          else:
+                              node = child[node][v]
+                          if node == -1:
+                              break
+                      node = 0
+                      for bit in range(bits - 1, -1, -1):
+                          v = (value >> bit) & 1
+                          nxt = child[node][v]
+                          if nxt == -1:
+                              nxt = len(child)
+                              child[node][v] = nxt
+                              child.append([-1, -1])
+                              counts.append(0)
+                          node = nxt
+                          counts[node] += 1
+                  return total
+              return result == count_less(high + 1) - count_less(low)
+
+seed: 1803
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 4, 2, 7]
+      low: 2
+      high: 6
+    out: 6
+  - name: example-two
+    in:
+      nums: [9, 8, 4, 2, 1]
+      low: 5
+      high: 14
+    out: 8
+  - name: single
+    in:
+      nums: [1]
+      low: 1
+      high: 1
+    out: 0
+  - name: equal-pair
+    in:
+      nums: [7, 7]
+      low: 0
+      high: 0
+    out: 1
+  - name: equal-outside
+    in:
+      nums: [7, 7, 7]
+      low: 1
+      high: 2
+    out: 0
+  - name: adjacent-small
+    in:
+      nums: [1, 2, 3, 4]
+      low: 1
+      high: 3
+    out: 3
+  - name: all-pairs
+    in:
+      nums: [1, 2, 4, 8]
+      low: 1
+      high: 15
+    out: 6
+  - name: no-pairs
+    in:
+      nums: [1, 2, 4, 8]
+      low: 16
+      high: 20000
+    out: 0
+  - name: exact-xor
+    in:
+      nums: [1, 2, 3, 4, 5]
+      low: 6
+      high: 6
+    out: 2
+  - name: zero-bound
+    in:
+      nums: [3, 3, 3, 3]
+      low: 0
+      high: 0
+    out: 6
+  - name: one-bound
+    in:
+      nums: [1, 2, 4, 8, 16]
+      low: 1
+      high: 1
+    out: 0
+  - name: duplicates-mixed
+    in:
+      nums: [1, 1, 2, 2, 4, 4]
+      low: 0
+      high: 3
+    out: 7
+  - name: high-bit
+    in:
+      nums: [1, 1024, 2048, 4096]
+      low: 1024
+      high: 4096
+    out: 3
+  - name: max-values
+    in:
+      nums: [20000, 19999, 16384, 8192]
+      low: 1
+      high: 20000
+    out: 3
+  - name: narrow-middle
+    in:
+      nums: [0, 1, 2, 3, 4, 5, 6, 7]
+      low: 4
+      high: 5
+    out: 8
+  - name: powers
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64, 128]
+      low: 7
+      high: 31
+    out: 7
+  - name: repeated-zero-xor
+    in:
+      nums: [10, 10, 10, 20, 20, 20]
+      low: 0
+      high: 15
+    out: 6
+  - name: two-groups
+    in:
+      nums: [0, 0, 31, 31]
+      low: 31
+      high: 31
+    out: 4
+  - name: alternating
+    in:
+      nums: [5, 10, 5, 10, 5, 10]
+      low: 15
+      high: 15
+    out: 9
+  - name: full-small-domain
+    in:
+      nums: [0, 1, 2, 3, 4, 5, 6, 7]
+      low: 0
+      high: 7
+    out: 28
+  - name: upper-exclusive
+    in:
+      nums: [8, 9, 10, 11]
+      low: 1
+      high: 2
+    out: 4
+  - name: lower-exclusive
+    in:
+      nums: [8, 9, 10, 11]
+      low: 3
+      high: 7
+    out: 2
+  - name: broad-range
+    in:
+      nums: [17, 23, 41, 58, 99, 127]
+      low: 10
+      high: 120
+    out: 14
+  - name: sorted-input
+    in:
+      nums: [1, 3, 7, 15, 31, 63]
+      low: 8
+      high: 32
+    out: 8
+  - name: reverse-input
+    in:
+      nums: [63, 31, 15, 7, 3, 1]
+      low: 8
+      high: 32
+    out: 8
+  - name: many-duplicates
+    in:
+      nums: [2, 2, 2, 2, 5, 5, 5, 5]
+      low: 3
+      high: 7
+    out: 16
+  - name: low-high-same
+    in:
+      nums: [1, 4, 6, 9, 12]
+      low: 10
+      high: 10
+    out: 1
+  - name: zero-and-max
+    in:
+      nums: [0, 20000, 0, 20000]
+      low: 20000
+      high: 20000
+    out: 4
+  - name: dense-eight
+    in:
+      nums: [12, 13, 14, 15, 28, 29, 30, 31]
+      low: 1
+      high: 4
+    out: 12
+  - name: sparse-large
+    in:
+      nums: [1, 4096, 8192, 12288, 16384, 20000]
+      low: 4096
+      high: 12288
+    out: 5
+  - name: generator-small
+    in:
+      nums:
+        gen: "array"
+        len: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 20000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      low: 1
+      high: 20000
+  - name: generator-medium
+    in:
+      nums:
+        gen: "array"
+        len: 250
+        of:
+          gen: "int"
+          min: 1
+          max: 20000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      low: 100
+      high: 15000
+  - name: generator-dense
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 2047
+        distinct: false
+        sorted: false
+        elemType: "int"
+      low: 0
+      high: 2047
+  - name: generator-large
+    in:
+      nums:
+        gen: "array"
+        len: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 20000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      low: 4096
+      high: 16384
+  - name: generator-maximum
+    in:
+      nums:
+        gen: "array"
+        len: 20000
+        of:
+          gen: "int"
+          min: 1
+          max: 20000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      low: 1
+      high: 20000

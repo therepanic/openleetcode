@@ -1,0 +1,235 @@
+entry:
+  id: 1690
+  title: "stone-game-vii"
+  params:
+    stones:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().stoneGameVII({stones})"
+    rust: "Solution::stone_game_vii({stones})"
+    python3: "Solution().stoneGameVII({stones})"
+    python2: "Solution().stoneGameVII({stones})"
+    ruby: "stone_game_vii({stones})"
+    java: "new Solution().stoneGameVII({stones})"
+    csharp: "new Solution().StoneGameVII({stones})"
+    kotlin: "Solution().stoneGameVII({stones})"
+    go: "stoneGameVII({stones})"
+    dart: "Solution().stoneGameVII({stones})"
+    swift: "Solution().stoneGameVII({stones})"
+    typescript: "stoneGameVII({stones})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().stoneGameVII(stones, {result})"
+    checker: |
+      class Checker:
+          def stoneGameVII(self, stones, result):
+              n = len(stones)
+              if n < 2 or n > 1000 or any(x < 1 or x > 1000 for x in stones):
+                  return False
+              prefix = [0]
+              for x in stones:
+                  prefix.append(prefix[-1] + x)
+              dp = [0] * n
+              for length in range(2, n + 1):
+                  for left in range(n - length + 1):
+                      right = left + length - 1
+                      total = prefix[right + 1] - prefix[left]
+                      dp[left] = max(total - stones[left] - dp[left + 1],
+                                     total - stones[right] - dp[left])
+              return result == dp[0]
+
+seed: 1690
+
+tests:
+  - name: example-one
+    in:
+      stones: [5, 3, 1, 4, 2]
+    out: 6
+  - name: example-two
+    in:
+      stones: [7, 90, 5, 1, 100, 10, 10, 2]
+    out: 122
+  - name: minimum-length
+    in:
+      stones: [2, 7]
+    out: 7
+  - name: three-equal
+    in:
+      stones: [1, 1, 1]
+    out: 1
+  - name: increasing-four
+    in:
+      stones: [1, 2, 3, 4]
+    out: 6
+  - name: alternating-large
+    in:
+      stones: [10, 1, 10, 1]
+    out: 20
+  - name: maximum-equal-four
+    in:
+      stones: [1000, 1000, 1000, 1000]
+    out: 2000
+  - name: alternating-five
+    in:
+      stones: [1, 1000, 1, 1000, 1]
+    out: 2
+  - name: skewed-three
+    in:
+      stones: [999, 1, 500]
+    out: 1
+  - name: repeated-alternation
+    in:
+      stones: [1, 2, 1, 2, 1, 2]
+    out: 6
+  - name: valley-then-peak
+    in:
+      stones: [8, 6, 4, 2, 10, 12]
+    out: 22
+  - name: mixed-seven
+    in:
+      stones: [3, 9, 2, 8, 1, 7, 4]
+    out: 7
+  - name: equal-seven
+    in:
+      stones: [5, 5, 5, 5, 5, 5, 5]
+    out: 15
+  - name: increasing-eight
+    in:
+      stones: [1, 3, 5, 7, 9, 11, 13, 15]
+    out: 36
+  - name: decreasing-eight
+    in:
+      stones: [15, 13, 11, 9, 7, 5, 3, 1]
+    out: 36
+  - name: high-low-nine
+    in:
+      stones: [1, 1000, 999, 2, 998, 3, 997, 4, 996]
+    out: 1009
+  - name: equal-ten
+    in:
+      stones: [42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+    out: 210
+  - name: increasing-ten
+    in:
+      stones: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: 30
+  - name: decreasing-eight-high
+    in:
+      stones: [1000, 999, 998, 997, 996, 995, 994, 993]
+    out: 3988
+  - name: repeated-three-values
+    in:
+      stones: [250, 750, 500, 250, 750, 500]
+    out: 1750
+  - name: mixed-nine
+    in:
+      stones: [4, 1, 7, 3, 9, 2, 8, 5, 6]
+    out: 11
+  - name: paired-values
+    in:
+      stones: [1, 1, 2, 2, 3, 3, 4, 4]
+    out: 10
+  - name: separated-peaks
+    in:
+      stones: [12, 1, 2, 20, 3, 4, 30]
+    out: 25
+  - name: descending-seven
+    in:
+      stones: [6, 5, 4, 3, 2, 1, 1]
+    out: 9
+  - name: arithmetic-five
+    in:
+      stones: [11, 22, 33, 44, 55]
+    out: 66
+  - name: alternating-seven
+    in:
+      stones: [2, 100, 3, 99, 4, 98, 5]
+    out: 12
+  - name: sparse-peaks
+    in:
+      stones: [17, 2, 23, 4, 19, 6, 13]
+    out: 12
+  - name: alternating-nine
+    in:
+      stones: [1, 50, 2, 49, 3, 48, 4, 47, 5]
+    out: 14
+  - name: irregular-six
+    in:
+      stones: [321, 123, 456, 234, 345, 111]
+    out: 1122
+  - name: decreasing-nine
+    in:
+      stones: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: 20
+  - name: permutation-eight
+    in:
+      stones: [1, 4, 2, 8, 3, 7, 5, 6]
+    out: 25
+  - name: dominant-first
+    in:
+      stones: [100, 1, 2, 3, 4, 5, 6, 7, 8]
+    out: 16
+  - name: repeated-blocks
+    in:
+      stones: [13, 13, 13, 1, 1, 1, 26, 26]
+    out: 53
+  - name: generated-small
+    in:
+      stones:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated-medium
+    in:
+      stones:
+        gen: "array"
+        len: 17
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated-structured
+    in:
+      stones:
+        gen: "array"
+        len: 64
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated-large
+    in:
+      stones:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"
+  - name: generated-maximum
+    in:
+      stones:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        elemType: "int"

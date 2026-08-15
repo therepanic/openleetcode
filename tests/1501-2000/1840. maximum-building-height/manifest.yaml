@@ -1,0 +1,330 @@
+entry:
+  id: 1840
+  title: maximum-building-height
+  params:
+    n:
+      type: int
+    restrictions:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxBuilding({n}, {restrictions})"
+    rust: "Solution::max_building({n}, {restrictions})"
+    python3: "Solution().maxBuilding({n}, {restrictions})"
+    python2: "Solution().maxBuilding({n}, {restrictions})"
+    ruby: "max_building({n}, {restrictions})"
+    java: "new Solution().maxBuilding({n}, {restrictions})"
+    csharp: "new Solution().MaxBuilding({n}, {restrictions})"
+    kotlin: "Solution().maxBuilding({n}, {restrictions})"
+    go: "maxBuilding({n}, {restrictions})"
+    dart: "Solution().maxBuilding({n}, {restrictions})"
+    swift: "Solution().maxBuilding({n}, {restrictions})"
+    typescript: "maxBuilding({n}, {restrictions})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().maxBuilding(n, restrictions, {result})"
+    checker: |
+      class Checker:
+          def maxBuilding(self, n, restrictions, result):
+              points = [[1, 0]] + [list(x) for x in restrictions]
+              points.sort()
+              for i in range(1, len(points)):
+                  points[i][1] = min(points[i][1], points[i - 1][1] + points[i][0] - points[i - 1][0])
+              for i in range(len(points) - 2, -1, -1):
+                  points[i][1] = min(points[i][1], points[i + 1][1] + points[i + 1][0] - points[i][0])
+              best = 0
+              for left, right in zip(points, points[1:]):
+                  best = max(best, (left[1] + right[1] + right[0] - left[0]) // 2)
+              best = max(best, points[-1][1] + n - points[-1][0])
+              return isinstance(result, int) and result == best
+seed: 1840
+tests:
+  - name: three-empty
+    in:
+      n: 3
+      restrictions: []
+    out: 2
+  - name: four-empty
+    in:
+      n: 4
+      restrictions: []
+    out: 3
+  - name: ten-empty
+    in:
+      n: 10
+      restrictions: []
+    out: 9
+  - name: example-one
+    in:
+      n: 5
+      restrictions:
+        - [2, 1]
+        - [4, 1]
+    out: 2
+  - name: example-two
+    in:
+      n: 6
+      restrictions: []
+    out: 5
+  - name: example-three
+    in:
+      n: 10
+      restrictions:
+        - [5, 3]
+        - [2, 5]
+        - [7, 4]
+        - [10, 3]
+    out: 5
+  - name: final-zero
+    in:
+      n: 5
+      restrictions:
+        - [5, 0]
+    out: 2
+  - name: early-zero
+    in:
+      n: 10
+      restrictions:
+        - [2, 0]
+    out: 8
+  - name: end-zero
+    in:
+      n: 10
+      restrictions:
+        - [10, 0]
+    out: 4
+  - name: middle-zero
+    in:
+      n: 10
+      restrictions:
+        - [5, 0]
+    out: 5
+  - name: two-low-peaks
+    in:
+      n: 10
+      restrictions:
+        - [3, 1]
+        - [7, 1]
+    out: 4
+  - name: three-boundaries
+    in:
+      n: 20
+      restrictions:
+        - [2, 1]
+        - [10, 2]
+        - [20, 0]
+    out: 6
+  - name: hundred-middle-cap
+    in:
+      n: 100
+      restrictions:
+        - [50, 10]
+    out: 60
+  - name: billion-empty
+    in:
+      n: 1000000000
+      restrictions: []
+    out: 999999999
+  - name: billion-final-zero
+    in:
+      n: 1000000000
+      restrictions:
+        - [1000000000, 0]
+    out: 499999999
+  - name: billion-two-zeroes
+    in:
+      n: 1000000000
+      restrictions:
+        - [2, 0]
+        - [999999999, 0]
+    out: 499999998
+  - name: two-equal-caps
+    in:
+      n: 15
+      restrictions:
+        - [5, 2]
+        - [10, 2]
+    out: 7
+  - name: mixed-three
+    in:
+      n: 20
+      restrictions:
+        - [4, 10]
+        - [8, 0]
+        - [15, 10]
+    out: 12
+  - name: late-low-cap
+    in:
+      n: 12
+      restrictions:
+        - [6, 1]
+        - [12, 1]
+    out: 4
+  - name: high-caps-around-low
+    in:
+      n: 50
+      restrictions:
+        - [2, 100]
+        - [25, 3]
+        - [49, 100]
+    out: 28
+  - name: repeated-zero-barriers
+    in:
+      n: 30
+      restrictions:
+        - [10, 0]
+        - [20, 0]
+        - [30, 0]
+    out: 5
+  - name: early-and-late-zero
+    in:
+      n: 25
+      restrictions:
+        - [2, 0]
+        - [3, 0]
+        - [24, 0]
+    out: 10
+  - name: final-high-cap
+    in:
+      n: 7
+      restrictions:
+        - [7, 100]
+    out: 6
+  - name: central-cap
+    in:
+      n: 8
+      restrictions:
+        - [4, 1]
+    out: 5
+  - name: broad-equal-caps
+    in:
+      n: 9
+      restrictions:
+        - [2, 5]
+        - [5, 5]
+        - [9, 5]
+    out: 6
+  - name: thousand-three-caps
+    in:
+      n: 1000
+      restrictions:
+        - [100, 1]
+        - [500, 100]
+        - [900, 1]
+    out: 250
+  - name: hundred-thousand-caps
+    in:
+      n: 100000
+      restrictions:
+        - [2, 1]
+        - [50000, 1000]
+        - [99999, 1]
+    out: 25500
+  - name: odd-middle-zero
+    in:
+      n: 17
+      restrictions:
+        - [9, 0]
+    out: 8
+  - name: end-cap-almost-natural
+    in:
+      n: 18
+      restrictions:
+        - [2, 0]
+        - [18, 17]
+    out: 16
+  - name: close-low-caps
+    in:
+      n: 40
+      restrictions:
+        - [5, 1]
+        - [6, 1]
+        - [35, 2]
+    out: 16
+  - name: single-middle-zero-large
+    in:
+      n: 60
+      restrictions:
+        - [30, 0]
+    out: 30
+  - name: clustered-early-caps
+    in:
+      n: 11
+      restrictions:
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [8, 2]
+    out: 5
+  - name: adjacent-low-caps
+    in:
+      n: 22
+      restrictions:
+        - [11, 4]
+        - [12, 0]
+        - [22, 5]
+    out: 7
+  - name: odd-large-final
+    in:
+      n: 31
+      restrictions:
+        - [16, 1]
+        - [31, 30]
+    out: 16
+  - name: billion-large-cap
+    in:
+      n: 1000000000
+      restrictions:
+        - [500000000, 123456789]
+        - [999999999, 999999999]
+    out: 623456789
+  - name: generated-empty-small
+    in:
+      n:
+        gen: int
+        min: 3
+        max: 1000
+      restrictions: []
+  - name: generated-empty-large
+    in:
+      n:
+        gen: int
+        min: 100000000
+        max: 1000000000
+      restrictions: []
+  - name: generated-fixed-barrier
+    in:
+      n:
+        gen: int
+        min: 20
+        max: 1000000000
+      restrictions:
+        - [2, 0]
+        - [10, 1]
+  - name: generated-middle-cap
+    in:
+      n:
+        gen: int
+        min: 100
+        max: 1000000000
+      restrictions:
+        - [50, 10]
+        - [99, 0]
+  - name: generated-three-caps
+    in:
+      n:
+        gen: int
+        min: 1000
+        max: 1000000000
+      restrictions:
+        - [2, 1]
+        - [500, 100]
+        - [999, 1]

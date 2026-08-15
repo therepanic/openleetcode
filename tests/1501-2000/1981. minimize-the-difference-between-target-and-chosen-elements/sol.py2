@@ -1,0 +1,31 @@
+class Solution(object):
+    def minimizeTheDifference(self, mat, target):
+        """
+        :type mat: List[List[int]]
+        :type target: int
+        :rtype: int
+        """
+        for row in mat:
+            row.sort()
+        dp = {}
+        mini = [float('inf')]
+        
+        def func(i, ans):
+            if i < 0:
+                mini[0] = min(mini[0], abs(ans))
+                return abs(ans)
+            if (i, ans) in dp:
+                return dp[(i, ans)]
+            if ans < 0 and abs(ans) > mini[0]:
+                return float('inf')
+            take = float('inf')
+            for z in range(len(mat[i])):
+                if z > 0 and mat[i][z] == mat[i][z-1]:
+                    continue
+                take = min(take, func(i-1, ans - mat[i][z]))
+                if take == 0:
+                    break
+            dp[(i, ans)] = take
+            return take
+        
+        return func(len(mat)-1, target)

@@ -1,0 +1,279 @@
+entry:
+  id: 1604
+  title: "Alert Using Same Key-Card Three or More Times in a One Hour Period"
+  params:
+    keyName:
+      type: array
+      items:
+        type: string
+    keyTime:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().alertNames({keyName}, {keyTime})"
+    rust: "Solution::alert_names({keyName}, {keyTime})"
+    python3: "Solution().alertNames({keyName}, {keyTime})"
+    python2: "Solution().alertNames({keyName}, {keyTime})"
+    ruby: "alert_names({keyName}, {keyTime})"
+    java: "new Solution().alertNames({keyName}, {keyTime})"
+    csharp: "new Solution().AlertNames({keyName}, {keyTime})"
+    kotlin: "Solution().alertNames({keyName}, {keyTime})"
+    go: "alertNames({keyName}, {keyTime})"
+    dart: "Solution().alertNames({keyName}, {keyTime})"
+    swift: "Solution().alertNames({keyName}, {keyTime})"
+    typescript: "alertNames({keyName}, {keyTime})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().alertNames(keyName, keyTime, {result})"
+    checker: |
+      class Checker:
+          def alertNames(self, keyName, keyTime, result):
+              expected = []
+              grouped = {}
+              for name, stamp in zip(keyName, keyTime):
+                  h, m = map(int, stamp.split(':'))
+                  grouped.setdefault(name, []).append(h * 60 + m)
+              for name, times in grouped.items():
+                  times.sort()
+                  if any(times[i + 2] - times[i] <= 60 for i in range(len(times) - 2)):
+                      expected.append(name)
+              return result == sorted(expected)
+
+seed: 1604
+
+tests:
+  - name: empty
+    in:
+      keyName: [a]
+      keyTime: ["00:00"]
+    out: []
+  - name: two-uses-not-alert
+    in:
+      keyName: [alice, alice]
+      keyTime: ["09:00", "09:30"]
+    out: []
+  - name: exact-sixty-minutes
+    in:
+      keyName: [alice, alice, alice]
+      keyTime: ["09:00", "09:30", "10:00"]
+    out: [alice]
+  - name: just-over-hour
+    in:
+      keyName: [alice, alice, alice]
+      keyTime: ["09:00", "09:30", "10:01"]
+    out: []
+  - name: unsorted-input
+    in:
+      keyName: [alice, alice, alice]
+      keyTime: ["10:00", "09:00", "09:30"]
+    out: [alice]
+  - name: duplicate-time
+    in:
+      keyName: [bob, bob, bob]
+      keyTime: ["12:00", "12:01", "13:01"]
+    out: []
+  - name: midnight-window
+    in:
+      keyName: [carol, carol, carol]
+      keyTime: ["00:00", "00:01", "01:00"]
+    out: [carol]
+  - name: end-of-day
+    in:
+      keyName: [dave, dave, dave]
+      keyTime: ["22:59", "23:00", "23:59"]
+    out: [dave]
+  - name: multiple-names-sorted
+    in:
+      keyName: [zoe, amy, zoe, amy, zoe, amy]
+      keyTime: ["08:00", "09:00", "08:20", "09:20", "08:40", "09:40"]
+    out: [amy, zoe]
+  - name: one-alert-one-safe
+    in:
+      keyName: [alice, bob, alice, bob, alice, bob]
+      keyTime: ["08:00", "08:00", "08:20", "09:01", "08:40", "10:00"]
+    out: [alice]
+  - name: sliding-window-late
+    in:
+      keyName: [alice, alice, alice, alice]
+      keyTime: ["08:00", "09:02", "09:30", "09:45"]
+    out: [alice]
+  - name: three-spread-four-safe
+    in:
+      keyName: [alice, alice, alice, alice]
+      keyTime: ["08:00", "08:30", "09:01", "10:30"]
+    out: []
+  - name: four-over-hour
+    in:
+      keyName: [alice, alice, alice, alice]
+      keyTime: ["08:00", "08:30", "09:01", "09:31"]
+    out: []
+  - name: names-with-spaces
+    in:
+      keyName: [johndoe, johndoe, johndoe, annlee, annlee, annlee]
+      keyTime: ["10:00", "10:20", "10:40", "10:00", "11:01", "11:30"]
+    out: [johndoe]
+  - name: lexicographic-order
+    in:
+      keyName: [z, a, m, z, a, m, z, a, m]
+      keyTime:
+        [
+          "01:00",
+          "02:00",
+          "03:00",
+          "01:10",
+          "02:10",
+          "03:10",
+          "01:20",
+          "02:20",
+          "03:20",
+        ]
+    out: [a, m, z]
+  - name: isolated-names
+    in:
+      keyName: [a, b, c, d, e]
+      keyTime: ["00:00", "01:00", "02:00", "03:00", "04:00"]
+    out: []
+  - name: boundary-100
+    in:
+      keyName: [a, a, a, b, b, b]
+      keyTime: ["01:00", "01:59", "02:40", "01:00", "02:00", "03:01"]
+    out: []
+  - name: early-hours
+    in:
+      keyName: [a, a, a, b, b, b]
+      keyTime: ["00:01", "00:02", "00:03", "04:57", "04:58", "05:59"]
+    out: [a]
+  - name: late-hours-safe
+    in:
+      keyName: [a, a, a]
+      keyTime: ["21:00", "22:01", "23:02"]
+    out: []
+  - name: repeated-alert-candidates
+    in:
+      keyName: [a, a, a, a, b, b, b, c, c, c]
+      keyTime:
+        [
+          "10:00",
+          "10:10",
+          "10:20",
+          "10:30",
+          "11:00",
+          "11:30",
+          "12:00",
+          "12:00",
+          "12:30",
+          "13:01",
+        ]
+    out: [a, b]
+  - name: same-minute-three
+    in:
+      keyName: [a, a, a]
+      keyTime: ["14:15", "14:15", "14:15"]
+    out: [a]
+  - name: interleaved-safe
+    in:
+      keyName: [a, b, a, b, a, b]
+      keyTime: ["08:00", "08:00", "09:01", "09:01", "10:02", "10:02"]
+    out: []
+  - name: interleaved-alert
+    in:
+      keyName: [a, b, a, b, a, b]
+      keyTime: ["08:00", "08:00", "09:00", "09:00", "09:59", "09:59"]
+    out: []
+  - name: unsorted-mixed
+    in:
+      keyName: [b, a, b, a, b, a]
+      keyTime: ["18:00", "17:30", "17:00", "18:00", "17:30", "18:30"]
+    out: [a, b]
+  - name: one-name-many-safe
+    in:
+      keyName: [a, a, a, a, a, a]
+      keyTime: ["06:00", "07:01", "08:02", "09:03", "10:04", "11:05"]
+    out: []
+  - name: one-name-many-alert
+    in:
+      keyName: [a, a, a, a, a, a]
+      keyTime: ["06:00", "06:59", "07:00", "08:02", "08:03", "09:03"]
+    out: [a]
+  - name: exact-hour-later-window
+    in:
+      keyName: [a, a, a, a]
+      keyTime: ["02:00", "02:59", "03:00", "04:30"]
+    out: [a]
+  - name: no-cross-midnight
+    in:
+      keyName: [a, a, a]
+      keyTime: ["23:30", "23:50", "00:10"]
+    out: []
+  - name: alphabetic-long-names
+    in:
+      keyName: [alexander, beatrice, alexander, beatrice, alexander, beatrice]
+      keyTime: ["15:00", "15:00", "15:30", "16:01", "16:00", "17:02"]
+    out: [alexander]
+  - name: four-users
+    in:
+      keyName: [a, b, c, d, a, b, c, d, a, b, c, d]
+      keyTime:
+        [
+          "07:00",
+          "07:00",
+          "07:00",
+          "07:00",
+          "07:20",
+          "07:20",
+          "07:20",
+          "07:20",
+          "07:40",
+          "07:40",
+          "08:01",
+          "08:01",
+        ]
+    out: [a, b]
+  - name: four-users-safe
+    in:
+      keyName: [a, b, c, d, a, b, c, d, a, b, c, d]
+      keyTime:
+        [
+          "07:00",
+          "07:00",
+          "07:00",
+          "07:00",
+          "08:01",
+          "08:01",
+          "08:01",
+          "08:01",
+          "09:02",
+          "09:02",
+          "09:02",
+          "09:02",
+        ]
+    out: []
+  - name: dense-and-sparse
+    in:
+      keyName: [dense, sparse, dense, sparse, dense, sparse, dense]
+      keyTime: ["12:00", "00:00", "12:01", "01:01", "12:02", "02:02", "12:03"]
+    out: [dense]
+  - name: late-alert
+    in:
+      keyName: [a, a, a, b, b, b]
+      keyTime: ["22:00", "22:30", "23:00", "22:00", "22:30", "23:01"]
+    out: [a]
+  - name: exact-hour-with-duplicates
+    in:
+      keyName: [a, a, a, a]
+      keyTime: ["05:00", "05:00", "06:00", "08:00"]
+    out: [a]
+  - name: long-window-safe
+    in:
+      keyName: [a, a, a, a, a]
+      keyTime: ["00:00", "01:01", "02:02", "03:03", "04:04"]
+    out: []

@@ -1,0 +1,244 @@
+entry:
+  id: 1799
+  title: "maximize-score-after-n-operations"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxScore({nums})"
+    rust: "Solution::max_score({nums})"
+    python3: "Solution().maxScore({nums})"
+    python2: "Solution().maxScore({nums})"
+    ruby: "max_score({nums})"
+    java: "new Solution().maxScore({nums})"
+    csharp: "new Solution().MaxScore({nums})"
+    kotlin: "Solution().maxScore({nums})"
+    go: "maxScore({nums})"
+    dart: "Solution().maxScore({nums})"
+    swift: "Solution().maxScore({nums})"
+    typescript: "maxScore({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxScore(nums, {result})"
+    checker: |
+      from functools import lru_cache
+      from math import gcd
+
+      class Checker:
+          def maxScore(self, nums, result):
+              n = len(nums)
+              if n == 0 or n % 2 or n > 14:
+                  return False
+              @lru_cache(None)
+              def dp(op, mask):
+                  if mask == (1 << n) - 1:
+                      return 0
+                  best = 0
+                  for i in range(n):
+                      if mask & (1 << i):
+                          continue
+                      for j in range(i + 1, n):
+                          if mask & (1 << j):
+                              continue
+                          best = max(best, op * gcd(nums[i], nums[j]) + dp(op + 1, mask | (1 << i) | (1 << j)))
+                  return best
+              return isinstance(result, int) and result == dp(1, 0)
+
+seed: 1799
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 2]
+    out: 1
+  - name: example-two
+    in:
+      nums: [3, 4, 6, 8]
+    out: 11
+  - name: example-three
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 14
+  - name: equal-pair
+    in:
+      nums: [2, 2]
+    out: 2
+  - name: coprime-pair
+    in:
+      nums: [6, 10]
+    out: 2
+  - name: four-multiples
+    in:
+      nums: [12, 18, 24, 30]
+    out: 30
+  - name: overlapping-divisors
+    in:
+      nums: [5, 10, 15, 20]
+    out: 25
+  - name: common-seven
+    in:
+      nums: [7, 14, 21, 28]
+    out: 35
+  - name: all-ones
+    in:
+      nums: [1, 1, 1, 1]
+    out: 3
+  - name: maximum-equal
+    in:
+      nums: [1000000, 1000000]
+    out: 1000000
+  - name: near-maximum-coprime
+    in:
+      nums: [999999, 999998]
+    out: 1
+  - name: four-primes
+    in:
+      nums: [2, 3, 5, 7]
+    out: 3
+  - name: six-even
+    in:
+      nums: [4, 8, 12, 16, 20, 24]
+    out: 56
+  - name: six-overlapping
+    in:
+      nums: [6, 9, 15, 21, 27, 33]
+    out: 36
+  - name: six-tens
+    in:
+      nums: [10, 20, 30, 40, 50, 60]
+    out: 140
+  - name: eight-eleven
+    in:
+      nums: [11, 22, 33, 44, 55, 66, 77, 88]
+    out: 308
+  - name: four-thirteen
+    in:
+      nums: [13, 26, 39, 52]
+    out: 65
+  - name: six-seventeen
+    in:
+      nums: [17, 34, 51, 68, 85, 102]
+    out: 238
+  - name: eight-eights
+    in:
+      nums: [8, 12, 16, 20, 24, 28, 32, 36]
+    out: 120
+  - name: six-nines
+    in:
+      nums: [9, 18, 27, 36, 45, 54]
+    out: 126
+  - name: mixed-extremes
+    in:
+      nums: [1, 1000000, 2, 999999]
+    out: 5
+  - name: distinct-factors
+    in:
+      nums: [25, 35, 49, 77]
+    out: 19
+  - name: six-fourteens
+    in:
+      nums: [14, 28, 42, 70, 98, 126]
+    out: 168
+  - name: four-sixteens
+    in:
+      nums: [16, 24, 40, 56]
+    out: 24
+  - name: six-eighteens
+    in:
+      nums: [18, 30, 42, 66, 78, 90]
+    out: 108
+  - name: four-large-primes
+    in:
+      nums: [19, 23, 29, 31]
+    out: 3
+  - name: six-hundreds
+    in:
+      nums: [100, 200, 300, 400, 500, 600]
+    out: 1400
+  - name: powers-of-two
+    in:
+      nums: [2, 4, 8, 16, 32, 64]
+    out: 114
+  - name: eight-threes
+    in:
+      nums: [3, 6, 9, 12, 15, 18, 21, 24]
+    out: 84
+  - name: all-forty-two
+    in:
+      nums: [42, 42, 42, 42, 42, 42]
+    out: 252
+  - name: generated-small
+    in:
+      nums:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 1801
+  - name: generated-four
+    in:
+      nums:
+        gen: "array"
+        len: 4
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 1802
+  - name: generated-six
+    in:
+      nums:
+        gen: "array"
+        len: 6
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 1803
+  - name: generated-ten
+    in:
+      nums:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 1804
+  - name: generated-max-even
+    in:
+      nums:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 1805

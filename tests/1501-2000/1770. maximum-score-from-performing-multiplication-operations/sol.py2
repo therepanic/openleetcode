@@ -1,0 +1,15 @@
+
+class Solution(object):
+    def maximumScore(self, nums, multipliers):
+        m = len(multipliers)
+        dp = [0] * (m + 1)
+        for operation in xrange(m - 1, -1, -1):
+            next_dp = dp[:]
+            for left in xrange(operation, -1, -1):
+                right = operation - left
+                next_dp[left] = max(
+                    multipliers[operation] * nums[left] + dp[left + 1],
+                    multipliers[operation] * nums[len(nums) - 1 - right] + dp[left],
+                )
+            dp = next_dp
+        return dp[0]

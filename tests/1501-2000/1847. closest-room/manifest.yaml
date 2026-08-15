@@ -1,0 +1,489 @@
+entry:
+  id: 1847
+  title: closest-room
+  params:
+    rooms:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().closestRoom({rooms}, {queries})"
+    rust: "Solution::closest_room({rooms}, {queries})"
+    python3: "Solution().closestRoom({rooms}, {queries})"
+    python2: "Solution().closestRoom({rooms}, {queries})"
+    ruby: "closest_room({rooms}, {queries})"
+    java: "new Solution().closestRoom({rooms}, {queries})"
+    csharp: "new Solution().ClosestRoom({rooms}, {queries})"
+    kotlin: "Solution().closestRoom({rooms}, {queries})"
+    go: "closestRoom({rooms}, {queries})"
+    dart: "Solution().closestRoom({rooms}, {queries})"
+    swift: "Solution().closestRoom({rooms}, {queries})"
+    typescript: "closestRoom({rooms}, {queries})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().closestRoom(rooms, queries, {result})"
+    checker: |
+      class Checker:
+          def closestRoom(self, rooms, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              for answer, query in zip(result, queries):
+                  preferred, minimum = query
+                  valid = [room_id for room_id, size in rooms if size >= minimum]
+                  expected = min(valid, key=lambda room_id: (abs(room_id - preferred), room_id)) if valid else -1
+                  if answer != expected:
+                      return False
+              return True
+seed: 1847
+tests:
+  - name: example-one
+    in:
+      rooms:
+        - [2, 2]
+        - [1, 2]
+        - [3, 2]
+      queries:
+        - [3, 1]
+        - [3, 3]
+        - [5, 2]
+  - name: example-two
+    in:
+      rooms:
+        - [1, 4]
+        - [2, 3]
+        - [3, 5]
+        - [4, 1]
+        - [5, 2]
+      queries:
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+  - name: one-room-match
+    in:
+      rooms:
+        - [10, 7]
+      queries:
+        - [1, 1]
+        - [10, 7]
+        - [100, 8]
+  - name: exact-preferred
+    in:
+      rooms:
+        - [4, 1]
+        - [9, 10]
+        - [15, 5]
+      queries:
+        - [9, 10]
+        - [15, 5]
+        - [4, 1]
+  - name: tie-chooses-smaller
+    in:
+      rooms:
+        - [2, 9]
+        - [8, 9]
+        - [20, 1]
+      queries:
+        - [5, 9]
+        - [6, 9]
+        - [5, 1]
+  - name: all-too-small
+    in:
+      rooms:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+      queries:
+        - [1, 4]
+        - [2, 10]
+  - name: duplicate-sizes
+    in:
+      rooms:
+        - [100, 5]
+        - [1, 5]
+        - [50, 5]
+        - [75, 2]
+      queries:
+        - [60, 5]
+        - [2, 5]
+        - [74, 2]
+  - name: descending-ids
+    in:
+      rooms:
+        - [90, 3]
+        - [70, 8]
+        - [50, 1]
+        - [30, 6]
+      queries:
+        - [60, 6]
+        - [80, 7]
+        - [40, 1]
+  - name: size-thresholds
+    in:
+      rooms:
+        - [1, 10]
+        - [2, 20]
+        - [3, 30]
+        - [4, 40]
+      queries:
+        - [2, 10]
+        - [2, 20]
+        - [2, 21]
+        - [4, 40]
+  - name: preferred-outside-left
+    in:
+      rooms:
+        - [100, 5]
+        - [200, 6]
+        - [300, 7]
+      queries:
+        - [1, 5]
+        - [50, 6]
+        - [250, 7]
+  - name: preferred-outside-right
+    in:
+      rooms:
+        - [10, 5]
+        - [20, 6]
+        - [30, 7]
+      queries:
+        - [100, 5]
+        - [99, 6]
+        - [31, 7]
+  - name: mixed-gaps
+    in:
+      rooms:
+        - [3, 4]
+        - [11, 9]
+        - [25, 4]
+        - [40, 12]
+        - [62, 2]
+      queries:
+        - [18, 4]
+        - [18, 9]
+        - [50, 3]
+        - [62, 3]
+  - name: minimum-values
+    in:
+      rooms:
+        - [1, 1]
+        - [2, 1]
+        - [10000000, 1]
+      queries:
+        - [1, 1]
+        - [3, 1]
+        - [9999999, 1]
+  - name: maximum-values
+    in:
+      rooms:
+        - [10000000, 10000000]
+        - [9999999, 9999999]
+        - [1, 10000000]
+      queries:
+        - [10000000, 10000000]
+        - [5000000, 10000000]
+        - [1, 9999999]
+  - name: interleaved-eligibility
+    in:
+      rooms:
+        - [5, 10]
+        - [10, 1]
+        - [15, 8]
+        - [20, 3]
+        - [25, 6]
+      queries:
+        - [12, 9]
+        - [12, 7]
+        - [12, 2]
+        - [12, 11]
+  - name: many-ties
+    in:
+      rooms:
+        - [2, 100]
+        - [4, 100]
+        - [6, 100]
+        - [8, 100]
+        - [10, 100]
+      queries:
+        - [5, 100]
+        - [7, 100]
+        - [9, 100]
+        - [1, 100]
+  - name: negative-not-allowed-boundary
+    in:
+      rooms:
+        - [1, 2]
+        - [7, 3]
+        - [13, 4]
+      queries:
+        - [1, 2]
+        - [7, 4]
+        - [13, 5]
+  - name: ten-rooms
+    in:
+      rooms:
+        - [1, 9]
+        - [7, 1]
+        - [13, 5]
+        - [21, 9]
+        - [34, 2]
+        - [55, 8]
+        - [89, 3]
+        - [144, 10]
+        - [233, 4]
+        - [377, 6]
+      queries:
+        - [8, 1]
+        - [20, 8]
+        - [100, 6]
+        - [200, 10]
+        - [400, 11]
+  - name: repeated-query-pattern
+    in:
+      rooms:
+        - [10, 5]
+        - [20, 10]
+        - [30, 15]
+      queries:
+        - [21, 10]
+        - [21, 10]
+        - [21, 15]
+        - [21, 16]
+  - name: close-and-far
+    in:
+      rooms:
+        - [49, 7]
+        - [51, 7]
+        - [100, 7]
+        - [1, 8]
+      queries:
+        - [50, 7]
+        - [50, 8]
+        - [2, 8]
+  - name: sparse-large-ids
+    in:
+      rooms:
+        - [100, 10]
+        - [1000, 20]
+        - [10000, 30]
+        - [100000, 40]
+        - [1000000, 50]
+      queries:
+        - [500, 15]
+        - [5000, 25]
+        - [50000, 35]
+        - [500000, 45]
+  - name: alternating-sizes
+    in:
+      rooms:
+        - [1, 100]
+        - [2, 1]
+        - [3, 100]
+        - [4, 1]
+        - [5, 100]
+        - [6, 1]
+      queries:
+        - [2, 100]
+        - [4, 2]
+        - [6, 100]
+  - name: threshold-one
+    in:
+      rooms:
+        - [17, 1]
+        - [19, 1]
+        - [23, 1]
+      queries:
+        - [18, 1]
+        - [22, 1]
+        - [30, 1]
+  - name: threshold-max
+    in:
+      rooms:
+        - [17, 10000000]
+        - [19, 9999999]
+        - [23, 10000000]
+      queries:
+        - [18, 10000000]
+        - [20, 10000000]
+        - [20, 10000001]
+  - name: uneven-query-count
+    in:
+      rooms:
+        - [2, 2]
+        - [9, 4]
+        - [18, 6]
+        - [31, 8]
+      queries:
+        - [1, 1]
+        - [8, 3]
+        - [20, 5]
+        - [30, 7]
+        - [100, 9]
+  - name: room-order-randomized
+    in:
+      rooms:
+        - [42, 3]
+        - [5, 10]
+        - [99, 1]
+        - [17, 7]
+        - [64, 5]
+      queries:
+        - [40, 2]
+        - [40, 6]
+        - [60, 4]
+        - [90, 8]
+  - name: all-query-no-match
+    in:
+      rooms:
+        - [4, 1]
+        - [8, 2]
+        - [12, 3]
+      queries:
+        - [4, 4]
+        - [8, 5]
+        - [12, 100]
+  - name: broad-eligibility
+    in:
+      rooms:
+        - [100, 50]
+        - [200, 40]
+        - [300, 30]
+        - [400, 20]
+        - [500, 10]
+      queries:
+        - [250, 10]
+        - [250, 25]
+        - [250, 35]
+        - [250, 45]
+  - name: adjacent-ids
+    in:
+      rooms:
+        - [100, 5]
+        - [101, 5]
+        - [102, 5]
+        - [103, 5]
+      queries:
+        - [100, 5]
+        - [101, 5]
+        - [103, 6]
+  - name: query-preferred-one
+    in:
+      rooms:
+        - [1, 9]
+        - [2, 8]
+        - [3, 7]
+        - [4, 6]
+      queries:
+        - [1, 8]
+        - [1, 7]
+        - [1, 10]
+  - name: query-preferred-max
+    in:
+      rooms:
+        - [9999997, 3]
+        - [9999998, 6]
+        - [9999999, 9]
+        - [10000000, 12]
+      queries:
+        - [10000000, 5]
+        - [10000000, 10]
+        - [10000000, 13]
+  - name: six-query-mix
+    in:
+      rooms:
+        - [6, 2]
+        - [14, 11]
+        - [27, 5]
+        - [39, 11]
+        - [52, 1]
+        - [68, 9]
+      queries:
+        - [10, 1]
+        - [10, 10]
+        - [30, 6]
+        - [45, 10]
+        - [60, 8]
+        - [70, 12]
+  - name: seven-query-mix
+    in:
+      rooms:
+        - [3, 3]
+        - [16, 12]
+        - [29, 6]
+        - [44, 2]
+        - [58, 12]
+        - [73, 7]
+        - [91, 1]
+      queries:
+        - [1, 1]
+        - [20, 10]
+        - [35, 5]
+        - [50, 3]
+        - [65, 8]
+        - [80, 12]
+        - [100, 20]
+  - name: same-preferred-thresholds
+    in:
+      rooms:
+        - [40, 1]
+        - [45, 3]
+        - [50, 5]
+        - [55, 7]
+        - [60, 9]
+      queries:
+        - [50, 1]
+        - [50, 3]
+        - [50, 5]
+        - [50, 7]
+        - [50, 9]
+  - name: large-room-count
+    in:
+      rooms:
+        - [11, 100]
+        - [22, 99]
+        - [33, 98]
+        - [44, 97]
+        - [55, 96]
+        - [66, 95]
+        - [77, 94]
+        - [88, 93]
+        - [99, 92]
+        - [110, 91]
+        - [121, 90]
+        - [132, 89]
+        - [143, 88]
+        - [154, 87]
+        - [165, 86]
+        - [176, 85]
+        - [187, 84]
+        - [198, 83]
+        - [209, 82]
+      queries:
+        - [100, 80]
+        - [100, 90]
+        - [100, 100]
+        - [1, 95]
+  - name: final-boundary-mix
+    in:
+      rooms:
+        - [1, 10000000]
+        - [5000000, 5000000]
+        - [9999999, 2]
+        - [10000000, 10000000]
+      queries:
+        - [5000001, 5000000]
+        - [5000001, 10000000]
+        - [9999998, 3]
+        - [10000000, 10000001]

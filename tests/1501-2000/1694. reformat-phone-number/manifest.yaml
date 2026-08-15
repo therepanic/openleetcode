@@ -1,0 +1,212 @@
+entry:
+  id: 1694
+  title: reformat-phone-number
+  params:
+    number:
+      type: string
+  call:
+    cpp: "Solution().reformatNumber({number})"
+    rust: "Solution::reformat_number({number})"
+    python3: "Solution().reformatNumber({number})"
+    python2: "Solution().reformatNumber({number})"
+    ruby: "reformat_number({number})"
+    java: "new Solution().reformatNumber({number})"
+    csharp: "new Solution().ReformatNumber({number})"
+    kotlin: "Solution().reformatNumber({number})"
+    go: "reformatNumber({number})"
+    dart: "Solution().reformatNumber({number})"
+    swift: "Solution().reformatNumber({number})"
+    typescript: "reformatNumber({number})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(number, {result})"
+    checker: |
+      class Checker:
+          def check(self, number, result):
+              digits = ''.join(ch for ch in number if ch.isdigit())
+              blocks = []
+              while len(digits) > 4:
+                  blocks.append(digits[:3])
+                  digits = digits[3:]
+              if len(digits) == 4:
+                  blocks.extend([digits[:2], digits[2:]])
+              elif digits:
+                  blocks.append(digits)
+              return result == '-'.join(blocks)
+
+seed: 1694
+
+tests:
+  - name: example-one
+    in:
+      number: "1-23-45 6"
+    out: "123-456"
+  - name: example-two
+    in:
+      number: "123 4-567"
+    out: "123-45-67"
+  - name: example-three
+    in:
+      number: "123 4-5678"
+    out: "123-456-78"
+  - name: two-digits-spaced
+    in:
+      number: "1 2"
+  - name: two-digits-dashed
+    in:
+      number: "1-2"
+  - name: three-digits
+    in:
+      number: "123"
+  - name: four-digits
+    in:
+      number: "12-34"
+    out: "12-34"
+  - name: five-digits
+    in:
+      number: "12345"
+    out: "123-45"
+  - name: six-digits
+    in:
+      number: "123456"
+    out: "123-456"
+  - name: seven-digits
+    in:
+      number: "1234567"
+    out: "123-45-67"
+  - name: eight-digits
+    in:
+      number: "12345678"
+    out: "123-456-78"
+  - name: nine-digits
+    in:
+      number: "123456789"
+    out: "123-456-789"
+  - name: ten-digits
+    in:
+      number: "1234567890"
+    out: "123-456-78-90"
+  - name: leading-zero
+    in:
+      number: "0-12 345"
+    out: "012-345"
+  - name: all-zeroes
+    in:
+      number: "0-0 0-0 0"
+    out: "000-00"
+  - name: repeated-separators
+    in:
+      number: "12-- 34  56"
+    out: "123-456"
+  - name: separators-at-edges
+    in:
+      number: " 123456 "
+    out: "123-456"
+  - name: alternating-separators
+    in:
+      number: "1 2-3 4-5 6-7 8"
+    out: "123-456-78"
+  - name: four-after-block
+    in:
+      number: "123-4567"
+    out: "123-45-67"
+  - name: five-after-block
+    in:
+      number: "123-45678"
+    out: "123-456-78"
+  - name: long-spaced
+    in:
+      number: "1 2 3 4 5 6 7 8 9 0 1 2"
+    out: "123-456-789-012"
+  - name: long-dashed
+    in:
+      number: "12-34-56-78-90-12-34-56"
+  - name: mixed-long
+    in:
+      number: "123  -45 6-789 0-12"
+    out: "123-456-789-012"
+  - name: zeros-and-separators
+    in:
+      number: "000-000 000-000"
+    out: "000-000-000-000"
+  - name: digits-one-through
+    in:
+      number: "1-2-3-4-5-6-7-8-9"
+    out: "123-456-789"
+  - name: twelve-digits
+    in:
+      number: "123456789012"
+    out: "123-456-789-012"
+  - name: thirteen-digits
+    in:
+      number: "1234567890123"
+  - name: fourteen-digits
+    in:
+      number: "12345678901234"
+  - name: thirty-digits
+    in:
+      number: "123456789012345678901234567890"
+  - name: separator-heavy
+    in:
+      number: "1 - 2 - 3 - 4 - 5 - 6 - 7 - 8 - 9 - 0"
+    out: "123-456-78-90"
+  - name: grouped-input
+    in:
+      number: "123 456 789 012 345"
+    out: "123-456-789-012-345"
+  - name: leading-zero-long
+    in:
+      number: "0000000000000"
+  - name: alternating-zeroes
+    in:
+      number: "0-10 20-30 40-50"
+    out: "010-203-040-50"
+  - name: final-four-preserved
+    in:
+      number: "999-9999"
+    out: "999-99-99"
+  - name: final-two-preserved
+    in:
+      number: "999-999-99"
+    out: "999-999-99"
+  - name: max-length-digits
+    in:
+      number: "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+  - name: generated-short
+    in:
+      number:
+        gen: str
+        len: 20
+        alphabet: "0123456789"
+  - name: generated-medium
+    in:
+      number:
+        gen: str
+        len: 50
+        alphabet: "0123456789"
+  - name: generated-long
+    in:
+      number:
+        gen: str
+        len: 100
+        alphabet: "0123456789"
+  - name: generated-digits-heavy
+    in:
+      number:
+        gen: str
+        len: 90
+        alphabet: "0123456789"
+  - name: generated-maximal
+    in:
+      number:
+        gen: str
+        len: 100
+        alphabet: "0123456789 -"

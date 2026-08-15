@@ -1,0 +1,249 @@
+entry:
+  id: 1813
+  title: sentence-similarity-iii
+  params:
+    sentence1:
+      type: string
+    sentence2:
+      type: string
+  call:
+    cpp: "Solution().areSentencesSimilar({sentence1}, {sentence2})"
+    rust: "Solution::are_sentences_similar({sentence1}, {sentence2})"
+    python3: "Solution().areSentencesSimilar({sentence1}, {sentence2})"
+    python2: "Solution().areSentencesSimilar({sentence1}, {sentence2})"
+    ruby: "are_sentences_similar({sentence1}, {sentence2})"
+    java: "new Solution().areSentencesSimilar({sentence1}, {sentence2})"
+    csharp: "new Solution().AreSentencesSimilar({sentence1}, {sentence2})"
+    kotlin: "Solution().areSentencesSimilar({sentence1}, {sentence2})"
+    go: "areSentencesSimilar({sentence1}, {sentence2})"
+    dart: "Solution().areSentencesSimilar({sentence1}, {sentence2})"
+    swift: "Solution().areSentencesSimilar({sentence1}, {sentence2})"
+    typescript: "areSentencesSimilar({sentence1}, {sentence2})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(sentence1, sentence2, {result})"
+    checker: |
+      class Checker:
+          def check(self, sentence1, sentence2, result):
+              a = sentence1.split(" ")
+              b = sentence2.split(" ")
+              i = 0
+              while i < len(a) and i < len(b) and a[i] == b[i]:
+                  i += 1
+              j = 0
+              while j < len(a) - i and j < len(b) - i and a[-1 - j] == b[-1 - j]:
+                  j += 1
+              expected = i + j >= min(len(a), len(b))
+              return isinstance(result, bool) and result == expected
+
+seed: 1813
+
+tests:
+  - name: example-middle
+    in:
+      sentence1: "My name is Haley"
+      sentence2: "My Haley"
+    out: true
+  - name: example-no-match
+    in:
+      sentence1: "of"
+      sentence2: "A lot of words"
+    out: false
+  - name: example-suffix
+    in:
+      sentence1: "Eating right now"
+      sentence2: "Eating"
+    out: true
+  - name: identical-single
+    in:
+      sentence1: "Hello"
+      sentence2: "Hello"
+    out: true
+  - name: identical-many
+    in:
+      sentence1: "we code every day"
+      sentence2: "we code every day"
+    out: true
+  - name: one-word-different
+    in:
+      sentence1: "Hello"
+      sentence2: "World"
+    out: false
+  - name: prefix-only
+    in:
+      sentence1: "a b"
+      sentence2: "a b c d"
+    out: true
+  - name: suffix-only
+    in:
+      sentence1: "a b c d"
+      sentence2: "c d"
+    out: true
+  - name: middle-empty
+    in:
+      sentence1: "a c"
+      sentence2: "a b c"
+    out: true
+  - name: middle-one-word
+    in:
+      sentence1: "a x c"
+      sentence2: "a c"
+    out: true
+  - name: middle-mismatch
+    in:
+      sentence1: "a x c"
+      sentence2: "a y c"
+    out: false
+  - name: repeated-prefix-word
+    in:
+      sentence1: "a b a c"
+      sentence2: "a a c"
+    out: true
+  - name: repeated-suffix-word
+    in:
+      sentence1: "x a b a"
+      sentence2: "a b a"
+    out: true
+  - name: frog-boundary
+    in:
+      sentence1: "Frog cool"
+      sentence2: "Frogs are cool"
+    out: false
+  - name: case-sensitive
+    in:
+      sentence1: "Hello world"
+      sentence2: "hello world"
+    out: false
+  - name: single-word-prefix
+    in:
+      sentence1: "A lot of words"
+      sentence2: "A"
+    out: true
+  - name: single-word-suffix
+    in:
+      sentence1: "A lot of words"
+      sentence2: "words"
+    out: true
+  - name: unrelated-three
+    in:
+      sentence1: "one two three"
+      sentence2: "one four three"
+    out: false
+  - name: all-prefix-overlap
+    in:
+      sentence1: "one two"
+      sentence2: "one two three"
+    out: true
+  - name: all-suffix-overlap
+    in:
+      sentence1: "one two three"
+      sentence2: "two three"
+    out: true
+  - name: no-contiguous-bridge
+    in:
+      sentence1: "a b c d"
+      sentence2: "a c d e"
+    out: false
+  - name: alternating-words
+    in:
+      sentence1: "red blue red green"
+      sentence2: "red red green"
+    out: true
+  - name: duplicate-not-enough
+    in:
+      sentence1: "red blue red green"
+      sentence2: "red blue green red"
+    out: false
+  - name: uppercase-words
+    in:
+      sentence1: "A B C D"
+      sentence2: "A D"
+    out: true
+  - name: punctuation-not-word
+    in:
+      sentence1: "hello world"
+      sentence2: "hello worldx"
+    out: false
+  - name: long-identical
+    in:
+      sentence1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      sentence2: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: true
+  - name: long-prefix
+    in:
+      sentence1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      sentence2: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b"
+    out: true
+  - name: long-different
+    in:
+      sentence1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      sentence2: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: false
+  - name: long-middle
+    in:
+      sentence1: "a bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb c"
+      sentence2: "a c"
+    out: true
+  - name: long-two-word-limit
+    in:
+      sentence1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      sentence2: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa cccccccccccccccccccccccccccccccccccccccccccccccccc"
+    out: false
+  - name: prefix-and-suffix
+    in:
+      sentence1: "start middle end"
+      sentence2: "start end"
+    out: true
+  - name: only-end-mismatch
+    in:
+      sentence1: "start middle end"
+      sentence2: "start other finish"
+    out: false
+  - name: four-word-insert
+    in:
+      sentence1: "the quick fox"
+      sentence2: "the very swift clever fox"
+    out: false
+  - name: insertion-not-at-boundary
+    in:
+      sentence1: "the quick fox"
+      sentence2: "the very swift clever dog"
+    out: false
+  - name: generated-single-words
+    in:
+      sentence1:
+        gen: "str"
+        len: 100
+        alphabet: "abcXY"
+      sentence2:
+        gen: "str"
+        len: 100
+        alphabet: "defPQ"
+  - name: generated-short-words
+    in:
+      sentence1:
+        gen: "str"
+        len: 1
+        alphabet: "abc"
+      sentence2:
+        gen: "str"
+        len: 1
+        alphabet: "abc"
+  - name: generated-medium-words
+    in:
+      sentence1:
+        gen: "str"
+        len: 50
+        alphabet: "mno"
+      sentence2:
+        gen: "str"
+        len: 49
+        alphabet: "mno"

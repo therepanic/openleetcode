@@ -1,0 +1,17 @@
+class Solution:
+    def evaluate(self, s, knowledge):
+        mp = {k: v for k, v in knowledge}
+        ans, i, n = "", 0, len(s)
+        while i < n:
+            if s[i] == "(":
+                i += 1
+                temp = ""
+                while i < n and s[i] != ")":
+                    temp += s[i]
+                    i += 1
+                ans += mp.get(temp, "?")
+                i += 1
+            else:
+                ans += s[i]
+                i += 1
+        return ans

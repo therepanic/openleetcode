@@ -1,0 +1,479 @@
+entry:
+  id: 1620
+  title: "coordinate-with-maximum-network-quality"
+  params:
+    towers:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    radius:
+      type: int
+  call:
+    cpp: "Solution().bestCoordinate({towers}, {radius})"
+    rust: "Solution::best_coordinate({towers}, {radius})"
+    python3: "Solution().bestCoordinate({towers}, {radius})"
+    python2: "Solution().bestCoordinate({towers}, {radius})"
+    ruby: "best_coordinate({towers}, {radius})"
+    java: "new Solution().bestCoordinate({towers}, {radius})"
+    csharp: "new Solution().BestCoordinate({towers}, {radius})"
+    kotlin: "Solution().bestCoordinate({towers}, {radius})"
+    go: "bestCoordinate({towers}, {radius})"
+    dart: "Solution().bestCoordinate({towers}, {radius})"
+    swift: "Solution().bestCoordinate({towers}, {radius})"
+    typescript: "bestCoordinate({towers}, {radius})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().bestCoordinate(towers, radius, {result})"
+    checker: |
+      import math
+
+      class Checker:
+          def bestCoordinate(self, towers, radius, result):
+              if not isinstance(result, list) or len(result) != 2:
+                  return False
+              if not all(isinstance(v, int) and not isinstance(v, bool) for v in result):
+                  return False
+              max_x = max(t[0] for t in towers)
+              max_y = max(t[1] for t in towers)
+              expected = [0, 0]
+              best = 0
+              for x in range(max_x + 1):
+                  for y in range(max_y + 1):
+                      quality = 0
+                      for tx, ty, q in towers:
+                          distance = math.sqrt((tx - x) ** 2 + (ty - y) ** 2)
+                          if distance <= radius:
+                              quality += int(q / (1 + distance))
+                      candidate = [x, y]
+                      if quality > best or (quality == best and candidate < expected):
+                          best = quality
+                          expected = candidate
+              return result == expected
+
+seed: 1620
+
+tests:
+  - name: "example_1"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [1, 2, 5]
+          - [2, 1, 7]
+          - [3, 1, 9]
+      radius: 2
+    out: [2, 1]
+
+  - name: "example_2"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [23, 11, 21]
+      radius: 9
+    out: [23, 11]
+
+  - name: "example_3"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [1, 2, 13]
+          - [2, 1, 7]
+          - [0, 1, 9]
+      radius: 2
+    out: [1, 2]
+
+  - name: "zero_quality_tower"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [50, 50, 0]
+      radius: 1
+
+  - name: "origin_tower"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 50]
+      radius: 50
+    out: [0, 0]
+
+  - name: "lexicographic_tie"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [1, 0, 1]
+          - [0, 1, 1]
+      radius: 1
+
+  - name: "same_location"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [4, 4, 10]
+          - [4, 4, 20]
+      radius: 1
+
+  - name: "radius_one"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [2, 2, 30]
+          - [0, 0, 30]
+          - [1, 1, 30]
+      radius: 1
+
+  - name: "radius_max"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 50, 50]
+          - [50, 0, 49]
+      radius: 50
+
+  - name: "diagonal_distance"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 40]
+          - [3, 4, 40]
+      radius: 5
+
+  - name: "boundary_coordinates"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 50, 1]
+          - [50, 50, 50]
+          - [50, 0, 1]
+      radius: 2
+
+  - name: "clustered_towers"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [10, 10, 5]
+          - [10, 11, 6]
+          - [11, 10, 7]
+          - [11, 11, 8]
+          - [12, 12, 9]
+      radius: 3
+
+  - name: "sparse_towers"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 50]
+          - [25, 25, 49]
+          - [50, 50, 48]
+      radius: 2
+
+  - name: "many_zero_quality"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [1, 1, 0]
+          - [2, 2, 0]
+          - [3, 3, 0]
+          - [4, 4, 50]
+      radius: 4
+
+  - name: "small_square"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 10]
+          - [0, 2, 10]
+          - [2, 0, 10]
+          - [2, 2, 10]
+      radius: 2
+
+  - name: "overlapping_reach"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [5, 5, 20]
+          - [6, 5, 20]
+          - [5, 6, 20]
+          - [4, 5, 20]
+          - [5, 4, 20]
+      radius: 2
+
+  - name: "quality_gradient"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 1]
+          - [1, 0, 2]
+          - [2, 0, 3]
+          - [3, 0, 4]
+          - [4, 0, 5]
+      radius: 4
+
+  - name: "far_high_quality"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 1]
+          - [50, 50, 50]
+      radius: 10
+
+  - name: "integer_boundary_distance"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 25]
+          - [3, 4, 26]
+          - [6, 8, 27]
+      radius: 5
+
+  - name: "rectangle_corners"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [1, 1, 11]
+          - [1, 9, 12]
+          - [9, 1, 13]
+          - [9, 9, 14]
+      radius: 6
+
+  - name: "duplicate_coordinates_different_quality"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [7, 8, 1]
+          - [7, 8, 2]
+          - [7, 8, 3]
+          - [6, 8, 50]
+      radius: 3
+
+  - name: "low_radius_cluster"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [20, 20, 50]
+          - [20, 21, 49]
+          - [21, 20, 48]
+          - [21, 21, 47]
+          - [22, 22, 46]
+      radius: 1
+
+  - name: "large_radius_cluster"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [15, 15, 15]
+          - [16, 16, 16]
+          - [17, 17, 17]
+          - [18, 18, 18]
+          - [19, 19, 19]
+      radius: 20
+
+  - name: "axes_mix"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 7, 30]
+          - [7, 0, 29]
+          - [0, 0, 28]
+          - [7, 7, 27]
+      radius: 7
+
+  - name: "all_maximum_values"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [50, 50, 50]
+          - [50, 49, 50]
+          - [49, 50, 50]
+          - [49, 49, 50]
+      radius: 50
+
+  - name: "quality_zero_origin_tie"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [50, 50, 0]
+          - [50, 49, 0]
+      radius: 1
+
+  - name: "long_horizontal_line"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 25, 5]
+          - [10, 25, 10]
+          - [20, 25, 15]
+          - [30, 25, 20]
+          - [40, 25, 25]
+          - [50, 25, 30]
+      radius: 10
+
+  - name: "long_vertical_line"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [25, 0, 5]
+          - [25, 10, 10]
+          - [25, 20, 15]
+          - [25, 30, 20]
+          - [25, 40, 25]
+          - [25, 50, 30]
+      radius: 15
+
+  - name: "mixed_extremes"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [0, 0, 50]
+          - [0, 50, 1]
+          - [50, 0, 1]
+          - [50, 50, 50]
+          - [25, 25, 25]
+      radius: 25
+
+  - name: "single_low_quality_corner"
+    in:
+      towers:
+        elemType: "int"
+        value:
+          - [50, 0, 1]
+      radius: 50
+
+  - name: "generated_small"
+    seed: 162001
+    in:
+      towers:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 8
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 0
+            max: 10
+        elemType: "int"
+      radius:
+        gen: "int"
+        min: 1
+        max: 10
+
+  - name: "generated_medium"
+    seed: 162002
+    in:
+      towers:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 10
+          max: 20
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 0
+            max: 50
+        elemType: "int"
+      radius:
+        gen: "int"
+        min: 1
+        max: 25
+
+  - name: "generated_dense"
+    seed: 162003
+    in:
+      towers:
+        gen: "array"
+        len: 50
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 0
+            max: 50
+        elemType: "int"
+      radius: 50
+
+  - name: "generated_sparse"
+    seed: 162004
+    in:
+      towers:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 5
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 0
+            max: 50
+        elemType: "int"
+      radius: 1
+
+  - name: "generated_near_limit"
+    seed: 162005
+    in:
+      towers:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 40
+          max: 50
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 0
+            max: 50
+        elemType: "int"
+      radius:
+        gen: "int"
+        min: 40
+        max: 50

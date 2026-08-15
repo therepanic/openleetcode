@@ -1,0 +1,504 @@
+entry:
+  id: 2001
+  title: "number-of-pairs-of-interchangeable-rectangles"
+  params:
+    rectangles:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().interchangeableRectangles({rectangles})"
+    rust: "Solution::interchangeable_rectangles({rectangles})"
+    python3: "Solution().interchangeableRectangles({rectangles})"
+    python2: "Solution().interchangeableRectangles({rectangles})"
+    ruby: "interchangeable_rectangles({rectangles})"
+    java: "new Solution().interchangeableRectangles({rectangles})"
+    csharp: "new Solution().InterchangeableRectangles({rectangles})"
+    kotlin: "Solution().interchangeableRectangles({rectangles})"
+    go: "interchangeableRectangles({rectangles})"
+    dart: "Solution().interchangeableRectangles({rectangles})"
+    swift: "Solution().interchangeableRectangles({rectangles})"
+    typescript: "interchangeableRectangles({rectangles})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().interchangeableRectangles(rectangles, {result})"
+    checker: |
+      from collections import defaultdict
+      from math import gcd
+
+      class Checker:
+          def interchangeableRectangles(self, rectangles, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              counts = defaultdict(int)
+              expected = 0
+              for pair in rectangles:
+                  if not isinstance(pair, list) or len(pair) != 2:
+                      return False
+                  w, h = pair
+                  if not isinstance(w, int) or not isinstance(h, int) or w <= 0 or h <= 0:
+                      return False
+                  g = gcd(w, h)
+                  key = (w // g, h // g)
+                  expected += counts[key]
+                  counts[key] += 1
+              return result == expected
+
+seed: 2001
+
+tests:
+  - name: "example_all_same"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [4, 8]
+          - [3, 6]
+          - [10, 20]
+          - [15, 30]
+    out: 6
+  - name: "example_no_match"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [4, 5]
+          - [7, 8]
+    out: 0
+  - name: "two_equal"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [2, 2]
+    out: 1
+  - name: "single"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [100000, 1]
+    out: 0
+  - name: "same_width_different_ratio"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [5, 1]
+          - [5, 2]
+          - [5, 5]
+          - [5, 10]
+    out: 0
+  - name: "reduced_fraction_duplicates"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [6, 9]
+          - [2, 3]
+          - [100, 150]
+          - [4, 6]
+          - [3, 2]
+    out: 6
+  - name: "two_groups"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 4]
+          - [3, 9]
+          - [1, 3]
+          - [10, 30]
+          - [4, 8]
+    out: 6
+  - name: "three_groups"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [2, 2]
+          - [1, 2]
+          - [2, 4]
+          - [1, 3]
+          - [3, 9]
+          - [7, 5]
+    out: 3
+  - name: "coprime_pairs"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+    out: 0
+  - name: "max_values_same_ratio"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [100000, 100000]
+          - [50000, 50000]
+          - [99999, 99999]
+    out: 3
+  - name: "one_pair_among_noise"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [2, 5]
+          - [3, 7]
+          - [4, 10]
+          - [6, 11]
+          - [7, 13]
+    out: 1
+  - name: "four_equal_ratio"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [8, 12]
+          - [2, 3]
+          - [10, 15]
+          - [14, 21]
+    out: 6
+  - name: "two_equal_groups"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [2, 3]
+          - [4, 6]
+          - [3, 4]
+          - [6, 8]
+          - [5, 7]
+    out: 2
+  - name: "order_independent"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [9, 6]
+          - [1, 4]
+          - [3, 2]
+          - [5, 20]
+          - [2, 1]
+    out: 2
+  - name: "large_coprime_values"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [99991, 99989]
+          - [99989, 99991]
+          - [99991, 99991]
+    out: 0
+  - name: "five_same"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 7]
+          - [2, 14]
+          - [3, 21]
+          - [4, 28]
+          - [5, 35]
+    out: 10
+  - name: "six_same"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [7, 1]
+          - [14, 2]
+          - [21, 3]
+          - [28, 4]
+          - [35, 5]
+          - [42, 6]
+    out: 15
+  - name: "mixed_reduced_forms"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [12, 18]
+          - [8, 12]
+          - [20, 30]
+          - [15, 10]
+          - [3, 2]
+          - [9, 6]
+          - [1, 1]
+    out: 6
+  - name: "all_distinct_reversed"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 5]
+          - [2, 4]
+          - [3, 3]
+          - [4, 2]
+          - [5, 1]
+    out: 0
+  - name: "ratio_one_and_two"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [2, 2]
+          - [3, 3]
+          - [1, 2]
+          - [2, 4]
+          - [3, 6]
+          - [4, 8]
+    out: 9
+  - name: "eight_same"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [11, 13]
+          - [22, 26]
+          - [33, 39]
+          - [44, 52]
+          - [55, 65]
+          - [66, 78]
+          - [77, 91]
+          - [88, 104]
+    out: 28
+  - name: "alternating_groups"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [1, 3]
+          - [2, 4]
+          - [2, 6]
+          - [3, 6]
+          - [3, 9]
+    out: 6
+  - name: "three_ratio_groups"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [2, 5]
+          - [4, 10]
+          - [6, 15]
+          - [3, 7]
+          - [6, 14]
+          - [9, 21]
+          - [5, 2]
+          - [10, 4]
+    out: 7
+  - name: "boundary_widths"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 100000]
+          - [2, 100000]
+          - [3, 100000]
+          - [100000, 1]
+          - [50000, 1]
+    out: 0
+  - name: "duplicate_input_rows"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [17, 19]
+          - [17, 19]
+          - [17, 19]
+          - [19, 17]
+    out: 3
+  - name: "seven_same"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [9, 10]
+          - [18, 20]
+          - [27, 30]
+          - [36, 40]
+          - [45, 50]
+          - [54, 60]
+          - [63, 70]
+    out: 21
+  - name: "large_reduced_ratio"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [99999, 66666]
+          - [3, 2]
+          - [99996, 66664]
+          - [6, 4]
+    out: 6
+  - name: "two_pairs_two_singletons"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [4, 7]
+          - [8, 14]
+          - [5, 8]
+          - [10, 16]
+          - [6, 11]
+          - [7, 12]
+    out: 2
+  - name: "nine_same"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 9]
+          - [2, 18]
+          - [3, 27]
+          - [4, 36]
+          - [5, 45]
+          - [6, 54]
+          - [7, 63]
+          - [8, 72]
+          - [9, 81]
+    out: 36
+  - name: "ten_all_distinct"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 3]
+          - [3, 5]
+          - [5, 8]
+          - [8, 13]
+          - [13, 21]
+          - [21, 34]
+          - [34, 55]
+          - [55, 89]
+          - [89, 144]
+    out: 0
+  - name: "ten_same_max_pair_count"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [10000, 100000]
+          - [1000, 10000]
+          - [100, 1000]
+          - [10, 100]
+          - [1, 10]
+          - [20000, 100000]
+          - [2000, 10000]
+          - [200, 1000]
+          - [20, 100]
+          - [2, 10]
+    out: 20
+  - name: "mixed_many_groups"
+    in:
+      rectangles:
+        elemType: "int"
+        value:
+          - [2, 3]
+          - [4, 6]
+          - [3, 5]
+          - [6, 10]
+          - [5, 7]
+          - [10, 14]
+          - [7, 11]
+          - [14, 22]
+          - [11, 13]
+          - [22, 26]
+    out: 5
+  - name: "stress_same_ratio"
+    in:
+      rectangles:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+    seed: 2101
+  - name: "stress_random_rectangles"
+    in:
+      rectangles:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+    seed: 2102
+  - name: "stress_small_values"
+    in:
+      rectangles:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 20
+          elemType: "int"
+        elemType: "int"
+    seed: 2103
+  - name: "stress_max_boundary"
+    in:
+      rectangles:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 99980
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+    seed: 2104
+  - name: "stress_moderate"
+    in:
+      rectangles:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+        elemType: "int"
+    seed: 2105

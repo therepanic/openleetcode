@@ -1,0 +1,268 @@
+entry:
+  id: 1850
+  title: minimum-adjacent-swaps-to-reach-the-kth-smallest-number
+  params:
+    num:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().getMinSwaps({num}, {k})"
+    rust: "Solution::get_min_swaps({num}, {k})"
+    python3: "Solution().getMinSwaps({num}, {k})"
+    python2: "Solution().getMinSwaps({num}, {k})"
+    ruby: "get_min_swaps({num}, {k})"
+    java: "new Solution().getMinSwaps({num}, {k})"
+    csharp: "new Solution().GetMinSwaps({num}, {k})"
+    kotlin: "Solution().getMinSwaps({num}, {k})"
+    go: "getMinSwaps({num}, {k})"
+    dart: "Solution().getMinSwaps({num}, {k})"
+    swift: "Solution().getMinSwaps({num}, {k})"
+    typescript: "getMinSwaps({num}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(num, k, {result})"
+    checker: |
+      class Checker:
+          def check(self, num, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              target = list(num)
+              for _ in range(k):
+                  i = len(target) - 2
+                  while i >= 0 and target[i] >= target[i + 1]:
+                      i -= 1
+                  if i < 0:
+                      return False
+                  j = len(target) - 1
+                  while target[j] <= target[i]:
+                      j -= 1
+                  target[i], target[j] = target[j], target[i]
+                  target[i + 1:] = reversed(target[i + 1:])
+              current = list(num)
+              swaps = 0
+              for i in range(len(current)):
+                  if current[i] == target[i]:
+                      continue
+                  j = i
+                  while j < len(current) and current[j] != target[i]:
+                      j += 1
+                  if j == len(current):
+                      return False
+                  while j > i:
+                      current[j], current[j - 1] = current[j - 1], current[j]
+                      j -= 1
+                      swaps += 1
+              return result == swaps
+
+seed: 1850
+
+tests:
+  - name: example-one
+    in:
+      num: "5489355142"
+      k: 4
+    out: 2
+  - name: example-two
+    in:
+      num: "11112"
+      k: 4
+    out: 4
+  - name: example-three
+    in:
+      num: "00123"
+      k: 1
+    out: 1
+  - name: ascending-four-first
+    in:
+      num: "1234"
+      k: 1
+    out: 1
+  - name: ascending-four-fifth
+    in:
+      num: "1234"
+      k: 5
+    out: 3
+  - name: repeated-prefix-first
+    in:
+      num: "1123"
+      k: 1
+    out: 1
+  - name: repeated-prefix-fifth
+    in:
+      num: "1123"
+      k: 5
+    out: 3
+  - name: repeated-middle
+    in:
+      num: "1223"
+      k: 3
+    out: 1
+  - name: repeated-suffix
+    in:
+      num: "1233"
+      k: 4
+    out: 2
+  - name: zero-middle
+    in:
+      num: "1012"
+      k: 1
+    out: 1
+  - name: zero-middle-third
+    in:
+      num: "1012"
+      k: 3
+    out: 2
+  - name: mixed-small
+    in:
+      num: "1023"
+      k: 5
+    out: 3
+  - name: repeated-zeroes
+    in:
+      num: "102030"
+      k: 1
+    out: 1
+  - name: repeated-zeroes-larger-k
+    in:
+      num: "102030"
+      k: 20
+    out: 3
+  - name: alternating-large-digits
+    in:
+      num: "135790"
+      k: 1
+    out: 2
+  - name: even-digits
+    in:
+      num: "246810"
+      k: 1
+    out: 4
+  - name: four-digit-zero
+    in:
+      num: "1001"
+      k: 1
+    out: 1
+  - name: four-digit-zero-second
+    in:
+      num: "1001"
+      k: 2
+    out: 2
+  - name: varied-six-digit
+    in:
+      num: "121314"
+      k: 1
+    out: 1
+  - name: varied-six-digit-seventh
+    in:
+      num: "121314"
+      k: 7
+    out: 4
+  - name: ascending-five-first
+    in:
+      num: "12345"
+      k: 1
+    out: 1
+  - name: ascending-five-tenth
+    in:
+      num: "12345"
+      k: 10
+    out: 3
+  - name: ascending-ten-first
+    in:
+      num: "1234567890"
+      k: 1
+    out: 2
+  - name: ascending-ten-large-k
+    in:
+      num: "1234567890"
+      k: 1000
+    out: 9
+  - name: mixed-ten-first
+    in:
+      num: "1029384756"
+      k: 1
+    out: 1
+  - name: mixed-ten-large-k
+    in:
+      num: "1029384756"
+      k: 999
+    out: 8
+  - name: repeated-high-digits-first
+    in:
+      num: "55556667"
+      k: 1
+    out: 1
+  - name: repeated-high-digits-twentieth
+    in:
+      num: "55556667"
+      k: 20
+    out: 2
+  - name: pi-prefix-first
+    in:
+      num: "31415926"
+      k: 1
+    out: 1
+  - name: pi-prefix-hundredth
+    in:
+      num: "31415926"
+      k: 100
+    out: 4
+  - name: e-prefix-first
+    in:
+      num: "27182818"
+      k: 1
+    out: 1
+  - name: e-prefix-hundredth
+    in:
+      num: "27182818"
+      k: 100
+    out: 8
+  - name: long-zero-tail
+    in:
+      num: "1000000002"
+      k: 1
+    out: 1
+  - name: long-zero-tail-two-billion
+    in:
+      num: "2000000001"
+      k: 1
+    out: 1
+  - name: long-ascending
+    in:
+      num: "12345678901234567890"
+      k: 1
+    out: 2
+  - name: long-ascending-k-thousand
+    in:
+      num: "12345678901234567890"
+      k: 1000
+    out: 9
+  - name: long-repeated-prefix
+    in:
+      num: "1111222233334444"
+      k: 1
+    out: 1
+  - name: long-repeated-prefix-k-ten
+    in:
+      num: "1111222233334444"
+      k: 10
+    out: 5
+  - name: length-one-thousand-pattern
+    in:
+      num: "1234567890"
+      k: 999
+    out: 8
+  - name: duplicate-heavy-pattern
+    in:
+      num: "11223344556677889900"
+      k: 1000
+    out: 11

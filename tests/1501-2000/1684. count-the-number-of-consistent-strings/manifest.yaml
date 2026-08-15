@@ -1,0 +1,283 @@
+entry:
+  id: 1684
+  title: count-the-number-of-consistent-strings
+  params:
+    allowed:
+      type: string
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().countConsistentStrings({allowed}, {words})"
+    rust: "Solution::count_consistent_strings({allowed}, {words})"
+    python3: "Solution().countConsistentStrings({allowed}, {words})"
+    python2: "Solution().countConsistentStrings({allowed}, {words})"
+    ruby: "count_consistent_strings({allowed}, {words})"
+    java: "new Solution().countConsistentStrings({allowed}, {words})"
+    csharp: "new Solution().CountConsistentStrings({allowed}, {words})"
+    kotlin: "Solution().countConsistentStrings({allowed}, {words})"
+    go: "countConsistentStrings({allowed}, {words})"
+    dart: "Solution().countConsistentStrings({allowed}, {words})"
+    swift: "Solution().countConsistentStrings({allowed}, {words})"
+    typescript: "countConsistentStrings({allowed}, {words})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().countConsistentStrings(allowed, words, {result})"
+    checker: |
+      class Checker:
+          def countConsistentStrings(self, allowed, words, result):
+              if not isinstance(allowed, str) or not isinstance(words, list):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if len(allowed) < 1 or len(allowed) > 26 or len(set(allowed)) != len(allowed):
+                  return False
+              if any(c < 'a' or c > 'z' for c in allowed):
+                  return False
+              if len(words) < 1 or len(words) > 10000:
+                  return False
+              if any(not isinstance(word, str) or len(word) < 1 or len(word) > 10 for word in words):
+                  return False
+              if any(any(c < 'a' or c > 'z' for c in word) for word in words):
+                  return False
+              expected = sum(1 for word in words if all(c in allowed for c in word))
+              return result == expected
+
+seed: 1684
+
+tests:
+  - name: example-one
+    in:
+      allowed: "ab"
+      words: ["ad", "bd", "aaab", "baa", "badab"]
+    out: 2
+  - name: example-two-all-consistent
+    in:
+      allowed: "abc"
+      words: ["a", "b", "c", "ab", "ac", "bc", "abc"]
+    out: 7
+  - name: example-three
+    in:
+      allowed: "cad"
+      words: ["cc", "acd", "b", "ba", "bac", "bad", "ac", "d"]
+    out: 4
+  - name: one-letter-allowed
+    in:
+      allowed: "a"
+      words: ["a", "aa", "b", "ab", "aaa"]
+    out: 3
+  - name: all-letters-allowed
+    in:
+      allowed: "abcdefghijklmnopqrstuvwxyz"
+      words: ["a", "z", "hello", "leetcode", "abcxyz"]
+    out: 5
+  - name: no-word-consistent
+    in:
+      allowed: "xyz"
+      words: ["a", "ab", "hello", "world"]
+    out: 0
+  - name: all-words-identical
+    in:
+      allowed: "abc"
+      words: ["abc", "abc", "abc", "abc"]
+    out: 4
+  - name: repeated-characters
+    in:
+      allowed: "ab"
+      words: ["aaaa", "bbbb", "ababab", "cccc", "baac"]
+    out: 3
+  - name: allowed-singleton-mixed
+    in:
+      allowed: "m"
+      words: ["m", "mmmmm", "n", "mn", "mmm"]
+    out: 3
+  - name: one-invalid-character
+    in:
+      allowed: "abcdef"
+      words: ["abc", "abcdef", "abcg", "f", "z", "de"]
+    out: 4
+  - name: disjoint-alphabet
+    in:
+      allowed: "abc"
+      words: ["x", "y", "z", "xy", "xyz"]
+    out: 0
+  - name: alternating-valid-invalid
+    in:
+      allowed: "aeiou"
+      words: ["a", "b", "e", "f", "io", "jk", "ou", "xyz"]
+    out: 4
+  - name: forbidden-lowercase-not-allowed
+    in:
+      allowed: "abc"
+      words: ["abc", "abx", "axc", "cab"]
+    out: 2
+  - name: max-word-length
+    in:
+      allowed: "abc"
+      words: ["abcabcabca", "cccccccccc", "abcabcdefg", "aaaaaaaaaa"]
+    out: 3
+  - name: single-word-valid
+    in:
+      allowed: "qwerty"
+      words: ["type"]
+    out: 0
+  - name: single-word-invalid
+    in:
+      allowed: "qwerty"
+      words: ["python"]
+    out: 0
+  - name: boundary-alphabet-prefix
+    in:
+      allowed: "abcdefghijklm"
+      words: ["abcdefghijklm", "nop", "abc", "mn", "z", "ghijk"]
+    out: 3
+  - name: boundary-alphabet-suffix
+    in:
+      allowed: "nopqrstuvwxyz"
+      words: ["nop", "xyz", "abc", "mnop", "qrst", "lm"]
+    out: 3
+  - name: empty-not-permitted-word-replacement
+    in:
+      allowed: "d"
+      words: ["d", "dd", "ddd", "c", "dc", "cd"]
+    out: 3
+  - name: every-word-has-one-forbidden
+    in:
+      allowed: "ab"
+      words: ["ac", "bd", "ca", "db", "abc", "babd"]
+    out: 0
+  - name: one-forbidden-at-end
+    in:
+      allowed: "abc"
+      words: ["a", "ab", "abc", "abcz", "zz", "cab"]
+    out: 4
+  - name: one-forbidden-at-start
+    in:
+      allowed: "abc"
+      words: ["za", "zab", "zabc", "a", "bc", "cba"]
+    out: 3
+  - name: two-character-alphabet
+    in:
+      allowed: "az"
+      words: ["a", "z", "az", "za", "aaazzz", "b", "zab"]
+    out: 5
+  - name: vowel-only
+    in:
+      allowed: "aeiou"
+      words: ["aeiou", "uoiea", "queue", "sequoia", "ai", "b"]
+    out: 3
+  - name: consonant-only
+    in:
+      allowed: "bcdfg"
+      words: ["bcdfg", "big", "dog", "gfd", "abc", "cf"]
+    out: 3
+  - name: duplicates-in-words
+    in:
+      allowed: "xyz"
+      words: ["xxyyzz", "xyzxyz", "xxx", "xyza", "yy"]
+    out: 4
+  - name: long-valid-and-invalid
+    in:
+      allowed: "abcdefghij"
+      words:
+        ["abcdefghij", "jihgfedcba", "abcdefghik", "aaaaaaaaaa", "klmnopqrst"]
+    out: 3
+  - name: near-complete-alphabet
+    in:
+      allowed: "abcdefghijklmnopqrstuvwxy"
+      words: ["abcdefghijklmnopqrstuvwxy", "z", "xy", "yz", "mnopqrst"]
+    out: 3
+  - name: all-single-character-words
+    in:
+      allowed: "ace"
+      words: ["a", "b", "c", "d", "e", "f", "a", "c"]
+    out: 5
+  - name: valid-prefixes
+    in:
+      allowed: "leetcode"
+      words: ["leet", "code", "leetcode", "leetx", "cool", "to", "e"]
+    out: 6
+  - name: forbidden-middle
+    in:
+      allowed: "abc"
+      words: ["a", "abc", "axbc", "abxc", "abcx", "bac"]
+    out: 3
+  - name: alternating-allowed
+    in:
+      allowed: "bd"
+      words: ["bd", "dbdb", "bbbb", "dddd", "abcd", "dcb"]
+    out: 4
+  - name: maximal-count-small-list
+    in:
+      allowed: "a"
+      words: ["a", "a", "a", "a", "a", "b", "b", "aa", "aaa"]
+    out: 7
+  - name: maximal-count-large-alphabet
+    in:
+      allowed: "abcdefghijklmnopqrstuvwxyz"
+      words: ["zxy", "abc", "leetcode", "zzzzzzzzzz", "qwertyuiop"]
+    out: 5
+  - name: generated-small
+    in:
+      allowed: "abc"
+      words:
+        gen: "array"
+        len: 20
+        of:
+          gen: "str"
+          len: 5
+          alphabet: "abcde"
+        elemType: "string"
+  - name: generated-single-character
+    in:
+      allowed: "m"
+      words:
+        gen: "array"
+        len: 100
+        of:
+          gen: "str"
+          len: 1
+          alphabet: "mno"
+        elemType: "string"
+  - name: generated-medium
+    in:
+      allowed: "abcdefghijklm"
+      words:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "abcmnz"
+        elemType: "string"
+  - name: generated-near-max
+    in:
+      allowed: "aeiou"
+      words:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "aeioub"
+        elemType: "string"
+  - name: generated-maximal-alphabet
+    in:
+      allowed: "abcdefghijklmnopqrstuvwxyz"
+      words:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "str"
+          len: 10
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        elemType: "string"

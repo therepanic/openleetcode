@@ -1,0 +1,27 @@
+class Solution(object):
+    def minDifference(self, nums, queries):
+        """
+        :type nums: List[int]
+        :type queries: List[List[int]]
+        :rtype: List[int]
+        """
+        max_val = max(nums) if nums else 0
+        p = [[0] * (max_val + 1) for _ in range(len(nums) + 1)]
+        for j in range(max_val + 1):
+            p[0][j] = 0
+        for i in range(len(nums)):
+            for j in range(max_val + 1):
+                p[i + 1][j] = p[i][j] + (1 if nums[i] == j else 0)
+        res = []
+        for l, r in queries:
+            diff = [p[r + 1][j] - p[l][j] for j in range(max_val + 1)]
+            prev = -1
+            best = -1
+            for j in range(max_val + 1):
+                if diff[j] > 0:
+                    if prev >= 0:
+                        if best == -1 or j - prev < best:
+                            best = j - prev
+                    prev = j
+            res.append(best)
+        return res

@@ -1,0 +1,384 @@
+entry:
+  id: 1691
+  title: "maximum-height-by-stacking-cuboids"
+  params:
+    cuboids:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxHeight({cuboids})"
+    rust: "Solution::max_height({cuboids})"
+    python3: "Solution().maxHeight({cuboids})"
+    python2: "Solution().maxHeight({cuboids})"
+    ruby: "max_height({cuboids})"
+    java: "new Solution().maxHeight({cuboids})"
+    csharp: "new Solution().MaxHeight({cuboids})"
+    kotlin: "Solution().maxHeight({cuboids})"
+    go: "maxHeight({cuboids})"
+    dart: "Solution().maxHeight({cuboids})"
+    swift: "Solution().maxHeight({cuboids})"
+    typescript: "maxHeight({cuboids})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxHeight(cuboids, {result})"
+    checker: |
+      class Checker:
+          def maxHeight(self, cuboids, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              normalized = sorted(sorted(int(x) for x in c) for c in cuboids)
+              dp = [0] * len(normalized)
+              for i, current in enumerate(normalized):
+                  dp[i] = current[2]
+                  for j in range(i):
+                      previous = normalized[j]
+                      if all(previous[k] <= current[k] for k in range(3)):
+                          dp[i] = max(dp[i], dp[j] + current[2])
+              return result == max(dp)
+
+seed: 1691
+
+tests:
+  - name: example-1
+    in:
+      cuboids:
+        - [50, 45, 20]
+        - [95, 37, 53]
+        - [45, 23, 12]
+    out: 190
+  - name: example-2
+    in:
+      cuboids:
+        - [38, 25, 45]
+        - [76, 35, 3]
+    out: 76
+  - name: example-3
+    in:
+      cuboids:
+        - [7, 11, 17]
+        - [7, 17, 11]
+        - [11, 7, 17]
+        - [11, 17, 7]
+        - [17, 7, 11]
+        - [17, 11, 7]
+    out: 102
+  - name: single-cuboid
+    in:
+      cuboids:
+        - [1, 2, 3]
+    out: 3
+  - name: all-equal
+    in:
+      cuboids:
+        - [5, 5, 5]
+        - [5, 5, 5]
+        - [5, 5, 5]
+        - [5, 5, 5]
+    out: 20
+  - name: strict-chain
+    in:
+      cuboids:
+        - [1, 1, 1]
+        - [2, 2, 2]
+        - [3, 3, 3]
+        - [4, 4, 4]
+        - [5, 5, 5]
+    out: 15
+  - name: incomparable-pairs
+    in:
+      cuboids:
+        - [1, 10, 10]
+        - [10, 1, 10]
+        - [10, 10, 1]
+        - [2, 9, 9]
+    out: 30
+  - name: rotations-matter
+    in:
+      cuboids:
+        - [4, 2, 3]
+        - [3, 4, 2]
+        - [2, 3, 4]
+    out: 12
+  - name: one-dimension-ties
+    in:
+      cuboids:
+        - [2, 3, 4]
+        - [2, 4, 5]
+        - [3, 4, 6]
+        - [3, 5, 7]
+    out: 22
+  - name: descending-input
+    in:
+      cuboids:
+        - [9, 9, 9]
+        - [7, 7, 7]
+        - [5, 5, 5]
+        - [3, 3, 3]
+        - [1, 1, 1]
+    out: 25
+  - name: duplicate-with-different-height
+    in:
+      cuboids:
+        - [2, 3, 4]
+        - [2, 3, 4]
+        - [2, 3, 5]
+    out: 13
+  - name: zero-crossing-not-allowed
+    in:
+      cuboids:
+        - [1, 100, 1]
+        - [2, 99, 2]
+        - [3, 98, 3]
+        - [4, 97, 4]
+    out: 100
+  - name: maximum-dimensions
+    in:
+      cuboids:
+        - [100, 100, 100]
+        - [99, 99, 99]
+        - [98, 98, 98]
+        - [97, 97, 97]
+    out: 394
+  - name: thin-cuboids
+    in:
+      cuboids:
+        - [1, 1, 100]
+        - [1, 2, 99]
+        - [1, 3, 98]
+        - [1, 4, 97]
+    out: 100
+  - name: sorted-already
+    in:
+      cuboids:
+        - [1, 2, 3]
+        - [2, 3, 4]
+        - [3, 4, 5]
+        - [4, 5, 6]
+    out: 18
+  - name: mixed-orientations
+    in:
+      cuboids:
+        - [8, 6, 5]
+        - [7, 4, 3]
+        - [9, 2, 8]
+        - [6, 6, 6]
+        - [10, 1, 1]
+    out: 15
+  - name: equal-base-chain
+    in:
+      cuboids:
+        - [4, 4, 1]
+        - [4, 4, 2]
+        - [4, 4, 3]
+        - [4, 4, 4]
+    out: 16
+  - name: many-maximal
+    in:
+      cuboids:
+        - [6, 10, 2]
+        - [7, 9, 3]
+        - [8, 8, 4]
+        - [9, 7, 5]
+        - [10, 6, 6]
+    out: 20
+  - name: staircase
+    in:
+      cuboids:
+        - [1, 5, 2]
+        - [2, 6, 3]
+        - [3, 7, 4]
+        - [4, 8, 5]
+        - [5, 9, 6]
+        - [6, 10, 7]
+    out: 45
+  - name: two-useful-among-noise
+    in:
+      cuboids:
+        - [100, 1, 1]
+        - [1, 100, 1]
+        - [2, 2, 2]
+        - [3, 3, 3]
+        - [4, 4, 4]
+        - [1, 99, 2]
+    out: 200
+  - name: nineties
+    in:
+      cuboids:
+        - [90, 91, 92]
+        - [91, 92, 93]
+        - [92, 93, 94]
+    out: 279
+  - name: repeated-dimensions
+    in:
+      cuboids:
+        - [2, 2, 8]
+        - [2, 8, 2]
+        - [8, 2, 2]
+        - [3, 3, 7]
+        - [3, 7, 3]
+    out: 24
+  - name: lower-bound-values
+    in:
+      cuboids:
+        - [1, 1, 1]
+        - [1, 1, 2]
+        - [1, 2, 1]
+        - [2, 1, 1]
+    out: 7
+  - name: broad-chain
+    in:
+      cuboids:
+        - [10, 20, 30]
+        - [15, 25, 35]
+        - [20, 30, 40]
+        - [25, 35, 45]
+        - [30, 40, 50]
+        - [35, 45, 55]
+    out: 255
+  - name: alternate-traps
+    in:
+      cuboids:
+        - [2, 100, 2]
+        - [3, 99, 3]
+        - [4, 98, 4]
+        - [5, 97, 5]
+        - [6, 6, 6]
+        - [7, 7, 7]
+    out: 100
+  - name: equal-two-sides
+    in:
+      cuboids:
+        - [3, 3, 1]
+        - [3, 3, 2]
+        - [3, 3, 3]
+        - [4, 4, 4]
+        - [4, 4, 5]
+    out: 18
+  - name: high-height-small-base
+    in:
+      cuboids:
+        - [1, 2, 100]
+        - [1, 3, 99]
+        - [2, 3, 98]
+        - [2, 4, 97]
+    out: 100
+  - name: six-identical
+    in:
+      cuboids:
+        - [7, 11, 17]
+        - [7, 11, 17]
+        - [7, 11, 17]
+        - [7, 11, 17]
+        - [7, 11, 17]
+        - [7, 11, 17]
+    out: 102
+  - name: nontrivial-choice
+    in:
+      cuboids:
+        - [4, 5, 6]
+        - [5, 6, 7]
+        - [6, 7, 8]
+        - [7, 8, 9]
+        - [8, 9, 10]
+        - [9, 10, 11]
+        - [10, 11, 12]
+    out: 63
+  - name: max-count-small
+    in:
+      cuboids:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 8
+  - name: max-count-varied
+    in:
+      cuboids:
+        - [2, 2, 2]
+        - [2, 2, 3]
+        - [2, 3, 3]
+        - [3, 3, 3]
+        - [3, 3, 4]
+        - [3, 4, 4]
+        - [4, 4, 4]
+    out: 23
+  - name: generator-uniform
+    in:
+      cuboids:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+          elemType: "int"
+  - name: generator-small-values
+    in:
+      cuboids:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 10
+          elemType: "int"
+  - name: generator-wide-values
+    in:
+      cuboids:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 90
+            max: 100
+          elemType: "int"
+  - name: generator-two-valued
+    in:
+      cuboids:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 2
+          elemType: "int"
+  - name: generator-mixed
+    in:
+      cuboids:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+          elemType: "int"

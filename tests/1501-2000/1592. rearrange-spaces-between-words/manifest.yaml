@@ -1,0 +1,220 @@
+entry:
+  id: 1592
+  title: "rearrange-spaces-between-words"
+  params:
+    text:
+      type: string
+  call:
+    cpp: "Solution().reorderSpaces({text})"
+    rust: "Solution::reorder_spaces({text})"
+    python3: "Solution().reorderSpaces({text})"
+    python2: "Solution().reorderSpaces({text})"
+    ruby: "reorder_spaces({text})"
+    java: "new Solution().reorderSpaces({text})"
+    csharp: "new Solution().ReorderSpaces({text})"
+    kotlin: "Solution().reorderSpaces({text})"
+    go: "reorderSpaces({text})"
+    dart: "Solution().reorderSpaces({text})"
+    swift: "Solution().reorderSpaces({text})"
+    typescript: "reorderSpaces({text})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().reorderSpaces(text, {result})"
+    checker: |
+      class Checker:
+          def reorderSpaces(self, text, result):
+              words = text.split()
+              spaces = text.count(" ")
+              if len(words) == 1:
+                  expected = words[0] + " " * spaces
+              else:
+                  gap, extra = divmod(spaces, len(words) - 1)
+                  expected = (" " * gap).join(words) + " " * extra
+              return result == expected
+
+seed: 1592
+
+tests:
+  - name: example-leading-trailing
+    in:
+      text: "  this   is  a sentence "
+    out: "this   is   a   sentence"
+  - name: example-extra-at-end
+    in:
+      text: " practice   makes   perfect"
+    out: "practice   makes   perfect "
+  - name: one-word-many-spaces
+    in:
+      text: "     hello     "
+    out: "hello          "
+  - name: one-word-no-spaces
+    in:
+      text: "word"
+    out: "word"
+  - name: two-words-even
+    in:
+      text: "a b"
+    out: "a b"
+  - name: two-words-leading-trailing
+    in:
+      text: "   alpha beta  "
+    out: "alpha      beta"
+  - name: two-words-all-spaces-between
+    in:
+      text: "left          right"
+    out: "left          right"
+  - name: two-words-extra-trailing
+    in:
+      text: "x  y   "
+    out: "x     y"
+  - name: no-spaces-three-words
+    in:
+      text: "one two three"
+    out: "one two three"
+  - name: three-words-remainder-one
+    in:
+      text: "a  bb     c "
+    out: "a    bb    c"
+  - name: three-words-remainder-two
+    in:
+      text: " a    bb      c"
+    out: "a     bb     c "
+  - name: four-words-zero-remainder
+    in:
+      text: " a b c d       "
+    out: "a   b   c   d  "
+  - name: four-words-remainder
+    in:
+      text: "a  b c       d"
+    out: "a   b   c   d "
+  - name: repeated-single-letters
+    in:
+      text: "  a   a a    a "
+    out: "a   a   a   a  "
+  - name: repeated-words
+    in:
+      text: "go     go  go"
+    out: "go   go   go "
+  - name: irregular-internal-gaps
+    in:
+      text: "alpha beta    gamma      delta"
+    out: "alpha   beta   gamma   delta  "
+  - name: all-leading-spaces
+    in:
+      text: "        hello world"
+    out: "hello         world"
+  - name: all-trailing-spaces
+    in:
+      text: "hello world        "
+    out: "hello         world"
+  - name: alternating-gaps
+    in:
+      text: "a b   c     d       e"
+    out: "a    b    c    d    e"
+  - name: punctuation-not-allowed-but-letters
+    in:
+      text: "abc        xyz"
+    out: "abc        xyz"
+  - name: long-word-single
+    in:
+      text: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv"
+    out: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv"
+  - name: long-two-word
+    in:
+      text: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  - name: thirty-one-one-letter-words
+    in:
+      text: "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e"
+    out: "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e"
+  - name: sparse-five-words
+    in:
+      text: "    aa b       c  d             e  "
+    out: "aa       b       c       d       e "
+  - name: dense-five-words
+    in:
+      text: "a b c d e"
+    out: "a b c d e"
+  - name: two-long-words-leading
+    in:
+      text: "  aaaaaaaaaaaaaaaaaaaa   bbbbbbbbbbbbbbbbbbbb"
+    out: "aaaaaaaaaaaaaaaaaaaa     bbbbbbbbbbbbbbbbbbbb"
+  - name: mixed-word-lengths
+    in:
+      text: " a  bb   cccc      ddddddd "
+    out: "a    bb    cccc    ddddddd "
+  - name: twenty-spaces-two-words
+    in:
+      text: "first                    second"
+    out: "first                    second"
+  - name: spaces-only-between-three
+    in:
+      text: "left          middle          right"
+    out: "left          middle          right"
+  - name: one-space-between-many
+    in:
+      text: "a b c d e f g"
+    out: "a b c d e f g"
+  - name: all-space-budget-at-end
+    in:
+      text: "a b c          "
+    out: "a      b      c"
+  - name: leading-and-trailing-budget
+    in:
+      text: "       a b c       "
+    out: "a        b        c"
+  - name: uneven-seven-words
+    in:
+      text: "a  bb c   d e     f  g"
+    out: "a  bb  c  d  e  f  g  "
+  - name: many-leading-one-word
+    in:
+      text: "                    z"
+    out: "z                    "
+  - name: maximum-length-three-words
+    in:
+      text: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb cccccccccccccccccccccccccccccccccccccccccccccccccc"
+    out: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb cccccccccccccccccccccccccccccccccccccccccccccccccc"
+  - name: generated-letter-stress-20
+    in:
+      text:
+        gen: "str"
+        len: 20
+        alphabet: "abc"
+    seed: 20
+  - name: generated-letter-stress-50
+    in:
+      text:
+        gen: "str"
+        len: 50
+        alphabet: "defg"
+    seed: 50
+  - name: generated-letter-stress-80
+    in:
+      text:
+        gen: "str"
+        len: 80
+        alphabet: "hij"
+    seed: 80
+  - name: generated-letter-stress-99
+    in:
+      text:
+        gen: "str"
+        len: 99
+        alphabet: "klmn"
+    seed: 99
+  - name: generated-letter-limit
+    in:
+      text:
+        gen: "str"
+        len: 100
+        alphabet: "opqrs"
+    seed: 100
