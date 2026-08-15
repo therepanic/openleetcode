@@ -402,7 +402,9 @@ func encodeValue(v reflect.Value, seen map[uintptr]bool) string {
 		return "false"
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return fmt.Sprintf("%d", v.Int())
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+	case reflect.Uint8:
+		return jsonQuote(string(rune(v.Uint())))
+	case reflect.Uint, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		return fmt.Sprintf("%d", v.Uint())
 	case reflect.Float32, reflect.Float64:
 		return formatJsonFloat(v.Float())
