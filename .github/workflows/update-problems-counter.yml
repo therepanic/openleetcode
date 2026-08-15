@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          count="$(find tests -name manifest.yaml | wc -l | tr -d ' ')"
+          count="$(find tests -name manifest.yaml | wc -l | awk '{if($1<1000) print $1; else printf "%.1fk\n",$1/1000}' | sed 's/\.0k$/k/')"
           echo "count=$count" >> "$GITHUB_OUTPUT"
 
       - name: Update counter JSON
