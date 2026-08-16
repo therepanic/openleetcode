@@ -36,23 +36,41 @@ oracle:
               if not isinstance(result, int) or isinstance(result, bool):
                   return False
               n = len(stoneValue)
-              pref = [0]
+              prefix = [0]
               for value in stoneValue:
-                  pref.append(pref[-1] + value)
-              dp = [[0] * (n + 1) for _ in range(n + 1)]
-              for length in range(2, n + 1):
+                  prefix.append(prefix[-1] + value)
+              dp = [[0] * n for _ in range(n)]
+              left_best = [[0] * n for _ in range(n)]
+              right_best = [[0] * n for _ in range(n)]
+              for length in range(1, n + 1):
                   for left in range(n - length + 1):
-                      right = left + length
-                      best = 0
-                      for mid in range(left + 1, right):
-                          a = pref[mid] - pref[left]
-                          b = pref[right] - pref[mid]
-                          if a <= b:
-                              best = max(best, a + dp[left][mid])
-                          if b <= a:
-                              best = max(best, b + dp[mid][right])
-                      dp[left][right] = best
-              return result == dp[0][n]
+                      right = left + length - 1
+                      total = prefix[right + 1] - prefix[left]
+                      if left < right:
+                          lo, hi, split = left, right - 1, left - 1
+                          while lo <= hi:
+                              mid = (lo + hi) // 2
+                              if 2 * (prefix[mid + 1] - prefix[left]) <= total:
+                                  split = mid
+                                  lo = mid + 1
+                              else:
+                                  hi = mid - 1
+                          if split >= left:
+                              dp[left][right] = left_best[left][split]
+                          lo, hi, first = left + 1, right, right + 1
+                          while lo <= hi:
+                              mid = (lo + hi) // 2
+                              if 2 * (prefix[mid] - prefix[left]) >= total:
+                                  first = mid
+                                  hi = mid - 1
+                              else:
+                                  lo = mid + 1
+                          if first <= right:
+                              dp[left][right] = max(dp[left][right], right_best[first][right])
+                      score = total + dp[left][right]
+                      left_best[left][right] = max(score, left_best[left][right - 1] if right > left else 0)
+                      right_best[left][right] = max(score, right_best[left + 1][right] if left < right else 0)
+              return result == dp[0][n - 1]
 
 seed: 1563
 
