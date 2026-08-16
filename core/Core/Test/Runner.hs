@@ -352,110 +352,110 @@ buildMainSnippet lang idx prelude callExpr =
       T.unlines
         ( ["fmt.Println(" <> quotedMarker <> ")"]
             ++ prelude
-            ++ [ "cur" <> suffix <> " := time.Now().UnixNano() / 1_000_000",
-                 "a" <> suffix <> " := " <> callExpr,
-                 "now" <> suffix <> " := time.Now().UnixNano() / 1_000_000",
-                 "fmt.Println(now" <> suffix <> " - cur" <> suffix <> ")",
-                 "fmt.Println(toJson(a" <> suffix <> "))"
+            ++ [ "openleetcode_timer_start_" <> suffix <> " := time.Now().UnixNano() / 1_000_000",
+                 "openleetcode_result_" <> suffix <> " := " <> callExpr,
+                 "openleetcode_timer_end_" <> suffix <> " := time.Now().UnixNano() / 1_000_000",
+                 "fmt.Println(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> ")",
+                 "fmt.Println(toJson(openleetcode_result_" <> suffix <> "))"
                ]
         )
     TypeScript ->
       T.unlines
         ( ["console.log(" <> quotedMarker <> ");"]
             ++ prelude
-            ++ [ "const _start" <> suffix <> " = Date.now();",
-                 "const _a" <> suffix <> " = " <> callExpr <> ";",
-                 "const _end" <> suffix <> " = Date.now();",
-                 "console.log(String(_end" <> suffix <> " - _start" <> suffix <> "));",
-                 "console.log(toJson(_a" <> suffix <> "));"
+            ++ [ "const openleetcode_timer_start_" <> suffix <> " = Date.now();",
+                 "const openleetcode_result_" <> suffix <> " = " <> callExpr <> ";",
+                 "const openleetcode_timer_end_" <> suffix <> " = Date.now();",
+                 "console.log(String(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> "));",
+                 "console.log(toJson(openleetcode_result_" <> suffix <> "));"
                ]
         )
     Dart ->
       T.unlines
         ( ["print(" <> quotedMarker <> ");"]
             ++ prelude
-            ++ [ "final start" <> suffix <> " = Stopwatch()..start();",
-                 "final a" <> suffix <> " = " <> callExpr <> ";",
-                 "start" <> suffix <> ".stop();",
-                 "print(start" <> suffix <> ".elapsedMilliseconds);",
-                 "print(toJson(a" <> suffix <> "));"
+            ++ [ "final openleetcode_timer_" <> suffix <> " = Stopwatch()..start();",
+                 "final openleetcode_result_" <> suffix <> " = " <> callExpr <> ";",
+                 "openleetcode_timer_" <> suffix <> ".stop();",
+                 "print(openleetcode_timer_" <> suffix <> ".elapsedMilliseconds);",
+                 "print(toJson(openleetcode_result_" <> suffix <> "));"
                ]
         )
     Cpp ->
       T.unlines
         ( ["cout << " <> quotedMarker <> " << \"\\n\";"]
             ++ prelude
-            ++ [ "auto start" <> suffix <> " = chrono::steady_clock::now();",
-                 "auto a" <> suffix <> " = " <> callExpr <> ";",
-                 "auto end" <> suffix <> " = chrono::steady_clock::now();",
-                 "cout << chrono::duration_cast<chrono::milliseconds>(end" <> suffix <> " - start" <> suffix <> ").count() << \"\\n\";",
-                 "cout << toJson(a" <> suffix <> ") << \"\\n\";"
+            ++ [ "auto openleetcode_timer_start_" <> suffix <> " = chrono::steady_clock::now();",
+                 "auto openleetcode_result_" <> suffix <> " = " <> callExpr <> ";",
+                 "auto openleetcode_timer_end_" <> suffix <> " = chrono::steady_clock::now();",
+                 "cout << chrono::duration_cast<chrono::milliseconds>(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> ").count() << \"\\n\";",
+                 "cout << toJson(openleetcode_result_" <> suffix <> ") << \"\\n\";"
                ]
         )
     CSharp ->
       T.unlines
         ( ["Console.WriteLine(" <> quotedMarker <> ");"]
             ++ prelude
-            ++ [ "var sw" <> suffix <> " = Stopwatch.StartNew();",
-                 "var a" <> suffix <> " = " <> callExpr <> ";",
-                 "sw" <> suffix <> ".Stop();",
-                 "Console.WriteLine(sw" <> suffix <> ".ElapsedMilliseconds);",
-                 "Console.WriteLine(ToJson(a" <> suffix <> "));"
+            ++ [ "var openleetcode_timer_" <> suffix <> " = Stopwatch.StartNew();",
+                 "var openleetcode_result_" <> suffix <> " = " <> callExpr <> ";",
+                 "openleetcode_timer_" <> suffix <> ".Stop();",
+                 "Console.WriteLine(openleetcode_timer_" <> suffix <> ".ElapsedMilliseconds);",
+                 "Console.WriteLine(ToJson(openleetcode_result_" <> suffix <> "));"
                ]
         )
     Java ->
       T.unlines
         ( ["System.out.println(" <> quotedMarker <> ");"]
             ++ prelude
-            ++ [ "long cur" <> suffix <> " = System.currentTimeMillis();",
-                 "var a" <> suffix <> " = " <> callExpr <> ";",
-                 "long now" <> suffix <> " = System.currentTimeMillis();",
-                 "System.out.println(now" <> suffix <> " - cur" <> suffix <> ");",
-                 "System.out.println(Json.toJson(a" <> suffix <> "));"
+            ++ [ "long openleetcode_timer_start_" <> suffix <> " = System.currentTimeMillis();",
+                 "var openleetcode_result_" <> suffix <> " = " <> callExpr <> ";",
+                 "long openleetcode_timer_end_" <> suffix <> " = System.currentTimeMillis();",
+                 "System.out.println(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> ");",
+                 "System.out.println(Json.toJson(openleetcode_result_" <> suffix <> "));"
                ]
         )
     Kotlin ->
       T.unlines
         ( ["println(" <> quotedMarker <> ")"]
             ++ prelude
-            ++ [ "val cur" <> suffix <> " = System.currentTimeMillis()",
-                 "val a" <> suffix <> " = " <> callExpr,
-                 "val now" <> suffix <> " = System.currentTimeMillis()",
-                 "println(now" <> suffix <> " - cur" <> suffix <> ")",
-                 "println(Json.toJson(a" <> suffix <> "))"
+            ++ [ "val openleetcode_timer_start_" <> suffix <> " = System.currentTimeMillis()",
+                 "val openleetcode_result_" <> suffix <> " = " <> callExpr,
+                 "val openleetcode_timer_end_" <> suffix <> " = System.currentTimeMillis()",
+                 "println(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> ")",
+                 "println(Json.toJson(openleetcode_result_" <> suffix <> "))"
                ]
         )
     Rust ->
       T.unlines
         ( ["println!(\"" <> marker idx <> "\");"]
             ++ prelude
-            ++ [ "let start" <> suffix <> " = Instant::now();",
-                 "let result" <> suffix <> " = " <> callExpr <> ";",
-                 "let duration" <> suffix <> " = start" <> suffix <> ".elapsed();",
-                 "println!(\"{}\", duration" <> suffix <> ".as_millis());",
-                 "println!(\"{}\", to_json(&result" <> suffix <> "));"
+            ++ [ "let openleetcode_timer_start_" <> suffix <> " = Instant::now();",
+                 "let openleetcode_result_" <> suffix <> " = " <> callExpr <> ";",
+                 "let openleetcode_duration_" <> suffix <> " = openleetcode_timer_start_" <> suffix <> ".elapsed();",
+                 "println!(\"{}\", openleetcode_duration_" <> suffix <> ".as_millis());",
+                 "println!(\"{}\", to_json(&openleetcode_result_" <> suffix <> "));"
                ]
         )
     Ruby ->
       T.unlines
         ( ["puts " <> quotedMarker]
             ++ prelude
-            ++ [ "start" <> suffix <> " = (Time.now.to_f * 1000).to_i",
-                 "a" <> suffix <> " = " <> callExpr,
-                 "finish" <> suffix <> " = (Time.now.to_f * 1000).to_i",
-                 "puts(finish" <> suffix <> " - start" <> suffix <> ")",
-                 "puts to_json(a" <> suffix <> ")"
+            ++ [ "openleetcode_timer_start_" <> suffix <> " = (Time.now.to_f * 1000).to_i",
+                 "openleetcode_result_" <> suffix <> " = " <> callExpr,
+                 "openleetcode_timer_end_" <> suffix <> " = (Time.now.to_f * 1000).to_i",
+                 "puts(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> ")",
+                 "puts to_json(openleetcode_result_" <> suffix <> ")"
                ]
         )
     Swift ->
       T.unlines
         ( ["print(" <> quotedMarker <> ")"]
             ++ prelude
-            ++ [ "let start" <> suffix <> " = Int(Date().timeIntervalSince1970 * 1000)",
-                 "let result" <> suffix <> " = " <> callExpr,
-                 "let end" <> suffix <> " = Int(Date().timeIntervalSince1970 * 1000)",
-                 "print(end" <> suffix <> " - start" <> suffix <> ")",
-                 "print(toJson(result" <> suffix <> "))"
+            ++ [ "let openleetcode_timer_start_" <> suffix <> " = Int(Date().timeIntervalSince1970 * 1000)",
+                 "let openleetcode_result_" <> suffix <> " = " <> callExpr,
+                 "let openleetcode_timer_end_" <> suffix <> " = Int(Date().timeIntervalSince1970 * 1000)",
+                 "print(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> ")",
+                 "print(toJson(openleetcode_result_" <> suffix <> "))"
                ]
         )
     Default -> error "Unsupported"
@@ -466,17 +466,13 @@ buildMainSnippet lang idx prelude callExpr =
       T.unlines
         ( ["print(" <> quotedMarker <> ")"]
             ++ prelude
-            ++ [ "_start_" <> suffix <> " = int(" <> pythonTimeExpr <> " * 1000)",
-                 "_a_" <> suffix <> " = " <> callExpr,
-                 "_end_" <> suffix <> " = int(" <> pythonTimeExpr <> " * 1000)",
-                 "print(_end_" <> suffix <> " - _start_" <> suffix <> ")",
-                 "print(to_json(_a_" <> suffix <> "))"
+            ++ [ "openleetcode_timer_start_" <> suffix <> " = int(time.time() * 1000)",
+                 "openleetcode_result_" <> suffix <> " = " <> callExpr,
+                 "openleetcode_timer_end_" <> suffix <> " = int(time.time() * 1000)",
+                 "print(openleetcode_timer_end_" <> suffix <> " - openleetcode_timer_start_" <> suffix <> ")",
+                 "print(to_json(openleetcode_result_" <> suffix <> "))"
                ]
         )
-    pythonTimeExpr =
-      case lang of
-        Python2 -> "_time.time()"
-        _ -> "time.time()"
 
 parseMainBatchOutput :: [PreparedCase] -> Text -> IO (M.Map Int MainCaseOutput)
 parseMainBatchOutput cases stdoutText =

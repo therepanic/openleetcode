@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-import time as _time
+import time
 import math
 import heapq
 import bisect
@@ -9,7 +9,6 @@ import random
 import re
 import operator
 import string
-import datetime as _dt
 import collections
 import json
 from functools import *
