@@ -1,29 +1,33 @@
 class Solution(object):
     def maximizeXor(self, nums, queries):
-        trie = [[-1, -1]]
+        child_zero = [-1]
+        child_one = [-1]
 
         def insert(num):
             node = 0
-            for i in range(31, -1, -1):
+            for i in range(30, -1, -1):
                 bit = (num >> i) & 1
-                if trie[node][bit] == -1:
-                    trie[node][bit] = len(trie)
-                    trie.append([-1, -1])
-                node = trie[node][bit]
+                children = child_one if bit else child_zero
+                if children[node] == -1:
+                    children[node] = len(child_zero)
+                    child_zero.append(-1)
+                    child_one.append(-1)
+                node = children[node]
 
         def maxor(num):
-            if trie[0][0] == -1 and trie[0][1] == -1:
+            if child_zero[0] == -1 and child_one[0] == -1:
                 return -1
             node = 0
             ans = 0
-            for i in range(31, -1, -1):
+            for i in range(30, -1, -1):
                 bit = (num >> i) & 1
                 opp = 1 - bit
-                if trie[node][opp] != -1:
+                opposite = child_one if opp else child_zero
+                if opposite[node] != -1:
                     ans |= 1 << i
-                    node = trie[node][opp]
+                    node = opposite[node]
                 else:
-                    node = trie[node][bit]
+                    node = (child_one if bit else child_zero)[node]
             return ans
 
         nums.sort()
@@ -41,9 +45,3 @@ class Solution(object):
                 idx += 1
             res[i] = maxor(x)
         return res
-
-        """
-        :type nums: List[int]
-        :type queries: List[List[int]]
-        :rtype: List[int]
-        """
