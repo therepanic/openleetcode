@@ -8,7 +8,7 @@ use std::cell::RefCell;
 use std::cmp::*;
 use std::collections::*;
 use std::fs;
-use itertools::*;
+use itertools::Itertools as _;
 use rand::prelude::*;
 use regex::*;
 
