@@ -1,6 +1,5 @@
 import * as fs from "fs";
-import * as __lodash_runtime from "lodash";
-void __lodash_runtime;
+import * as _ from "lodash";
 
 type _TEST_INPUT_ = { val: any };
 const _TEST_: Record<string, Record<string, _TEST_INPUT_>> = JSON.parse(
