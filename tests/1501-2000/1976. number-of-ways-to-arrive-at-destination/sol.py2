@@ -1,0 +1,30 @@
+
+import heapq
+
+
+class Solution(object):
+    def countPaths(self, n, roads):
+        graph = [[] for _ in xrange(n)]
+        for left, right, time in roads:
+            graph[left].append((right, time))
+            graph[right].append((left, time))
+
+        modulo = 1000000007
+        distance = [float('inf')] * n
+        ways = [0] * n
+        distance[0] = 0
+        ways[0] = 1
+        heap = [(0, 0)]
+        while heap:
+            current_distance, node = heapq.heappop(heap)
+            if current_distance != distance[node]:
+                continue
+            for neighbor, weight in graph[node]:
+                candidate = current_distance + weight
+                if candidate < distance[neighbor]:
+                    distance[neighbor] = candidate
+                    ways[neighbor] = ways[node]
+                    heapq.heappush(heap, (candidate, neighbor))
+                elif candidate == distance[neighbor]:
+                    ways[neighbor] = (ways[neighbor] + ways[node]) % modulo
+        return ways[-1]

@@ -1,0 +1,237 @@
+entry:
+  id: 1864
+  title: "minimum-number-of-swaps-to-make-the-binary-string-alternating"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().minSwaps({s})"
+    rust: "Solution::min_swaps({s})"
+    python3: "Solution().minSwaps({s})"
+    python2: "Solution().minSwaps({s})"
+    ruby: "min_swaps({s})"
+    java: "new Solution().minSwaps({s})"
+    csharp: "new Solution().MinSwaps({s})"
+    kotlin: "Solution().minSwaps({s})"
+    go: "minSwaps({s})"
+    dart: "Solution().minSwaps({s})"
+    swift: "Solution().minSwaps({s})"
+    typescript: "minSwaps({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minSwaps(s, {result})"
+    checker: |
+      class Checker:
+          def minSwaps(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              zeros = s.count("0")
+              ones = len(s) - zeros
+              if abs(zeros - ones) > 1:
+                  return result == -1
+
+              def mismatches(start):
+                  other = "1" if start == "0" else "0"
+                  bad = sum(ch != (start if i % 2 == 0 else other)
+                            for i, ch in enumerate(s))
+                  return bad // 2
+
+              if zeros == ones:
+                  expected = min(mismatches("0"), mismatches("1"))
+              elif zeros > ones:
+                  expected = mismatches("0")
+              else:
+                  expected = mismatches("1")
+              return result == expected
+
+seed: 1864
+
+tests:
+  - name: two-digit-zero-one
+    in:
+      s: "10"
+    out: 0
+  - name: two-digit-one-zero
+    in:
+      s: "01"
+    out: 0
+  - name: single-zero
+    in:
+      s: "0"
+    out: 0
+  - name: single-one
+    in:
+      s: "1"
+    out: 0
+  - name: impossible-two-zeros
+    in:
+      s: "00"
+    out: -1
+  - name: impossible-two-ones
+    in:
+      s: "11"
+    out: -1
+  - name: alternating-three-zero-start
+    in:
+      s: "010"
+    out: 0
+  - name: alternating-three-one-start
+    in:
+      s: "101"
+    out: 0
+  - name: impossible-three-zeros
+    in:
+      s: "000"
+    out: -1
+  - name: impossible-three-ones
+    in:
+      s: "111"
+    out: -1
+  - name: one-swap-zero-majority
+    in:
+      s: "001"
+    out: 1
+  - name: one-swap-one-majority
+    in:
+      s: "110"
+    out: 1
+  - name: one-swap-leading-zero
+    in:
+      s: "011"
+    out: 1
+  - name: one-swap-leading-one
+    in:
+      s: "100"
+    out: 1
+  - name: alternating-even-zero-start
+    in:
+      s: "0101"
+    out: 0
+  - name: alternating-even-one-start
+    in:
+      s: "1010"
+    out: 0
+  - name: example-one
+    in:
+      s: "111000"
+    out: 1
+  - name: example-three-impossible
+    in:
+      s: "1110"
+    out: -1
+  - name: mirrored-example-one
+    in:
+      s: "000111"
+    out: 1
+  - name: equal-blocks
+    in:
+      s: "0011"
+    out: 1
+  - name: near-alternating-zero-tail
+    in:
+      s: "0100"
+    out: -1
+  - name: near-alternating-one-tail
+    in:
+      s: "1011"
+    out: -1
+  - name: all-zero-even
+    in:
+      s: "0000"
+    out: -1
+  - name: all-one-even
+    in:
+      s: "1111"
+    out: -1
+  - name: excess-zero-by-two
+    in:
+      s: "0001"
+    out: -1
+  - name: excess-one-by-two
+    in:
+      s: "1000"
+    out: -1
+  - name: five-zero-majority
+    in:
+      s: "00101"
+    out: 2
+  - name: five-one-majority
+    in:
+      s: "11010"
+    out: 2
+  - name: alternating-five-zero-start
+    in:
+      s: "01010"
+    out: 0
+  - name: alternating-five-one-start
+    in:
+      s: "10101"
+    out: 0
+  - name: repeated-balanced-blocks
+    in:
+      s: "00110011"
+    out: 2
+  - name: alternating-eight
+    in:
+      s: "01010101"
+    out: 0
+  - name: four-zero-four-one
+    in:
+      s: "11110000"
+    out: 2
+  - name: four-one-four-zero
+    in:
+      s: "00001111"
+    out: 2
+  - name: alternating-ten
+    in:
+      s: "0101010101"
+    out: 0
+  - name: generated-balanced
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "01"
+    judge:
+      type: "exact"
+  - name: generated-short-binary
+    in:
+      s:
+        gen: "str"
+        len: 17
+        alphabet: "01"
+    judge:
+      type: "exact"
+  - name: generated-medium-binary
+    in:
+      s:
+        gen: "str"
+        len: 257
+        alphabet: "01"
+    judge:
+      type: "exact"
+  - name: generated-large-binary
+    in:
+      s:
+        gen: "str"
+        len: 999
+        alphabet: "01"
+    judge:
+      type: "exact"
+  - name: generated-even-large-binary
+    in:
+      s:
+        gen: "str"
+        len: 998
+        alphabet: "01"
+    judge:
+      type: "exact"

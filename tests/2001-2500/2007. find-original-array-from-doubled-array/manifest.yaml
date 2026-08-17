@@ -1,0 +1,288 @@
+entry:
+  id: 2007
+  title: "find-original-array-from-doubled-array"
+  params:
+    changed:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().findOriginalArray({changed})"
+    rust: "Solution::find_original_array({changed})"
+    python3: "Solution().findOriginalArray({changed})"
+    python2: "Solution().findOriginalArray({changed})"
+    ruby: "find_original_array({changed})"
+    java: "new Solution().findOriginalArray({changed})"
+    csharp: "new Solution().FindOriginalArray({changed})"
+    kotlin: "Solution().findOriginalArray({changed})"
+    go: "findOriginalArray({changed})"
+    dart: "Solution().findOriginalArray({changed})"
+    swift: "Solution().findOriginalArray({changed})"
+    typescript: "findOriginalArray({changed})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().findOriginalArray(changed, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def findOriginalArray(self, changed, result):
+              if not isinstance(result, list):
+                  return False
+              if len(changed) % 2 == 1:
+                  return result == []
+              remaining = Counter(changed)
+              for value in result:
+                  if not isinstance(value, int) or value < 0:
+                      return False
+                  if remaining[value] <= 0:
+                      return False
+                  remaining[value] -= 1
+                  doubled = value * 2
+                  if remaining[doubled] <= 0:
+                      return False
+                  remaining[doubled] -= 1
+              if len(result) != len(changed) // 2:
+                  return False
+              return not any(remaining.values())
+
+seed: 2007
+
+tests:
+  - name: example-valid
+    in:
+      changed: [1, 3, 4, 2, 6, 8]
+  - name: example-invalid
+    in:
+      changed: [6, 3, 0, 1]
+    out: []
+  - name: example-odd
+    in:
+      changed: [1]
+    out: []
+  - name: empty-not-allowed-but-represented
+    in:
+      changed: [0, 0]
+  - name: all-zero-four
+    in:
+      changed: [0, 0, 0, 0]
+  - name: zero-and-one
+    in:
+      changed: [0, 1, 0, 2]
+  - name: zero-and-large
+    in:
+      changed: [0, 0, 100000, 0]
+    out: []
+  - name: one-chain
+    in:
+      changed: [1, 2, 2, 4, 4, 8]
+  - name: duplicate-chain
+    in:
+      changed: [2, 4, 8, 16, 2, 4, 8, 16]
+  - name: duplicate-single
+    in:
+      changed: [7, 14, 7, 14]
+  - name: unsorted-valid
+    in:
+      changed: [10, 1, 6, 2, 3, 20, 12, 4]
+    out: []
+  - name: unsorted-invalid
+    in:
+      changed: [8, 4, 2, 1, 16, 5]
+    out: []
+  - name: missing-double
+    in:
+      changed: [2, 3, 4, 6]
+  - name: extra-unpaired
+    in:
+      changed: [1, 2, 2, 4, 9, 18, 10, 11]
+    out: []
+  - name: odd-three
+    in:
+      changed: [0, 0, 0]
+    out: []
+  - name: odd-five
+    in:
+      changed: [1, 2, 2, 4, 4]
+    out: []
+  - name: minimum-positive
+    in:
+      changed: [1, 2]
+  - name: minimum-invalid
+    in:
+      changed: [2, 3]
+    out: []
+  - name: maximum-value-pair
+    in:
+      changed: [50000, 100000]
+  - name: maximum-unmatched
+    in:
+      changed: [100000, 100000]
+    out: []
+  - name: many-zeros-and-pair
+    in:
+      changed: [0, 0, 0, 0, 0, 0, 5, 10]
+  - name: repeated-zero-valid
+    in:
+      changed: [0, 5, 0, 10, 0, 0]
+  - name: repeated-zero-invalid
+    in:
+      changed: [0, 0, 0, 5, 10, 11]
+    out: []
+  - name: powers-of-two
+    in:
+      changed: [32, 1, 16, 2, 4, 8, 64, 128]
+  - name: powers-invalid-tail
+    in:
+      changed: [1, 2, 2, 4, 4, 8, 8, 32]
+    out: []
+  - name: repeated-mixed-valid
+    in:
+      changed: [3, 6, 3, 6, 12, 24, 0, 0, 10, 20]
+  - name: repeated-mixed-invalid
+    in:
+      changed: [3, 6, 3, 6, 12, 12, 0, 0, 10, 21]
+    out: []
+  - name: adjacent-values
+    in:
+      changed: [11, 22, 12, 24, 13, 26, 14, 28]
+  - name: close-invalid-values
+    in:
+      changed: [11, 22, 12, 24, 13, 26, 14, 29]
+    out: []
+  - name: zero-heavy-valid
+    in:
+      changed: [0, 0, 0, 0, 0, 0, 0, 0, 25, 50, 1, 2]
+  - name: zero-heavy-invalid
+    in:
+      changed: [0, 0, 0, 0, 0, 0, 0, 0, 25, 50, 1, 3]
+    out: []
+  - name: broad-valid
+    in:
+      changed: [99, 198, 100, 200, 101, 202, 102, 204, 103, 206, 104, 208]
+  - name: broad-invalid
+    in:
+      changed: [99, 198, 100, 200, 101, 202, 102, 204, 103, 206, 104, 209]
+    out: []
+  - name: many-duplicate-pairs
+    in:
+      changed: [6, 12, 6, 12, 6, 12, 6, 12, 7, 14, 7, 14, 0, 0, 0, 0]
+  - name: large-static-valid
+    in:
+      changed:
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          4,
+          3,
+          6,
+          4,
+          8,
+          5,
+          10,
+          6,
+          12,
+          7,
+          14,
+          8,
+          16,
+          9,
+          18,
+          10,
+          20,
+          11,
+          22,
+          12,
+          24,
+          13,
+          26,
+          14,
+          28,
+          15,
+          30,
+          16,
+          32,
+          17,
+          34,
+          18,
+          36,
+          19,
+          38,
+          20,
+          40,
+          21,
+          42,
+          22,
+          44,
+          23,
+          46,
+          24,
+          48,
+          25,
+          50,
+          26,
+          52,
+          27,
+          54,
+          28,
+          56,
+          29,
+          58,
+          30,
+          60,
+          31,
+          62,
+          32,
+          64,
+          33,
+          66,
+          34,
+          68,
+          35,
+          70,
+          36,
+          72,
+          37,
+          74,
+          38,
+          76,
+          39,
+          78,
+          40,
+          80,
+          41,
+          82,
+          42,
+          84,
+          43,
+          86,
+          44,
+          88,
+          45,
+          90,
+          46,
+          92,
+          47,
+          94,
+          48,
+          96,
+          49,
+          98,
+          50,
+          100,
+        ]

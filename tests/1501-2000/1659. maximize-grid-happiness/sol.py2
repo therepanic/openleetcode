@@ -1,0 +1,28 @@
+class Solution(object):
+ def getMaxGridHappiness(self,m,n,introvertsCount,extrovertsCount):
+  I,E=introvertsCount,extrovertsCount
+  if n>m:m,n=n,m
+  rows=range(3**n); st=[]
+  for x in rows:
+   a=x;h=ii=ee=prev=0
+   for j in range(n):
+    d=a%3;a//=3
+    if d==1:h+=120;ii+=1
+    elif d==2:h+=40;ee+=1
+    if d and prev:h+=(-30 if d==1 else 20)+(-30 if prev==1 else 20)
+    prev=d
+   st.append((h,ii,ee))
+  def inter(a,b):
+   s=0
+   for _ in range(n):
+    u=a%3;d=b%3;a//=3;b//=3
+    if u and d:s+=(-30 if u==1 else 20)+(-30 if d==1 else 20)
+   return s
+  memo={}
+  def f(r,i,e,p):
+   if r==m:return 0
+   key=(r,i,e,p)
+   if key not in memo:
+    memo[key]=max(st[c][0]+inter(p,c)+f(r+1,i-st[c][1],e-st[c][2],c) for c in rows if st[c][1]<=i and st[c][2]<=e)
+   return memo[key]
+  return f(0,I,E,0)

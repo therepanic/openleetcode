@@ -1,0 +1,227 @@
+entry:
+  id: 1578
+  title: "minimum-time-to-make-rope-colorful"
+  params:
+    colors:
+      type: string
+    neededTime:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minCost({colors}, {neededTime})"
+    rust: "Solution::min_cost({colors}, {neededTime})"
+    python3: "Solution().minCost({colors}, {neededTime})"
+    python2: "Solution().minCost({colors}, {neededTime})"
+    ruby: "min_cost({colors}, {neededTime})"
+    java: "new Solution().minCost({colors}, {neededTime})"
+    csharp: "new Solution().MinCost({colors}, {neededTime})"
+    kotlin: "Solution().minCost({colors}, {neededTime})"
+    go: "minCost({colors}, {neededTime})"
+    dart: "Solution().minCost({colors}, {neededTime})"
+    swift: "Solution().minCost({colors}, {neededTime})"
+    typescript: "minCost({colors}, {neededTime})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minCost(colors, neededTime, {result})"
+    checker: |
+      class Checker:
+          def minCost(self, colors, neededTime, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              keep = 0
+              removed = 0
+              for i, value in enumerate(neededTime):
+                  if i == 0 or colors[i] != colors[i - 1]:
+                      keep = value
+                  else:
+                      removed += min(keep, value)
+                      keep = max(keep, value)
+              return result == removed
+
+seed: 1578001
+
+tests:
+  - name: example-one
+    in:
+      colors: "abaac"
+      neededTime: [1, 2, 3, 4, 5]
+    out: 3
+  - name: example-two-already-colorful
+    in:
+      colors: "abc"
+      neededTime: [1, 2, 3]
+    out: 0
+  - name: example-three
+    in:
+      colors: "aabaa"
+      neededTime: [1, 2, 3, 4, 1]
+    out: 2
+  - name: single-balloon
+    in:
+      colors: "z"
+      neededTime: [10000]
+    out: 0
+  - name: two-equal-low-first
+    in:
+      colors: "aa"
+      neededTime: [1, 9]
+    out: 1
+  - name: two-equal-high-first
+    in:
+      colors: "aa"
+      neededTime: [9, 1]
+    out: 1
+  - name: two-different
+    in:
+      colors: "ab"
+      neededTime: [10000, 1]
+    out: 0
+  - name: all-equal-increasing
+    in:
+      colors: "aaaa"
+      neededTime: [1, 2, 3, 4]
+    out: 6
+  - name: all-equal-decreasing
+    in:
+      colors: "aaaa"
+      neededTime: [4, 3, 2, 1]
+    out: 6
+  - name: all-equal-middle-maximum
+    in:
+      colors: "aaaaa"
+      neededTime: [5, 1, 9, 2, 4]
+    out: 12
+  - name: leading-run
+    in:
+      colors: "aaab"
+      neededTime: [5, 1, 7, 3]
+    out: 6
+  - name: trailing-run
+    in:
+      colors: "baaab"
+      neededTime: [8, 5, 1, 7, 2]
+    out: 6
+  - name: separated-runs
+    in:
+      colors: "aabbcc"
+      neededTime: [1, 9, 2, 8, 3, 7]
+    out: 6
+  - name: triple-middle
+    in:
+      colors: "abbba"
+      neededTime: [2, 9, 1, 4, 8]
+    out: 5
+  - name: alternating-colors
+    in:
+      colors: "abababab"
+      neededTime: [10, 1, 9, 2, 8, 3, 7, 4]
+    out: 0
+  - name: long-single-run
+    in:
+      colors: "bbbbbb"
+      neededTime: [6, 5, 4, 3, 2, 1]
+    out: 15
+  - name: repeated-pairs
+    in:
+      colors: "aabbbaacc"
+      neededTime: [2, 3, 10, 1, 4, 7, 8, 2, 9]
+    out: 16
+  - name: maximum-times
+    in:
+      colors: "aaaaa"
+      neededTime: [10000, 10000, 10000, 10000, 10000]
+    out: 40000
+  - name: max-and-min-run
+    in:
+      colors: "aaabbb"
+      neededTime: [10000, 1, 10000, 2, 9999, 3]
+    out: 10006
+  - name: three-colors-runs
+    in:
+      colors: "cccccddd"
+      neededTime: [4, 1, 8, 2, 7, 3, 9, 1]
+    out: 18
+  - name: no-removal-long
+    in:
+      colors: "abcdefghij"
+      neededTime: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: 0
+  - name: adjacent-runs-with-peaks
+    in:
+      colors: "aabcccbba"
+      neededTime: [3, 8, 2, 1, 10, 4, 6, 9, 5]
+    out: 14
+  - name: one-run-each-letter
+    in:
+      colors: "aabbccddeeff"
+      neededTime: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    out: 36
+  - name: runs-of-four
+    in:
+      colors: "aaaabbbb"
+      neededTime: [4, 3, 2, 1, 8, 7, 6, 5]
+    out: 24
+  - name: alternating-runs
+    in:
+      colors: "aabbaa"
+      neededTime: [9, 2, 8, 1, 7, 3]
+    out: 6
+  - name: all-low-equal
+    in:
+      colors: "zzzzz"
+      neededTime: [1, 1, 1, 1, 1]
+    out: 4
+  - name: isolated-expensive
+    in:
+      colors: "aabaaac"
+      neededTime: [2, 100, 3, 4, 1, 8, 9]
+    out: 7
+  - name: two-runs-with-single
+    in:
+      colors: "aaabaaa"
+      neededTime: [1, 2, 10, 50, 3, 4, 5]
+    out: 10
+  - name: mixed-small-values
+    in:
+      colors: "abbaccca"
+      neededTime: [2, 5, 1, 4, 3, 6, 2, 8]
+    out: 6
+  - name: long-two-color-runs
+    in:
+      colors: "aaaaabbbbb"
+      neededTime: [1, 3, 5, 7, 9, 2, 4, 6, 8, 10]
+    out: 36
+  - name: high-value-single-preserved
+    in:
+      colors: "xxxyxxx"
+      neededTime: [2, 3, 100, 10000, 1, 4, 5]
+    out: 10
+  - name: runs-touching-boundaries
+    in:
+      colors: "aabbccaa"
+      neededTime: [10, 1, 2, 9, 3, 8, 7, 4]
+    out: 10
+  - name: repeated-color-after-break
+    in:
+      colors: "aaabacaaa"
+      neededTime: [3, 2, 1, 9, 8, 7, 6, 5, 4]
+    out: 12
+  - name: all-distinct-lowercase
+    in:
+      colors: "qwertyuiop"
+      neededTime: [10000, 9999, 1, 5000, 2, 4000, 3, 3000, 4, 2000]
+    out: 0
+  - name: final-long-run
+    in:
+      colors: "abcddeeee"
+      neededTime: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: 25

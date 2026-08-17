@@ -1,0 +1,256 @@
+entry:
+  id: 1569
+  title: "number-of-ways-to-reorder-array-to-get-same-bst"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().numOfWays({nums})"
+    rust: "Solution::num_of_ways({nums})"
+    python3: "Solution().numOfWays({nums})"
+    python2: "Solution().numOfWays({nums})"
+    ruby: "num_of_ways({nums})"
+    java: "new Solution().numOfWays({nums})"
+    csharp: "new Solution().NumOfWays({nums})"
+    kotlin: "Solution().numOfWays({nums})"
+    go: "numOfWays({nums})"
+    dart: "Solution().numOfWays({nums})"
+    swift: "Solution().numOfWays({nums})"
+    typescript: "numOfWays({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().numOfWays(nums, {result})"
+    checker: |
+      class Checker:
+          def numOfWays(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              n = len(nums)
+              comb = [[0] * (n + 1) for _ in range(n + 1)]
+              for i in range(n + 1):
+                  comb[i][0] = comb[i][i] = 1
+                  for j in range(1, i):
+                      comb[i][j] = (comb[i - 1][j - 1] + comb[i - 1][j]) % mod
+              def ways(values):
+                  if len(values) <= 2:
+                      return 1
+                  root = values[0]
+                  left = [x for x in values[1:] if x < root]
+                  right = [x for x in values[1:] if x > root]
+                  return comb[len(left) + len(right)][len(left)] * ways(left) % mod * ways(right) % mod
+              return result == (ways(nums) - 1) % mod
+
+seed: 1569
+
+tests:
+  - name: single
+    in:
+      nums: [1]
+    out: 0
+  - name: two-ascending
+    in:
+      nums: [1, 2]
+    out: 0
+  - name: two-descending
+    in:
+      nums: [2, 1]
+    out: 0
+  - name: ascending-three
+    in:
+      nums: [1, 2, 3]
+    out: 0
+  - name: descending-three
+    in:
+      nums: [3, 2, 1]
+    out: 0
+  - name: balanced-three
+    in:
+      nums: [2, 1, 3]
+    out: 1
+  - name: balanced-three-reordered
+    in:
+      nums: [2, 3, 1]
+    out: 1
+  - name: skewed-root
+    in:
+      nums: [3, 1, 2]
+    out: 0
+  - name: left-chain-four
+    in:
+      nums: [4, 1, 2, 3]
+    out: 0
+  - name: descending-four
+    in:
+      nums: [4, 3, 2, 1]
+    out: 0
+  - name: two-balanced-subtrees
+    in:
+      nums: [2, 1, 4, 3]
+    out: 2
+  - name: root-with-unbalanced-right
+    in:
+      nums: [3, 1, 2, 4]
+    out: 2
+  - name: example-two-a
+    in:
+      nums: [3, 4, 1, 2, 5]
+    out: 5
+  - name: example-two-b
+    in:
+      nums: [3, 4, 5, 1, 2]
+    out: 5
+  - name: six-mixed
+    in:
+      nums: [4, 2, 1, 3, 6, 5]
+    out: 19
+  - name: left-subtree-chain
+    in:
+      nums: [5, 3, 2, 1, 4]
+    out: 2
+  - name: root-minimum
+    in:
+      nums: [5, 1, 2, 3, 4]
+    out: 0
+  - name: two-independent-pairs
+    in:
+      nums: [1, 3, 2, 5, 4]
+    out: 2
+  - name: five-mixed
+    in:
+      nums: [4, 1, 3, 2, 5]
+    out: 3
+  - name: six-balanced-ish
+    in:
+      nums: [6, 3, 1, 2, 5, 4]
+    out: 5
+  - name: six-root-middle
+    in:
+      nums: [6, 2, 1, 4, 3, 5]
+    out: 7
+  - name: perfect-seven
+    in:
+      nums: [4, 2, 6, 1, 3, 5, 7]
+    out: 79
+  - name: seven-right-chain
+    in:
+      nums: [4, 1, 2, 3, 5, 6, 7]
+    out: 19
+  - name: perfect-seven-alternate
+    in:
+      nums: [4, 2, 1, 3, 6, 5, 7]
+    out: 79
+  - name: two-balanced-levels
+    in:
+      nums: [5, 3, 1, 2, 4, 7, 6]
+    out: 44
+  - name: seven-root-high
+    in:
+      nums: [7, 4, 2, 1, 3, 6, 5]
+    out: 19
+  - name: perfect-eight
+    in:
+      nums: [8, 4, 2, 1, 3, 6, 5, 7]
+    out: 79
+  - name: eight-mixed
+    in:
+      nums: [5, 2, 1, 4, 3, 8, 6, 7]
+    out: 104
+  - name: nine-balanced
+    in:
+      nums: [6, 1, 3, 2, 5, 4, 8, 7, 9]
+    out: 335
+  - name: ten-mixed
+    in:
+      nums: [7, 3, 1, 2, 5, 4, 6, 10, 8, 9]
+    out: 1679
+  - name: ten-left-heavy
+    in:
+      nums: [5, 4, 3, 2, 1, 6, 7, 8, 9, 10]
+    out: 125
+  - name: ten-left-heavy-root-six
+    in:
+      nums: [6, 5, 4, 3, 2, 1, 7, 8, 9, 10]
+    out: 125
+  - name: ten-irregular
+    in:
+      nums: [8, 3, 1, 2, 6, 4, 5, 10, 9, 7]
+    out: 1619
+  - name: ten-two-sided
+    in:
+      nums: [10, 5, 2, 1, 4, 3, 8, 7, 6, 9]
+    out: 629
+  - name: ten-root-minimum
+    in:
+      nums: [10, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: 0
+  - name: generated-small-permutation
+    in:
+      nums:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-medium-permutation
+    in:
+      nums:
+        gen: "array"
+        len: 50
+        of:
+          gen: "int"
+          min: 1
+          max: 50
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-large-permutation
+    in:
+      nums:
+        gen: "array"
+        len: 200
+        of:
+          gen: "int"
+          min: 1
+          max: 200
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-near-limit-permutation
+    in:
+      nums:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 500
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-limit-permutation
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: true
+        sorted: false
+        elemType: "int"

@@ -1,0 +1,423 @@
+entry:
+  id: 1672
+  title: richest-customer-wealth
+  params:
+    accounts:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maximumWealth({accounts})"
+    rust: "Solution::maximum_wealth({accounts})"
+    python3: "Solution().maximumWealth({accounts})"
+    python2: "Solution().maximumWealth({accounts})"
+    ruby: "maximum_wealth({accounts})"
+    java: "new Solution().maximumWealth({accounts})"
+    csharp: "new Solution().MaximumWealth({accounts})"
+    kotlin: "Solution().maximumWealth({accounts})"
+    go: "maximumWealth({accounts})"
+    dart: "Solution().maximumWealth({accounts})"
+    swift: "Solution().maximumWealth({accounts})"
+    typescript: "maximumWealth({accounts})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maximumWealth(accounts, {result})"
+    checker: |
+      class Checker:
+          def maximumWealth(self, accounts, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(accounts, list) or not accounts:
+                  return False
+              if any(not isinstance(row, list) or not row for row in accounts):
+                  return False
+              if any(any(not isinstance(value, int) or isinstance(value, bool) or value < 1 or value > 100 for value in row) for row in accounts):
+                  return False
+              width = len(accounts[0])
+              if any(len(row) != width for row in accounts):
+                  return False
+              return result == max(sum(row) for row in accounts)
+
+seed: 1672
+
+tests:
+  - name: example-balanced
+    in:
+      accounts:
+        - [1, 2, 3]
+        - [3, 2, 1]
+    out: 6
+  - name: example-middle-richest
+    in:
+      accounts:
+        - [1, 5]
+        - [7, 3]
+        - [3, 5]
+    out: 10
+  - name: example-three-banks
+    in:
+      accounts:
+        - [2, 8, 7]
+        - [7, 1, 3]
+        - [1, 9, 5]
+    out: 17
+  - name: one-customer-one-bank
+    in:
+      accounts:
+        - [42]
+    out: 42
+  - name: all-minimum
+    in:
+      accounts:
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 2
+  - name: all-maximum
+    in:
+      accounts:
+        - [100, 100, 100, 100]
+        - [100, 100, 100, 100]
+    out: 400
+  - name: single-row-five
+    in:
+      accounts:
+        - [4, 8, 15, 16, 23]
+    out: 66
+  - name: single-column
+    in:
+      accounts:
+        - [9]
+        - [1]
+        - [77]
+        - [34]
+    out: 77
+  - name: negative-not-allowed-boundary
+    in:
+      accounts:
+        - [1, 100]
+        - [100, 1]
+        - [50, 50]
+    out: 101
+  - name: unequal-wealth-close
+    in:
+      accounts:
+        - [10, 10, 10]
+        - [9, 10, 10]
+        - [10, 9, 10]
+    out: 30
+  - name: largest-first
+    in:
+      accounts:
+        - [100, 99, 98]
+        - [1, 2, 3]
+        - [50, 50, 50]
+    out: 297
+  - name: largest-last
+    in:
+      accounts:
+        - [1, 2, 3]
+        - [50, 50, 50]
+        - [100, 99, 98]
+    out: 297
+  - name: tie-at-maximum
+    in:
+      accounts:
+        - [12, 4, 8]
+        - [1, 22, 1]
+        - [20, 2, 2]
+    out: 24
+  - name: repeated-pattern
+    in:
+      accounts:
+        - [5, 10, 5, 10]
+        - [10, 5, 10, 5]
+        - [6, 6, 6, 6]
+    out: 30
+  - name: varied-width-six
+    in:
+      accounts:
+        - [3, 14, 15, 9, 2, 6]
+        - [5, 3, 5, 8, 9, 7]
+        - [9, 3, 2, 3, 8, 4]
+    out: 49
+  - name: two-customers-extremes
+    in:
+      accounts:
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [100, 100, 100, 100, 100, 100, 100, 100]
+    out: 800
+  - name: sparse-looking-values
+    in:
+      accounts:
+        - [1, 100, 1, 100]
+        - [50, 50, 50, 50]
+        - [99, 1, 99, 1]
+    out: 202
+  - name: four-by-four
+    in:
+      accounts:
+        - [1, 2, 3, 4]
+        - [4, 3, 2, 1]
+        - [10, 10, 10, 10]
+        - [9, 8, 7, 6]
+    out: 40
+  - name: max-sum-nine
+    in:
+      accounts:
+        - [100, 100, 100, 100, 100, 100, 100, 100, 100]
+        - [99, 99, 99, 99, 99, 99, 99, 99, 99]
+    out: 900
+  - name: twenty-banks
+    in:
+      accounts:
+        - [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+          ]
+        - [
+            20,
+            19,
+            18,
+            17,
+            16,
+            15,
+            14,
+            13,
+            12,
+            11,
+            10,
+            9,
+            8,
+            7,
+            6,
+            5,
+            4,
+            3,
+            2,
+            1,
+          ]
+        - [100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 210
+  - name: five-by-five-balanced
+    in:
+      accounts:
+        - [5, 5, 5, 5, 5]
+        - [6, 6, 6, 6, 6]
+        - [7, 7, 7, 7, 7]
+        - [8, 8, 8, 8, 8]
+        - [9, 9, 9, 9, 9]
+    out: 45
+  - name: alternating-extremes
+    in:
+      accounts:
+        - [100, 1, 100, 1, 100]
+        - [1, 100, 1, 100, 1]
+        - [50, 50, 50, 50, 50]
+    out: 302
+  - name: twelve-customers
+    in:
+      accounts:
+        - [1, 2, 3]
+        - [2, 3, 4]
+        - [3, 4, 5]
+        - [4, 5, 6]
+        - [5, 6, 7]
+        - [6, 7, 8]
+        - [7, 8, 9]
+        - [8, 9, 10]
+        - [9, 10, 11]
+        - [10, 11, 12]
+        - [11, 12, 13]
+        - [12, 13, 14]
+    out: 39
+  - name: high-values-mixed
+    in:
+      accounts:
+        - [98, 97, 96, 95]
+        - [100, 100, 1, 1]
+        - [75, 75, 75, 75]
+        - [99, 98, 97, 96]
+    out: 390
+  - name: one-hundred-banks
+    in:
+      accounts:
+        - [100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [99, 99, 99, 99, 99, 99, 99, 99, 99, 99]
+    out: 1000
+  - name: seven-by-seven
+    in:
+      accounts:
+        - [1, 4, 9, 16, 25, 36, 49]
+        - [49, 36, 25, 16, 9, 4, 1]
+        - [7, 7, 7, 7, 7, 7, 7]
+        - [8, 8, 8, 8, 8, 8, 8]
+    out: 140
+  - name: two-row-near-limit
+    in:
+      accounts:
+        - [100, 100, 100, 99, 99, 99, 98, 98, 98, 97]
+        - [100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+    out: 1000
+  - name: equal-wealth-many
+    in:
+      accounts:
+        - [2, 4, 6, 8]
+        - [8, 6, 4, 2]
+        - [5, 5, 5, 5]
+        - [1, 9, 7, 3]
+    out: 20
+  - name: three-by-eight-boundary
+    in:
+      accounts:
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [10, 10, 10, 10, 10, 10, 10, 10]
+        - [9, 9, 9, 9, 9, 9, 9, 9]
+    out: 80
+  - name: forty-nine-customers
+    in:
+      accounts:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+        - [5, 5]
+        - [6, 6]
+        - [7, 7]
+        - [8, 8]
+        - [9, 9]
+        - [10, 10]
+        - [11, 11]
+        - [12, 12]
+        - [13, 13]
+        - [14, 14]
+        - [15, 15]
+        - [16, 16]
+        - [17, 17]
+        - [18, 18]
+        - [19, 19]
+        - [20, 20]
+        - [21, 21]
+        - [22, 22]
+        - [23, 23]
+        - [24, 24]
+        - [25, 25]
+        - [26, 26]
+        - [27, 27]
+        - [28, 28]
+        - [29, 29]
+        - [30, 30]
+        - [31, 31]
+        - [32, 32]
+        - [33, 33]
+        - [34, 34]
+        - [35, 35]
+        - [36, 36]
+        - [37, 37]
+        - [38, 38]
+        - [39, 39]
+        - [40, 40]
+        - [41, 41]
+        - [42, 42]
+        - [43, 43]
+        - [44, 44]
+        - [45, 45]
+        - [46, 46]
+        - [47, 47]
+        - [48, 48]
+        - [49, 49]
+    out: 98
+  - name: generated-one-by-one
+    in:
+      accounts:
+        gen: "array"
+        len: 1
+        of:
+          gen: "array"
+          len: 1
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+          elemType: "int"
+  - name: generated-single-customer
+    in:
+      accounts:
+        gen: "array"
+        len: 1
+        of:
+          gen: "array"
+          len: 50
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+          elemType: "int"
+  - name: generated-single-bank
+    in:
+      accounts:
+        gen: "array"
+        len: 50
+        of:
+          gen: "array"
+          len: 1
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+          elemType: "int"
+  - name: generated-max-grid
+    in:
+      accounts:
+        gen: "array"
+        len: 50
+        of:
+          gen: "array"
+          len: 50
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+          elemType: "int"
+  - name: generated-wide-grid
+    in:
+      accounts:
+        gen: "array"
+        len: 37
+        of:
+          gen: "array"
+          len: 23
+          of:
+            gen: "int"
+            min: 1
+            max: 100
+          elemType: "int"

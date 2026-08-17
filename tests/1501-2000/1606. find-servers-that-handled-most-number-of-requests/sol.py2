@@ -1,0 +1,22 @@
+class Solution(object):
+    def busiestServers(self, k, arrival, load):
+        """
+        :type k: int
+        :type arrival: List[int]
+        :type load: List[int]
+        :rtype: List[int]
+        """
+        import heapq
+        available = list(range(k))  # already a min-heap
+        busy = []
+        res = [0] * k
+        for i, a in enumerate(arrival):
+            while busy and busy[0][0] <= a:
+                _, x = heapq.heappop(busy)
+                heapq.heappush(available, i + (x - i) % k)
+            if available:
+                j = heapq.heappop(available) % k
+                heapq.heappush(busy, (a + load[i], j))
+                res[j] += 1
+        max_count = max(res)
+        return [i for i in range(k) if res[i] == max_count]

@@ -1,0 +1,33 @@
+class Solution(object):
+    def minMoves(self, nums, limit):
+        """
+        :type nums: List[int]
+        :type limit: int
+        :rtype: int
+        """
+        n = len(nums)
+        diff = [0] * (2 * limit + 2)
+        
+        for i in range(n // 2):
+            a = nums[i]
+            b = nums[n - 1 - i]
+            low = min(a, b) + 1
+            high = max(a, b) + limit
+            total = a + b
+            
+            diff[2] += 2
+            diff[2 * limit + 1] -= 2
+            
+            diff[low] -= 1
+            diff[high + 1] += 1
+            
+            diff[total] -= 1
+            diff[total + 1] += 1
+        
+        ans = float('inf')
+        moves = 0
+        for target in range(2, 2 * limit + 1):
+            moves += diff[target]
+            ans = min(ans, moves)
+        
+        return ans

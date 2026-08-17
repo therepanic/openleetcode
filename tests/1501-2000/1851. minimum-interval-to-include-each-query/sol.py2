@@ -1,0 +1,23 @@
+class Solution(object):
+    def minInterval(self, intervals, queries):
+        """
+        :type intervals: List[List[int]]
+        :type queries: List[int]
+        :rtype: List[int]
+        """
+        intervals.sort()
+        import heapq
+        minHeap = []
+        res = {}
+        i = 0
+        for q in sorted(queries):
+            while i < len(intervals) and intervals[i][0] <= q:
+                l, r = intervals[i]
+                heapq.heappush(minHeap, (r - l + 1, r))
+                i += 1
+            while minHeap and minHeap[0][1] < q:
+                heapq.heappop(minHeap)
+            res[q] = minHeap[0][0] if minHeap else -1
+        for i in range(len(queries)):
+            queries[i] = res[queries[i]]
+        return queries

@@ -1,0 +1,542 @@
+entry:
+  id: 1610
+  title: "maximum-number-of-visible-points"
+  params:
+    points:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    angle:
+      type: int
+    location:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().visiblePoints({points}, {angle}, {location})"
+    rust: "Solution::visible_points({points}, {angle}, {location})"
+    python3: "Solution().visiblePoints({points}, {angle}, {location})"
+    python2: "Solution().visiblePoints({points}, {angle}, {location})"
+    ruby: "visible_points({points}, {angle}, {location})"
+    java: "new Solution().visiblePoints({points}, {angle}, {location})"
+    csharp: "new Solution().VisiblePoints({points}, {angle}, {location})"
+    kotlin: "Solution().visiblePoints({points}, {angle}, {location})"
+    go: "visiblePoints({points}, {angle}, {location})"
+    dart: "Solution().visiblePoints({points}, {angle}, {location})"
+    swift: "Solution().visiblePoints({points}, {angle}, {location})"
+    typescript: "visiblePoints({points}, {angle}, {location})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().visiblePoints(points, angle, location, {result})"
+    checker: |
+      import math
+
+      class Checker:
+          def visiblePoints(self, points, angle, location, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              lx, ly = location
+              same = 0
+              values = []
+              for x, y in points:
+                  dx, dy = x - lx, y - ly
+                  if dx == 0 and dy == 0:
+                      same += 1
+                  else:
+                      values.append(math.degrees(math.atan2(dy, dx)))
+              if not values:
+                  return result == same
+              values.sort()
+              doubled = values + [x + 360.0 for x in values]
+              best = 0
+              left = 0
+              eps = 1e-10
+              for right in range(len(doubled)):
+                  while doubled[right] - doubled[left] > angle + eps:
+                      left += 1
+                  if right - left + 1 > best:
+                      best = right - left + 1
+              return result == same + min(best, len(values))
+
+seed: 16101610
+
+tests:
+  - name: example-one
+    in:
+      points:
+        - [2, 1]
+        - [2, 2]
+        - [3, 3]
+      angle: 90
+      location: [1, 1]
+    out: 3
+  - name: example-two-with-location-point
+    in:
+      points:
+        - [2, 1]
+        - [2, 2]
+        - [3, 4]
+        - [1, 1]
+      angle: 90
+      location: [1, 1]
+    out: 4
+  - name: example-three
+    in:
+      points:
+        - [1, 0]
+        - [2, 1]
+      angle: 13
+      location: [1, 1]
+    out: 1
+  - name: all-at-location
+    in:
+      points:
+        - [5, 5]
+        - [5, 5]
+        - [5, 5]
+      angle: 0
+      location: [5, 5]
+    out: 3
+  - name: one-point-zero-angle
+    in:
+      points:
+        - [1, 0]
+      angle: 0
+      location: [0, 0]
+    out: 1
+  - name: opposite-points-zero-angle
+    in:
+      points:
+        - [51, 50]
+        - [49, 50]
+      angle: 0
+      location: [50, 50]
+    out: 1
+  - name: full-circle-excluded
+    in:
+      points:
+        - [51, 50]
+        - [50, 51]
+        - [49, 50]
+        - [50, 49]
+      angle: 359
+      location: [50, 50]
+    out: 4
+  - name: cardinal-quarter
+    in:
+      points:
+        - [51, 50]
+        - [50, 51]
+        - [49, 50]
+        - [50, 49]
+      angle: 90
+      location: [50, 50]
+    out: 2
+  - name: wrap-around-east
+    in:
+      points:
+        - [60, 49]
+        - [60, 50]
+        - [60, 51]
+        - [50, 60]
+      angle: 20
+      location: [50, 50]
+    out: 3
+  - name: duplicate-rays
+    in:
+      points:
+        - [2, 2]
+        - [4, 4]
+        - [6, 6]
+        - [3, 0]
+      angle: 1
+      location: [0, 0]
+    out: 3
+  - name: negative-relative-coordinates
+    in:
+      points:
+        - [0, 0]
+        - [0, 1]
+        - [1, 0]
+        - [1, 1]
+      angle: 45
+      location: [1, 1]
+    out: 3
+  - name: boundary-inclusive
+    in:
+      points:
+        - [1, 0]
+        - [1, 1]
+        - [0, 1]
+      angle: 45
+      location: [0, 0]
+    out: 2
+  - name: vertical-line
+    in:
+      points:
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [1, 5]
+      angle: 0
+      location: [2, 5]
+    out: 3
+  - name: angle-one
+    in:
+      points:
+        - [100, 1]
+        - [100, 2]
+        - [99, 0]
+        - [98, 0]
+      angle: 1
+      location: [0, 0]
+    out: 3
+  - name: angle-180
+    in:
+      points:
+        - [51, 50]
+        - [50, 51]
+        - [49, 50]
+        - [50, 49]
+      angle: 180
+      location: [50, 50]
+    out: 3
+  - name: clustered-diagonal
+    in:
+      points:
+        - [10, 1]
+        - [10, 2]
+        - [10, 3]
+        - [1, 10]
+        - [0, 10]
+      angle: 15
+      location: [0, 0]
+    out: 3
+  - name: location-on-boundary
+    in:
+      points:
+        - [1, 1]
+        - [2, 1]
+        - [1, 2]
+        - [0, 1]
+      angle: 90
+      location: [1, 1]
+    out: 3
+  - name: same-ray-plus-opposite
+    in:
+      points:
+        - [51, 51]
+        - [52, 52]
+        - [53, 53]
+        - [49, 49]
+      angle: 10
+      location: [50, 50]
+    out: 3
+  - name: sparse-square
+    in:
+      points:
+        - [0, 0]
+        - [100, 0]
+        - [0, 100]
+        - [100, 100]
+      angle: 1
+      location: [50, 50]
+    out: 1
+  - name: repeated-location-and-ray
+    in:
+      points:
+        - [5, 5]
+        - [5, 5]
+        - [6, 5]
+        - [7, 5]
+        - [5, 6]
+      angle: 0
+      location: [5, 5]
+    out: 4
+  - name: obtuse-cluster
+    in:
+      points:
+        - [51, 50]
+        - [50, 51]
+        - [49, 50]
+        - [50, 49]
+        - [51, 51]
+      angle: 135
+      location: [50, 50]
+    out: 3
+  - name: near-limit-coordinates
+    in:
+      points:
+        - [100, 100]
+        - [100, 0]
+        - [0, 100]
+        - [0, 0]
+        - [50, 50]
+      angle: 90
+      location: [50, 50]
+    out: 3
+  - name: horizontal-cluster
+    in:
+      points:
+        - [0, 50]
+        - [1, 50]
+        - [2, 50]
+        - [100, 50]
+        - [50, 0]
+      angle: 1
+      location: [50, 50]
+    out: 3
+  - name: narrow-negative-side
+    in:
+      points:
+        - [0, 1]
+        - [0, 2]
+        - [1, 0]
+        - [2, 0]
+      angle: 10
+      location: [1, 1]
+    out: 1
+  - name: broad-view
+    in:
+      points:
+        - [0, 0]
+        - [100, 0]
+        - [0, 100]
+        - [100, 100]
+        - [50, 50]
+      angle: 270
+      location: [50, 50]
+    out: 5
+  - name: diagonal-boundary
+    in:
+      points:
+        - [2, 1]
+        - [3, 2]
+        - [4, 3]
+        - [3, 1]
+      angle: 0
+      location: [1, 0]
+    out: 3
+  - name: points-at-extremes
+    in:
+      points:
+        - [0, 0]
+        - [0, 100]
+        - [100, 0]
+        - [100, 100]
+      angle: 45
+      location: [0, 0]
+    out: 3
+  - name: many-collinear
+    in:
+      points:
+        - [1, 0]
+        - [2, 0]
+        - [3, 0]
+        - [4, 0]
+        - [5, 0]
+        - [0, 1]
+      angle: 0
+      location: [0, 0]
+    out: 5
+  - name: angle-359-with-location
+    in:
+      points:
+        - [50, 50]
+        - [51, 50]
+        - [50, 51]
+        - [49, 50]
+        - [50, 49]
+      angle: 359
+      location: [50, 50]
+    out: 5
+  - name: diagonal-location
+    in:
+      points:
+        - [10, 10]
+        - [11, 10]
+        - [10, 11]
+        - [9, 10]
+        - [10, 9]
+      angle: 90
+      location: [10, 10]
+    out: 3
+  - name: small-grid
+    in:
+      points:
+        - [0, 0]
+        - [0, 1]
+        - [1, 0]
+        - [1, 1]
+        - [2, 0]
+        - [0, 2]
+      angle: 90
+      location: [0, 0]
+    out: 6
+  - name: duplicate-all-directions
+    in:
+      points:
+        - [51, 50]
+        - [51, 50]
+        - [50, 51]
+        - [50, 51]
+        - [49, 50]
+        - [49, 50]
+      angle: 90
+      location: [50, 50]
+    out: 4
+  - name: zero-angle-location
+    in:
+      points:
+        - [1, 1]
+        - [2, 1]
+        - [1, 1]
+        - [0, 1]
+      angle: 0
+      location: [1, 1]
+    out: 3
+  - name: all-visible-270
+    in:
+      points:
+        - [51, 50]
+        - [50, 51]
+        - [49, 50]
+        - [50, 49]
+      angle: 270
+      location: [50, 50]
+    out: 4
+  - name: gen-random-small
+    in:
+      points:
+        gen: "array"
+        len: 20
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 100
+          elemType: "int"
+      angle:
+        gen: "int"
+        min: 0
+        max: 359
+      location:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+        elemType: "int"
+  - name: gen-random-medium
+    in:
+      points:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 100
+          elemType: "int"
+      angle:
+        gen: "int"
+        min: 0
+        max: 359
+      location:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+        elemType: "int"
+  - name: gen-random-large
+    in:
+      points:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 100
+          elemType: "int"
+      angle:
+        gen: "int"
+        min: 0
+        max: 359
+      location:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+        elemType: "int"
+  - name: gen-random-near-limit
+    in:
+      points:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 100
+          elemType: "int"
+      angle:
+        gen: "int"
+        min: 0
+        max: 359
+      location:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+        elemType: "int"
+  - name: gen-dense-boundary
+    in:
+      points:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 100
+          elemType: "int"
+      angle:
+        gen: "int"
+        min: 1
+        max: 10
+      location:
+        gen: "array"
+        len: 2
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+        elemType: "int"

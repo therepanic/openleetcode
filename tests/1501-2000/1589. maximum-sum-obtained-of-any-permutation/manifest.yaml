@@ -1,0 +1,366 @@
+entry:
+  id: 1589
+  title: maximum-sum-obtained-of-any-permutation
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    requests:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxSumRangeQuery({nums}, {requests})"
+    rust: "Solution::max_sum_range_query({nums}, {requests})"
+    python3: "Solution().maxSumRangeQuery({nums}, {requests})"
+    python2: "Solution().maxSumRangeQuery({nums}, {requests})"
+    ruby: "max_sum_range_query({nums}, {requests})"
+    java: "new Solution().maxSumRangeQuery({nums}, {requests})"
+    csharp: "new Solution().MaxSumRangeQuery({nums}, {requests})"
+    kotlin: "Solution().maxSumRangeQuery({nums}, {requests})"
+    go: "maxSumRangeQuery({nums}, {requests})"
+    dart: "Solution().maxSumRangeQuery({nums}, {requests})"
+    swift: "Solution().maxSumRangeQuery({nums}, {requests})"
+    typescript: "maxSumRangeQuery({nums}, {requests})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().maxSumRangeQuery(nums, requests, {result})"
+    checker: |
+      class Checker:
+          def maxSumRangeQuery(self, nums, requests, result):
+              mod = 1000000007
+              n = len(nums)
+              freq = [0] * (n + 1)
+              for left, right in requests:
+                  freq[left] += 1
+                  freq[right + 1] -= 1
+              cur = 0
+              counts = []
+              for i in range(n):
+                  cur += freq[i]
+                  counts.append(cur)
+              expected = sum(a * b for a, b in zip(sorted(nums), sorted(counts))) % mod
+              return isinstance(result, int) and result == expected
+seed: 1589
+tests:
+  - name: example-one
+    in:
+      nums: [1, 2, 3, 4, 5]
+      requests:
+        - [1, 3]
+        - [0, 1]
+    out: 19
+  - name: example-two
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      requests:
+        - [0, 1]
+    out: 11
+  - name: example-three
+    in:
+      nums: [1, 2, 3, 4, 5, 10]
+      requests:
+        - [0, 2]
+        - [1, 3]
+        - [1, 1]
+    out: 47
+  - name: two-elements-full
+    in:
+      nums: [0, 100000]
+      requests:
+        - [0, 1]
+    out: 100000
+  - name: one-position-repeated
+    in:
+      nums: [4, 9, 1]
+      requests:
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 27
+  - name: disjoint
+    in:
+      nums: [8, 1, 7, 2]
+      requests:
+        - [0, 0]
+        - [2, 3]
+    out: 17
+  - name: all-singletons
+    in:
+      nums: [5, 2, 9, 1]
+      requests:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+    out: 17
+  - name: nested
+    in:
+      nums: [3, 6, 2, 8, 4]
+      requests:
+        - [0, 4]
+        - [1, 3]
+        - [2, 2]
+    out: 49
+  - name: duplicate-values
+    in:
+      nums: [7, 7, 7, 7]
+      requests:
+        - [0, 2]
+        - [1, 3]
+    out: 42
+  - name: zeros
+    in:
+      nums: [0, 0, 4, 0, 2]
+      requests:
+        - [0, 4]
+        - [0, 0]
+        - [4, 4]
+    out: 12
+  - name: descending
+    in:
+      nums: [10, 9, 8, 7, 6, 5]
+      requests:
+        - [0, 5]
+        - [0, 2]
+        - [3, 5]
+    out: 90
+  - name: overlap-middle
+    in:
+      nums: [1, 3, 5, 7, 9]
+      requests:
+        - [0, 2]
+        - [1, 3]
+        - [2, 4]
+    out: 55
+  - name: endpoint-heavy
+    in:
+      nums: [2, 11, 5, 3, 17]
+      requests:
+        - [0, 0]
+        - [4, 4]
+        - [0, 4]
+        - [0, 4]
+    out: 104
+  - name: large-values
+    in:
+      nums: [100000, 99999, 99998, 99997]
+      requests:
+        - [0, 1]
+        - [1, 3]
+        - [0, 3]
+    out: 899988
+  - name: narrow-overlap
+    in:
+      nums: [12, 4, 15, 3, 9, 7]
+      requests:
+        - [1, 4]
+        - [2, 3]
+        - [3, 5]
+        - [0, 0]
+    out: 101
+  - name: alternating-singletons
+    in:
+      nums: [6, 1, 8, 2, 10, 3]
+      requests:
+        - [0, 0]
+        - [2, 2]
+        - [4, 4]
+        - [1, 5]
+    out: 48
+  - name: many-identical-requests
+    in:
+      nums: [1, 4, 6, 8, 10]
+      requests:
+        - [0, 3]
+        - [0, 3]
+        - [0, 3]
+        - [1, 4]
+    out: 109
+  - name: full-and-tail
+    in:
+      nums: [2, 4, 6, 8, 10, 12]
+      requests:
+        - [0, 5]
+        - [2, 5]
+        - [4, 5]
+    out: 100
+  - name: prime-values
+    in:
+      nums: [2, 3, 5, 7, 11, 13, 17]
+      requests:
+        - [0, 6]
+        - [0, 2]
+        - [2, 5]
+        - [4, 4]
+    out: 144
+  - name: uneven-coverage
+    in:
+      nums: [20, 1, 14, 3, 8, 6, 2]
+      requests:
+        - [0, 0]
+        - [0, 6]
+        - [1, 5]
+        - [1, 5]
+        - [3, 3]
+    out: 178
+  - name: n-eight
+    in:
+      nums: [8, 6, 7, 5, 3, 0, 9, 1]
+      requests:
+        - [0, 7]
+        - [0, 3]
+        - [4, 7]
+        - [2, 6]
+    out: 113
+  - name: no-zero-coverage
+    in:
+      nums: [5, 10, 15, 20, 25]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 135
+  - name: singleton-array-not-allowed
+    in:
+      nums: [42, 42]
+      requests:
+        - [0, 0]
+        - [1, 1]
+        - [0, 1]
+    out: 168
+  - name: zero-request-position
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      requests:
+        - [0, 0]
+        - [0, 0]
+        - [5, 5]
+    out: 17
+  - name: high-frequency-center
+    in:
+      nums: [1, 2, 4, 8, 16, 32]
+      requests:
+        - [2, 2]
+        - [2, 2]
+        - [2, 2]
+        - [1, 3]
+        - [2, 4]
+    out: 204
+  - name: max-n-small-values
+    in:
+      nums: [0, 1, 0, 1, 0, 1, 0, 1]
+      requests:
+        - [0, 7]
+        - [0, 7]
+        - [1, 6]
+        - [2, 5]
+    out: 16
+  - name: reversed-interval-pattern
+    in:
+      nums: [13, 2, 21, 5, 8, 3]
+      requests:
+        - [0, 5]
+        - [0, 1]
+        - [4, 5]
+        - [1, 4]
+    out: 138
+  - name: large-count
+    in:
+      nums: [1, 2, 3, 4, 5]
+      requests:
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+        - [4, 4]
+        - [4, 4]
+    out: 33
+  - name: large-alternating
+    in:
+      nums: [100000, 0, 99999, 1, 50000, 50000]
+      requests:
+        - [0, 5]
+        - [0, 0]
+        - [2, 4]
+        - [1, 5]
+        - [3, 3]
+    out: 949999
+  - name: long-overlap
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      requests:
+        - [0, 9]
+        - [0, 8]
+        - [1, 9]
+        - [2, 7]
+        - [3, 6]
+        - [4, 5]
+    out: 260
+  - name: repeated-full-range
+    in:
+      nums: [0, 100000, 99999, 42, 17, 80000, 1]
+      requests:
+        - [0, 6]
+        - [0, 6]
+        - [0, 6]
+        - [0, 6]
+        - [0, 6]
+    out: 1400295
+  - name: sparse-large-indices
+    in:
+      nums: [9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99, 108]
+      requests:
+        - [0, 11]
+        - [0, 1]
+        - [10, 11]
+        - [5, 8]
+        - [3, 9]
+    out: 1773
+  - name: dense-coverage
+    in:
+      nums: [1, 10, 100, 1000, 10000, 100000]
+      requests:
+        - [0, 0]
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+    out: 666665
+  - name: alternating-ranges
+    in:
+      nums: [31, 2, 47, 5, 19, 11, 23, 7, 29]
+      requests:
+        - [0, 2]
+        - [2, 4]
+        - [4, 6]
+        - [6, 8]
+        - [1, 7]
+        - [0, 8]
+    out: 622
+  - name: maximum-request-volume
+    in:
+      nums: [100000, 99999, 99998, 99997, 99996]
+      requests:
+        - [0, 4]
+        - [0, 3]
+        - [1, 4]
+        - [1, 3]
+        - [2, 4]
+        - [0, 2]
+    out: 2199964

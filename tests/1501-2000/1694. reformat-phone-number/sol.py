@@ -1,0 +1,14 @@
+class Solution(object):
+    def reformatNumber(self, number):
+        phone_cleared = "".join(char for char in number if char.isdigit())
+        phone_result = []
+
+        while len(phone_cleared) > 4:
+            phone_result.append(phone_cleared[:3])
+            phone_cleared = phone_cleared[3:]
+        if len(phone_cleared) == 4:
+            phone_result.append(phone_cleared[:2])
+            phone_result.append(phone_cleared[2:])
+        elif phone_cleared:
+            phone_result.append(phone_cleared)
+        return "-".join(phone_result)

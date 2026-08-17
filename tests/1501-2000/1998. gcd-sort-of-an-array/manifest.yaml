@@ -1,0 +1,267 @@
+entry:
+  id: 1998
+  title: "gcd-sort-of-an-array"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().gcdSort({nums})"
+    rust: "Solution::gcd_sort({nums})"
+    python3: "Solution().gcdSort({nums})"
+    python2: "Solution().gcdSort({nums})"
+    ruby: "gcd_sort({nums})"
+    java: "new Solution().gcdSort({nums})"
+    csharp: "new Solution().GcdSort({nums})"
+    kotlin: "Solution().gcdSort({nums})"
+    go: "gcdSort({nums})"
+    dart: "Solution().gcdSort({nums})"
+    swift: "Solution().gcdSort({nums})"
+    typescript: "gcdSort({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().gcdSort(nums, {result})"
+    checker: |
+      from math import gcd
+
+      class Checker:
+          def gcdSort(self, nums, result):
+              if not isinstance(result, bool):
+                  return False
+              n = len(nums)
+              parent = list(range(n))
+
+              def find(x):
+                  while parent[x] != x:
+                      parent[x] = parent[parent[x]]
+                      x = parent[x]
+                  return x
+
+              def union(a, b):
+                  a, b = find(a), find(b)
+                  if a != b:
+                      parent[b] = a
+
+              first = {}
+              for i, value in enumerate(nums):
+                  x = value
+                  factor = 2
+                  while factor * factor <= x:
+                      if x % factor == 0:
+                          if factor in first:
+                              union(i, first[factor])
+                          else:
+                              first[factor] = i
+                          while x % factor == 0:
+                              x //= factor
+                      factor += 1
+                  if x > 1:
+                      if x in first:
+                          union(i, first[x])
+                      else:
+                          first[x] = i
+              expected = True
+              sorted_values = sorted(nums)
+              positions = {}
+              for i, value in enumerate(nums):
+                  positions.setdefault(value, []).append(i)
+              used = {}
+              for destination, value in enumerate(sorted_values):
+                  k = used.get(value, 0)
+                  original = positions[value][k]
+                  used[value] = k + 1
+                  if find(destination) != find(original):
+                      expected = False
+                      break
+              return result == expected
+
+seed: 1998
+
+tests:
+  - name: "example_chain"
+    in:
+      nums: [7, 21, 3]
+    out: true
+  - name: "example_isolated_prime"
+    in:
+      nums: [5, 2, 6, 2]
+    out: false
+  - name: "example_mixed_components"
+    in:
+      nums: [10, 5, 9, 3, 15]
+    out: true
+  - name: "single_value"
+    in:
+      nums: [2]
+    out: true
+  - name: "already_sorted_primes"
+    in:
+      nums: [2, 3, 5, 7, 11]
+    out: true
+  - name: "reverse_primes"
+    in:
+      nums: [11, 7, 5, 3, 2]
+    out: false
+  - name: "equal_values"
+    in:
+      nums: [37, 37, 37, 37]
+    out: true
+  - name: "two_coprime_swap_needed"
+    in:
+      nums: [3, 2]
+    out: false
+  - name: "two_shared_factor"
+    in:
+      nums: [6, 10]
+    out: true
+  - name: "transitive_factor_chain"
+    in:
+      nums: [77, 22, 6]
+    out: true
+  - name: "large_prime_isolated"
+    in:
+      nums: [99991, 2, 3]
+    out: false
+  - name: "large_prime_sorted"
+    in:
+      nums: [2, 3, 99991]
+    out: true
+  - name: "duplicate_component"
+    in:
+      nums: [12, 7, 18, 5, 30]
+    out: true
+  - name: "all_even_reverse"
+    in:
+      nums: [100, 50, 10, 2]
+    out: true
+  - name: "all_odd_shared_three"
+    in:
+      nums: [45, 15, 75, 105]
+    out: true
+  - name: "separate_blocks_sorted"
+    in:
+      nums: [6, 10, 7, 11]
+    out: false
+  - name: "separate_blocks_crossed"
+    in:
+      nums: [10, 6, 11, 7]
+    out: false
+  - name: "one_component_with_singletons"
+    in:
+      nums: [35, 14, 22, 13, 26]
+    out: true
+  - name: "prime_duplicates_can_move"
+    in:
+      nums: [13, 2, 13, 2]
+    out: false
+  - name: "duplicate_prime_crossed"
+    in:
+      nums: [13, 2, 2, 13]
+    out: false
+  - name: "many_small_factors"
+    in:
+      nums: [30, 42, 70, 105, 66]
+    out: true
+  - name: "coprime_permutation"
+    in:
+      nums: [17, 19, 23, 29]
+    out: true
+  - name: "sorted_with_zero_swaps"
+    in:
+      nums: [2, 6, 15, 35, 77]
+    out: true
+  - name: "one_bad_position"
+    in:
+      nums: [2, 6, 35, 15, 77]
+    out: true
+  - name: "factor_one_bridge"
+    in:
+      nums: [143, 11, 22, 6, 3]
+    out: true
+  - name: "large_values_shared_factor"
+    in:
+      nums: [99990, 99980, 99970, 99960]
+    out: true
+  - name: "large_values_coprime_order"
+    in:
+      nums: [99991, 99989, 99971]
+    out: false
+  - name: "mixed_duplicates"
+    in:
+      nums: [8, 15, 8, 21, 15, 35]
+    out: false
+  - name: "component_boundary_failure"
+    in:
+      nums: [2, 9, 6, 25]
+    out: true
+  - name: "long_factor_chain"
+    in:
+      nums: [231, 77, 35, 15, 6]
+    out: true
+  - name: "all_singletons_already_sorted"
+    in:
+      nums: [2, 3, 5, 7, 11, 13]
+    out: true
+  - name: "all_singletons_reversed"
+    in:
+      nums: [13, 11, 7, 5, 3, 2]
+    out: false
+  - name: "stress_even_component"
+    seed: 2101
+    in:
+      nums:
+        gen: "array"
+        len: 30000
+        of:
+          gen: "int"
+          min: 2
+          max: 100000
+  - name: "stress_small_values"
+    seed: 2102
+    in:
+      nums:
+        gen: "array"
+        len: 25000
+        of:
+          gen: "int"
+          min: 2
+          max: 200
+  - name: "stress_large_values"
+    seed: 2103
+    in:
+      nums:
+        gen: "array"
+        len: 30000
+        of:
+          gen: "int"
+          min: 90000
+          max: 100000
+  - name: "stress_medium_values"
+    seed: 2104
+    in:
+      nums:
+        gen: "array"
+        len: 20000
+        of:
+          gen: "int"
+          min: 2
+          max: 10000
+  - name: "stress_repeated_values"
+    seed: 2105
+    in:
+      nums:
+        gen: "array"
+        len: 30000
+        of:
+          gen: "int"
+          min: 99990
+          max: 100000

@@ -1,0 +1,34 @@
+class Solution(object):
+    def recoverArray(self, n, sums):
+        """
+        :type n: int
+        :type sums: List[int]
+        :rtype: List[int]
+        """
+        sums.sort()
+        res = []
+        
+        for _ in range(n):
+            d = sums[1] - sums[0]
+            
+            left = []
+            right = []
+            count = {}
+            for s in sums:
+                count[s] = count.get(s, 0) + 1
+            
+            for s in sums:
+                if count[s] > 0:
+                    left.append(s)
+                    right.append(s + d)
+                    count[s] -= 1
+                    count[s + d] = count.get(s + d, 0) - 1
+            
+            if 0 in left:
+                res.append(d)
+                sums = left
+            else:
+                res.append(-d)
+                sums = right
+                
+        return res

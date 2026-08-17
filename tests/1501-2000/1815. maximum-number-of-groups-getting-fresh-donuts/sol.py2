@@ -1,0 +1,53 @@
+class Solution(object):
+    def maxHappyGroups(self, batchSize, groups):
+        """
+        :type batchSize: int
+        :type groups: List[int]
+        :rtype: int
+        """
+        memo = {}
+        
+        counts = [0] * batchSize
+        happy_count = 0
+        for g in groups:
+            rem = g % batchSize
+            if rem == 0:
+                happy_count += 1
+            else:
+                counts[rem] += 1
+        
+        for i in range(1, (batchSize // 2) + 1):
+            if i == batchSize - i:
+                pair_count = counts[i] // 2
+                happy_count += pair_count
+                counts[i] %= 2
+            else:
+                pair_count = min(counts[i], counts[batchSize - i])
+                happy_count += pair_count
+                counts[i] -= pair_count
+                counts[batchSize - i] -= pair_count
+        
+        state_vector = tuple(counts[1:])
+        
+        def viterbi_search(current_counts, leftover):
+            key = (current_counts, leftover)
+            if key in memo:
+                return memo[key]
+            if sum(current_counts) == 0:
+                return 0
+            
+            res = 0
+            for i, count in enumerate(current_counts):
+                if count > 0:
+                    rem = i + 1
+                    next_counts = list(current_counts)
+                    next_counts[i] -= 1
+                    
+                    is_happy = 1 if leftover == 0 else 0
+                    new_leftover = (leftover + rem) % batchSize
+                    
+                    res = max(res, is_happy + viterbi_search(tuple(next_counts), new_leftover))
+            memo[key] = res
+            return res
+
+        return happy_count + viterbi_search(state_vector, 0)

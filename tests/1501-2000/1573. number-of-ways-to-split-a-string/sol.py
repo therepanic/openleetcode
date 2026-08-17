@@ -1,0 +1,29 @@
+class Solution(object):
+    def numWays(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        MOD = 10**9 + 7
+        total_ones = s.count("1")
+
+        if total_ones == 0:
+            n = len(s)
+            return ((n - 1) * (n - 2) // 2) % MOD
+
+        if total_ones % 3 != 0:
+            return 0
+
+        ones_per_part = total_ones // 3
+        first_split_ways = second_split_ways = 0
+        count = 0
+
+        for i in range(len(s)):
+            if s[i] == "1":
+                count += 1
+            if count == ones_per_part:
+                first_split_ways += 1
+            elif count == 2 * ones_per_part:
+                second_split_ways += 1
+
+        return (first_split_ways * second_split_ways) % MOD

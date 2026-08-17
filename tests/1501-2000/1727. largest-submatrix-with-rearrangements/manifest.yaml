@@ -1,0 +1,425 @@
+entry:
+  id: 1727
+  title: "largest-submatrix-with-rearrangements"
+  params:
+    matrix:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().largestSubmatrix({matrix})"
+    rust: "Solution::largest_submatrix({matrix})"
+    python3: "Solution().largestSubmatrix({matrix})"
+    python2: "Solution().largestSubmatrix({matrix})"
+    ruby: "largest_submatrix({matrix})"
+    java: "new Solution().largestSubmatrix({matrix})"
+    csharp: "new Solution().LargestSubmatrix({matrix})"
+    kotlin: "Solution().largestSubmatrix({matrix})"
+    go: "largestSubmatrix({matrix})"
+    dart: "Solution().largestSubmatrix({matrix})"
+    swift: "Solution().largestSubmatrix({matrix})"
+    typescript: "largestSubmatrix({matrix})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().largestSubmatrix(matrix, {result})"
+    checker: |
+      class Checker:
+          def largestSubmatrix(self, matrix, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not matrix or not matrix[0]:
+                  return result == 0
+              n = len(matrix[0])
+              heights = [0] * n
+              expected = 0
+              for row in matrix:
+                  if len(row) != n or any(value not in (0, 1) for value in row):
+                      return False
+                  for j, value in enumerate(row):
+                      heights[j] = heights[j] + 1 if value == 1 else 0
+                  ordered = sorted(heights, reverse=True)
+                  for width, height in enumerate(ordered, 1):
+                      expected = max(expected, width * height)
+              return result == expected
+
+seed: 1727
+
+tests:
+  - name: example-1
+    in:
+      matrix:
+        - [0, 0, 1]
+        - [1, 1, 1]
+        - [1, 0, 1]
+    out: 4
+  - name: example-2
+    in:
+      matrix:
+        - [1, 0, 1, 0, 1]
+    out: 3
+  - name: example-3
+    in:
+      matrix:
+        - [1, 1, 0]
+        - [1, 0, 1]
+    out: 2
+  - name: one-one
+    in:
+      matrix:
+        - [1]
+    out: 1
+  - name: all-zero-row
+    in:
+      matrix:
+        - [0, 0, 0, 0]
+    out: 0
+  - name: all-one-row
+    in:
+      matrix:
+        - [1, 1, 1, 1]
+    out: 4
+  - name: all-zero-column
+    in:
+      matrix:
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+    out: 0
+  - name: all-one-column
+    in:
+      matrix:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+    out: 4
+  - name: all-ones-square
+    in:
+      matrix:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 9
+  - name: checkerboard-3
+    in:
+      matrix:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 1]
+    out: 2
+  - name: diagonal-4
+    in:
+      matrix:
+        - [1, 0, 0, 0]
+        - [0, 1, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+    out: 1
+  - name: increasing-prefixes
+    in:
+      matrix:
+        - [1, 0, 0, 0, 0]
+        - [1, 1, 0, 0, 0]
+        - [1, 1, 1, 0, 0]
+        - [1, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 1]
+    out: 9
+  - name: decreasing-prefixes
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 0]
+        - [1, 1, 1, 0, 0]
+        - [1, 1, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+    out: 9
+  - name: tall-mixed
+    in:
+      matrix:
+        - [1, 1, 0, 1]
+        - [1, 0, 1, 1]
+        - [1, 1, 1, 0]
+        - [1, 1, 1, 1]
+        - [0, 1, 1, 1]
+        - [1, 1, 0, 1]
+    out: 6
+  - name: wide-mixed
+    in:
+      matrix:
+        - [1, 0, 1, 1, 0, 1, 0, 1]
+        - [1, 1, 1, 0, 0, 1, 1, 0]
+        - [0, 1, 1, 1, 1, 0, 1, 1]
+    out: 6
+  - name: isolated-column
+    in:
+      matrix:
+        - [1, 0, 0]
+        - [1, 0, 0]
+        - [1, 0, 0]
+        - [1, 0, 0]
+        - [1, 0, 0]
+    out: 5
+  - name: two-full-columns
+    in:
+      matrix:
+        - [1, 1, 0, 0]
+        - [1, 1, 0, 1]
+        - [1, 1, 1, 0]
+        - [1, 1, 0, 0]
+    out: 8
+  - name: alternating-columns
+    in:
+      matrix:
+        - [1, 0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0]
+    out: 6
+  - name: sparse-5x5
+    in:
+      matrix:
+        - [0, 1, 0, 0, 1]
+        - [1, 0, 1, 0, 0]
+        - [0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1]
+        - [0, 0, 1, 1, 0]
+    out: 3
+  - name: dense-6x6
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 0, 1]
+        - [1, 1, 1, 0, 0, 1]
+        - [1, 1, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1, 1]
+    out: 12
+  - name: full-rectangle-2x7
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 14
+  - name: full-rectangle-7x2
+    in:
+      matrix:
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 14
+  - name: single-row-nine
+    in:
+      matrix:
+        - [1, 0, 1, 1, 0, 1, 1, 1, 0]
+    out: 6
+  - name: single-column-nine
+    in:
+      matrix:
+        - [1]
+        - [0]
+        - [1]
+        - [1]
+        - [1]
+        - [0]
+        - [1]
+        - [1]
+        - [1]
+    out: 3
+  - name: height-dominates
+    in:
+      matrix:
+        - [1, 1, 0, 0]
+        - [1, 1, 0, 0]
+        - [1, 1, 0, 0]
+        - [1, 1, 0, 0]
+        - [1, 1, 0, 0]
+        - [0, 0, 1, 1]
+    out: 10
+  - name: width-dominates
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+    out: 8
+  - name: mixed-7x7
+    in:
+      matrix:
+        - [1, 0, 1, 1, 0, 1, 0]
+        - [1, 1, 1, 0, 1, 1, 0]
+        - [1, 1, 0, 1, 1, 0, 1]
+        - [0, 1, 1, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 0, 1, 1]
+        - [1, 0, 1, 1, 1, 0, 1]
+        - [1, 1, 0, 1, 1, 1, 1]
+    out: 9
+  - name: large-all-ones-20x20
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 380
+  - name: two-row-staircase
+    in:
+      matrix:
+        - [1, 1, 0, 1, 0, 1]
+        - [0, 1, 1, 1, 1, 0]
+    out: 4
+  - name: three-row-blocks
+    in:
+      matrix:
+        - [1, 1, 0, 0, 1, 0]
+        - [1, 0, 1, 0, 1, 1]
+        - [1, 1, 1, 0, 0, 1]
+    out: 6
+  - name: four-by-eight-dense
+    in:
+      matrix:
+        - [1, 1, 1, 0, 1, 1, 0, 1]
+        - [1, 0, 1, 1, 1, 0, 1, 1]
+        - [1, 1, 0, 1, 1, 1, 1, 0]
+        - [0, 1, 1, 1, 0, 1, 1, 1]
+    out: 8
+  - name: alternating-rows
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1]
+    out: 6
+  - name: all-ones-10x10
+    in:
+      matrix:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 100
+  - name: one-zero-restored
+    in:
+      matrix:
+        - [0]
+    out: 0
+  - name: restored-example
+    in:
+      matrix:
+        - [0, 0, 1]
+        - [1, 1, 1]
+        - [1, 0, 1]
+    out: 4
+  - name: generated-single-row-maximum
+    in:
+      matrix:
+        gen: array
+        len: 1
+        of:
+          gen: array
+          len: 20000
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+        elemType: int
+    seed: 1727001
+  - name: generated-two-row-wide
+    in:
+      matrix:
+        gen: array
+        len: 2
+        of:
+          gen: array
+          len: 10000
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+        elemType: int
+    seed: 1727002
+  - name: generated-hundred-by-thousand
+    in:
+      matrix:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 1000
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+        elemType: int
+    seed: 1727003
+  - name: generated-two-hundred-by-five-hundred
+    in:
+      matrix:
+        gen: array
+        len: 200
+        of:
+          gen: array
+          len: 500
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+        elemType: int
+    seed: 1727004
+  - name: generated-square-boundary
+    in:
+      matrix:
+        gen: array
+        len: 316
+        of:
+          gen: array
+          len: 316
+          of:
+            gen: int
+            min: 0
+            max: 1
+          elemType: int
+        elemType: int
+    seed: 1727005

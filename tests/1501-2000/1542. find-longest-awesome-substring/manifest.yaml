@@ -1,0 +1,220 @@
+entry:
+  id: 1542
+  title: "find-longest-awesome-substring"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().longestAwesome({s})"
+    rust: "Solution::longest_awesome({s})"
+    python3: "Solution().longestAwesome({s})"
+    python2: "Solution().longestAwesome({s})"
+    ruby: "longest_awesome({s})"
+    java: "new Solution().longestAwesome({s})"
+    csharp: "new Solution().LongestAwesome({s})"
+    kotlin: "Solution().longestAwesome({s})"
+    go: "longestAwesome({s})"
+    dart: "Solution().longestAwesome({s})"
+    swift: "Solution().longestAwesome({s})"
+    typescript: "longestAwesome({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().longestAwesome(s, {result})"
+    checker: |
+      class Checker:
+          def longestAwesome(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              first = {0: -1}
+              mask = 0
+              best = 0
+              for i, ch in enumerate(s):
+                  mask ^= 1 << (ord(ch) - 48)
+                  if mask in first:
+                      best = max(best, i - first[mask])
+                  for bit in range(10):
+                      other = mask ^ (1 << bit)
+                      if other in first:
+                          best = max(best, i - first[other])
+                  if mask not in first:
+                      first[mask] = i
+              return result == best
+
+seed: 1542
+
+tests:
+  - name: example-3242415
+    in:
+      s: "3242415"
+    out: 5
+  - name: example-distinct-eight
+    in:
+      s: "12345678"
+    out: 1
+  - name: example-full-six
+    in:
+      s: "213123"
+    out: 6
+  - name: single-zero
+    in:
+      s: "0"
+    out: 1
+  - name: single-nine
+    in:
+      s: "9"
+    out: 1
+  - name: two-equal
+    in:
+      s: "00"
+    out: 2
+  - name: two-different
+    in:
+      s: "01"
+    out: 1
+  - name: all-zeroes
+    in:
+      s: "0000000000"
+    out: 10
+  - name: all-distinct-digits
+    in:
+      s: "0123456789"
+    out: 1
+  - name: ten-pair-palindrome
+    in:
+      s: "01234567899876543210"
+    out: 20
+  - name: repeated-two-digits
+    in:
+      s: "1212121212"
+    out: 9
+  - name: one-odd-count
+    in:
+      s: "1122334455667788999"
+    out: 19
+  - name: odd-digit-at-front
+    in:
+      s: "0123456789"
+    out: 1
+  - name: odd-digit-at-end
+    in:
+      s: "01234567890"
+    out: 1
+  - name: alternating-zero-one
+    in:
+      s: "0101010101010101"
+    out: 16
+  - name: separated-pair
+    in:
+      s: "0123401234"
+    out: 10
+  - name: nested-awesome
+    in:
+      s: "111222333444555"
+    out: 7
+  - name: one-extra-middle
+    in:
+      s: "0010200"
+    out: 3
+  - name: many-odd-prefix
+    in:
+      s: "01234567890123456789"
+    out: 20
+  - name: only-one-longest
+    in:
+      s: "01234567890123456788"
+    out: 19
+  - name: long-symmetric-block
+    in:
+      s: "98765432100123456789"
+    out: 20
+  - name: runs-with-tail
+    in:
+      s: "00000111112222233333"
+    out: 13
+  - name: ten-digit-blocks
+    in:
+      s: "012345678901234567890123456789"
+    out: 21
+  - name: disturbed-block
+    in:
+      s: "012345678901234567890123456788"
+    out: 23
+  - name: all-nine
+    in:
+      s: "99999999999999999999"
+    out: 20
+  - name: sparse-nine
+    in:
+      s: "90909090909090909090"
+    out: 20
+  - name: prefix-single-best
+    in:
+      s: "123456789000000"
+    out: 7
+  - name: suffix-single-best
+    in:
+      s: "000000123456789"
+    out: 7
+  - name: two-odd-digits
+    in:
+      s: "123456789012345678"
+    out: 1
+  - name: mixed-nine-block
+    in:
+      s: "314159265358979323846"
+    out: 3
+  - name: long-repeated-cycle
+    in:
+      s: "0123012301230123012301230123"
+    out: 25
+  - name: near-limit-small
+    in:
+      s: "0000000000111111111122222222223333333333"
+    out: 40
+  - name: near-limit-distinct-pattern
+    in:
+      s: "01234567890123456789012345678901234567890123456789"
+    out: 41
+  - name: generated-uniform
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "0123456789"
+    seed: 154201
+  - name: generated-binary
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "01"
+    seed: 154202
+  - name: generated-heavy-zero
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "0123"
+    seed: 154203
+  - name: generated-cyclic
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "0123456789"
+    seed: 154204
+  - name: generated-short-random
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "0123456789"
+    seed: 154205

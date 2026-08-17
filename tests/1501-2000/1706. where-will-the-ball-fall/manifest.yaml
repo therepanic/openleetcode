@@ -1,0 +1,370 @@
+entry:
+  id: 1706
+  title: "where-will-the-ball-fall"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().findBall({grid})"
+    rust: "Solution::find_ball({grid})"
+    python3: "Solution().findBall({grid})"
+    python2: "Solution().findBall({grid})"
+    ruby: "find_ball({grid})"
+    java: "new Solution().findBall({grid})"
+    csharp: "new Solution().FindBall({grid})"
+    kotlin: "Solution().findBall({grid})"
+    go: "findBall({grid})"
+    dart: "Solution().findBall({grid})"
+    swift: "Solution().findBall({grid})"
+    typescript: "findBall({grid})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(grid, {result})"
+    checker: |
+      class Checker:
+          def check(self, grid, result):
+              if not isinstance(grid, list) or not grid or not isinstance(result, list):
+                  return False
+              n = len(grid[0])
+              if n < 1 or any(not isinstance(row, list) or len(row) != n for row in grid):
+                  return False
+              if any(cell not in (-1, 1) for row in grid for cell in row):
+                  return False
+              if len(result) != n or any(type(x) is not int for x in result):
+                  return False
+              expected = []
+              for start in range(n):
+                  col = start
+                  for row in grid:
+                      nxt = col + row[col]
+                      if nxt < 0 or nxt >= n or row[nxt] != row[col]:
+                          col = -1
+                          break
+                      col = nxt
+                  expected.append(col)
+              return result == expected
+
+seed: 1706
+
+tests:
+  - name: example-one
+    in:
+      grid:
+        - [1, 1, 1, -1, -1]
+        - [1, 1, 1, -1, -1]
+        - [-1, -1, -1, 1, 1]
+        - [1, 1, 1, 1, -1]
+        - [-1, -1, -1, -1, -1]
+  - name: example-two-left-wall
+    in:
+      grid:
+        - [-1]
+  - name: example-three
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1]
+        - [-1, -1, -1, -1, -1, -1]
+        - [1, 1, 1, 1, 1, 1]
+        - [-1, -1, -1, -1, -1, -1]
+  - name: one-cell-right
+    in:
+      grid:
+        - [1]
+  - name: single-row-open-three
+    in:
+      grid:
+        - [1, 1, 1]
+  - name: single-row-open-left-three
+    in:
+      grid:
+        - [-1, -1, -1]
+  - name: single-row-zigzag
+    in:
+      grid:
+        - [1, -1, 1, -1, 1]
+  - name: two-row-all-right
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+  - name: two-row-all-left
+    in:
+      grid:
+        - [-1, -1, -1, -1]
+        - [-1, -1, -1, -1]
+  - name: two-row-alternating
+    in:
+      grid:
+        - [1, -1, 1, -1]
+        - [-1, 1, -1, 1]
+  - name: two-column-right-then-left
+    in:
+      grid:
+        - [1, 1]
+        - [-1, -1]
+  - name: two-column-left-then-right
+    in:
+      grid:
+        - [-1, -1]
+        - [1, 1]
+  - name: three-column-clear-center
+    in:
+      grid:
+        - [1, 1, -1]
+        - [1, 1, -1]
+        - [1, 1, -1]
+  - name: three-column-center-trap
+    in:
+      grid:
+        - [1, -1, -1]
+        - [1, -1, -1]
+  - name: three-column-left-trap
+    in:
+      grid:
+        - [-1, 1, 1]
+        - [-1, 1, 1]
+  - name: four-column-mixed
+    in:
+      grid:
+        - [1, 1, -1, -1]
+        - [1, 1, -1, -1]
+        - [-1, -1, 1, 1]
+  - name: four-column-cross
+    in:
+      grid:
+        - [1, -1, -1, 1]
+        - [-1, 1, 1, -1]
+        - [1, -1, -1, 1]
+  - name: five-column-staircase
+    in:
+      grid:
+        - [1, 1, 1, 1, -1]
+        - [-1, 1, 1, -1, -1]
+        - [-1, -1, 1, 1, 1]
+        - [1, -1, -1, 1, 1]
+  - name: five-column-reverse-staircase
+    in:
+      grid:
+        - [-1, 1, 1, 1, 1]
+        - [-1, -1, 1, 1, -1]
+        - [1, 1, -1, -1, -1]
+        - [1, 1, 1, -1, -1]
+  - name: six-column-horizontal-bands
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1]
+        - [-1, -1, -1, -1, -1, -1]
+        - [1, 1, 1, 1, 1, 1]
+  - name: six-column-reversed-bands
+    in:
+      grid:
+        - [-1, -1, -1, -1, -1, -1]
+        - [1, 1, 1, 1, 1, 1]
+        - [-1, -1, -1, -1, -1, -1]
+  - name: seven-column-center-split
+    in:
+      grid:
+        - [1, 1, 1, -1, -1, -1, -1]
+        - [1, 1, 1, -1, -1, -1, -1]
+        - [-1, -1, -1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, -1, -1, -1]
+  - name: seven-column-alternating-rows
+    in:
+      grid:
+        - [1, -1, 1, -1, 1, -1, 1]
+        - [-1, 1, -1, 1, -1, 1, -1]
+        - [1, -1, 1, -1, 1, -1, 1]
+  - name: eight-column-left-heavy
+    in:
+      grid:
+        - [-1, -1, 1, 1, 1, 1, 1, 1]
+        - [-1, -1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, -1, -1, -1, -1, -1, -1]
+  - name: eight-column-right-heavy
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, -1, -1]
+        - [1, 1, 1, 1, 1, 1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, 1, 1]
+  - name: nine-column-v-patterns
+    in:
+      grid:
+        - [1, 1, -1, -1, 1, 1, -1, -1, 1]
+        - [-1, 1, 1, -1, -1, 1, 1, -1, -1]
+        - [1, -1, -1, 1, 1, -1, -1, 1, 1]
+  - name: ten-column-random-one
+    in:
+      grid:
+        - [1, -1, 1, 1, -1, -1, 1, -1, 1, 1]
+        - [1, 1, -1, 1, -1, 1, 1, -1, -1, 1]
+        - [-1, 1, 1, -1, 1, -1, 1, 1, -1, -1]
+        - [1, -1, -1, 1, 1, -1, -1, 1, 1, -1]
+  - name: ten-column-random-two
+    in:
+      grid:
+        - [-1, -1, 1, 1, -1, 1, 1, -1, 1, -1]
+        - [1, -1, -1, 1, -1, -1, 1, 1, -1, 1]
+        - [-1, 1, -1, -1, 1, 1, -1, 1, 1, -1]
+        - [1, 1, -1, 1, 1, -1, -1, 1, -1, -1]
+  - name: eleven-column-all-right
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: eleven-column-all-left
+    in:
+      grid:
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+  - name: twelve-column-middle-escape
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1]
+        - [1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1]
+  - name: twelve-column-alternating
+    in:
+      grid:
+        - [1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1]
+        - [-1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1]
+  - name: thirteen-column-long-right
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: fourteen-column-long-left
+    in:
+      grid:
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+  - name: fifteen-column-wave
+    in:
+      grid:
+        - [1, 1, -1, -1, 1, 1, -1, -1, 1, 1, -1, -1, 1, 1, -1]
+        - [-1, 1, 1, -1, -1, 1, 1, -1, -1, 1, 1, -1, -1, 1, 1]
+        - [1, -1, -1, 1, 1, -1, -1, 1, 1, -1, -1, 1, 1, -1, -1]
+  - name: sixteen-column-border-traps
+    in:
+      grid:
+        - [-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+  - name: seventeen-column-mixed
+    in:
+      grid:
+        - [1, -1, 1, 1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1]
+        - [-1, 1, -1, 1, 1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1]
+        - [1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, -1, 1, 1]
+  - name: eighteen-column-wide
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+          ]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: nineteen-column-center-v
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        - [-1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: twenty-column-deep
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: generated-one-row-max
+    in:
+      grid:
+        gen: array
+        len: 1
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: 1
+            max: 1
+  - name: generated-one-column-max
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 1
+          of:
+            gen: int
+            min: -1
+            max: -1
+  - name: generated-square-medium
+    in:
+      grid:
+        gen: array
+        len: 50
+        of:
+          gen: array
+          len: 50
+          of:
+            gen: int
+            min: 1
+            max: 1
+  - name: generated-wide-medium
+    in:
+      grid:
+        gen: array
+        len: 20
+        of:
+          gen: array
+          len: 100
+          of:
+            gen: int
+            min: -1
+            max: -1
+  - name: generated-tall-medium
+    in:
+      grid:
+        gen: array
+        len: 100
+        of:
+          gen: array
+          len: 20
+          of:
+            gen: int
+            min: 1
+            max: 1

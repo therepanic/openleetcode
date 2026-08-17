@@ -1,0 +1,329 @@
+entry:
+  id: 1904
+  title: the-number-of-full-rounds-you-have-played
+  params:
+    loginTime:
+      type: string
+    logoutTime:
+      type: string
+  call:
+    cpp: "Solution().numberOfRounds({loginTime}, {logoutTime})"
+    rust: "Solution::number_of_rounds({loginTime}, {logoutTime})"
+    python3: "Solution().numberOfRounds({loginTime}, {logoutTime})"
+    python2: "Solution().numberOfRounds({loginTime}, {logoutTime})"
+    ruby: "number_of_rounds({loginTime}, {logoutTime})"
+    java: "new Solution().numberOfRounds({loginTime}, {logoutTime})"
+    csharp: "new Solution().NumberOfRounds({loginTime}, {logoutTime})"
+    kotlin: "Solution().numberOfRounds({loginTime}, {logoutTime})"
+    go: "numberOfRounds({loginTime}, {logoutTime})"
+    dart: "Solution().numberOfRounds({loginTime}, {logoutTime})"
+    swift: "Solution().numberOfRounds({loginTime}, {logoutTime})"
+    typescript: "numberOfRounds({loginTime}, {logoutTime})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().numberOfRounds(loginTime, logoutTime, {result})"
+    checker: |
+      class Checker:
+          def numberOfRounds(self, loginTime, logoutTime, result):
+              def minutes(value):
+                  hours, mins = map(int, value.split(":"))
+                  return hours * 60 + mins
+
+              start = minutes(loginTime)
+              end = minutes(logoutTime)
+              if end < start:
+                  end += 24 * 60
+              expected = max(0, end // 15 - (start + 14) // 15)
+              return result == expected
+
+seed: 1904
+
+tests:
+  - name: example-one
+    in:
+      loginTime: "09:31"
+      logoutTime: "10:14"
+    out: 1
+    judge:
+      type: exact
+  - name: example-two-midnight
+    in:
+      loginTime: "21:30"
+      logoutTime: "03:00"
+    out: 22
+    judge:
+      type: exact
+  - name: exact-one-round
+    in:
+      loginTime: "09:30"
+      logoutTime: "09:45"
+    out: 1
+    judge:
+      type: exact
+  - name: less-than-round
+    in:
+      loginTime: "09:31"
+      logoutTime: "09:44"
+    out: 0
+    judge:
+      type: exact
+  - name: same-quarter-boundaries
+    in:
+      loginTime: "12:00"
+      logoutTime: "12:15"
+    out: 1
+    judge:
+      type: exact
+  - name: login-after-boundary
+    in:
+      loginTime: "12:01"
+      logoutTime: "12:15"
+    out: 0
+    judge:
+      type: exact
+  - name: logout-before-boundary
+    in:
+      loginTime: "12:00"
+      logoutTime: "12:14"
+    out: 0
+    judge:
+      type: exact
+  - name: two-rounds
+    in:
+      loginTime: "00:00"
+      logoutTime: "00:30"
+    out: 2
+    judge:
+      type: exact
+  - name: full-day-wrap
+    in:
+      loginTime: "00:01"
+      logoutTime: "00:00"
+    out: 95
+    judge:
+      type: exact
+  - name: first-quarter
+    in:
+      loginTime: "00:00"
+      logoutTime: "00:15"
+    out: 1
+    judge:
+      type: exact
+  - name: before-first-round
+    in:
+      loginTime: "00:01"
+      logoutTime: "00:14"
+    out: 0
+    judge:
+      type: exact
+  - name: last-quarter
+    in:
+      loginTime: "23:45"
+      logoutTime: "23:59"
+    out: 0
+    judge:
+      type: exact
+  - name: last-quarter-full
+    in:
+      loginTime: "23:45"
+      logoutTime: "00:00"
+    out: 1
+    judge:
+      type: exact
+  - name: nearly-full-day
+    in:
+      loginTime: "00:00"
+      logoutTime: "23:59"
+    out: 95
+    judge:
+      type: exact
+  - name: wrap-one-quarter
+    in:
+      loginTime: "23:45"
+      logoutTime: "00:15"
+    out: 2
+    judge:
+      type: exact
+  - name: wrap-partial-start
+    in:
+      loginTime: "23:46"
+      logoutTime: "00:15"
+    out: 1
+    judge:
+      type: exact
+  - name: wrap-partial-end
+    in:
+      loginTime: "23:45"
+      logoutTime: "00:14"
+    out: 1
+    judge:
+      type: exact
+  - name: hour-aligned
+    in:
+      loginTime: "08:00"
+      logoutTime: "17:00"
+    out: 36
+    judge:
+      type: exact
+  - name: hour-aligned-wrap
+    in:
+      loginTime: "18:00"
+      logoutTime: "06:00"
+    out: 48
+    judge:
+      type: exact
+  - name: start-five
+    in:
+      loginTime: "05:05"
+      logoutTime: "06:05"
+    out: 3
+    judge:
+      type: exact
+  - name: start-fourteen
+    in:
+      loginTime: "05:14"
+      logoutTime: "06:14"
+    out: 3
+    judge:
+      type: exact
+  - name: start-fifteen
+    in:
+      loginTime: "05:15"
+      logoutTime: "06:15"
+    out: 4
+    judge:
+      type: exact
+  - name: end-one
+    in:
+      loginTime: "05:00"
+      logoutTime: "06:01"
+    out: 4
+    judge:
+      type: exact
+  - name: end-fourteen
+    in:
+      loginTime: "05:00"
+      logoutTime: "06:14"
+    out: 4
+    judge:
+      type: exact
+  - name: end-fifteen
+    in:
+      loginTime: "05:00"
+      logoutTime: "06:15"
+    out: 5
+    judge:
+      type: exact
+  - name: zero-after-login
+    in:
+      loginTime: "10:16"
+      logoutTime: "10:17"
+    out: 0
+    judge:
+      type: exact
+  - name: one-minute-before-midnight
+    in:
+      loginTime: "23:58"
+      logoutTime: "00:01"
+    out: 0
+    judge:
+      type: exact
+  - name: midnight-to-morning
+    in:
+      loginTime: "00:00"
+      logoutTime: "03:01"
+    out: 12
+    judge:
+      type: exact
+  - name: morning-to-midnight
+    in:
+      loginTime: "03:00"
+      logoutTime: "23:59"
+    out: 83
+    judge:
+      type: exact
+  - name: quarter-to-quarter
+    in:
+      loginTime: "07:15"
+      logoutTime: "08:45"
+    out: 6
+    judge:
+      type: exact
+  - name: quarter-to-nonquarter
+    in:
+      loginTime: "07:15"
+      logoutTime: "08:44"
+    out: 5
+    judge:
+      type: exact
+  - name: nonquarter-to-quarter
+    in:
+      loginTime: "07:16"
+      logoutTime: "08:45"
+    out: 5
+    judge:
+      type: exact
+  - name: afternoon-wrap
+    in:
+      loginTime: "16:29"
+      logoutTime: "02:31"
+    out: 40
+    judge:
+      type: exact
+  - name: long-same-day
+    in:
+      loginTime: "01:02"
+      logoutTime: "22:58"
+    out: 86
+    judge:
+      type: exact
+  - name: one-round-late-start
+    in:
+      loginTime: "14:16"
+      logoutTime: "14:30"
+    out: 0
+    judge:
+      type: exact
+  - name: one-round-late-end
+    in:
+      loginTime: "14:15"
+      logoutTime: "14:29"
+    out: 0
+    judge:
+      type: exact
+  - name: two-rounds-offset
+    in:
+      loginTime: "14:16"
+      logoutTime: "14:46"
+    out: 1
+    judge:
+      type: exact
+  - name: evening-boundary
+    in:
+      loginTime: "20:59"
+      logoutTime: "21:46"
+    out: 3
+    judge:
+      type: exact
+  - name: wrap-even-boundaries
+    in:
+      loginTime: "22:15"
+      logoutTime: "01:15"
+    out: 12
+    judge:
+      type: exact
+  - name: last-login-before-midnight
+    in:
+      loginTime: "23:59"
+      logoutTime: "00:01"
+    out: 0
+    judge:
+      type: exact

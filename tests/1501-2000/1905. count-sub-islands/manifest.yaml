@@ -1,0 +1,500 @@
+entry:
+  id: 1905
+  title: count-sub-islands
+  params:
+    grid1:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    grid2:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().countSubIslands({grid1}, {grid2})"
+    rust: "Solution::count_sub_islands({grid1}, {grid2})"
+    python3: "Solution().countSubIslands({grid1}, {grid2})"
+    python2: "Solution().countSubIslands({grid1}, {grid2})"
+    ruby: "count_sub_islands({grid1}, {grid2})"
+    java: "new Solution().countSubIslands({grid1}, {grid2})"
+    csharp: "new Solution().CountSubIslands({grid1}, {grid2})"
+    kotlin: "Solution().countSubIslands({grid1}, {grid2})"
+    go: "countSubIslands({grid1}, {grid2})"
+    dart: "Solution().countSubIslands({grid1}, {grid2})"
+    swift: "Solution().countSubIslands({grid1}, {grid2})"
+    typescript: "countSubIslands({grid1}, {grid2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().countSubIslands(grid1, grid2, {result})"
+    checker: |
+      class Checker:
+          def countSubIslands(self, grid1, grid2, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              m, n = len(grid1), len(grid1[0])
+              seen = [[False] * n for _ in range(m)]
+              expected = 0
+              for i in range(m):
+                  for j in range(n):
+                      if grid2[i][j] != 1 or seen[i][j]:
+                          continue
+                      stack = [(i, j)]
+                      seen[i][j] = True
+                      valid = True
+                      while stack:
+                          r, c = stack.pop()
+                          if grid1[r][c] != 1:
+                              valid = False
+                          for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                              nr, nc = r + dr, c + dc
+                              if 0 <= nr < m and 0 <= nc < n and grid2[nr][nc] == 1 and not seen[nr][nc]:
+                                  seen[nr][nc] = True
+                                  stack.append((nr, nc))
+                      expected += int(valid)
+              return result == expected
+
+seed: 1905
+
+tests:
+  - name: example-one
+    in:
+      grid1:
+        - [1, 1, 1, 0, 0]
+        - [0, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0]
+        - [1, 0, 0, 0, 0]
+        - [1, 1, 0, 1, 1]
+      grid2:
+        - [1, 1, 1, 0, 0]
+        - [0, 0, 1, 1, 1]
+        - [0, 1, 0, 0, 0]
+        - [1, 0, 1, 1, 0]
+        - [0, 1, 0, 1, 0]
+  - name: example-two
+    in:
+      grid1:
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+      grid2:
+        - [0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1]
+        - [0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0]
+        - [1, 0, 0, 0, 1]
+  - name: one-cell-valid
+    in:
+      grid1:
+        - [1]
+      grid2:
+        - [1]
+  - name: one-cell-invalid
+    in:
+      grid1:
+        - [0]
+      grid2:
+        - [1]
+  - name: one-cell-water
+    in:
+      grid1:
+        - [0]
+      grid2:
+        - [0]
+  - name: all-land-valid-2x2
+    in:
+      grid1:
+        - [1, 1]
+        - [1, 1]
+      grid2:
+        - [1, 1]
+        - [1, 1]
+  - name: all-land-invalid-2x2
+    in:
+      grid1:
+        - [1, 0]
+        - [0, 1]
+      grid2:
+        - [1, 1]
+        - [1, 1]
+  - name: diagonal-islands
+    in:
+      grid1:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 1]
+      grid2:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 1]
+  - name: horizontal-split
+    in:
+      grid1:
+        - [1, 1, 0, 1, 1]
+      grid2:
+        - [1, 1, 1, 1, 1]
+  - name: vertical-split
+    in:
+      grid1:
+        - [1]
+        - [1]
+        - [0]
+        - [1]
+        - [1]
+      grid2:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+  - name: hole-in-grid1
+    in:
+      grid1:
+        - [1, 1, 1]
+        - [1, 0, 1]
+        - [1, 1, 1]
+      grid2:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+  - name: separate-valid-components
+    in:
+      grid1:
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1]
+      grid2:
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1]
+  - name: touching-invalid-component
+    in:
+      grid1:
+        - [1, 1, 0]
+        - [1, 0, 1]
+        - [0, 1, 1]
+      grid2:
+        - [1, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 1]
+  - name: border-valid
+    in:
+      grid1:
+        - [1, 1, 1, 1]
+        - [1, 0, 0, 1]
+        - [1, 0, 0, 1]
+        - [1, 1, 1, 1]
+      grid2:
+        - [1, 1, 0, 0]
+        - [1, 0, 0, 1]
+        - [1, 0, 0, 1]
+        - [1, 1, 1, 1]
+  - name: corner-singletons
+    in:
+      grid1:
+        - [1, 0, 0, 1]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [1, 0, 0, 1]
+      grid2:
+        - [1, 0, 0, 1]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [1, 0, 0, 1]
+  - name: grid2-empty
+    in:
+      grid1:
+        - [1, 1, 1]
+        - [1, 1, 1]
+      grid2:
+        - [0, 0, 0]
+        - [0, 0, 0]
+  - name: grid1-empty
+    in:
+      grid1:
+        - [0, 0, 0]
+        - [0, 0, 0]
+      grid2:
+        - [1, 0, 1]
+        - [0, 1, 0]
+  - name: checkerboard
+    in:
+      grid1:
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+      grid2:
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+  - name: one-row-mixed
+    in:
+      grid1:
+        - [1, 0, 1, 1, 0, 1, 0, 1]
+      grid2:
+        - [1, 1, 1, 1, 0, 1, 1, 1]
+  - name: one-column-mixed
+    in:
+      grid1:
+        - [1]
+        - [0]
+        - [1]
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+      grid2:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [0]
+        - [1]
+  - name: thin-l-shape
+    in:
+      grid1:
+        - [1, 1, 0]
+        - [1, 0, 0]
+        - [1, 1, 1]
+      grid2:
+        - [1, 1, 0]
+        - [1, 0, 0]
+        - [1, 1, 1]
+  - name: thin-l-invalid
+    in:
+      grid1:
+        - [1, 1, 0]
+        - [1, 0, 0]
+        - [1, 1, 0]
+      grid2:
+        - [1, 1, 0]
+        - [1, 1, 0]
+        - [1, 1, 1]
+  - name: two-by-five
+    in:
+      grid1:
+        - [1, 1, 0, 0, 1]
+        - [0, 1, 1, 1, 1]
+      grid2:
+        - [1, 1, 0, 1, 1]
+        - [0, 1, 1, 1, 1]
+  - name: five-by-two
+    in:
+      grid1:
+        - [1, 0]
+        - [1, 1]
+        - [0, 1]
+        - [1, 0]
+        - [1, 1]
+      grid2:
+        - [1, 0]
+        - [1, 1]
+        - [1, 1]
+        - [1, 0]
+        - [1, 1]
+  - name: two-large-components
+    in:
+      grid1:
+        - [1, 1, 1, 0, 1, 1]
+        - [1, 0, 1, 0, 1, 1]
+        - [1, 1, 1, 0, 0, 0]
+      grid2:
+        - [1, 1, 0, 0, 1, 1]
+        - [1, 0, 1, 0, 1, 0]
+        - [1, 1, 1, 0, 0, 0]
+  - name: narrow-bridge
+    in:
+      grid1:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+      grid2:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 1]
+  - name: all-zero-4x4
+    in:
+      grid1:
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+      grid2:
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+  - name: all-one-4x4
+    in:
+      grid1:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+      grid2:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+  - name: diagonal-touch-not-connected
+    in:
+      grid1:
+        - [1, 0, 0]
+        - [0, 1, 0]
+        - [0, 0, 1]
+      grid2:
+        - [1, 1, 0]
+        - [0, 1, 1]
+        - [0, 0, 1]
+  - name: invalid-cell-inside
+    in:
+      grid1:
+        - [1, 1, 1, 1]
+        - [1, 1, 0, 1]
+        - [1, 1, 1, 1]
+      grid2:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+  - name: multiple-singletons-and-pair
+    in:
+      grid1:
+        - [1, 0, 1, 1, 0, 1]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 1, 0, 0, 1, 1]
+      grid2:
+        - [1, 0, 1, 1, 1, 1]
+        - [0, 1, 0, 0, 0, 0]
+        - [1, 1, 0, 0, 1, 0]
+  - name: irregular-5x5
+    in:
+      grid1:
+        - [1, 1, 0, 1, 0]
+        - [1, 0, 0, 1, 1]
+        - [0, 0, 1, 0, 0]
+        - [1, 1, 1, 0, 1]
+        - [0, 1, 0, 1, 1]
+      grid2:
+        - [1, 1, 0, 1, 1]
+        - [1, 0, 0, 1, 1]
+        - [0, 0, 1, 1, 0]
+        - [1, 1, 1, 0, 1]
+        - [0, 1, 0, 1, 1]
+  - name: full-grid-with-one-mismatch
+    in:
+      grid1:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 0, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+      grid2:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+  - name: separated-columns
+    in:
+      grid1:
+        - [1, 0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1, 0]
+      grid2:
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1, 0]
+        - [1, 1, 1, 1, 1, 1]
+  - name: nested-square
+    in:
+      grid1:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+      grid2:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+  - name: nested-square-invalid-center
+    in:
+      grid1:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+      grid2:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+  - name: alternating-stripes
+    in:
+      grid1:
+        - [1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+      grid2:
+        - [1, 1, 0, 1, 1, 0]
+        - [1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 0, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+  - name: four-by-seven
+    in:
+      grid1:
+        - [1, 0, 1, 1, 0, 1, 1]
+        - [1, 1, 0, 1, 0, 0, 1]
+        - [0, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1, 0, 1]
+      grid2:
+        - [1, 1, 1, 1, 0, 1, 1]
+        - [1, 1, 0, 1, 0, 0, 1]
+        - [0, 1, 1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1, 1, 1]
+  - name: five-by-five-sparse
+    in:
+      grid1:
+        - [1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1]
+      grid2:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+  - name: final-boundary-case
+    in:
+      grid1:
+        - [1, 1, 0, 0, 1, 1, 0, 1]
+        - [0, 1, 1, 0, 1, 0, 0, 1]
+        - [1, 0, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 0, 0, 0, 1, 0, 0]
+        - [0, 1, 1, 1, 0, 1, 1, 1]
+      grid2:
+        - [1, 1, 1, 0, 1, 1, 0, 1]
+        - [0, 1, 1, 0, 1, 0, 0, 1]
+        - [1, 0, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 0, 0, 0, 1, 1, 0]
+        - [0, 1, 1, 1, 0, 1, 1, 1]

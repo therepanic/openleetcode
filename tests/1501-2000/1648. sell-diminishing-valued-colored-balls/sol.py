@@ -1,0 +1,28 @@
+class Solution:
+    def maxProfit(self, inventory: List[int], orders: int) -> int:
+        t = self.binary_search(inventory, 0, max(inventory), orders)
+        total = 0
+        sold = 0
+        for ball in inventory:
+            if ball > t:
+                cnt = ball - t
+                total += (ball + t + 1) * cnt // 2
+                sold += cnt
+
+        extra = sold - orders
+        res = total - extra * (t + 1)
+        return res % (10**9 + 7)
+
+    def binary_search(self, arr, left, right, target):
+        while left < right:
+            mid = (left + right + 1) // 2
+            count = 0
+            for x in arr:
+                if x > mid:
+                    count += x - mid
+
+            if count >= target:
+                left = mid
+            else:
+                right = mid - 1
+        return left

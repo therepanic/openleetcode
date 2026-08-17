@@ -1,0 +1,261 @@
+entry:
+  id: 1771
+  title: "maximize-palindrome-length-from-subsequences"
+  params:
+    word1:
+      type: string
+    word2:
+      type: string
+  call:
+    cpp: "Solution().longestPalindrome({word1}, {word2})"
+    rust: "Solution::longest_palindrome({word1}, {word2})"
+    python3: "Solution().longestPalindrome({word1}, {word2})"
+    python2: "Solution().longestPalindrome({word1}, {word2})"
+    ruby: "longest_palindrome({word1}, {word2})"
+    java: "new Solution().longestPalindrome({word1}, {word2})"
+    csharp: "new Solution().LongestPalindrome({word1}, {word2})"
+    kotlin: "Solution().longestPalindrome({word1}, {word2})"
+    go: "longestPalindrome({word1}, {word2})"
+    dart: "Solution().longestPalindrome({word1}, {word2})"
+    swift: "Solution().longestPalindrome({word1}, {word2})"
+    typescript: "longestPalindrome({word1}, {word2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().longestPalindrome(word1, word2, {result})"
+    checker: |
+      class Checker:
+          def longestPalindrome(self, word1, word2, result):
+              if not isinstance(word1, str) or not isinstance(word2, str):
+                  return False
+              if not (1 <= len(word1) <= 1000 and 1 <= len(word2) <= 1000):
+                  return False
+              if any(not ('a' <= c <= 'z') for c in word1 + word2):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              word = word1 + word2
+              n = len(word)
+              dp = [[0] * n for _ in range(n)]
+              best = 0
+              for i in range(n - 1, -1, -1):
+                  dp[i][i] = 1
+                  for j in range(i + 1, n):
+                      if word[i] == word[j]:
+                          dp[i][j] = dp[i + 1][j - 1] + 2 if i + 1 <= j - 1 else 2
+                      else:
+                          dp[i][j] = max(dp[i + 1][j], dp[i][j - 1])
+                      if i < len(word1) <= j:
+                          best = max(best, dp[i][j])
+              return result == best
+
+seed: 1771
+
+tests:
+  - name: example-one
+    in:
+      word1: "cacb"
+      word2: "cbba"
+    out: 5
+  - name: example-two
+    in:
+      word1: "ab"
+      word2: "ab"
+    out: 3
+  - name: example-three-no-match
+    in:
+      word1: "aa"
+      word2: "bb"
+    out: 0
+  - name: single-equal
+    in:
+      word1: "a"
+      word2: "a"
+    out: 2
+  - name: single-different
+    in:
+      word1: "a"
+      word2: "b"
+    out: 0
+  - name: two-by-two-cross
+    in:
+      word1: "ab"
+      word2: "ba"
+    out: 4
+  - name: repeated-first
+    in:
+      word1: "aaa"
+      word2: "a"
+    out: 4
+  - name: repeated-second
+    in:
+      word1: "a"
+      word2: "aaa"
+    out: 4
+  - name: disjoint-alphabet
+    in:
+      word1: "abc"
+      word2: "def"
+    out: 0
+  - name: alternating
+    in:
+      word1: "abab"
+      word2: "baba"
+    out: 8
+  - name: nested-palindrome
+    in:
+      word1: "abcba"
+      word2: "abcba"
+    out: 10
+  - name: cross-boundary-pair
+    in:
+      word1: "xabc"
+      word2: "cby"
+    out: 4
+  - name: cross-boundary-long
+    in:
+      word1: "abcdxyz"
+      word2: "zyxwvut"
+    out: 6
+  - name: one-sided-no-palindrome
+    in:
+      word1: "abcd"
+      word2: "efgh"
+    out: 0
+  - name: all-same-small
+    in:
+      word1: "aaaaa"
+      word2: "aaaaa"
+    out: 10
+  - name: all-same-unbalanced
+    in:
+      word1: "aaaa"
+      word2: "aa"
+    out: 6
+  - name: mirrored-halves
+    in:
+      word1: "abc"
+      word2: "cba"
+    out: 6
+  - name: mirrored-with-noise
+    in:
+      word1: "axbycz"
+      word2: "zcybxa"
+    out: 12
+  - name: duplicate-noise
+    in:
+      word1: "aabcc"
+      word2: "cbbaa"
+    out: 9
+  - name: long-first-short-second
+    in:
+      word1: "abcdefghijklmnopq"
+      word2: "qponmlkjihgfedcba"
+    out: 34
+  - name: long-second-short-first
+    in:
+      word1: "mnopq"
+      word2: "qponmlkjihgfedcba"
+    out: 10
+  - name: boundary-character-a
+    in:
+      word1: "zaaz"
+      word2: "azza"
+    out: 5
+  - name: boundary-character-z
+    in:
+      word1: "zzab"
+      word2: "bazz"
+    out: 8
+  - name: multiple-optimal-centers
+    in:
+      word1: "abca"
+      word2: "acba"
+    out: 8
+  - name: sparse-match
+    in:
+      word1: "qwerty"
+      word2: "ytrewq"
+    out: 12
+  - name: repeated-blocks
+    in:
+      word1: "abcabc"
+      word2: "cbacba"
+    out: 12
+  - name: mostly-equal
+    in:
+      word1: "aaaaab"
+      word2: "baaaaa"
+    out: 12
+  - name: distinct-letters
+    in:
+      word1: "acegik"
+      word2: "bdfhjl"
+    out: 0
+  - name: alternating-noise
+    in:
+      word1: "aibicid"
+      word2: "dicibia"
+    out: 14
+  - name: moderate-repeated
+    in:
+      word1: "abbacaba"
+      word2: "bacababb"
+    out: 13
+  - name: generated-small
+    in:
+      word1:
+        gen: "str"
+        len: 1
+        alphabet: "abc"
+      word2:
+        gen: "str"
+        len: 1
+        alphabet: "abc"
+  - name: generated-medium
+    in:
+      word1:
+        gen: "str"
+        len: 20
+        alphabet: "abcde"
+      word2:
+        gen: "str"
+        len: 20
+        alphabet: "abcde"
+  - name: generated-dense
+    in:
+      word1:
+        gen: "str"
+        len: 100
+        alphabet: "abc"
+      word2:
+        gen: "str"
+        len: 100
+        alphabet: "abc"
+  - name: generated-large
+    in:
+      word1:
+        gen: "str"
+        len: 500
+        alphabet: "abcdefgh"
+      word2:
+        gen: "str"
+        len: 500
+        alphabet: "abcdefgh"
+  - name: generated-max
+    in:
+      word1:
+        gen: "str"
+        len: 1000
+        alphabet: "abcdefghij"
+      word2:
+        gen: "str"
+        len: 1000
+        alphabet: "abcdefghij"

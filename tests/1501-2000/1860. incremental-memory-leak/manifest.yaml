@@ -1,0 +1,264 @@
+entry:
+  id: 1860
+  title: "incremental-memory-leak"
+  params:
+    memory1:
+      type: int
+    memory2:
+      type: int
+  call:
+    cpp: "Solution().memLeak({memory1}, {memory2})"
+    rust: "Solution::mem_leak({memory1}, {memory2})"
+    python3: "Solution().memLeak({memory1}, {memory2})"
+    python2: "Solution().memLeak({memory1}, {memory2})"
+    ruby: "mem_leak({memory1}, {memory2})"
+    java: "new Solution().memLeak({memory1}, {memory2})"
+    csharp: "new Solution().MemLeak({memory1}, {memory2})"
+    kotlin: "Solution().memLeak({memory1}, {memory2})"
+    go: "memLeak({memory1}, {memory2})"
+    dart: "Solution().memLeak({memory1}, {memory2})"
+    swift: "Solution().memLeak({memory1}, {memory2})"
+    typescript: "memLeak({memory1}, {memory2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().memLeak(memory1, memory2, {result})"
+    checker: |
+      class Checker:
+          def memLeak(self, memory1, memory2, result):
+              if not isinstance(result, list) or len(result) != 3:
+                  return False
+              time = 1
+              a, b = memory1, memory2
+              while True:
+                  if a >= b:
+                      if a < time:
+                          break
+                      a -= time
+                  else:
+                      if b < time:
+                          break
+                      b -= time
+                  time += 1
+              return result == [time, a, b]
+
+seed: 1860001
+
+tests:
+  - name: "example_equal_small"
+    in:
+      memory1: 2
+      memory2: 2
+    out: [3, 1, 0]
+  - name: "example_unequal"
+    in:
+      memory1: 8
+      memory2: 11
+    out: [6, 0, 4]
+  - name: "both_zero"
+    in:
+      memory1: 0
+      memory2: 0
+    out: [1, 0, 0]
+  - name: "first_zero_second_one"
+    in:
+      memory1: 0
+      memory2: 1
+    out: [2, 0, 0]
+  - name: "first_one_second_zero"
+    in:
+      memory1: 1
+      memory2: 0
+    out: [2, 0, 0]
+  - name: "equal_one"
+    in:
+      memory1: 1
+      memory2: 1
+    out: [2, 0, 1]
+  - name: "equal_three"
+    in:
+      memory1: 3
+      memory2: 3
+    out: [3, 2, 1]
+  - name: "first_dominates"
+    in:
+      memory1: 10
+      memory2: 1
+    out: [5, 0, 1]
+  - name: "second_dominates"
+    in:
+      memory1: 1
+      memory2: 10
+    out: [5, 1, 0]
+  - name: "tie_break_first"
+    in:
+      memory1: 5
+      memory2: 5
+    out: [4, 1, 3]
+  - name: "near_first_switch"
+    in:
+      memory1: 4
+      memory2: 5
+    out: [4, 2, 1]
+  - name: "near_second_switch"
+    in:
+      memory1: 5
+      memory2: 4
+    out: [4, 2, 1]
+  - name: "balanced_six"
+    in:
+      memory1: 6
+      memory2: 6
+    out: [5, 2, 0]
+  - name: "balanced_ten"
+    in:
+      memory1: 10
+      memory2: 10
+    out: [6, 1, 4]
+  - name: "small_large_gap"
+    in:
+      memory1: 2
+      memory2: 20
+    out: [6, 2, 5]
+  - name: "large_small_gap"
+    in:
+      memory1: 20
+      memory2: 2
+    out: [6, 5, 2]
+  - name: "first_exact_triangular"
+    in:
+      memory1: 15
+      memory2: 0
+    out: [6, 0, 0]
+  - name: "second_exact_triangular"
+    in:
+      memory1: 0
+      memory2: 15
+    out: [6, 0, 0]
+  - name: "one_above_triangular"
+    in:
+      memory1: 16
+      memory2: 0
+    out: [6, 1, 0]
+  - name: "one_below_triangular"
+    in:
+      memory1: 14
+      memory2: 0
+    out: [5, 4, 0]
+  - name: "asymmetric_seven_eight"
+    in:
+      memory1: 7
+      memory2: 8
+    out: [5, 1, 4]
+  - name: "asymmetric_eight_seven"
+    in:
+      memory1: 8
+      memory2: 7
+    out: [5, 1, 4]
+  - name: "medium_pair"
+    in:
+      memory1: 42
+      memory2: 37
+    out: [12, 4, 9]
+  - name: "reverse_medium_pair"
+    in:
+      memory1: 37
+      memory2: 42
+    out: [12, 9, 4]
+  - name: "power_boundary"
+    in:
+      memory1: 100
+      memory2: 100
+    out: [20, 0, 10]
+  - name: "unequal_hundreds"
+    in:
+      memory1: 100
+      memory2: 120
+    out: [21, 9, 1]
+  - name: "large_equal"
+    in:
+      memory1: 1000000
+      memory2: 1000000
+    out: [2000, 0, 1000]
+  - name: "large_unequal"
+    in:
+      memory1: 1000000
+      memory2: 2000000
+    out: [2449, 1673, 751]
+  - name: "near_int_max_equal"
+    in:
+      memory1: 2147483647
+      memory2: 2147483647
+    out: [92681, 88047, 41707]
+  - name: "near_int_max_first"
+    in:
+      memory1: 2147483647
+      memory2: 0
+    out: [65536, 32767, 0]
+  - name: "near_int_max_second"
+    in:
+      memory1: 0
+      memory2: 2147483647
+    out: [65536, 0, 32767]
+  - name: "generated_small"
+    seed: 18601
+    in:
+      memory1:
+        gen: "int"
+        min: 0
+        max: 100
+      memory2:
+        gen: "int"
+        min: 0
+        max: 100
+  - name: "generated_medium"
+    seed: 18602
+    in:
+      memory1:
+        gen: "int"
+        min: 0
+        max: 100000
+      memory2:
+        gen: "int"
+        min: 0
+        max: 100000
+  - name: "generated_large_equal_scale"
+    seed: 18603
+    in:
+      memory1:
+        gen: "int"
+        min: 1000000
+        max: 100000000
+      memory2:
+        gen: "int"
+        min: 1000000
+        max: 100000000
+  - name: "generated_full_range"
+    seed: 18604
+    in:
+      memory1:
+        gen: "int"
+        min: 0
+        max: 2147483647
+      memory2:
+        gen: "int"
+        min: 0
+        max: 2147483647
+  - name: "generated_high_memory"
+    seed: 18605
+    in:
+      memory1:
+        gen: "int"
+        min: 2000000000
+        max: 2147483647
+      memory2:
+        gen: "int"
+        min: 2000000000
+        max: 2147483647

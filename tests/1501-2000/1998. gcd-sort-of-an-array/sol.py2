@@ -1,0 +1,42 @@
+class Solution(object):
+    def gcdSort(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        class UnionFind:
+            def __init__(self, n):
+                self.parent = list(range(n))
+                self.size = [1]*n
+            def find(self, x):
+                if self.parent[x] != x:
+                    self.parent[x] = self.find(self.parent[x])
+                return self.parent[x]
+            def union(self, x, y):
+                px, py = self.find(x), self.find(y)
+                if px != py:
+                    if self.size[px] < self.size[py]:
+                        self.parent[px] = py
+                        self.size[py] += self.size[px]
+                    else:
+                        self.parent[py] = px
+                        self.size[px] += self.size[py]
+        
+        max_val = max(nums)
+        uf = UnionFind(max_val+1)
+        for num in nums:
+            n = num
+            i = 2
+            while i*i <= n:
+                if n % i == 0:
+                    uf.union(i, num)
+                    while n % i == 0:
+                        n //= i
+                i += 1
+            if n > 1:
+                uf.union(n, num)
+        
+        for a, b in zip(nums, sorted(nums)):
+            if uf.find(a) != uf.find(b):
+                return False
+        return True

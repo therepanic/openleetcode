@@ -1,0 +1,714 @@
+entry:
+  id: 1773
+  title: "count-items-matching-a-rule"
+  params:
+    items:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+    ruleKey:
+      type: string
+    ruleValue:
+      type: string
+  call:
+    cpp: "Solution().countMatches({items}, {ruleKey}, {ruleValue})"
+    rust: "Solution::count_matches({items}, {ruleKey}, {ruleValue})"
+    python3: "Solution().countMatches({items}, {ruleKey}, {ruleValue})"
+    python2: "Solution().countMatches({items}, {ruleKey}, {ruleValue})"
+    ruby: "count_matches({items}, {ruleKey}, {ruleValue})"
+    java: "new Solution().countMatches({items}, {ruleKey}, {ruleValue})"
+    csharp: "new Solution().CountMatches({items}, {ruleKey}, {ruleValue})"
+    kotlin: "Solution().countMatches({items}, {ruleKey}, {ruleValue})"
+    go: "countMatches({items}, {ruleKey}, {ruleValue})"
+    dart: "Solution().countMatches({items}, {ruleKey}, {ruleValue})"
+    swift: "Solution().countMatches({items}, {ruleKey}, {ruleValue})"
+    typescript: "countMatches({items}, {ruleKey}, {ruleValue})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().countMatches(items, ruleKey, ruleValue, {result})"
+    checker: |
+      class Checker:
+          def countMatches(self, items, ruleKey, ruleValue, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              index = {"type": 0, "color": 1, "name": 2}[ruleKey]
+              expected = sum(1 for item in items if item[index] == ruleValue)
+              return result == expected
+seed: 1773
+tests:
+  - name: example-color
+    in:
+      items:
+        - ["phone", "blue", "pixel"]
+        - ["computer", "silver", "lenovo"]
+        - ["phone", "gold", "iphone"]
+      ruleKey: "color"
+      ruleValue: "silver"
+    out: 1
+    judge:
+      type: "exact"
+  - name: example-type
+    in:
+      items:
+        - ["phone", "blue", "pixel"]
+        - ["computer", "silver", "phone"]
+        - ["phone", "gold", "iphone"]
+      ruleKey: "type"
+      ruleValue: "phone"
+    out: 2
+    judge:
+      type: "exact"
+  - name: single-type-hit
+    in:
+      items:
+        - ["a", "b", "c"]
+      ruleKey: "type"
+      ruleValue: "a"
+    out: 1
+    judge:
+      type: "exact"
+  - name: single-color-miss
+    in:
+      items:
+        - ["a", "b", "c"]
+      ruleKey: "color"
+      ruleValue: "a"
+    out: 0
+    judge:
+      type: "exact"
+  - name: single-name-hit
+    in:
+      items:
+        - ["a", "b", "c"]
+      ruleKey: "name"
+      ruleValue: "c"
+    out: 1
+    judge:
+      type: "exact"
+  - name: all-types-match
+    in:
+      items:
+        - ["book", "red", "one"]
+        - ["book", "blue", "two"]
+        - ["book", "green", "three"]
+        - ["book", "black", "four"]
+      ruleKey: "type"
+      ruleValue: "book"
+    out: 4
+    judge:
+      type: "exact"
+  - name: all-colors-match
+    in:
+      items:
+        - ["a", "red", "one"]
+        - ["b", "red", "two"]
+        - ["c", "red", "three"]
+      ruleKey: "color"
+      ruleValue: "red"
+    out: 3
+    judge:
+      type: "exact"
+  - name: all-names-match
+    in:
+      items:
+        - ["a", "x", "same"]
+        - ["b", "y", "same"]
+        - ["c", "z", "same"]
+      ruleKey: "name"
+      ruleValue: "same"
+    out: 3
+    judge:
+      type: "exact"
+  - name: no-type-match
+    in:
+      items:
+        - ["a", "x", "p"]
+        - ["b", "y", "q"]
+        - ["c", "z", "r"]
+      ruleKey: "type"
+      ruleValue: "d"
+    out: 0
+    judge:
+      type: "exact"
+  - name: no-color-match
+    in:
+      items:
+        - ["a", "x", "p"]
+        - ["b", "y", "q"]
+        - ["c", "z", "r"]
+      ruleKey: "color"
+      ruleValue: "w"
+    out: 0
+    judge:
+      type: "exact"
+  - name: no-name-match
+    in:
+      items:
+        - ["a", "x", "p"]
+        - ["b", "y", "q"]
+        - ["c", "z", "r"]
+      ruleKey: "name"
+      ruleValue: "s"
+    out: 0
+    judge:
+      type: "exact"
+  - name: mixed-type-count
+    in:
+      items:
+        - ["cat", "red", "small"]
+        - ["dog", "red", "fast"]
+        - ["cat", "blue", "quiet"]
+        - ["bird", "red", "small"]
+        - ["cat", "green", "fast"]
+      ruleKey: "type"
+      ruleValue: "cat"
+    out: 3
+    judge:
+      type: "exact"
+  - name: mixed-color-count
+    in:
+      items:
+        - ["cat", "red", "small"]
+        - ["dog", "red", "fast"]
+        - ["cat", "blue", "quiet"]
+        - ["bird", "red", "small"]
+        - ["cat", "green", "fast"]
+      ruleKey: "color"
+      ruleValue: "red"
+    out: 3
+    judge:
+      type: "exact"
+  - name: mixed-name-count
+    in:
+      items:
+        - ["cat", "red", "small"]
+        - ["dog", "red", "fast"]
+        - ["cat", "blue", "quiet"]
+        - ["bird", "red", "small"]
+        - ["cat", "green", "fast"]
+      ruleKey: "name"
+      ruleValue: "fast"
+    out: 2
+    judge:
+      type: "exact"
+  - name: case-sensitive-lowercase
+    in:
+      items:
+        - ["ab", "cd", "ef"]
+        - ["abc", "cde", "efg"]
+        - ["abcd", "cdef", "efgh"]
+      ruleKey: "name"
+      ruleValue: "ef"
+    out: 1
+    judge:
+      type: "exact"
+  - name: maximum-string-length
+    in:
+      items:
+        - ["abcdefghij", "klmnopqrst", "uvwxyzabcd"]
+        - ["abcdefghij", "klmnopqrst", "zzzzzzzzzz"]
+        - ["qqqqqqqqqq", "klmnopqrst", "uvwxyzabcd"]
+      ruleKey: "color"
+      ruleValue: "klmnopqrst"
+    out: 3
+    judge:
+      type: "exact"
+  - name: repeated-identical-items
+    in:
+      items:
+        - ["x", "y", "z"]
+        - ["x", "y", "z"]
+        - ["x", "y", "z"]
+        - ["x", "y", "z"]
+        - ["x", "y", "z"]
+      ruleKey: "type"
+      ruleValue: "x"
+    out: 5
+    judge:
+      type: "exact"
+  - name: repeated-value-only-color
+    in:
+      items:
+        - ["a", "same", "p"]
+        - ["b", "same", "q"]
+        - ["c", "same", "r"]
+        - ["d", "other", "s"]
+      ruleKey: "color"
+      ruleValue: "same"
+    out: 3
+    judge:
+      type: "exact"
+  - name: repeated-value-only-name
+    in:
+      items:
+        - ["a", "x", "same"]
+        - ["b", "y", "same"]
+        - ["c", "z", "other"]
+        - ["d", "w", "same"]
+      ruleKey: "name"
+      ruleValue: "same"
+    out: 3
+    judge:
+      type: "exact"
+  - name: first-field-only
+    in:
+      items:
+        - ["target", "a", "b"]
+        - ["c", "target", "d"]
+        - ["e", "f", "target"]
+        - ["target", "target", "target"]
+      ruleKey: "type"
+      ruleValue: "target"
+    out: 2
+    judge:
+      type: "exact"
+  - name: second-field-only
+    in:
+      items:
+        - ["target", "a", "b"]
+        - ["c", "target", "d"]
+        - ["e", "f", "target"]
+        - ["target", "target", "target"]
+      ruleKey: "color"
+      ruleValue: "target"
+    out: 2
+    judge:
+      type: "exact"
+  - name: third-field-only
+    in:
+      items:
+        - ["target", "a", "b"]
+        - ["c", "target", "d"]
+        - ["e", "f", "target"]
+        - ["target", "target", "target"]
+      ruleKey: "name"
+      ruleValue: "target"
+    out: 2
+    judge:
+      type: "exact"
+  - name: alternating-types
+    in:
+      items:
+        - ["a", "x", "p"]
+        - ["b", "y", "q"]
+        - ["a", "z", "r"]
+        - ["b", "x", "s"]
+        - ["a", "y", "t"]
+        - ["b", "z", "u"]
+      ruleKey: "type"
+      ruleValue: "a"
+    out: 3
+    judge:
+      type: "exact"
+  - name: alternating-colors
+    in:
+      items:
+        - ["a", "x", "p"]
+        - ["b", "y", "q"]
+        - ["c", "x", "r"]
+        - ["d", "y", "s"]
+        - ["e", "x", "t"]
+        - ["f", "y", "u"]
+      ruleKey: "color"
+      ruleValue: "x"
+    out: 3
+    judge:
+      type: "exact"
+  - name: alternating-names
+    in:
+      items:
+        - ["a", "p", "x"]
+        - ["b", "q", "y"]
+        - ["c", "r", "x"]
+        - ["d", "s", "y"]
+        - ["e", "t", "x"]
+        - ["f", "u", "y"]
+      ruleKey: "name"
+      ruleValue: "y"
+    out: 3
+    judge:
+      type: "exact"
+  - name: ten-items-type
+    in:
+      items:
+        - ["a", "b", "c"]
+        - ["b", "c", "d"]
+        - ["a", "c", "d"]
+        - ["c", "b", "a"]
+        - ["a", "d", "e"]
+        - ["d", "a", "b"]
+        - ["e", "b", "c"]
+        - ["a", "e", "f"]
+        - ["f", "a", "g"]
+        - ["a", "a", "a"]
+      ruleKey: "type"
+      ruleValue: "a"
+    out: 5
+    judge:
+      type: "exact"
+  - name: ten-items-color
+    in:
+      items:
+        - ["a", "b", "c"]
+        - ["b", "c", "d"]
+        - ["a", "c", "d"]
+        - ["c", "b", "a"]
+        - ["a", "d", "e"]
+        - ["d", "a", "b"]
+        - ["e", "b", "c"]
+        - ["a", "e", "f"]
+        - ["f", "a", "g"]
+        - ["a", "a", "a"]
+      ruleKey: "color"
+      ruleValue: "b"
+    out: 3
+    judge:
+      type: "exact"
+  - name: ten-items-name
+    in:
+      items:
+        - ["a", "b", "c"]
+        - ["b", "c", "d"]
+        - ["a", "c", "d"]
+        - ["c", "b", "a"]
+        - ["a", "d", "e"]
+        - ["d", "a", "b"]
+        - ["e", "b", "c"]
+        - ["a", "e", "f"]
+        - ["f", "a", "g"]
+        - ["a", "a", "a"]
+      ruleKey: "name"
+      ruleValue: "d"
+    out: 2
+    judge:
+      type: "exact"
+  - name: same-key-different-values
+    in:
+      items:
+        - ["one", "red", "cat"]
+        - ["two", "red", "dog"]
+        - ["three", "red", "bird"]
+        - ["four", "blue", "fish"]
+        - ["five", "red", "cat"]
+        - ["six", "green", "dog"]
+        - ["seven", "red", "horse"]
+      ruleKey: "color"
+      ruleValue: "red"
+    out: 5
+    judge:
+      type: "exact"
+  - name: many-duplicates-one-miss
+    in:
+      items:
+        - ["same", "same", "same"]
+        - ["same", "same", "same"]
+        - ["same", "same", "same"]
+        - ["same", "same", "other"]
+        - ["same", "same", "same"]
+        - ["same", "other", "same"]
+      ruleKey: "name"
+      ruleValue: "same"
+    out: 5
+    judge:
+      type: "exact"
+  - name: long-distinct-values
+    in:
+      items:
+        - ["aaaaaaaaaa", "bbbbbbbbbb", "cccccccccc"]
+        - ["dddddddddd", "eeeeeeeeee", "ffffffff"]
+        - ["aaaaaaaaaa", "eeeeeeeeee", "ffffffff"]
+        - ["gggggggggg", "bbbbbbbbbb", "cccccccccc"]
+      ruleKey: "type"
+      ruleValue: "aaaaaaaaaa"
+    out: 2
+    judge:
+      type: "exact"
+  - name: fifteen-categories
+    in:
+      items:
+        - ["a", "x", "p"]
+        - ["b", "y", "q"]
+        - ["c", "z", "r"]
+        - ["d", "x", "s"]
+        - ["e", "y", "t"]
+        - ["f", "z", "u"]
+        - ["g", "x", "v"]
+        - ["h", "y", "w"]
+        - ["i", "z", "p"]
+        - ["j", "x", "q"]
+        - ["k", "y", "r"]
+        - ["l", "z", "s"]
+        - ["m", "x", "t"]
+        - ["n", "y", "u"]
+        - ["o", "z", "v"]
+      ruleKey: "color"
+      ruleValue: "z"
+    out: 5
+    judge:
+      type: "exact"
+  - name: fifteen-name-collisions
+    in:
+      items:
+        - ["a", "x", "p"]
+        - ["b", "y", "q"]
+        - ["c", "z", "p"]
+        - ["d", "x", "r"]
+        - ["e", "y", "p"]
+        - ["f", "z", "s"]
+        - ["g", "x", "p"]
+        - ["h", "y", "t"]
+        - ["i", "z", "p"]
+        - ["j", "x", "u"]
+        - ["k", "y", "p"]
+        - ["l", "z", "v"]
+        - ["m", "x", "p"]
+        - ["n", "y", "w"]
+        - ["o", "z", "p"]
+      ruleKey: "name"
+      ruleValue: "p"
+    out: 8
+    judge:
+      type: "exact"
+  - name: twenty-mixed
+    in:
+      items:
+        - ["a", "a", "a"]
+        - ["b", "b", "b"]
+        - ["c", "a", "c"]
+        - ["d", "b", "d"]
+        - ["e", "a", "e"]
+        - ["f", "b", "f"]
+        - ["g", "a", "g"]
+        - ["h", "b", "h"]
+        - ["i", "a", "i"]
+        - ["j", "b", "j"]
+        - ["k", "a", "k"]
+        - ["l", "b", "l"]
+        - ["m", "a", "m"]
+        - ["n", "b", "n"]
+        - ["o", "a", "o"]
+        - ["p", "b", "p"]
+        - ["q", "a", "q"]
+        - ["r", "b", "r"]
+        - ["s", "a", "s"]
+        - ["t", "b", "t"]
+      ruleKey: "color"
+      ruleValue: "a"
+    out: 10
+    judge:
+      type: "exact"
+  - name: twenty-name-target
+    in:
+      items:
+        - ["a", "a", "target"]
+        - ["b", "b", "x"]
+        - ["c", "a", "target"]
+        - ["d", "b", "x"]
+        - ["e", "a", "target"]
+        - ["f", "b", "x"]
+        - ["g", "a", "target"]
+        - ["h", "b", "x"]
+        - ["i", "a", "target"]
+        - ["j", "b", "x"]
+        - ["k", "a", "target"]
+        - ["l", "b", "x"]
+        - ["m", "a", "target"]
+        - ["n", "b", "x"]
+        - ["o", "a", "target"]
+        - ["p", "b", "x"]
+        - ["q", "a", "target"]
+        - ["r", "b", "x"]
+        - ["s", "a", "target"]
+        - ["t", "b", "x"]
+      ruleKey: "name"
+      ruleValue: "target"
+    out: 10
+    judge:
+      type: "exact"
+  - name: twenty-five-type-sparse
+    in:
+      items:
+        - ["hit", "a", "a"]
+        - ["x", "b", "b"]
+        - ["x", "c", "c"]
+        - ["x", "d", "d"]
+        - ["hit", "e", "e"]
+        - ["x", "f", "f"]
+        - ["x", "g", "g"]
+        - ["x", "h", "h"]
+        - ["x", "i", "i"]
+        - ["hit", "j", "j"]
+        - ["x", "k", "k"]
+        - ["x", "l", "l"]
+        - ["x", "m", "m"]
+        - ["x", "n", "n"]
+        - ["hit", "o", "o"]
+        - ["x", "p", "p"]
+        - ["x", "q", "q"]
+        - ["x", "r", "r"]
+        - ["x", "s", "s"]
+        - ["hit", "t", "t"]
+        - ["x", "u", "u"]
+        - ["x", "v", "v"]
+        - ["x", "w", "w"]
+        - ["x", "y", "y"]
+        - ["hit", "z", "z"]
+      ruleKey: "type"
+      ruleValue: "hit"
+    out: 6
+    judge:
+      type: "exact"
+  - name: twenty-five-color-sparse
+    in:
+      items:
+        - ["a", "hit", "a"]
+        - ["b", "x", "b"]
+        - ["c", "x", "c"]
+        - ["d", "x", "d"]
+        - ["e", "hit", "e"]
+        - ["f", "x", "f"]
+        - ["g", "x", "g"]
+        - ["h", "x", "h"]
+        - ["i", "x", "i"]
+        - ["j", "hit", "j"]
+        - ["k", "x", "k"]
+        - ["l", "x", "l"]
+        - ["m", "x", "m"]
+        - ["n", "x", "n"]
+        - ["o", "hit", "o"]
+        - ["p", "x", "p"]
+        - ["q", "x", "q"]
+        - ["r", "x", "r"]
+        - ["s", "x", "s"]
+        - ["t", "hit", "t"]
+        - ["u", "x", "u"]
+        - ["v", "x", "v"]
+        - ["w", "x", "w"]
+        - ["y", "x", "y"]
+        - ["z", "hit", "z"]
+      ruleKey: "color"
+      ruleValue: "hit"
+    out: 6
+    judge:
+      type: "exact"
+  - name: thirty-balanced
+    in:
+      items:
+        - ["a", "red", "p"]
+        - ["b", "blue", "q"]
+        - ["c", "green", "r"]
+        - ["a", "blue", "s"]
+        - ["b", "green", "t"]
+        - ["c", "red", "u"]
+        - ["a", "green", "v"]
+        - ["b", "red", "w"]
+        - ["c", "blue", "x"]
+        - ["a", "red", "y"]
+        - ["b", "blue", "z"]
+        - ["c", "green", "p"]
+        - ["a", "blue", "q"]
+        - ["b", "green", "r"]
+        - ["c", "red", "s"]
+        - ["a", "green", "t"]
+        - ["b", "red", "u"]
+        - ["c", "blue", "v"]
+        - ["a", "red", "w"]
+        - ["b", "blue", "x"]
+        - ["c", "green", "y"]
+        - ["a", "blue", "z"]
+        - ["b", "green", "p"]
+        - ["c", "red", "q"]
+        - ["a", "green", "r"]
+        - ["b", "red", "s"]
+        - ["c", "blue", "t"]
+        - ["a", "red", "u"]
+        - ["b", "blue", "v"]
+        - ["c", "green", "w"]
+      ruleKey: "type"
+      ruleValue: "a"
+    out: 10
+    judge:
+      type: "exact"
+  - name: thirty-color-balance
+    in:
+      items:
+        - ["a", "red", "p"]
+        - ["b", "blue", "q"]
+        - ["c", "green", "r"]
+        - ["a", "blue", "s"]
+        - ["b", "green", "t"]
+        - ["c", "red", "u"]
+        - ["a", "green", "v"]
+        - ["b", "red", "w"]
+        - ["c", "blue", "x"]
+        - ["a", "red", "y"]
+        - ["b", "blue", "z"]
+        - ["c", "green", "p"]
+        - ["a", "blue", "q"]
+        - ["b", "green", "r"]
+        - ["c", "red", "s"]
+        - ["a", "green", "t"]
+        - ["b", "red", "u"]
+        - ["c", "blue", "v"]
+        - ["a", "red", "w"]
+        - ["b", "blue", "x"]
+        - ["c", "green", "y"]
+        - ["a", "blue", "z"]
+        - ["b", "green", "p"]
+        - ["c", "red", "q"]
+        - ["a", "green", "r"]
+        - ["b", "red", "s"]
+        - ["c", "blue", "t"]
+        - ["a", "red", "u"]
+        - ["b", "blue", "v"]
+        - ["c", "green", "w"]
+      ruleKey: "color"
+      ruleValue: "red"
+    out: 10
+    judge:
+      type: "exact"
+  - name: thirty-name-repeats
+    in:
+      items:
+        - ["a", "r", "same"]
+        - ["b", "b", "x"]
+        - ["c", "g", "same"]
+        - ["d", "r", "y"]
+        - ["e", "b", "same"]
+        - ["f", "g", "z"]
+        - ["g", "r", "same"]
+        - ["h", "b", "x"]
+        - ["i", "g", "same"]
+        - ["j", "r", "y"]
+        - ["k", "b", "same"]
+        - ["l", "g", "z"]
+        - ["m", "r", "same"]
+        - ["n", "b", "x"]
+        - ["o", "g", "same"]
+        - ["p", "r", "y"]
+        - ["q", "b", "same"]
+        - ["r", "g", "z"]
+        - ["s", "r", "same"]
+        - ["t", "b", "x"]
+        - ["u", "g", "same"]
+        - ["v", "r", "y"]
+        - ["w", "b", "same"]
+        - ["x", "g", "z"]
+        - ["y", "r", "same"]
+        - ["z", "b", "x"]
+        - ["aa", "g", "same"]
+        - ["bb", "r", "y"]
+        - ["cc", "b", "same"]
+        - ["dd", "g", "z"]
+      ruleKey: "name"
+      ruleValue: "same"
+    out: 15
+    judge:
+      type: "exact"

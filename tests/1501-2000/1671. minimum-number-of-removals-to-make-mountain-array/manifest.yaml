@@ -1,0 +1,197 @@
+entry:
+  id: 1671
+  title: "minimum-number-of-removals-to-make-mountain-array"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minimumMountainRemovals({nums})"
+    rust: "Solution::minimum_mountain_removals({nums})"
+    python3: "Solution().minimumMountainRemovals({nums})"
+    python2: "Solution().minimumMountainRemovals({nums})"
+    ruby: "minimum_mountain_removals({nums})"
+    java: "new Solution().minimumMountainRemovals({nums})"
+    csharp: "new Solution().MinimumMountainRemovals({nums})"
+    kotlin: "Solution().minimumMountainRemovals({nums})"
+    go: "minimumMountainRemovals({nums})"
+    dart: "Solution().minimumMountainRemovals({nums})"
+    swift: "Solution().minimumMountainRemovals({nums})"
+    typescript: "minimumMountainRemovals({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minimumMountainRemovals(nums, {result})"
+    checker: |
+      class Checker:
+          def minimumMountainRemovals(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(nums)
+              inc = [1] * n
+              dec = [1] * n
+              for i in range(n):
+                  for j in range(i):
+                      if nums[j] < nums[i]:
+                          inc[i] = max(inc[i], inc[j] + 1)
+              for i in range(n - 1, -1, -1):
+                  for j in range(n - 1, i, -1):
+                      if nums[j] < nums[i]:
+                          dec[i] = max(dec[i], dec[j] + 1)
+              best = 0
+              for i in range(1, n - 1):
+                  if inc[i] > 1 and dec[i] > 1:
+                      best = max(best, inc[i] + dec[i] - 1)
+              return result == n - best
+
+seed: 1671
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 3, 1]
+    out: 0
+  - name: example-two
+    in:
+      nums: [2, 1, 1, 5, 6, 2, 3, 1]
+    out: 3
+  - name: perfect-seven
+    in:
+      nums: [1, 2, 3, 4, 3, 2, 1]
+    out: 0
+  - name: perfect-nine
+    in:
+      nums: [1, 2, 3, 4, 5, 4, 3, 2, 1]
+    out: 0
+  - name: descending-prefix
+    in:
+      nums: [5, 4, 3, 2, 1, 2, 3]
+    out: 7
+  - name: duplicate-prefix
+    in:
+      nums: [1, 1, 2, 3, 2, 1]
+    out: 1
+  - name: duplicate-peak-side
+    in:
+      nums: [1, 2, 2, 3, 2, 1]
+    out: 1
+  - name: leading-outlier
+    in:
+      nums: [10, 1, 2, 3, 4, 5, 4, 3, 2, 1]
+    out: 1
+  - name: short-perfect
+    in:
+      nums: [1, 3, 5, 4, 2]
+    out: 0
+  - name: wrong-middle
+    in:
+      nums: [1, 4, 2, 3, 1]
+    out: 1
+  - name: low-left-outlier
+    in:
+      nums: [7, 1, 2, 3, 4, 3, 2]
+    out: 1
+  - name: high-center
+    in:
+      nums: [1, 2, 10, 3, 4, 2, 1]
+    out: 1
+  - name: late-peak
+    in:
+      nums: [1, 5, 4, 3, 2, 6, 1]
+    out: 1
+  - name: two-candidate-peaks
+    in:
+      nums: [4, 1, 2, 3, 2, 5, 1]
+    out: 2
+  - name: interrupted-ramp
+    in:
+      nums: [1, 2, 3, 2, 4, 3, 2, 1]
+    out: 1
+  - name: two-mountains
+    in:
+      nums: [1, 2, 3, 4, 5, 1, 2, 3, 4, 2, 1]
+    out: 3
+  - name: descending-then-rising
+    in:
+      nums: [9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3]
+    out: 11
+  - name: small-zigzag
+    in:
+      nums: [1, 3, 2, 4, 3, 2, 1]
+    out: 1
+  - name: high-middle-candidate
+    in:
+      nums: [1, 2, 4, 3, 5, 4, 3, 2, 1]
+    out: 1
+  - name: uneven-descent
+    in:
+      nums: [1, 2, 3, 5, 4, 2, 3, 1]
+    out: 1
+  - name: separated-rises
+    in:
+      nums: [2, 3, 4, 1, 2, 3, 4, 3, 2, 1]
+    out: 3
+  - name: competing-peak
+    in:
+      nums: [1, 4, 3, 2, 5, 4, 3, 2]
+    out: 2
+  - name: valley-before-mountain
+    in:
+      nums: [1, 2, 1, 2, 3, 4, 3, 2, 1]
+    out: 2
+  - name: late-ramp
+    in:
+      nums: [1, 2, 3, 4, 3, 2, 5, 4, 3, 2, 1]
+    out: 2
+  - name: six-element-mix
+    in:
+      nums: [1, 5, 3, 4, 2, 1]
+    out: 1
+  - name: delayed-start
+    in:
+      nums: [3, 1, 2, 4, 3, 2, 1]
+    out: 1
+  - name: alternate-peak
+    in:
+      nums: [1, 2, 3, 4, 2, 3, 1]
+    out: 1
+  - name: double-zigzag
+    in:
+      nums: [1, 2, 3, 2, 1, 2, 3, 2, 1]
+    out: 4
+  - name: descending-long
+    in:
+      nums: [1, 10, 9, 8, 7, 6, 5, 4, 3]
+    out: 0
+  - name: billion-values
+    in:
+      nums: [1000000000, 1, 2, 3, 4, 999999999, 5, 4, 3, 2, 1]
+    out: 1
+  - name: alternating-large
+    in:
+      nums: [1, 1000000000, 2, 999999999, 3, 999999998, 1]
+    out: 2
+  - name: perfect-eleven
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1]
+    out: 0
+  - name: long-descending-ramp
+    in:
+      nums: [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3]
+    out: 13
+  - name: powers-and-descent
+    in:
+      nums: [1, 2, 4, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: 0
+  - name: broad-mountain
+    in:
+      nums: [1, 3, 6, 10, 9, 8, 7, 5, 4, 2, 1]
+    out: 0

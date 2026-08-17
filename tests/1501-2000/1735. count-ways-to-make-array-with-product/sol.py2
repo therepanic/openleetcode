@@ -1,0 +1,36 @@
+class Solution(object):
+    def waysToFillArray(self, queries):
+        """
+        :type queries: List[List[int]]
+        :rtype: List[int]
+        """
+        MOD = 10**9 + 7
+        from collections import Counter
+        
+        def get_primes(n):
+            result = []
+            p = 2
+            while p * p <= n:
+                while n % p == 0:
+                    result.append(p)
+                    n //= p
+                p += 1
+            if n > 1:
+                result.append(n)
+            return result
+
+        def comb(n, r):
+            r = min(r, n - r)
+            result = 1
+            for i in xrange(1, r + 1):
+                result = result * (n - i + 1) // i
+            return result
+        
+        ans = []
+        for n, k in queries:
+            factors = Counter(get_primes(k))
+            total = 1
+            for c in factors.values():
+                total = total * comb(n + c - 1, n - 1) % MOD
+            ans.append(int(total))
+        return ans

@@ -1,0 +1,338 @@
+entry:
+  id: 1774
+  title: "closest-dessert-cost"
+  params:
+    baseCosts:
+      type: array
+      items:
+        type: int
+    toppingCosts:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().closestCost({baseCosts}, {toppingCosts}, {target})"
+    rust: "Solution::closest_cost({baseCosts}, {toppingCosts}, {target})"
+    python3: "Solution().closestCost({baseCosts}, {toppingCosts}, {target})"
+    python2: "Solution().closestCost({baseCosts}, {toppingCosts}, {target})"
+    ruby: "closest_cost({baseCosts}, {toppingCosts}, {target})"
+    java: "new Solution().closestCost({baseCosts}, {toppingCosts}, {target})"
+    csharp: "new Solution().ClosestCost({baseCosts}, {toppingCosts}, {target})"
+    kotlin: "Solution().closestCost({baseCosts}, {toppingCosts}, {target})"
+    go: "closestCost({baseCosts}, {toppingCosts}, {target})"
+    dart: "Solution().closestCost({baseCosts}, {toppingCosts}, {target})"
+    swift: "Solution().closestCost({baseCosts}, {toppingCosts}, {target})"
+    typescript: "closestCost({baseCosts}, {toppingCosts}, {target})"
+judge:
+  type: exact
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().closestCost(baseCosts, toppingCosts, target, {result})"
+    checker: |
+      class Checker:
+          def closestCost(self, baseCosts, toppingCosts, target, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              sums = [0]
+              for topping in toppingCosts:
+                  sums = [old + add for old in sums for add in (0, topping, 2 * topping)]
+              best = min((abs(base + extra - target), base + extra)
+                         for base in baseCosts for extra in sums)
+              return result == best[1]
+seed: 1774
+tests:
+  - name: example-1
+    in:
+      baseCosts: [1, 7]
+      toppingCosts: [3, 4]
+      target: 10
+    out: 10
+  - name: example-2
+    in:
+      baseCosts: [2, 3]
+      toppingCosts: [4, 5, 100]
+      target: 18
+    out: 17
+  - name: example-3-tie-lower
+    in:
+      baseCosts: [3, 10]
+      toppingCosts: [2, 5]
+      target: 9
+    out: 8
+  - name: minimum-values
+    in:
+      baseCosts: [1]
+      toppingCosts: [1]
+      target: 1
+    out: 1
+  - name: target-far-above
+    in:
+      baseCosts: [5]
+      toppingCosts: [5]
+      target: 10000
+    out: 15
+  - name: no-topping-needed
+    in:
+      baseCosts: [10]
+      toppingCosts: [1]
+      target: 10
+    out: 10
+  - name: exact-combination
+    in:
+      baseCosts: [1, 2, 3]
+      toppingCosts: [1, 2, 3]
+      target: 4
+    out: 4
+  - name: lower-tie-base
+    in:
+      baseCosts: [7, 9]
+      toppingCosts: [4, 4]
+      target: 8
+    out: 7
+  - name: maximum-ingredients
+    in:
+      baseCosts: [1, 10000]
+      toppingCosts: [10000]
+      target: 10000
+    out: 10000
+  - name: repeated-toppings
+    in:
+      baseCosts: [100]
+      toppingCosts: [1, 1, 1]
+      target: 101
+    out: 101
+  - name: odd-tie
+    in:
+      baseCosts: [6, 8, 10]
+      toppingCosts: [2, 4]
+      target: 9
+    out: 8
+  - name: duplicate-cost-tie
+    in:
+      baseCosts: [3, 5]
+      toppingCosts: [2, 2]
+      target: 4
+    out: 3
+  - name: overshoot-necessary
+    in:
+      baseCosts: [1, 2]
+      toppingCosts: [3, 3, 3]
+      target: 20
+    out: 20
+  - name: close-base
+    in:
+      baseCosts: [50, 60]
+      toppingCosts: [10, 20]
+      target: 55
+    out: 50
+  - name: large-topping-and-small
+    in:
+      baseCosts: [1, 100]
+      toppingCosts: [2, 99]
+      target: 100
+    out: 100
+  - name: two-copies
+    in:
+      baseCosts: [8]
+      toppingCosts: [7, 7]
+      target: 22
+    out: 22
+  - name: small-exact
+    in:
+      baseCosts: [2, 4, 6]
+      toppingCosts: [1, 1]
+      target: 5
+    out: 5
+  - name: target-below-all
+    in:
+      baseCosts: [9, 10]
+      toppingCosts: [3, 6]
+      target: 1
+    out: 9
+  - name: duplicate-bases
+    in:
+      baseCosts: [1, 1, 1]
+      toppingCosts: [1, 1, 1]
+      target: 2
+    out: 2
+  - name: near-maximum-base
+    in:
+      baseCosts: [9999, 10000]
+      toppingCosts: [1, 2]
+      target: 10000
+    out: 10000
+  - name: exact-with-two-types
+    in:
+      baseCosts: [4, 11]
+      toppingCosts: [5, 6]
+      target: 20
+    out: 20
+  - name: small-topping-wins
+    in:
+      baseCosts: [12, 13]
+      toppingCosts: [1, 100]
+      target: 14
+    out: 14
+  - name: large-overshoot
+    in:
+      baseCosts: [2]
+      toppingCosts: [100, 100]
+      target: 150
+    out: 102
+  - name: three-bases
+    in:
+      baseCosts: [30, 31, 32]
+      toppingCosts: [9, 9, 9]
+      target: 50
+    out: 50
+  - name: target-between-options
+    in:
+      baseCosts: [1, 20]
+      toppingCosts: [7, 8]
+      target: 17
+    out: 17
+  - name: large-exact
+    in:
+      baseCosts: [1000]
+      toppingCosts: [333, 334]
+      target: 1999
+    out: 2000
+  - name: multiple-close
+    in:
+      baseCosts: [17, 23]
+      toppingCosts: [5, 10]
+      target: 40
+    out: 38
+  - name: one-large-topping
+    in:
+      baseCosts: [1, 2, 3, 4]
+      toppingCosts: [10]
+      target: 25
+    out: 24
+  - name: exact-small-gap
+    in:
+      baseCosts: [75, 80]
+      toppingCosts: [1, 2, 3]
+      target: 76
+    out: 76
+  - name: upper-bound-exact
+    in:
+      baseCosts: [2, 10000]
+      toppingCosts: [4999, 5000]
+      target: 10000
+    out: 10000
+  - name: generated-small
+    in:
+      baseCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      toppingCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      target:
+        gen: int
+        min: 1
+        max: 10000
+  - name: generated-medium
+    in:
+      baseCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      toppingCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      target:
+        gen: int
+        min: 1
+        max: 10000
+  - name: generated-low-target
+    in:
+      baseCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      toppingCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      target:
+        gen: int
+        min: 1
+        max: 50
+  - name: generated-high-target
+    in:
+      baseCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 9950
+          max: 10000
+        elemType: int
+      toppingCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      target:
+        gen: int
+        min: 9950
+        max: 10000
+  - name: generated-mixed
+    in:
+      baseCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      toppingCosts:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+      target:
+        gen: int
+        min: 1
+        max: 10000

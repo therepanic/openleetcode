@@ -1,0 +1,613 @@
+entry:
+  id: 1971
+  title: find-if-path-exists-in-graph
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    source:
+      type: int
+    destination:
+      type: int
+  call:
+    cpp: "Solution().validPath({n}, {edges}, {source}, {destination})"
+    rust: "Solution::valid_path({n}, {edges}, {source}, {destination})"
+    python3: "Solution().validPath({n}, {edges}, {source}, {destination})"
+    python2: "Solution().validPath({n}, {edges}, {source}, {destination})"
+    ruby: "valid_path({n}, {edges}, {source}, {destination})"
+    java: "new Solution().validPath({n}, {edges}, {source}, {destination})"
+    csharp: "new Solution().ValidPath({n}, {edges}, {source}, {destination})"
+    kotlin: "Solution().validPath({n}, {edges}, {source}, {destination})"
+    go: "validPath({n}, {edges}, {source}, {destination})"
+    dart: "Solution().validPath({n}, {edges}, {source}, {destination})"
+    swift: "Solution().validPath({n}, {edges}, {source}, {destination})"
+    typescript: "validPath({n}, {edges}, {source}, {destination})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().validPath(n, edges, source, destination, {result})"
+    checker: |
+      from collections import deque
+
+      class Checker:
+          def validPath(self, n, edges, source, destination, result):
+              if not isinstance(result, bool):
+                  return False
+              graph = [[] for _ in range(n)]
+              for edge in edges:
+                  if not isinstance(edge, list) or len(edge) != 2:
+                      return False
+                  u, v = edge
+                  if not (0 <= u < n and 0 <= v < n and u != v):
+                      return False
+                  graph[u].append(v)
+                  graph[v].append(u)
+              seen = {source}
+              queue = deque([source])
+              while queue:
+                  node = queue.popleft()
+                  if node == destination:
+                      return result is True
+                  for neighbor in graph[node]:
+                      if neighbor not in seen:
+                          seen.add(neighbor)
+                          queue.append(neighbor)
+              return result is False
+
+seed: 1971
+
+tests:
+  - name: triangle-connected
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+      source: 0
+      destination: 2
+    out: true
+  - name: disconnected-components
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [3, 5]
+        - [5, 4]
+        - [4, 3]
+      source: 0
+      destination: 5
+    out: false
+  - name: single-vertex-self-query
+    in:
+      n: 1
+      edges: []
+      source: 0
+      destination: 0
+    out: true
+  - name: isolated-different-vertices
+    in:
+      n: 2
+      edges: []
+      source: 0
+      destination: 1
+    out: false
+  - name: direct-edge
+    in:
+      n: 4
+      edges:
+        - [1, 3]
+      source: 3
+      destination: 1
+    out: true
+  - name: reversed-multi-hop
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      source: 3
+      destination: 0
+    out: true
+  - name: long-chain
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+      source: 0
+      destination: 9
+    out: true
+  - name: chain-separated
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      source: 0
+      destination: 7
+    out: false
+  - name: cycle-with-tail
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      source: 5
+      destination: 1
+    out: true
+  - name: cycle-isolated
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [4, 5]
+        - [5, 6]
+        - [6, 4]
+      source: 0
+      destination: 7
+    out: false
+  - name: hub-connected
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+      source: 4
+      destination: 5
+    out: true
+  - name: hub-missing-target
+    in:
+      n: 7
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+      source: 4
+      destination: 6
+    out: false
+  - name: multiple-components-middle
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [6, 7]
+      source: 3
+      destination: 5
+    out: true
+  - name: multiple-components-cross-query
+    in:
+      n: 9
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [6, 7]
+      source: 2
+      destination: 7
+    out: false
+  - name: dense-six
+    in:
+      n: 6
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 4]
+        - [2, 3]
+        - [2, 5]
+        - [3, 4]
+        - [4, 5]
+      source: 5
+      destination: 0
+    out: true
+  - name: sparse-late-connection
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [7, 8]
+        - [8, 9]
+        - [3, 7]
+      source: 0
+      destination: 9
+    out: true
+  - name: sparse-no-connection
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [7, 8]
+        - [8, 9]
+      source: 0
+      destination: 9
+    out: false
+  - name: source-in-large-component
+    in:
+      n: 15
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [10, 11]
+        - [11, 12]
+      source: 9
+      destination: 12
+    out: false
+  - name: endpoint-in-large-component
+    in:
+      n: 15
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [10, 11]
+        - [11, 12]
+      source: 0
+      destination: 9
+    out: true
+  - name: two-vertex-cycle-not-allowed
+    in:
+      n: 3
+      edges:
+        - [0, 1]
+      source: 0
+      destination: 1
+    out: true
+  - name: isolated-source
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [5, 6]
+      source: 0
+      destination: 6
+    out: false
+  - name: isolated-destination
+    in:
+      n: 8
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+      source: 0
+      destination: 7
+    out: false
+  - name: query-same-in-cycle
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+      source: 2
+      destination: 2
+    out: true
+  - name: query-same-isolated
+    in:
+      n: 5
+      edges:
+        - [0, 1]
+      source: 4
+      destination: 4
+    out: true
+  - name: alternating-components
+    in:
+      n: 14
+      edges:
+        - [0, 2]
+        - [2, 4]
+        - [4, 6]
+        - [1, 3]
+        - [3, 5]
+        - [5, 7]
+        - [8, 10]
+        - [10, 12]
+        - [9, 11]
+      source: 0
+      destination: 6
+    out: true
+  - name: alternating-components-disconnected
+    in:
+      n: 14
+      edges:
+        - [0, 2]
+        - [2, 4]
+        - [4, 6]
+        - [1, 3]
+        - [3, 5]
+        - [5, 7]
+        - [8, 10]
+        - [10, 12]
+        - [9, 11]
+      source: 0
+      destination: 7
+    out: false
+  - name: bridge-between-cycles
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [3, 4]
+        - [4, 5]
+        - [5, 3]
+        - [2, 3]
+      source: 1
+      destination: 5
+    out: true
+  - name: bridge-absent-between-cycles
+    in:
+      n: 10
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 0]
+        - [3, 4]
+        - [4, 5]
+        - [5, 3]
+      source: 1
+      destination: 5
+    out: false
+  - name: tree-branch
+    in:
+      n: 11
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [5, 7]
+        - [5, 8]
+        - [6, 9]
+        - [6, 10]
+      source: 3
+      destination: 10
+    out: true
+  - name: tree-branch-missing
+    in:
+      n: 11
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [2, 6]
+        - [5, 7]
+        - [5, 8]
+      source: 3
+      destination: 10
+    out: false
+  - name: high-label-edge
+    in:
+      n: 100
+      edges:
+        - [98, 99]
+        - [50, 98]
+      source: 50
+      destination: 99
+    out: true
+  - name: high-label-isolated
+    in:
+      n: 100
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [98, 99]
+      source: 0
+      destination: 99
+    out: false
+  - name: large-chain-endpoints
+    in:
+      n: 50
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+        - [24, 25]
+        - [25, 26]
+        - [26, 27]
+        - [27, 28]
+        - [28, 29]
+        - [29, 30]
+        - [30, 31]
+        - [31, 32]
+        - [32, 33]
+        - [33, 34]
+        - [34, 35]
+        - [35, 36]
+        - [36, 37]
+        - [37, 38]
+        - [38, 39]
+        - [39, 40]
+        - [40, 41]
+        - [41, 42]
+        - [42, 43]
+        - [43, 44]
+        - [44, 45]
+        - [45, 46]
+        - [46, 47]
+        - [47, 48]
+        - [48, 49]
+      source: 0
+      destination: 49
+    out: true
+  - name: large-chain-off-component
+    in:
+      n: 50
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+        - [24, 25]
+        - [25, 26]
+        - [26, 27]
+        - [27, 28]
+        - [28, 29]
+        - [29, 30]
+        - [30, 31]
+        - [31, 32]
+        - [32, 33]
+        - [33, 34]
+        - [34, 35]
+        - [35, 36]
+        - [36, 37]
+        - [37, 38]
+        - [38, 39]
+        - [39, 40]
+        - [40, 41]
+        - [41, 42]
+        - [42, 43]
+        - [43, 44]
+        - [44, 45]
+        - [45, 46]
+        - [46, 47]
+        - [47, 48]
+        - [48, 49]
+      source: 0
+      destination: 49
+    out: false
+  - name: dense-two-components
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [6, 7]
+        - [6, 8]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+      source: 0
+      destination: 11
+    out: false
+  - name: dense-two-components-connected-query
+    in:
+      n: 12
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [6, 7]
+        - [6, 8]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+      source: 0
+      destination: 5
+    out: true

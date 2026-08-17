@@ -1,0 +1,215 @@
+entry:
+  id: 1647
+  title: "minimum-deletions-to-make-character-frequencies-unique"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().minDeletions({s})"
+    rust: "Solution::min_deletions({s})"
+    python3: "Solution().minDeletions({s})"
+    python2: "Solution().minDeletions({s})"
+    ruby: "min_deletions({s})"
+    java: "new Solution().minDeletions({s})"
+    csharp: "new Solution().MinDeletions({s})"
+    kotlin: "Solution().minDeletions({s})"
+    go: "minDeletions({s})"
+    dart: "Solution().minDeletions({s})"
+    swift: "Solution().minDeletions({s})"
+    typescript: "minDeletions({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(s, {result})"
+    checker: |
+      from collections import Counter
+      class Checker:
+          def check(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool) or result < 0:
+                  return False
+              freqs = sorted(Counter(s).values(), reverse=True)
+              expected = 0
+              for i in range(1, len(freqs)):
+                  if freqs[i] >= freqs[i - 1]:
+                      target = max(0, freqs[i - 1] - 1)
+                      expected += freqs[i] - target
+                      freqs[i] = target
+              return result == expected
+
+seed: 1647
+
+tests:
+  - name: single
+    in:
+      s: "a"
+    out: 0
+  - name: two-distinct
+    in:
+      s: "ab"
+    out: 1
+  - name: already-good
+    in:
+      s: "aab"
+    out: 0
+  - name: example-two
+    in:
+      s: "aaabbbcc"
+    out: 2
+  - name: example-three
+    in:
+      s: "ceabaacb"
+    out: 2
+  - name: one-frequency
+    in:
+      s: "aaaa"
+    out: 0
+  - name: two-equal
+    in:
+      s: "aabb"
+    out: 1
+  - name: three-equal
+    in:
+      s: "aabbcc"
+    out: 3
+  - name: two-triples
+    in:
+      s: "aaabbb"
+    out: 1
+  - name: two-fours
+    in:
+      s: "aaaabbbb"
+    out: 1
+  - name: repeated-pairs
+    in:
+      s: "abcabc"
+    out: 3
+  - name: three-two-one
+    in:
+      s: "aabbccd"
+    out: 4
+  - name: four-pairs
+    in:
+      s: "aabbccdd"
+    out: 5
+  - name: five-pairs
+    in:
+      s: "aabbccdde"
+    out: 6
+  - name: one-character-long
+    in:
+      s: "zzzzzzzzzz"
+    out: 0
+  - name: twenty-five-singletons
+    in:
+      s: "abcdefghijklmnopqrstuvwxy"
+    out: 24
+  - name: all-lowercase-singletons
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+    out: 25
+  - name: one-hundred-same
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 0
+  - name: two-hundred-halves
+    in:
+      s: "abababababababababababababababababababababababababababababababababababababababababababababababababab"
+    out: 1
+  - name: balanced-three
+    in:
+      s: "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+    out: 3
+  - name: descending-frequencies
+    in:
+      s: "aaaaaaaaaabbbbbbbbbccccccccdddddddeeeeee"
+    out: 0
+  - name: four-close-frequencies
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddd"
+    out: 4
+  - name: five-equal-frequencies
+    in:
+      s: "aaaabbbbccccddddeeee"
+    out: 10
+  - name: six-near-equal
+    in:
+      s: "aaaaabbbbbcccccdddddeeeeef"
+    out: 11
+  - name: seven-equal
+    in:
+      s: "aaaaaabbbbbbccccccddddddeeeeeeffffffgggggg"
+    out: 21
+  - name: eight-equal
+    in:
+      s: "aaaaaaabbbbbbbcccccccdddddddeeeeeeeffffffffggggggghhhhhhh"
+    out: 21
+  - name: nine-equal
+    in:
+      s: "aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeefffffffffgggggggghhhhhhhhiiiiiiii"
+    out: 28
+  - name: ten-equal
+    in:
+      s: "aaaaaaaaabbbbbbbbbcccccccccddddddddddeeeeeeeeeefffffffffffgggggggggghhhhhhhhhhhiiiiiiiiiiijjjjjjjjjj"
+    out: 35
+  - name: alternating-two
+    in:
+      s: "abababababababababababababababababababababababababababababababababababababababababababababababababab"
+    out: 1
+  - name: all-nineteen-singletons
+    in:
+      s: "abcdefghijklmnopqrs"
+    out: 18
+  - name: repeated-three-symbols
+    in:
+      s: "aaabbbcccddd"
+    out: 6
+  - name: skewed-tail
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbcccdd"
+    out: 0
+  - name: many-singletons
+    in:
+      s: "aabbccddeeffgghhiijjklmno"
+    out: 22
+  - name: generated-small
+    in:
+      s:
+        gen: "str"
+        len: 37
+        alphabet: "abcdef"
+    seed: 164701
+  - name: generated-medium
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "abcdefghij"
+    seed: 164702
+  - name: generated-large
+    in:
+      s:
+        gen: "str"
+        len: 10000
+        alphabet: "abcdefghijklm"
+    seed: 164703
+  - name: generated-maximum
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+    seed: 164704
+  - name: generated-narrow-maximum
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "ab"
+    seed: 164705

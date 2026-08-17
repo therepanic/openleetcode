@@ -1,0 +1,230 @@
+entry:
+  id: 1609
+  title: "even-odd-tree"
+  params:
+    root:
+      type: tree_node
+  call:
+    cpp: "Solution().isEvenOddTree({root})"
+    rust: "Solution::is_even_odd_tree({root})"
+    python3: "Solution().isEvenOddTree({root})"
+    python2: "Solution().isEvenOddTree({root})"
+    ruby: "is_even_odd_tree({root})"
+    java: "new Solution().isEvenOddTree({root})"
+    csharp: "new Solution().IsEvenOddTree({root})"
+    kotlin: "Solution().isEvenOddTree({root})"
+    go: "isEvenOddTree({root})"
+    dart: "Solution().isEvenOddTree({root})"
+    swift: "Solution().isEvenOddTree({root})"
+    typescript: "isEvenOddTree({root})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().isEvenOddTree(root, {result})"
+    checker: |
+      class Checker:
+          def isEvenOddTree(self, root, result):
+              if not isinstance(result, bool):
+                  return False
+              if root is None:
+                  return result is False
+              level = [root]
+              parity = 0
+              while level:
+                  values = [node.val for node in level]
+                  if parity == 0:
+                      if any(value % 2 == 0 for value in values):
+                          expected = False
+                          return result == expected
+                      if any(left >= right for left, right in zip(values, values[1:])):
+                          expected = False
+                          return result == expected
+                  else:
+                      if any(value % 2 != 0 for value in values):
+                          expected = False
+                          return result == expected
+                      if any(left <= right for left, right in zip(values, values[1:])):
+                          expected = False
+                          return result == expected
+                  next_level = []
+                  for node in level:
+                      if node.left is not None:
+                          next_level.append(node.left)
+                      if node.right is not None:
+                          next_level.append(node.right)
+                  level = next_level
+                  parity ^= 1
+              return result is True
+
+seed: 1609
+
+tests:
+  - name: single-odd
+    in:
+      root: [1]
+    out: true
+  - name: single-even
+    in:
+      root: [2]
+    out: false
+  - name: two-level-decreasing
+    in:
+      root: [1, 10, 4]
+    out: true
+  - name: two-level-increasing-invalid
+    in:
+      root: [1, 4, 10]
+    out: false
+  - name: child-odd-invalid
+    in:
+      root: [1, 9, 4]
+    out: false
+  - name: root-even-invalid
+    in:
+      root: [2, 10, 4]
+    out: false
+  - name: perfect-three-valid-with-even-level
+    in:
+      root: [1, 4, 2, 3, 5, 7, 9]
+    out: true
+  - name: example-one
+    in:
+      root: [1, 10, 4, 3, null, 7, 9, 12, 8, 6, null, null, 2]
+    out: true
+  - name: example-two
+    in:
+      root: [5, 4, 2, 3, 3, 7]
+    out: false
+  - name: example-three
+    in:
+      root: [5, 9, 1, 3, 5, 7]
+    out: false
+  - name: perfect-three-valid
+    in:
+      root: [1, 10, 4, 3, 5, 7, 9]
+    out: true
+  - name: perfect-three-left-order-invalid
+    in:
+      root: [1, 10, 4, 5, 3, 7, 9]
+    out: false
+  - name: perfect-three-right-order-invalid
+    in:
+      root: [1, 10, 4, 3, 5, 9, 7]
+    out: false
+  - name: perfect-seven-valid
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 20, 18, 16, 14, 12, 10, 8, 6]
+    out: true
+  - name: perfect-seven-level-one-parity
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 11, 13, 15, 17, 19, 22, 23, 25]
+    out: false
+  - name: sparse-left-valid
+    in:
+      root: [1, 10, null, 3, null, null, null, 11]
+    out: true
+  - name: sparse-left-invalid-order
+    in:
+      root: [1, 10, null, 4]
+    out: false
+  - name: sparse-right-valid
+    in:
+      root: [1, null, 8]
+    out: true
+  - name: sparse-right-invalid-parity
+    in:
+      root: [1, null, 8, null, 4]
+    out: false
+  - name: alternating-chain-valid
+    in:
+      root:
+        [
+          1,
+          10,
+          null,
+          3,
+          null,
+          null,
+          null,
+          12,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          5,
+        ]
+    out: true
+  - name: alternating-chain-invalid-level-two
+    in:
+      root: [1, 10, null, 4]
+    out: false
+  - name: deep-level-order-invalid
+    in:
+      root: [1, 10, 8, 3, 9, 7, 9]
+    out: false
+  - name: boundary-values-valid
+    in:
+      root: [999999, 1000000, 999998]
+    out: true
+  - name: boundary-root-even
+    in:
+      root: [1000000]
+    out: false
+  - name: deep-complete-valid
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 16, 14, 12, 10, 8, 6, 4, 2]
+    out: true
+  - name: deep-complete-invalid-level-three
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 16, 14, 12, 10, 8, 6, 8, 2]
+    out: false
+  - name: deep-complete-even-boundary-invalid
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 14, 12, 10, 8, 6, 4, 2, 2]
+    out: false
+  - name: four-level-valid-corrected
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 20, 18, 16, 14, 12, 10, 8, 6]
+    out: true
+  - name: four-level-descending-invalid
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 18, 20, 16, 14, 12, 10, 8, 6]
+    out: false
+  - name: missing-middle-child
+    in:
+      root: [1, 10, 8, 3, null, 7, 9]
+    out: true
+  - name: missing-middle-child-invalid
+    in:
+      root: [1, 10, 8, 3, null, 7, 9, 11, null, null, null, 12]
+    out: false
+  - name: duplicate-odd-level
+    in:
+      root: [1, 10, 8, 3, 5, 7, 7]
+    out: false
+  - name: duplicate-even-level
+    in:
+      root: [1, 10, 8, 3, 5, 8, 9]
+    out: false
+  - name: wide-valid-levels
+    in:
+      root: [1, 100, 98, 3, 5, 7, 9, 20, 18, 16, 14, 12, 10, 8, 6]
+    out: true
+  - name: wide-valid-root-level
+    in:
+      root: [1, 100, 98, 3, 5, 7, 11, 20, 18, 16, 14, 12, 10, 8, 6]
+    out: true
+  - name: parity-failure-deep
+    in:
+      root: [1, 10, 8, 3, 5, 7, 9, 20, 18, 16, 14, 12, 11, 8, 6]
+    out: false

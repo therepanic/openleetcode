@@ -1,0 +1,344 @@
+entry:
+  id: 1654
+  title: "minimum-jumps-to-reach-home"
+  params:
+    forbidden:
+      type: array
+      items:
+        type: int
+    a:
+      type: int
+    b:
+      type: int
+    x:
+      type: int
+  call:
+    cpp: "Solution().minimumJumps({forbidden}, {a}, {b}, {x})"
+    rust: "Solution::minimum_jumps({forbidden}, {a}, {b}, {x})"
+    python3: "Solution().minimumJumps({forbidden}, {a}, {b}, {x})"
+    python2: "Solution().minimumJumps({forbidden}, {a}, {b}, {x})"
+    ruby: "minimum_jumps({forbidden}, {a}, {b}, {x})"
+    java: "new Solution().minimumJumps({forbidden}, {a}, {b}, {x})"
+    csharp: "new Solution().MinimumJumps({forbidden}, {a}, {b}, {x})"
+    kotlin: "Solution().minimumJumps({forbidden}, {a}, {b}, {x})"
+    go: "minimumJumps({forbidden}, {a}, {b}, {x})"
+    dart: "Solution().minimumJumps({forbidden}, {a}, {b}, {x})"
+    swift: "Solution().minimumJumps({forbidden}, {a}, {b}, {x})"
+    typescript: "minimumJumps({forbidden}, {a}, {b}, {x})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minimumJumps(forbidden, a, b, x, {result})"
+    checker: |
+      from collections import deque
+      class Checker:
+          def minimumJumps(self, forbidden, a, b, x, result):
+              blocked = set(forbidden)
+              if x in blocked or 0 in blocked:
+                  return False
+              bound = max(max(blocked) if blocked else 0, x) + a + b
+              q = deque([(0, False, 0)])
+              seen = {(0, False)}
+              answer = -1
+              while q:
+                  pos, last_back, dist = q.popleft()
+                  if pos == x:
+                      answer = dist
+                      break
+                  nxt = pos + a
+                  state = (nxt, False)
+                  if nxt <= bound and nxt not in blocked and state not in seen:
+                      seen.add(state)
+                      q.append((nxt, False, dist + 1))
+                  if not last_back:
+                      nxt = pos - b
+                      state = (nxt, True)
+                      if nxt >= 0 and nxt not in blocked and state not in seen:
+                          seen.add(state)
+                          q.append((nxt, True, dist + 1))
+              return isinstance(result, int) and result == answer
+
+seed: 1654
+
+tests:
+  - name: example-1
+    in:
+      forbidden: [14, 4, 18, 1, 15]
+      a: 3
+      b: 15
+      x: 9
+    out: 3
+  - name: example-2
+    in:
+      forbidden: [8, 3, 16, 6, 12, 20]
+      a: 15
+      b: 13
+      x: 11
+    out: -1
+  - name: example-3
+    in:
+      forbidden: [1, 6, 2, 14, 5, 17, 4]
+      a: 16
+      b: 9
+      x: 7
+    out: 2
+  - name: home-at-zero
+    in:
+      forbidden: [1]
+      a: 2
+      b: 3
+      x: 0
+    out: 0
+  - name: one-forward
+    in:
+      forbidden: [2]
+      a: 7
+      b: 3
+      x: 7
+    out: 1
+  - name: one-backward-after-forward
+    in:
+      forbidden: [5]
+      a: 10
+      b: 3
+      x: 7
+    out: 2
+  - name: blocked-home
+    in:
+      forbidden: [9, 1, 4]
+      a: 3
+      b: 2
+      x: 9
+    out: -1
+  - name: gcd-impossible
+    in:
+      forbidden: [10]
+      a: 6
+      b: 4
+      x: 7
+    out: -1
+  - name: direct-with-obstacle
+    in:
+      forbidden: [6]
+      a: 3
+      b: 5
+      x: 9
+    out: -1
+  - name: no-backward-needed
+    in:
+      forbidden: [3, 7]
+      a: 4
+      b: 9
+      x: 12
+    out: 3
+  - name: parity-impossible
+    in:
+      forbidden: [2, 4, 6]
+      a: 8
+      b: 6
+      x: 5
+    out: -1
+  - name: backward-required
+    in:
+      forbidden: [4]
+      a: 6
+      b: 4
+      x: 2
+    out: 2
+  - name: trapped-by-forbidden
+    in:
+      forbidden: [3, 6, 9, 12]
+      a: 3
+      b: 2
+      x: 10
+    out: -1
+  - name: repeated-forward
+    in:
+      forbidden: [1, 2, 5]
+      a: 4
+      b: 7
+      x: 16
+    out: 4
+  - name: overshoot-and-return
+    in:
+      forbidden: [8, 11]
+      a: 7
+      b: 5
+      x: 9
+    out: 3
+  - name: large-a
+    in:
+      forbidden: [10, 20, 30]
+      a: 100
+      b: 37
+      x: 63
+    out: 2
+  - name: large-b
+    in:
+      forbidden: [5, 9, 13]
+      a: 17
+      b: 100
+      x: 34
+    out: 2
+  - name: dense-small-blocks
+    in:
+      forbidden: [1, 2, 3, 4, 5, 6, 8, 9, 10]
+      a: 7
+      b: 3
+      x: 14
+    out: 2
+  - name: sparse-large-x
+    in:
+      forbidden: [100, 203, 407, 811]
+      a: 37
+      b: 19
+      x: 185
+    out: 5
+  - name: x-forbidden-not-last
+    in:
+      forbidden: [17, 1, 13]
+      a: 8
+      b: 5
+      x: 17
+    out: -1
+  - name: exact-return
+    in:
+      forbidden: [3]
+      a: 5
+      b: 2
+      x: 8
+    out: 3
+  - name: two-backward-alternation
+    in:
+      forbidden: [6, 12]
+      a: 9
+      b: 4
+      x: 5
+    out: 2
+  - name: unreachable-wall
+    in:
+      forbidden: [1, 2, 3, 4, 5, 6, 7]
+      a: 8
+      b: 3
+      x: 1
+    out: -1
+  - name: max-x-direct
+    in:
+      forbidden: [1999]
+      a: 2000
+      b: 1
+      x: 2000
+    out: 1
+  - name: max-values
+    in:
+      forbidden: [1, 1999]
+      a: 2000
+      b: 2000
+      x: 2000
+    out: 1
+  - name: unit-forward
+    in:
+      forbidden: [2, 4, 6]
+      a: 1
+      b: 2
+      x: 7
+    out: -1
+  - name: unit-backward
+    in:
+      forbidden: [1, 3]
+      a: 2
+      b: 1
+      x: 4
+    out: 2
+  - name: coprime-detour
+    in:
+      forbidden: [6, 10, 14]
+      a: 4
+      b: 3
+      x: 11
+    out: -1
+  - name: isolated-target
+    in:
+      forbidden: [2, 3, 4, 5, 6, 7, 8, 9]
+      a: 10
+      b: 1
+      x: 10
+    out: 1
+  - name: high-forbidden-tail
+    in:
+      forbidden: [1500, 1600, 1700, 1800, 1900]
+      a: 13
+      b: 17
+      x: 999
+    out: 93
+  - name: target-behind-first-jump
+    in:
+      forbidden: [2, 15]
+      a: 15
+      b: 8
+      x: 7
+    out: -1
+  - name: blocked-forward-route
+    in:
+      forbidden: [5, 10, 15, 20]
+      a: 5
+      b: 3
+      x: 25
+    out: -1
+  - name: long-detour
+    in:
+      forbidden: [19, 38, 57, 76, 95]
+      a: 19
+      b: 11
+      x: 114
+    out: -1
+  - name: near-boundary
+    in:
+      forbidden: [1990, 1991, 1992]
+      a: 997
+      b: 991
+      x: 1994
+    out: 2
+  - name: large-forbidden-set
+    in:
+      forbidden:
+        [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          19,
+          21,
+          23,
+          25,
+          27,
+          29,
+          31,
+          33,
+          35,
+          37,
+          39,
+        ]
+      a: 2
+      b: 3
+      x: 40
+    out: 20
+  - name: final-bfs-case
+    in:
+      forbidden: [4, 12, 18, 23, 29, 34]
+      a: 7
+      b: 6
+      x: 31
+    out: 10

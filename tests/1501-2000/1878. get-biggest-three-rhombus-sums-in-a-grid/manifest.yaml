@@ -1,0 +1,422 @@
+entry:
+  id: 1878
+  title: "get-biggest-three-rhombus-sums-in-a-grid"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().getBiggestThree({grid})"
+    rust: "Solution::get_biggest_three({grid})"
+    python3: "Solution().getBiggestThree({grid})"
+    python2: "Solution().getBiggestThree({grid})"
+    ruby: "get_biggest_three({grid})"
+    java: "new Solution().getBiggestThree({grid})"
+    csharp: "new Solution().GetBiggestThree({grid})"
+    kotlin: "Solution().getBiggestThree({grid})"
+    go: "getBiggestThree({grid})"
+    dart: "Solution().getBiggestThree({grid})"
+    swift: "Solution().getBiggestThree({grid})"
+    typescript: "getBiggestThree({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(grid, {result})"
+    checker: |
+      class Checker:
+          def check(self, grid, result):
+              m, n = len(grid), len(grid[0])
+              sums = set()
+              for i in range(m):
+                  for j in range(n):
+                      sums.add(grid[i][j])
+                      d = 1
+                      while i - d >= 0 and i + d < m and j - d >= 0 and j + d < n:
+                          cells = {(i - d, j), (i, j + d), (i + d, j), (i, j - d)}
+                          for k in range(1, d):
+                              cells.add((i - d + k, j - k))
+                              cells.add((i - d + k, j + k))
+                              cells.add((i + d - k, j - k))
+                              cells.add((i + d - k, j + k))
+                          sums.add(sum(grid[r][c] for r, c in cells))
+                          d += 1
+              expected = sorted(sums, reverse=True)[:3]
+              return result == expected
+
+seed: 1878
+
+tests:
+  - name: example-one
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [3, 4, 5, 1, 3]
+          - [3, 3, 4, 2, 3]
+          - [20, 30, 200, 40, 10]
+          - [1, 5, 5, 4, 1]
+          - [4, 3, 2, 2, 5]
+  - name: example-two
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+          - [7, 8, 9]
+  - name: example-three
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [7, 7, 7]
+  - name: one-cell
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [42]
+  - name: one-row
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 9, 3, 8, 2, 7]
+  - name: one-column
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [6]
+          - [2]
+          - [9]
+          - [4]
+  - name: two-by-two
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 10]
+          - [7, 3]
+  - name: equal-values
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5, 5, 5, 5]
+          - [5, 5, 5, 5]
+          - [5, 5, 5, 5]
+          - [5, 5, 5, 5]
+  - name: three-by-five
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5]
+          - [6, 7, 8, 9, 10]
+          - [11, 12, 13, 14, 15]
+  - name: four-by-three
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+          - [7, 8, 9]
+          - [10, 11, 12]
+  - name: large-corners
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100000, 1, 1, 1, 100000]
+          - [1, 2, 3, 2, 1]
+          - [1, 3, 90000, 3, 1]
+          - [1, 2, 3, 2, 1]
+          - [100000, 1, 1, 1, 100000]
+  - name: alternating
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 100, 1, 100, 1]
+          - [100, 1, 100, 1, 100]
+          - [1, 100, 1, 100, 1]
+          - [100, 1, 100, 1, 100]
+          - [1, 100, 1, 100, 1]
+  - name: increasing-four
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4]
+          - [5, 6, 7, 8]
+          - [9, 10, 11, 12]
+          - [13, 14, 15, 16]
+  - name: decreasing-four
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [16, 15, 14, 13]
+          - [12, 11, 10, 9]
+          - [8, 7, 6, 5]
+          - [4, 3, 2, 1]
+  - name: sparse-high-center
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 100000, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1]
+          - [1, 1, 1, 1, 1, 1, 1]
+  - name: two-by-six
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [10, 20, 30, 40, 50, 60]
+          - [1, 2, 3, 4, 5, 6]
+  - name: five-by-two
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [10, 1]
+          - [20, 2]
+          - [30, 3]
+          - [40, 4]
+          - [50, 5]
+  - name: repeated-top-three
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [8, 8, 1]
+          - [8, 8, 1]
+          - [1, 1, 1]
+  - name: mixed-negative-not-allowed
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 100000, 2]
+          - [99999, 3, 99998]
+          - [4, 99997, 5]
+  - name: six-by-six
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5, 6]
+          - [7, 8, 9, 10, 11, 12]
+          - [13, 14, 15, 16, 17, 18]
+          - [19, 20, 21, 22, 23, 24]
+          - [25, 26, 27, 28, 29, 30]
+          - [31, 32, 33, 34, 35, 36]
+  - name: constant-seven
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [7, 7, 7, 7, 7]
+          - [7, 7, 7, 7, 7]
+          - [7, 7, 7, 7, 7]
+          - [7, 7, 7, 7, 7]
+          - [7, 7, 7, 7, 7]
+  - name: checkerboard-small
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [2, 1, 2, 1, 2]
+          - [1, 2, 1, 2, 1]
+          - [2, 1, 2, 1, 2]
+          - [1, 2, 1, 2, 1]
+          - [2, 1, 2, 1, 2]
+  - name: border-heavy
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100, 100, 100, 100, 100]
+          - [100, 1, 1, 1, 100]
+          - [100, 1, 50, 1, 100]
+          - [100, 1, 1, 1, 100]
+          - [100, 100, 100, 100, 100]
+  - name: max-single
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100000]
+  - name: max-row
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100000, 99999, 99998, 99997, 99996]
+  - name: max-column
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100000]
+          - [99999]
+          - [99998]
+          - [99997]
+          - [99996]
+  - name: seven-by-three
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [4, 5, 6]
+          - [7, 8, 9]
+          - [10, 11, 12]
+          - [13, 14, 15]
+          - [16, 17, 18]
+          - [19, 20, 21]
+  - name: three-by-seven
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1, 2, 3, 4, 5, 6, 7]
+          - [8, 9, 10, 11, 12, 13, 14]
+          - [15, 16, 17, 18, 19, 20, 21]
+  - name: varied-5
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [11, 3, 17, 5, 19]
+          - [2, 23, 7, 29, 13]
+          - [31, 37, 41, 43, 47]
+          - [53, 59, 61, 67, 71]
+          - [73, 79, 83, 89, 97]
+  - name: varied-4
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [9, 1, 8, 2]
+          - [7, 3, 6, 4]
+          - [5, 10, 11, 12]
+          - [13, 14, 15, 16]
+  - name: alternating-large
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [100000, 1, 100000, 1]
+          - [1, 100000, 1, 100000]
+          - [100000, 1, 100000, 1]
+          - [1, 100000, 1, 100000]
+  - name: nine-by-one
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [1]
+          - [2]
+          - [3]
+          - [4]
+          - [5]
+          - [6]
+          - [7]
+          - [8]
+          - [9]
+  - name: five-by-five-gradient
+    in:
+      grid:
+        elemType: "int"
+        value:
+          - [5, 6, 7, 8, 9]
+          - [10, 11, 12, 13, 14]
+          - [15, 16, 17, 18, 19]
+          - [20, 21, 22, 23, 24]
+          - [25, 26, 27, 28, 29]
+  - name: generated-small
+    in:
+      grid:
+        gen: "array"
+        len: 5
+        of:
+          gen: "array"
+          len: 5
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+    seed: 187801
+  - name: generated-wide
+    in:
+      grid:
+        gen: "array"
+        len: 3
+        of:
+          gen: "array"
+          len: 50
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+    seed: 187802
+  - name: generated-tall
+    in:
+      grid:
+        gen: "array"
+        len: 50
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+    seed: 187803
+  - name: generated-square
+    in:
+      grid:
+        gen: "array"
+        len: 50
+        of:
+          gen: "array"
+          len: 50
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+    seed: 187804
+  - name: generated-medium
+    in:
+      grid:
+        gen: "array"
+        len: 20
+        of:
+          gen: "array"
+          len: 25
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+          elemType: "int"
+    seed: 187805

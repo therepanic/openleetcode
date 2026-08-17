@@ -1,0 +1,243 @@
+entry:
+  id: 1732
+  title: "find-the-highest-altitude"
+  params:
+    gain:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().largestAltitude({gain})"
+    rust: "Solution::largest_altitude({gain})"
+    python3: "Solution().largestAltitude({gain})"
+    python2: "Solution().largestAltitude({gain})"
+    ruby: "largest_altitude({gain})"
+    java: "new Solution().largestAltitude({gain})"
+    csharp: "new Solution().LargestAltitude({gain})"
+    kotlin: "Solution().largestAltitude({gain})"
+    go: "largestAltitude({gain})"
+    dart: "Solution().largestAltitude({gain})"
+    swift: "Solution().largestAltitude({gain})"
+    typescript: "largestAltitude({gain})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().largestAltitude(gain, {result})"
+    checker: |
+      class Checker:
+          def largestAltitude(self, gain, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              altitude = 0
+              highest = 0
+              for delta in gain:
+                  altitude += delta
+                  highest = max(highest, altitude)
+              return result == highest
+
+seed: 1732
+
+tests:
+  - name: example-negative-then-rise
+    in:
+      gain: [-5, 1, 5, 0, -7]
+    out: 1
+  - name: example-never-positive
+    in:
+      gain: [-4, -3, -2, -1, 4, 3, 2]
+    out: 0
+  - name: one-positive
+    in:
+      gain: [5]
+    out: 5
+  - name: one-negative
+    in:
+      gain: [-5]
+    out: 0
+  - name: one-zero
+    in:
+      gain: [0]
+    out: 0
+  - name: all-zero
+    in:
+      gain: [0, 0, 0, 0, 0]
+    out: 0
+  - name: monotone-rise
+    in:
+      gain: [1, 2, 3, 4, 5]
+    out: 15
+  - name: monotone-fall
+    in:
+      gain: [-1, -2, -3, -4, -5]
+    out: 0
+  - name: rise-then-fall
+    in:
+      gain: [10, 10, -5, -20]
+    out: 20
+  - name: late-maximum
+    in:
+      gain: [-10, -10, 30]
+    out: 10
+  - name: maximum-at-start
+    in:
+      gain: [-1, -1, -1, -1]
+    out: 0
+  - name: maximum-after-recovery
+    in:
+      gain: [-5, 10, -2, 8]
+    out: 11
+  - name: alternating-small
+    in:
+      gain: [1, -1, 1, -1, 1, -1]
+    out: 1
+  - name: alternating-large
+    in:
+      gain: [100, -100, 100, -100]
+    out: 100
+  - name: negative-dip
+    in:
+      gain: [-100, 100, -100, 100]
+    out: 0
+  - name: repeated-positive
+    in:
+      gain: [7, 7, 7, -3, -3]
+    out: 21
+  - name: repeated-negative
+    in:
+      gain: [-7, -7, -7, 3, 3]
+    out: 0
+  - name: balanced-sum
+    in:
+      gain: [20, -10, -10]
+    out: 20
+  - name: exact-recovery
+    in:
+      gain: [-50, 25, 25]
+    out: 0
+  - name: large-positive-peak
+    in:
+      gain: [100, 100, 100, 100, 100]
+    out: 500
+  - name: large-negative-deltas
+    in:
+      gain: [-100, -100, -100, -100, -100]
+    out: 0
+  - name: mixed-boundaries
+    in:
+      gain: [100, -99, -99, 100, -99, 100]
+    out: 100
+  - name: peak-before-final-drop
+    in:
+      gain: [30, -10, 20, -100]
+    out: 40
+  - name: several-records
+    in:
+      gain: [3, -8, 12, -4, 6, -20, 5]
+    out: 9
+  - name: deep-negative-recovery
+    in:
+      gain: [-20, -20, 50, -5]
+    out: 10
+  - name: peak-on-last-step
+    in:
+      gain: [-10, -10, 5, 30]
+    out: 15
+  - name: zero-between-changes
+    in:
+      gain: [4, 0, 0, -2, 0, 3]
+    out: 5
+  - name: symmetric-cycle
+    in:
+      gain: [9, -4, -5, 9, -4, -5]
+    out: 9
+  - name: small-negative-positive
+    in:
+      gain: [-1, 2, -1, 2, -1]
+    out: 2
+  - name: long-flat-tail
+    in:
+      gain: [8, -3, 0, 0, 0, 0, -5]
+    out: 8
+  - name: max-length-pattern
+    in:
+      gain: [10, -20, 30, -40, 50, -60, 70, -80, 90, -100]
+    out: 50
+  - name: positive-plateau
+    in:
+      gain: [6, -2, 4, -8, 10, 0, -10]
+    out: 10
+  - name: ending-at-zero
+    in:
+      gain: [12, -4, -4, -4]
+    out: 12
+  - name: two-high-peaks
+    in:
+      gain: [25, -5, 5, -30, 40, -10]
+    out: 35
+  - name: generator-random-small
+    in:
+      gain:
+        gen: "array"
+        len: 17
+        of:
+          gen: "int"
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-random-medium
+    in:
+      gain:
+        gen: "array"
+        len: 63
+        of:
+          gen: "int"
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-all-positive
+    in:
+      gain:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-all-negative
+    in:
+      gain:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: -100
+          max: -1
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generator-full-range
+    in:
+      gain:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: -100
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"

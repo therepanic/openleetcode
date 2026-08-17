@@ -1,0 +1,429 @@
+entry:
+  id: 1719
+  title: "number-of-ways-to-reconstruct-a-tree"
+  params:
+    pairs:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().checkWays({pairs})"
+    rust: "Solution::check_ways({pairs})"
+    python3: "Solution().checkWays({pairs})"
+    python2: "Solution().checkWays({pairs})"
+    ruby: "check_ways({pairs})"
+    java: "new Solution().checkWays({pairs})"
+    csharp: "new Solution().CheckWays({pairs})"
+    kotlin: "Solution().checkWays({pairs})"
+    go: "checkWays({pairs})"
+    dart: "Solution().checkWays({pairs})"
+    swift: "Solution().checkWays({pairs})"
+    typescript: "checkWays({pairs})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().checkWays(pairs, {result})"
+    checker: |
+      class Checker:
+          def checkWays(self, pairs, result):
+              if not isinstance(result, int) or result not in (0, 1, 2):
+                  return False
+              graph = {}
+              for edge in pairs:
+                  if not isinstance(edge, list) or len(edge) != 2:
+                      return False
+                  x, y = edge
+                  if not isinstance(x, int) or not isinstance(y, int) or x == y:
+                      return False
+                  graph.setdefault(x, set()).add(y)
+                  graph.setdefault(y, set()).add(x)
+              if not graph:
+                  return result == 0
+              root = max(graph, key=lambda node: len(graph[node]))
+              if len(graph[root]) != len(graph) - 1:
+                  return result == 0
+              answer = 1
+              for node, neighbors in graph.items():
+                  if node == root:
+                      continue
+                  candidates = [candidate for candidate in neighbors
+                                if len(graph[candidate]) >= len(neighbors)]
+                  if not candidates:
+                      return result == 0
+                  parent = min(candidates, key=lambda candidate: len(graph[candidate]))
+                  if neighbors - (graph[parent] | {parent}):
+                      return result == 0
+                  if len(neighbors) == len(graph[parent]):
+                      answer = 2
+              return result == answer
+
+seed: 1719
+
+tests:
+  - name: chain-three
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+    out: 1
+  - name: complete-three
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+    out: 2
+  - name: invalid-four
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [2, 4]
+        - [1, 5]
+    out: 0
+  - name: single-pair
+    in:
+      pairs:
+        - [1, 2]
+    out: 2
+  - name: star-four
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+    out: 1
+  - name: complete-four
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 3]
+        - [2, 4]
+        - [3, 4]
+    out: 2
+  - name: disconnected-two-edges
+    in:
+      pairs:
+        - [1, 2]
+        - [3, 4]
+    out: 0
+  - name: disconnected-singletons
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+    out: 0
+  - name: chain-four
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+    out: 0
+  - name: chain-five
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+    out: 0
+  - name: star-five
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+    out: 1
+  - name: equal-degree-children
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 3]
+        - [2, 4]
+    out: 2
+  - name: nested-subtree
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 3]
+        - [2, 4]
+        - [3, 4]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+    out: 2
+  - name: invalid-missing-cross-edge
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+    out: 0
+  - name: complete-five
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 4]
+        - [3, 5]
+        - [4, 5]
+    out: 2
+  - name: root-two-levels
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 4]
+    out: 2
+  - name: ambiguous-two-levels
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+        - [1, 4]
+        - [2, 4]
+    out: 2
+  - name: invalid-extra-branch
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 4]
+    out: 0
+  - name: chain-six
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+    out: 0
+  - name: star-six
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+    out: 1
+  - name: complete-six
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [4, 5]
+        - [4, 6]
+        - [5, 6]
+    out: 2
+  - name: disconnected-long-chain
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [5, 6]
+    out: 0
+  - name: root-with-two-equal-branches
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+        - [2, 3]
+        - [4, 5]
+    out: 0
+  - name: invalid-cycle-like
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [3, 4]
+        - [2, 5]
+    out: 0
+  - name: chain-seven
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+    out: 0
+  - name: star-seven
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+    out: 1
+  - name: complete-seven
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [5, 6]
+        - [5, 7]
+        - [6, 7]
+    out: 2
+  - name: sparse-invalid-eight
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 4]
+        - [2, 5]
+        - [3, 6]
+        - [3, 7]
+        - [4, 8]
+    out: 0
+  - name: nested-ambiguous
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 3]
+        - [2, 4]
+        - [3, 4]
+        - [1, 5]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+        - [1, 6]
+        - [2, 6]
+        - [3, 6]
+        - [4, 6]
+        - [5, 6]
+    out: 2
+  - name: two-components-three
+    in:
+      pairs:
+        - [10, 11]
+        - [11, 12]
+        - [20, 21]
+    out: 0
+  - name: labels-not-contiguous
+    in:
+      pairs:
+        - [7, 42]
+        - [42, 100]
+        - [7, 100]
+    out: 2
+  - name: labels-large-chain
+    in:
+      pairs:
+        - [100, 200]
+        - [200, 300]
+        - [300, 400]
+    out: 0
+  - name: labels-large-star
+    in:
+      pairs:
+        - [1, 500]
+        - [2, 500]
+        - [3, 500]
+        - [4, 500]
+    out: 1
+  - name: invalid-cross-component
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 3]
+        - [1, 4]
+        - [5, 6]
+        - [6, 7]
+    out: 0
+  - name: complete-eight
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+        - [1, 7]
+        - [1, 8]
+        - [2, 3]
+        - [2, 4]
+        - [2, 5]
+        - [2, 6]
+        - [2, 7]
+        - [2, 8]
+        - [3, 4]
+        - [3, 5]
+        - [3, 6]
+        - [3, 7]
+        - [3, 8]
+        - [4, 5]
+        - [4, 6]
+        - [4, 7]
+        - [4, 8]
+        - [5, 6]
+        - [5, 7]
+        - [5, 8]
+        - [6, 7]
+        - [6, 8]
+        - [7, 8]
+    out: 2

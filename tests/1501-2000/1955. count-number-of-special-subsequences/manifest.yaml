@@ -1,0 +1,256 @@
+entry:
+  id: 1955
+  title: "count-number-of-special-subsequences"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().countSpecialSubsequences({nums})"
+    rust: "Solution::count_special_subsequences({nums})"
+    python3: "Solution().countSpecialSubsequences({nums})"
+    python2: "Solution().countSpecialSubsequences({nums})"
+    ruby: "count_special_subsequences({nums})"
+    java: "new Solution().countSpecialSubsequences({nums})"
+    csharp: "new Solution().CountSpecialSubsequences({nums})"
+    kotlin: "Solution().countSpecialSubsequences({nums})"
+    go: "countSpecialSubsequences({nums})"
+    dart: "Solution().countSpecialSubsequences({nums})"
+    swift: "Solution().countSpecialSubsequences({nums})"
+    typescript: "countSpecialSubsequences({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().countSpecialSubsequences(nums, {result})"
+    checker: |
+      class Checker:
+          def countSpecialSubsequences(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              dp0 = 0
+              dp1 = 0
+              dp2 = 0
+              for value in nums:
+                  if value == 0:
+                      dp0 = (2 * dp0 + 1) % mod
+                  elif value == 1:
+                      dp1 = (2 * dp1 + dp0) % mod
+                  elif value == 2:
+                      dp2 = (2 * dp2 + dp1) % mod
+                  else:
+                      return False
+              return result == dp2
+
+seed: 1955
+
+tests:
+  - name: "single_zero"
+    in:
+      nums: [0]
+    out: 0
+  - name: "single_one"
+    in:
+      nums: [1]
+    out: 0
+  - name: "single_two"
+    in:
+      nums: [2]
+    out: 0
+  - name: "two_values_zero_one"
+    in:
+      nums: [0, 1]
+    out: 0
+  - name: "two_values_zero_two"
+    in:
+      nums: [0, 2]
+    out: 0
+  - name: "two_values_one_two"
+    in:
+      nums: [1, 2]
+    out: 0
+  - name: "minimum_special"
+    in:
+      nums: [0, 1, 2]
+    out: 1
+  - name: "example_one"
+    in:
+      nums: [0, 1, 2, 2]
+    out: 3
+  - name: "example_two"
+    in:
+      nums: [2, 2, 0, 0]
+    out: 0
+  - name: "example_three"
+    in:
+      nums: [0, 1, 2, 0, 1, 2]
+    out: 7
+  - name: "balanced_blocks"
+    in:
+      nums: [0, 0, 1, 1, 2, 2]
+    out: 27
+  - name: "zeros_only"
+    in:
+      nums: [0, 0, 0, 0, 0]
+    out: 0
+  - name: "ones_only"
+    in:
+      nums: [1, 1, 1, 1]
+    out: 0
+  - name: "twos_only"
+    in:
+      nums: [2, 2, 2, 2]
+    out: 0
+  - name: "zeros_ones_no_two"
+    in:
+      nums: [0, 0, 0, 1, 1]
+    out: 0
+  - name: "ones_twos_no_zero"
+    in:
+      nums: [1, 1, 2, 2]
+    out: 0
+  - name: "zero_two_one_two"
+    in:
+      nums: [0, 2, 1, 2]
+    out: 1
+  - name: "leading_noise"
+    in:
+      nums: [2, 1, 0, 0, 1, 2]
+    out: 3
+  - name: "interleaved_noise"
+    in:
+      nums: [0, 2, 0, 1, 2]
+    out: 3
+  - name: "repeated_twos"
+    in:
+      nums: [0, 1, 2, 2, 2]
+    out: 7
+  - name: "repeated_ones"
+    in:
+      nums: [0, 1, 1, 1, 2, 2, 2]
+    out: 49
+  - name: "repeated_zeros"
+    in:
+      nums: [0, 0, 0, 1, 2]
+    out: 7
+  - name: "all_blocks_three"
+    in:
+      nums: [0, 0, 0, 1, 1, 2, 2, 2]
+    out: 147
+  - name: "zero_one_zero_one_two"
+    in:
+      nums: [0, 1, 0, 1, 2]
+    out: 5
+  - name: "zero_one_two_zero_two"
+    in:
+      nums: [0, 1, 2, 0, 2]
+    out: 3
+  - name: "zero_zero_one_zero_one_two"
+    in:
+      nums: [0, 0, 1, 0, 1, 2]
+    out: 13
+  - name: "zero_one_two_one_two"
+    in:
+      nums: [0, 1, 2, 1, 2]
+    out: 5
+  - name: "zero_one_one_zero_one_two"
+    in:
+      nums: [0, 1, 1, 0, 1, 2]
+    out: 9
+  - name: "zero_zero_one_one_zero_one_two"
+    in:
+      nums: [0, 0, 1, 1, 0, 1, 2]
+    out: 25
+  - name: "zero_one_two_two_zero_one_two"
+    in:
+      nums: [0, 1, 2, 2, 0, 1, 2]
+    out: 11
+  - name: "longer_balanced_blocks"
+    in:
+      nums: [0, 0, 0, 1, 1, 1, 2, 2, 2]
+    out: 343
+  - name: "noise_before_and_between"
+    in:
+      nums: [2, 0, 1, 2, 1, 0, 1, 2]
+    out: 11
+  - name: "alternating_prefix"
+    in:
+      nums: [0, 1, 0, 1, 0, 1, 2, 2]
+    out: 51
+  - name: "generated_small"
+    seed: 101
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+        distinct: false
+        sorted: false
+  - name: "generated_medium"
+    seed: 102
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 500
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+        distinct: false
+        sorted: false
+  - name: "generated_zero_heavy"
+    seed: 103
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 2000
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+        distinct: false
+        sorted: false
+  - name: "stress_50000"
+    seed: 104
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+        distinct: false
+        sorted: false
+  - name: "stress_maximum"
+    seed: 105
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 2
+        distinct: false
+        sorted: false

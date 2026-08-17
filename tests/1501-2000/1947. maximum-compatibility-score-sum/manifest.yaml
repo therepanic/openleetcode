@@ -1,0 +1,511 @@
+entry:
+  id: 1947
+  title: maximum-compatibility-score-sum
+  params:
+    students:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    mentors:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxCompatibilitySum({students}, {mentors})"
+    rust: "Solution::max_compatibility_sum({students}, {mentors})"
+    python3: "Solution().maxCompatibilitySum({students}, {mentors})"
+    python2: "Solution().maxCompatibilitySum({students}, {mentors})"
+    ruby: "max_compatibility_sum({students}, {mentors})"
+    java: "new Solution().maxCompatibilitySum({students}, {mentors})"
+    csharp: "new Solution().MaxCompatibilitySum({students}, {mentors})"
+    kotlin: "Solution().maxCompatibilitySum({students}, {mentors})"
+    go: "maxCompatibilitySum({students}, {mentors})"
+    dart: "Solution().maxCompatibilitySum({students}, {mentors})"
+    swift: "Solution().maxCompatibilitySum({students}, {mentors})"
+    typescript: "maxCompatibilitySum({students}, {mentors})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(students, mentors, {result})"
+    checker: |
+      from itertools import permutations
+
+      class Checker:
+          def check(self, students, mentors, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              best = 0
+              for perm in permutations(range(len(students))):
+                  total = 0
+                  for i, j in enumerate(perm):
+                      total += sum(a == b for a, b in zip(students[i], mentors[j]))
+                  best = max(best, total)
+              return result == best
+
+seed: 1947
+
+tests:
+  - name: one-zero
+    in:
+      students:
+        - [0]
+      mentors:
+        - [0]
+    out: 1
+  - name: one-opposite
+    in:
+      students:
+        - [0]
+      mentors:
+        - [1]
+    out: 0
+  - name: one-one
+    in:
+      students:
+        - [1]
+      mentors:
+        - [1]
+    out: 1
+  - name: two-identical
+    in:
+      students:
+        - [0, 0]
+        - [0, 0]
+      mentors:
+        - [0, 0]
+        - [0, 0]
+    out: 4
+  - name: two-all-opposite
+    in:
+      students:
+        - [0, 0]
+        - [0, 0]
+      mentors:
+        - [1, 1]
+        - [1, 1]
+    out: 0
+  - name: two-same-order
+    in:
+      students:
+        - [1, 1]
+        - [0, 0]
+      mentors:
+        - [1, 1]
+        - [0, 0]
+    out: 4
+  - name: two-reversed
+    in:
+      students:
+        - [1, 1]
+        - [0, 0]
+      mentors:
+        - [0, 0]
+        - [1, 1]
+    out: 4
+  - name: identity-bits
+    in:
+      students:
+        - [1, 0]
+        - [0, 1]
+      mentors:
+        - [1, 0]
+        - [0, 1]
+    out: 4
+  - name: opposite-bits
+    in:
+      students:
+        - [1, 0]
+        - [0, 1]
+      mentors:
+        - [0, 1]
+        - [1, 0]
+    out: 4
+  - name: three-zero-one
+    in:
+      students:
+        - [1, 1, 1]
+        - [0, 0, 0]
+      mentors:
+        - [0, 0, 0]
+        - [1, 1, 1]
+    out: 6
+  - name: three-mixed
+    in:
+      students:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 1, 0]
+      mentors:
+        - [0, 1, 0]
+        - [1, 1, 0]
+        - [1, 0, 1]
+    out: 9
+  - name: example-one
+    in:
+      students:
+        - [1, 1, 0]
+        - [1, 0, 1]
+        - [0, 0, 1]
+      mentors:
+        - [1, 0, 0]
+        - [0, 0, 1]
+        - [1, 1, 0]
+    out: 8
+  - name: example-two
+    in:
+      students:
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+      mentors:
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 0
+  - name: three-complementary
+    in:
+      students:
+        - [0, 0, 1, 1]
+        - [0, 1, 0, 1]
+        - [1, 0, 0, 1]
+      mentors:
+        - [1, 1, 0, 0]
+        - [1, 0, 1, 0]
+        - [0, 1, 1, 0]
+    out: 6
+  - name: four-alternating
+    in:
+      students:
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 1, 1, 0]
+        - [0, 0, 0, 1]
+      mentors:
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 0, 0, 1]
+        - [1, 1, 1, 0]
+    out: 16
+  - name: four-duplicate-pairs
+    in:
+      students:
+        - [1, 0, 1]
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [0, 1, 0]
+      mentors:
+        - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 1]
+        - [0, 1, 0]
+    out: 12
+  - name: four-zero-blocks
+    in:
+      students:
+        - [0, 0, 0]
+        - [0, 0, 0]
+        - [1, 1, 1]
+        - [1, 1, 1]
+      mentors:
+        - [1, 1, 1]
+        - [0, 0, 0]
+        - [1, 1, 1]
+        - [0, 0, 0]
+    out: 12
+  - name: five-varied
+    in:
+      students:
+        - [1, 0, 0, 1, 0]
+        - [0, 1, 1, 0, 0]
+        - [1, 1, 0, 0, 1]
+        - [0, 0, 1, 0, 1]
+        - [1, 0, 1, 1, 0]
+      mentors:
+        - [0, 1, 1, 0, 1]
+        - [1, 0, 0, 1, 0]
+        - [1, 1, 0, 0, 1]
+        - [0, 0, 1, 1, 0]
+        - [1, 0, 1, 0, 1]
+    out: 22
+  - name: five-single-one
+    in:
+      students:
+        - [1, 0, 1]
+        - [0, 1, 1]
+        - [1, 1, 0]
+        - [0, 0, 1]
+        - [1, 0, 0]
+      mentors:
+        - [0, 1, 0]
+        - [1, 0, 1]
+        - [1, 1, 1]
+        - [0, 0, 0]
+        - [1, 0, 0]
+    out: 12
+  - name: six-two-bit
+    in:
+      students:
+        - [1, 0]
+        - [0, 1]
+        - [1, 1]
+        - [0, 0]
+        - [1, 0]
+        - [0, 1]
+      mentors:
+        - [0, 0]
+        - [1, 1]
+        - [1, 0]
+        - [0, 1]
+        - [0, 0]
+        - [1, 1]
+    out: 10
+  - name: six-complementary
+    in:
+      students:
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1]
+        - [1, 1, 0, 0, 1, 1]
+        - [0, 0, 1, 1, 0, 0]
+        - [1, 0, 0, 1, 1, 0]
+        - [0, 1, 1, 0, 0, 1]
+      mentors:
+        - [0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 0, 1, 1, 0, 0]
+        - [1, 1, 0, 0, 1, 1]
+        - [0, 1, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 1, 0]
+    out: 36
+  - name: seven-varied
+    in:
+      students:
+        - [1, 0, 0, 1, 0, 1, 1]
+        - [0, 1, 1, 0, 1, 0, 0]
+        - [1, 1, 0, 0, 1, 1, 0]
+        - [0, 0, 1, 1, 0, 0, 1]
+      mentors:
+        - [0, 0, 1, 1, 0, 0, 1]
+        - [1, 1, 0, 0, 1, 1, 0]
+        - [0, 1, 1, 0, 1, 0, 0]
+        - [1, 0, 0, 1, 0, 1, 1]
+    out: 28
+  - name: eight-alternating
+    in:
+      students:
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 1, 1, 1, 1]
+      mentors:
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [0, 0, 0, 0, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 0, 0, 0, 0]
+    out: 32
+  - name: eight-full-duplicates
+    in:
+      students:
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+      mentors:
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+    out: 40
+  - name: eight-all-complementary
+    in:
+      students:
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+        - [0, 0, 1, 1, 0, 0, 1, 1]
+        - [1, 0, 0, 1, 1, 0, 0, 1]
+        - [0, 1, 1, 0, 0, 1, 1, 0]
+      mentors:
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [0, 0, 1, 1, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+        - [0, 1, 1, 0, 0, 1, 1, 0]
+        - [1, 0, 0, 1, 1, 0, 0, 1]
+    out: 64
+  - name: eight-large-random-a
+    in:
+      students:
+        - [1, 0, 1, 1, 0, 0, 1, 0]
+        - [0, 1, 0, 0, 1, 1, 0, 1]
+        - [1, 1, 0, 1, 0, 1, 1, 0]
+        - [0, 0, 1, 0, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 1, 0, 1, 1]
+        - [0, 1, 1, 0, 0, 1, 0, 0]
+        - [1, 1, 1, 0, 0, 0, 1, 0]
+        - [0, 0, 0, 1, 1, 1, 0, 1]
+      mentors:
+        - [0, 1, 0, 0, 1, 1, 0, 1]
+        - [1, 0, 1, 1, 0, 0, 1, 0]
+        - [0, 0, 1, 0, 1, 0, 0, 1]
+        - [1, 1, 0, 1, 0, 1, 1, 0]
+        - [0, 1, 1, 0, 0, 1, 0, 0]
+        - [1, 0, 0, 1, 1, 0, 1, 1]
+        - [0, 0, 0, 1, 1, 1, 0, 1]
+        - [1, 1, 1, 0, 0, 0, 1, 0]
+    out: 64
+  - name: eight-large-random-b
+    in:
+      students:
+        - [0, 1, 1, 0, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 0, 1, 1, 0]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+        - [0, 0, 1, 1, 0, 0, 1, 1]
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [1, 1, 1, 1, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 1, 1, 1, 1]
+      mentors:
+        - [1, 0, 0, 1, 0, 1, 1, 0]
+        - [0, 1, 1, 0, 1, 0, 0, 1]
+        - [0, 0, 1, 1, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+        - [0, 0, 0, 0, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 0, 0, 0, 0]
+    out: 64
+  - name: five-balanced
+    in:
+      students:
+        - [1, 0, 1]
+        - [0, 1, 1]
+        - [1, 1, 0]
+        - [0, 0, 1]
+        - [1, 0, 0]
+      mentors:
+        - [0, 1, 0]
+        - [1, 0, 1]
+        - [1, 1, 1]
+        - [0, 0, 0]
+        - [1, 0, 0]
+    out: 12
+  - name: eight-minimal-match
+    in:
+      students:
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+      mentors:
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1]
+    out: 64
+  - name: five-extra-boundary
+    in:
+      students:
+        - [1, 0, 1]
+        - [0, 1, 1]
+        - [1, 1, 0]
+        - [0, 0, 1]
+        - [1, 0, 0]
+      mentors:
+        - [0, 1, 0]
+        - [1, 0, 1]
+        - [1, 1, 1]
+        - [0, 0, 0]
+        - [1, 0, 0]
+    out: 12
+  - name: one-eight-bits
+    in:
+      students:
+        - [1, 0, 1, 0, 1, 0, 1, 0]
+      mentors:
+        - [0, 1, 0, 1, 0, 1, 0, 1]
+    out: 0
+  - name: two-eight-bits
+    in:
+      students:
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+        - [0, 1, 1, 0, 0, 1, 1, 0]
+      mentors:
+        - [0, 0, 1, 1, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+    out: 12
+  - name: three-eight-bits
+    in:
+      students:
+        - [1, 0, 0, 1, 0, 1, 1, 0]
+        - [0, 1, 1, 0, 1, 0, 0, 1]
+        - [1, 1, 0, 0, 1, 1, 0, 0]
+      mentors:
+        - [0, 1, 1, 0, 1, 0, 0, 1]
+        - [1, 0, 0, 1, 0, 1, 1, 0]
+        - [0, 0, 1, 1, 0, 0, 1, 1]
+    out: 16
+  - name: seven-one-bit
+    in:
+      students:
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+      mentors:
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+    out: 6
+  - name: eight-one-bit
+    in:
+      students:
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+      mentors:
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+    out: 8

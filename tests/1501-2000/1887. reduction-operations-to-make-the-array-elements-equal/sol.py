@@ -1,0 +1,12 @@
+class Solution:
+    def reductionOperations(self, nums):
+        freq = [0] * 50001
+        for num in nums:
+            freq[num] += 1
+        idx = next(i for i in range(1, 50001) if freq[i] > 0)
+        val, total = 0, 0
+        for i in range(50000, idx, -1):
+            if freq[i] > 0:
+                val += freq[i]
+                total += val
+        return total

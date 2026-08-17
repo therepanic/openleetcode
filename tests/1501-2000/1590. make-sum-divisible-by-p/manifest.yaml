@@ -1,0 +1,287 @@
+entry:
+  id: 1590
+  title: "make-sum-divisible-by-p"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    p:
+      type: int
+  call:
+    cpp: "Solution().minSubarray({nums}, {p})"
+    rust: "Solution::min_subarray({nums}, {p})"
+    python3: "Solution().minSubarray({nums}, {p})"
+    python2: "Solution().minSubarray({nums}, {p})"
+    ruby: "min_subarray({nums}, {p})"
+    java: "new Solution().minSubarray({nums}, {p})"
+    csharp: "new Solution().MinSubarray({nums}, {p})"
+    kotlin: "Solution().minSubarray({nums}, {p})"
+    go: "minSubarray({nums}, {p})"
+    dart: "Solution().minSubarray({nums}, {p})"
+    swift: "Solution().minSubarray({nums}, {p})"
+    typescript: "minSubarray({nums}, {p})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minSubarray(nums, p, {result})"
+    checker: |
+      class Checker:
+          def minSubarray(self, nums, p, result):
+              total = sum(nums)
+              target = total % p
+              if target == 0:
+                  expected = 0
+              else:
+                  last = {0: -1}
+                  prefix = 0
+                  best = len(nums)
+                  for i, value in enumerate(nums):
+                      prefix = (prefix + value) % p
+                      need = (prefix - target) % p
+                      if need in last:
+                          best = min(best, i - last[need])
+                      last[prefix] = i
+                  expected = -1 if best == len(nums) else best
+              return result == expected
+seed: 1590
+tests:
+  - name: example-one
+    in:
+      nums: [3, 1, 4, 2]
+      p: 6
+    out: 1
+  - name: example-two
+    in:
+      nums: [6, 3, 5, 2]
+      p: 9
+    out: 2
+  - name: already-divisible
+    in:
+      nums: [1, 2, 3]
+      p: 3
+    out: 0
+  - name: single-element-impossible
+    in:
+      nums: [1]
+      p: 2
+    out: -1
+  - name: single-element-divisible
+    in:
+      nums: [7]
+      p: 7
+    out: 0
+  - name: remove-one-at-start
+    in:
+      nums: [5, 2, 4]
+      p: 7
+    out: 1
+  - name: remove-one-at-end
+    in:
+      nums: [2, 4, 5]
+      p: 7
+    out: 1
+  - name: remove-middle-one
+    in:
+      nums: [8, 3, 2, 6]
+      p: 5
+    out: -1
+  - name: remove-two-middle
+    in:
+      nums: [6, 3, 5, 2]
+      p: 9
+    out: 2
+  - name: no-valid-proper-subarray
+    in:
+      nums: [1, 1]
+      p: 3
+    out: -1
+  - name: p-one
+    in:
+      nums: [9, 8, 7]
+      p: 1
+    out: 0
+  - name: repeated-residues
+    in:
+      nums: [4, 4, 4, 4]
+      p: 6
+    out: 1
+  - name: large-values-small-p
+    in:
+      nums: [1000000000, 1000000000, 1000000000]
+      p: 7
+    out: -1
+  - name: large-p
+    in:
+      nums: [1, 2, 3, 4]
+      p: 1000000000
+    out: -1
+  - name: duplicate-prefix-choice
+    in:
+      nums: [2, 1, 2, 1, 2]
+      p: 4
+    out: 0
+  - name: alternating-values
+    in:
+      nums: [1, 9, 1, 9, 1, 9]
+      p: 10
+    out: 0
+  - name: all-ones
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1]
+      p: 5
+    out: 2
+  - name: remainder-needs-whole-invalid
+    in:
+      nums: [2, 2, 2]
+      p: 4
+    out: 1
+  - name: length-two
+    in:
+      nums: [3, 5]
+      p: 4
+    out: 0
+  - name: length-three
+    in:
+      nums: [2, 6, 4]
+      p: 5
+    out: 1
+  - name: zero-target-with-large-p
+    in:
+      nums: [1000000000, 1000000000]
+      p: 1000000000
+    out: 0
+  - name: powers-and-prime
+    in:
+      nums: [2, 4, 8, 16, 32]
+      p: 13
+    out: -1
+  - name: best-longer-than-one
+    in:
+      nums: [1, 1, 1, 1, 1, 1]
+      p: 4
+    out: 2
+  - name: best-shorter-than-prefix
+    in:
+      nums: [10, 1, 1, 1, 1]
+      p: 6
+    out: 2
+  - name: prime-modulus
+    in:
+      nums: [11, 7, 5, 3, 2]
+      p: 11
+    out: 4
+  - name: many-equal
+    in:
+      nums: [6, 6, 6, 6, 6, 6, 6, 6]
+      p: 10
+    out: 3
+  - name: mixed-residues
+    in:
+      nums: [5, 12, 7, 3, 8, 11]
+      p: 9
+    out: 2
+  - name: no-single-but-pair
+    in:
+      nums: [1, 2, 4, 8]
+      p: 7
+    out: 1
+  - name: minimum-element-values
+    in:
+      nums: [1, 1, 2, 1, 1]
+      p: 6
+    out: 0
+  - name: near-int-limit-values
+    in:
+      nums: [999999999, 999999998, 999999997]
+      p: 1000000000
+    out: -1
+  - name: long-static-pattern
+    in:
+      nums: [17, 4, 23, 9, 12, 8, 31, 6, 5, 19]
+      p: 14
+    out: 1
+  - name: generator-small
+    in:
+      nums:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      p:
+        gen: "int"
+        min: 2
+        max: 1000
+  - name: generator-medium
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      p:
+        gen: "int"
+        min: 2
+        max: 1000000000
+  - name: generator-large-one
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      p:
+        gen: "int"
+        min: 2
+        max: 1000000000
+  - name: generator-large-two
+    in:
+      nums:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      p:
+        gen: "int"
+        min: 2
+        max: 1000000000
+  - name: generator-large-three
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      p:
+        gen: "int"
+        min: 2
+        max: 1000000000

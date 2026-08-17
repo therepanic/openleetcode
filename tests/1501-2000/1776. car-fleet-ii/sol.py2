@@ -1,0 +1,23 @@
+class Solution(object):
+    def getCollisionTimes(self, cars):
+        """
+        :type cars: List[List[int]]
+        :rtype: List[float]
+        """
+        n = len(cars)
+        right_greater = [-1] * n
+        ans = [-1.0] * n
+        stack = []
+        for r in range(n - 1, -1, -1):
+            while stack and cars[stack[-1]][1] >= cars[r][1]:
+                stack.pop()
+            if stack:
+                right_greater[r] = stack[-1]
+            stack.append(r)
+        for r in range(n - 1, -1, -1):
+            collide_id = right_greater[r]
+            while collide_id != -1 and ans[collide_id] != -1 and ans[collide_id] < float(cars[collide_id][0] - cars[r][0]) / (cars[r][1] - cars[collide_id][1]):
+                collide_id = right_greater[collide_id]
+            if collide_id != -1:
+                ans[r] = float(cars[collide_id][0] - cars[r][0]) / (cars[r][1] - cars[collide_id][1])
+        return ans

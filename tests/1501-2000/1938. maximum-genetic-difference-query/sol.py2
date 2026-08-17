@@ -1,0 +1,63 @@
+class Solution(object):
+    def maxGeneticDifference(self, parents, queries):
+        """
+        :type parents: List[int]
+        :type queries: List[List[int]]
+        :rtype: List[int]
+        """
+        class BitTrieNode:
+            def __init__(self):
+                self.count = 0
+                self.child = {}
+
+        class BitTrie:
+            def __init__(self):
+                self.root = BitTrieNode()
+
+            def increase(self, number, d):
+                cur = self.root
+                for i in range(17, -1, -1):
+                    bit = (number >> i) & 1
+                    if bit not in cur.child:
+                        cur.child[bit] = BitTrieNode()
+                    cur = cur.child[bit]
+                    cur.count += d
+
+            def findMax(self, number):
+                cur, ans = self.root, 0
+                for i in range(17, -1, -1):
+                    bit = (number >> i) & 1
+                    if (1 - bit) in cur.child and cur.child[1 - bit].count > 0:
+                        cur = cur.child[1 - bit]
+                        ans |= (1 << i)
+                    else:
+                        cur = cur.child[bit]
+                return ans
+
+        n = len(parents)
+        adj = [[] for _ in range(n)]
+        root = 0
+        for i, p in enumerate(parents):
+            if p == -1:
+                root = i
+            else:
+                adj[p].append(i)
+
+        trie = BitTrie()
+        qmap = {}
+        for i, (node, val) in enumerate(queries):
+            qmap.setdefault(node, []).append((i, val))
+
+        ans = [0] * len(queries)
+
+        def dfs(u):
+            trie.increase(u, 1)
+            if u in qmap:
+                for idx, val in qmap[u]:
+                    ans[idx] = trie.findMax(val)
+            for v in adj[u]:
+                dfs(v)
+            trie.increase(u, -1)
+
+        dfs(root)
+        return ans

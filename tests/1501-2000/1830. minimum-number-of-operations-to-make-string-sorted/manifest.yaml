@@ -1,0 +1,308 @@
+entry:
+  id: 1830
+  title: "minimum-number-of-operations-to-make-string-sorted"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().makeStringSorted({s})"
+    rust: "Solution::make_string_sorted({s})"
+    python3: "Solution().makeStringSorted({s})"
+    python2: "Solution().makeStringSorted({s})"
+    ruby: "make_string_sorted({s})"
+    java: "new Solution().makeStringSorted({s})"
+    csharp: "new Solution().MakeStringSorted({s})"
+    kotlin: "Solution().makeStringSorted({s})"
+    go: "makeStringSorted({s})"
+    dart: "Solution().makeStringSorted({s})"
+    swift: "Solution().makeStringSorted({s})"
+    typescript: "makeStringSorted({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(s, {result})"
+    checker: |
+      class Checker:
+          MOD = 1000000007
+
+          def check(self, s, result):
+              n = len(s)
+              fac = [1] * (n + 1)
+              for i in range(1, n + 1):
+                  fac[i] = fac[i - 1] * i % self.MOD
+              inv = [1] * (n + 1)
+              inv[n] = pow(fac[n], self.MOD - 2, self.MOD)
+              for i in range(n, 0, -1):
+                  inv[i - 1] = inv[i] * i % self.MOD
+              freq = [0] * 26
+              for ch in s:
+                  freq[ord(ch) - 97] += 1
+              expected = 0
+              for i, ch in enumerate(s):
+                  smaller = sum(freq[:ord(ch) - 97])
+                  term = fac[n - i - 1] * smaller % self.MOD
+                  for count in freq:
+                      term = term * inv[count] % self.MOD
+                  expected = (expected + term) % self.MOD
+                  freq[ord(ch) - 97] -= 1
+              return isinstance(result, int) and result == expected
+
+seed: 1830
+
+tests:
+  - name: one-letter
+    in:
+      s: "a"
+    out: 0
+    judge:
+      type: "exact"
+  - name: one-letter-z
+    in:
+      s: "z"
+    out: 0
+    judge:
+      type: "exact"
+  - name: equal-pair
+    in:
+      s: "aa"
+    out: 0
+    judge:
+      type: "exact"
+  - name: sorted-pair
+    in:
+      s: "ab"
+    out: 0
+    judge:
+      type: "exact"
+  - name: reversed-pair
+    in:
+      s: "ba"
+    out: 1
+    judge:
+      type: "exact"
+  - name: sorted-three
+    in:
+      s: "abc"
+    out: 0
+    judge:
+      type: "exact"
+  - name: reverse-three
+    in:
+      s: "cba"
+    out: 5
+    judge:
+      type: "exact"
+  - name: repeated-three
+    in:
+      s: "aaa"
+    out: 0
+    judge:
+      type: "exact"
+  - name: repeated-middle
+    in:
+      s: "aba"
+    out: 1
+    judge:
+      type: "exact"
+  - name: example-two
+    in:
+      s: "aabaa"
+    out: 2
+    judge:
+      type: "exact"
+  - name: sorted-four
+    in:
+      s: "abcd"
+    out: 0
+    judge:
+      type: "exact"
+  - name: reverse-four
+    in:
+      s: "dcba"
+    out: 23
+    judge:
+      type: "exact"
+  - name: palindrome-four
+    in:
+      s: "abba"
+    out: 2
+    judge:
+      type: "exact"
+  - name: descending-duplicates
+    in:
+      s: "bbaa"
+    out: 5
+    judge:
+      type: "exact"
+  - name: equal-z
+    in:
+      s: "zzzz"
+    out: 0
+    judge:
+      type: "exact"
+  - name: alternating-low
+    in:
+      s: "azaz"
+    out: 1
+    judge:
+      type: "exact"
+  - name: alternating-high
+    in:
+      s: "zaza"
+    out: 4
+    judge:
+      type: "exact"
+  - name: sorted-five
+    in:
+      s: "abcde"
+    out: 0
+    judge:
+      type: "exact"
+  - name: reverse-five
+    in:
+      s: "edcba"
+    out: 119
+    judge:
+      type: "exact"
+  - name: grouped-sorted
+    in:
+      s: "aabb"
+    out: 0
+    judge:
+      type: "exact"
+  - name: alternating-ab
+    in:
+      s: "abab"
+    out: 1
+    judge:
+      type: "exact"
+  - name: alternating-ba
+    in:
+      s: "baba"
+    out: 4
+    judge:
+      type: "exact"
+  - name: repeated-block
+    in:
+      s: "abcabc"
+    out: 12
+    judge:
+      type: "exact"
+  - name: repeated-reverse-block
+    in:
+      s: "cbacba"
+    out: 77
+    judge:
+      type: "exact"
+  - name: mostly-sorted
+    in:
+      s: "aaaaab"
+    out: 0
+    judge:
+      type: "exact"
+  - name: leading-large
+    in:
+      s: "baaaaa"
+    out: 5
+    judge:
+      type: "exact"
+  - name: sorted-long
+    in:
+      s: "abcdefghijklmnop"
+    out: 0
+    judge:
+      type: "exact"
+  - name: reverse-long
+    in:
+      s: "ponmlkjihgfedcba"
+    out: 789741545
+    judge:
+      type: "exact"
+  - name: equal-hundred
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 0
+    judge:
+      type: "exact"
+  - name: equal-z-hundred
+    in:
+      s: "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+    out: 0
+    judge:
+      type: "exact"
+  - name: grouped-hundred
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    out: 0
+    judge:
+      type: "exact"
+  - name: reversed-groups
+    in:
+      s: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 538992042
+    judge:
+      type: "exact"
+  - name: leetcode
+    in:
+      s: "leetcode"
+    out: 4660
+    judge:
+      type: "exact"
+  - name: reverse-alphabet
+    in:
+      s: "zyxwvutsrqponmlkjihgfedcba"
+    out: 459042010
+    judge:
+      type: "exact"
+  - name: generated-binary
+    in:
+      s:
+        gen: "str"
+        len: 3000
+        alphabet: "ab"
+    judge:
+      type: "exact"
+    seed: 183001
+  - name: generated-small-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 2999
+        alphabet: "abc"
+    judge:
+      type: "exact"
+    seed: 183002
+  - name: generated-medium-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 3000
+        alphabet: "admz"
+    judge:
+      type: "exact"
+    seed: 183003
+  - name: generated-full-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 3000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+    judge:
+      type: "exact"
+    seed: 183004
+  - name: generated-short
+    in:
+      s:
+        gen: "str"
+        len: 257
+        alphabet: "abyz"
+    judge:
+      type: "exact"
+    seed: 183005

@@ -1,0 +1,331 @@
+entry:
+  id: 1626
+  title: best-team-with-no-conflicts
+  params:
+    scores:
+      type: array
+      items:
+        type: int
+    ages:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().bestTeamScore({scores}, {ages})"
+    rust: "Solution::best_team_score({scores}, {ages})"
+    python3: "Solution().bestTeamScore({scores}, {ages})"
+    python2: "Solution().bestTeamScore({scores}, {ages})"
+    ruby: "best_team_score({scores}, {ages})"
+    java: "new Solution().bestTeamScore({scores}, {ages})"
+    csharp: "new Solution().BestTeamScore({scores}, {ages})"
+    kotlin: "Solution().bestTeamScore({scores}, {ages})"
+    go: "bestTeamScore({scores}, {ages})"
+    dart: "Solution().bestTeamScore({scores}, {ages})"
+    swift: "Solution().bestTeamScore({scores}, {ages})"
+    typescript: "bestTeamScore({scores}, {ages})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().bestTeamScore(scores, ages, {result})"
+    checker: |
+      class Checker:
+          def bestTeamScore(self, scores, ages, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if len(scores) != len(ages) or not scores:
+                  return False
+              order = sorted(zip(ages, scores))
+              dp = []
+              for _, score in order:
+                  dp.append(score)
+              for i in range(len(order)):
+                  for j in range(i):
+                      if order[j][1] <= order[i][1]:
+                          dp[i] = max(dp[i], dp[j] + order[i][1])
+              return result == max(dp)
+
+seed: 1626
+
+tests:
+  - name: example-increasing
+    in:
+      scores: [1, 3, 5, 10, 15]
+      ages: [1, 2, 3, 4, 5]
+    out: 34
+  - name: example-same-age
+    in:
+      scores: [4, 5, 6, 5]
+      ages: [2, 1, 2, 1]
+    out: 16
+  - name: example-conflict
+    in:
+      scores: [1, 2, 3, 5]
+      ages: [8, 9, 10, 1]
+    out: 6
+  - name: one-player
+    in:
+      scores: [7]
+      ages: [3]
+    out: 7
+  - name: all-equal
+    in:
+      scores: [5, 5, 5, 5]
+      ages: [1, 2, 3, 4]
+    out: 20
+  - name: equal-ages
+    in:
+      scores: [2, 9, 4, 7]
+      ages: [6, 6, 6, 6]
+    out: 22
+  - name: descending-scores-ascending-ages
+    in:
+      scores: [10, 9, 8, 7]
+      ages: [1, 2, 3, 4]
+    out: 10
+  - name: ascending-scores-descending-ages
+    in:
+      scores: [2, 4, 6, 8]
+      ages: [4, 3, 2, 1]
+    out: 8
+  - name: duplicate-ages-and-scores
+    in:
+      scores: [1, 2, 2, 3, 3]
+      ages: [2, 1, 2, 1, 2]
+    out: 8
+  - name: alternating
+    in:
+      scores: [5, 1, 6, 2, 7, 3]
+      ages: [1, 2, 3, 4, 5, 6]
+    out: 18
+  - name: older-high-score
+    in:
+      scores: [100, 1, 2, 3]
+      ages: [10, 1, 2, 3]
+    out: 106
+  - name: tie-score-chain
+    in:
+      scores: [8, 8, 8, 1]
+      ages: [3, 1, 2, 4]
+    out: 24
+  - name: two-conflicting
+    in:
+      scores: [5, 6]
+      ages: [2, 1]
+    out: 6
+  - name: two-compatible
+    in:
+      scores: [5, 6]
+      ages: [1, 2]
+    out: 11
+  - name: middle-best-chain
+    in:
+      scores: [4, 10, 5, 6]
+      ages: [1, 2, 3, 4]
+    out: 15
+  - name: low-score-blocker
+    in:
+      scores: [9, 1, 8, 7, 6]
+      ages: [1, 2, 3, 4, 5]
+    out: 9
+  - name: repeated-age-groups
+    in:
+      scores: [4, 6, 5, 7, 3, 8]
+      ages: [1, 1, 2, 2, 3, 3]
+    out: 25
+  - name: large-score-values
+    in:
+      scores: [1000000, 999999, 1000000]
+      ages: [1, 2, 3]
+    out: 2000000
+  - name: all-max-values
+    in:
+      scores: [1000000, 1000000, 1000000, 1000000]
+      ages: [1000, 1, 500, 1000]
+    out: 4000000
+  - name: age-boundaries
+    in:
+      scores: [3, 4, 5, 6]
+      ages: [1, 1000, 1, 1000]
+    out: 14
+  - name: many-equal-ages
+    in:
+      scores: [3, 9, 1, 8, 2, 7, 4]
+      ages: [5, 5, 5, 5, 5, 5, 5]
+    out: 34
+  - name: zigzag-ages
+    in:
+      scores: [3, 8, 4, 9, 5, 10]
+      ages: [1, 6, 2, 5, 3, 4]
+    out: 22
+  - name: zigzag-scores
+    in:
+      scores: [9, 2, 8, 3, 7, 4]
+      ages: [1, 2, 3, 4, 5, 6]
+    out: 12
+  - name: nested-optimum
+    in:
+      scores: [5, 100, 6, 7, 8, 9]
+      ages: [1, 2, 3, 4, 5, 6]
+    out: 105
+  - name: choose-two-after-conflict
+    in:
+      scores: [20, 1, 19, 18, 17]
+      ages: [1, 2, 3, 4, 5]
+    out: 20
+  - name: repeated-pattern
+    in:
+      scores: [2, 5, 2, 5, 2, 5, 2, 5]
+      ages: [1, 2, 3, 4, 5, 6, 7, 8]
+    out: 22
+  - name: broad-age-ties
+    in:
+      scores: [12, 3, 9, 4, 10, 5]
+      ages: [2, 2, 4, 4, 6, 6]
+    out: 26
+  - name: minimum-scores
+    in:
+      scores: [1, 1, 1, 1, 1]
+      ages: [1, 1000, 500, 2, 999]
+    out: 5
+  - name: high-low-high
+    in:
+      scores: [50, 2, 49, 3, 48]
+      ages: [1, 2, 3, 4, 5]
+    out: 53
+  - name: compatible-blocks
+    in:
+      scores: [4, 4, 6, 6, 8, 8]
+      ages: [1, 1, 2, 2, 3, 3]
+    out: 36
+  - name: age-sort-reorders
+    in:
+      scores: [10, 20, 30, 40]
+      ages: [4, 1, 3, 2]
+    out: 60
+  - name: mixed-plateaus
+    in:
+      scores: [6, 6, 2, 9, 9, 4, 10]
+      ages: [1, 2, 3, 4, 5, 6, 7]
+    out: 40
+  - name: nontrivial-subsequence
+    in:
+      scores: [4, 9, 5, 6, 10, 7, 8]
+      ages: [3, 1, 4, 2, 5, 6, 7]
+    out: 24
+  - name: seven-player-ties
+    in:
+      scores: [3, 8, 8, 2, 9, 9, 4]
+      ages: [1, 2, 2, 3, 3, 4, 4]
+    out: 37
+  - name: near-limit-static
+    in:
+      scores: [1000000, 1, 999998, 2, 999997, 3, 999996, 4]
+      ages: [1, 2, 3, 4, 5, 6, 7, 8]
+    out: 1000002
+  - name: generated-small
+    in:
+      scores:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        elemType: "int"
+      ages:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+        distinct: false
+        elemType: "int"
+  - name: generated-medium
+    in:
+      scores:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+      ages:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        elemType: "int"
+  - name: generated-large
+    in:
+      scores:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        elemType: "int"
+      ages:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+  - name: generated-near-limit
+    in:
+      scores:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        elemType: "int"
+      ages:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+  - name: generated-small-values
+    in:
+      scores:
+        gen: "array"
+        len: 250
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        elemType: "int"
+      ages:
+        gen: "array"
+        len: 250
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        elemType: "int"

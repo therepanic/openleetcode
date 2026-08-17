@@ -1,0 +1,326 @@
+entry:
+  id: 1967
+  title: "number-of-strings-that-appear-as-substrings-in-word"
+  params:
+    patterns:
+      type: array
+      items:
+        type: string
+    word:
+      type: string
+  call:
+    cpp: "Solution().numOfStrings({patterns}, {word})"
+    rust: "Solution::num_of_strings({patterns}, {word})"
+    python3: "Solution().numOfStrings({patterns}, {word})"
+    python2: "Solution().numOfStrings({patterns}, {word})"
+    ruby: "num_of_strings({patterns}, {word})"
+    java: "new Solution().numOfStrings({patterns}, {word})"
+    csharp: "new Solution().NumOfStrings({patterns}, {word})"
+    kotlin: "Solution().numOfStrings({patterns}, {word})"
+    go: "numOfStrings({patterns}, {word})"
+    dart: "Solution().numOfStrings({patterns}, {word})"
+    swift: "Solution().numOfStrings({patterns}, {word})"
+    typescript: "numOfStrings({patterns}, {word})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().numOfStrings(patterns, word, {result})"
+    checker: |
+      class Checker:
+          def numOfStrings(self, patterns, word, result):
+              if isinstance(result, bool) or not isinstance(result, int):
+                  return False
+              return result == sum(1 for pattern in patterns if pattern in word)
+
+seed: 1967
+
+tests:
+  - name: "example_basic"
+    in:
+      patterns: ["a", "abc", "bc", "d"]
+      word: "abc"
+    out: 3
+  - name: "example_runs"
+    in:
+      patterns: ["a", "b", "c"]
+      word: "aaaaabbbbb"
+    out: 2
+  - name: "example_duplicates"
+    in:
+      patterns: ["a", "a", "a"]
+      word: "ab"
+    out: 3
+  - name: "single_match"
+    in:
+      patterns: ["z"]
+      word: "z"
+    out: 1
+  - name: "single_miss"
+    in:
+      patterns: ["z"]
+      word: "a"
+    out: 0
+  - name: "whole_word"
+    in:
+      patterns: ["abc", "ab", "bc", "abcd"]
+      word: "abc"
+    out: 3
+  - name: "repeated_pattern"
+    in:
+      patterns: ["aa", "aa", "aaa", "b"]
+      word: "aaaa"
+    out: 3
+  - name: "overlapping_matches"
+    in:
+      patterns: ["aba", "bab", "ab", "ba", "ac"]
+      word: "ababa"
+    out: 4
+  - name: "all_misses"
+    in:
+      patterns: ["x", "y", "z", "xy", "yz"]
+      word: "aaaa"
+    out: 0
+  - name: "one_letter_word"
+    in:
+      patterns: ["a", "aa", "b", "ab"]
+      word: "a"
+    out: 1
+  - name: "alternating"
+    in:
+      patterns: ["a", "b", "ab", "ba", "aba", "bab"]
+      word: "ababab"
+    out: 6
+  - name: "prefixes"
+    in:
+      patterns: ["a", "ab", "abc", "abcd", "abcde"]
+      word: "abcd"
+    out: 4
+  - name: "suffixes"
+    in:
+      patterns: ["d", "cd", "bcd", "abcd", "abcde"]
+      word: "abcd"
+    out: 4
+  - name: "interior"
+    in:
+      patterns: ["b", "bc", "c", "abc", "bcd"]
+      word: "abcd"
+    out: 5
+  - name: "case_lowercase_only"
+    in:
+      patterns: ["q", "qq", "w", "qw"]
+      word: "qqq"
+    out: 2
+  - name: "long_pattern_miss"
+    in:
+      patterns: ["aaaaaaaaab", "aaaaaaaaa", "baaaaaaaaa"]
+      word: "aaaaaaaaaa"
+    out: 1
+  - name: "many_duplicates"
+    in:
+      patterns: ["cat", "cat", "cat", "dog", "cat", "bird"]
+      word: "catdog"
+    out: 5
+  - name: "single_char_repetition"
+    in:
+      patterns: ["a", "aa", "aaa", "aaaa", "aaaaa", "b"]
+      word: "aaaa"
+    out: 4
+  - name: "middle_only"
+    in:
+      patterns: ["bc", "cd", "bcd", "abc", "abcd"]
+      word: "abcd"
+    out: 5
+  - name: "disjoint_alphabet"
+    in:
+      patterns: ["a", "ab", "ba", "aba"]
+      word: "bbbb"
+    out: 0
+  - name: "all_same"
+    in:
+      patterns: ["m", "m", "m", "m"]
+      word: "m"
+    out: 4
+  - name: "length_four"
+    in:
+      patterns: ["abcd", "bcde", "cdef", "defg"]
+      word: "abcdefg"
+    out: 4
+  - name: "length_limit_pattern"
+    in:
+      patterns:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "b",
+        ]
+      word: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 1
+  - name: "length_limit_word"
+    in:
+      patterns:
+        ["a", "aa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "b"]
+      word: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 3
+  - name: "near_limit_mismatch"
+    in:
+      patterns:
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        ]
+      word: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 1
+  - name: "mixed_words"
+    in:
+      patterns: ["hello", "ell", "llo", "world", "low", "o"]
+      word: "helloworld"
+    out: 6
+  - name: "no_empty_patterns"
+    in:
+      patterns: ["x", "xx", "xxx"]
+      word: "xxxx"
+    out: 3
+  - name: "alternating_long"
+    in:
+      patterns: ["abab", "baba", "ababa", "babab", "aab"]
+      word: "abababa"
+    out: 4
+  - name: "rare_letters"
+    in:
+      patterns: ["z", "yz", "xyz", "wxyz", "x"]
+      word: "wxyz"
+    out: 5
+  - name: "pattern_order_irrelevant"
+    in:
+      patterns: ["no", "yes", "maybe", "on", "es"]
+      word: "yesorno"
+    out: 3
+  - name: "overlap_single_letter"
+    in:
+      patterns: ["a", "b", "c", "d", "e", "f", "g", "h"]
+      word: "abcdefgh"
+    out: 8
+  - name: "long_repeated_blocks"
+    in:
+      patterns: ["abcabc", "bcab", "cabc", "abc", "bca", "cab", "ac"]
+      word: "abcabcabc"
+    out: 6
+  - name: "punctuation_not_allowed"
+    in:
+      patterns: ["aa", "bb", "cc", "dd"]
+      word: "aabbcc"
+    out: 3
+  - name: "all_word_substrings"
+    in:
+      patterns: ["a", "b", "c", "ab", "bc", "abc", "ac"]
+      word: "abc"
+    out: 6
+  - name: "generated_small"
+    seed: 196701
+    in:
+      patterns:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 10
+          alphabet: "abc"
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        alphabet: "abc"
+  - name: "generated_medium"
+    seed: 196702
+    in:
+      patterns:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 30
+          max: 60
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 50
+          alphabet: "abcd"
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 50
+          max: 80
+        alphabet: "abcd"
+  - name: "generated_max_patterns"
+    seed: 196703
+    in:
+      patterns:
+        gen: "array"
+        len: 100
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 100
+          alphabet: "abcde"
+      word:
+        gen: "str"
+        len: 100
+        alphabet: "abcde"
+  - name: "generated_max_repetitive"
+    seed: 196704
+    in:
+      patterns:
+        gen: "array"
+        len: 100
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 100
+          alphabet: "ab"
+      word:
+        gen: "str"
+        len: 100
+        alphabet: "ab"
+  - name: "generated_max_alphabet"
+    seed: 196705
+    in:
+      patterns:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 80
+          max: 100
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 80
+            max: 100
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 80
+          max: 100
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

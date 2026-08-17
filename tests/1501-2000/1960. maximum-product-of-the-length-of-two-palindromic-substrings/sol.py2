@@ -1,0 +1,70 @@
+class Solution(object):
+    def maxProduct(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        n = len(s)
+        
+        # Manacher (odd length only)
+        d = [0] * n
+        l = 0
+        r = -1
+        
+        for i in range(n):
+            if i > r:
+                k = 1
+            else:
+                k = min(d[l + r - i], r - i + 1)
+            
+            while i - k >= 0 and i + k < n and s[i - k] == s[i + k]:
+                k += 1
+            
+            d[i] = k
+            
+            if i + k - 1 > r:
+                l = i - k + 1
+                r = i + k - 1
+        
+        # left[i] = max palindrome ending at i
+        left = [0] * n
+        
+        for i in range(n):
+            radius = d[i]
+            length = 2 * radius - 1
+            end = i + radius - 1
+            left[end] = max(left[end], length)
+        
+        # propagate backwards (reduce by 2)
+        for i in range(n - 2, -1, -1):
+            left[i] = max(left[i], left[i + 1] - 2)
+        
+        # prefix max
+        for i in range(1, n):
+            left[i] = max(left[i], left[i - 1])
+        
+        
+        # right[i] = max palindrome starting at i
+        right = [0] * n
+        
+        for i in range(n):
+            radius = d[i]
+            length = 2 * radius - 1
+            start = i - radius + 1
+            right[start] = max(right[start], length)
+        
+        # propagate forward (reduce by 2)
+        for i in range(1, n):
+            right[i] = max(right[i], right[i - 1] - 2)
+        
+        # suffix max
+        for i in range(n - 2, -1, -1):
+            right[i] = max(right[i], right[i + 1])
+        
+        
+        # try all splits
+        ans = 0
+        for i in range(n - 1):
+            ans = max(ans, left[i] * right[i + 1])
+        
+        return ans

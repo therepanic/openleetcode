@@ -1,0 +1,36 @@
+class Solution(object):
+    def minimumTimeRequired(self, jobs, k):
+        """
+        :type jobs: List[int]
+        :type k: int
+        :rtype: int
+        """
+        jobs.sort(reverse=True)
+        left, right = max(jobs), sum(jobs)
+        
+        def canDistribute(maxWorkload):
+            workers = [0] * k
+            
+            def assignJob(jobIndex):
+                if jobIndex == len(jobs):
+                    return True
+                for i in range(k):
+                    if workers[i] + jobs[jobIndex] <= maxWorkload:
+                        workers[i] += jobs[jobIndex]
+                        if assignJob(jobIndex + 1):
+                            return True
+                        workers[i] -= jobs[jobIndex]
+                    if workers[i] == 0:
+                        break
+                return False
+            
+            return assignJob(0)
+        
+        while left < right:
+            mid = (left + right) // 2
+            if canDistribute(mid):
+                right = mid
+            else:
+                left = mid + 1
+        
+        return left

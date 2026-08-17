@@ -1,0 +1,238 @@
+entry:
+  id: 1675
+  title: "minimize-deviation-in-array"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minimumDeviation({nums})"
+    rust: "Solution::minimum_deviation({nums})"
+    python3: "Solution().minimumDeviation({nums})"
+    python2: "Solution().minimumDeviation({nums})"
+    ruby: "minimum_deviation({nums})"
+    java: "new Solution().minimumDeviation({nums})"
+    csharp: "new Solution().MinimumDeviation({nums})"
+    kotlin: "Solution().minimumDeviation({nums})"
+    go: "minimumDeviation({nums})"
+    dart: "Solution().minimumDeviation({nums})"
+    swift: "Solution().minimumDeviation({nums})"
+    typescript: "minimumDeviation({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().minimumDeviation(nums, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def minimumDeviation(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              heap = []
+              low = 10**30
+              for value in nums:
+                  value = value if value % 2 == 0 else value * 2
+                  heapq.heappush(heap, -value)
+                  low = min(low, value)
+              best = 10**30
+              while heap and (-heap[0]) % 2 == 0:
+                  high = -heapq.heappop(heap)
+                  best = min(best, high - low)
+                  lowered = high // 2
+                  heapq.heappush(heap, -lowered)
+                  low = min(low, lowered)
+              best = min(best, -heap[0] - low)
+              return result == best
+
+seed: 1675
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 2, 3, 4]
+    out: 1
+  - name: example-two
+    in:
+      nums: [4, 1, 5, 20, 3]
+    out: 3
+  - name: example-three
+    in:
+      nums: [2, 10, 8]
+    out: 3
+  - name: all-equal-odd
+    in:
+      nums: [7, 7, 7]
+    out: 0
+  - name: all-equal-even
+    in:
+      nums: [8, 8, 8, 8]
+    out: 0
+  - name: powers-of-two
+    in:
+      nums: [1, 2, 4, 8, 16]
+    out: 0
+  - name: two-values
+    in:
+      nums: [3, 10]
+    out: 1
+  - name: adjacent-odds
+    in:
+      nums: [3, 5, 7, 9]
+    out: 4
+  - name: mixed-small
+    in:
+      nums: [1, 6, 11]
+    out: 9
+  - name: minimum-values
+    in:
+      nums: [1, 1, 2]
+    out: 0
+  - name: one-large-even
+    in:
+      nums: [1, 2, 1000000000]
+    out: 1953123
+  - name: max-odd
+    in:
+      nums: [999999999, 1000000000, 999999997]
+    out: 3
+  - name: repeated-mixed
+    in:
+      nums: [4, 4, 5, 5, 10, 10]
+    out: 1
+  - name: powers-and-odd
+    in:
+      nums: [2, 8, 32, 63]
+    out: 61
+  - name: broad-range
+    in:
+      nums: [6, 13, 24, 41, 100]
+    out: 35
+  - name: odd-heavy
+    in:
+      nums: [9, 15, 21, 27, 33]
+    out: 15
+  - name: even-heavy
+    in:
+      nums: [12, 20, 28, 36, 44]
+    out: 5
+  - name: duplicate-extremes
+    in:
+      nums: [1, 1, 1, 1000000000, 1000000000]
+    out: 1953123
+  - name: balanced-small
+    in:
+      nums: [2, 3, 4, 5, 6]
+    out: 3
+  - name: values-near-billion
+    in:
+      nums: [536870911, 536870912, 805306367, 805306368]
+    out: 268435457
+  - name: alternating
+    in:
+      nums: [1, 16, 3, 64, 5, 256]
+    out: 3
+  - name: prime-values
+    in:
+      nums: [2, 3, 5, 7, 11, 13]
+    out: 11
+  - name: sparse-powers
+    in:
+      nums: [17, 34, 68, 272]
+    out: 0
+  - name: three-large
+    in:
+      nums: [700000000, 800000001, 900000000]
+    out: 200000000
+  - name: six-values
+    in:
+      nums: [14, 18, 22, 26, 30, 34]
+    out: 7
+  - name: one-outlier
+    in:
+      nums: [31, 32, 32, 32]
+    out: 1
+  - name: odd-and-double
+    in:
+      nums: [25, 50, 100, 200]
+    out: 0
+  - name: low-and-high
+    in:
+      nums: [2, 999999999, 4]
+    out: 999999997
+  - name: mixed-powers
+    in:
+      nums: [7, 14, 28, 56, 112]
+    out: 0
+  - name: varied-small
+    in:
+      nums: [2, 7, 12, 19, 26, 31]
+    out: 29
+  - name: stress-randomish
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+    seed: 101
+  - name: stress-small-values
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1024
+        distinct: false
+        elemType: "int"
+    seed: 102
+  - name: stress-large-values
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 999000000
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+    seed: 103
+  - name: stress-powers-range
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 536870912
+        distinct: false
+        elemType: "int"
+    seed: 104
+  - name: stress-max-length
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+    seed: 105

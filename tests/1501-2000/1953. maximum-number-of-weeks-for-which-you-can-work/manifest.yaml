@@ -1,0 +1,260 @@
+entry:
+  id: 1953
+  title: "maximum-number-of-weeks-for-which-you-can-work"
+  params:
+    milestones:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().numberOfWeeks({milestones})"
+    rust: "Solution::number_of_weeks({milestones})"
+    python3: "Solution().numberOfWeeks({milestones})"
+    python2: "Solution().numberOfWeeks({milestones})"
+    ruby: "number_of_weeks({milestones})"
+    java: "new Solution().numberOfWeeks({milestones})"
+    csharp: "new Solution().NumberOfWeeks({milestones})"
+    kotlin: "Solution().numberOfWeeks({milestones})"
+    go: "numberOfWeeks({milestones})"
+    dart: "Solution().numberOfWeeks({milestones})"
+    swift: "Solution().numberOfWeeks({milestones})"
+    typescript: "numberOfWeeks({milestones})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().numberOfWeeks(milestones, {result})"
+    checker: |
+      class Checker:
+          def numberOfWeeks(self, milestones, result):
+              if not isinstance(milestones, list) or not milestones:
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) or x < 1 or x > 1000000000 for x in milestones):
+                  return False
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              total = sum(milestones)
+              largest = max(milestones)
+              expected = total if largest <= total - largest else 2 * (total - largest) + 1
+              return result == expected
+
+seed: 1953001
+
+tests:
+  - name: "example_balanced_three"
+    in:
+      milestones: [1, 2, 3]
+    out: 6
+  - name: "example_dominant_project"
+    in:
+      milestones: [5, 2, 1]
+    out: 7
+  - name: "two_equal_projects"
+    in:
+      milestones: [1, 1]
+    out: 2
+  - name: "two_unequal_projects"
+    in:
+      milestones: [1, 2]
+    out: 3
+  - name: "single_project_one"
+    in:
+      milestones: [1]
+    out: 1
+  - name: "single_project_large"
+    in:
+      milestones: [1000000000]
+    out: 1
+  - name: "all_ones"
+    in:
+      milestones: [1, 1, 1, 1, 1]
+    out: 5
+  - name: "balanced_four"
+    in:
+      milestones: [4, 4, 4, 4]
+    out: 16
+  - name: "largest_exactly_rest"
+    in:
+      milestones: [3, 1, 1, 1]
+    out: 6
+  - name: "largest_one_above_rest"
+    in:
+      milestones: [4, 1, 1, 1]
+    out: 7
+  - name: "largest_far_above_rest"
+    in:
+      milestones: [10, 1, 1]
+    out: 5
+  - name: "two_projects_large_equal"
+    in:
+      milestones: [1000000000, 1000000000]
+    out: 2000000000
+  - name: "two_projects_large_dominant"
+    in:
+      milestones: [1000000000, 999999999]
+    out: 1999999999
+  - name: "many_small_one_large"
+    in:
+      milestones: [20, 1, 1, 1, 1, 1]
+    out: 11
+  - name: "many_small_balances_peak"
+    in:
+      milestones: [6, 2, 2, 2]
+    out: 12
+  - name: "zeros_not_allowed_boundary_values"
+    in:
+      milestones: [1, 1000000000, 1]
+    out: 5
+  - name: "strictly_increasing"
+    in:
+      milestones: [1, 2, 3, 4, 5]
+    out: 15
+  - name: "strictly_decreasing"
+    in:
+      milestones: [5, 4, 3, 2, 1]
+    out: 15
+  - name: "duplicate_peaks"
+    in:
+      milestones: [7, 7, 1]
+    out: 15
+  - name: "two_maxima_with_tail"
+    in:
+      milestones: [9, 9, 2, 2]
+    out: 22
+  - name: "one_peak_just_feasible"
+    in:
+      milestones: [8, 3, 3, 2]
+    out: 16
+  - name: "one_peak_just_infeasible"
+    in:
+      milestones: [9, 3, 3, 2]
+    out: 17
+  - name: "large_total_small_peak"
+    in:
+      milestones: [100, 99, 98, 97]
+    out: 394
+  - name: "power_of_two_values"
+    in:
+      milestones: [1, 2, 4, 8, 16]
+    out: 31
+  - name: "prime_values"
+    in:
+      milestones: [2, 3, 5, 7, 11]
+    out: 28
+  - name: "one_peak_100_rest_1"
+    in:
+      milestones: [100, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 19
+  - name: "near_maximum_many_projects"
+    in:
+      milestones: [1000000000, 999999999, 999999998, 999999997]
+    out: 3999999994
+  - name: "large_dominant_with_three"
+    in:
+      milestones: [1000000000, 1, 1, 1]
+    out: 7
+  - name: "large_dominant_with_many"
+    in:
+      milestones: [1000000000, 100, 100, 100, 100]
+    out: 801
+  - name: "alternating_sizes"
+    in:
+      milestones: [2, 50, 2, 50, 2, 50]
+    out: 156
+  - name: "repeated_moderate"
+    in:
+      milestones: [12, 12, 12, 12, 12, 12, 12]
+    out: 84
+  - name: "long_tail"
+    in:
+      milestones: [30, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: 75
+  - name: "single_peak_equals_sum_tail"
+    in:
+      milestones: [25, 5, 5, 5, 5, 5]
+    out: 50
+  - name: "single_peak_exceeds_sum_tail"
+    in:
+      milestones: [26, 5, 5, 5, 5, 5]
+    out: 51
+  - name: "small_mixed"
+    in:
+      milestones: [2, 1, 3, 1, 2]
+    out: 9
+  - name: "stress_random_small"
+    seed: 195301
+    in:
+      milestones:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "stress_random_medium"
+    seed: 195302
+    in:
+      milestones:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "stress_large_uniform"
+    seed: 195303
+    in:
+      milestones:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "stress_large_small_values"
+    seed: 195304
+    in:
+      milestones:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "stress_large_max_values"
+    seed: 195305
+    in:
+      milestones:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 999999998
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"

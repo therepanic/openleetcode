@@ -1,0 +1,236 @@
+entry:
+  id: 1915
+  title: "number-of-wonderful-substrings"
+  params:
+    word:
+      type: string
+  call:
+    cpp: "Solution().wonderfulSubstrings({word})"
+    rust: "Solution::wonderful_substrings({word})"
+    python3: "Solution().wonderfulSubstrings({word})"
+    python2: "Solution().wonderfulSubstrings({word})"
+    ruby: "wonderful_substrings({word})"
+    java: "new Solution().wonderfulSubstrings({word})"
+    csharp: "new Solution().WonderfulSubstrings({word})"
+    kotlin: "Solution().wonderfulSubstrings({word})"
+    go: "wonderfulSubstrings({word})"
+    dart: "Solution().wonderfulSubstrings({word})"
+    swift: "Solution().wonderfulSubstrings({word})"
+    typescript: "wonderfulSubstrings({word})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().wonderfulSubstrings(word, {result})"
+    checker: |
+      class Checker:
+          def wonderfulSubstrings(self, word, result):
+              if not isinstance(word, str) or not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not (1 <= len(word) <= 100000) or any(ch < 'a' or ch > 'j' for ch in word):
+                  return False
+              counts = [0] * 1024
+              counts[0] = 1
+              mask = 0
+              expected = 0
+              for ch in word:
+                  mask ^= 1 << (ord(ch) - ord('a'))
+                  expected += counts[mask]
+                  for bit in range(10):
+                      expected += counts[mask ^ (1 << bit)]
+                  counts[mask] += 1
+              return result == expected
+
+seed: 1915
+
+tests:
+  - name: "single_a"
+    in:
+      word: "a"
+    out: 1
+  - name: "single_j"
+    in:
+      word: "j"
+    out: 1
+  - name: "two_distinct"
+    in:
+      word: "ab"
+    out: 2
+  - name: "two_equal"
+    in:
+      word: "aa"
+    out: 3
+  - name: "example_aba"
+    in:
+      word: "aba"
+    out: 4
+  - name: "example_aabb"
+    in:
+      word: "aabb"
+    out: 9
+  - name: "example_he"
+    in:
+      word: "he"
+    out: 2
+  - name: "all_letters_once"
+    in:
+      word: "abcdefghij"
+    out: 10
+  - name: "all_letters_reverse"
+    in:
+      word: "jihgfedcba"
+    out: 10
+  - name: "two_cycles"
+    in:
+      word: "abcdefghijabcdefghij"
+    out: 23
+  - name: "four_a"
+    in:
+      word: "aaaa"
+    out: 10
+  - name: "six_b"
+    in:
+      word: "bbbbbb"
+    out: 21
+  - name: "alternating_ab"
+    in:
+      word: "abab"
+    out: 7
+  - name: "three_distinct"
+    in:
+      word: "abc"
+    out: 3
+  - name: "double_then_single"
+    in:
+      word: "aab"
+    out: 5
+  - name: "five_distinct"
+    in:
+      word: "abcde"
+    out: 5
+  - name: "three_pairs"
+    in:
+      word: "aabbcc"
+    out: 18
+  - name: "five_pair_prefix"
+    in:
+      word: "aabbccdde"
+    out: 35
+  - name: "double_j_suffix"
+    in:
+      word: "abcdefghijj"
+    out: 13
+  - name: "six_pairs"
+    in:
+      word: "aabbccddeeff"
+    out: 63
+  - name: "thirty_mixed"
+    in:
+      word: "abcdefghijabcdefghijabcde"
+    out: 43
+  - name: "twenty_a"
+    in:
+      word: "aaaaaaaaaaaaaaaaaaaa"
+    out: 210
+  - name: "forty_alternating"
+    in:
+      word: "abababababababababababababababababababab"
+    out: 610
+  - name: "thirty_abc"
+    in:
+      word: "abcabcabcabcabcabcabcabcabcabc"
+    out: 225
+  - name: "forty_aabb"
+    in:
+      word: "aabbaabbaabbaabbaabbaabbaabbaabbaabbaabb"
+    out: 720
+  - name: "ten_ab"
+    in:
+      word: "ababababab"
+    out: 40
+  - name: "ten_abcde"
+    in:
+      word: "abcdeabcde"
+    out: 13
+  - name: "ten_pairs"
+    in:
+      word: "aabbccddeeaabbccdde"
+    out: 150
+  - name: "edge_a_and_j"
+    in:
+      word: "ajaja"
+    out: 11
+  - name: "nested_masks"
+    in:
+      word: "abcddcba"
+    out: 18
+  - name: "mixed_boundary_letters"
+    in:
+      word: "aijjiiia"
+    out: 25
+  - name: "palindrome_mixed"
+    in:
+      word: "abccba"
+    out: 13
+  - name: "repeated_blocks"
+    in:
+      word: "aabbccaabbcc"
+    out: 66
+  - name: "long_single_letter"
+    in:
+      word: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    out: 1275
+  - name: "long_two_letters"
+    in:
+      word: "ababababababababababababababababababababababababab"
+    out: 950
+  - name: "generated_small"
+    seed: 191501
+    in:
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 40
+        alphabet: "abcdefghij"
+  - name: "generated_medium"
+    seed: 191502
+    in:
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 100
+          max: 500
+        alphabet: "abcdefghij"
+  - name: "generated_large"
+    seed: 191503
+    in:
+      word:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 10000
+          max: 20000
+        alphabet: "abcdefghij"
+  - name: "generated_maximum"
+    seed: 191504
+    in:
+      word:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghij"
+  - name: "generated_biased"
+    seed: 191505
+    in:
+      word:
+        gen: "str"
+        len: 50000
+        alphabet: "aaabcj"

@@ -1,0 +1,303 @@
+entry:
+  id: 1521
+  title: "find-a-value-of-a-mysterious-function-closest-to-target"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    target:
+      type: int
+  call:
+    cpp: "Solution().closestToTarget({arr}, {target})"
+    rust: "Solution::closest_to_target({arr}, {target})"
+    python3: "Solution().closestToTarget({arr}, {target})"
+    python2: "Solution().closestToTarget({arr}, {target})"
+    ruby: "closest_to_target({arr}, {target})"
+    java: "new Solution().closestToTarget({arr}, {target})"
+    csharp: "new Solution().ClosestToTarget({arr}, {target})"
+    kotlin: "Solution().closestToTarget({arr}, {target})"
+    go: "closestToTarget({arr}, {target})"
+    dart: "Solution().closestToTarget({arr}, {target})"
+    swift: "Solution().closestToTarget({arr}, {target})"
+    typescript: "closestToTarget({arr}, {target})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().closestToTarget(arr, target, {result})"
+    checker: |
+      class Checker:
+          def closestToTarget(self, arr, target, result):
+              if not isinstance(result, int) or isinstance(result, bool) or result < 0:
+                  return False
+              best = 10**18
+              active = set()
+              for value in arr:
+                  current = {value}
+                  for old in active:
+                      current.add(old & value)
+                  active = current
+                  for value2 in active:
+                      best = min(best, abs(value2 - target))
+              return result == best
+seed: 15211521
+tests:
+  - name: example-one
+    in:
+      arr: [9, 12, 3, 7, 15]
+      target: 5
+    out: 2
+  - name: example-two
+    in:
+      arr: [1000000, 1000000, 1000000]
+      target: 1
+    out: 999999
+  - name: example-three
+    in:
+      arr: [1, 2, 4, 8, 16]
+      target: 0
+    out: 0
+  - name: single-exact
+    in:
+      arr: [37]
+      target: 37
+    out: 0
+  - name: single-below
+    in:
+      arr: [37]
+      target: 0
+    out: 37
+  - name: single-above
+    in:
+      arr: [37]
+      target: 100
+    out: 63
+  - name: all-equal
+    in:
+      arr: [255, 255, 255, 255]
+      target: 200
+    out: 55
+  - name: decreasing-bits
+    in:
+      arr: [31, 15, 7, 3, 1]
+      target: 6
+    out: 1
+  - name: increasing-bits
+    in:
+      arr: [1, 3, 7, 15, 31]
+      target: 14
+    out: 1
+  - name: zero-target
+    in:
+      arr: [8, 4, 2, 1]
+      target: 0
+    out: 0
+  - name: target-overall-range
+    in:
+      arr: [1, 1, 1]
+      target: 10000000
+    out: 9999999
+  - name: adjacent-zero-and
+    in:
+      arr: [8, 7]
+      target: 0
+    out: 0
+  - name: duplicate-values
+    in:
+      arr: [42, 42, 40, 42]
+      target: 41
+    out: 1
+  - name: high-values
+    in:
+      arr: [1048575, 1048574, 1048572]
+      target: 1048573
+    out: 1
+  - name: sparse-bits
+    in:
+      arr: [65536, 32768, 16384, 8192]
+      target: 12345
+    out: 4039
+  - name: alternating
+    in:
+      arr: [170, 85, 170, 85, 170]
+      target: 80
+    out: 5
+  - name: mixed-small
+    in:
+      arr: [13, 6, 11, 9, 4, 15]
+      target: 10
+    out: 1
+  - name: powers-and-mask
+    in:
+      arr: [64, 96, 112, 120]
+      target: 100
+    out: 4
+  - name: one-bit-values
+    in:
+      arr: [2, 2, 4, 8, 16]
+      target: 3
+    out: 1
+  - name: all-ones
+    in:
+      arr: [1, 1, 1, 1, 1]
+      target: 0
+    out: 1
+  - name: wide-spread
+    in:
+      arr: [1000000, 524288, 262144, 131072, 65536]
+      target: 500000
+    out: 24288
+  - name: short-three
+    in:
+      arr: [10, 12, 14]
+      target: 11
+    out: 1
+  - name: short-four
+    in:
+      arr: [7, 11, 13, 15]
+      target: 9
+    out: 0
+  - name: repeated-zero-producing
+    in:
+      arr: [3, 4, 12, 5]
+      target: 2
+    out: 1
+  - name: near-million
+    in:
+      arr: [999999, 999998, 999997]
+      target: 999996
+    out: 0
+  - name: binary-boundary
+    in:
+      arr: [524287, 524288, 524289]
+      target: 524288
+    out: 0
+  - name: long-repeated
+    in:
+      arr: [1023, 1022, 1021, 1020, 1023, 1022, 1021, 1020]
+      target: 1020
+    out: 0
+  - name: target-between
+    in:
+      arr: [48, 56, 60, 62]
+      target: 59
+    out: 1
+  - name: isolated-low
+    in:
+      arr: [100, 200, 400, 800]
+      target: 3
+    out: 3
+  - name: mask-collapse
+    in:
+      arr: [255, 240, 15, 3]
+      target: 17
+    out: 2
+  - name: ten-values
+    in:
+      arr: [31, 30, 28, 24, 16, 1, 3, 7, 15, 31]
+      target: 20
+    out: 4
+  - name: max-single
+    in:
+      arr: [1000000]
+      target: 10000000
+    out: 9000000
+  - name: target-one
+    in:
+      arr: [2, 6, 14, 30]
+      target: 1
+    out: 1
+  - name: target-max
+    in:
+      arr: [1000000, 999999]
+      target: 10000000
+    out: 9000000
+  - name: varied-nine
+    in:
+      arr: [5, 18, 27, 44, 63, 72, 91, 128, 255]
+      target: 35
+    out: 8
+  - name: generator-small
+    in:
+      arr:
+        gen: "array"
+        len: 1
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 0
+        max: 10000000
+  - name: generator-medium
+    in:
+      arr:
+        gen: "array"
+        len: 37
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 0
+        max: 10000000
+  - name: generator-large
+    in:
+      arr:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 0
+        max: 10000000
+  - name: generator-near-limit
+    in:
+      arr:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 0
+        max: 10000000
+  - name: generator-max-limit
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      target:
+        gen: "int"
+        min: 0
+        max: 10000000

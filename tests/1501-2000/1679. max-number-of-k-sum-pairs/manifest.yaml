@@ -1,0 +1,325 @@
+entry:
+  id: 1679
+  title: "max-number-of-k-sum-pairs"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxOperations({nums}, {k})"
+    rust: "Solution::max_operations({nums}, {k})"
+    python3: "Solution().maxOperations({nums}, {k})"
+    python2: "Solution().maxOperations({nums}, {k})"
+    ruby: "max_operations({nums}, {k})"
+    java: "new Solution().maxOperations({nums}, {k})"
+    csharp: "new Solution().MaxOperations({nums}, {k})"
+    kotlin: "Solution().maxOperations({nums}, {k})"
+    go: "maxOperations({nums}, {k})"
+    dart: "Solution().maxOperations({nums}, {k})"
+    swift: "Solution().maxOperations({nums}, {k})"
+    typescript: "maxOperations({nums}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxOperations(nums, k, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def maxOperations(self, nums, k, result):
+              counts = Counter(nums)
+              expected = 0
+              for value in list(counts):
+                  other = k - value
+                  if other not in counts:
+                      continue
+                  if value == other:
+                      expected += counts[value] // 2
+                      counts[value] = 0
+                  elif counts[value] > 0 and counts[other] > 0:
+                      pairs = min(counts[value], counts[other])
+                      expected += pairs
+                      counts[value] -= pairs
+                      counts[other] -= pairs
+              return result == expected
+
+seed: 1679
+
+tests:
+  - name: example-balanced
+    in:
+      nums: [1, 2, 3, 4]
+      k: 5
+    out: 2
+  - name: example-duplicate-threes
+    in:
+      nums: [3, 1, 3, 4, 3]
+      k: 6
+    out: 1
+  - name: single-element
+    in:
+      nums: [5]
+      k: 5
+    out: 0
+  - name: two-elements-match
+    in:
+      nums: [4, 7]
+      k: 11
+    out: 1
+  - name: two-elements-miss
+    in:
+      nums: [4, 7]
+      k: 10
+    out: 0
+  - name: all-identical-even
+    in:
+      nums: [5, 5, 5, 5, 5, 5]
+      k: 10
+    out: 3
+  - name: all-identical-odd
+    in:
+      nums: [5, 5, 5, 5, 5]
+      k: 10
+    out: 2
+  - name: no-complements
+    in:
+      nums: [1, 1, 1, 1]
+      k: 100
+    out: 0
+  - name: complement-shortage
+    in:
+      nums: [1, 1, 1, 9, 9]
+      k: 10
+    out: 2
+  - name: unsorted-input
+    in:
+      nums: [4, 1, 3, 2]
+      k: 5
+    out: 2
+  - name: negatives-not-allowed-boundary
+    in:
+      nums: [1, 2, 999999999, 1000000000]
+      k: 1000000000
+    out: 1
+  - name: minimum-values
+    in:
+      nums: [1, 1, 2, 2, 3, 3]
+      k: 3
+    out: 2
+  - name: maximum-values
+    in:
+      nums: [1000000000, 999999999, 1, 2]
+      k: 1000000000
+    out: 1
+  - name: several-value-groups
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8]
+      k: 9
+    out: 4
+  - name: extra-unmatched-large
+    in:
+      nums: [1, 8, 2, 7, 3, 6, 4, 5, 100]
+      k: 9
+    out: 4
+  - name: repeated-low-side
+    in:
+      nums: [2, 2, 2, 2, 8]
+      k: 10
+    out: 1
+  - name: repeated-high-side
+    in:
+      nums: [2, 8, 8, 8, 8]
+      k: 10
+    out: 1
+  - name: target-one-billion
+    in:
+      nums: [1, 999999999, 2, 999999998, 500000000]
+      k: 1000000000
+    out: 2
+  - name: alternating-pairs
+    in:
+      nums: [10, 1, 9, 2, 8, 3, 7, 4, 6, 5]
+      k: 11
+    out: 5
+  - name: one-valid-pair
+    in:
+      nums: [1, 2, 2, 2, 9, 10]
+      k: 11
+    out: 2
+  - name: pair-with-self-and-other
+    in:
+      nums: [5, 5, 5, 5, 4, 6]
+      k: 10
+    out: 3
+  - name: four-pairs-with-noise
+    in:
+      nums: [12, 88, 13, 87, 14, 86, 15, 85, 1, 2, 3]
+      k: 100
+    out: 4
+  - name: target-two
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 2]
+      k: 2
+    out: 3
+  - name: target-three
+    in:
+      nums: [1, 1, 1, 2, 2, 3]
+      k: 3
+    out: 2
+  - name: target-two-billion
+    in:
+      nums: [1000000000, 1000000000, 999999999, 999999999]
+      k: 1000000000
+    out: 0
+  - name: sorted-ascending
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7]
+      k: 8
+    out: 3
+  - name: sorted-descending
+    in:
+      nums: [7, 6, 5, 4, 3, 2, 1]
+      k: 8
+    out: 3
+  - name: many-duplicates
+    in:
+      nums: [1, 1, 1, 1, 4, 4, 4, 4, 4]
+      k: 5
+    out: 4
+  - name: disjoint-complements
+    in:
+      nums: [2, 3, 4, 5, 6, 7, 8]
+      k: 20
+    out: 0
+  - name: mixed-boundaries
+    in:
+      nums: [1, 1000000000, 500000000, 500000000, 999999999, 1]
+      k: 1000000001
+    out: 1
+  - name: odd-length-perfect-prefix
+    in:
+      nums: [1, 9, 2, 8, 3, 7, 100]
+      k: 10
+    out: 3
+  - name: value-duplicates-and-noise
+    in:
+      nums: [6, 6, 4, 4, 4, 4, 1, 2, 9]
+      k: 10
+    out: 3
+  - name: large-static-structured
+    in:
+      nums:
+        [
+          1,
+          999999999,
+          2,
+          999999998,
+          3,
+          999999997,
+          4,
+          999999996,
+          5,
+          999999995,
+          6,
+          999999994,
+          7,
+          999999993,
+          8,
+          999999992,
+          9,
+          999999991,
+          10,
+          999999990,
+        ]
+      k: 1000000000
+    out: 10
+  - name: generator-random-small
+    in:
+      nums:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: 2
+        max: 2000
+    seed: 101
+  - name: generator-random-medium
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: 2
+        max: 200000
+    seed: 202
+  - name: generator-maximum-range
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: 1
+        max: 1000000000
+    seed: 303
+  - name: generator-many-duplicates
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+        distinct: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: 2
+        max: 40
+    seed: 404
+  - name: generator-upper-values
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 999900000
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: 999900000
+        max: 1000000000
+    seed: 505

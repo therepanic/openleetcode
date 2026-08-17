@@ -1,0 +1,373 @@
+entry:
+  id: 1655
+  title: distribute-repeating-integers
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    quantity:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().canDistribute({nums}, {quantity})"
+    rust: "Solution::can_distribute({nums}, {quantity})"
+    python3: "Solution().canDistribute({nums}, {quantity})"
+    python2: "Solution().canDistribute({nums}, {quantity})"
+    ruby: "can_distribute({nums}, {quantity})"
+    java: "new Solution().canDistribute({nums}, {quantity})"
+    csharp: "new Solution().CanDistribute({nums}, {quantity})"
+    kotlin: "Solution().canDistribute({nums}, {quantity})"
+    go: "canDistribute({nums}, {quantity})"
+    dart: "Solution().canDistribute({nums}, {quantity})"
+    swift: "Solution().canDistribute({nums}, {quantity})"
+    typescript: "canDistribute({nums}, {quantity})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().canDistribute(nums, quantity, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def canDistribute(self, nums, quantity, result):
+              if not isinstance(result, bool):
+                  return False
+              capacities = list(Counter(nums).values())
+              orders = sorted(quantity, reverse=True)
+              memo = {}
+
+              def feasible(i, caps):
+                  if i == len(orders):
+                      return True
+                  key = (i, tuple(sorted(caps, reverse=True)))
+                  if key in memo:
+                      return memo[key]
+                  need = orders[i]
+                  seen = set()
+                  for j, cap in enumerate(caps):
+                      if cap >= need and cap not in seen:
+                          seen.add(cap)
+                          nxt = list(caps)
+                          nxt[j] -= need
+                          if feasible(i + 1, nxt):
+                              memo[key] = True
+                              return True
+                  memo[key] = False
+                  return False
+
+              return result == feasible(0, capacities)
+
+seed: 1655
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, 2, 3, 4]
+      quantity: [2]
+    out: false
+    judge:
+      type: exact
+  - name: example-two
+    in:
+      nums: [1, 2, 3, 3]
+      quantity: [2]
+    out: true
+    judge:
+      type: exact
+  - name: example-three
+    in:
+      nums: [1, 1, 2, 2]
+      quantity: [2, 2]
+    out: true
+    judge:
+      type: exact
+  - name: one-item-order
+    in:
+      nums: [7]
+      quantity: [1]
+    out: true
+    judge:
+      type: exact
+  - name: single-frequency-insufficient
+    in:
+      nums: [5, 5, 5]
+      quantity: [4]
+    out: false
+    judge:
+      type: exact
+  - name: split-one-frequency
+    in:
+      nums: [2, 2, 2, 2, 2]
+      quantity: [3, 2]
+    out: true
+    judge:
+      type: exact
+  - name: two-orders-one-capacity
+    in:
+      nums: [2, 2, 2, 2, 2]
+      quantity: [3, 1]
+    out: true
+    judge:
+      type: exact
+  - name: multiple-equal-capacities
+    in:
+      nums: [1, 1, 2, 2, 3, 3]
+      quantity: [1, 1, 1]
+    out: true
+    judge:
+      type: exact
+  - name: impossible-total-capacity
+    in:
+      nums: [1, 1, 2, 2, 3, 3]
+      quantity: [2, 2, 1]
+    out: true
+    judge:
+      type: exact
+  - name: exact-disjoint-groups
+    in:
+      nums: [1, 1, 1, 2, 2, 2, 3, 3]
+      quantity: [3, 2, 2]
+    out: true
+    judge:
+      type: exact
+  - name: order-independent
+    in:
+      nums: [4, 4, 4, 4, 5, 5, 5, 6, 6]
+      quantity: [2, 3, 1]
+    out: true
+    judge:
+      type: exact
+  - name: duplicate-demand
+    in:
+      nums: [1, 1, 1, 1, 2, 2, 2, 2]
+      quantity: [3, 3]
+    out: true
+    judge:
+      type: exact
+  - name: exact-duplicate-demand
+    in:
+      nums: [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+      quantity: [4, 4, 4]
+    out: true
+    judge:
+      type: exact
+  - name: many-singletons
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      quantity: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: true
+    judge:
+      type: exact
+  - name: too-many-customers
+    in:
+      nums: [1, 1, 2, 2, 3, 3]
+      quantity: [2, 2, 2, 1]
+    out: false
+    judge:
+      type: exact
+  - name: scarce-large-order
+    in:
+      nums: [1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3]
+      quantity: [5, 4, 3]
+    out: true
+    judge:
+      type: exact
+  - name: scarce-large-order-fail
+    in:
+      nums: [1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3]
+      quantity: [6, 4, 2]
+    out: false
+    judge:
+      type: exact
+  - name: capacity-remainder
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 2, 2, 2]
+      quantity: [4, 2, 2]
+    out: true
+    judge:
+      type: exact
+  - name: capacity-remainder-success
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 2, 2, 2]
+      quantity: [4, 2, 1]
+    out: true
+    judge:
+      type: exact
+  - name: values-at-upper-bound
+    in:
+      nums: [1000, 1000, 999, 999, 998]
+      quantity: [2, 2, 1]
+    out: true
+    judge:
+      type: exact
+  - name: value-irrelevance
+    in:
+      nums: [1000, 1, 1000, 1, 500, 500]
+      quantity: [2, 2, 2]
+    out: true
+    judge:
+      type: exact
+  - name: five-capacities
+    in:
+      nums: [1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5]
+      quantity: [4, 3, 2, 1]
+    out: true
+    judge:
+      type: exact
+  - name: five-capacities-fail
+    in:
+      nums: [1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5]
+      quantity: [4, 4, 2, 2]
+    out: false
+    judge:
+      type: exact
+  - name: m-ten-success
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10]
+      quantity: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+    out: true
+    judge:
+      type: exact
+  - name: m-ten-fail
+    in:
+      nums: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10]
+      quantity: [3, 3, 2, 2, 2, 2, 2, 2, 2, 2]
+    out: false
+    judge:
+      type: exact
+  - name: large-single-capacity
+    in:
+      nums:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 1
+          max: 1
+        elemType: int
+      quantity: [100000]
+  - name: large-balanced
+    in:
+      nums:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 1
+          max: 10
+        elemType: int
+      quantity:
+        [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+  - name: large-impossible-demand
+    in:
+      nums:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 1
+          max: 50
+        elemType: int
+      quantity: [100000]
+  - name: generated-small
+    in:
+      nums:
+        gen: array
+        len: 60
+        of:
+          gen: int
+          min: 1
+          max: 6
+        elemType: int
+      quantity:
+        gen: array
+        len: 5
+        of:
+          gen: int
+          min: 1
+          max: 12
+        elemType: int
+  - name: generated-medium
+    in:
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: 1
+          max: 20
+        elemType: int
+      quantity:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 100
+        elemType: int
+  - name: generated-large-skewed
+    in:
+      nums:
+        gen: array
+        len: 50000
+        of:
+          gen: int
+          min: 1
+          max: 2
+        elemType: int
+      quantity:
+        gen: array
+        len: 8
+        of:
+          gen: int
+          min: 1
+          max: 5000
+        elemType: int
+  - name: generated-large-many-values
+    in:
+      nums:
+        gen: array
+        len: 100000
+        of:
+          gen: int
+          min: 1
+          max: 50
+        elemType: int
+      quantity:
+        gen: array
+        len: 10
+        of:
+          gen: int
+          min: 1
+          max: 10000
+        elemType: int
+  - name: all-orders-one-value
+    in:
+      nums: [7, 7, 7, 7, 7, 7, 7]
+      quantity: [2, 2, 2]
+    out: true
+    judge:
+      type: exact
+  - name: one-order-uses-all
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8]
+      quantity: [8]
+    out: false
+    judge:
+      type: exact
+  - name: exact-largest-group
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 2, 2, 3]
+      quantity: [6, 2]
+    out: true
+    judge:
+      type: exact

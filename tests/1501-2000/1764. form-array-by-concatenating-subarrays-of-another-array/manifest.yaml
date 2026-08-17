@@ -1,0 +1,284 @@
+entry:
+  id: 1764
+  title: "form-array-by-concatenating-subarrays-of-another-array"
+  params:
+    groups:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().canChoose({groups}, {nums})"
+    rust: "Solution::can_choose({groups}, {nums})"
+    python3: "Solution().canChoose({groups}, {nums})"
+    python2: "Solution().canChoose({groups}, {nums})"
+    ruby: "can_choose({groups}, {nums})"
+    java: "new Solution().canChoose({groups}, {nums})"
+    csharp: "new Solution().CanChoose({groups}, {nums})"
+    kotlin: "Solution().canChoose({groups}, {nums})"
+    go: "canChoose({groups}, {nums})"
+    dart: "Solution().canChoose({groups}, {nums})"
+    swift: "Solution().canChoose({groups}, {nums})"
+    typescript: "canChoose({groups}, {nums})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().canChoose(groups, nums, {result})"
+    checker: |
+      class Checker:
+          def canChoose(self, groups, nums, result):
+              i = 0
+              expected = True
+              for group in groups:
+                  found = False
+                  while i + len(group) <= len(nums):
+                      if nums[i:i + len(group)] == group:
+                          i += len(group)
+                          found = True
+                          break
+                      i += 1
+                  if not found:
+                      expected = False
+                      break
+              return isinstance(result, bool) and result == expected
+
+seed: 1764
+
+tests:
+  - name: examples-1
+    in:
+      groups: [[1, -1, -1], [3, -2, 0]]
+      nums: [1, -1, 0, 1, -1, -1, 3, -2, 0]
+    out: true
+  - name: examples-2-order
+    in:
+      groups: [[10, -2], [1, 2, 3, 4]]
+      nums: [1, 2, 3, 4, 10, -2]
+    out: false
+  - name: examples-3-overlap
+    in:
+      groups: [[1, 2, 3], [3, 4]]
+      nums: [7, 7, 1, 2, 3, 4, 7, 7]
+    out: false
+  - name: one-group-exact
+    in:
+      groups: [[5, 6, 7]]
+      nums: [5, 6, 7]
+    out: true
+  - name: one-group-inside
+    in:
+      groups: [[5, 6]]
+      nums: [0, 5, 6, 9]
+    out: true
+  - name: one-group-missing
+    in:
+      groups: [[5, 6]]
+      nums: [0, 5, 7, 6]
+    out: false
+  - name: empty-gap
+    in:
+      groups: [[1], [3]]
+      nums: [1, 2, 3]
+    out: true
+  - name: adjacent-groups
+    in:
+      groups: [[1, 2], [3, 4]]
+      nums: [1, 2, 3, 4]
+    out: true
+  - name: repeated-groups
+    in:
+      groups: [[2], [2], [2]]
+      nums: [2, 2, 2]
+    out: true
+  - name: repeated-insufficient
+    in:
+      groups: [[2], [2], [2]]
+      nums: [2, 2]
+    out: false
+  - name: repeated-with-noise
+    in:
+      groups: [[2], [2]]
+      nums: [2, 9, 2]
+    out: true
+  - name: negative-values
+    in:
+      groups: [[-3, -2], [0, -1]]
+      nums: [8, -3, -2, 5, 0, -1]
+    out: true
+  - name: large-values
+    in:
+      groups: [[10000000], [-10000000]]
+      nums: [10000000, -10000000]
+    out: true
+  - name: large-values-reversed
+    in:
+      groups: [[10000000], [-10000000]]
+      nums: [-10000000, 10000000]
+    out: false
+  - name: prefix-match-then-valid
+    in:
+      groups: [[1, 2], [3]]
+      nums: [1, 9, 1, 2, 3]
+    out: true
+  - name: prefix-match-wrong-order
+    in:
+      groups: [[1, 2], [3]]
+      nums: [1, 2, 9, 3]
+    out: true
+  - name: group-prefix-conflict
+    in:
+      groups: [[1, 2, 3], [2, 3]]
+      nums: [1, 2, 3, 2, 3]
+    out: true
+  - name: overlapping-only
+    in:
+      groups: [[1, 2], [2, 3]]
+      nums: [1, 2, 3]
+    out: false
+  - name: trailing-unused
+    in:
+      groups: [[4], [5]]
+      nums: [0, 4, 0, 5, 0]
+    out: true
+  - name: no-space-after-first
+    in:
+      groups: [[4, 5], [6]]
+      nums: [4, 5]
+    out: false
+  - name: many-singletons
+    in:
+      groups: [[1], [3], [5], [7], [9]]
+      nums: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: true
+  - name: singleton-order-fail
+    in:
+      groups: [[1], [3], [5]]
+      nums: [5, 3, 1]
+    out: false
+  - name: duplicate-long-group
+    in:
+      groups: [[1, 1, 2], [1, 1, 2]]
+      nums: [1, 1, 2, 0, 1, 1, 2]
+    out: true
+  - name: duplicate-long-insufficient
+    in:
+      groups: [[1, 1, 2], [1, 1, 2]]
+      nums: [1, 1, 2, 0, 1, 2]
+    out: false
+  - name: group-at-end
+    in:
+      groups: [[0, 0], [9, 8, 7]]
+      nums: [1, 2, 3, 0, 0, 4, 9, 8, 7]
+    out: true
+  - name: first-group-at-end-impossible
+    in:
+      groups: [[9, 8], [7]]
+      nums: [7, 9, 8]
+    out: false
+  - name: all-negative
+    in:
+      groups: [[-1, -2], [-3, -4]]
+      nums: [-1, -2, -3, -4]
+    out: true
+  - name: mismatch-last-element
+    in:
+      groups: [[1, 2, 3], [4, 5]]
+      nums: [1, 2, 9, 4, 5]
+    out: false
+  - name: later-valid-occurrence
+    in:
+      groups: [[1, 2], [4]]
+      nums: [1, 9, 1, 2, 4]
+    out: true
+  - name: later-occurrence-would-overlap
+    in:
+      groups: [[1, 2], [2, 3]]
+      nums: [1, 2, 1, 2, 3]
+    out: true
+  - name: all-values-equal
+    in:
+      groups: [[3, 3], [3, 3], [3]]
+      nums: [3, 3, 3, 3, 3]
+    out: true
+  - name: generated-no-match
+    in:
+      groups: [[10000000, 9999999], [8888888]]
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -10000000
+          max: 10000000
+        elemType: int
+    judge:
+      type: exact
+    seed: 176401
+  - name: generated-singletons
+    in:
+      groups: [[10000000], [-10000000]]
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -10000000
+          max: 10000000
+        elemType: int
+    judge:
+      type: exact
+    seed: 176402
+  - name: generated-long-pattern
+    in:
+      groups: [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -10000000
+          max: 10000000
+        elemType: int
+    judge:
+      type: exact
+    seed: 176403
+  - name: generated-negative-pattern
+    in:
+      groups: [[-1, -2, -3], [4, 5]]
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -10000000
+          max: 10000000
+        elemType: int
+    judge:
+      type: exact
+    seed: 176404
+  - name: generated-repeated-pattern
+    in:
+      groups: [[0, 0, 0], [1, 1]]
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -10000000
+          max: 10000000
+        elemType: int
+    judge:
+      type: exact
+    seed: 176405

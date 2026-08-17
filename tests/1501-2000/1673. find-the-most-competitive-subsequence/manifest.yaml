@@ -1,0 +1,321 @@
+entry:
+  id: 1673
+  title: "find-the-most-competitive-subsequence"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().mostCompetitive({nums}, {k})"
+    rust: "Solution::most_competitive({nums}, {k})"
+    python3: "Solution().mostCompetitive({nums}, {k})"
+    python2: "Solution().mostCompetitive({nums}, {k})"
+    ruby: "most_competitive({nums}, {k})"
+    java: "new Solution().mostCompetitive({nums}, {k})"
+    csharp: "new Solution().MostCompetitive({nums}, {k})"
+    kotlin: "Solution().mostCompetitive({nums}, {k})"
+    go: "mostCompetitive({nums}, {k})"
+    dart: "Solution().mostCompetitive({nums}, {k})"
+    swift: "Solution().mostCompetitive({nums}, {k})"
+    typescript: "mostCompetitive({nums}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().mostCompetitive(nums, k, {result})"
+    checker: |
+      class Checker:
+          def mostCompetitive(self, nums, k, result):
+              if not isinstance(result, list) or len(result) != k:
+                  return False
+              stack = []
+              n = len(nums)
+              for i, value in enumerate(nums):
+                  while stack and stack[-1] > value and n - i - 1 >= k - len(stack):
+                      stack.pop()
+                  stack.append(value)
+              return result == stack[:k]
+
+seed: 1673
+
+tests:
+  - name: example-one
+    in:
+      nums: [3, 5, 2, 6]
+      k: 2
+    out: [2, 6]
+    judge:
+      type: "exact"
+  - name: example-two
+    in:
+      nums: [2, 4, 3, 3, 5, 4, 9, 6]
+      k: 4
+    out: [2, 3, 3, 4]
+    judge:
+      type: "exact"
+  - name: keep-all
+    in:
+      nums: [1, 2, 3, 4]
+      k: 4
+    out: [1, 2, 3, 4]
+    judge:
+      type: "exact"
+  - name: one-element
+    in:
+      nums: [9]
+      k: 1
+    out: [9]
+    judge:
+      type: "exact"
+  - name: choose-global-minimum
+    in:
+      nums: [8, 7, 6, 5, 4]
+      k: 1
+    out: [4]
+    judge:
+      type: "exact"
+  - name: descending-half
+    in:
+      nums: [9, 8, 7, 6, 5, 4]
+      k: 3
+    out: [6, 5, 4]
+    judge:
+      type: "exact"
+  - name: ascending
+    in:
+      nums: [0, 1, 2, 3, 4, 5]
+      k: 3
+    out: [0, 1, 2]
+    judge:
+      type: "exact"
+  - name: duplicates
+    in:
+      nums: [2, 2, 1, 2, 1, 2]
+      k: 4
+    out: [1, 2, 1, 2]
+    judge:
+      type: "exact"
+  - name: zeros
+    in:
+      nums: [0, 0, 0, 1, 0]
+      k: 3
+    out: [0, 0, 0]
+    judge:
+      type: "exact"
+  - name: late-drop
+    in:
+      nums: [4, 5, 6, 1, 2, 3]
+      k: 3
+    out: [1, 2, 3]
+    judge:
+      type: "exact"
+  - name: early-drop-limited
+    in:
+      nums: [1, 9, 8, 7, 6]
+      k: 4
+    out: [1, 8, 7, 6]
+    judge:
+      type: "exact"
+  - name: alternating
+    in:
+      nums: [5, 1, 5, 1, 5, 1, 5]
+      k: 4
+    out: [1, 1, 1, 5]
+    judge:
+      type: "exact"
+  - name: equal-boundary
+    in:
+      nums: [3, 1, 1, 1, 2]
+      k: 3
+    out: [1, 1, 1]
+    judge:
+      type: "exact"
+  - name: large-values
+    in:
+      nums: [1000000000, 999999999, 1, 999999998, 0]
+      k: 2
+    out: [1, 0]
+    judge:
+      type: "exact"
+  - name: negative-not-allowed-boundary
+    in:
+      nums: [0, 1000000000, 0, 1000000000]
+      k: 2
+    out: [0, 0]
+    judge:
+      type: "exact"
+  - name: k-near-n
+    in:
+      nums: [5, 1, 4, 2, 3]
+      k: 4
+    out: [1, 4, 2, 3]
+    judge:
+      type: "exact"
+  - name: first-minimum
+    in:
+      nums: [1, 5, 4, 3, 2]
+      k: 2
+    out: [1, 2]
+    judge:
+      type: "exact"
+  - name: min-at-cutoff
+    in:
+      nums: [4, 3, 2, 1, 0]
+      k: 4
+    out: [3, 2, 1, 0]
+    judge:
+      type: "exact"
+  - name: repeated-valleys
+    in:
+      nums: [6, 2, 5, 2, 4, 2, 3]
+      k: 4
+    out: [2, 2, 2, 3]
+    judge:
+      type: "exact"
+  - name: all-max
+    in:
+      nums: [1000000000, 1000000000, 1000000000]
+      k: 2
+    out: [1000000000, 1000000000]
+    judge:
+      type: "exact"
+  - name: mixed-small
+    in:
+      nums: [7, 3, 9, 2, 8, 1, 6]
+      k: 5
+    out: [3, 2, 8, 1, 6]
+    judge:
+      type: "exact"
+  - name: isolated-zero
+    in:
+      nums: [9, 8, 7, 0, 6, 5]
+      k: 2
+    out: [0, 5]
+    judge:
+      type: "exact"
+  - name: zero-k-choice
+    in:
+      nums: [5, 0, 4, 0, 3]
+      k: 1
+    out: [0]
+    judge:
+      type: "exact"
+  - name: preserve-prefix
+    in:
+      nums: [1, 2, 9, 0, 8, 7]
+      k: 4
+    out: [1, 0, 8, 7]
+    judge:
+      type: "exact"
+  - name: last-element-required
+    in:
+      nums: [2, 3, 1, 4]
+      k: 3
+    out: [2, 1, 4]
+    judge:
+      type: "exact"
+  - name: two-elements
+    in:
+      nums: [2, 1]
+      k: 1
+    out: [1]
+    judge:
+      type: "exact"
+  - name: tie-order
+    in:
+      nums: [2, 1, 1, 2, 1]
+      k: 3
+    out: [1, 1, 1]
+    judge:
+      type: "exact"
+  - name: plateau
+    in:
+      nums: [4, 4, 3, 3, 2, 2]
+      k: 3
+    out: [3, 2, 2]
+    judge:
+      type: "exact"
+  - name: bounded-drop
+    in:
+      nums: [3, 2, 1, 4, 0, 5]
+      k: 4
+    out: [1, 4, 0, 5]
+    judge:
+      type: "exact"
+  - name: large-static
+    in:
+      nums: [1000000000, 1, 999999999, 2, 999999998, 3, 0, 4, 5, 6]
+      k: 5
+    out: [1, 0, 4, 5, 6]
+    judge:
+      type: "exact"
+  - name: generated-random-100k-k1
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+      k: 1
+  - name: generated-random-100k-k50k
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+      k: 50000
+  - name: generated-small-values
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 3
+        distinct: false
+        elemType: "int"
+      k: 25000
+  - name: generated-descending-range
+    in:
+      nums:
+        gen: "array"
+        len: 75000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+        sorted: true
+      k: 37500
+  - name: generated-large-k-near-n
+    in:
+      nums:
+        gen: "array"
+        len: 60000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        distinct: false
+        elemType: "int"
+      k: 59999

@@ -1,0 +1,28 @@
+class Solution(object):
+    def numberOfSets(self, n, k):
+        """
+        :type n: int
+        :type k: int
+        :rtype: int
+        """
+        MOD = 10**9 + 7
+        dp_prev = [1] * n
+
+        prefix_prev = [0] * n
+        prefix_prev[0] = dp_prev[0]
+        for i in range(1, n):
+            prefix_prev[i] = (prefix_prev[i - 1] + dp_prev[i]) % MOD
+
+        for _ in range(1, k + 1):
+            dp_cur = [0] * n
+            for i in range(1, n):
+                dp_cur[i] = dp_cur[i - 1] + prefix_prev[i - 1]
+                if dp_cur[i] >= MOD:
+                    dp_cur[i] %= MOD
+
+            dp_prev = dp_cur
+            prefix_prev[0] = dp_prev[0]
+            for i in range(1, n):
+                prefix_prev[i] = (prefix_prev[i - 1] + dp_prev[i]) % MOD
+
+        return dp_prev[n - 1]

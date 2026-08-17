@@ -1,0 +1,275 @@
+entry:
+  id: 1755
+  title: closest-subsequence-sum
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    goal:
+      type: int
+  call:
+    cpp: "Solution().minAbsDifference({nums}, {goal})"
+    rust: "Solution::min_abs_difference({nums}, {goal})"
+    python3: "Solution().minAbsDifference({nums}, {goal})"
+    python2: "Solution().minAbsDifference({nums}, {goal})"
+    ruby: "min_abs_difference({nums}, {goal})"
+    java: "new Solution().minAbsDifference({nums}, {goal})"
+    csharp: "new Solution().MinAbsDifference({nums}, {goal})"
+    kotlin: "Solution().minAbsDifference({nums}, {goal})"
+    go: "minAbsDifference({nums}, {goal})"
+    dart: "Solution().minAbsDifference({nums}, {goal})"
+    swift: "Solution().minAbsDifference({nums}, {goal})"
+    typescript: "minAbsDifference({nums}, {goal})"
+judge:
+  type: exact
+limits:
+  time_ms: 10000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().check(nums, goal, {result})"
+    checker: |
+      class Checker:
+          def check(self, nums, goal, result):
+              if not isinstance(result, int) or isinstance(result, bool) or result < 0:
+                  return False
+              def sums(values):
+                  out = [0]
+                  for value in values:
+                      out += [x + value for x in out]
+                  return out
+              mid = len(nums) // 2
+              left = sorted(sums(nums[:mid]))
+              right = sorted(sums(nums[mid:]))
+              best = abs(goal)
+              j = len(right) - 1
+              for value in left:
+                  while j > 0 and right[j - 1] >= goal - value:
+                      j -= 1
+                  best = min(best, abs(value + right[j] - goal))
+                  if j > 0:
+                      best = min(best, abs(value + right[j - 1] - goal))
+              return result == best
+seed: 1755
+tests:
+  - name: example-one
+    in:
+      nums: [5, -7, 3, 5]
+      goal: 6
+    out: 0
+  - name: example-two
+    in:
+      nums: [7, -9, 15, -2]
+      goal: -5
+    out: 1
+  - name: example-three
+    in:
+      nums: [1, 2, 3]
+      goal: -7
+    out: 7
+  - name: one-positive-hit
+    in:
+      nums: [8]
+      goal: 8
+    out: 0
+  - name: one-negative
+    in:
+      nums: [-8]
+      goal: 3
+    out: 3
+  - name: empty-subsequence-best
+    in:
+      nums: [4, 9]
+      goal: 0
+    out: 0
+  - name: all-negative
+    in:
+      nums: [-10, -4, -7]
+      goal: -12
+    out: 1
+  - name: all-positive
+    in:
+      nums: [2, 5, 11]
+      goal: 14
+    out: 1
+  - name: duplicates
+    in:
+      nums: [3, 3, 3, 3]
+      goal: 7
+    out: 1
+  - name: cancellation
+    in:
+      nums: [-5, 5, -5, 5]
+      goal: 1
+    out: 1
+  - name: exact-single
+    in:
+      nums: [12, -4, 9]
+      goal: -4
+    out: 0
+  - name: exact-combination
+    in:
+      nums: [6, 10, 15, -2]
+      goal: 13
+    out: 0
+  - name: far-positive-goal
+    in:
+      nums: [1, 2, 4]
+      goal: 100
+    out: 93
+  - name: far-negative-goal
+    in:
+      nums: [-1, -2, -4]
+      goal: -100
+    out: 93
+  - name: zero-values
+    in:
+      nums: [0, 0, 0]
+      goal: 5
+    out: 5
+  - name: large-values
+    in:
+      nums: [10000000, -10000000, 9999999]
+      goal: 1000000
+    out: 1000000
+  - name: mixed-six
+    in:
+      nums: [17, -23, 31, -11, 8, 4]
+      goal: 19
+    out: 1
+  - name: mixed-seven
+    in:
+      nums: [-20, 14, 6, 9, -3, 2, 1]
+      goal: -1
+    out: 0
+  - name: parity-gap
+    in:
+      nums: [2, 4, 8]
+      goal: 7
+    out: 1
+  - name: negative-and-zero
+    in:
+      nums: [-9, 0, 4]
+      goal: -6
+    out: 1
+  - name: powers
+    in:
+      nums: [1, 2, 4, 8, 16, 32]
+      goal: 37
+    out: 0
+  - name: repeated-negative
+    in:
+      nums: [-6, -6, -6, -6, -6]
+      goal: -17
+    out: 1
+  - name: narrow-near-goal
+    in:
+      nums: [101, -100, 51, -49]
+      goal: 2
+    out: 0
+  - name: large-goal
+    in:
+      nums: [10000000, 10000000, -1]
+      goal: 20000000
+    out: 0
+  - name: negative-large-goal
+    in:
+      nums: [-10000000, -10000000, 1]
+      goal: -19999999
+    out: 0
+  - name: eleven-mixed
+    in:
+      nums: [3, -1, 7, 12, -9, 4, 15, -6, 2, 8, -11]
+      goal: 20
+    out: 0
+  - name: twelve-mixed
+    in:
+      nums: [-5, 13, -8, 21, -3, 6, 10, -14, 2, 9, -1, 4]
+      goal: 33
+    out: 0
+  - name: generator-small
+    in:
+      nums:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: -10000000
+          max: 10000000
+        elemType: int
+      goal:
+        gen: int
+        min: -1000000000
+        max: 1000000000
+  - name: exact-powers
+    in:
+      nums: [1, 2, 4]
+      goal: 6
+    out: 0
+  - name: exact-negative-powers
+    in:
+      nums: [-1, -2, -4]
+      goal: -6
+    out: 0
+  - name: two-element-near
+    in:
+      nums: [5, 10]
+      goal: 12
+    out: 2
+  - name: generator-medium
+    in:
+      nums:
+        gen: array
+        len: 30
+        of:
+          gen: int
+          min: -1000000
+          max: 1000000
+        elemType: int
+      goal:
+        gen: int
+        min: -1000000000
+        max: 1000000000
+  - name: generator-large-values
+    in:
+      nums:
+        gen: array
+        len: 40
+        of:
+          gen: int
+          min: -10000000
+          max: 10000000
+        elemType: int
+      goal:
+        gen: int
+        min: -1000000000
+        max: 1000000000
+  - name: generator-biased-positive
+    in:
+      nums:
+        gen: array
+        len: 40
+        of:
+          gen: int
+          min: 0
+          max: 10000000
+        elemType: int
+      goal:
+        gen: int
+        min: -1000000000
+        max: 1000000000
+  - name: generator-biased-negative
+    in:
+      nums:
+        gen: array
+        len: 40
+        of:
+          gen: int
+          min: -10000000
+          max: 0
+        elemType: int
+      goal:
+        gen: int
+        min: -1000000000
+        max: 1000000000

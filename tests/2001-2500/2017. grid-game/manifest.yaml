@@ -1,0 +1,271 @@
+entry:
+  id: 2017
+  title: "grid-game"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().gridGame({grid})"
+    rust: "Solution::grid_game({grid})"
+    python3: "Solution().gridGame({grid})"
+    python2: "Solution().gridGame({grid})"
+    ruby: "grid_game({grid})"
+    java: "new Solution().gridGame({grid})"
+    csharp: "new Solution().GridGame({grid})"
+    kotlin: "Solution().gridGame({grid})"
+    go: "gridGame({grid})"
+    dart: "Solution().gridGame({grid})"
+    swift: "Solution().gridGame({grid})"
+    typescript: "gridGame({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().gridGame(grid, {result})"
+    checker: |
+      class Checker:
+          def gridGame(self, grid, result):
+              if not isinstance(grid, list) or len(grid) != 2:
+                  return False
+              if not all(isinstance(row, list) for row in grid):
+                  return False
+              if len(grid[0]) != len(grid[1]) or not grid[0]:
+                  return False
+              top = sum(grid[0])
+              bottom = 0
+              expected = float("inf")
+              for i, value in enumerate(grid[0]):
+                  top -= value
+                  expected = min(expected, max(top, bottom))
+                  bottom += grid[1][i]
+              return result == expected
+
+seed: 2017
+
+tests:
+  - name: "example-one"
+    in:
+      grid:
+        - [2, 5, 4]
+        - [1, 5, 1]
+    out: 4
+  - name: "example-two"
+    in:
+      grid:
+        - [3, 3, 1]
+        - [8, 5, 2]
+    out: 4
+  - name: "example-three"
+    in:
+      grid:
+        - [1, 3, 1, 15]
+        - [1, 3, 3, 1]
+    out: 7
+  - name: "single-column-small"
+    in:
+      grid:
+        - [1]
+        - [1]
+    out: 0
+  - name: "single-column-maximum"
+    in:
+      grid:
+        - [100000]
+        - [100000]
+    out: 0
+  - name: "two-equal-columns"
+    in:
+      grid:
+        - [1, 1]
+        - [1, 1]
+    out: 1
+  - name: "two-columns-rising"
+    in:
+      grid:
+        - [1, 2]
+        - [3, 4]
+    out: 2
+  - name: "two-columns-reversed"
+    in:
+      grid:
+        - [4, 1]
+        - [1, 4]
+    out: 1
+  - name: "top-heavy-edge"
+    in:
+      grid:
+        - [5, 1, 1]
+        - [1, 1, 5]
+    out: 1
+  - name: "bottom-heavy-edge"
+    in:
+      grid:
+        - [1, 1, 5]
+        - [5, 1, 1]
+    out: 5
+  - name: "uniform-ten"
+    in:
+      grid:
+        - [10, 10, 10]
+        - [10, 10, 10]
+    out: 10
+  - name: "top-middle-spike"
+    in:
+      grid:
+        - [1, 100, 1]
+        - [100, 1, 100]
+    out: 100
+  - name: "bottom-middle-spike"
+    in:
+      grid:
+        - [100, 1, 100]
+        - [1, 100, 1]
+    out: 100
+  - name: "alternating-four"
+    in:
+      grid:
+        - [2, 8, 2, 8]
+        - [8, 2, 8, 2]
+    out: 10
+  - name: "descending-top"
+    in:
+      grid:
+        - [9, 8, 7, 6, 5]
+        - [1, 2, 3, 4, 5]
+    out: 6
+  - name: "ascending-top"
+    in:
+      grid:
+        - [1, 2, 3, 4, 5]
+        - [9, 8, 7, 6, 5]
+    out: 12
+  - name: "zero-valued-cells"
+    in:
+      grid:
+        - [5, 0, 5]
+        - [0, 5, 0]
+    out: 5
+  - name: "zero-valued-bottom"
+    in:
+      grid:
+        - [0, 5, 0]
+        - [5, 0, 5]
+    out: 5
+  - name: "symmetric-peaks"
+    in:
+      grid:
+        - [7, 1, 9, 1, 7]
+        - [2, 8, 2, 8, 2]
+    out: 10
+  - name: "symmetric-peaks-reversed"
+    in:
+      grid:
+        - [2, 8, 2, 8, 2]
+        - [7, 1, 9, 1, 7]
+    out: 10
+  - name: "late-top-drop"
+    in:
+      grid:
+        - [6, 6, 1, 1]
+        - [1, 1, 6, 6]
+    out: 2
+  - name: "early-top-drop"
+    in:
+      grid:
+        - [1, 1, 6, 6]
+        - [6, 6, 1, 1]
+    out: 12
+  - name: "equal-end-peaks"
+    in:
+      grid:
+        - [10, 1, 1, 1, 10]
+        - [1, 1, 1, 1, 10]
+    out: 4
+  - name: "bottom-end-peak"
+    in:
+      grid:
+        - [1, 1, 1, 1, 10]
+        - [10, 1, 1, 1, 1]
+    out: 11
+  - name: "mixed-six"
+    in:
+      grid:
+        - [3, 1, 4, 1, 5, 9]
+        - [2, 6, 5, 3, 5, 8]
+    out: 14
+  - name: "top-left-block"
+    in:
+      grid:
+        - [9, 9, 1, 1, 1, 1]
+        - [1, 1, 9, 9, 9, 9]
+    out: 3
+  - name: "bottom-left-block"
+    in:
+      grid:
+        - [1, 1, 9, 9, 9, 9]
+        - [9, 9, 1, 1, 1, 1]
+    out: 19
+  - name: "alternating-six"
+    in:
+      grid:
+        - [20, 1, 20, 1, 20, 1]
+        - [1, 20, 1, 20, 1, 20]
+    out: 22
+  - name: "alternating-six-reversed"
+    in:
+      grid:
+        - [1, 20, 1, 20, 1, 20]
+        - [20, 1, 20, 1, 20, 1]
+    out: 41
+  - name: "mixed-seven"
+    in:
+      grid:
+        - [12, 3, 4, 5, 6, 7, 8]
+        - [8, 7, 6, 5, 4, 3, 12]
+    out: 21
+  - name: "mixed-seven-reversed"
+    in:
+      grid:
+        - [8, 7, 6, 5, 4, 3, 12]
+        - [12, 3, 4, 5, 6, 7, 8]
+    out: 19
+  - name: "alternating-eight"
+    in:
+      grid:
+        - [1, 2, 1, 2, 1, 2, 1, 2]
+        - [2, 1, 2, 1, 2, 1, 2, 1]
+    out: 6
+  - name: "outer-top-peaks"
+    in:
+      grid:
+        - [50, 1, 1, 1, 1, 1, 50]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 6
+  - name: "outer-bottom-peak"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 50]
+        - [50, 1, 1, 1, 1, 1, 1]
+    out: 52
+  - name: "maximum-values-left"
+    in:
+      grid:
+        - [100000, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 100000]
+    out: 2
+  - name: "maximum-values-right"
+    in:
+      grid:
+        - [1, 1, 1, 1, 100000]
+        - [100000, 1, 1, 1, 1]
+    out: 100001

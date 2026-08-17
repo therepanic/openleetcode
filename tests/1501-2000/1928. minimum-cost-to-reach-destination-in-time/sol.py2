@@ -1,0 +1,33 @@
+class Solution(object):
+    def minCost(self, maxTime, edges, passingFees):
+        """
+        :type maxTime: int
+        :type edges: List[List[int]]
+        :type passingFees: List[int]
+        :rtype: int
+        """
+        import heapq
+        n = len(passingFees)
+        graph = [[] for _ in range(n)]
+        for u, v, t in edges:
+            graph[u].append((v, t))
+            graph[v].append((u, t))
+        times = [maxTime + 1] * n
+        costs = [float('inf')] * n
+        times[0] = 0
+        costs[0] = passingFees[0]
+        pq = [(passingFees[0], 0, 0)]
+        while pq:
+            cost, time, city = heapq.heappop(pq)
+            if city == n - 1:
+                return cost
+            for nxt, t in graph[city]:
+                nt = time + t
+                if nt > maxTime:
+                    continue
+                nc = cost + passingFees[nxt]
+                if nc < costs[nxt] or nt < times[nxt]:
+                    costs[nxt] = nc
+                    times[nxt] = nt
+                    heapq.heappush(pq, (nc, nt, nxt))
+        return -1

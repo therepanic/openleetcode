@@ -1,0 +1,231 @@
+entry:
+  id: 1749
+  title: "maximum-absolute-sum-of-any-subarray"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxAbsoluteSum({nums})"
+    rust: "Solution::max_absolute_sum({nums})"
+    python3: "Solution().maxAbsoluteSum({nums})"
+    python2: "Solution().maxAbsoluteSum({nums})"
+    ruby: "max_absolute_sum({nums})"
+    java: "new Solution().maxAbsoluteSum({nums})"
+    csharp: "new Solution().MaxAbsoluteSum({nums})"
+    kotlin: "Solution().maxAbsoluteSum({nums})"
+    go: "maxAbsoluteSum({nums})"
+    dart: "Solution().maxAbsoluteSum({nums})"
+    swift: "Solution().maxAbsoluteSum({nums})"
+    typescript: "maxAbsoluteSum({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(nums, {result})"
+    checker: |
+      class Checker:
+          def check(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              prefix = 0
+              low = 0
+              high = 0
+              expected = 0
+              for value in nums:
+                  prefix += value
+                  expected = max(expected, prefix - low, high - prefix)
+                  low = min(low, prefix)
+                  high = max(high, prefix)
+              return result == expected
+
+seed: 1749
+
+tests:
+  - name: example-one
+    in:
+      nums: [1, -3, 2, 3, -4]
+    out: 5
+  - name: example-two
+    in:
+      nums: [2, -5, 1, -4, 3, -2]
+    out: 8
+  - name: single-positive
+    in:
+      nums: [7]
+    out: 7
+  - name: single-negative
+    in:
+      nums: [-7]
+    out: 7
+  - name: single-zero
+    in:
+      nums: [0]
+    out: 0
+  - name: all-zero
+    in:
+      nums: [0, 0, 0, 0, 0]
+    out: 0
+  - name: all-positive
+    in:
+      nums: [1, 2, 3, 4, 5]
+    out: 15
+  - name: all-negative
+    in:
+      nums: [-1, -2, -3, -4, -5]
+    out: 15
+  - name: alternating-balanced
+    in:
+      nums: [5, -5, 5, -5]
+    out: 5
+  - name: positive-run-with-noise
+    in:
+      nums: [-2, 4, 6, -1, 3, -20, 2]
+    out: 20
+  - name: negative-run-with-noise
+    in:
+      nums: [2, -4, -6, 1, -3, 20, -2]
+    out: 20
+  - name: cancellation
+    in:
+      nums: [10, -10, 10, -10, 10]
+    out: 10
+  - name: large-positive-bound
+    in:
+      nums: [10000, 10000, 10000]
+    out: 30000
+  - name: large-negative-bound
+    in:
+      nums: [-10000, -10000, -10000]
+    out: 30000
+  - name: opposite-extremes
+    in:
+      nums: [10000, -10000, -10000, 10000]
+    out: 20000
+  - name: best-middle-positive
+    in:
+      nums: [-8, 3, 4, 5, -9]
+    out: 12
+  - name: best-middle-negative
+    in:
+      nums: [8, -3, -4, -5, 9]
+    out: 12
+  - name: separated-peaks
+    in:
+      nums: [6, 6, -20, 7, 7]
+    out: 20
+  - name: one-element-best
+    in:
+      nums: [-1, 2, -3, 1]
+    out: 3
+  - name: prefix-positive
+    in:
+      nums: [4, -1, -1, -1]
+    out: 4
+  - name: suffix-negative
+    in:
+      nums: [1, 1, 1, -5]
+    out: 5
+  - name: mixed-small
+    in:
+      nums: [-2, 1, -2, 1, -2]
+    out: 4
+  - name: repeated-blocks
+    in:
+      nums: [3, 3, -6, -3, -3, 6]
+    out: 12
+  - name: near-intuition-trap
+    in:
+      nums: [4, -10, 4, 4, -10, 4]
+    out: 12
+  - name: maximal-length-small-pattern
+    in:
+      nums: [1, -1, 1, -1, 1, -1, 1, -1, 1, -1]
+    out: 1
+  - name: uneven-alternation
+    in:
+      nums: [-4, 1, 1, 1, 1, -4]
+    out: 4
+  - name: two-element-positive
+    in:
+      nums: [9999, 1]
+    out: 10000
+  - name: two-element-negative
+    in:
+      nums: [-9999, -1]
+    out: 10000
+  - name: bounds-with-zero
+    in:
+      nums: [10000, 0, -10000, -10000]
+    out: 20000
+  - name: long-static
+    in:
+      nums: [2, 2, 2, 2, -3, -3, -3, 1, 1, 1, 1, -2, -2, -2, -2]
+    out: 13
+  - name: generated-positive
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-negative
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -10000
+          max: 0
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-balanced
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-small-range
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: -2
+          max: 2
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-extreme-mix
+    in:
+      nums:
+        gen: "array"
+        len: 75000
+        of:
+          gen: "int"
+          min: -10000
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"

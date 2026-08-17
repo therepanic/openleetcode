@@ -1,0 +1,190 @@
+entry:
+  id: 1678
+  title: "goal-parser-interpretation"
+  params:
+    command:
+      type: string
+  call:
+    cpp: "Solution().interpret({command})"
+    rust: "Solution::interpret({command})"
+    python3: "Solution().interpret({command})"
+    python2: "Solution().interpret({command})"
+    ruby: "interpret({command})"
+    java: "new Solution().interpret({command})"
+    csharp: "new Solution().Interpret({command})"
+    kotlin: "Solution().interpret({command})"
+    go: "interpret({command})"
+    dart: "Solution().interpret({command})"
+    swift: "Solution().interpret({command})"
+    typescript: "interpret({command})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(command, {result})"
+    checker: |
+      class Checker:
+          def check(self, command, result):
+              expected = []
+              i = 0
+              while i < len(command):
+                  if command[i] == "G":
+                      expected.append("G")
+                      i += 1
+                  elif command[i:i + 2] == "()":
+                      expected.append("o")
+                      i += 2
+                  else:
+                      expected.append("al")
+                      i += 4
+              return result == "".join(expected)
+
+seed: 1678
+
+tests:
+  - name: example-one
+    in:
+      command: "G()(al)"
+    out: "Goal"
+  - name: example-two
+    in:
+      command: "G()()()()(al)"
+    out: "Gooooal"
+  - name: example-three
+    in:
+      command: "(al)G(al)()()G"
+    out: "alGalooG"
+  - name: single-g
+    in:
+      command: "G"
+    out: "G"
+  - name: single-empty-token
+    in:
+      command: "()"
+    out: "o"
+  - name: single-al-token
+    in:
+      command: "(al)"
+    out: "al"
+  - name: repeated-g
+    in:
+      command: "GGGGG"
+    out: "GGGGG"
+  - name: repeated-empty
+    in:
+      command: "()()()()()"
+    out: "ooooo"
+  - name: repeated-al
+    in:
+      command: "(al)(al)(al)"
+    out: "alalal"
+  - name: alternating-g-empty
+    in:
+      command: "G()G()G()"
+    out: "GoGoGo"
+  - name: alternating-g-al
+    in:
+      command: "G(al)G(al)G(al)"
+    out: "GalGalGal"
+  - name: alternating-empty-al
+    in:
+      command: "()(al)()(al)"
+    out: "oaloal"
+  - name: g-prefix
+    in:
+      command: "GGG(al)()"
+    out: "GGGalo"
+  - name: g-suffix
+    in:
+      command: "()(al)GGG"
+    out: "oalGGG"
+  - name: al-prefix
+    in:
+      command: "(al)(al)G()"
+    out: "alalGo"
+  - name: mixed-short
+    in:
+      command: "G()(al)G()"
+    out: "GoalGo"
+  - name: mixed-long-one
+    in:
+      command: "G(al)()G(al)()G"
+    out: "GaloGaloG"
+  - name: twenty-g
+    in:
+      command: "GGGGGGGGGGGGGGGGGGGG"
+    out: "GGGGGGGGGGGGGGGGGGGG"
+  - name: twenty-empty
+    in:
+      command: "()()()()()()()()()()"
+    out: "oooooooooo"
+  - name: ten-al
+    in:
+      command: "(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)"
+    out: "alalalalalalalalalal"
+  - name: max-g
+    in:
+      command: "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+    out: "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+  - name: max-empty
+    in:
+      command: "()()()()()()()()()()()()()()()()()()()()()()()()()()"
+    out: "oooooooooooooooooooooooooo"
+  - name: max-al
+    in:
+      command: "(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)"
+    out: "alalalalalalalalalalalalalalalalalalalalalalalalal"
+  - name: pattern-one
+    in:
+      command: "G()G(al)()G(al)G()"
+    out: "GoGaloGalGo"
+  - name: pattern-two
+    in:
+      command: "(al)()G(al)G()G(al)"
+    out: "aloGalGoGal"
+  - name: pattern-three
+    in:
+      command: "G(al)(al)()()G"
+    out: "GalalooG"
+  - name: pattern-four
+    in:
+      command: "()G()(al)G(al)()"
+    out: "oGoalGalo"
+  - name: pattern-five
+    in:
+      command: "(al)G()G()G(al)(al)"
+    out: "alGoGoGalal"
+  - name: long-mixed-one
+    in:
+      command: "G()G()G()G()G()G(al)G(al)G(al)"
+    out: "GoGoGoGoGoGalGalGal"
+  - name: long-mixed-two
+    in:
+      command: "(al)()(al)G(al)()G()G(al)"
+    out: "aloalGaloGoGal"
+  - name: long-mixed-three
+    in:
+      command: "G(al)G()()(al)G()G(al)()"
+    out: "GalGooalGoGalo"
+  - name: long-mixed-four
+    in:
+      command: "()(al)G()(al)G(al)G()()"
+    out: "oalGoalGalGoo"
+  - name: long-mixed-five
+    in:
+      command: "G()()G(al)(al)G()G(al)()G"
+    out: "GooGalalGoGaloG"
+  - name: boundary-mix
+    in:
+      command: "GG(al)()G(al)()()G(al)GG"
+    out: "GGaloGalooGalGG"
+  - name: full-length-mix
+    in:
+      command: "G()G(al)()G()G(al)G()()G(al)G()G(al)()G"
+    out: "GoGaloGoGalGooGalGoGaloG"

@@ -1,0 +1,322 @@
+entry:
+  id: 1598
+  title: "crawler-log-folder"
+  params:
+    logs:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().minOperations({logs})"
+    rust: "Solution::min_operations({logs})"
+    python3: "Solution().minOperations({logs})"
+    python2: "Solution().minOperations({logs})"
+    ruby: "min_operations({logs})"
+    java: "new Solution().minOperations({logs})"
+    csharp: "new Solution().MinOperations({logs})"
+    kotlin: "Solution().minOperations({logs})"
+    go: "minOperations({logs})"
+    dart: "Solution().minOperations({logs})"
+    swift: "Solution().minOperations({logs})"
+    typescript: "minOperations({logs})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minOperations(logs, {result})"
+    checker: |
+      class Checker:
+          def minOperations(self, logs, result):
+              depth = 0
+              for operation in logs:
+                  if operation == "../":
+                      depth = max(0, depth - 1)
+                  elif operation == "./":
+                      continue
+                  else:
+                      if not isinstance(operation, str) or not operation.endswith("/"):
+                          return False
+                      name = operation[:-1]
+                      if not name or any(ch not in "abcdefghijklmnopqrstuvwxyz0123456789" for ch in name):
+                          return False
+                      depth += 1
+              return isinstance(result, int) and not isinstance(result, bool) and result == depth
+
+seed: 1598
+
+tests:
+  - name: example-one
+    in:
+      logs: ["d1/", "d2/", "../", "d21/", "./"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: example-two
+    in:
+      logs: ["d1/", "d2/", "./", "d3/", "../", "d31/"]
+    out: 3
+    judge:
+      type: "exact"
+  - name: example-three
+    in:
+      logs: ["d1/", "../", "../", "../"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: one-child
+    in:
+      logs: ["a/"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: one-parent-at-root
+    in:
+      logs: ["../"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: one-current
+    in:
+      logs: ["./"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: nested-three
+    in:
+      logs: ["a/", "b/", "c/"]
+    out: 3
+    judge:
+      type: "exact"
+  - name: return-one-level
+    in:
+      logs: ["a/", "b/", "../"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: return-all-levels
+    in:
+      logs: ["a/", "b/", "c/", "../", "../", "../"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: root-parent-burst
+    in:
+      logs: ["../", "../", "../", "../"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: current-only-many
+    in:
+      logs: ["./", "./", "./", "./", "./"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: alternating-child-parent
+    in:
+      logs: ["a/", "../", "b/", "../", "c/", "../"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: child-after-root-parent
+    in:
+      logs: ["../", "x/", "../", "y/"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: deep-then-current
+    in:
+      logs: ["a/", "b/", "c/", "d/", "./", "./"]
+    out: 4
+    judge:
+      type: "exact"
+  - name: deep-then-two-up
+    in:
+      logs: ["a/", "b/", "c/", "d/", "../", "../"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: repeated-same-name
+    in:
+      logs: ["a/", "a/", "a/", "../"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: digits-and-letters
+    in:
+      logs: ["a1/", "b2/", "../", "c3/"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: mixed-all-operations
+    in:
+      logs: ["a/", "./", "b/", "../", "../", "./", "c/"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: climb-and-descend
+    in:
+      logs: ["a/", "b/", "c/", "../", "d/", "../", "../"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: many-up-after-short-path
+    in:
+      logs: ["a/", "b/", "../", "../", "../", "c/", "d/"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: balanced-five
+    in:
+      logs: ["a/", "b/", "c/", "../", "../", "d/", "../", "../"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: final-parent-dominates
+    in:
+      logs: ["a/", "b/", "../", "../", "../", "e/"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: long-chain-ten
+    in:
+      logs: ["a/", "b/", "c/", "d/", "e/", "f/", "g/", "h/", "i/", "j/"]
+    out: 10
+    judge:
+      type: "exact"
+  - name: long-chain-unwind
+    in:
+      logs: ["a/", "b/", "c/", "d/", "e/", "../", "../", "../", "../", "../"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: long-chain-partial-unwind
+    in:
+      logs: ["a/", "b/", "c/", "d/", "e/", "f/", "../", "../", "../"]
+    out: 3
+    judge:
+      type: "exact"
+  - name: current-between-levels
+    in:
+      logs: ["a/", "./", "b/", "./", "c/", "../", "./"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: root-noise
+    in:
+      logs: ["./", "../", "./", "../", "x/", "../", "./"]
+    out: 0
+    judge:
+      type: "exact"
+  - name: two-branches
+    in:
+      logs: ["left/", "leaf/", "../", "right/", "leaf/", "../", "../"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: branch-not-unwind
+    in:
+      logs: ["left/", "leaf/", "../", "right/", "leaf/"]
+    out: 3
+    judge:
+      type: "exact"
+  - name: repeated-root-clamps
+    in:
+      logs: ["a/", "../", "../", "b/", "../", "../", "c/"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: names-with-digits
+    in:
+      logs: ["0/", "1a/", "z9/", "../", "../"]
+    out: 1
+    judge:
+      type: "exact"
+  - name: twelve-operations
+    in:
+      logs:
+        [
+          "a/",
+          "b/",
+          "./",
+          "../",
+          "c/",
+          "d/",
+          "../",
+          "../",
+          "../",
+          "e/",
+          "f/",
+          "../",
+        ]
+    out: 1
+    judge:
+      type: "exact"
+  - name: deep-with-noise
+    in:
+      logs: ["a/", "./", "b/", "./", "c/", "../", "d/", "../", "e/", "../"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: partial-return-with-noise
+    in:
+      logs: ["a/", "b/", "./", "c/", "../", "./", "d/", "../"]
+    out: 2
+    judge:
+      type: "exact"
+  - name: fifteen-mixed
+    in:
+      logs:
+        [
+          "a/",
+          "b/",
+          "../",
+          "c/",
+          "d/",
+          "./",
+          "../",
+          "e/",
+          "../",
+          "../",
+          "f/",
+          "g/",
+          "../",
+          "h/",
+          "../",
+        ]
+    out: 2
+    judge:
+      type: "exact"
+  - name: twenty-mixed
+    in:
+      logs:
+        [
+          "a/",
+          "b/",
+          "c/",
+          "../",
+          "./",
+          "d/",
+          "../",
+          "e/",
+          "f/",
+          "../",
+          "../",
+          "g/",
+          "./",
+          "h/",
+          "../",
+          "i/",
+          "../",
+          "../",
+          "j/",
+          "../",
+        ]
+    out: 2
+    judge:
+      type: "exact"

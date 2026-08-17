@@ -1,0 +1,298 @@
+entry:
+  id: 1685
+  title: "sum-of-absolute-differences-in-a-sorted-array"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().getSumAbsoluteDifferences({nums})"
+    rust: "Solution::get_sum_absolute_differences({nums})"
+    python3: "Solution().getSumAbsoluteDifferences({nums})"
+    python2: "Solution().getSumAbsoluteDifferences({nums})"
+    ruby: "get_sum_absolute_differences({nums})"
+    java: "new Solution().getSumAbsoluteDifferences({nums})"
+    csharp: "new Solution().GetSumAbsoluteDifferences({nums})"
+    kotlin: "Solution().getSumAbsoluteDifferences({nums})"
+    go: "getSumAbsoluteDifferences({nums})"
+    dart: "Solution().getSumAbsoluteDifferences({nums})"
+    swift: "Solution().getSumAbsoluteDifferences({nums})"
+    typescript: "getSumAbsoluteDifferences({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().getSumAbsoluteDifferences(nums, {result})"
+    checker: |
+      class Checker:
+          def getSumAbsoluteDifferences(self, nums, result):
+              if not isinstance(nums, list) or not isinstance(result, list):
+                  return False
+              if len(nums) != len(result) or len(nums) < 2:
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) for x in nums):
+                  return False
+              if any(nums[i] > nums[i + 1] for i in range(len(nums) - 1)):
+                  return False
+              prefix = 0
+              total = sum(nums)
+              expected = []
+              n = len(nums)
+              for i, value in enumerate(nums):
+                  left = value * i - prefix
+                  right = (total - prefix - value) - value * (n - i - 1)
+                  expected.append(left + right)
+                  prefix += value
+              return result == expected
+
+seed: 1685001
+
+tests:
+  - name: "example_one"
+    in:
+      nums: [2, 3, 5]
+    out: [4, 3, 5]
+  - name: "example_two"
+    in:
+      nums: [1, 4, 6, 8, 10]
+    out: [24, 15, 13, 15, 21]
+  - name: "minimum_length"
+    in:
+      nums: [1, 2]
+    out: [1, 1]
+  - name: "equal_pair"
+    in:
+      nums: [7, 7]
+    out: [0, 0]
+  - name: "all_equal"
+    in:
+      nums: [5, 5, 5, 5, 5, 5]
+    out: [0, 0, 0, 0, 0, 0]
+  - name: "three_duplicates"
+    in:
+      nums: [1, 1, 3]
+    out: [2, 2, 4]
+  - name: "negative_not_allowed_boundary"
+    in:
+      nums: [1, 1, 2, 2, 3]
+    out: [4, 4, 3, 3, 6]
+  - name: "consecutive_small"
+    in:
+      nums: [1, 2, 3, 4, 5]
+    out: [10, 7, 6, 7, 10]
+  - name: "large_gap"
+    in:
+      nums: [1, 10000]
+    out: [9999, 9999]
+  - name: "extreme_endpoints"
+    in:
+      nums: [1, 1, 1, 10000, 10000]
+    out: [19998, 19998, 19998, 29997, 29997]
+  - name: "repeated_blocks"
+    in:
+      nums: [2, 2, 2, 8, 8, 8]
+    out: [18, 18, 18, 18, 18, 18]
+  - name: "uneven_duplicates"
+    in:
+      nums: [1, 2, 2, 2, 10]
+    out: [12, 9, 9, 9, 33]
+  - name: "near_max_values"
+    in:
+      nums: [9996, 9997, 9998, 9999, 10000]
+    out: [10, 7, 6, 7, 10]
+  - name: "wide_progression"
+    in:
+      nums: [1, 100, 200, 500, 1000]
+    out: [1796, 1499, 1399, 1699, 3199]
+  - name: "seven_values"
+    in:
+      nums: [1, 3, 3, 6, 9, 9, 10]
+    out: [34, 24, 24, 21, 24, 24, 29]
+  - name: "alternating_gaps"
+    in:
+      nums: [1, 2, 10, 11, 100, 101]
+    out: [219, 215, 199, 199, 377, 381]
+  - name: "ten_consecutive"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: [45, 37, 31, 27, 25, 25, 27, 31, 37, 45]
+  - name: "ten_equal"
+    in:
+      nums: [42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+    out: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "powers_and_gaps"
+    in:
+      nums: [1, 2, 4, 8, 16, 32]
+    out: [57, 53, 49, 49, 65, 129]
+  - name: "one_low_many_high"
+    in:
+      nums: [1, 9000, 9000, 9000, 9000, 10000]
+    out: [45995, 9999, 9999, 9999, 9999, 13999]
+  - name: "three_clusters"
+    in:
+      nums: [10, 10, 10, 20, 20, 30, 30, 30]
+    out: [80, 80, 80, 60, 60, 80, 80, 80]
+  - name: "dense_low_range"
+    in:
+      nums: [1, 1, 2, 3, 3, 4, 5, 5, 5]
+    out: [20, 20, 15, 12, 12, 13, 16, 16, 16]
+  - name: "large_duplicate_middle"
+    in:
+      nums: [1, 2, 50, 50, 50, 50, 99]
+    out: [295, 290, 146, 146, 146, 146, 391]
+  - name: "boundary_minimum_repeated"
+    in:
+      nums: [1, 1, 1, 1, 2, 3]
+    out: [3, 3, 3, 3, 5, 9]
+  - name: "boundary_maximum_repeated"
+    in:
+      nums: [9998, 9999, 10000, 10000, 10000, 10000]
+    out: [9, 5, 3, 3, 3, 3]
+  - name: "balanced_values"
+    in:
+      nums: [2, 4, 6, 8, 10, 12, 14]
+    out: [42, 32, 26, 24, 26, 32, 42]
+  - name: "irregular_eight"
+    in:
+      nums: [1, 4, 4, 7, 12, 12, 20, 25]
+    out: [77, 59, 59, 53, 53, 53, 85, 115]
+  - name: "fourteen_consecutive"
+    in:
+      nums:
+        [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113]
+    out: [91, 79, 69, 61, 55, 51, 49, 49, 51, 55, 61, 69, 79, 91]
+  - name: "very_sparse"
+    in:
+      nums: [1, 10, 100, 1000, 5000, 10000]
+    out: [16105, 16069, 15889, 15889, 23889, 43889]
+  - name: "twenty_mixed"
+    in:
+      nums:
+        [
+          1,
+          1,
+          2,
+          2,
+          3,
+          5,
+          8,
+          13,
+          21,
+          34,
+          55,
+          89,
+          144,
+          233,
+          377,
+          610,
+          987,
+          1597,
+          2584,
+          4181,
+        ]
+    out:
+      [
+        10927,
+        10927,
+        10911,
+        10911,
+        10899,
+        10879,
+        10855,
+        10825,
+        10793,
+        10767,
+        10767,
+        10835,
+        11055,
+        11589,
+        12741,
+        15071,
+        19595,
+        28135,
+        43927,
+        72673,
+      ]
+  - name: "generated_small_sorted"
+    seed: 168501
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 2
+          max: 30
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        sorted: true
+        distinct: false
+
+  - name: "generated_medium_sorted"
+    seed: 168502
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        sorted: true
+        distinct: false
+
+  - name: "generated_duplicate_heavy"
+    seed: 168503
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 3000
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        sorted: true
+        distinct: false
+
+  - name: "generated_large_full_range"
+    seed: 168504
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 80000
+          max: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        sorted: true
+        distinct: false
+
+  - name: "generated_large_constant"
+    seed: 168505
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 5000
+          max: 5000
+        sorted: true
+        distinct: false

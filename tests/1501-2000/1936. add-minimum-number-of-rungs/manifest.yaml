@@ -1,0 +1,314 @@
+entry:
+  id: 1936
+  title: "add-minimum-number-of-rungs"
+  params:
+    rungs:
+      type: array
+      items:
+        type: int
+    dist:
+      type: int
+  call:
+    cpp: "Solution().addRungs({rungs}, {dist})"
+    rust: "Solution::add_rungs({rungs}, {dist})"
+    python3: "Solution().addRungs({rungs}, {dist})"
+    python2: "Solution().addRungs({rungs}, {dist})"
+    ruby: "add_rungs({rungs}, {dist})"
+    java: "new Solution().addRungs({rungs}, {dist})"
+    csharp: "new Solution().AddRungs({rungs}, {dist})"
+    kotlin: "Solution().addRungs({rungs}, {dist})"
+    go: "addRungs({rungs}, {dist})"
+    dart: "Solution().addRungs({rungs}, {dist})"
+    swift: "Solution().addRungs({rungs}, {dist})"
+    typescript: "addRungs({rungs}, {dist})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().addRungs(rungs, dist, {result})"
+    checker: |
+      class Checker:
+          def addRungs(self, rungs, dist, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              current = 0
+              expected = 0
+              for rung in rungs:
+                  if rung - current > dist:
+                      expected += (rung - current - 1) // dist
+                  current = rung
+              return result == expected
+
+seed: 1936
+
+tests:
+  - name: "example_one"
+    in:
+      rungs: [1, 3, 5, 10]
+      dist: 2
+    out: 2
+  - name: "example_two"
+    in:
+      rungs: [3, 6, 8, 10]
+      dist: 3
+    out: 0
+  - name: "example_three"
+    in:
+      rungs: [3, 4, 6, 7]
+      dist: 2
+    out: 1
+  - name: "single_reachable"
+    in:
+      rungs: [1]
+      dist: 1
+    out: 0
+  - name: "single_gap_one"
+    in:
+      rungs: [2]
+      dist: 1
+    out: 1
+  - name: "single_large_gap"
+    in:
+      rungs: [1000000000]
+      dist: 1
+    out: 999999999
+  - name: "exact_multiple_gap"
+    in:
+      rungs: [10]
+      dist: 5
+    out: 1
+  - name: "non_multiple_gap"
+    in:
+      rungs: [11]
+      dist: 5
+    out: 2
+  - name: "all_reachable"
+    in:
+      rungs: [2, 4, 6, 8, 10]
+      dist: 2
+    out: 0
+  - name: "gaps_each_need_one"
+    in:
+      rungs: [3, 6, 9, 12]
+      dist: 2
+    out: 4
+  - name: "mixed_gaps"
+    in:
+      rungs: [1, 10, 11, 25]
+      dist: 5
+    out: 3
+  - name: "large_dist"
+    in:
+      rungs: [1, 2, 100, 1000]
+      dist: 1000000000
+    out: 0
+  - name: "dist_one_consecutive"
+    in:
+      rungs: [1, 2, 3, 4, 5, 6]
+      dist: 1
+    out: 0
+  - name: "dist_one_sparse"
+    in:
+      rungs: [1, 3, 6, 10]
+      dist: 1
+    out: 6
+  - name: "dist_two_long"
+    in:
+      rungs: [2, 4, 6, 8, 10, 12, 14, 16]
+      dist: 2
+    out: 0
+  - name: "first_gap_only"
+    in:
+      rungs: [8, 9, 10]
+      dist: 3
+    out: 2
+  - name: "last_gap_only"
+    in:
+      rungs: [1, 2, 3, 10]
+      dist: 3
+    out: 2
+  - name: "two_huge_gaps"
+    in:
+      rungs: [100, 1000000000]
+      dist: 100
+    out: 9999998
+  - name: "near_limit_dist"
+    in:
+      rungs: [1, 999999999, 1000000000]
+      dist: 999999998
+    out: 0
+  - name: "alternating_small_gaps"
+    in:
+      rungs: [1, 5, 6, 10, 11, 15, 16]
+      dist: 3
+    out: 3
+  - name: "zero_additions_after_first"
+    in:
+      rungs: [4, 8, 12, 16, 20]
+      dist: 4
+    out: 0
+  - name: "remainder_zero"
+    in:
+      rungs: [7, 14, 21]
+      dist: 3
+    out: 6
+  - name: "remainder_one"
+    in:
+      rungs: [8, 16, 24]
+      dist: 3
+    out: 6
+  - name: "negative_not_allowed_boundary"
+    in:
+      rungs: [1, 1000000000]
+      dist: 2
+    out: 499999999
+  - name: "dense_then_gap"
+    in:
+      rungs: [1, 2, 3, 4, 5, 20]
+      dist: 4
+    out: 3
+  - name: "gap_then_dense"
+    in:
+      rungs: [10, 11, 12, 13, 14]
+      dist: 3
+    out: 3
+  - name: "many_rungs_dist_three"
+    in:
+      rungs: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30]
+      dist: 3
+    out: 0
+  - name: "many_rungs_dist_four"
+    in:
+      rungs: [1, 5, 9, 13, 17, 21, 25]
+      dist: 4
+    out: 0
+  - name: "large_first_then_small"
+    in:
+      rungs: [50, 51, 52, 53, 54]
+      dist: 10
+    out: 4
+  - name: "large_values_small_dist"
+    in:
+      rungs: [999999990, 999999995, 1000000000]
+      dist: 2
+    out: 499999998
+  - name: "one_less_than_dist"
+    in:
+      rungs: [9, 18, 27]
+      dist: 10
+    out: 0
+  - name: "exactly_dist_from_floor"
+    in:
+      rungs: [10, 20, 30]
+      dist: 10
+    out: 0
+  - name: "strictly_increasing_irregular"
+    in:
+      rungs: [2, 7, 8, 19, 40]
+      dist: 6
+    out: 4
+  - name: "large_count_small_steps"
+    in:
+      rungs: [1, 4, 7, 10, 13, 16, 19, 22, 25]
+      dist: 2
+    out: 8
+  - name: "near_max_single"
+    in:
+      rungs: [999999999]
+      dist: 1000000000
+    out: 0
+  - name: "generated_small_strict"
+    seed: 101
+    in:
+      rungs:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "int"
+          min: 1
+          max: 200
+        distinct: true
+        sorted: true
+      dist:
+        gen: "int"
+        min: 1
+        max: 30
+  - name: "generated_medium_strict"
+    seed: 102
+    in:
+      rungs:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 20
+          max: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: true
+        sorted: true
+      dist:
+        gen: "int"
+        min: 1
+        max: 500
+  - name: "generated_large_sparse"
+    seed: 103
+    in:
+      rungs:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        sorted: true
+      dist:
+        gen: "int"
+        min: 1
+        max: 1000
+  - name: "generated_large_dense"
+    seed: 104
+    in:
+      rungs:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        sorted: true
+      dist:
+        gen: "int"
+        min: 100000
+        max: 1000000000
+  - name: "generated_max_values"
+    seed: 105
+    in:
+      rungs:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50000
+          max: 100000
+        of:
+          gen: "int"
+          min: 900000000
+          max: 1000000000
+        distinct: true
+        sorted: true
+      dist:
+        gen: "int"
+        min: 1
+        max: 1000000000

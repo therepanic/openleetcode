@@ -1,0 +1,323 @@
+entry:
+  id: 1552
+  title: "magnetic-force-between-two-balls"
+  params:
+    position:
+      type: array
+      items:
+        type: int
+    m:
+      type: int
+  call:
+    cpp: "Solution().maxDistance({position}, {m})"
+    rust: "Solution::max_distance({position}, {m})"
+    python3: "Solution().maxDistance({position}, {m})"
+    python2: "Solution().maxDistance({position}, {m})"
+    ruby: "max_distance({position}, {m})"
+    java: "new Solution().maxDistance({position}, {m})"
+    csharp: "new Solution().MaxDistance({position}, {m})"
+    kotlin: "Solution().maxDistance({position}, {m})"
+    go: "maxDistance({position}, {m})"
+    dart: "Solution().maxDistance({position}, {m})"
+    swift: "Solution().maxDistance({position}, {m})"
+    typescript: "maxDistance({position}, {m})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maxDistance(position, m, {result})"
+    checker: |
+      class Checker:
+          def maxDistance(self, position, m, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              a = sorted(position)
+              lo, hi = 1, a[-1] - a[0]
+              best = 0
+              while lo <= hi:
+                  mid = (lo + hi) // 2
+                  count = 1
+                  last = a[0]
+                  for value in a[1:]:
+                      if value - last >= mid:
+                          count += 1
+                          last = value
+                  if count >= m:
+                      best = mid
+                      lo = mid + 1
+                  else:
+                      hi = mid - 1
+              return result == best
+
+seed: 1552
+
+tests:
+  - name: "example_one"
+    in:
+      position: [1, 2, 3, 4, 7]
+      m: 3
+    out: 3
+  - name: "example_two_unsorted_large"
+    in:
+      position: [5, 4, 3, 2, 1, 1000000000]
+      m: 2
+    out: 999999999
+  - name: "three_spread_points"
+    in:
+      position: [1, 2, 8, 12, 17]
+      m: 3
+    out: 7
+  - name: "two_minimum_baskets"
+    in:
+      position: [1, 10]
+      m: 2
+    out: 9
+  - name: "three_consecutive_choose_two"
+    in:
+      position: [1, 2, 3]
+      m: 2
+    out: 2
+  - name: "all_consecutive"
+    in:
+      position: [1, 2, 3]
+      m: 3
+    out: 1
+  - name: "unit_interval_extremes"
+    in:
+      position: [1, 100]
+      m: 2
+    out: 99
+  - name: "use_every_evenly_spaced"
+    in:
+      position: [10, 20, 30, 40, 50]
+      m: 5
+    out: 10
+  - name: "six_points_three_balls"
+    in:
+      position: [1, 5, 9, 13, 17, 21]
+      m: 3
+    out: 8
+  - name: "six_points_four_balls"
+    in:
+      position: [1, 4, 7, 10, 13, 16]
+      m: 4
+    out: 3
+  - name: "prime_gaps"
+    in:
+      position: [2, 3, 5, 7, 11, 13, 17]
+      m: 4
+    out: 4
+  - name: "wide_range_three"
+    in:
+      position: [1, 100, 200, 300, 400]
+      m: 3
+    out: 199
+  - name: "clustered_endpoints"
+    in:
+      position: [1, 2, 100, 101, 102]
+      m: 3
+    out: 2
+  - name: "two_clusters_four"
+    in:
+      position: [10, 11, 12, 100, 101, 102]
+      m: 4
+    out: 2
+  - name: "symmetric_five"
+    in:
+      position: [1, 50, 51, 52, 100]
+      m: 3
+    out: 49
+  - name: "irregular_four"
+    in:
+      position: [3, 8, 14, 20, 29, 35]
+      m: 4
+    out: 6
+  - name: "five_from_irregular"
+    in:
+      position: [1, 9, 10, 18, 27, 40]
+      m: 5
+    out: 8
+  - name: "arithmetic_step_ten"
+    in:
+      position: [2, 12, 22, 32, 42, 52, 62]
+      m: 4
+    out: 20
+  - name: "eight_points_six"
+    in:
+      position: [1, 6, 11, 16, 21, 26, 31, 36]
+      m: 6
+    out: 5
+  - name: "two_endpoints_large"
+    in:
+      position: [100, 200, 300, 400, 500, 600]
+      m: 2
+    out: 500
+  - name: "thousand_gaps"
+    in:
+      position: [1, 1000, 2000, 3000, 4000]
+      m: 4
+    out: 1000
+  - name: "powers_of_two"
+    in:
+      position: [7, 14, 28, 56, 112]
+      m: 3
+    out: 49
+  - name: "alternating_large_gaps"
+    in:
+      position: [1, 3, 100, 103, 200, 205]
+      m: 3
+    out: 102
+  - name: "mixed_small_gaps"
+    in:
+      position: [4, 8, 15, 16, 23, 42]
+      m: 3
+    out: 19
+  - name: "binary_positions"
+    in:
+      position: [1, 2, 4, 8, 16, 32, 64]
+      m: 5
+    out: 7
+  - name: "eight_step_pattern"
+    in:
+      position: [11, 22, 33, 44, 55, 66, 77, 88]
+      m: 7
+    out: 11
+  - name: "quarters"
+    in:
+      position: [1, 25, 50, 75, 100]
+      m: 4
+    out: 25
+  - name: "increasing_gaps"
+    in:
+      position: [2, 5, 9, 14, 20, 27]
+      m: 4
+    out: 7
+  - name: "paired_clusters"
+    in:
+      position: [1, 17, 18, 35, 36, 53]
+      m: 3
+    out: 18
+  - name: "seven_step_five"
+    in:
+      position: [6, 12, 18, 24, 30, 36, 42]
+      m: 5
+    out: 6
+  - name: "large_coordinates"
+    in:
+      position: [1, 100000000, 200000000, 300000000, 400000000]
+      m: 3
+    out: 199999999
+  - name: "near_upper_pair"
+    in:
+      position: [999999990, 999999995, 1000000000]
+      m: 2
+    out: 10
+  - name: "large_endpoint_pair"
+    in:
+      position: [1, 2, 1000000000]
+      m: 2
+    out: 999999999
+  - name: "four_quarters_billion"
+    in:
+      position: [1, 250000000, 500000000, 750000000, 1000000000]
+      m: 4
+    out: 250000000
+  - name: "seven_step_six"
+    in:
+      position: [13, 26, 39, 52, 65, 78, 91]
+      m: 6
+    out: 13
+  - name: "generated_small_distinct"
+    seed: 155201
+    in:
+      position:
+        gen: "array"
+        len: 30
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        sorted: true
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 2
+        max: 30
+  - name: "generated_medium_distinct"
+    seed: 155202
+    in:
+      position:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        sorted: true
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 2
+        max: 500
+  - name: "generated_large_one"
+    seed: 155203
+    in:
+      position:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        sorted: true
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 2
+        max: 100000
+  - name: "generated_large_two"
+    seed: 155204
+    in:
+      position:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        sorted: true
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 2
+        max: 99999
+  - name: "generated_wide_range"
+    seed: 155205
+    in:
+      position:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+        sorted: true
+        elemType: "int"
+      m:
+        gen: "int"
+        min: 2
+        max: 5000

@@ -1,0 +1,82 @@
+class Solution(object):
+    def longestCommonSubpath(self, n, paths):
+        """
+        :type n: int
+        :type paths: List[List[int]]
+        :rtype: int
+        """
+        combined = []
+        path_origin = []
+        for i, p in enumerate(paths):
+            for v in p:
+                combined.append(v)
+                path_origin.append(i)
+            combined.append(-(i+1))
+            path_origin.append(i)
+        N = len(combined)
+        M = len(paths)
+
+        # rank compression
+        rank = [0]*N
+        temp = sorted(combined)
+        for i in range(N):
+            rank[i] = temp.index(combined[i])
+
+        k = 1
+        while k < N:
+            keys = [0]*N
+            for i in range(N):
+                first = rank[i]
+                second = rank[i+k] + 1 if i+k < N else 0
+                keys[i] = (first << 32) | second
+            sorted_keys = sorted(keys)
+            for i in range(N):
+                rank[i] = sorted_keys.index(keys[i])
+            if k >= N:
+                break
+            k *= 2
+
+        sa = [0]*N
+        for i in range(N):
+            sa[rank[i]] = i
+
+        lcp = [0]*N
+        inv = rank
+        h = 0
+        for i in range(N):
+            if inv[i] > 0:
+                j = sa[inv[i]-1]
+                while i+h < N and j+h < N and combined[i+h] == combined[j+h]:
+                    h += 1
+                lcp[inv[i]] = h
+                if h > 0:
+                    h -= 1
+
+        ans = 0
+        left = 0
+        count = [0]*M
+        distinct = 0
+        from collections import deque
+        min_q = deque()
+        for right in range(N):
+            p = path_origin[sa[right]]
+            if p >= 0:
+                if count[p] == 0:
+                    distinct += 1
+                count[p] += 1
+            while min_q and lcp[min_q[-1]] >= lcp[right]:
+                min_q.pop()
+            min_q.append(right)
+
+            while distinct == M:
+                while min_q and min_q[0] <= left:
+                    min_q.popleft()
+                if min_q:
+                    ans = max(ans, lcp[min_q[0]])
+                out = path_origin[sa[left]]
+                if out >= 0:
+                    count[out] -= 1
+                    if count[out] == 0:
+                        distinct -= 1
+                left += 1
+        return ans

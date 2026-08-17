@@ -1,0 +1,30 @@
+class Solution(object):
+    def maxProductPath(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        r, c = len(grid), len(grid[0])
+        MOD = 10**9 + 7
+        dp = [[[0, 0] for _ in range(c)] for _ in range(r)]
+        
+        p = grid[0][0]
+        dp[0][0][0] = dp[0][0][1] = p
+        for j in range(1, c):
+            p *= grid[0][j]
+            dp[0][j][0] = dp[0][j][1] = p
+        
+        p = grid[0][0]
+        for i in range(1, r):
+            p *= grid[i][0]
+            dp[i][0][0] = dp[i][0][1] = p
+            for j in range(1, c):
+                x = grid[i][j]
+                vals = (x * dp[i][j-1][0], x * dp[i][j-1][1], x * dp[i-1][j][0], x * dp[i-1][j][1])
+                dp[i][j][0] = min(vals)
+                dp[i][j][1] = max(vals)
+        
+        ans = dp[r-1][c-1][1]
+        if ans < 0:
+            return -1
+        return ans % MOD

@@ -1,0 +1,271 @@
+entry:
+  id: 1649
+  title: "create-sorted-array-through-instructions"
+  params:
+    instructions:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().createSortedArray({instructions})"
+    rust: "Solution::create_sorted_array({instructions})"
+    python3: "Solution().createSortedArray({instructions})"
+    python2: "Solution().createSortedArray({instructions})"
+    ruby: "create_sorted_array({instructions})"
+    java: "new Solution().createSortedArray({instructions})"
+    csharp: "new Solution().CreateSortedArray({instructions})"
+    kotlin: "Solution().createSortedArray({instructions})"
+    go: "createSortedArray({instructions})"
+    dart: "Solution().createSortedArray({instructions})"
+    swift: "Solution().createSortedArray({instructions})"
+    typescript: "createSortedArray({instructions})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().createSortedArray(instructions, {result})"
+    checker: |
+      class Checker:
+          def createSortedArray(self, instructions, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              n = len(instructions)
+              bit = [0] * (100002)
+              def add(i):
+                  while i < len(bit):
+                      bit[i] += 1
+                      i += i & -i
+              def prefix(i):
+                  total = 0
+                  while i:
+                      total += bit[i]
+                      i -= i & -i
+                  return total
+              expected = 0
+              for i, value in enumerate(instructions):
+                  less = prefix(value)
+                  not_greater = prefix(value + 1)
+                  greater = i - not_greater
+                  expected = (expected + min(less, greater)) % mod
+                  add(value + 1)
+              return result == expected
+
+seed: 1649
+
+tests:
+  - name: example-one
+    in:
+      instructions: [1, 5, 6, 2]
+    out: 1
+  - name: example-two
+    in:
+      instructions: [1, 2, 3, 6, 5, 4]
+    out: 3
+  - name: example-three
+    in:
+      instructions: [1, 3, 3, 3, 2, 4, 2, 1, 2]
+    out: 4
+  - name: single
+    in:
+      instructions: [1]
+    out: 0
+  - name: equal-single-value
+    in:
+      instructions: [1, 1, 1]
+    out: 0
+  - name: descending
+    in:
+      instructions: [3, 2, 1]
+    out: 0
+  - name: ascending
+    in:
+      instructions: [1, 2, 3, 4, 5]
+    out: 0
+  - name: descending-longer
+    in:
+      instructions: [5, 4, 3, 2, 1]
+    out: 0
+  - name: duplicate-blocks
+    in:
+      instructions: [2, 2, 1, 1, 3, 3]
+    out: 0
+  - name: maximum-value
+    in:
+      instructions: [100000]
+    out: 0
+  - name: alternating-extremes
+    in:
+      instructions: [1, 100000, 1, 100000]
+    out: 0
+  - name: repeated-extremes
+    in:
+      instructions: [7, 1, 7, 1, 7, 1]
+    out: 0
+  - name: alternating-near-sorted
+    in:
+      instructions: [1, 2, 1, 2, 1, 2, 1, 2]
+    out: 0
+  - name: descending-ten
+    in:
+      instructions: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: 0
+  - name: wide-values
+    in:
+      instructions: [1, 100000, 99999, 2, 50000]
+    out: 4
+  - name: zero-is-invalid-not-used
+    in:
+      instructions: [4, 1, 3, 2, 5, 1]
+    out: 2
+  - name: evens-then-odds
+    in:
+      instructions: [2, 4, 6, 8, 10, 1, 3, 5, 7, 9]
+    out: 8
+  - name: zigzag
+    in:
+      instructions: [1, 10, 2, 9, 3, 8, 4, 7, 5, 6]
+    out: 20
+  - name: paired-descending
+    in:
+      instructions: [50, 50, 49, 49, 48, 48]
+    out: 0
+  - name: three-extreme-cycles
+    in:
+      instructions: [1, 100000, 1, 100000, 1]
+    out: 0
+  - name: mixed-permutation
+    in:
+      instructions: [8, 6, 7, 5, 3, 2, 9]
+    out: 1
+  - name: repeated-pairs
+    in:
+      instructions: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+    out: 0
+  - name: high-low-alternation
+    in:
+      instructions: [99999, 1, 99998, 2, 99997, 3]
+    out: 6
+  - name: all-equal
+    in:
+      instructions:
+        [
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+        ]
+    out: 0
+  - name: valley
+    in:
+      instructions: [1, 2, 3, 4, 5, 4, 3, 2, 1]
+    out: 4
+  - name: triple-repeat
+    in:
+      instructions: [17, 3, 17, 3, 17, 3, 17]
+    out: 0
+  - name: interleaved-halves
+    in:
+      instructions: [1, 50000, 25000, 75000, 12500, 87500]
+    out: 2
+  - name: high-descending-then-ascending
+    in:
+      instructions: [100000, 99999, 99998, 1, 2, 3]
+    out: 3
+  - name: two-runs
+    in:
+      instructions: [6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6]
+    out: 7
+  - name: alternating-small-ranges
+    in:
+      instructions: [1, 4, 2, 5, 3, 6]
+    out: 3
+  - name: powers-of-two
+    in:
+      instructions: [1, 2, 4, 8, 16, 32, 64]
+    out: 0
+  - name: mixed-boundaries
+    in:
+      instructions: [100000, 1, 2, 99999, 3, 99998]
+    out: 6
+  - name: duplicate-staircase
+    in:
+      instructions: [1, 1, 1, 2, 2, 3, 3, 4, 4, 5]
+    out: 0
+  - name: generated-small
+    in:
+      instructions:
+        gen: "array"
+        len: 37
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+    seed: 164901
+  - name: generated-medium
+    in:
+      instructions:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+    seed: 164902
+  - name: generated-large
+    in:
+      instructions:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+    seed: 164903
+  - name: generated-large-narrow-domain
+    in:
+      instructions:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+        elemType: "int"
+    seed: 164904
+  - name: generated-large-two-values
+    in:
+      instructions:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 99999
+          max: 100000
+        elemType: "int"
+    seed: 164905

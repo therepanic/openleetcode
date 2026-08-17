@@ -1,0 +1,31 @@
+class Solution(object):
+    def placeWordInCrossword(self, board, word):
+        """
+        :type board: List[List[str]]
+        :type word: str
+        :rtype: bool
+        """
+        def can_place(segment, word):
+            if len(segment) != len(word):
+                return False
+            for c1, c2 in zip(segment, word):
+                if c1 != ' ' and c1 != c2:
+                    return False
+            return True
+        
+        m, n = len(board), len(board[0])
+        reversed_word = word[::-1]
+
+        for row in board:
+            parts = ''.join(row).split('#')
+            for part in parts:
+                if can_place(part, word) or can_place(part, reversed_word):
+                    return True
+
+        for col in zip(*board):
+            parts = ''.join(col).split('#')
+            for part in parts:
+                if can_place(part, word) or can_place(part, reversed_word):
+                    return True
+
+        return False

@@ -1,0 +1,436 @@
+entry:
+  id: 1563
+  title: stone-game-v
+  params:
+    stoneValue:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().stoneGameV({stoneValue})"
+    rust: "Solution::stone_game_v({stoneValue})"
+    python3: "Solution().stoneGameV({stoneValue})"
+    python2: "Solution().stoneGameV({stoneValue})"
+    ruby: "stone_game_v({stoneValue})"
+    java: "new Solution().stoneGameV({stoneValue})"
+    csharp: "new Solution().StoneGameV({stoneValue})"
+    kotlin: "Solution().stoneGameV({stoneValue})"
+    go: "stoneGameV({stoneValue})"
+    dart: "Solution().stoneGameV({stoneValue})"
+    swift: "Solution().stoneGameV({stoneValue})"
+    typescript: "stoneGameV({stoneValue})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().stoneGameV(stoneValue, {result})"
+    checker: |
+      class Checker:
+          def stoneGameV(self, stoneValue, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(stoneValue)
+              prefix = [0]
+              for value in stoneValue:
+                  prefix.append(prefix[-1] + value)
+              dp = [[0] * n for _ in range(n)]
+              left_best = [[0] * n for _ in range(n)]
+              right_best = [[0] * n for _ in range(n)]
+              for length in range(1, n + 1):
+                  for left in range(n - length + 1):
+                      right = left + length - 1
+                      total = prefix[right + 1] - prefix[left]
+                      if left < right:
+                          lo, hi, split = left, right - 1, left - 1
+                          while lo <= hi:
+                              mid = (lo + hi) // 2
+                              if 2 * (prefix[mid + 1] - prefix[left]) <= total:
+                                  split = mid
+                                  lo = mid + 1
+                              else:
+                                  hi = mid - 1
+                          if split >= left:
+                              dp[left][right] = left_best[left][split]
+                          lo, hi, first = left + 1, right, right + 1
+                          while lo <= hi:
+                              mid = (lo + hi) // 2
+                              if 2 * (prefix[mid] - prefix[left]) >= total:
+                                  first = mid
+                                  hi = mid - 1
+                              else:
+                                  lo = mid + 1
+                          if first <= right:
+                              dp[left][right] = max(dp[left][right], right_best[first][right])
+                      score = total + dp[left][right]
+                      left_best[left][right] = max(score, left_best[left][right - 1] if right > left else 0)
+                      right_best[left][right] = max(score, right_best[left + 1][right] if left < right else 0)
+              return result == dp[0][n - 1]
+
+seed: 1563
+
+tests:
+  - name: singleton
+    in:
+      stoneValue: [4]
+    out: 0
+  - name: example-one
+    in:
+      stoneValue: [6, 2, 3, 4, 5, 5]
+    out: 18
+  - name: example-two
+    in:
+      stoneValue: [7, 7, 7, 7, 7, 7, 7]
+    out: 28
+  - name: two-equal
+    in:
+      stoneValue: [5, 5]
+    out: 5
+  - name: two-unequal-left
+    in:
+      stoneValue: [1, 9]
+    out: 1
+  - name: two-unequal-right
+    in:
+      stoneValue: [9, 1]
+    out: 1
+  - name: increasing-three
+    in:
+      stoneValue: [1, 2, 3]
+    out: 4
+  - name: decreasing-three
+    in:
+      stoneValue: [3, 2, 1]
+    out: 4
+  - name: equal-three
+    in:
+      stoneValue: [4, 4, 4]
+    out: 4
+  - name: all-ones-four
+    in:
+      stoneValue: [1, 1, 1, 1]
+    out: 3
+  - name: all-ones-five
+    in:
+      stoneValue: [1, 1, 1, 1, 1]
+    out: 3
+  - name: all-ones-six
+    in:
+      stoneValue: [1, 1, 1, 1, 1, 1]
+    out: 4
+  - name: powers
+    in:
+      stoneValue: [1, 2, 4, 8, 16]
+    out: 26
+  - name: reverse-powers
+    in:
+      stoneValue: [16, 8, 4, 2, 1]
+    out: 26
+  - name: balanced-six
+    in:
+      stoneValue: [2, 2, 2, 2, 2, 2]
+    out: 8
+  - name: asymmetric-small
+    in:
+      stoneValue: [10, 1, 1, 10]
+    out: 12
+  - name: middle-heavy
+    in:
+      stoneValue: [1, 1, 20, 1, 1]
+    out: 3
+  - name: ends-heavy
+    in:
+      stoneValue: [20, 1, 1, 1, 20]
+    out: 22
+  - name: alternating
+    in:
+      stoneValue: [1, 10, 1, 10, 1, 10]
+    out: 13
+  - name: alternating-reverse
+    in:
+      stoneValue: [10, 1, 10, 1, 10, 1]
+    out: 13
+  - name: small-primes
+    in:
+      stoneValue: [2, 3, 5, 7, 11, 13]
+    out: 24
+  - name: repeated-large
+    in:
+      stoneValue: [1000000, 1000000, 1000000]
+    out: 1000000
+  - name: large-skew
+    in:
+      stoneValue: [1000000, 1, 1, 1, 1]
+    out: 7
+  - name: large-tail
+    in:
+      stoneValue: [1, 1, 1, 1, 1000000]
+    out: 7
+  - name: ten-equal
+    in:
+      stoneValue: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    out: 24
+  - name: ten-increasing
+    in:
+      stoneValue: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: 37
+  - name: ten-decreasing
+    in:
+      stoneValue: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: 37
+  - name: uneven-seven
+    in:
+      stoneValue: [2, 9, 1, 8, 3, 7, 4]
+    out: 18
+  - name: uneven-eight
+    in:
+      stoneValue: [8, 1, 7, 2, 6, 3, 5, 4]
+    out: 31
+  - name: twenty-equal
+    in:
+      stoneValue: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    out: 90
+  - name: twenty-one-ones
+    in:
+      stoneValue:
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: 18
+  - name: near-limit-small-values
+    in:
+      stoneValue:
+        [
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+        ]
+    out: 37
+  - name: near-limit-large-values
+    in:
+      stoneValue:
+        [
+          999999,
+          1000000,
+          999998,
+          1000000,
+          999997,
+          1000000,
+          999996,
+          1000000,
+          999995,
+          1000000,
+          999994,
+          1000000,
+          999993,
+          1000000,
+          999992,
+          1000000,
+          999991,
+          1000000,
+          999990,
+          1000000,
+        ]
+    out: 17999927
+  - name: forty-eight-equal
+    in:
+      stoneValue:
+        [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+        ]
+    out: 92
+  - name: fifty-one-ones
+    in:
+      stoneValue:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 47
+  - name: generated-uniform-small
+    in:
+      stoneValue:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-uniform-medium
+    in:
+      stoneValue:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-uniform-large
+    in:
+      stoneValue:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-biased-low
+    in:
+      stoneValue:
+        gen: "array"
+        len: 499
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: generated-biased-high
+    in:
+      stoneValue:
+        gen: "array"
+        len: 500
+        of:
+          gen: "int"
+          min: 999000
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"

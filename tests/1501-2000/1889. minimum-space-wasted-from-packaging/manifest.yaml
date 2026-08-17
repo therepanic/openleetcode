@@ -1,0 +1,315 @@
+entry:
+  id: 1889
+  title: minimum-space-wasted-from-packaging
+  params:
+    packages:
+      type: array
+      items:
+        type: int
+    boxes:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minWastedSpace({packages}, {boxes})"
+    rust: "Solution::min_wasted_space({packages}, {boxes})"
+    python3: "Solution().minWastedSpace({packages}, {boxes})"
+    python2: "Solution().minWastedSpace({packages}, {boxes})"
+    ruby: "min_wasted_space({packages}, {boxes})"
+    java: "new Solution().minWastedSpace({packages}, {boxes})"
+    csharp: "new Solution().MinWastedSpace({packages}, {boxes})"
+    kotlin: "Solution().minWastedSpace({packages}, {boxes})"
+    go: "minWastedSpace({packages}, {boxes})"
+    dart: "Solution().minWastedSpace({packages}, {boxes})"
+    swift: "Solution().minWastedSpace({packages}, {boxes})"
+    typescript: "minWastedSpace({packages}, {boxes})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(packages, boxes, {result})"
+    checker: |
+      from bisect import bisect_right
+      class Checker:
+          def check(self, packages, boxes, result):
+              if not isinstance(result, int):
+                  return False
+              p = sorted(packages)
+              total = sum(p)
+              best = None
+              for supplier in boxes:
+                  b = sorted(supplier)
+                  i = 0
+                  gross = 0
+                  for size in b:
+                      j = bisect_right(p, size, i)
+                      gross += size * (j - i)
+                      i = j
+                      if i == len(p):
+                          break
+                  if i == len(p):
+                      best = gross if best is None else min(best, gross)
+              expected = -1 if best is None else (best - total) % (10 ** 9 + 7)
+              return result == expected
+
+seed: 1889
+
+tests:
+  - name: example-one
+    in:
+      packages: [2, 3, 5]
+      boxes:
+        - [4, 8]
+        - [2, 8]
+    out: 6
+  - name: impossible-example
+    in:
+      packages: [2, 3, 5]
+      boxes:
+        - [1, 4]
+        - [2, 3]
+        - [3, 4]
+    out: -1
+  - name: example-three
+    in:
+      packages: [3, 5, 8, 10, 11, 12]
+      boxes:
+        - [12]
+        - [11, 9]
+        - [10, 5, 14]
+    out: 9
+  - name: single-exact
+    in:
+      packages: [1]
+      boxes:
+        - [1]
+    out: 0
+  - name: single-best-supplier
+    in:
+      packages: [1]
+      boxes:
+        - [2]
+        - [1]
+    out: 0
+  - name: single-impossible-option
+    in:
+      packages: [5]
+      boxes:
+        - [4]
+        - [5]
+        - [10]
+    out: 0
+  - name: duplicate-packages
+    in:
+      packages: [1, 1, 1]
+      boxes:
+        - [1]
+        - [2]
+        - [1, 3]
+    out: 0
+  - name: mixed-coverage
+    in:
+      packages: [2, 2, 3, 7]
+      boxes:
+        - [2, 3, 7]
+        - [3, 8]
+        - [7]
+    out: 0
+  - name: exact-three
+    in:
+      packages: [10, 20, 30]
+      boxes:
+        - [10, 20, 30]
+    out: 0
+  - name: larger-better
+    in:
+      packages: [10, 20, 30]
+      boxes:
+        - [11, 21, 31]
+        - [30]
+    out: 3
+  - name: consecutive-packages
+    in:
+      packages: [1, 2, 3, 4, 5]
+      boxes:
+        - [5]
+        - [6]
+        - [1, 3, 5]
+    out: 2
+  - name: duplicate-size-boxes
+    in:
+      packages: [5, 5, 5]
+      boxes:
+        - [5]
+        - [6]
+    out: 0
+  - name: wide-gap
+    in:
+      packages: [1, 100]
+      boxes:
+        - [50, 100]
+        - [100]
+    out: 49
+  - name: three-nearby
+    in:
+      packages: [7, 8, 9]
+      boxes:
+        - [7, 9]
+        - [8, 9]
+        - [9]
+    out: 1
+  - name: even-exact
+    in:
+      packages: [2, 4, 6, 8]
+      boxes:
+        - [3, 5, 7, 9]
+        - [8]
+        - [2, 8]
+    out: 4
+  - name: odd-gaps
+    in:
+      packages: [1, 3, 5, 7]
+      boxes:
+        - [2, 4, 6, 8]
+        - [1, 7]
+    out: 4
+  - name: maximum-exact
+    in:
+      packages: [100000]
+      boxes:
+        - [100000]
+    out: 0
+  - name: maximum-duplicates
+    in:
+      packages: [99999, 100000]
+      boxes:
+        - [100000]
+        - [99999, 100000]
+    out: 0
+  - name: maximum-gap
+    in:
+      packages: [1, 2, 100000]
+      boxes:
+        - [2, 100000]
+        - [1, 100000]
+    out: 1
+  - name: four-exact
+    in:
+      packages: [4, 6, 9, 12]
+      boxes:
+        - [4, 6, 9, 12]
+        - [5, 7, 10, 13]
+    out: 0
+  - name: repeated-middle
+    in:
+      packages: [1, 2, 2, 4, 8]
+      boxes:
+        - [2, 4, 8]
+        - [1, 3, 9]
+    out: 1
+  - name: two-pairs
+    in:
+      packages: [3, 3, 4, 4]
+      boxes:
+        - [3, 4]
+        - [4, 5]
+    out: 0
+  - name: skipped-small-boxes
+    in:
+      packages: [6, 10, 11]
+      boxes:
+        - [6, 10, 11]
+        - [7, 12]
+    out: 0
+  - name: sparse-boxes
+    in:
+      packages: [2, 5, 9, 10]
+      boxes:
+        - [5, 10]
+        - [2, 9, 10]
+    out: 4
+  - name: alternative-supplier
+    in:
+      packages: [1, 4, 4, 9]
+      boxes:
+        - [4, 9]
+        - [5, 10]
+    out: 3
+  - name: alternating-gaps
+    in:
+      packages: [8, 9, 10, 11]
+      boxes:
+        - [8, 10, 12]
+        - [9, 11]
+    out: 2
+  - name: one-box-supplier
+    in:
+      packages: [2, 3, 4]
+      boxes:
+        - [4]
+        - [3, 4]
+    out: 1
+  - name: two-equal-large
+    in:
+      packages: [10, 10, 20]
+      boxes:
+        - [10, 20]
+        - [11, 21]
+    out: 0
+  - name: increasing-gaps
+    in:
+      packages: [1, 5, 10, 20]
+      boxes:
+        - [5, 10, 20]
+        - [2, 6, 11, 21]
+    out: 4
+  - name: duplicate-six
+    in:
+      packages: [2, 6, 6, 9]
+      boxes:
+        - [6, 9]
+        - [7, 10]
+    out: 4
+  - name: small-duplicates
+    in:
+      packages: [1, 1, 2, 3]
+      boxes:
+        - [1, 2, 3]
+        - [2, 3]
+    out: 0
+  - name: close-triple
+    in:
+      packages: [15, 16, 17]
+      boxes:
+        - [16, 17]
+        - [15, 18]
+    out: 1
+  - name: large-spread
+    in:
+      packages: [2, 8, 18]
+      boxes:
+        - [8, 18]
+        - [3, 9, 20]
+    out: 4
+  - name: four-close
+    in:
+      packages: [11, 12, 13, 14]
+      boxes:
+        - [12, 14]
+        - [11, 13, 15]
+    out: 2
+  - name: exact-endpoint-choice
+    in:
+      packages: [3, 6, 9]
+      boxes:
+        - [4, 7, 10]
+        - [3, 9]
+    out: 3

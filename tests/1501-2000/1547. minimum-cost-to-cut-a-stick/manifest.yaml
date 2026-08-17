@@ -1,0 +1,288 @@
+entry:
+  id: 1547
+  title: "minimum-cost-to-cut-a-stick"
+  params:
+    n:
+      type: int
+    cuts:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minCost({n}, {cuts})"
+    rust: "Solution::min_cost({n}, {cuts})"
+    python3: "Solution().minCost({n}, {cuts})"
+    python2: "Solution().minCost({n}, {cuts})"
+    ruby: "min_cost({n}, {cuts})"
+    java: "new Solution().minCost({n}, {cuts})"
+    csharp: "new Solution().MinCost({n}, {cuts})"
+    kotlin: "Solution().minCost({n}, {cuts})"
+    go: "minCost({n}, {cuts})"
+    dart: "Solution().minCost({n}, {cuts})"
+    swift: "Solution().minCost({n}, {cuts})"
+    typescript: "minCost({n}, {cuts})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().minCost(n, cuts, {result})"
+    checker: |
+      class Checker:
+          def minCost(self, n, cuts, result):
+              points = sorted([0, n] + list(cuts))
+              size = len(points)
+              dp = [[0] * size for _ in range(size)]
+              for gap in range(2, size):
+                  for left in range(size - gap):
+                      right = left + gap
+                      dp[left][right] = min(
+                          dp[left][mid] + dp[mid][right]
+                          for mid in range(left + 1, right)
+                      ) + points[right] - points[left]
+              return result == dp[0][size - 1]
+seed: 1547
+tests:
+  - name: one-cut-small
+    in:
+      n: 3
+      cuts: [1]
+    out: 3
+  - name: one-cut-left
+    in:
+      n: 4
+      cuts: [1]
+    out: 4
+  - name: one-cut-middle
+    in:
+      n: 4
+      cuts: [2]
+    out: 4
+  - name: adjacent-left-cuts
+    in:
+      n: 5
+      cuts: [1, 2]
+    out: 7
+  - name: asymmetric-two-cuts
+    in:
+      n: 5
+      cuts: [1, 3]
+    out: 8
+  - name: mirrored-two-cuts
+    in:
+      n: 5
+      cuts: [2, 4]
+    out: 8
+  - name: one-cut-six
+    in:
+      n: 6
+      cuts: [1]
+    out: 6
+  - name: separated-two-cuts
+    in:
+      n: 6
+      cuts: [2, 4]
+    out: 10
+  - name: three-evenly-spaced
+    in:
+      n: 6
+      cuts: [1, 3, 5]
+    out: 12
+  - name: official-example-one
+    in:
+      n: 7
+      cuts: [1, 3, 4, 5]
+    out: 16
+  - name: two-cuts-seven
+    in:
+      n: 7
+      cuts: [2, 5]
+    out: 12
+  - name: three-left-heavy
+    in:
+      n: 8
+      cuts: [1, 2, 3]
+    out: 13
+  - name: three-symmetric
+    in:
+      n: 8
+      cuts: [2, 4, 6]
+    out: 16
+  - name: four-almost-even
+    in:
+      n: 8
+      cuts: [1, 3, 5, 7]
+    out: 19
+  - name: official-example-two
+    in:
+      n: 9
+      cuts: [5, 6, 1, 4, 2]
+    out: 22
+  - name: five-dense-left
+    in:
+      n: 10
+      cuts: [1, 2, 3, 4, 5]
+    out: 22
+  - name: three-balanced
+    in:
+      n: 10
+      cuts: [2, 5, 8]
+    out: 20
+  - name: four-right-heavy
+    in:
+      n: 10
+      cuts: [1, 4, 7, 9]
+    out: 23
+  - name: two-cuts-eleven
+    in:
+      n: 11
+      cuts: [3, 6]
+    out: 17
+  - name: three-asymmetric-eleven
+    in:
+      n: 11
+      cuts: [1, 5, 10]
+    out: 22
+  - name: five-evenly-spaced
+    in:
+      n: 12
+      cuts: [2, 4, 6, 8, 10]
+    out: 32
+  - name: six-odd-cuts
+    in:
+      n: 12
+      cuts: [1, 3, 5, 7, 9, 11]
+    out: 34
+  - name: four-thirteen
+    in:
+      n: 13
+      cuts: [2, 6, 9, 12]
+    out: 30
+  - name: one-cut-large
+    in:
+      n: 20
+      cuts: [1]
+    out: 20
+  - name: three-cuts-twenty
+    in:
+      n: 20
+      cuts: [5, 10, 15]
+    out: 40
+  - name: nine-dense-cuts
+    in:
+      n: 20
+      cuts: [2, 4, 6, 8, 10, 12, 14, 16, 18]
+    out: 68
+  - name: five-irregular-twenty-five
+    in:
+      n: 25
+      cuts: [1, 7, 13, 19, 24]
+    out: 63
+  - name: five-irregular-thirty
+    in:
+      n: 30
+      cuts: [3, 8, 14, 21, 27]
+    out: 77
+  - name: nine-cuts-fifty
+    in:
+      n: 50
+      cuts: [5, 10, 15, 20, 25, 30, 35, 40, 45]
+    out: 170
+  - name: five-cuts-hundred
+    in:
+      n: 100
+      cuts: [1, 25, 50, 75, 99]
+    out: 250
+  - name: nine-cuts-hundred
+    in:
+      n: 100
+      cuts: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+    out: 340
+  - name: six-cuts-thousand
+    in:
+      n: 1000
+      cuts: [1, 100, 250, 500, 750, 999]
+    out: 2600
+  - name: max-n-one-left
+    in:
+      n: 999999
+      cuts: [1]
+    out: 999999
+  - name: max-n-two-extremes
+    in:
+      n: 1000000
+      cuts: [1, 999999]
+    out: 1999999
+  - name: max-n-nine-cuts
+    in:
+      n: 1000000
+      cuts:
+        [100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000]
+    out: 3400000
+  - name: generated-single-cut
+    in:
+      n: 1000000
+      cuts:
+        gen: "array"
+        len: 1
+        of:
+          gen: "int"
+          min: 1
+          max: 999999
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-small-cut-set
+    in:
+      n: 1000000
+      cuts:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 1
+          max: 999999
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-medium-cut-set
+    in:
+      n: 1000000
+      cuts:
+        gen: "array"
+        len: 50
+        of:
+          gen: "int"
+          min: 1
+          max: 999999
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-near-limit-cut-set
+    in:
+      n: 1000000
+      cuts:
+        gen: "array"
+        len: 99
+        of:
+          gen: "int"
+          min: 1
+          max: 999999
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: generated-maximum-cut-set
+    in:
+      n: 1000000
+      cuts:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 999999
+        distinct: true
+        sorted: false
+        elemType: "int"

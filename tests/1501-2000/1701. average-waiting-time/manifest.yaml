@@ -1,0 +1,315 @@
+entry:
+  id: 1701
+  title: "average-waiting-time"
+  params:
+    customers:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().averageWaitingTime({customers})"
+    rust: "Solution::average_waiting_time({customers})"
+    python3: "Solution().averageWaitingTime({customers})"
+    python2: "Solution().averageWaitingTime({customers})"
+    ruby: "average_waiting_time({customers})"
+    java: "new Solution().averageWaitingTime({customers})"
+    csharp: "new Solution().AverageWaitingTime({customers})"
+    kotlin: "Solution().averageWaitingTime({customers})"
+    go: "averageWaitingTime({customers})"
+    dart: "Solution().averageWaitingTime({customers})"
+    swift: "Solution().averageWaitingTime({customers})"
+    typescript: "averageWaitingTime({customers})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().averageWaitingTime(customers, {result})"
+    checker: |
+      import math
+
+      class Checker:
+          def averageWaitingTime(self, customers, result):
+              if not isinstance(customers, list) or not customers:
+                  return False
+              previous = 0
+              total = 0
+              last_arrival = 0
+              for customer in customers:
+                  if not isinstance(customer, list) or len(customer) != 2:
+                      return False
+                  arrival, duration = customer
+                  if not isinstance(arrival, int) or not isinstance(duration, int):
+                      return False
+                  if arrival < 1 or arrival > 10000 or duration < 1 or duration > 10000:
+                      return False
+                  if arrival < last_arrival:
+                      return False
+                  last_arrival = arrival
+                  previous = max(previous, arrival) + duration
+                  total += previous - arrival
+              expected = total / float(len(customers))
+              return isinstance(result, (int, float)) and math.isfinite(result) and abs(result - expected) <= 1e-5
+
+seed: 1701
+
+tests:
+  - name: example-one
+    in:
+      customers:
+        - [1, 2]
+        - [2, 5]
+        - [4, 3]
+  - name: example-two
+    in:
+      customers:
+        - [5, 2]
+        - [5, 4]
+        - [10, 3]
+        - [20, 1]
+  - name: single-customer
+    in:
+      customers:
+        - [1, 7]
+  - name: single-at-maximum
+    in:
+      customers:
+        - [10000, 10000]
+  - name: all-arrive-together
+    in:
+      customers:
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+  - name: idle-between-orders
+    in:
+      customers:
+        - [1, 2]
+        - [10, 1]
+        - [20, 5]
+  - name: exact-boundary-arrivals
+    in:
+      customers:
+        - [1, 3]
+        - [4, 2]
+        - [6, 1]
+  - name: long-first-order
+    in:
+      customers:
+        - [2, 10000]
+        - [3, 1]
+        - [4, 1]
+  - name: long-last-order
+    in:
+      customers:
+        - [1, 1]
+        - [2, 1]
+        - [3, 10000]
+  - name: repeated-arrivals
+    in:
+      customers:
+        - [7, 4]
+        - [7, 1]
+        - [7, 8]
+        - [7, 2]
+  - name: alternating-idle-and-busy
+    in:
+      customers:
+        - [1, 5]
+        - [2, 1]
+        - [20, 3]
+        - [21, 10]
+        - [50, 2]
+  - name: fractional-average-1
+    in:
+      customers:
+        - [1, 1]
+        - [1, 2]
+        - [1, 4]
+  - name: fractional-average-2
+    in:
+      customers:
+        - [1, 2]
+        - [3, 2]
+        - [3, 2]
+        - [10, 1]
+  - name: late-duplicate-arrivals
+    in:
+      customers:
+        - [1, 2]
+        - [100, 3]
+        - [100, 4]
+        - [100, 5]
+  - name: increasing-durations
+    in:
+      customers:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+        - [5, 5]
+  - name: decreasing-durations
+    in:
+      customers:
+        - [1, 5]
+        - [2, 4]
+        - [3, 3]
+        - [4, 2]
+        - [5, 1]
+  - name: same-arrival-long-queue
+    in:
+      customers:
+        - [10, 100]
+        - [10, 200]
+        - [10, 300]
+        - [10, 400]
+        - [10, 500]
+  - name: near-maximum-arrivals
+    in:
+      customers:
+        - [9990, 1]
+        - [9991, 10000]
+        - [9992, 1]
+        - [10000, 2]
+  - name: service-finishes-before-each-arrival
+    in:
+      customers:
+        - [1, 2]
+        - [4, 2]
+        - [7, 2]
+        - [10, 2]
+        - [13, 2]
+  - name: service-just-overlaps
+    in:
+      customers:
+        - [1, 3]
+        - [3, 3]
+        - [5, 3]
+        - [7, 3]
+  - name: two-phases
+    in:
+      customers:
+        - [1, 8]
+        - [2, 1]
+        - [3, 1]
+        - [20, 8]
+        - [21, 1]
+  - name: varied-small
+    in:
+      customers:
+        - [1, 9]
+        - [1, 1]
+        - [2, 5]
+        - [8, 2]
+        - [8, 7]
+        - [30, 3]
+  - name: many-equal-duration
+    in:
+      customers:
+        - [2, 17]
+        - [3, 17]
+        - [4, 17]
+        - [5, 17]
+        - [6, 17]
+        - [7, 17]
+  - name: large-duration-mix
+    in:
+      customers:
+        - [1, 10000]
+        - [1, 9999]
+        - [5000, 10000]
+        - [10000, 1]
+  - name: sparse-singletons
+    in:
+      customers:
+        - [1, 100]
+        - [1000, 100]
+        - [2000, 100]
+        - [3000, 100]
+        - [4000, 100]
+  - name: six-customer-chain
+    in:
+      customers:
+        - [1, 10]
+        - [2, 1]
+        - [3, 10]
+        - [20, 1]
+        - [21, 10]
+        - [22, 1]
+  - name: duplicate-boundary-groups
+    in:
+      customers:
+        - [1, 2]
+        - [1, 2]
+        - [5, 2]
+        - [5, 2]
+        - [9, 2]
+        - [9, 2]
+  - name: large-idle-gap
+    in:
+      customers:
+        - [1, 100]
+        - [10000, 10000]
+  - name: maximum-same-arrival
+    in:
+      customers:
+        - [10000, 10000]
+        - [10000, 9999]
+        - [10000, 1]
+  - name: balanced-workload
+    in:
+      customers:
+        - [1, 6]
+        - [3, 4]
+        - [8, 7]
+        - [10, 2]
+        - [20, 9]
+        - [21, 1]
+        - [40, 5]
+  - name: long-tail-queue
+    in:
+      customers:
+        - [1, 10000]
+        - [1, 1]
+        - [1, 1]
+        - [5000, 10000]
+        - [10000, 10000]
+  - name: clustered-arrivals
+    in:
+      customers:
+        - [3, 8]
+        - [3, 2]
+        - [3, 6]
+        - [4, 1]
+        - [4, 9]
+        - [20, 2]
+  - name: staircase-arrivals
+    in:
+      customers:
+        - [1, 10]
+        - [2, 9]
+        - [4, 8]
+        - [7, 7]
+        - [11, 6]
+        - [16, 5]
+        - [22, 4]
+  - name: max-values-busy
+    in:
+      customers:
+        - [1, 10000]
+        - [2, 10000]
+        - [3, 10000]
+        - [4, 10000]
+  - name: max-values-spread
+    in:
+      customers:
+        - [1, 10000]
+        - [10000, 10000]

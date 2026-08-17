@@ -1,0 +1,315 @@
+entry:
+  id: 1802
+  title: "maximum-value-at-a-given-index-in-a-bounded-array"
+  params:
+    n:
+      type: int
+    index:
+      type: int
+    maxSum:
+      type: int
+  call:
+    cpp: "Solution().maxValue({n}, {index}, {maxSum})"
+    rust: "Solution::max_value({n}, {index}, {maxSum})"
+    python3: "Solution().maxValue({n}, {index}, {maxSum})"
+    python2: "Solution().maxValue({n}, {index}, {maxSum})"
+    ruby: "max_value({n}, {index}, {maxSum})"
+    java: "new Solution().maxValue({n}, {index}, {maxSum})"
+    csharp: "new Solution().MaxValue({n}, {index}, {maxSum})"
+    kotlin: "Solution().maxValue({n}, {index}, {maxSum})"
+    go: "maxValue({n}, {index}, {maxSum})"
+    dart: "Solution().maxValue({n}, {index}, {maxSum})"
+    swift: "Solution().maxValue({n}, {index}, {maxSum})"
+    typescript: "maxValue({n}, {index}, {maxSum})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxValue(n, index, maxSum, {result})"
+    checker: |
+      class Checker:
+          def maxValue(self, n, index, maxSum, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              def cost(peak):
+                  left_count = index
+                  right_count = n - index - 1
+                  left = peak * (peak - 1) // 2 + max(0, left_count - (peak - 1))
+                  right = peak * (peak - 1) // 2 + max(0, right_count - (peak - 1))
+                  if peak > left_count:
+                      left = (peak - left_count + peak - 1) * left_count // 2
+                  if peak > right_count:
+                      right = (peak - right_count + peak - 1) * right_count // 2
+                  return left + peak + right
+              if result < 1 or result > maxSum or cost(result) > maxSum:
+                  return False
+              low, high = 1, maxSum
+              expected = 1
+              while low <= high:
+                  mid = (low + high) // 2
+                  if cost(mid) <= maxSum:
+                      expected = mid
+                      low = mid + 1
+                  else:
+                      high = mid - 1
+              return result == expected
+
+seed: 1802
+
+tests:
+  - name: example-one
+    in:
+      n: 4
+      index: 2
+      maxSum: 6
+    out: 2
+  - name: example-two
+    in:
+      n: 6
+      index: 1
+      maxSum: 10
+    out: 3
+  - name: single-element
+    in:
+      n: 1
+      index: 0
+      maxSum: 1
+    out: 1
+  - name: two-left
+    in:
+      n: 2
+      index: 0
+      maxSum: 2
+    out: 1
+  - name: two-right
+    in:
+      n: 2
+      index: 1
+      maxSum: 2
+    out: 1
+  - name: minimum-three
+    in:
+      n: 3
+      index: 1
+      maxSum: 3
+    out: 1
+  - name: small-centered
+    in:
+      n: 3
+      index: 1
+      maxSum: 6
+    out: 2
+  - name: minimum-left-edge
+    in:
+      n: 5
+      index: 0
+      maxSum: 5
+    out: 1
+  - name: minimum-right-edge
+    in:
+      n: 5
+      index: 4
+      maxSum: 5
+    out: 1
+  - name: minimum-centered
+    in:
+      n: 5
+      index: 2
+      maxSum: 5
+    out: 1
+  - name: centered-ten
+    in:
+      n: 5
+      index: 2
+      maxSum: 10
+    out: 3
+  - name: centered-fifteen
+    in:
+      n: 5
+      index: 2
+      maxSum: 15
+    out: 4
+  - name: long-left-edge-minimum
+    in:
+      n: 10
+      index: 0
+      maxSum: 10
+    out: 1
+  - name: long-right-edge-minimum
+    in:
+      n: 10
+      index: 9
+      maxSum: 10
+    out: 1
+  - name: long-center-minimum
+    in:
+      n: 10
+      index: 5
+      maxSum: 10
+    out: 1
+  - name: long-center-small-budget
+    in:
+      n: 10
+      index: 5
+      maxSum: 20
+    out: 4
+  - name: long-center-large-budget
+    in:
+      n: 10
+      index: 5
+      maxSum: 100
+    out: 12
+  - name: hundred-left-minimum
+    in:
+      n: 100
+      index: 0
+      maxSum: 100
+    out: 1
+  - name: hundred-right-minimum
+    in:
+      n: 100
+      index: 99
+      maxSum: 100
+    out: 1
+  - name: hundred-center-minimum
+    in:
+      n: 100
+      index: 50
+      maxSum: 100
+    out: 1
+  - name: hundred-center-budget
+    in:
+      n: 100
+      index: 50
+      maxSum: 1000
+    out: 31
+  - name: max-n-left-edge
+    in:
+      n: 1000000000
+      index: 0
+      maxSum: 1000000000
+    out: 1
+  - name: max-n-right-edge
+    in:
+      n: 1000000000
+      index: 999999999
+      maxSum: 1000000000
+    out: 1
+  - name: max-n-center
+    in:
+      n: 1000000000
+      index: 500000000
+      maxSum: 1000000000
+    out: 1
+  - name: seven-centered
+    in:
+      n: 7
+      index: 3
+      maxSum: 20
+    out: 4
+  - name: seven-left-edge
+    in:
+      n: 7
+      index: 0
+      maxSum: 20
+    out: 5
+  - name: seven-right-edge
+    in:
+      n: 7
+      index: 6
+      maxSum: 20
+    out: 5
+  - name: eight-left-center
+    in:
+      n: 8
+      index: 2
+      maxSum: 25
+    out: 5
+  - name: eight-right-center
+    in:
+      n: 8
+      index: 5
+      maxSum: 25
+    out: 5
+  - name: twenty-center-tight
+    in:
+      n: 20
+      index: 10
+      maxSum: 35
+    out: 4
+  - name: twenty-left-rich
+    in:
+      n: 20
+      index: 0
+      maxSum: 100
+    out: 13
+  - name: twenty-right-rich
+    in:
+      n: 20
+      index: 19
+      maxSum: 100
+    out: 13
+  - name: fifty-center-tight
+    in:
+      n: 50
+      index: 25
+      maxSum: 75
+    out: 6
+  - name: fifty-near-left-rich
+    in:
+      n: 50
+      index: 1
+      maxSum: 1000
+    out: 43
+  - name: thousand-center-rich
+    in:
+      n: 1000
+      index: 500
+      maxSum: 1000000
+    out: 1250
+  - name: generated-large-left
+    in:
+      n:
+        gen: "int"
+        min: 50000
+        max: 100000
+      index: 0
+      maxSum: 1000000000
+  - name: generated-large-right
+    in:
+      n:
+        gen: "int"
+        min: 50000
+        max: 100000
+      index: 49999
+      maxSum: 1000000000
+  - name: generated-large-center
+    in:
+      n:
+        gen: "int"
+        min: 50000
+        max: 100000
+      index: 25000
+      maxSum: 1000000000
+  - name: generated-medium-left
+    in:
+      n:
+        gen: "int"
+        min: 1000
+        max: 10000
+      index: 0
+      maxSum: 100000000
+  - name: generated-medium-center
+    in:
+      n:
+        gen: "int"
+        min: 1000
+        max: 10000
+      index: 500
+      maxSum: 100000000

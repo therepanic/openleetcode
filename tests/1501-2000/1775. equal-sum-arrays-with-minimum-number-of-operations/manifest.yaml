@@ -1,0 +1,386 @@
+entry:
+  id: 1775
+  title: "equal-sum-arrays-with-minimum-number-of-operations"
+  params:
+    nums1:
+      type: array
+      items:
+        type: int
+    nums2:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minOperations({nums1}, {nums2})"
+    rust: "Solution::min_operations({nums1}, {nums2})"
+    python3: "Solution().minOperations({nums1}, {nums2})"
+    python2: "Solution().minOperations({nums1}, {nums2})"
+    ruby: "min_operations({nums1}, {nums2})"
+    java: "new Solution().minOperations({nums1}, {nums2})"
+    csharp: "new Solution().MinOperations({nums1}, {nums2})"
+    kotlin: "Solution().minOperations({nums1}, {nums2})"
+    go: "minOperations({nums1}, {nums2})"
+    dart: "Solution().minOperations({nums1}, {nums2})"
+    swift: "Solution().minOperations({nums1}, {nums2})"
+    typescript: "minOperations({nums1}, {nums2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().check(nums1, nums2, {result})"
+    checker: |
+      class Checker:
+          def check(self, nums1, nums2, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              diff = abs(sum(nums1) - sum(nums2))
+              if diff == 0:
+                  return result == 0
+              gains = []
+              if sum(nums1) < sum(nums2):
+                  gains.extend(6 - x for x in nums1)
+                  gains.extend(x - 1 for x in nums2)
+              else:
+                  gains.extend(x - 1 for x in nums1)
+                  gains.extend(6 - x for x in nums2)
+              gains.sort(reverse=True)
+              used = 0
+              for gain in gains:
+                  if gain > 0:
+                      diff -= gain
+                      used += 1
+                      if diff <= 0:
+                          return result == used
+              return result == -1
+
+seed: 1775001
+
+tests:
+  - name: example-one
+    in:
+      nums1: [1, 2, 3, 4, 5, 6]
+      nums2: [1, 1, 2, 2, 2, 2]
+    out: 3
+    judge:
+      type: "exact"
+  - name: example-two-impossible
+    in:
+      nums1: [1, 1, 1, 1, 1, 1, 1]
+      nums2: [6]
+    out: -1
+    judge:
+      type: "exact"
+  - name: example-three
+    in:
+      nums1: [6, 6]
+      nums2: [1]
+    out: 3
+    judge:
+      type: "exact"
+  - name: already-equal-single
+    in:
+      nums1: [4]
+      nums2: [4]
+    out: 0
+    judge:
+      type: "exact"
+  - name: one-step-increase
+    in:
+      nums1: [1]
+      nums2: [6]
+    out: 1
+    judge:
+      type: "exact"
+  - name: one-step-decrease
+    in:
+      nums1: [6]
+      nums2: [1]
+    out: 1
+    judge:
+      type: "exact"
+  - name: equal-many
+    in:
+      nums1: [1, 6, 2, 5]
+      nums2: [3, 4, 2, 5]
+    out: 0
+    judge:
+      type: "exact"
+  - name: all-low-versus-all-high
+    in:
+      nums1: [1, 1, 1]
+      nums2: [6, 6, 6]
+    out: 3
+    judge:
+      type: "exact"
+  - name: two-versus-one
+    in:
+      nums1: [1, 1]
+      nums2: [6]
+    out: 1
+    judge:
+      type: "exact"
+  - name: one-versus-two
+    in:
+      nums1: [6]
+      nums2: [1, 1]
+    out: 1
+    judge:
+      type: "exact"
+  - name: impossible-length-gap
+    in:
+      nums1: [1, 1, 1, 1, 1, 1, 1, 1]
+      nums2: [6]
+    out: -1
+    judge:
+      type: "exact"
+  - name: six-low-versus-six-high
+    in:
+      nums1: [1, 1, 1, 1, 1, 1]
+      nums2: [6, 6, 6, 6, 6, 6]
+    out: 6
+    judge:
+      type: "exact"
+  - name: use-largest-gain
+    in:
+      nums1: [1, 1, 1, 6]
+      nums2: [6, 6]
+    out: 1
+    judge:
+      type: "exact"
+  - name: mixed-gains
+    in:
+      nums1: [2, 2, 2]
+      nums2: [6, 6]
+    out: 2
+    judge:
+      type: "exact"
+  - name: reverse-mixed-gains
+    in:
+      nums1: [5, 5]
+      nums2: [1, 4, 4]
+    out: 1
+    judge:
+      type: "exact"
+  - name: all-sixes-equal
+    in:
+      nums1: [6, 6, 6]
+      nums2: [6, 6, 6]
+    out: 0
+    judge:
+      type: "exact"
+  - name: all-ones-equal
+    in:
+      nums1: [1, 1, 1]
+      nums2: [1, 1, 1]
+    out: 0
+    judge:
+      type: "exact"
+  - name: exact-two-operations
+    in:
+      nums1: [1, 1, 1]
+      nums2: [6, 1]
+    out: 1
+    judge:
+      type: "exact"
+  - name: parity-does-not-matter
+    in:
+      nums1: [1, 2, 3]
+      nums2: [6, 6]
+    out: 2
+    judge:
+      type: "exact"
+  - name: balanced-long
+    in:
+      nums1: [1, 2, 3, 4, 5]
+      nums2: [5, 4, 3, 2, 1]
+    out: 0
+    judge:
+      type: "exact"
+  - name: two-largest-changes
+    in:
+      nums1: [1, 1, 1, 1]
+      nums2: [6, 6, 6]
+    out: 3
+    judge:
+      type: "exact"
+  - name: small-difference-one
+    in:
+      nums1: [3, 3, 3]
+      nums2: [3, 3, 2]
+    out: 1
+    judge:
+      type: "exact"
+  - name: small-difference-two
+    in:
+      nums1: [3, 3, 3]
+      nums2: [3, 1, 3]
+    out: 1
+    judge:
+      type: "exact"
+  - name: zeros-not-allowed-boundary
+    in:
+      nums1: [2, 6]
+      nums2: [1, 1, 1]
+    out: 1
+    judge:
+      type: "exact"
+  - name: large-single-side
+    in:
+      nums1: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      nums2: [6, 6]
+    out: 1
+    judge:
+      type: "exact"
+  - name: close-long-arrays
+    in:
+      nums1: [1, 6, 1, 6, 1, 6, 1, 6]
+      nums2: [3, 3, 3, 3, 3, 3, 3, 3]
+    out: 1
+    judge:
+      type: "exact"
+  - name: descending-needs-decrease
+    in:
+      nums1: [6, 5, 4]
+      nums2: [1, 1, 1, 1]
+    out: 3
+    judge:
+      type: "exact"
+  - name: ascending-needs-increase
+    in:
+      nums1: [1, 2, 3]
+      nums2: [6, 6, 6, 6]
+    out: 4
+    judge:
+      type: "exact"
+  - name: all-middle
+    in:
+      nums1: [3, 3, 3, 3]
+      nums2: [3, 3]
+    out: 2
+    judge:
+      type: "exact"
+  - name: max-gap-feasible
+    in:
+      nums1: [1, 1, 1, 1, 1, 1]
+      nums2: [6, 6, 6, 6, 6]
+    out: 5
+    judge:
+      type: "exact"
+  - name: asymmetric-feasible
+    in:
+      nums1: [6, 6, 1]
+      nums2: [1, 1, 1, 1]
+    out: 2
+    judge:
+      type: "exact"
+  - name: generator-small
+    in:
+      nums1:
+        gen: "array"
+        len: 1
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 1
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 177501
+  - name: generator-balanced
+    in:
+      nums1:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 177502
+  - name: generator-medium
+    in:
+      nums1:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 80
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 177503
+  - name: generator-large
+    in:
+      nums1:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 177504
+  - name: generator-maximum
+    in:
+      nums1:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 6
+        elemType: "int"
+    judge:
+      type: "exact"
+    seed: 177505

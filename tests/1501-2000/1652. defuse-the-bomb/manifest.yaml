@@ -1,0 +1,269 @@
+entry:
+  id: 1652
+  title: "defuse-the-bomb"
+  params:
+    code:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().decrypt({code}, {k})"
+    rust: "Solution::decrypt({code}, {k})"
+    python3: "Solution().decrypt({code}, {k})"
+    python2: "Solution().decrypt({code}, {k})"
+    ruby: "decrypt({code}, {k})"
+    java: "new Solution().decrypt({code}, {k})"
+    csharp: "new Solution().Decrypt({code}, {k})"
+    kotlin: "Solution().decrypt({code}, {k})"
+    go: "decrypt({code}, {k})"
+    dart: "Solution().decrypt({code}, {k})"
+    swift: "Solution().decrypt({code}, {k})"
+    typescript: "decrypt({code}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().decrypt(code, k, {result})"
+    checker: |
+      class Checker:
+          def decrypt(self, code, k, result):
+              if not isinstance(result, list) or len(result) != len(code):
+                  return False
+              n = len(code)
+              expected = []
+              for i in range(n):
+                  if k == 0:
+                      expected.append(0)
+                  elif k > 0:
+                      expected.append(sum(code[(i + j) % n] for j in range(1, k + 1)))
+                  else:
+                      expected.append(sum(code[(i - j) % n] for j in range(1, -k + 1)))
+              return result == expected
+
+seed: 1652
+
+tests:
+  - name: example-positive
+    in:
+      code: [5, 7, 1, 4]
+      k: 3
+    out: [12, 10, 16, 13]
+  - name: example-zero
+    in:
+      code: [1, 2, 3, 4]
+      k: 0
+    out: [0, 0, 0, 0]
+  - name: example-negative
+    in:
+      code: [2, 4, 9, 3]
+      k: -2
+    out: [12, 5, 6, 13]
+  - name: one-element-zero
+    in:
+      code: [1]
+      k: 0
+    out: [0]
+  - name: two-positive
+    in:
+      code: [1, 2]
+      k: 1
+    out: [2, 1]
+  - name: two-negative
+    in:
+      code: [1, 2]
+      k: -1
+    out: [2, 1]
+  - name: min-length-positive
+    in:
+      code: [100, 1]
+      k: 1
+    out: [1, 100]
+  - name: min-length-negative
+    in:
+      code: [100, 1]
+      k: -1
+    out: [1, 100]
+  - name: all-ones-positive
+    in:
+      code: [1, 1, 1, 1, 1]
+      k: 4
+    out: [4, 4, 4, 4, 4]
+  - name: all-ones-negative
+    in:
+      code: [1, 1, 1, 1, 1]
+      k: -4
+    out: [4, 4, 4, 4, 4]
+  - name: all-max-zero
+    in:
+      code: [100, 100, 100, 100]
+      k: 0
+    out: [0, 0, 0, 0]
+  - name: positive-one
+    in:
+      code: [1, 2, 3, 4, 5]
+      k: 1
+    out: [2, 3, 4, 5, 1]
+  - name: negative-one
+    in:
+      code: [1, 2, 3, 4, 5]
+      k: -1
+    out: [5, 1, 2, 3, 4]
+  - name: positive-two
+    in:
+      code: [1, 2, 3, 4, 5]
+      k: 2
+    out: [5, 7, 9, 6, 3]
+  - name: negative-two
+    in:
+      code: [1, 2, 3, 4, 5]
+      k: -2
+    out: [9, 6, 3, 5, 7]
+  - name: positive-three
+    in:
+      code: [2, 5, 1, 7, 3, 4]
+      k: 3
+    out: [13, 11, 14, 9, 11, 8]
+  - name: negative-three
+    in:
+      code: [2, 5, 1, 7, 3, 4]
+      k: -3
+    out: [14, 9, 11, 8, 13, 11]
+  - name: max-positive-six
+    in:
+      code: [1, 2, 3, 4, 5, 6, 7]
+      k: 6
+    out: [27, 26, 25, 24, 23, 22, 21]
+  - name: max-negative-six
+    in:
+      code: [1, 2, 3, 4, 5, 6, 7]
+      k: -6
+    out: [27, 26, 25, 24, 23, 22, 21]
+  - name: alternating-positive
+    in:
+      code: [1, 100, 1, 100, 1, 100]
+      k: 2
+    out: [101, 101, 101, 101, 101, 101]
+  - name: alternating-negative
+    in:
+      code: [1, 100, 1, 100, 1, 100]
+      k: -2
+    out: [101, 101, 101, 101, 101, 101]
+  - name: repeated-pattern
+    in:
+      code: [3, 8, 2, 8, 3, 8, 2, 8]
+      k: 3
+    out: [18, 13, 19, 13, 18, 13, 19, 13]
+  - name: repeated-pattern-negative
+    in:
+      code: [3, 8, 2, 8, 3, 8, 2, 8]
+      k: -3
+    out: [18, 13, 19, 13, 18, 13, 19, 13]
+  - name: nine-values
+    in:
+      code: [9, 1, 8, 2, 7, 3, 6, 4, 5]
+      k: 4
+    out: [18, 20, 18, 20, 18, 24, 19, 23, 20]
+  - name: nine-values-negative
+    in:
+      code: [9, 1, 8, 2, 7, 3, 6, 4, 5]
+      k: -4
+    out: [18, 24, 19, 23, 20, 18, 20, 18, 20]
+  - name: large-values-positive
+    in:
+      code: [100, 99, 98, 97, 96, 95]
+      k: 5
+    out: [485, 486, 487, 488, 489, 490]
+  - name: large-values-negative
+    in:
+      code: [100, 99, 98, 97, 96, 95]
+      k: -5
+    out: [485, 486, 487, 488, 489, 490]
+  - name: single-high-positive
+    in:
+      code: [100]
+      k: 0
+    out: [0]
+  - name: six-zero
+    in:
+      code: [1, 3, 5, 7, 9, 11]
+      k: 0
+    out: [0, 0, 0, 0, 0, 0]
+  - name: uneven-positive
+    in:
+      code: [4, 1, 9, 2, 8, 3, 7]
+      k: 2
+    out: [10, 11, 10, 11, 10, 11, 5]
+  - name: uneven-negative
+    in:
+      code: [4, 1, 9, 2, 8, 3, 7]
+      k: -2
+    out: [10, 11, 5, 10, 11, 10, 11]
+  - name: gen-random-small
+    in:
+      code:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -9
+        max: 9
+  - name: gen-random-medium
+    in:
+      code:
+        gen: "array"
+        len: 37
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -36
+        max: 36
+  - name: gen-max-length-positive
+    in:
+      code:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      k: 99
+  - name: gen-max-length-negative
+    in:
+      code:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      k: -99
+  - name: gen-max-length-zero
+    in:
+      code:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      k: 0

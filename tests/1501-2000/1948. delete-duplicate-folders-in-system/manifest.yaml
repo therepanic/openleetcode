@@ -1,0 +1,448 @@
+entry:
+  id: 1948
+  title: "delete-duplicate-folders-in-system"
+  params:
+    paths:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+  call:
+    cpp: "Solution().deleteDuplicateFolder({paths})"
+    rust: "Solution::delete_duplicate_folder({paths})"
+    python3: "Solution().deleteDuplicateFolder({paths})"
+    python2: "Solution().deleteDuplicateFolder({paths})"
+    ruby: "delete_duplicate_folder({paths})"
+    java: "new Solution().deleteDuplicateFolder({paths})"
+    csharp: "new Solution().DeleteDuplicateFolder({paths})"
+    kotlin: "Solution().deleteDuplicateFolder({paths})"
+    go: "deleteDuplicateFolder({paths})"
+    dart: "Solution().deleteDuplicateFolder({paths})"
+    swift: "Solution().deleteDuplicateFolder({paths})"
+    typescript: "deleteDuplicateFolder({paths})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().deleteDuplicateFolder(paths, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def deleteDuplicateFolder(self, paths, result):
+              if not isinstance(result, list):
+                  return False
+              children = {}
+              for path in paths:
+                  if not isinstance(path, list) or not path:
+                      return False
+                  node = children
+                  for name in path:
+                      if not isinstance(name, str) or not name:
+                          return False
+                      node = node.setdefault(name, {})
+
+              counts = Counter()
+              signatures = {}
+
+              def encode(node):
+                  sig = tuple((name, encode(child)) for name, child in sorted(node.items()))
+                  signatures[id(node)] = sig
+                  if sig:
+                      counts[sig] += 1
+                  return sig
+
+              encode(children)
+              expected = []
+
+              def walk(node, prefix):
+                  for name, child in sorted(node.items()):
+                      sig = signatures[id(child)]
+                      if sig and counts[sig] >= 2:
+                          continue
+                      current = prefix + [name]
+                      expected.append(current)
+                      walk(child, current)
+
+              walk(children, [])
+              try:
+                  actual = [list(path) for path in result]
+              except Exception:
+                  return False
+              if any(not isinstance(path, list) or any(not isinstance(x, str) for x in path) for path in actual):
+                  return False
+              return sorted(actual) == sorted(expected)
+
+seed: 1948
+
+tests:
+  - name: "example_one"
+    in:
+      paths:
+        - ["a"]
+        - ["c"]
+        - ["d"]
+        - ["a", "b"]
+        - ["c", "b"]
+        - ["d", "a"]
+  - name: "example_two"
+    in:
+      paths:
+        - ["a"]
+        - ["c"]
+        - ["a", "b"]
+        - ["c", "b"]
+        - ["a", "b", "x"]
+        - ["a", "b", "x", "y"]
+        - ["w"]
+        - ["w", "y"]
+  - name: "example_three"
+    in:
+      paths:
+        - ["a", "b"]
+        - ["c", "d"]
+        - ["c"]
+        - ["a"]
+  - name: "single_root"
+    in:
+      paths:
+        - ["root"]
+  - name: "two_distinct_roots"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+  - name: "identical_empty_children"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "x"]
+  - name: "identical_deep_chain"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["a", "x", "y"]
+        - ["b", "x", "y"]
+  - name: "different_child_names"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "y"]
+  - name: "same_shape_different_depth"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "y"]
+        - ["b", "y", "z"]
+  - name: "nested_duplicate_subfolders"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "x"]
+        - ["a", "x", "z"]
+        - ["b"]
+        - ["b", "y"]
+        - ["b", "y", "z"]
+  - name: "duplicate_subfolders_keep_parents"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "y"]
+        - ["a", "x", "z"]
+        - ["b", "y", "z"]
+        - ["a", "q"]
+  - name: "three_identical_roots"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["c", "x"]
+  - name: "three_identical_nested"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["c", "x"]
+        - ["a", "x", "y"]
+        - ["b", "x", "y"]
+        - ["c", "x", "y"]
+  - name: "sibling_order_independent"
+    in:
+      paths:
+        - ["r"]
+        - ["r", "b"]
+        - ["r", "a"]
+        - ["r", "a", "z"]
+        - ["r", "b", "q"]
+  - name: "duplicate_with_extra_sibling"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["b", "y"]
+  - name: "duplicate_non_root"
+    in:
+      paths:
+        - ["r"]
+        - ["s"]
+        - ["r", "a"]
+        - ["s", "b"]
+        - ["r", "a", "x"]
+        - ["s", "b", "x"]
+  - name: "chain_with_unique_leaf"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "b"]
+        - ["a", "b", "c"]
+        - ["a", "b", "c", "d"]
+  - name: "two_chains_different_lengths"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "y"]
+        - ["a", "x", "m"]
+  - name: "wide_unique_tree"
+    in:
+      paths:
+        - ["r"]
+        - ["r", "a"]
+        - ["r", "b"]
+        - ["r", "c"]
+        - ["r", "d"]
+        - ["r", "a", "x"]
+        - ["r", "b", "y"]
+  - name: "wide_duplicate_trees"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["a", "y"]
+        - ["b", "x"]
+        - ["b", "y"]
+  - name: "duplicate_only_at_leaf_parent"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "y"]
+        - ["a", "x", "p"]
+        - ["b", "y", "p"]
+        - ["a", "x", "q"]
+  - name: "same_names_different_structure"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["a", "x", "y"]
+  - name: "root_and_nested_same_signature"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "x"]
+        - ["a", "x", "y"]
+        - ["b"]
+        - ["b", "y"]
+  - name: "many_unique_names"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+        - ["a", "x"]
+        - ["b", "y"]
+        - ["c", "z"]
+  - name: "duplicate_at_two_levels"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["a", "x", "p"]
+        - ["b", "x", "p"]
+        - ["a", "x", "q"]
+        - ["b", "x", "q"]
+  - name: "three_level_unique_variants"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "b"]
+        - ["a", "b", "c"]
+        - ["a", "b", "d"]
+        - ["a", "e"]
+        - ["f"]
+        - ["f", "g"]
+  - name: "duplicate_roots_with_extra_root"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["c", "y"]
+  - name: "nested_same_shape_different_parent"
+    in:
+      paths:
+        - ["r"]
+        - ["r", "a"]
+        - ["r", "b"]
+        - ["r", "a", "x"]
+        - ["r", "b", "y"]
+        - ["r", "a", "x", "z"]
+        - ["r", "b", "y", "z"]
+  - name: "long_single_chain"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "b"]
+        - ["a", "b", "c"]
+        - ["a", "b", "c", "d"]
+        - ["a", "b", "c", "d", "e"]
+        - ["a", "b", "c", "d", "e", "f"]
+  - name: "two_long_identical_chains"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "c"]
+        - ["b", "d"]
+        - ["a", "c", "e"]
+        - ["b", "d", "e"]
+        - ["a", "c", "e", "f"]
+        - ["b", "d", "e", "f"]
+  - name: "large_branching_static"
+    in:
+      paths:
+        - ["r"]
+        - ["r", "a"]
+        - ["r", "b"]
+        - ["r", "c"]
+        - ["r", "d"]
+        - ["r", "e"]
+        - ["r", "a", "x"]
+        - ["r", "a", "y"]
+        - ["r", "b", "x"]
+        - ["r", "b", "y"]
+        - ["r", "c", "z"]
+        - ["r", "d", "z"]
+  - name: "duplicate_names_across_levels"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "b"]
+        - ["a", "b", "a"]
+        - ["c"]
+        - ["c", "b"]
+        - ["c", "b", "a"]
+  - name: "empty_result_after_duplicate_roots"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["a", "x", "y"]
+        - ["b", "x", "y"]
+  - name: "root_unique_nested_duplicates"
+    in:
+      paths:
+        - ["root"]
+        - ["root", "a"]
+        - ["root", "b"]
+        - ["root", "a", "x"]
+        - ["root", "b", "y"]
+        - ["root", "a", "x", "z"]
+        - ["root", "b", "y", "z"]
+  - name: "mixed_three_components"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "x"]
+        - ["b"]
+        - ["b", "y"]
+        - ["c"]
+        - ["c", "z"]
+        - ["c", "z", "q"]
+  - name: "large_names"
+    in:
+      paths:
+        - ["abcdefghij"]
+        - ["klmnopqrst"]
+        - ["abcdefghij", "uvwxyzabcd"]
+        - ["klmnopqrst", "zyxwvutsrq"]
+  - name: "deep_duplicate_subtree"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "y"]
+        - ["a", "x", "m"]
+        - ["b", "y", "m"]
+        - ["a", "x", "m", "n"]
+        - ["b", "y", "m", "n"]
+  - name: "four_roots_two_pairs"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["c"]
+        - ["d"]
+        - ["a", "x"]
+        - ["b", "x"]
+        - ["c", "y"]
+        - ["d", "y"]
+  - name: "asymmetric_extra_depth"
+    in:
+      paths:
+        - ["a"]
+        - ["b"]
+        - ["a", "x"]
+        - ["b", "y"]
+        - ["a", "x", "z"]
+        - ["a", "x", "z", "q"]
+  - name: "all_unique_nested"
+    in:
+      paths:
+        - ["a"]
+        - ["a", "b"]
+        - ["a", "b", "c"]
+        - ["a", "d"]
+        - ["e"]
+        - ["e", "f"]
+        - ["e", "f", "g"]

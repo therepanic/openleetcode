@@ -1,0 +1,240 @@
+entry:
+  id: 1896
+  title: "minimum-cost-to-change-the-final-value-of-expression"
+  params:
+    expression:
+      type: string
+  call:
+    cpp: "Solution().minOperationsToFlip({expression})"
+    rust: "Solution::min_operations_to_flip({expression})"
+    python3: "Solution().minOperationsToFlip({expression})"
+    python2: "Solution().minOperationsToFlip({expression})"
+    ruby: "min_operations_to_flip({expression})"
+    java: "new Solution().minOperationsToFlip({expression})"
+    csharp: "new Solution().MinOperationsToFlip({expression})"
+    kotlin: "Solution().minOperationsToFlip({expression})"
+    go: "minOperationsToFlip({expression})"
+    dart: "Solution().minOperationsToFlip({expression})"
+    swift: "Solution().minOperationsToFlip({expression})"
+    typescript: "minOperationsToFlip({expression})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minOperationsToFlip(expression, {result})"
+    checker: |
+      class Checker:
+          def minOperationsToFlip(self, expression, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              pos = 0
+
+              def parse_atom():
+                  nonlocal pos
+                  if expression[pos] in "01":
+                      value = int(expression[pos])
+                      pos += 1
+                      return value, 1
+                  pos += 1
+                  value = parse_expr()
+                  if pos >= len(expression) or expression[pos] != ")":
+                      raise ValueError
+                  pos += 1
+                  return value
+
+              def combine(left, right, op):
+                  lv, lc = left
+                  rv, rc = right
+                  value = (lv & rv) if op == "&" else (lv | rv)
+                  if lv == rv == (0 if op == "&" else 1):
+                      cost = min(lc, rc)
+                  elif lv == rv == (1 if op == "&" else 0):
+                      cost = 1 + min(lc, rc)
+                  else:
+                      cost = 1
+                  return value, cost
+
+              def parse_expr():
+                  nonlocal pos
+                  current = parse_atom()
+                  while pos < len(expression) and expression[pos] != ")":
+                      op = expression[pos]
+                      if op not in "&|":
+                          raise ValueError
+                      pos += 1
+                      current = combine(current, parse_atom(), op)
+                  return current
+
+              try:
+                  value, cost = parse_expr()
+                  if pos != len(expression):
+                      return False
+                  return cost == result and cost >= 1
+              except (IndexError, ValueError, TypeError):
+                  return False
+
+seed: 1896
+
+tests:
+  - name: "single_zero"
+    in:
+      expression: "0"
+    out: 1
+  - name: "single_one"
+    in:
+      expression: "1"
+    out: 1
+  - name: "and_zeros"
+    in:
+      expression: "0&0"
+    out: 2
+  - name: "and_ones"
+    in:
+      expression: "1&1"
+    out: 1
+  - name: "or_zeros"
+    in:
+      expression: "0|0"
+    out: 1
+  - name: "or_ones"
+    in:
+      expression: "1|1"
+    out: 2
+  - name: "mixed_and"
+    in:
+      expression: "0&1"
+    out: 1
+  - name: "mixed_and_reverse"
+    in:
+      expression: "1&0"
+    out: 1
+  - name: "example_one"
+    in:
+      expression: "1&(0|1)"
+    out: 1
+  - name: "example_two"
+    in:
+      expression: "(0&0)&(0&0&0)"
+    out: 3
+  - name: "example_three"
+    in:
+      expression: "(0|(1|0&1))"
+    out: 1
+  - name: "left_to_right_or_and"
+    in:
+      expression: "1|0&1"
+    out: 1
+  - name: "left_to_right_and_or"
+    in:
+      expression: "1&0|1"
+    out: 1
+  - name: "one_parenthesis"
+    in:
+      expression: "(1)"
+    out: 1
+  - name: "nested_parentheses"
+    in:
+      expression: "(((1)))"
+    out: 1
+  - name: "nested_zero"
+    in:
+      expression: "((0))"
+    out: 1
+  - name: "all_zero_or_chain"
+    in:
+      expression: "0|0|0"
+    out: 1
+  - name: "all_one_and_chain"
+    in:
+      expression: "1&1&1"
+    out: 1
+  - name: "or_with_one"
+    in:
+      expression: "0|1|0"
+    out: 1
+  - name: "and_with_zero"
+    in:
+      expression: "1&0&1"
+    out: 1
+  - name: "balanced_or_and"
+    in:
+      expression: "(1|0)&(0|1)"
+    out: 1
+  - name: "balanced_and_or"
+    in:
+      expression: "(1&0)|(0&1)"
+    out: 1
+  - name: "both_true_or_groups"
+    in:
+      expression: "(1|1)&(1|1)"
+    out: 2
+  - name: "both_false_and_groups"
+    in:
+      expression: "(0&0)|(0&0)"
+    out: 2
+  - name: "false_or_groups_and"
+    in:
+      expression: "(0|0)&(0|0)"
+    out: 2
+  - name: "long_mixed_chain"
+    in:
+      expression: "1|1|(0&0)&1"
+    out: 1
+  - name: "zero_chain_final_one"
+    in:
+      expression: "0&0&0|1"
+    out: 1
+  - name: "nested_zero_or"
+    in:
+      expression: "1&(0|0|0)"
+    out: 1
+  - name: "nested_or_then_zero"
+    in:
+      expression: "(1&(0|1))|0"
+    out: 1
+  - name: "nested_balanced_false"
+    in:
+      expression: "((1|0)&(1&0))"
+    out: 1
+  - name: "deep_mixed_zero"
+    in:
+      expression: "0|(1&(0|1&0))"
+    out: 1
+  - name: "and_after_or_groups"
+    in:
+      expression: "((0|0)|(1&1))&0"
+    out: 1
+  - name: "deep_balanced"
+    in:
+      expression: "1&((1|0)&(0|1))"
+    out: 1
+  - name: "three_false_terms"
+    in:
+      expression: "(0&1)|(1&0)|(0&0)"
+    out: 1
+  - name: "alternating_and_chain"
+    in:
+      expression: "0&1&0&1&0&1"
+    out: 1
+  - name: "alternating_or_chain"
+    in:
+      expression: "1|0|1|0|1|0"
+    out: 1
+  - name: "two_complex_groups"
+    in:
+      expression: "(1|0&1|0)&(0|1&0|1)"
+    out: 1
+  - name: "deep_true_or_false"
+    in:
+      expression: "((0&0)&(0&0))|((1&1)&(1&1))"
+    out: 1
+  - name: "deep_right_nesting"
+    in:
+      expression: "1&(1&(1&(0|0)))"
+    out: 1

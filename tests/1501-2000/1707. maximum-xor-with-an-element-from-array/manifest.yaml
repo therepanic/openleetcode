@@ -1,0 +1,488 @@
+entry:
+  id: 1707
+  title: "maximum-xor-with-an-element-from-array"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maximizeXor({nums}, {queries})"
+    rust: "Solution::maximize_xor({nums}, {queries})"
+    python3: "Solution().maximizeXor({nums}, {queries})"
+    python2: "Solution().maximizeXor({nums}, {queries})"
+    ruby: "maximize_xor({nums}, {queries})"
+    java: "new Solution().maximizeXor({nums}, {queries})"
+    csharp: "new Solution().MaximizeXor({nums}, {queries})"
+    kotlin: "Solution().maximizeXor({nums}, {queries})"
+    go: "maximizeXor({nums}, {queries})"
+    dart: "Solution().maximizeXor({nums}, {queries})"
+    swift: "Solution().maximizeXor({nums}, {queries})"
+    typescript: "maximizeXor({nums}, {queries})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maximizeXor(nums, queries, {result})"
+    checker: |
+      class Checker:
+          def maximizeXor(self, nums, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              ordered = sorted(nums)
+              trie = [[-1, -1]]
+              def insert(value):
+                  node = 0
+                  for bit_index in range(30, -1, -1):
+                      bit = (value >> bit_index) & 1
+                      if trie[node][bit] == -1:
+                          trie[node][bit] = len(trie)
+                          trie.append([-1, -1])
+                      node = trie[node][bit]
+              def best(value):
+                  if trie[0] == [-1, -1]:
+                      return -1
+                  node = 0
+                  answer = 0
+                  for bit_index in range(30, -1, -1):
+                      bit = (value >> bit_index) & 1
+                      other = bit ^ 1
+                      if trie[node][other] != -1:
+                          answer |= 1 << bit_index
+                          node = trie[node][other]
+                      else:
+                          node = trie[node][bit]
+                  return answer
+              expected = []
+              index = 0
+              for x, limit in sorted(enumerate(queries), key=lambda item: item[1][1]):
+                  while index < len(ordered) and ordered[index] <= limit[1]:
+                      insert(ordered[index])
+                      index += 1
+                  expected.append((x, best(limit[0])))
+              expected.sort()
+              return result == [value for _, value in expected]
+
+seed: 1707
+
+tests:
+  - name: example-one
+    in:
+      nums: [0, 1, 2, 3, 4]
+      queries:
+        - [3, 1]
+        - [1, 3]
+        - [5, 6]
+    out: [3, 3, 7]
+    judge:
+      type: "exact"
+  - name: example-two
+    in:
+      nums: [5, 2, 4, 6, 6, 3]
+      queries:
+        - [12, 4]
+        - [8, 1]
+        - [6, 3]
+    out: [15, -1, 5]
+    judge:
+      type: "exact"
+  - name: single-match
+    in:
+      nums: [7]
+      queries:
+        - [0, 7]
+    out: [7]
+    judge:
+      type: "exact"
+  - name: single-ineligible
+    in:
+      nums: [7]
+      queries:
+        - [3, 6]
+    out: [-1]
+    judge:
+      type: "exact"
+  - name: zero-values
+    in:
+      nums: [0, 0, 0]
+      queries:
+        - [0, 0]
+        - [15, 0]
+    out: [0, 15]
+    judge:
+      type: "exact"
+  - name: duplicate-values
+    in:
+      nums: [5, 5, 5, 2, 2]
+      queries:
+        - [1, 5]
+        - [7, 2]
+    out: [4, 5]
+    judge:
+      type: "exact"
+  - name: threshold-boundary
+    in:
+      nums: [1, 4, 8, 16]
+      queries:
+        - [3, 3]
+        - [3, 4]
+        - [3, 8]
+    out: [2, 7, 11]
+    judge:
+      type: "exact"
+  - name: unsorted-input
+    in:
+      nums: [10, 1, 7, 3, 12]
+      queries:
+        - [6, 6]
+        - [9, 10]
+        - [2, 0]
+    out: [7, 14, -1]
+    judge:
+      type: "exact"
+  - name: query-order-preserved
+    in:
+      nums: [2, 8, 13]
+      queries:
+        - [1, 100]
+        - [7, 2]
+        - [15, 8]
+        - [0, 1]
+    out: [12, 5, 13, -1]
+    judge:
+      type: "exact"
+  - name: low-thresholds
+    in:
+      nums: [10, 20, 30]
+      queries:
+        - [1, 0]
+        - [1, 9]
+        - [1, 10]
+    out: [-1, -1, 11]
+    judge:
+      type: "exact"
+  - name: high-bit-values
+    in:
+      nums: [536870911, 536870912, 1073741823]
+      queries:
+        - [0, 536870911]
+        - [1, 1073741823]
+        - [1073741823, 536870912]
+    out: [536870911, 1073741822, 536870912]
+    judge:
+      type: "exact"
+  - name: max-values
+    in:
+      nums: [1000000000, 999999999]
+      queries:
+        - [1000000000, 1000000000]
+        - [0, 999999999]
+    out: [1023, 999999999]
+    judge:
+      type: "exact"
+  - name: powers-of-two
+    in:
+      nums: [1, 2, 4, 8, 16]
+      queries:
+        - [31, 3]
+        - [31, 7]
+        - [31, 31]
+    out: [30, 30, 30]
+    judge:
+      type: "exact"
+  - name: identical-queries
+    in:
+      nums: [3, 10, 12]
+      queries:
+        - [5, 10]
+        - [5, 10]
+        - [5, 10]
+    out: [15, 15, 15]
+    judge:
+      type: "exact"
+  - name: empty-eligible-mixed
+    in:
+      nums: [50, 60, 70]
+      queries:
+        - [1, 49]
+        - [1, 50]
+        - [100, 65]
+    out: [-1, 51, 88]
+    judge:
+      type: "exact"
+  - name: close-values
+    in:
+      nums: [14, 15, 16, 17]
+      queries:
+        - [8, 14]
+        - [8, 15]
+        - [8, 16]
+    out: [6, 7, 24]
+    judge:
+      type: "exact"
+  - name: mixed-small
+    in:
+      nums: [0, 3, 5, 6, 9]
+      queries:
+        - [2, 2]
+        - [4, 5]
+        - [7, 9]
+    out: [2, 7, 14]
+    judge:
+      type: "exact"
+  - name: many-duplicates
+    in:
+      nums: [1, 1, 1, 8, 8, 8, 15]
+      queries:
+        - [7, 1]
+        - [7, 8]
+        - [7, 15]
+    out: [6, 15, 15]
+    judge:
+      type: "exact"
+  - name: descending-values
+    in:
+      nums: [99, 50, 25, 12, 6, 3]
+      queries:
+        - [100, 5]
+        - [100, 50]
+        - [0, 100]
+    out: [103, 125, 99]
+    judge:
+      type: "exact"
+  - name: all-query-misses
+    in:
+      nums: [100, 200, 300]
+      queries:
+        - [0, 0]
+        - [1000, 99]
+        - [7, 50]
+    out: [-1, -1, -1]
+    judge:
+      type: "exact"
+  - name: all-query-hits
+    in:
+      nums: [4, 9, 12]
+      queries:
+        - [0, 100]
+        - [3, 100]
+        - [15, 100]
+    out: [12, 15, 11]
+    judge:
+      type: "exact"
+  - name: xor-zero-query
+    in:
+      nums: [0, 1, 2, 4, 8]
+      queries:
+        - [0, 0]
+        - [0, 3]
+        - [0, 8]
+    out: [0, 2, 8]
+    judge:
+      type: "exact"
+  - name: alternating-thresholds
+    in:
+      nums: [2, 6, 10, 14]
+      queries:
+        - [1, 14]
+        - [1, 2]
+        - [1, 10]
+        - [1, 0]
+    out: [15, 3, 11, -1]
+    judge:
+      type: "exact"
+  - name: thirty-one-mask
+    in:
+      nums: [7, 11, 13, 17, 31]
+      queries:
+        - [31, 13]
+        - [16, 20]
+        - [8, 30]
+    out: [24, 29, 25]
+    judge:
+      type: "exact"
+  - name: sparse-large
+    in:
+      nums: [1, 100, 10000, 1000000]
+      queries:
+        - [999999999, 0]
+        - [123456, 10000]
+        - [765432, 1000000]
+    out: [-1, 123457, 765433]
+    judge:
+      type: "exact"
+  - name: threshold-each-value
+    in:
+      nums: [3, 7, 12, 20]
+      queries:
+        - [9, 3]
+        - [9, 7]
+        - [9, 12]
+        - [9, 20]
+    out: [10, 14, 14, 29]
+    judge:
+      type: "exact"
+  - name: repeated-x-different-m
+    in:
+      nums: [2, 5, 9, 14]
+      queries:
+        - [6, 1]
+        - [6, 5]
+        - [6, 9]
+        - [6, 14]
+    out: [-1, 4, 15, 15]
+    judge:
+      type: "exact"
+  - name: twenty-five-values
+    in:
+      nums: [0, 1, 2, 4, 8, 16, 3, 5, 9, 17]
+      queries:
+        - [25, 0]
+        - [25, 5]
+        - [25, 10]
+        - [25, 20]
+    out: [25, 29, 29, 29]
+    judge:
+      type: "exact"
+  - name: boundary-nine-bits
+    in:
+      nums: [255, 256, 511, 512]
+      queries:
+        - [511, 255]
+        - [511, 511]
+        - [256, 512]
+    out: [256, 256, 768]
+    judge:
+      type: "exact"
+  - name: forty-small-values
+    in:
+      nums: [1, 3, 7, 15, 31, 63, 127]
+      queries:
+        - [2, 7]
+        - [10, 31]
+        - [100, 127]
+    out: [5, 21, 123]
+    judge:
+      type: "exact"
+  - name: generated-small
+    in:
+      nums:
+        gen: "array"
+        len: 8
+        of:
+          gen: "int"
+          min: 0
+          max: 63
+        elemType: "int"
+      queries:
+        gen: "array"
+        len: 6
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 63
+          elemType: "int"
+    seed: 170701
+  - name: generated-medium
+    in:
+      nums:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000
+        elemType: "int"
+      queries:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000
+          elemType: "int"
+    seed: 170702
+  - name: generated-large-values
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        elemType: "int"
+      queries:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000000
+          elemType: "int"
+    seed: 170703
+  - name: generated-stress
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        elemType: "int"
+      queries:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000000
+          elemType: "int"
+    seed: 170704
+  - name: generated-zero-thresholds
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+        elemType: "int"
+      queries:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000000
+          elemType: "int"
+    seed: 170705

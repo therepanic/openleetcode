@@ -1,0 +1,356 @@
+entry:
+  id: 1937
+  title: "maximum-number-of-points-with-cost"
+  params:
+    points:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maxPoints({points})"
+    rust: "Solution::max_points({points})"
+    python3: "Solution().maxPoints({points})"
+    python2: "Solution().maxPoints({points})"
+    ruby: "max_points({points})"
+    java: "new Solution().maxPoints({points})"
+    csharp: "new Solution().MaxPoints({points})"
+    kotlin: "Solution().maxPoints({points})"
+    go: "maxPoints({points})"
+    dart: "Solution().maxPoints({points})"
+    swift: "Solution().maxPoints({points})"
+    typescript: "maxPoints({points})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxPoints(points, {result})"
+    checker: |
+      class Checker:
+          def maxPoints(self, points, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not points or not points[0]:
+                  return False
+              dp = list(points[0])
+              for row in points[1:]:
+                  left = [0] * len(dp)
+                  right = [0] * len(dp)
+                  left[0] = dp[0]
+                  for c in range(1, len(dp)):
+                      left[c] = max(left[c - 1], dp[c] + c)
+                  right[-1] = dp[-1] - len(dp) + 1
+                  for c in range(len(dp) - 2, -1, -1):
+                      right[c] = max(right[c + 1], dp[c] - c)
+                  dp = [row[c] + max(left[c] - c, right[c] + c) for c in range(len(dp))]
+              return result == max(dp)
+
+seed: 1937
+
+tests:
+  - name: "single_cell"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [5]
+    out: 5
+  - name: "single_row_zeroes"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+    out: 0
+  - name: "single_row_increasing"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+    out: 3
+  - name: "single_row_decreasing"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [3, 2, 1]
+    out: 3
+  - name: "one_column_growth"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1]
+          - [2]
+          - [3]
+    out: 6
+  - name: "one_column_jump"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [5]
+          - [0]
+          - [10]
+    out: 15
+  - name: "example_two"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 5]
+          - [2, 3]
+          - [4, 2]
+    out: 11
+  - name: "example_one"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 2, 3]
+          - [1, 5, 1]
+          - [3, 1, 1]
+    out: 9
+  - name: "all_zero_two_by_two"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [0, 0]
+          - [0, 0]
+    out: 0
+  - name: "opposite_corners"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [9, 0]
+          - [0, 9]
+    out: 17
+  - name: "center_peak_first"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [10, 1, 1]
+          - [1, 10, 1]
+    out: 19
+  - name: "center_peak_second"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 10, 1]
+          - [1, 1, 10]
+    out: 19
+  - name: "constant_rows"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [7, 7, 7]
+          - [7, 7, 7]
+    out: 14
+  - name: "alternating_peaks"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [0, 5, 0]
+          - [5, 0, 5]
+    out: 9
+  - name: "three_rows_mixed"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [2, 0, 4]
+          - [1, 3, 2]
+          - [5, 1, 0]
+    out: 10
+  - name: "wide_two_rows"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [8, 1, 6, 2]
+          - [3, 9, 0, 4]
+    out: 16
+  - name: "wide_three_rows"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 4, 2, 8]
+          - [7, 0, 5, 3]
+          - [2, 9, 1, 6]
+    out: 20
+  - name: "maximum_values_two_columns"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [100000, 0]
+          - [0, 100000]
+    out: 199999
+  - name: "maximum_single_row"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [0, 100000, 0]
+    out: 100000
+  - name: "maximum_constant"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [100000, 100000]
+          - [100000, 100000]
+    out: 200000
+  - name: "four_rows_three_columns"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [4, 1, 7]
+          - [2, 8, 3]
+          - [9, 0, 6]
+          - [1, 5, 2]
+    out: 26
+  - name: "reversed_two_rows"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [0, 1, 2, 3, 4]
+          - [4, 3, 2, 1, 0]
+    out: 4
+  - name: "three_diagonal_peaks"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [5, 0, 0, 0, 5]
+          - [0, 5, 0, 5, 0]
+          - [0, 0, 5, 0, 0]
+    out: 13
+  - name: "four_rows_two_columns"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 3]
+          - [2, 4]
+          - [5, 0]
+          - [6, 1]
+    out: 17
+  - name: "descending_rows"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [9, 8, 7]
+          - [6, 5, 4]
+          - [3, 2, 1]
+    out: 18
+  - name: "identity_peaks"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 0, 0]
+          - [0, 1, 0]
+          - [0, 0, 1]
+    out: 1
+  - name: "constant_wide_rows"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [2, 2, 2, 2]
+          - [1, 1, 1, 1]
+          - [3, 3, 3, 3]
+    out: 6
+  - name: "right_diagonal"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [0, 9, 0, 0]
+          - [0, 0, 9, 0]
+          - [0, 0, 0, 9]
+    out: 25
+  - name: "wide_two_rows_mixed"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [6, 1, 4, 2, 8]
+          - [0, 7, 3, 9, 1]
+    out: 16
+  - name: "four_rows_three_columns_alt"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [3, 0, 8]
+          - [5, 2, 1]
+          - [4, 9, 0]
+          - [7, 1, 6]
+    out: 25
+  - name: "large_values_small_matrix"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [11, 12, 13]
+          - [14, 15, 16]
+    out: 29
+  - name: "separated_large_peaks"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [20, 0, 0, 0]
+          - [0, 0, 0, 20]
+          - [0, 0, 20, 0]
+    out: 56
+  - name: "exponential_values"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [1, 2, 4, 8]
+          - [16, 8, 4, 2]
+          - [3, 6, 12, 24]
+    out: 42
+  - name: "three_large_diagonal_peaks"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [0, 0, 0]
+          - [100, 0, 0]
+          - [0, 100, 0]
+          - [0, 0, 100]
+    out: 298
+  - name: "five_rows_mixed"
+    in:
+      points:
+        elemType: "int"
+        value:
+          - [7, 2, 9, 1]
+          - [4, 8, 0, 6]
+          - [3, 5, 11, 2]
+          - [10, 1, 4, 7]
+          - [0, 6, 3, 9]
+    out: 41

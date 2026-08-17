@@ -1,0 +1,372 @@
+entry:
+  id: 1992
+  title: "find-all-groups-of-farmland"
+  params:
+    land:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().findFarmland({land})"
+    rust: "Solution::find_farmland({land})"
+    python3: "Solution().findFarmland({land})"
+    python2: "Solution().findFarmland({land})"
+    ruby: "find_farmland({land})"
+    java: "new Solution().findFarmland({land})"
+    csharp: "new Solution().FindFarmland({land})"
+    kotlin: "Solution().findFarmland({land})"
+    go: "findFarmland({land})"
+    dart: "Solution().findFarmland({land})"
+    swift: "Solution().findFarmland({land})"
+    typescript: "findFarmland({land})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().findFarmland(land, {result})"
+    checker: |
+      class Checker:
+          def findFarmland(self, land, result):
+              if not isinstance(result, list):
+                  return False
+              rows = len(land)
+              cols = len(land[0])
+              seen = [[False] * cols for _ in range(rows)]
+              expected = []
+              for r in range(rows):
+                  for c in range(cols):
+                      if land[r][c] == 1 and not seen[r][c]:
+                          stack = [(r, c)]
+                          seen[r][c] = True
+                          cells = []
+                          while stack:
+                              x, y = stack.pop()
+                              cells.append((x, y))
+                              for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                                  nx, ny = x + dx, y + dy
+                                  if 0 <= nx < rows and 0 <= ny < cols and land[nx][ny] == 1 and not seen[nx][ny]:
+                                      seen[nx][ny] = True
+                                      stack.append((nx, ny))
+                          top = min(x for x, y in cells)
+                          left = min(y for x, y in cells)
+                          bottom = max(x for x, y in cells)
+                          right = max(y for x, y in cells)
+                          expected.append((top, left, bottom, right))
+              actual = []
+              for item in result:
+                  if not isinstance(item, list) or len(item) != 4 or not all(isinstance(x, int) and not isinstance(x, bool) for x in item):
+                      return False
+                  r1, c1, r2, c2 = item
+                  if not (0 <= r1 <= r2 < rows and 0 <= c1 <= c2 < cols):
+                      return False
+                  for r in range(r1, r2 + 1):
+                      for c in range(c1, c2 + 1):
+                          if land[r][c] != 1:
+                              return False
+                  actual.append(tuple(item))
+              return sorted(actual) == sorted(expected)
+
+seed: 1992
+
+tests:
+  - name: "example_single_and_square"
+    in:
+      land:
+        - [1, 0, 0]
+        - [0, 1, 1]
+        - [0, 1, 1]
+  - name: "example_full"
+    in:
+      land:
+        - [1, 1]
+        - [1, 1]
+  - name: "example_empty"
+    in:
+      land:
+        - [0]
+  - name: "single_one"
+    in:
+      land:
+        - [0, 0, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 0]
+  - name: "single_row_alternating"
+    in:
+      land:
+        - [1, 0, 1, 0, 1, 0, 1]
+  - name: "single_column_alternating"
+    in:
+      land:
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+  - name: "two_horizontal_groups"
+    in:
+      land:
+        - [1, 1, 0, 0, 1]
+        - [1, 1, 0, 0, 1]
+  - name: "two_vertical_groups"
+    in:
+      land:
+        - [1, 0, 1]
+        - [1, 0, 1]
+        - [0, 0, 1]
+        - [1, 0, 0]
+  - name: "corner_points"
+    in:
+      land:
+        - [1, 0, 0, 1]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [1, 0, 0, 1]
+  - name: "three_rectangles"
+    in:
+      land:
+        - [1, 1, 0, 0, 0, 1]
+        - [1, 1, 0, 0, 0, 1]
+        - [0, 0, 1, 1, 0, 0]
+        - [0, 0, 1, 1, 0, 0]
+  - name: "thin_top_and_bottom"
+    in:
+      land:
+        - [1, 1, 1, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [0, 1, 1, 1, 0]
+  - name: "nested_gaps"
+    in:
+      land:
+        - [1, 1, 0, 1, 1]
+        - [1, 1, 0, 1, 1]
+        - [0, 0, 0, 0, 0]
+        - [1, 0, 1, 0, 1]
+  - name: "checkerboard_4"
+    in:
+      land:
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+  - name: "left_large_right_points"
+    in:
+      land:
+        - [1, 1, 0, 0, 1, 0]
+        - [1, 1, 0, 0, 0, 0]
+        - [1, 1, 0, 0, 1, 0]
+        - [0, 0, 0, 0, 0, 0]
+  - name: "diagonal_components"
+    in:
+      land:
+        - [1, 0, 0, 0, 0]
+        - [0, 1, 0, 0, 0]
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 1, 0]
+        - [0, 0, 0, 0, 1]
+  - name: "middle_block"
+    in:
+      land:
+        - [0, 0, 0, 0, 0]
+        - [0, 1, 1, 0, 0]
+        - [0, 1, 1, 0, 0]
+        - [0, 0, 0, 0, 0]
+  - name: "four_singletons"
+    in:
+      land:
+        - [1, 0, 0, 0, 1]
+        - [0, 0, 0, 0, 0]
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 0, 0]
+        - [1, 0, 0, 0, 1]
+  - name: "wide_middle_group"
+    in:
+      land:
+        - [0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0, 0]
+  - name: "tall_middle_group"
+    in:
+      land:
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+  - name: "border_strips"
+    in:
+      land:
+        - [1, 1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1, 1]
+  - name: "four_by_six_blocks"
+    in:
+      land:
+        - [1, 1, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 0, 0, 0]
+  - name: "isolated_cross_corners"
+    in:
+      land:
+        - [1, 0, 1]
+        - [0, 0, 0]
+        - [1, 0, 1]
+  - name: "dense_left_sparse_right"
+    in:
+      land:
+        - [1, 1, 1, 0, 1]
+        - [1, 1, 1, 0, 0]
+        - [1, 1, 1, 0, 1]
+        - [0, 0, 0, 0, 0]
+  - name: "alternating_rows"
+    in:
+      land:
+        - [1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1]
+        - [0, 0, 0, 0, 0]
+        - [1, 1, 1, 1, 1]
+  - name: "two_by_ten"
+    in:
+      land:
+        - [1, 1, 0, 0, 1, 1, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 1, 1, 0, 0, 1, 1]
+  - name: "ten_by_two"
+    in:
+      land:
+        - [1, 1]
+        - [1, 1]
+        - [0, 0]
+        - [1, 1]
+        - [1, 1]
+        - [0, 0]
+        - [1, 1]
+        - [1, 1]
+        - [0, 0]
+        - [1, 1]
+  - name: "hollow_zero_frame"
+    in:
+      land:
+        - [1, 1, 0, 0, 1]
+        - [1, 1, 0, 0, 1]
+        - [0, 0, 0, 0, 1]
+        - [0, 0, 1, 1, 0]
+  - name: "separated_corner_blocks"
+    in:
+      land:
+        - [1, 1, 0, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 0, 1, 1]
+        - [0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 1, 1, 0, 0, 0]
+  - name: "five_singletons_row"
+    in:
+      land:
+        - [1, 0, 1, 0, 1, 0, 1, 0, 1]
+  - name: "large_empty_12"
+    in:
+      land:
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: "large_full_12"
+    in:
+      land:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: "six_by_six_quadrants"
+    in:
+      land:
+        - [1, 1, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 1, 1]
+        - [0, 0, 0, 0, 0, 0]
+        - [0, 0, 1, 1, 0, 0]
+        - [0, 0, 1, 1, 0, 0]
+        - [0, 0, 0, 0, 0, 0]
+  - name: "long_isolated_runs"
+    in:
+      land:
+        - [1, 1, 1, 1, 0, 0, 0, 1, 1, 1]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 0, 0, 1, 1, 1, 0, 0, 1]
+  - name: "mixed_8x8"
+    in:
+      land:
+        - [1, 1, 0, 0, 0, 0, 1, 1]
+        - [1, 1, 0, 0, 0, 0, 1, 1]
+        - [0, 0, 0, 1, 1, 0, 0, 0]
+        - [0, 0, 0, 1, 1, 0, 0, 0]
+        - [1, 0, 0, 0, 0, 1, 1, 0]
+        - [1, 0, 0, 0, 0, 1, 1, 0]
+        - [0, 0, 1, 1, 0, 0, 0, 0]
+        - [0, 0, 1, 1, 0, 0, 0, 0]
+  - name: "single_row_full"
+    in:
+      land:
+        - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: "single_column_full"
+    in:
+      land:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+  - name: "two_diagonal_rectangles"
+    in:
+      land:
+        - [1, 1, 0, 0, 0, 0]
+        - [1, 1, 0, 0, 0, 0]
+        - [0, 0, 0, 0, 1, 1]
+        - [0, 0, 0, 0, 1, 1]
+  - name: "maxish_sparse"
+    in:
+      land:
+        - [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [0, 0, 1, 1, 0, 0, 1, 0, 0, 0]
+        - [0, 0, 1, 1, 0, 0, 1, 0, 0, 0]
+        - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        - [1, 1, 1, 0, 0, 0, 0, 1, 1, 1]
+        - [1, 1, 1, 0, 0, 0, 0, 1, 1, 1]
+  - name: "all_singletons_6x6"
+    in:
+      land:
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 0, 0, 0, 0, 0]
+        - [1, 0, 1, 0, 1, 0]
+        - [0, 0, 0, 0, 0, 0]

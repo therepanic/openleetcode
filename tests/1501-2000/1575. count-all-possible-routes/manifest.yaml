@@ -1,0 +1,415 @@
+entry:
+  id: 1575
+  title: "count-all-possible-routes"
+  params:
+    locations:
+      type: array
+      items:
+        type: int
+    startCity:
+      type: int
+    finish:
+      type: int
+    fuel:
+      type: int
+  call:
+    cpp: "Solution().countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    rust: "Solution::count_routes({locations}, {startCity}, {finish}, {fuel})"
+    python3: "Solution().countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    python2: "Solution().countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    ruby: "count_routes({locations}, {startCity}, {finish}, {fuel})"
+    java: "new Solution().countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    csharp: "new Solution().CountRoutes({locations}, {startCity}, {finish}, {fuel})"
+    kotlin: "Solution().countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    go: "countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    dart: "Solution().countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    swift: "Solution().countRoutes({locations}, {startCity}, {finish}, {fuel})"
+    typescript: "countRoutes({locations}, {startCity}, {finish}, {fuel})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().countRoutes(locations, startCity, finish, fuel, {result})"
+    checker: |
+      class Checker:
+          def countRoutes(self, locations, start, finish, fuel, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              memo = {}
+              def dp(city, left):
+                  key = (city, left)
+                  if key in memo:
+                      return memo[key]
+                  total = 1 if city == finish else 0
+                  for nxt, pos in enumerate(locations):
+                      cost = abs(pos - locations[city])
+                      if nxt != city and cost <= left:
+                          total = (total + dp(nxt, left - cost)) % mod
+                  memo[key] = total
+                  return total
+              return result == dp(start, fuel)
+
+seed: 1575
+
+tests:
+  - name: "example_two"
+    in:
+      locations: [4, 3, 1]
+      startCity: 1
+      finish: 0
+      fuel: 6
+    out: 5
+  - name: "example_three_unreachable"
+    in:
+      locations: [5, 2, 1]
+      startCity: 0
+      finish: 2
+      fuel: 3
+    out: 0
+  - name: "two_cities_one_fuel"
+    in:
+      locations: [1, 2]
+      startCity: 0
+      finish: 1
+      fuel: 1
+    out: 1
+  - name: "same_city_no_fuel"
+    in:
+      locations: [1, 10]
+      startCity: 0
+      finish: 0
+      fuel: 1
+    out: 1
+  - name: "same_city_with_round_trip"
+    in:
+      locations: [1, 2]
+      startCity: 0
+      finish: 0
+      fuel: 2
+    out: 2
+  - name: "three_evenly_spaced"
+    in:
+      locations: [1, 3, 5]
+      startCity: 0
+      finish: 2
+      fuel: 4
+    out: 2
+  - name: "three_evenly_spaced_more_fuel"
+    in:
+      locations: [1, 3, 5]
+      startCity: 0
+      finish: 2
+      fuel: 6
+    out: 2
+  - name: "finish_start_reversed"
+    in:
+      locations: [1, 4, 7]
+      startCity: 2
+      finish: 0
+      fuel: 6
+    out: 2
+  - name: "large_gap_unreachable"
+    in:
+      locations: [1, 100, 200]
+      startCity: 0
+      finish: 2
+      fuel: 100
+    out: 0
+  - name: "large_gap_exact"
+    in:
+      locations: [1, 100, 200]
+      startCity: 0
+      finish: 2
+      fuel: 199
+    out: 2
+  - name: "four_linear_low_fuel"
+    in:
+      locations: [1, 2, 3, 4]
+      startCity: 0
+      finish: 3
+      fuel: 3
+    out: 4
+  - name: "four_linear_detour"
+    in:
+      locations: [1, 2, 3, 4]
+      startCity: 0
+      finish: 3
+      fuel: 5
+    out: 16
+  - name: "four_linear_more_routes"
+    in:
+      locations: [1, 2, 3, 4]
+      startCity: 1
+      finish: 2
+      fuel: 6
+    out: 27
+  - name: "unsorted_locations"
+    in:
+      locations: [10, 1, 7, 3]
+      startCity: 0
+      finish: 3
+      fuel: 9
+    out: 2
+  - name: "negative_coordinates_not_allowed_but_small"
+    in:
+      locations: [1, 5, 9, 14]
+      startCity: 3
+      finish: 0
+      fuel: 13
+    out: 4
+  - name: "five_sparse"
+    in:
+      locations: [2, 11, 20, 35, 50]
+      startCity: 0
+      finish: 4
+      fuel: 48
+    out: 8
+  - name: "five_clustered"
+    in:
+      locations: [10, 11, 12, 13, 14]
+      startCity: 0
+      finish: 4
+      fuel: 8
+    out: 216
+  - name: "finish_is_start_clustered"
+    in:
+      locations: [10, 11, 12, 13, 14]
+      startCity: 2
+      finish: 2
+      fuel: 4
+    out: 17
+  - name: "six_exact_path"
+    in:
+      locations: [3, 8, 14, 21, 29, 38]
+      startCity: 0
+      finish: 5
+      fuel: 35
+    out: 16
+  - name: "six_multiple_paths"
+    in:
+      locations: [3, 8, 14, 21, 29, 38]
+      startCity: 0
+      finish: 5
+      fuel: 42
+    out: 16
+  - name: "duplicate_distance_patterns"
+    in:
+      locations: [1, 4, 7, 10, 13]
+      startCity: 1
+      finish: 3
+      fuel: 9
+    out: 2
+  - name: "minimum_fuel_to_finish"
+    in:
+      locations: [2, 20, 35, 60]
+      startCity: 0
+      finish: 3
+      fuel: 58
+    out: 4
+  - name: "one_less_than_minimum"
+    in:
+      locations: [2, 20, 35, 60]
+      startCity: 0
+      finish: 3
+      fuel: 57
+    out: 0
+  - name: "seven_dense"
+    in:
+      locations: [1, 2, 4, 7, 11, 16, 22]
+      startCity: 0
+      finish: 6
+      fuel: 21
+    out: 32
+  - name: "seven_dense_same_city"
+    in:
+      locations: [1, 2, 4, 7, 11, 16, 22]
+      startCity: 3
+      finish: 3
+      fuel: 10
+    out: 7
+  - name: "large_coordinates_small_fuel"
+    in:
+      locations: [1, 100000, 500000000, 1000000000]
+      startCity: 0
+      finish: 1
+      fuel: 200
+    out: 0
+  - name: "large_coordinates_reachable"
+    in:
+      locations: [1, 201, 500000000, 1000000000]
+      startCity: 0
+      finish: 1
+      fuel: 200
+    out: 1
+  - name: "eight_mixed"
+    in:
+      locations: [4, 9, 15, 16, 23, 31, 40, 52]
+      startCity: 2
+      finish: 6
+      fuel: 30
+    out: 24
+  - name: "eight_low_fuel"
+    in:
+      locations: [4, 9, 15, 16, 23, 31, 40, 52]
+      startCity: 2
+      finish: 6
+      fuel: 24
+    out: 0
+  - name: "nine_close"
+    in:
+      locations: [100, 101, 103, 106, 110, 115, 121, 128, 136]
+      startCity: 0
+      finish: 8
+      fuel: 12
+    out: 0
+  - name: "ten_close_same"
+    in:
+      locations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      startCity: 4
+      finish: 4
+      fuel: 10
+    out: 7507
+  - name: "ten_close_route"
+    in:
+      locations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      startCity: 0
+      finish: 9
+      fuel: 10
+    out: 256
+  - name: "twenty_sparse"
+    in:
+      locations:
+        [
+          1,
+          11,
+          21,
+          31,
+          41,
+          51,
+          61,
+          71,
+          81,
+          91,
+          101,
+          111,
+          121,
+          131,
+          141,
+          151,
+          161,
+          171,
+          181,
+          191,
+        ]
+      startCity: 0
+      finish: 19
+      fuel: 190
+    out: 262144
+  - name: "twenty_sparse_extra"
+    in:
+      locations:
+        [
+          1,
+          11,
+          21,
+          31,
+          41,
+          51,
+          61,
+          71,
+          81,
+          91,
+          101,
+          111,
+          121,
+          131,
+          141,
+          151,
+          161,
+          171,
+          181,
+          191,
+        ]
+      startCity: 0
+      finish: 19
+      fuel: 200
+    out: 262144
+  - name: "example_one"
+    in:
+      locations: [2, 3, 6, 8, 4]
+      startCity: 1
+      finish: 3
+      fuel: 5
+    out: 4
+  - name: "generated_small_distinct"
+    in:
+      locations:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: true
+      startCity: 0
+      finish: 1
+      fuel: 30
+  - name: "generated_medium_distinct"
+    in:
+      locations:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: true
+      startCity: 0
+      finish: 1
+      fuel: 80
+  - name: "generated_dense_distinct"
+    in:
+      locations:
+        gen: "array"
+        len: 50
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: true
+      startCity: 0
+      finish: 1
+      fuel: 120
+  - name: "generated_large_distinct"
+    in:
+      locations:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: true
+      startCity: 0
+      finish: 1
+      fuel: 200
+  - name: "generated_clustered_distinct"
+    in:
+      locations:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: true
+      startCity: 0
+      finish: 1
+      fuel: 200

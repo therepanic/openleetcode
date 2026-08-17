@@ -1,0 +1,256 @@
+entry:
+  id: 1910
+  title: remove-all-occurrences-of-a-substring
+  params:
+    s:
+      type: string
+    part:
+      type: string
+  call:
+    cpp: "Solution().removeOccurrences({s}, {part})"
+    rust: "Solution::remove_occurrences({s}, {part})"
+    python3: "Solution().removeOccurrences({s}, {part})"
+    python2: "Solution().removeOccurrences({s}, {part})"
+    ruby: "remove_occurrences({s}, {part})"
+    java: "new Solution().removeOccurrences({s}, {part})"
+    csharp: "new Solution().RemoveOccurrences({s}, {part})"
+    kotlin: "Solution().removeOccurrences({s}, {part})"
+    go: "removeOccurrences({s}, {part})"
+    dart: "Solution().removeOccurrences({s}, {part})"
+    swift: "Solution().removeOccurrences({s}, {part})"
+    typescript: "removeOccurrences({s}, {part})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().removeOccurrences(s, part, {result})"
+    checker: |
+      class Checker:
+          def removeOccurrences(self, s, part, result):
+              stack = []
+              m = len(part)
+              for ch in s:
+                  stack.append(ch)
+                  if len(stack) >= m and ''.join(stack[-m:]) == part:
+                      del stack[-m:]
+              return result == ''.join(stack)
+seed: 1910
+tests:
+  - name: example-one
+    in:
+      s: "daabcbaabcbc"
+      part: "abc"
+    out: "dab"
+  - name: example-two
+    in:
+      s: "axxxxyyyyb"
+      part: "xy"
+    out: "ab"
+  - name: no-occurrence
+    in:
+      s: "hello"
+      part: "z"
+    out: "hello"
+  - name: exact-match
+    in:
+      s: "abc"
+      part: "abc"
+    out: ""
+  - name: part-longer
+    in:
+      s: "ab"
+      part: "abc"
+    out: "ab"
+  - name: repeated-single
+    in:
+      s: "aaaaaa"
+      part: "a"
+    out: ""
+  - name: repeated-pair
+    in:
+      s: "abababab"
+      part: "ab"
+    out: ""
+  - name: overlap-aba
+    in:
+      s: "ababa"
+      part: "aba"
+    out: "ba"
+  - name: overlap-aa
+    in:
+      s: "aaaaa"
+      part: "aa"
+    out: "a"
+  - name: cascade-after-removal
+    in:
+      s: "aabcbc"
+      part: "abc"
+    out: ""
+  - name: cascade-prefix
+    in:
+      s: "abcab"
+      part: "cab"
+    out: "ab"
+  - name: cascade-suffix
+    in:
+      s: "bcabc"
+      part: "bca"
+    out: "bc"
+  - name: repeated-word
+    in:
+      s: "foobarfoobar"
+      part: "foobar"
+    out: ""
+  - name: internal-occurrence
+    in:
+      s: "mississippi"
+      part: "issi"
+    out: "mssippi"
+  - name: repeated-letters-part
+    in:
+      s: "baaaab"
+      part: "aaa"
+    out: "bab"
+  - name: alternating-no-match
+    in:
+      s: "abababa"
+      part: "abaaba"
+    out: "abababa"
+  - name: removal-joins-match
+    in:
+      s: "xabcabcx"
+      part: "abc"
+    out: "xx"
+  - name: removal-joins-part
+    in:
+      s: "abcaabc"
+      part: "abc"
+    out: "a"
+  - name: one-character-suffix
+    in:
+      s: "zzaz"
+      part: "z"
+    out: "a"
+  - name: one-character-middle
+    in:
+      s: "banana"
+      part: "n"
+    out: "baaa"
+  - name: all-same-long-part
+    in:
+      s: "aaaaaaaa"
+      part: "aaaa"
+    out: ""
+  - name: all-same-nondivisible
+    in:
+      s: "aaaaaaaaa"
+      part: "aaaa"
+    out: "a"
+  - name: prefix-preserved
+    in:
+      s: "zzabcabc"
+      part: "abc"
+    out: "zz"
+  - name: suffix-preserved
+    in:
+      s: "abcabczz"
+      part: "abc"
+    out: "zz"
+  - name: case-lowercase-only
+    in:
+      s: "aAaAa"
+      part: "Aa"
+    out: "a"
+  - name: long-part-single
+    in:
+      s: "abcdefghijklmnopqrst"
+      part: "klmnop"
+    out: "abcdefghijqrst"
+  - name: near-match
+    in:
+      s: "abacaba"
+      part: "ababa"
+    out: "abacaba"
+  - name: nested-looking
+    in:
+      s: "abcxbcabc"
+      part: "bc"
+    out: "axa"
+  - name: chain-of-three
+    in:
+      s: "cabacaba"
+      part: "aba"
+    out: "cc"
+  - name: empty-result-cascade
+    in:
+      s: "aabbccabcc"
+      part: "abcc"
+    out: "aabbcc"
+  - name: stress-repeated
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      part: "aaaaa"
+    out: ""
+  - name: stress-pattern
+    in:
+      s: "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+      part: "abcabc"
+    out: ""
+  - name: stress-near-matches
+    in:
+      s: "abababababababababababababababababababababababababababababab"
+      part: "ababa"
+    out: "bbbbbbbbbb"
+  - name: generated-short
+    in:
+      s:
+        gen: "str"
+        len: 40
+        alphabet: "abc"
+      part:
+        gen: "str"
+        len: 4
+        alphabet: "abc"
+  - name: generated-medium
+    in:
+      s:
+        gen: "str"
+        len: 250
+        alphabet: "abcd"
+      part:
+        gen: "str"
+        len: 7
+        alphabet: "abcd"
+  - name: generated-large
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "ab"
+      part:
+        gen: "str"
+        len: 31
+        alphabet: "ab"
+  - name: generated-large-small-part
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "abc"
+      part:
+        gen: "str"
+        len: 2
+        alphabet: "abc"
+  - name: generated-max-part
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "abcde"
+      part:
+        gen: "str"
+        len: 1000
+        alphabet: "abcde"

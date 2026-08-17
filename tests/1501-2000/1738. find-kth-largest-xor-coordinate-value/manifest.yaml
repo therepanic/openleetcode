@@ -1,0 +1,370 @@
+entry:
+  id: 1738
+  title: "find-kth-largest-xor-coordinate-value"
+  params:
+    matrix:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().kthLargestValue({matrix}, {k})"
+    rust: "Solution::kth_largest_value({matrix}, {k})"
+    python3: "Solution().kthLargestValue({matrix}, {k})"
+    python2: "Solution().kthLargestValue({matrix}, {k})"
+    ruby: "kth_largest_value({matrix}, {k})"
+    java: "new Solution().kthLargestValue({matrix}, {k})"
+    csharp: "new Solution().KthLargestValue({matrix}, {k})"
+    kotlin: "Solution().kthLargestValue({matrix}, {k})"
+    go: "kthLargestValue({matrix}, {k})"
+    dart: "Solution().kthLargestValue({matrix}, {k})"
+    swift: "Solution().kthLargestValue({matrix}, {k})"
+    typescript: "kthLargestValue({matrix}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().kthLargestValue(matrix, k, {result})"
+    checker: |
+      class Checker:
+          def kthLargestValue(self, matrix, k, result):
+              if not isinstance(matrix, list) or not matrix or not isinstance(k, int):
+                  return False
+              if not all(isinstance(row, list) and row for row in matrix):
+                  return False
+              width = len(matrix[0])
+              if any(len(row) != width or any(not isinstance(x, int) or x < 0 or x > 1000000 for x in row) for row in matrix):
+                  return False
+              if k < 1 or k > len(matrix) * width or not isinstance(result, int):
+                  return False
+              pref = [[0] * width for _ in matrix]
+              values = []
+              for i, row in enumerate(matrix):
+                  for j, value in enumerate(row):
+                      cur = value
+                      if i:
+                          cur ^= pref[i - 1][j]
+                      if j:
+                          cur ^= pref[i][j - 1]
+                      if i and j:
+                          cur ^= pref[i - 1][j - 1]
+                      pref[i][j] = cur
+                      values.append(cur)
+              values.sort(reverse=True)
+              return result == values[k - 1]
+
+seed: 17381738
+
+tests:
+  - name: example-one
+    in:
+      matrix:
+        - [5, 2]
+        - [1, 6]
+      k: 1
+    out: 7
+  - name: example-two
+    in:
+      matrix:
+        - [5, 2]
+        - [1, 6]
+      k: 2
+    out: 5
+  - name: example-three
+    in:
+      matrix:
+        - [5, 2]
+        - [1, 6]
+      k: 3
+    out: 4
+  - name: example-last
+    in:
+      matrix:
+        - [5, 2]
+        - [1, 6]
+      k: 4
+    out: 0
+  - name: single-zero
+    in:
+      matrix:
+        - [0]
+      k: 1
+    out: 0
+  - name: single-maximum
+    in:
+      matrix:
+        - [1000000]
+      k: 1
+    out: 1000000
+  - name: one-row
+    in:
+      matrix:
+        - [1, 2, 3, 4, 5]
+      k: 3
+    out: 1
+  - name: one-column
+    in:
+      matrix:
+        - [1]
+        - [2]
+        - [3]
+        - [4]
+      k: 2
+    out: 3
+  - name: all-zero
+    in:
+      matrix:
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+      k: 4
+    out: 0
+  - name: equal-values
+    in:
+      matrix:
+        - [7, 7]
+        - [7, 7]
+      k: 3
+    out: 0
+  - name: xor-cancellation
+    in:
+      matrix:
+        - [1, 1]
+        - [1, 1]
+      k: 1
+    out: 1
+  - name: two-by-three
+    in:
+      matrix:
+        - [1, 2, 4]
+        - [8, 16, 32]
+      k: 4
+    out: 7
+  - name: three-by-two
+    in:
+      matrix:
+        - [3, 5]
+        - [7, 9]
+        - [11, 13]
+      k: 5
+    out: 4
+  - name: powers-of-two
+    in:
+      matrix:
+        - [1, 2, 4]
+        - [8, 16, 32]
+        - [64, 128, 256]
+      k: 1
+    out: 511
+  - name: high-values
+    in:
+      matrix:
+        - [1000000, 999999]
+        - [999998, 999997]
+      k: 2
+    out: 127
+  - name: alternating
+    in:
+      matrix:
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+      k: 6
+    out: 1
+  - name: rectangular-four-by-three
+    in:
+      matrix:
+        - [2, 7, 1]
+        - [8, 2, 8]
+        - [1, 3, 9]
+        - [4, 6, 5]
+      k: 7
+    out: 10
+  - name: negative-free-bit-patterns
+    in:
+      matrix:
+        - [1048575, 524288]
+        - [262144, 131072]
+      k: 3
+    out: 524287
+  - name: five-by-one
+    in:
+      matrix:
+        - [10]
+        - [20]
+        - [30]
+        - [40]
+        - [50]
+      k: 5
+    out: 0
+  - name: six-by-two
+    in:
+      matrix:
+        - [1, 3]
+        - [5, 7]
+        - [9, 11]
+        - [13, 15]
+        - [17, 19]
+        - [21, 23]
+      k: 8
+    out: 1
+  - name: mixed-small
+    in:
+      matrix:
+        - [12, 5, 9]
+        - [3, 10, 6]
+      k: 5
+    out: 0
+  - name: diagonal-cancellation
+    in:
+      matrix:
+        - [255, 0, 255]
+        - [0, 255, 0]
+        - [255, 0, 255]
+      k: 9
+    out: 0
+  - name: max-k
+    in:
+      matrix:
+        - [15, 8, 3]
+        - [4, 12, 7]
+        - [9, 2, 14]
+      k: 9
+    out: 2
+  - name: wide-eight
+    in:
+      matrix:
+        - [1, 4, 9, 16, 25, 36, 49, 64]
+      k: 8
+    out: 1
+  - name: tall-eight
+    in:
+      matrix:
+        - [1]
+        - [4]
+        - [9]
+        - [16]
+        - [25]
+        - [36]
+        - [49]
+        - [64]
+      k: 4
+    out: 16
+  - name: repeated-large
+    in:
+      matrix:
+        - [65535, 65535, 65535]
+        - [65535, 65535, 65535]
+      k: 2
+    out: 65535
+  - name: nine-by-nine-small
+    in:
+      matrix:
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        - [9, 8, 7, 6, 5, 4, 3, 2, 1]
+        - [2, 4, 6, 8, 1, 3, 5, 7, 9]
+        - [9, 7, 5, 3, 1, 8, 6, 4, 2]
+        - [5, 5, 5, 5, 5, 5, 5, 5, 5]
+        - [0, 1, 0, 1, 0, 1, 0, 1, 0]
+        - [8, 6, 4, 2, 9, 7, 5, 3, 1]
+        - [3, 1, 4, 1, 5, 9, 2, 6, 5]
+        - [6, 2, 7, 1, 8, 2, 8, 1, 8]
+      k: 40
+  - name: generated-ten-by-ten
+    in:
+      matrix:
+        gen: "array"
+        len: 10
+        of:
+          gen: "array"
+          len: 10
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000
+      k: 37
+  - name: generated-twenty-by-twenty
+    in:
+      matrix:
+        gen: "array"
+        len: 20
+        of:
+          gen: "array"
+          len: 20
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000
+      k: 211
+  - name: generated-fifty-by-fifty
+    in:
+      matrix:
+        gen: "array"
+        len: 50
+        of:
+          gen: "array"
+          len: 50
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000
+      k: 1234
+  - name: generated-hundred-by-hundred
+    in:
+      matrix:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000
+      k: 5000
+  - name: generated-two-hundred-by-fifty
+    in:
+      matrix:
+        gen: "array"
+        len: 200
+        of:
+          gen: "array"
+          len: 50
+          of:
+            gen: "int"
+            min: 0
+            max: 1000000
+      k: 9999
+  - name: two-by-two-high-bit
+    in:
+      matrix:
+        - [524288, 262144]
+        - [131072, 65536]
+      k: 2
+    out: 786432
+  - name: three-by-four-zero-border
+    in:
+      matrix:
+        - [0, 0, 0, 0]
+        - [1, 2, 4, 8]
+        - [16, 32, 64, 128]
+      k: 6
+    out: 7
+  - name: four-by-four-single-bit
+    in:
+      matrix:
+        - [1, 0, 0, 0]
+        - [0, 1, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+      k: 8
+    out: 1

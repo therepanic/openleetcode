@@ -1,0 +1,487 @@
+entry:
+  id: 1744
+  title: "can-you-eat-your-favorite-candy-on-your-favorite-day"
+  params:
+    candiesCount:
+      type: array
+      items:
+        type: int
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().canEat({candiesCount}, {queries})"
+    rust: "Solution::can_eat({candiesCount}, {queries})"
+    python3: "Solution().canEat({candiesCount}, {queries})"
+    python2: "Solution().canEat({candiesCount}, {queries})"
+    ruby: "can_eat({candiesCount}, {queries})"
+    java: "new Solution().canEat({candiesCount}, {queries})"
+    csharp: "new Solution().CanEat({candiesCount}, {queries})"
+    kotlin: "Solution().canEat({candiesCount}, {queries})"
+    go: "canEat({candiesCount}, {queries})"
+    dart: "Solution().canEat({candiesCount}, {queries})"
+    swift: "Solution().canEat({candiesCount}, {queries})"
+    typescript: "canEat({candiesCount}, {queries})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().canEat(candiesCount, queries, {result})"
+    checker: |
+      class Checker:
+          def canEat(self, candiesCount, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              prefix = [0]
+              for x in candiesCount:
+                  prefix.append(prefix[-1] + x)
+              expected = []
+              for t, day, cap in queries:
+                  d = day + 1
+                  expected.append((prefix[t] + cap) // cap <= d <= prefix[t + 1])
+              return result == expected
+
+seed: 1744
+
+tests:
+  - name: example-one
+    in:
+      candiesCount: [7, 4, 5, 3, 8]
+      queries:
+        - [0, 2, 2]
+        - [4, 2, 4]
+        - [2, 13, 1000000000]
+    out: [true, false, true]
+  - name: example-two
+    in:
+      candiesCount: [5, 2, 6, 4, 1]
+      queries:
+        - [3, 1, 2]
+        - [4, 10, 3]
+        - [3, 10, 100]
+        - [4, 100, 30]
+        - [1, 3, 1]
+    out: [false, true, true, false, false]
+  - name: first-type-day-zero
+    in:
+      candiesCount: [5]
+      queries:
+        - [0, 0, 1]
+        - [0, 0, 5]
+    out: [true, true]
+  - name: first-type-boundary
+    in:
+      candiesCount: [5]
+      queries:
+        - [0, 4, 1]
+        - [0, 5, 1]
+        - [0, 1, 5]
+    out: [true, false, true]
+  - name: two-types-transition
+    in:
+      candiesCount: [2, 3]
+      queries:
+        - [1, 0, 1]
+        - [1, 1, 1]
+        - [1, 2, 1]
+        - [1, 4, 1]
+        - [1, 5, 1]
+    out: [false, false, true, true, false]
+  - name: cap-one
+    in:
+      candiesCount: [1, 1, 1, 1]
+      queries:
+        - [0, 0, 1]
+        - [1, 1, 1]
+        - [2, 2, 1]
+        - [3, 3, 1]
+        - [3, 4, 1]
+    out: [true, true, true, true, false]
+  - name: cap-equals-first-type
+    in:
+      candiesCount: [4, 2, 3]
+      queries:
+        - [1, 0, 4]
+        - [1, 1, 4]
+        - [1, 3, 4]
+        - [2, 2, 4]
+    out: [false, true, true, true]
+  - name: large-cap
+    in:
+      candiesCount: [10, 20, 30]
+      queries:
+        - [0, 0, 1000000000]
+        - [1, 0, 1000000000]
+        - [2, 0, 1000000000]
+        - [2, 59, 1000000000]
+        - [2, 60, 1000000000]
+    out: [true, true, true, true, false]
+  - name: exact-min-day
+    in:
+      candiesCount: [3, 4, 5]
+      queries:
+        - [0, 0, 3]
+        - [1, 1, 3]
+        - [2, 2, 3]
+        - [2, 3, 4]
+    out: [true, true, true, true]
+  - name: exact-max-day
+    in:
+      candiesCount: [3, 4, 5]
+      queries:
+        - [0, 2, 1]
+        - [1, 6, 1]
+        - [2, 11, 1]
+        - [2, 12, 1]
+    out: [true, true, true, false]
+  - name: skipped-types
+    in:
+      candiesCount: [8, 1, 8, 1, 8]
+      queries:
+        - [2, 7, 2]
+        - [2, 8, 2]
+        - [3, 16, 2]
+        - [4, 25, 2]
+    out: [true, true, true, true]
+  - name: huge-day
+    in:
+      candiesCount: [100000, 100000, 100000]
+      queries:
+        - [0, 99999, 1]
+        - [1, 199999, 1]
+        - [2, 299999, 1]
+        - [2, 1000000000, 1000000000]
+    out: [true, true, true, false]
+  - name: huge-cap-one-candy
+    in:
+      candiesCount: [1, 100000, 1]
+      queries:
+        - [1, 0, 1000000000]
+        - [1, 1, 1000000000]
+        - [2, 0, 1000000000]
+        - [2, 100000, 1000000000]
+    out: [true, true, true, true]
+  - name: repeated-queries
+    in:
+      candiesCount: [6, 7]
+      queries:
+        - [1, 6, 2]
+        - [1, 6, 2]
+        - [1, 5, 2]
+        - [0, 5, 2]
+    out: [true, true, true, true]
+  - name: many-types
+    in:
+      candiesCount: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      queries:
+        - [0, 0, 1]
+        - [1, 2, 1]
+        - [2, 5, 2]
+        - [3, 9, 2]
+        - [4, 14, 3]
+        - [5, 20, 3]
+        - [9, 54, 5]
+    out: [true, true, true, true, true, true, true]
+  - name: alternating-caps
+    in:
+      candiesCount: [9, 9, 9, 9]
+      queries:
+        - [3, 8, 1]
+        - [3, 8, 2]
+        - [3, 8, 4]
+        - [3, 35, 1]
+        - [3, 35, 2]
+        - [3, 35, 4]
+    out: [false, false, true, true, true, true]
+  - name: type-zero-all-days
+    in:
+      candiesCount: [100]
+      queries:
+        - [0, 0, 100]
+        - [0, 1, 100]
+        - [0, 99, 1]
+        - [0, 100, 1]
+    out: [true, true, true, false]
+  - name: type-one-tight-window
+    in:
+      candiesCount: [5, 5]
+      queries:
+        - [1, 4, 1]
+        - [1, 5, 1]
+        - [1, 9, 1]
+        - [1, 10, 1]
+        - [1, 10, 2]
+    out: [false, true, true, false, false]
+  - name: mixed-boundaries
+    in:
+      candiesCount: [2, 1, 4, 2]
+      queries:
+        - [2, 2, 2]
+        - [2, 3, 2]
+        - [2, 6, 2]
+        - [3, 7, 2]
+        - [3, 8, 2]
+    out: [true, true, true, true, true]
+  - name: one-each-large-type
+    in:
+      candiesCount: [1, 1, 1, 1, 1, 1, 1, 1]
+      queries:
+        - [7, 7, 1]
+        - [7, 6, 1]
+        - [4, 4, 2]
+        - [6, 6, 100]
+    out: [true, false, true, true]
+  - name: all-cap-two
+    in:
+      candiesCount: [4, 4, 4, 4, 4]
+      queries:
+        - [0, 0, 2]
+        - [1, 2, 2]
+        - [2, 4, 2]
+        - [3, 6, 2]
+        - [4, 8, 2]
+        - [4, 9, 2]
+    out: [true, true, true, true, true, true]
+  - name: uneven-prefixes
+    in:
+      candiesCount: [10, 1, 10, 1, 10]
+      queries:
+        - [1, 9, 1]
+        - [1, 10, 1]
+        - [2, 10, 2]
+        - [2, 15, 2]
+        - [4, 31, 3]
+    out: [false, true, true, true, true]
+  - name: days-at-billion
+    in:
+      candiesCount: [100000, 100000]
+      queries:
+        - [0, 999999999, 1]
+        - [1, 999999999, 1]
+        - [1, 199999, 100000]
+        - [1, 1000000000, 1000000000]
+    out: [false, false, true, false]
+  - name: cap-one-billion-prefix
+    in:
+      candiesCount: [100000, 100000, 100000, 100000]
+      queries:
+        - [0, 0, 1000000000]
+        - [1, 0, 1000000000]
+        - [2, 0, 1000000000]
+        - [3, 0, 1000000000]
+        - [3, 1, 1000000000]
+    out: [true, true, true, true, true]
+  - name: long-prefix-cap-three
+    in:
+      candiesCount: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+      queries:
+        - [9, 14, 3]
+        - [9, 15, 3]
+        - [9, 33, 3]
+        - [9, 34, 3]
+        - [5, 18, 3]
+    out: [false, true, true, true, true]
+  - name: late-type-low-cap
+    in:
+      candiesCount: [20, 20, 20, 20]
+      queries:
+        - [3, 59, 1]
+        - [3, 60, 1]
+        - [3, 79, 1]
+        - [3, 80, 1]
+        - [2, 60, 2]
+    out: [false, true, true, false, false]
+  - name: alternating-query-types
+    in:
+      candiesCount: [3, 8, 2, 9]
+      queries:
+        - [0, 2, 1]
+        - [3, 10, 2]
+        - [1, 5, 2]
+        - [2, 9, 3]
+        - [3, 20, 1]
+    out: [true, true, true, true, true]
+  - name: maximum-values
+    in:
+      candiesCount: [100000, 100000, 100000, 100000, 100000]
+      queries:
+        - [4, 499999, 1]
+        - [4, 500000, 1]
+        - [4, 499999, 100000]
+        - [2, 299999, 100000]
+    out: [true, false, true, true]
+  - name: narrow-window-cap-seven
+    in:
+      candiesCount: [13, 17, 19]
+      queries:
+        - [2, 4, 7]
+        - [2, 6, 7]
+        - [2, 7, 7]
+        - [2, 10, 7]
+        - [2, 48, 7]
+    out: [true, true, true, true, true]
+  - name: several-singletons
+    in:
+      candiesCount: [1, 1, 1, 1, 1]
+      queries:
+        - [0, 0, 1]
+        - [2, 2, 1]
+        - [4, 4, 1]
+        - [4, 3, 2]
+        - [3, 4, 100]
+    out: [true, true, true, true, false]
+  - name: high-cap-late-query
+    in:
+      candiesCount: [6, 7, 8, 9]
+      queries:
+        - [3, 20, 100]
+        - [3, 29, 100]
+        - [3, 30, 1]
+        - [2, 19, 2]
+    out: [true, true, false, true]
+  - name: prefix-heavy
+    in:
+      candiesCount: [50, 1, 1, 1, 1, 50]
+      queries:
+        - [5, 50, 1]
+        - [5, 54, 1]
+        - [5, 103, 1]
+        - [5, 104, 1]
+        - [1, 49, 1]
+    out: [false, true, true, false, false]
+  - name: final-mixed
+    in:
+      candiesCount: [11, 2, 17, 3, 19]
+      queries:
+        - [0, 10, 1]
+        - [1, 11, 2]
+        - [2, 14, 2]
+        - [3, 20, 3]
+        - [4, 40, 2]
+        - [4, 51, 2]
+    out: [true, true, true, true, true, true]
+  - name: type-index-boundary
+    in:
+      candiesCount: [2, 2, 2, 2, 2, 2]
+      queries:
+        - [0, 1, 1]
+        - [1, 3, 1]
+        - [2, 5, 1]
+        - [5, 11, 1]
+        - [5, 10, 2]
+    out: [true, true, true, true, true]
+  - name: large-cap-window
+    in:
+      candiesCount: [12, 13, 14, 15]
+      queries:
+        - [1, 0, 12]
+        - [1, 1, 12]
+        - [2, 2, 13]
+        - [3, 4, 14]
+        - [3, 53, 1]
+    out: [false, true, true, true, true]
+  - name: generated-query-boundary
+    in:
+      candiesCount: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      queries:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 9
+          elemType: "int"
+        elemType: "int"
+    seed: 174401
+  - name: generated-query-medium
+    in:
+      candiesCount:
+        [100000, 99999, 99998, 99997, 99996, 99995, 99994, 99993, 99992, 99991]
+      queries:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 9
+          elemType: "int"
+        elemType: "int"
+    seed: 174402
+  - name: generated-query-large
+    in:
+      candiesCount:
+        [100000, 99999, 99998, 99997, 99996, 99995, 99994, 99993, 99992, 99991]
+      queries:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 9
+          elemType: "int"
+        elemType: "int"
+    seed: 174403
+  - name: generated-large-prefix
+    in:
+      candiesCount:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      queries:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 99999
+          elemType: "int"
+        elemType: "int"
+    seed: 174404
+  - name: generated-maximum-input
+    in:
+      candiesCount:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        elemType: "int"
+      queries:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 99999
+          elemType: "int"
+        elemType: "int"
+    seed: 174405

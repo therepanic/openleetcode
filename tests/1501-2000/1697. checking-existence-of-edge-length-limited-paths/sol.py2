@@ -1,0 +1,45 @@
+class Solution(object):
+    def distanceLimitedPathsExist(self, n, edgeList, queries):
+        """
+        :type n: int
+        :type edgeList: List[List[int]]
+        :type queries: List[List[int]]
+        :rtype: List[bool]
+        """
+        parent = list(range(n))
+        rank = [0] * n
+        
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(x, y):
+            xroot = find(x)
+            yroot = find(y)
+            if xroot == yroot:
+                return
+            if rank[xroot] < rank[yroot]:
+                parent[xroot] = yroot
+            elif rank[xroot] > rank[yroot]:
+                parent[yroot] = xroot
+            else:
+                parent[yroot] = xroot
+                rank[xroot] += 1
+        
+        # add index to queries
+        for i, q in enumerate(queries):
+            q.append(i)
+        
+        queries.sort(key=lambda x: x[2])
+        edgeList.sort(key=lambda x: x[2])
+        
+        i = 0
+        res = [False] * len(queries)
+        for q in queries:
+            while i < len(edgeList) and edgeList[i][2] < q[2]:
+                union(edgeList[i][0], edgeList[i][1])
+                i += 1
+            if find(q[0]) == find(q[1]):
+                res[q[3]] = True
+        return res

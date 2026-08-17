@@ -1,0 +1,38 @@
+class Solution(object):
+    def maxSumRangeQuery(self, nums, requests):
+        """
+        :type nums: List[int]
+        :type requests: List[List[int]]
+        :rtype: int
+        """
+        events = []
+        mod = 10**9 + 7
+        
+        for start, end in requests:
+            events.append((start, 1))
+            events.append((end+1, -1))
+        
+        events.sort()
+        
+        cnt = 0
+        prev = -1
+        weight = {}
+        
+        for pos, delta in events:
+            if prev != -1 and cnt != 0:
+                weight[cnt] = weight.get(cnt, 0) + pos - prev
+            prev = pos
+            cnt += delta
+        
+        weight_list = sorted(weight.items(), key=lambda x: x[0], reverse=True)
+        
+        nums.sort(reverse=True)
+        ans = 0
+        i = 0
+        
+        for wg, num in weight_list:
+            for _ in range(num):
+                ans = (ans + nums[i] * wg) % mod
+                i += 1
+        
+        return ans

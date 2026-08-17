@@ -1,0 +1,405 @@
+entry:
+  id: 1534
+  title: "count-good-triplets"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    a:
+      type: int
+    b:
+      type: int
+    c:
+      type: int
+  call:
+    cpp: "Solution().countGoodTriplets({arr}, {a}, {b}, {c})"
+    rust: "Solution::count_good_triplets({arr}, {a}, {b}, {c})"
+    python3: "Solution().countGoodTriplets({arr}, {a}, {b}, {c})"
+    python2: "Solution().countGoodTriplets({arr}, {a}, {b}, {c})"
+    ruby: "count_good_triplets({arr}, {a}, {b}, {c})"
+    java: "new Solution().countGoodTriplets({arr}, {a}, {b}, {c})"
+    csharp: "new Solution().CountGoodTriplets({arr}, {a}, {b}, {c})"
+    kotlin: "Solution().countGoodTriplets({arr}, {a}, {b}, {c})"
+    go: "countGoodTriplets({arr}, {a}, {b}, {c})"
+    dart: "Solution().countGoodTriplets({arr}, {a}, {b}, {c})"
+    swift: "Solution().countGoodTriplets({arr}, {a}, {b}, {c})"
+    typescript: "countGoodTriplets({arr}, {a}, {b}, {c})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().countGoodTriplets(arr, a, b, c, {result})"
+    checker: |
+      class Checker:
+          def countGoodTriplets(self, arr, a, b, c, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              expected = 0
+              for i in range(len(arr)):
+                  for j in range(i + 1, len(arr)):
+                      for k in range(j + 1, len(arr)):
+                          if (abs(arr[i] - arr[j]) <= a and
+                              abs(arr[j] - arr[k]) <= b and
+                              abs(arr[i] - arr[k]) <= c):
+                              expected += 1
+              return result == expected
+
+seed: 1534
+
+tests:
+  - name: example-one
+    in:
+      arr: [3, 0, 1, 1, 9, 7]
+      a: 7
+      b: 2
+      c: 3
+    out: 4
+  - name: example-two
+    in:
+      arr: [1, 1, 2, 2, 3]
+      a: 0
+      b: 0
+      c: 1
+    out: 0
+  - name: minimum-length-all-equal
+    in:
+      arr: [5, 5, 5]
+      a: 0
+      b: 0
+      c: 0
+    out: 1
+  - name: minimum-length-fails-a
+    in:
+      arr: [0, 1, 2]
+      a: 0
+      b: 10
+      c: 10
+    out: 0
+  - name: minimum-length-fails-b
+    in:
+      arr: [0, 0, 1]
+      a: 0
+      b: 0
+      c: 10
+    out: 0
+  - name: minimum-length-fails-c
+    in:
+      arr: [0, 0, 1]
+      a: 10
+      b: 10
+      c: 0
+    out: 0
+  - name: all-triplets-pass
+    in:
+      arr: [0, 1, 2, 3, 4]
+      a: 1000
+      b: 1000
+      c: 1000
+    out: 10
+  - name: all-triplets-fail-zero-threshold
+    in:
+      arr: [0, 1, 2, 3, 4]
+      a: 0
+      b: 0
+      c: 0
+    out: 0
+  - name: all-equal-six
+    in:
+      arr: [7, 7, 7, 7, 7, 7]
+      a: 0
+      b: 0
+      c: 0
+    out: 20
+  - name: duplicate-pairs
+    in:
+      arr: [1, 1, 2, 2]
+      a: 0
+      b: 1
+      c: 1
+    out: 2
+  - name: alternating-values
+    in:
+      arr: [0, 10, 0, 10, 0]
+      a: 0
+      b: 10
+      c: 0
+    out: 1
+  - name: only-adjacent-values
+    in:
+      arr: [0, 1, 2, 3]
+      a: 1
+      b: 1
+      c: 2
+    out: 2
+  - name: strict-middle-bound
+    in:
+      arr: [0, 2, 4, 6]
+      a: 2
+      b: 2
+      c: 4
+    out: 2
+  - name: negative-direction
+    in:
+      arr: [9, 6, 3, 0]
+      a: 3
+      b: 3
+      c: 6
+    out: 2
+  - name: one-valid-triplet
+    in:
+      arr: [0, 100, 101, 1000]
+      a: 100
+      b: 1
+      c: 101
+    out: 1
+  - name: separated-blocks
+    in:
+      arr: [0, 0, 0, 100, 100, 100]
+      a: 0
+      b: 0
+      c: 0
+    out: 2
+  - name: threshold-boundaries
+    in:
+      arr: [10, 20, 30, 40]
+      a: 10
+      b: 10
+      c: 20
+    out: 2
+  - name: one-below-boundary
+    in:
+      arr: [10, 20, 31, 40]
+      a: 10
+      b: 10
+      c: 20
+    out: 0
+  - name: large-values
+    in:
+      arr: [0, 1000, 500, 999, 1]
+      a: 1000
+      b: 499
+      c: 1000
+    out: 5
+  - name: repeated-middle
+    in:
+      arr: [4, 8, 8, 8, 12]
+      a: 4
+      b: 0
+      c: 8
+    out: 4
+  - name: increasing-tight
+    in:
+      arr: [1, 2, 3, 4, 5, 6]
+      a: 2
+      b: 2
+      c: 4
+    out: 12
+  - name: increasing-loose-middle
+    in:
+      arr: [1, 2, 3, 4, 5, 6]
+      a: 1
+      b: 1000
+      c: 1000
+    out: 10
+  - name: decreasing-tight
+    in:
+      arr: [6, 5, 4, 3, 2, 1]
+      a: 1
+      b: 1
+      c: 2
+    out: 4
+  - name: alternating-three-values
+    in:
+      arr: [0, 5, 10, 0, 5, 10]
+      a: 5
+      b: 5
+      c: 10
+    out: 12
+  - name: all-zero
+    in:
+      arr: [0, 0, 0, 0, 0, 0, 0]
+      a: 0
+      b: 0
+      c: 0
+    out: 35
+  - name: only-c-restricts
+    in:
+      arr: [0, 2, 4, 6, 8]
+      a: 1000
+      b: 1000
+      c: 4
+    out: 3
+  - name: only-a-restricts
+    in:
+      arr: [0, 2, 4, 6, 8]
+      a: 2
+      b: 1000
+      c: 1000
+    out: 6
+  - name: only-b-restricts
+    in:
+      arr: [0, 2, 4, 6, 8]
+      a: 1000
+      b: 2
+      c: 1000
+    out: 6
+  - name: scattered-seven
+    in:
+      arr: [2, 20, 3, 21, 4, 22, 5]
+      a: 2
+      b: 2
+      c: 3
+    out: 5
+  - name: max-array-small-values
+    in:
+      arr: [1, 1, 1, 2, 2, 2, 3, 3]
+      a: 0
+      b: 1
+      c: 2
+    out: 17
+  - name: max-thresholds
+    in:
+      arr: [0, 250, 500, 750, 1000]
+      a: 1000
+      b: 1000
+      c: 1000
+    out: 10
+  - name: mixed-boundary
+    in:
+      arr: [1000, 999, 0, 1, 500]
+      a: 1
+      b: 1000
+      c: 500
+    out: 2
+  - name: exactly-three-equal-at-end
+    in:
+      arr: [10, 20, 30, 30, 30]
+      a: 0
+      b: 0
+      c: 0
+    out: 1
+  - name: eight-with-one-valid-family
+    in:
+      arr: [0, 0, 1, 1, 2, 2, 100, 100]
+      a: 1
+      b: 1
+      c: 2
+    out: 16
+  - name: nine-uniform
+    in:
+      arr: [11, 11, 11, 11, 11, 11, 11, 11, 11]
+      a: 0
+      b: 0
+      c: 0
+    out: 84
+  - name: ten-ramp
+    in:
+      arr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      a: 3
+      b: 3
+      c: 6
+    out: 54
+  - name: generator-random-small
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 3
+          max: 20
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        elemType: "int"
+      a:
+        gen: "int"
+        min: 0
+        max: 1000
+      b:
+        gen: "int"
+        min: 0
+        max: 1000
+      c:
+        gen: "int"
+        min: 0
+        max: 1000
+  - name: generator-random-medium
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 40
+          max: 60
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        elemType: "int"
+      a:
+        gen: "int"
+        min: 0
+        max: 1000
+      b:
+        gen: "int"
+        min: 0
+        max: 1000
+      c:
+        gen: "int"
+        min: 0
+        max: 1000
+  - name: generator-maximum
+    in:
+      arr:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 1000
+        elemType: "int"
+      a:
+        gen: "int"
+        min: 0
+        max: 1000
+      b:
+        gen: "int"
+        min: 0
+        max: 1000
+      c:
+        gen: "int"
+        min: 0
+        max: 1000
+  - name: generator-duplicate-heavy
+    in:
+      arr:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 70
+          max: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 5
+        elemType: "int"
+      a:
+        gen: "int"
+        min: 0
+        max: 5
+      b:
+        gen: "int"
+        min: 0
+        max: 5
+      c:
+        gen: "int"
+        min: 0
+        max: 5

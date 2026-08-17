@@ -1,0 +1,423 @@
+entry:
+  id: 1710
+  title: "maximum-units-on-a-truck"
+  params:
+    boxTypes:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    truckSize:
+      type: int
+  call:
+    cpp: "Solution().maximumUnits({boxTypes}, {truckSize})"
+    rust: "Solution::maximum_units({boxTypes}, {truckSize})"
+    python3: "Solution().maximumUnits({boxTypes}, {truckSize})"
+    python2: "Solution().maximumUnits({boxTypes}, {truckSize})"
+    ruby: "maximum_units({boxTypes}, {truckSize})"
+    java: "new Solution().maximumUnits({boxTypes}, {truckSize})"
+    csharp: "new Solution().MaximumUnits({boxTypes}, {truckSize})"
+    kotlin: "Solution().maximumUnits({boxTypes}, {truckSize})"
+    go: "maximumUnits({boxTypes}, {truckSize})"
+    dart: "Solution().maximumUnits({boxTypes}, {truckSize})"
+    swift: "Solution().maximumUnits({boxTypes}, {truckSize})"
+    typescript: "maximumUnits({boxTypes}, {truckSize})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maximumUnits(boxTypes, truckSize, {result})"
+    checker: |
+      class Checker:
+          def maximumUnits(self, boxTypes, truckSize, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              remaining = truckSize
+              expected = 0
+              for count, units in sorted(boxTypes, key=lambda pair: pair[1], reverse=True):
+                  take = min(remaining, count)
+                  expected += take * units
+                  remaining -= take
+                  if remaining == 0:
+                      break
+              return result == expected
+
+seed: 1710
+
+tests:
+  - name: example-one
+    in:
+      boxTypes:
+        - [1, 3]
+        - [2, 2]
+        - [3, 1]
+      truckSize: 4
+    out: 8
+    judge:
+      type: "exact"
+  - name: example-two
+    in:
+      boxTypes:
+        - [5, 10]
+        - [2, 5]
+        - [4, 7]
+        - [3, 9]
+      truckSize: 10
+    out: 91
+    judge:
+      type: "exact"
+  - name: one-type-partial
+    in:
+      boxTypes:
+        - [10, 7]
+      truckSize: 3
+    out: 21
+    judge:
+      type: "exact"
+  - name: one-type-all
+    in:
+      boxTypes:
+        - [4, 12]
+      truckSize: 10
+    out: 48
+    judge:
+      type: "exact"
+  - name: truck-one
+    in:
+      boxTypes:
+        - [4, 2]
+        - [3, 9]
+        - [2, 5]
+      truckSize: 1
+    out: 9
+    judge:
+      type: "exact"
+  - name: exact-capacity
+    in:
+      boxTypes:
+        - [2, 8]
+        - [3, 4]
+      truckSize: 5
+    out: 28
+    judge:
+      type: "exact"
+  - name: capacity-exceeds-all
+    in:
+      boxTypes:
+        - [2, 8]
+        - [3, 4]
+      truckSize: 20
+    out: 28
+    judge:
+      type: "exact"
+  - name: equal-units
+    in:
+      boxTypes:
+        - [5, 6]
+        - [2, 6]
+        - [4, 6]
+      truckSize: 7
+    out: 42
+    judge:
+      type: "exact"
+  - name: reverse-order
+    in:
+      boxTypes:
+        - [5, 1]
+        - [1, 100]
+        - [2, 50]
+      truckSize: 4
+    out: 201
+    judge:
+      type: "exact"
+  - name: many-low-types
+    in:
+      boxTypes:
+        - [1, 1]
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+      truckSize: 3
+    out: 12
+    judge:
+      type: "exact"
+  - name: large-units
+    in:
+      boxTypes:
+        - [1000, 1000]
+        - [1000, 999]
+      truckSize: 1001
+    out: 1000999
+    judge:
+      type: "exact"
+  - name: large-count-low-value
+    in:
+      boxTypes:
+        - [1000, 1]
+        - [1, 2]
+      truckSize: 1000
+    out: 1001
+    judge:
+      type: "exact"
+  - name: alternating-values
+    in:
+      boxTypes:
+        - [2, 10]
+        - [5, 1]
+        - [3, 9]
+        - [4, 2]
+      truckSize: 7
+    out: 51
+    judge:
+      type: "exact"
+  - name: singleton-types
+    in:
+      boxTypes:
+        - [1, 20]
+        - [1, 19]
+        - [1, 18]
+      truckSize: 2
+    out: 39
+    judge:
+      type: "exact"
+  - name: zero-remainder
+    in:
+      boxTypes:
+        - [3, 4]
+        - [2, 3]
+        - [5, 2]
+      truckSize: 3
+    out: 12
+    judge:
+      type: "exact"
+  - name: tie-boundary
+    in:
+      boxTypes:
+        - [2, 7]
+        - [2, 7]
+        - [2, 6]
+      truckSize: 5
+    out: 34
+    judge:
+      type: "exact"
+  - name: descending-input
+    in:
+      boxTypes:
+        - [1, 10]
+        - [2, 9]
+        - [3, 8]
+        - [4, 7]
+      truckSize: 6
+    out: 52
+    judge:
+      type: "exact"
+  - name: ascending-input
+    in:
+      boxTypes:
+        - [4, 7]
+        - [3, 8]
+        - [2, 9]
+        - [1, 10]
+      truckSize: 6
+    out: 52
+    judge:
+      type: "exact"
+  - name: two-types-take-first
+    in:
+      boxTypes:
+        - [8, 5]
+        - [8, 4]
+      truckSize: 3
+    out: 15
+    judge:
+      type: "exact"
+  - name: two-types-split
+    in:
+      boxTypes:
+        - [2, 5]
+        - [8, 4]
+      truckSize: 5
+    out: 22
+    judge:
+      type: "exact"
+  - name: all-identical
+    in:
+      boxTypes:
+        - [3, 3]
+        - [3, 3]
+        - [3, 3]
+      truckSize: 8
+    out: 24
+    judge:
+      type: "exact"
+  - name: high-middle-wins
+    in:
+      boxTypes:
+        - [4, 2]
+        - [4, 8]
+        - [4, 5]
+      truckSize: 6
+    out: 42
+    judge:
+      type: "exact"
+  - name: max-box-types
+    in:
+      boxTypes:
+        - [1000, 1]
+        - [1000, 2]
+        - [1000, 3]
+        - [1000, 4]
+        - [1000, 5]
+      truckSize: 1
+    out: 5
+    judge:
+      type: "exact"
+  - name: capacity-six
+    in:
+      boxTypes:
+        - [1, 14]
+        - [2, 11]
+        - [5, 3]
+      truckSize: 6
+    out: 45
+    judge:
+      type: "exact"
+  - name: capacity-seven
+    in:
+      boxTypes:
+        - [3, 10]
+        - [3, 9]
+        - [3, 8]
+      truckSize: 7
+    out: 65
+    judge:
+      type: "exact"
+  - name: capacity-two
+    in:
+      boxTypes:
+        - [5, 4]
+        - [1, 20]
+        - [1, 19]
+      truckSize: 2
+    out: 39
+    judge:
+      type: "exact"
+  - name: units-one
+    in:
+      boxTypes:
+        - [3, 1]
+        - [2, 1]
+      truckSize: 4
+    out: 4
+    judge:
+      type: "exact"
+  - name: all-maximum
+    in:
+      boxTypes:
+        - [1000, 1000]
+        - [1000, 1000]
+      truckSize: 1000000
+    out: 2000000
+    judge:
+      type: "exact"
+  - name: large-partial
+    in:
+      boxTypes:
+        - [1000, 1000]
+        - [1000, 500]
+        - [1000, 1]
+      truckSize: 1500
+    out: 1250000
+    judge:
+      type: "exact"
+  - name: mixed-ten
+    in:
+      boxTypes:
+        - [1, 10]
+        - [2, 8]
+        - [3, 6]
+        - [4, 4]
+        - [5, 2]
+      truckSize: 10
+    out: 60
+    judge:
+      type: "exact"
+  - name: mixed-nine
+    in:
+      boxTypes:
+        - [4, 9]
+        - [1, 8]
+        - [2, 7]
+        - [3, 6]
+      truckSize: 9
+    out: 70
+    judge:
+      type: "exact"
+  - name: generated-small
+    in:
+      boxTypes:
+        - [5, 10]
+        - [4, 6]
+        - [3, 2]
+      truckSize:
+        gen: "int"
+        min: 1
+        max: 12
+  - name: generated-medium
+    in:
+      boxTypes:
+        - [20, 100]
+        - [30, 50]
+        - [40, 25]
+        - [50, 1]
+      truckSize:
+        gen: "int"
+        min: 1
+        max: 140
+  - name: generated-large-values
+    in:
+      boxTypes:
+        - [1000, 1000]
+        - [1000, 999]
+        - [1000, 1]
+      truckSize:
+        gen: "int"
+        min: 1
+        max: 3000
+  - name: generated-balanced
+    in:
+      boxTypes:
+        - [37, 91]
+        - [41, 73]
+        - [29, 55]
+        - [53, 12]
+        - [61, 3]
+      truckSize:
+        gen: "int"
+        min: 1
+        max: 221
+  - name: generated-many-types
+    in:
+      boxTypes:
+        - [11, 1]
+        - [12, 2]
+        - [13, 3]
+        - [14, 4]
+        - [15, 5]
+        - [16, 6]
+        - [17, 7]
+        - [18, 8]
+        - [19, 9]
+        - [20, 10]
+      truckSize:
+        gen: "int"
+        min: 1
+        max: 155

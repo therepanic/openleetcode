@@ -1,0 +1,234 @@
+entry:
+  id: 1695
+  title: "maximum-erasure-value"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maximumUniqueSubarray({nums})"
+    rust: "Solution::maximum_unique_subarray({nums})"
+    python3: "Solution().maximumUniqueSubarray({nums})"
+    python2: "Solution().maximumUniqueSubarray({nums})"
+    ruby: "maximum_unique_subarray({nums})"
+    java: "new Solution().maximumUniqueSubarray({nums})"
+    csharp: "new Solution().MaximumUniqueSubarray({nums})"
+    kotlin: "Solution().maximumUniqueSubarray({nums})"
+    go: "maximumUniqueSubarray({nums})"
+    dart: "Solution().maximumUniqueSubarray({nums})"
+    swift: "Solution().maximumUniqueSubarray({nums})"
+    typescript: "maximumUniqueSubarray({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maximumUniqueSubarray(nums, {result})"
+    checker: |
+      class Checker:
+          def maximumUniqueSubarray(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              seen = set()
+              left = 0
+              current = 0
+              expected = 0
+              for right, value in enumerate(nums):
+                  while value in seen:
+                      seen.remove(nums[left])
+                      current -= nums[left]
+                      left += 1
+                  seen.add(value)
+                  current += value
+                  expected = max(expected, current)
+              return result == expected
+
+seed: 1695
+
+tests:
+  - name: example-one
+    in:
+      nums: [4, 2, 4, 5, 6]
+    out: 17
+  - name: example-two
+    in:
+      nums: [5, 2, 1, 2, 5, 2, 1, 2, 5]
+    out: 8
+  - name: single-one
+    in:
+      nums: [1]
+    out: 1
+  - name: single-maximum
+    in:
+      nums: [10000]
+    out: 10000
+  - name: all-equal
+    in:
+      nums: [7, 7, 7, 7, 7]
+    out: 7
+  - name: all-distinct-small
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 21
+  - name: duplicate-at-end
+    in:
+      nums: [1, 2, 3, 4, 3]
+    out: 10
+  - name: duplicate-at-start
+    in:
+      nums: [4, 1, 2, 3, 4]
+    out: 10
+  - name: repeated-pattern
+    in:
+      nums: [1, 2, 1, 2, 1, 2]
+    out: 3
+  - name: shrinking-window
+    in:
+      nums: [5, 4, 3, 2, 1, 5]
+    out: 15
+  - name: high-values-distinct
+    in:
+      nums: [9998, 9999, 10000]
+    out: 29997
+  - name: high-values-duplicate
+    in:
+      nums: [10000, 9999, 10000, 9998]
+    out: 29997
+  - name: alternating
+    in:
+      nums: [10, 1, 10, 1, 10, 1, 10]
+    out: 11
+  - name: long-unique-prefix
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 1, 9]
+    out: 45
+  - name: zero-not-allowed-boundary-values
+    in:
+      nums: [1, 100, 2, 99, 3, 98]
+    out: 303
+  - name: two-values
+    in:
+      nums: [2, 1]
+    out: 3
+  - name: duplicate-forces-single
+    in:
+      nums: [9, 1, 9]
+    out: 10
+  - name: best-middle-window
+    in:
+      nums: [100, 1, 2, 100, 3, 4]
+    out: 110
+  - name: best-suffix
+    in:
+      nums: [8, 8, 1, 2, 3, 4]
+    out: 18
+  - name: best-prefix
+    in:
+      nums: [1, 2, 3, 4, 1, 1]
+    out: 10
+  - name: many-small-duplicates
+    in:
+      nums: [1, 2, 3, 1, 2, 3, 4, 5]
+    out: 15
+  - name: duplicate-after-large-sum
+    in:
+      nums: [10000, 9999, 9998, 10000, 1]
+    out: 29998
+  - name: alternating-high-low
+    in:
+      nums: [10000, 1, 9999, 2, 9998, 3]
+    out: 30003
+  - name: descending-distinct
+    in:
+      nums: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: 45
+  - name: duplicate-near-window-start
+    in:
+      nums: [1, 2, 3, 4, 5, 2, 6]
+    out: 20
+  - name: duplicate-near-window-end
+    in:
+      nums: [2, 3, 4, 5, 2, 6, 7]
+    out: 27
+  - name: nested-choice
+    in:
+      nums: [6, 7, 8, 6, 9, 10, 11]
+    out: 51
+  - name: large-value-single-best
+    in:
+      nums: [1, 1, 1, 10000, 1, 1]
+    out: 10001
+  - name: ten-distinct
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: 55
+  - name: duplicate-crossing-best
+    in:
+      nums: [4, 5, 6, 4, 7, 8, 9, 10]
+    out: 49
+  - name: gen-random-bounded
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: gen-many-duplicates
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: gen-all-distinct-range
+    in:
+      nums:
+        gen: "array"
+        len: 10000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: true
+        sorted: false
+        elemType: "int"
+  - name: gen-small-alphabet
+    in:
+      nums:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: gen-max-length-wide-values
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"

@@ -1,0 +1,346 @@
+entry:
+  id: 1540
+  title: "can-convert-string-in-k-moves"
+  params:
+    s:
+      type: string
+    t:
+      type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().canConvertString({s}, {t}, {k})"
+    rust: "Solution::can_convert_string({s}, {t}, {k})"
+    python3: "Solution().canConvertString({s}, {t}, {k})"
+    python2: "Solution().canConvertString({s}, {t}, {k})"
+    ruby: "can_convert_string({s}, {t}, {k})"
+    java: "new Solution().canConvertString({s}, {t}, {k})"
+    csharp: "new Solution().CanConvertString({s}, {t}, {k})"
+    kotlin: "Solution().canConvertString({s}, {t}, {k})"
+    go: "canConvertString({s}, {t}, {k})"
+    dart: "Solution().canConvertString({s}, {t}, {k})"
+    swift: "Solution().canConvertString({s}, {t}, {k})"
+    typescript: "canConvertString({s}, {t}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().canConvertString(s, t, k, {result})"
+    checker: |
+      class Checker:
+          def canConvertString(self, s, t, k, result):
+              if not isinstance(result, bool):
+                  return False
+              if len(s) != len(t):
+                  return result is False
+              used = {}
+              for a, b in zip(s, t):
+                  diff = (ord(b) - ord(a)) % 26
+                  if diff == 0:
+                      continue
+                  used[diff] = used.get(diff, 0) + 1
+                  if diff + 26 * (used[diff] - 1) > k:
+                      return result is False
+              return result is True
+
+seed: 1540
+
+tests:
+  - name: example-one
+    in:
+      s: "input"
+      t: "ouput"
+      k: 9
+    out: true
+  - name: example-two
+    in:
+      s: "abc"
+      t: "bcd"
+      k: 10
+    out: false
+  - name: example-three
+    in:
+      s: "aab"
+      t: "bbb"
+      k: 27
+    out: true
+  - name: identical-zero
+    in:
+      s: "abc"
+      t: "abc"
+      k: 0
+    out: true
+  - name: one-shift-one-move
+    in:
+      s: "a"
+      t: "b"
+      k: 1
+    out: true
+  - name: one-shift-no-move
+    in:
+      s: "a"
+      t: "b"
+      k: 0
+    out: false
+  - name: wraparound
+    in:
+      s: "z"
+      t: "a"
+      k: 1
+    out: true
+  - name: shift-twenty-six
+    in:
+      s: "a"
+      t: "a"
+      k: 26
+    out: true
+  - name: repeated-shift-needs-twenty-seven
+    in:
+      s: "aa"
+      t: "bb"
+      k: 27
+    out: true
+  - name: repeated-shift-too-small
+    in:
+      s: "aa"
+      t: "bb"
+      k: 26
+    out: false
+  - name: distinct-shifts
+    in:
+      s: "abc"
+      t: "bdf"
+      k: 5
+    out: true
+  - name: distinct-shifts-last-too-large
+    in:
+      s: "abc"
+      t: "bdf"
+      k: 2
+    out: false
+  - name: same-diff-three-too-small
+    in:
+      s: "aaa"
+      t: "bbb"
+      k: 52
+    out: false
+  - name: same-diff-three-boundary
+    in:
+      s: "aaa"
+      t: "bbb"
+      k: 53
+    out: true
+  - name: same-diff-three-at-fifty-five
+    in:
+      s: "aaa"
+      t: "bbb"
+      k: 55
+    out: true
+  - name: mismatch-length-shorter
+    in:
+      s: "ab"
+      t: "abc"
+      k: 100
+    out: false
+  - name: mismatch-length-longer
+    in:
+      s: "abcd"
+      t: "abc"
+      k: 100
+    out: false
+  - name: all-z-to-a
+    in:
+      s: "zzzz"
+      t: "aaaa"
+      k: 80
+    out: true
+  - name: all-z-to-b
+    in:
+      s: "zzzz"
+      t: "bbbb"
+      k: 1
+    out: false
+  - name: zero-shifts-only
+    in:
+      s: "aaaa"
+      t: "aaaa"
+      k: 0
+    out: true
+  - name: mixed-zero-and-one
+    in:
+      s: "aaaa"
+      t: "abab"
+      k: 27
+    out: true
+  - name: mixed-zero-and-one-too-small
+    in:
+      s: "aaaa"
+      t: "abab"
+      k: 1
+    out: false
+  - name: repeated-diff-two
+    in:
+      s: "aaaa"
+      t: "cccc"
+      k: 80
+    out: true
+  - name: repeated-diff-two-too-small
+    in:
+      s: "aaaa"
+      t: "cccc"
+      k: 79
+    out: false
+  - name: wrap-diff-twenty-five
+    in:
+      s: "bbbb"
+      t: "aaaa"
+      k: 103
+    out: true
+  - name: wrap-diff-twenty-five-repeat
+    in:
+      s: "bbbb"
+      t: "aaaa"
+      k: 76
+    out: false
+  - name: high-k-repeated
+    in:
+      s: "aaaaa"
+      t: "bbbbb"
+      k: 1000000000
+    out: true
+  - name: high-k-zero-shift-boundary
+    in:
+      s: "zzzzz"
+      t: "zzzzz"
+      k: 0
+    out: true
+  - name: alternating-large-shifts
+    in:
+      s: "azaz"
+      t: "zaza"
+      k: 51
+    out: true
+  - name: alternating-large-shifts-low
+    in:
+      s: "azaz"
+      t: "zaza"
+      k: 50
+    out: false
+  - name: all-different-letters
+    in:
+      s: "abcdef"
+      t: "bcdefg"
+      k: 131
+    out: true
+  - name: all-different-letters-low
+    in:
+      s: "abcdef"
+      t: "bcdefg"
+      k: 130
+    out: false
+  - name: long-equal
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      t: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      k: 0
+    out: true
+  - name: long-single-shift
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      t: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      k: 1000000000
+    out: true
+  - name: long-repeated-shift-boundary
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      t: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      k: 26
+    out: false
+  - name: mixed-repeated-shifts
+    in:
+      s: "aaaaaaaaaa"
+      t: "bbbbbbbbbb"
+      k: 235
+    out: true
+  - name: mixed-repeated-shifts-low
+    in:
+      s: "aaaaaaaaaa"
+      t: "bbbbbbbbbb"
+      k: 234
+    out: false
+  - name: generated-random-short
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "abcxyz"
+      t:
+        gen: "str"
+        len: 100
+        alphabet: "abcxyz"
+      k:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: generated-random-medium
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "abcmnz"
+      t:
+        gen: "str"
+        len: 1000
+        alphabet: "abcmnz"
+      k:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: generated-random-large
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "abmz"
+      t:
+        gen: "str"
+        len: 50000
+        alphabet: "abmz"
+      k:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: generated-random-max
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "az"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "az"
+      k:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: generated-random-max-wide-alphabet
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "afkpuz"
+      t:
+        gen: "str"
+        len: 100000
+        alphabet: "afkpuz"
+      k:
+        gen: "int"
+        min: 0
+        max: 1000000000

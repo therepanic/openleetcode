@@ -1,0 +1,12 @@
+class Solution:
+    def specialArray(self, nums: List[int]) -> int:
+        ans = []
+        for i in range(0, len(nums) + 1):
+            count = 0
+            for ele in nums:
+                if i <= ele:
+                    count += 1
+            ans.append(count)
+            if ans[i] == i:
+                return i
+        return -1

@@ -1,0 +1,215 @@
+entry:
+  id: 1541
+  title: "minimum-insertions-to-balance-a-parentheses-string"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().minInsertions({s})"
+    rust: "Solution::min_insertions({s})"
+    python3: "Solution().minInsertions({s})"
+    python2: "Solution().minInsertions({s})"
+    ruby: "min_insertions({s})"
+    java: "new Solution().minInsertions({s})"
+    csharp: "new Solution().MinInsertions({s})"
+    kotlin: "Solution().minInsertions({s})"
+    go: "minInsertions({s})"
+    dart: "Solution().minInsertions({s})"
+    swift: "Solution().minInsertions({s})"
+    typescript: "minInsertions({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minInsertions(s, {result})"
+    checker: |
+      class Checker:
+          def minInsertions(self, s, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              balance = 0
+              expected = 0
+              i = 0
+              while i < len(s):
+                  if s[i] == '(':
+                      balance += 1
+                      i += 1
+                  elif i + 1 < len(s) and s[i + 1] == ')':
+                      if balance:
+                          balance -= 1
+                      else:
+                          expected += 1
+                      i += 2
+                  else:
+                      expected += 1
+                      if balance:
+                          balance -= 1
+                      else:
+                          expected += 1
+                      i += 1
+              expected += 2 * balance
+              return result == expected
+
+seed: 1541
+
+tests:
+  - name: example-one
+    in:
+      s: "(()))"
+    out: 1
+  - name: example-two
+    in:
+      s: "())"
+    out: 0
+  - name: example-three
+    in:
+      s: "))())("
+    out: 3
+  - name: single-open
+    in:
+      s: "("
+    out: 2
+  - name: single-close
+    in:
+      s: ")"
+    out: 2
+  - name: double-close
+    in:
+      s: "))"
+    out: 1
+  - name: single-pair
+    in:
+      s: "())"
+    out: 0
+  - name: open-and-single-close
+    in:
+      s: "()"
+    out: 1
+  - name: two-pairs
+    in:
+      s: "())())"
+    out: 0
+  - name: nested-pairs
+    in:
+      s: "((()))"
+    out: 3
+  - name: nested-balanced
+    in:
+      s: "(())())"
+    out: 2
+  - name: leading-single-close
+    in:
+      s: ")())"
+    out: 2
+  - name: leading-pair-close
+    in:
+      s: "))())"
+    out: 1
+  - name: alternating
+    in:
+      s: "()()()"
+    out: 3
+  - name: alternating-complete
+    in:
+      s: "())())())"
+    out: 0
+  - name: unmatched-open-middle
+    in:
+      s: "())(()"
+    out: 3
+  - name: unmatched-close-middle
+    in:
+      s: "(())))"
+    out: 0
+  - name: all-opens-three
+    in:
+      s: "((("
+    out: 6
+  - name: all-closes-three
+    in:
+      s: ")))"
+    out: 3
+  - name: all-opens-six
+    in:
+      s: "(((((("
+    out: 12
+  - name: all-closes-five
+    in:
+      s: ")))))"
+    out: 4
+  - name: open-close-close-open
+    in:
+      s: "())("
+    out: 2
+  - name: close-open-close-close
+    in:
+      s: ")())"
+    out: 2
+  - name: two-open-single-close
+    in:
+      s: "(()"
+    out: 3
+  - name: two-open-four-close
+    in:
+      s: "(())))"
+    out: 0
+  - name: repeated-complete
+    in:
+      s: "())())())())"
+    out: 0
+  - name: repeated-open
+    in:
+      s: "((())"
+    out: 4
+  - name: close-run-after-open
+    in:
+      s: "()))))"
+    out: 3
+  - name: mixed-short-one
+    in:
+      s: "())(()))"
+    out: 1
+  - name: mixed-short-two
+    in:
+      s: ")(()())"
+    out: 5
+  - name: mixed-short-three
+    in:
+      s: "((()))("
+    out: 5
+  - name: generated-short
+    in:
+      s:
+        gen: "str"
+        len: 37
+        alphabet: "()"
+  - name: generated-medium
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "()"
+  - name: generated-large-a
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "()"
+  - name: generated-large-b
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "()"
+  - name: generated-limit
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "()"

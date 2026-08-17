@@ -1,0 +1,43 @@
+class Solution(object):
+    def smallestMissingValueSubtree(self, parents, nums):
+        """
+        :type parents: List[int]
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        n = len(parents)
+        graph = {}
+        for child in range(n):
+            graph.setdefault(child, [])
+        node_one = None
+        root = None
+        for child, parent in enumerate(parents):
+            if parent == -1:
+                root = child
+            else:
+                graph[parent].append(child)
+            if nums[child] == 1:
+                node_one = child
+        
+        results = [1] * n
+        if node_one is None:
+            return results
+        
+        seen = [False] * 100002
+        current_node = node_one
+        previous_missing = 1
+        
+        while current_node != -1:
+            self._markSeen(current_node, graph, seen, nums)
+            while previous_missing < 100002 and seen[previous_missing]:
+                previous_missing += 1
+            results[current_node] = previous_missing
+            current_node = parents[current_node]
+        
+        return results
+    
+    def _markSeen(self, node, graph, seen, nums):
+        if not seen[nums[node]]:
+            seen[nums[node]] = True
+            for child in graph[node]:
+                self._markSeen(child, graph, seen, nums)

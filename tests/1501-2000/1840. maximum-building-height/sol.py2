@@ -1,0 +1,28 @@
+class Solution(object):
+    def maxBuilding(self, n, restrictions):
+        """
+        :type n: int
+        :type restrictions: List[List[int]]
+        :rtype: int
+        """
+        restrictions.append([1, 0])
+        restrictions.sort()
+        m = len(restrictions)
+        
+        def yCap(x1, y1, x2, y2):
+            return min(y2, y1 + abs(x2 - x1))
+        
+        def yPeak(x1, y1, x2, y2):
+            return (y1 + y2 + x2 - x1) >> 1
+        
+        for i in range(1, m):
+            restrictions[i][1] = yCap(restrictions[i-1][0], restrictions[i-1][1], restrictions[i][0], restrictions[i][1])
+        
+        for i in range(m-2, -1, -1):
+            restrictions[i][1] = yCap(restrictions[i+1][0], restrictions[i+1][1], restrictions[i][0], restrictions[i][1])
+        
+        res = 0
+        for i in range(1, m):
+            res = max(res, yPeak(restrictions[i-1][0], restrictions[i-1][1], restrictions[i][0], restrictions[i][1]))
+        
+        return max(res, restrictions[-1][1] + n - restrictions[-1][0])

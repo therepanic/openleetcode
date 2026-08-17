@@ -1,0 +1,306 @@
+entry:
+  id: 1977
+  title: "number-of-ways-to-separate-numbers"
+  params:
+    num:
+      type: string
+  call:
+    cpp: "Solution().numberOfCombinations({num})"
+    rust: "Solution::number_of_combinations({num})"
+    python3: "Solution().numberOfCombinations({num})"
+    python2: "Solution().numberOfCombinations({num})"
+    ruby: "number_of_combinations({num})"
+    java: "new Solution().numberOfCombinations({num})"
+    csharp: "new Solution().NumberOfCombinations({num})"
+    kotlin: "Solution().numberOfCombinations({num})"
+    go: "numberOfCombinations({num})"
+    dart: "Solution().numberOfCombinations({num})"
+    swift: "Solution().numberOfCombinations({num})"
+    typescript: "numberOfCombinations({num})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 10000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(num, {result})"
+    checker: |
+      class Checker:
+          def check(self, num, result):
+              mod = 1000000007
+              n = len(num)
+              dp = [[0] * (n + 1) for _ in range(n)]
+              for i in range(n):
+                  if num[i] == "0":
+                      continue
+                  for j in range(i + 1, n + 1):
+                      if i == 0:
+                          dp[i][j] = 1
+                          continue
+                      length = j - i
+                      value = dp[i][j - 1]
+                      if i - length >= 0 and num[i - length:i] <= num[i:j]:
+                          value += dp[i - length][i]
+                      if i - length + 1 >= 0 and num[i - length + 1:i] > num[i:j - 1]:
+                          value += dp[i - length + 1][i]
+                      dp[i][j] = value % mod
+              expected = sum(dp[i][n] for i in range(n)) % mod
+              return result == expected
+
+seed: 1977
+
+tests:
+  - name: zero
+    in:
+      num: "0"
+    out: 0
+    judge:
+      type: "exact"
+  - name: one
+    in:
+      num: "1"
+    out: 1
+    judge:
+      type: "exact"
+  - name: nine
+    in:
+      num: "9"
+    out: 1
+    judge:
+      type: "exact"
+  - name: leading-zero-example
+    in:
+      num: "094"
+    out: 0
+    judge:
+      type: "exact"
+  - name: ten
+    in:
+      num: "10"
+    out: 1
+    judge:
+      type: "exact"
+  - name: equal-two-digits
+    in:
+      num: "11"
+    out: 2
+    judge:
+      type: "exact"
+  - name: increasing-two-digits
+    in:
+      num: "12"
+    out: 2
+    judge:
+      type: "exact"
+  - name: decreasing-two-digits
+    in:
+      num: "21"
+    out: 1
+    judge:
+      type: "exact"
+  - name: repeated-nines
+    in:
+      num: "99"
+    out: 2
+    judge:
+      type: "exact"
+  - name: one-zero-zero
+    in:
+      num: "100"
+    out: 1
+    judge:
+      type: "exact"
+  - name: one-zero-one
+    in:
+      num: "101"
+    out: 1
+    judge:
+      type: "exact"
+  - name: one-one-zero
+    in:
+      num: "110"
+    out: 2
+    judge:
+      type: "exact"
+  - name: three-equal
+    in:
+      num: "111"
+    out: 3
+    judge:
+      type: "exact"
+  - name: example-one
+    in:
+      num: "327"
+    out: 2
+    judge:
+      type: "exact"
+  - name: increasing-three
+    in:
+      num: "123"
+    out: 3
+    judge:
+      type: "exact"
+  - name: decreasing-three
+    in:
+      num: "321"
+    out: 2
+    judge:
+      type: "exact"
+  - name: four-equal
+    in:
+      num: "1111"
+    out: 5
+    judge:
+      type: "exact"
+  - name: increasing-four
+    in:
+      num: "1234"
+    out: 5
+    judge:
+      type: "exact"
+  - name: decreasing-four
+    in:
+      num: "4321"
+    out: 2
+    judge:
+      type: "exact"
+  - name: trailing-zeros
+    in:
+      num: "1000"
+    out: 1
+    judge:
+      type: "exact"
+  - name: internal-zero
+    in:
+      num: "1010"
+    out: 2
+    judge:
+      type: "exact"
+  - name: zero-suffix-after-one
+    in:
+      num: "1001"
+    out: 1
+    judge:
+      type: "exact"
+  - name: mixed-four
+    in:
+      num: "1100"
+    out: 2
+    judge:
+      type: "exact"
+  - name: palindrome-four
+    in:
+      num: "1221"
+    out: 4
+    judge:
+      type: "exact"
+  - name: palindrome-five
+    in:
+      num: "12321"
+    out: 5
+    judge:
+      type: "exact"
+  - name: descending-five
+    in:
+      num: "54321"
+    out: 3
+    judge:
+      type: "exact"
+  - name: five-equal
+    in:
+      num: "11111"
+    out: 7
+    judge:
+      type: "exact"
+  - name: five-nines
+    in:
+      num: "99999"
+    out: 7
+    judge:
+      type: "exact"
+  - name: alternating-six
+    in:
+      num: "121212"
+    out: 8
+    judge:
+      type: "exact"
+  - name: six-descending
+    in:
+      num: "987654"
+    out: 4
+    judge:
+      type: "exact"
+  - name: seven-alternating
+    in:
+      num: "1010101"
+    out: 3
+    judge:
+      type: "exact"
+  - name: seven-increasing
+    in:
+      num: "1234567"
+    out: 15
+    judge:
+      type: "exact"
+  - name: pi-prefix
+    in:
+      num: "31415926"
+    out: 10
+    judge:
+      type: "exact"
+  - name: eight-nines
+    in:
+      num: "99999999"
+    out: 22
+    judge:
+      type: "exact"
+  - name: nine-increasing
+    in:
+      num: "123456789"
+    out: 30
+    judge:
+      type: "exact"
+  - name: generator-short
+    in:
+      num:
+        gen: "str"
+        len: 120
+        alphabet: "123456789"
+    judge:
+      type: "exact"
+  - name: generator-medium
+    in:
+      num:
+        gen: "str"
+        len: 500
+        alphabet: "0123456789"
+    judge:
+      type: "exact"
+  - name: generator-large-one
+    in:
+      num:
+        gen: "str"
+        len: 2000
+        alphabet: "123456789"
+    judge:
+      type: "exact"
+  - name: generator-large-two
+    in:
+      num:
+        gen: "str"
+        len: 3000
+        alphabet: "0123456789"
+    judge:
+      type: "exact"
+  - name: generator-near-maximum
+    in:
+      num:
+        gen: "str"
+        len: 3500
+        alphabet: "123456789"
+    judge:
+      type: "exact"

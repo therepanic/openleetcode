@@ -1,0 +1,356 @@
+entry:
+  id: 1686
+  title: "stone-game-vi"
+  params:
+    aliceValues:
+      type: array
+      items:
+        type: int
+    bobValues:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().stoneGameVI({aliceValues}, {bobValues})"
+    rust: "Solution::stone_game_vi({aliceValues}, {bobValues})"
+    python3: "Solution().stoneGameVI({aliceValues}, {bobValues})"
+    python2: "Solution().stoneGameVI({aliceValues}, {bobValues})"
+    ruby: "stone_game_vi({aliceValues}, {bobValues})"
+    java: "new Solution().stoneGameVI({aliceValues}, {bobValues})"
+    csharp: "new Solution().StoneGameVI({aliceValues}, {bobValues})"
+    kotlin: "Solution().stoneGameVI({aliceValues}, {bobValues})"
+    go: "stoneGameVI({aliceValues}, {bobValues})"
+    dart: "Solution().stoneGameVI({aliceValues}, {bobValues})"
+    swift: "Solution().stoneGameVI({aliceValues}, {bobValues})"
+    typescript: "stoneGameVI({aliceValues}, {bobValues})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().stoneGameVI(aliceValues, bobValues, {result})"
+    checker: |
+      class Checker:
+          def stoneGameVI(self, aliceValues, bobValues, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              order = sorted(zip(aliceValues, bobValues), key=lambda p: p[0] + p[1], reverse=True)
+              alice = sum(a for i, (a, b) in enumerate(order) if i % 2 == 0)
+              bob = sum(b for i, (a, b) in enumerate(order) if i % 2 == 1)
+              expected = 1 if alice > bob else (-1 if alice < bob else 0)
+              return result == expected
+seed: 1686
+tests:
+  - name: example-one
+    in:
+      aliceValues: [1, 3]
+      bobValues: [2, 1]
+    out: 1
+  - name: example-two
+    in:
+      aliceValues: [1, 2]
+      bobValues: [3, 1]
+    out: 0
+  - name: example-three
+    in:
+      aliceValues: [2, 4, 3]
+      bobValues: [1, 6, 7]
+    out: -1
+  - name: one-stone-alice
+    in:
+      aliceValues: [100]
+      bobValues: [1]
+    out: 1
+  - name: one-stone-bob
+    in:
+      aliceValues: [1]
+      bobValues: [100]
+    out: 1
+  - name: one-stone-tie
+    in:
+      aliceValues: [7]
+      bobValues: [7]
+    out: 1
+  - name: two-clear-alice
+    in:
+      aliceValues: [9, 1]
+      bobValues: [1, 1]
+    out: 1
+  - name: two-clear-bob
+    in:
+      aliceValues: [1, 1]
+      bobValues: [9, 1]
+    out: 0
+  - name: two-tie
+    in:
+      aliceValues: [5, 5]
+      bobValues: [5, 5]
+    out: 0
+  - name: descending-total
+    in:
+      aliceValues: [10, 1, 1, 1]
+      bobValues: [10, 1, 1, 1]
+    out: 1
+  - name: equal-total-different-values
+    in:
+      aliceValues: [9, 8, 7, 6]
+      bobValues: [1, 2, 3, 4]
+    out: 1
+  - name: reverse-equal-total
+    in:
+      aliceValues: [1, 2, 3, 4]
+      bobValues: [9, 8, 7, 6]
+    out: -1
+  - name: all-ones-odd
+    in:
+      aliceValues: [1, 1, 1, 1, 1]
+      bobValues: [1, 1, 1, 1, 1]
+    out: 1
+  - name: all-ones-even
+    in:
+      aliceValues: [1, 1, 1, 1, 1, 1]
+      bobValues: [1, 1, 1, 1, 1, 1]
+    out: 0
+  - name: max-values-odd
+    in:
+      aliceValues: [100, 100, 100, 100, 100]
+      bobValues: [100, 100, 100, 100, 100]
+    out: 1
+  - name: max-values-even
+    in:
+      aliceValues: [100, 100, 100, 100]
+      bobValues: [100, 100, 100, 100]
+    out: 0
+  - name: alternating-high-alice
+    in:
+      aliceValues: [100, 1, 100, 1, 100, 1]
+      bobValues: [1, 100, 1, 100, 1, 100]
+    out: 0
+  - name: alternating-high-bob
+    in:
+      aliceValues: [1, 100, 1, 100, 1, 100]
+      bobValues: [100, 1, 100, 1, 100, 1]
+    out: 0
+  - name: tie-breaking-order
+    in:
+      aliceValues: [4, 3, 2]
+      bobValues: [3, 4, 5]
+    out: 1
+  - name: late-high-total
+    in:
+      aliceValues: [1, 1, 1, 50]
+      bobValues: [1, 1, 1, 50]
+    out: 1
+  - name: many-equal-totals
+    in:
+      aliceValues: [6, 5, 4, 3, 2, 1]
+      bobValues: [4, 5, 6, 7, 8, 9]
+    out: -1
+  - name: asymmetric-small
+    in:
+      aliceValues: [2, 2, 2, 2, 2, 2, 2]
+      bobValues: [1, 1, 1, 1, 1, 1, 1]
+    out: 1
+  - name: asymmetric-bob
+    in:
+      aliceValues: [1, 1, 1, 1, 1, 1, 1]
+      bobValues: [2, 2, 2, 2, 2, 2, 2]
+    out: -1
+  - name: mixed-nine
+    in:
+      aliceValues: [8, 1, 7, 2, 6, 3, 5, 4, 9]
+      bobValues: [2, 9, 3, 8, 4, 7, 5, 6, 1]
+    out: 1
+  - name: mixed-ten
+    in:
+      aliceValues: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+      bobValues: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
+    out: 0
+  - name: repeated-high-totals
+    in:
+      aliceValues: [50, 50, 49, 49, 1, 1]
+      bobValues: [50, 49, 50, 49, 1, 1]
+    out: 1
+  - name: skewed-values
+    in:
+      aliceValues: [100, 2, 2, 2, 2]
+      bobValues: [1, 99, 99, 99, 99]
+    out: -1
+  - name: alternating-totals
+    in:
+      aliceValues: [40, 1, 30, 2, 20, 3, 10, 4]
+      bobValues: [1, 40, 2, 30, 3, 20, 4, 10]
+    out: 0
+  - name: fifteen-balanced
+    in:
+      aliceValues: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      bobValues: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: 1
+  - name: fifteen-reversed
+    in:
+      aliceValues: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      bobValues: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    out: 1
+  - name: thirty-one-ones
+    in:
+      aliceValues:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+      bobValues:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+    out: 1
+  - name: generated-small
+    in:
+      aliceValues:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      bobValues:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+  - name: generated-medium
+    in:
+      aliceValues:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      bobValues:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+  - name: generated-large
+    in:
+      aliceValues:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+      bobValues:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        elemType: "int"
+  - name: generated-large-low
+    in:
+      aliceValues:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+        elemType: "int"
+      bobValues:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+        elemType: "int"
+  - name: generated-large-high
+    in:
+      aliceValues:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 98
+          max: 100
+        elemType: "int"
+      bobValues:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 98
+          max: 100
+        elemType: "int"

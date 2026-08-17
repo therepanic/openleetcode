@@ -1,0 +1,35 @@
+class Solution(object):
+    def getBiggestThree(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: List[int]
+        """
+        m, n = len(grid), len(grid[0])
+        max_d = min(m, n) // 2
+        result = []
+        def diamond_sum(i, j, d):
+            if d == 0:
+                return grid[i][j]
+            s = 0
+            # top to right
+            for t in range(d+1):
+                s += grid[i - d + t][j + t]
+            # right to bottom
+            for t in range(1, d+1):
+                s += grid[i + t][j + d - t]
+            # bottom to left
+            for t in range(1, d+1):
+                s += grid[i + d - t][j - t]
+            # left to top
+            for t in range(1, d):
+                s += grid[i - t][j - d + t]
+            return s
+        
+        for d in range(max_d+1):
+            for i in range(d, m - d):
+                for j in range(d, n - d):
+                    val = diamond_sum(i, j, d)
+                    if val not in result:
+                        result.append(val)
+        result.sort(reverse=True)
+        return result[:3]

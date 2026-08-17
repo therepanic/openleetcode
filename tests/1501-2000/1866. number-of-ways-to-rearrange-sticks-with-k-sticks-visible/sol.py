@@ -1,0 +1,11 @@
+class Solution:
+    def rearrangeSticks(self, n: int, k: int) -> int:
+        mod = 1000000007
+        dp = [0] * (k + 1)
+        dp[0] = 1
+        for length in range(1, n + 1):
+            nxt = [0] * (k + 1)
+            for visible in range(1, min(length, k) + 1):
+                nxt[visible] = (dp[visible - 1] + (length - 1) * dp[visible]) % mod
+            dp = nxt
+        return dp[k]

@@ -1,0 +1,32 @@
+
+from collections import defaultdict
+
+
+class Solution(object):
+    def countPairs(self, n, edges, queries):
+        degree = [0] * n
+        shared = defaultdict(int)
+        for left, right in edges:
+            left -= 1
+            right -= 1
+            degree[left] += 1
+            degree[right] += 1
+            if left > right:
+                left, right = right, left
+            shared[(left, right)] += 1
+
+        ordered = sorted(degree)
+        answer = []
+        for query in queries:
+            left, right, pairs = 0, n - 1, 0
+            while left < right:
+                if ordered[left] + ordered[right] > query:
+                    pairs += right - left
+                    right -= 1
+                else:
+                    left += 1
+            for (left, right), count in shared.items():
+                if degree[left] + degree[right] > query and degree[left] + degree[right] - count <= query:
+                    pairs -= 1
+            answer.append(pairs)
+        return answer

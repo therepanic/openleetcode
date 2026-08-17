@@ -1,0 +1,12 @@
+class Solution:
+    def minTimeToType(self, word: str) -> int:
+        answer = 0
+        pointer = "a"
+
+        for char in word:
+            clockwise = abs(ord(char) - ord(pointer))
+            counterclockwise = 26 - clockwise
+            answer += min(clockwise, counterclockwise) + 1
+            pointer = char
+
+        return answer

@@ -1,0 +1,293 @@
+entry:
+  id: 1870
+  title: "minimum-speed-to-arrive-on-time"
+  params:
+    dist:
+      type: array
+      items:
+        type: int
+    hour:
+      type: double
+  call:
+    cpp: "Solution().minSpeedOnTime({dist}, {hour})"
+    rust: "Solution::min_speed_on_time({dist}, {hour})"
+    python3: "Solution().minSpeedOnTime({dist}, {hour})"
+    python2: "Solution().minSpeedOnTime({dist}, {hour})"
+    ruby: "min_speed_on_time({dist}, {hour})"
+    java: "new Solution().minSpeedOnTime({dist}, {hour})"
+    csharp: "new Solution().MinSpeedOnTime({dist}, {hour})"
+    kotlin: "Solution().minSpeedOnTime({dist}, {hour})"
+    go: "minSpeedOnTime({dist}, {hour})"
+    dart: "Solution().minSpeedOnTime({dist}, {hour})"
+    swift: "Solution().minSpeedOnTime({dist}, {hour})"
+    typescript: "minSpeedOnTime({dist}, {hour})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 3000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minSpeedOnTime(dist, hour, {result})"
+    checker: |
+      class Checker:
+          def minSpeedOnTime(self, dist, hour, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              h100 = int(round(float(hour) * 100.0))
+              def ok(speed):
+                  whole = sum((d + speed - 1) // speed for d in dist[:-1])
+                  return whole * 100 * speed + dist[-1] * 100 <= h100 * speed
+              expected = -1
+              if dist:
+                  lo, hi = 1, 10000000
+                  while lo <= hi:
+                      mid = (lo + hi) // 2
+                      if ok(mid):
+                          expected = mid
+                          hi = mid - 1
+                      else:
+                          lo = mid + 1
+              return result == expected
+seed: 1870
+tests:
+  - name: example-one
+    in:
+      dist: [1, 3, 2]
+      hour: 6.0
+    out: 1
+  - name: example-two
+    in:
+      dist: [1, 3, 2]
+      hour: 2.7
+    out: 3
+  - name: example-three-impossible
+    in:
+      dist: [1, 3, 2]
+      hour: 1.9
+    out: -1
+  - name: single-train-exact
+    in:
+      dist: [10]
+      hour: 1.0
+    out: 10
+  - name: single-train-fraction
+    in:
+      dist: [10]
+      hour: 0.5
+    out: 20
+  - name: single-train-large-hour
+    in:
+      dist: [1]
+      hour: 1000000000.0
+    out: 1
+  - name: impossible-first-departure
+    in:
+      dist: [1, 1]
+      hour: 1.0
+    out: -1
+  - name: impossible-too-short
+    in:
+      dist: [1, 1]
+      hour: 0.99
+    out: -1
+  - name: all-ones-exact
+    in:
+      dist: [1, 1, 1, 1]
+      hour: 4.0
+    out: 1
+  - name: all-ones-tight
+    in:
+      dist: [1, 1, 1, 1]
+      hour: 3.01
+    out: 100
+  - name: integer-rounding
+    in:
+      dist: [2, 2, 2]
+      hour: 3.0
+    out: 2
+  - name: fractional-last-leg
+    in:
+      dist: [3, 3]
+      hour: 2.5
+    out: 3
+  - name: first-leg-waits
+    in:
+      dist: [5, 1]
+      hour: 2.01
+    out: 5
+  - name: exact-boundary-speed
+    in:
+      dist: [10, 10, 10]
+      hour: 3.0
+    out: 10
+  - name: repeated-long-rides
+    in:
+      dist: [100, 100, 100, 100, 100]
+      hour: 5.0
+    out: 100
+  - name: repeated-long-rides-tight
+    in:
+      dist: [100, 100, 100, 100, 100]
+      hour: 4.01
+    out: 10000
+  - name: mixed-small
+    in:
+      dist: [1, 2, 3, 4, 5]
+      hour: 6.5
+    out: 4
+  - name: mixed-small-tight
+    in:
+      dist: [1, 2, 3, 4, 5]
+      hour: 5.01
+    out: 5
+  - name: large-distance
+    in:
+      dist: [100000]
+      hour: 1.0
+    out: 100000
+  - name: large-distance-fraction
+    in:
+      dist: [100000]
+      hour: 0.01
+    out: 10000000
+  - name: many-trains-impossible
+    in:
+      dist: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      hour: 9.99
+    out: 2
+  - name: many-trains-feasible
+    in:
+      dist: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      hour: 10.0
+    out: 1
+  - name: varied-rides
+    in:
+      dist: [7, 11, 13, 17]
+      hour: 5.0
+    out: 13
+  - name: varied-rides-fraction
+    in:
+      dist: [7, 11, 13, 17]
+      hour: 3.5
+    out: 34
+  - name: near-integer-hour
+    in:
+      dist: [2, 5, 1]
+      hour: 2.0
+    out: -1
+  - name: near-integer-hour-under
+    in:
+      dist: [2, 5, 1]
+      hour: 1.99
+    out: -1
+  - name: speed-one
+    in:
+      dist: [1, 2, 1, 2]
+      hour: 6.0
+    out: 1
+  - name: speed-two
+    in:
+      dist: [3, 4, 5]
+      hour: 6.0
+    out: 3
+  - name: high-required-speed
+    in:
+      dist: [99999, 100000]
+      hour: 1.01
+    out: 10000000
+  - name: decimals-two-places
+    in:
+      dist: [4, 7, 9]
+      hour: 3.33
+    out: 7
+  - name: decimal-impossible
+    in:
+      dist: [4, 7, 9]
+      hour: 1.99
+    out: -1
+  - name: alternating-distances
+    in:
+      dist: [1, 100, 1, 100, 1]
+      hour: 5.0
+    out: 100
+  - name: short-final-leg
+    in:
+      dist: [100, 100, 1]
+      hour: 2.01
+    out: 100
+  - name: long-final-leg
+    in:
+      dist: [1, 1, 100]
+      hour: 2.5
+    out: 200
+  - name: generator-small
+    in:
+      dist:
+        gen: "array"
+        len: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      hour: 30.0
+    seed: 187001
+  - name: generator-medium
+    in:
+      dist:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      hour: 1001.0
+    seed: 187002
+  - name: generator-large-tight
+    in:
+      dist:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      hour: 49999.01
+    seed: 187003
+  - name: generator-large-feasible
+    in:
+      dist:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      hour: 100000.0
+    seed: 187004
+  - name: generator-large-fractional
+    in:
+      dist:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      hour: 1000000000.0
+    seed: 187005

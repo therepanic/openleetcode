@@ -1,0 +1,290 @@
+entry:
+  id: 2003
+  title: "smallest-missing-genetic-value-in-each-subtree"
+  params:
+    parents:
+      type: array
+      items:
+        type: int
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().smallestMissingValueSubtree({parents}, {nums})"
+    rust: "Solution::smallest_missing_value_subtree({parents}, {nums})"
+    python3: "Solution().smallestMissingValueSubtree({parents}, {nums})"
+    python2: "Solution().smallestMissingValueSubtree({parents}, {nums})"
+    ruby: "smallest_missing_value_subtree({parents}, {nums})"
+    java: "new Solution().smallestMissingValueSubtree({parents}, {nums})"
+    csharp: "new Solution().SmallestMissingValueSubtree({parents}, {nums})"
+    kotlin: "Solution().smallestMissingValueSubtree({parents}, {nums})"
+    go: "smallestMissingValueSubtree({parents}, {nums})"
+    dart: "Solution().smallestMissingValueSubtree({parents}, {nums})"
+    swift: "Solution().smallestMissingValueSubtree({parents}, {nums})"
+    typescript: "smallestMissingValueSubtree({parents}, {nums})"
+judge:
+  type: exact
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().check(parents, nums, {result})"
+    checker: |
+      class Checker:
+          def check(self, parents, nums, result):
+              n = len(parents)
+              if not isinstance(result, list) or len(result) != n:
+                  return False
+              children = [[] for _ in range(n)]
+              for i in range(1, n):
+                  if not isinstance(parents[i], int) or parents[i] < 0 or parents[i] >= n:
+                      return False
+                  children[parents[i]].append(i)
+              expected = [1] * n
+              def visit(v):
+                  values = {nums[v]}
+                  for child in children[v]:
+                      values.update(visit(child))
+                  missing = 1
+                  while missing in values:
+                      missing += 1
+                  expected[v] = missing
+                  return values
+              visit(0)
+              return result == expected
+seed: 2003
+tests:
+  - name: example-one
+    in:
+      parents: [-1, 0, 0, 2]
+      nums: [1, 2, 3, 4]
+    out: [5, 1, 1, 1]
+  - name: example-two
+    in:
+      parents: [-1, 0, 1, 0, 3, 3]
+      nums: [5, 4, 6, 2, 1, 3]
+    out: [7, 1, 1, 4, 2, 1]
+  - name: example-three
+    in:
+      parents: [-1, 2, 3, 0, 2, 4, 1]
+      nums: [2, 3, 4, 5, 6, 7, 8]
+    out: [1, 1, 1, 1, 1, 1, 1]
+  - name: root-and-child
+    in:
+      parents: [-1, 0, 0]
+      nums: [1, 2, 3]
+    out: [4, 1, 1]
+  - name: root-missing-one
+    in:
+      parents: [-1, 0, 1]
+      nums: [2, 1, 3]
+    out: [4, 2, 1]
+  - name: chain-one-to-five
+    in:
+      parents: [-1, 0, 1, 2, 3, 4]
+      nums: [1, 2, 3, 4, 5, 6]
+    out: [7, 1, 1, 1, 1, 1]
+  - name: chain-reversed-values
+    in:
+      parents: [-1, 0, 1, 2, 3, 4]
+      nums: [6, 5, 4, 3, 2, 1]
+    out: [7, 6, 5, 4, 3, 2]
+  - name: star-with-one
+    in:
+      parents: [-1, 0, 0, 0, 0, 0, 0]
+      nums: [4, 1, 2, 3, 6, 7, 5]
+    out: [8, 2, 1, 1, 1, 1, 1]
+  - name: one-deep-branch
+    in:
+      parents: [-1, 0, 0, 1, 3, 4, 2]
+      nums: [9, 1, 8, 2, 3, 4, 5]
+    out: [6, 5, 1, 1, 1, 1, 1]
+  - name: one-at-leaf
+    in:
+      parents: [-1, 0, 0, 1, 1, 3, 2, 6]
+      nums: [8, 4, 6, 2, 7, 1, 5, 3]
+    out: [9, 3, 1, 3, 1, 2, 1, 1]
+  - name: one-at-root
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 5]
+      nums: [1, 9, 8, 7, 6, 5, 4, 3]
+    out: [2, 1, 1, 1, 1, 1, 1, 1]
+  - name: missing-middle-root
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 6, 6]
+      nums: [1, 2, 4, 3, 8, 9, 7, 6, 5]
+    out: [10, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: sparse-values
+    in:
+      parents: [-1, 0, 1, 0, 3, 3, 5, 5]
+      nums: [100000, 99999, 50000, 1, 2, 4, 3, 100]
+    out: [5, 1, 1, 5, 1, 1, 1, 1]
+  - name: high-values-no-one
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2]
+      nums: [100000, 99998, 99997, 99996, 99995, 99994, 99993]
+    out: [1, 1, 1, 1, 1, 1, 1]
+  - name: complete-seven
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2]
+      nums: [1, 2, 3, 4, 5, 6, 7]
+    out: [8, 1, 1, 1, 1, 1, 1]
+  - name: complete-seven-one-leaf
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2]
+      nums: [8, 7, 6, 5, 4, 3, 1]
+    out: [2, 1, 2, 1, 1, 1, 2]
+  - name: branching-nine
+    in:
+      parents: [-1, 0, 0, 0, 1, 1, 2, 2, 3]
+      nums: [7, 1, 9, 2, 3, 4, 5, 6, 8]
+    out: [10, 2, 1, 1, 1, 1, 1, 1, 1]
+  - name: one-under-heavy-branch
+    in:
+      parents: [-1, 0, 0, 1, 1, 3, 3, 6, 6, 2]
+      nums: [9, 8, 7, 6, 5, 4, 3, 2, 1, 10]
+    out: [11, 7, 1, 5, 1, 1, 4, 1, 2, 1]
+  - name: one-and-two-in-subtree
+    in:
+      parents: [-1, 0, 0, 1, 1, 4, 2, 6, 6]
+      nums: [9, 8, 7, 6, 5, 1, 4, 2, 3]
+    out: [10, 2, 1, 1, 2, 2, 1, 1, 1]
+  - name: chain-ten
+    in:
+      parents: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: [11, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: chain-ten-one-last
+    in:
+      parents: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+      nums: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+  - name: ten-star
+    in:
+      parents: [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      nums: [1, 2, 4, 6, 8, 10, 3, 5, 7, 9]
+    out: [11, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: alternating-branches
+    in:
+      parents: [-1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+      nums: [11, 1, 2, 3, 5, 4, 7, 6, 9, 8, 10]
+    out: [12, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: value-one-middle
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 4, 4, 5, 5]
+      nums: [11, 10, 9, 8, 1, 7, 6, 5, 4, 3, 2]
+    out: [12, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1]
+  - name: root-values-one-to-eleven
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
+      nums: [11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: [12, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: two-large-gaps
+    in:
+      parents: [-1, 0, 0, 0, 1, 1, 2, 2, 3, 3]
+      nums: [1, 100000, 99999, 99998, 2, 4, 3, 5, 6, 7]
+    out: [8, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: deep-one-branch
+    in:
+      parents: [-1, 0, 0, 1, 3, 4, 5, 6, 7, 8, 2, 10]
+      nums: [20, 19, 18, 17, 16, 15, 14, 13, 12, 1, 11, 2]
+    out: [3, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1]
+  - name: twelve-complete-values
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5]
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    out: [13, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: twelve-no-one
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5]
+      nums:
+        [
+          100000,
+          99999,
+          99998,
+          99997,
+          99996,
+          99995,
+          99994,
+          99993,
+          99992,
+          99991,
+          99990,
+          99989,
+        ]
+    out: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: thirteen-one-in-small-subtree
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 4, 5, 6, 10, 10]
+      nums: [50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 1, 2]
+    out: [3, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 2, 1]
+  - name: fourteen-mixed
+    in:
+      parents: [-1, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 6, 7]
+      nums: [1, 2, 4, 6, 3, 5, 8, 7, 9, 10, 11, 12, 13, 14]
+    out: [15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: one-at-deep-leaf-fourteen
+    in:
+      parents: [-1, 0, 0, 1, 1, 3, 3, 5, 5, 7, 7, 2, 2, 12]
+      nums: [30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 1]
+    out: [2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2]
+  - name: fifteen-low-values
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]
+      nums: [1, 2, 3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 4, 7]
+    out: [16, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: fifteen-one-in-right
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      nums: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: [16, 1, 3, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2]
+  - name: sixteen-root-gap
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7]
+      nums: [1, 3, 5, 7, 9, 11, 13, 15, 2, 4, 6, 8, 10, 12, 14, 16]
+    out: [17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: sixteen-high-with-one
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7]
+      nums:
+        [
+          100000,
+          99999,
+          99998,
+          99997,
+          99996,
+          99995,
+          99994,
+          99993,
+          99992,
+          99991,
+          99990,
+          99989,
+          99988,
+          99987,
+          99986,
+          1,
+        ]
+    out: [2, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2]
+  - name: seventeen-chain-prefix
+    in:
+      parents: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+    out: [18, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: seventeen-chain-one-last
+    in:
+      parents: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      nums: [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    out: [18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+  - name: eighteen-star-values
+    in:
+      parents: [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      nums: [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 3, 5, 7, 9, 11, 13, 15, 17]
+    out: [19, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  - name: nineteen-mixed-tree
+    in:
+      parents: [-1, 0, 0, 1, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 8, 9, 10, 11, 12]
+      nums: [19, 1, 18, 2, 3, 17, 16, 4, 5, 6, 15, 14, 13, 7, 8, 9, 10, 11, 12]
+    out: [20, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]

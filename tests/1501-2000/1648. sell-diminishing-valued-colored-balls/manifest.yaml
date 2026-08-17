@@ -1,0 +1,271 @@
+entry:
+  id: 1648
+  title: "sell-diminishing-valued-colored-balls"
+  params:
+    inventory:
+      type: array
+      items:
+        type: int
+    orders:
+      type: int
+  call:
+    cpp: "Solution().maxProfit({inventory}, {orders})"
+    rust: "Solution::max_profit({inventory}, {orders})"
+    python3: "Solution().maxProfit({inventory}, {orders})"
+    python2: "Solution().maxProfit({inventory}, {orders})"
+    ruby: "max_profit({inventory}, {orders})"
+    java: "new Solution().maxProfit({inventory}, {orders})"
+    csharp: "new Solution().MaxProfit({inventory}, {orders})"
+    kotlin: "Solution().maxProfit({inventory}, {orders})"
+    go: "maxProfit({inventory}, {orders})"
+    dart: "Solution().maxProfit({inventory}, {orders})"
+    swift: "Solution().maxProfit({inventory}, {orders})"
+    typescript: "maxProfit({inventory}, {orders})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxProfit(inventory, orders, {result})"
+    checker: |
+      class Checker:
+          def maxProfit(self, inventory, orders, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              lo, hi = 0, max(inventory)
+              while lo < hi:
+                  mid = (lo + hi + 1) // 2
+                  count = sum(max(x - mid, 0) for x in inventory)
+                  if count >= orders:
+                      lo = mid
+                  else:
+                      hi = mid - 1
+              level = lo
+              sold = sum(max(x - level, 0) for x in inventory)
+              value = sum((x + level + 1) * (x - level) // 2 for x in inventory if x > level)
+              expected = (value - (sold - orders) * (level + 1)) % 1000000007
+              return result == expected
+
+seed: 1648
+
+tests:
+  - name: example-one
+    in:
+      inventory: [2, 5]
+      orders: 4
+    out: 14
+  - name: example-two
+    in:
+      inventory: [3, 5]
+      orders: 6
+    out: 19
+  - name: one-ball
+    in:
+      inventory: [1]
+      orders: 1
+    out: 1
+  - name: sell-entire-color
+    in:
+      inventory: [10]
+      orders: 10
+    out: 55
+  - name: first-most-valuable
+    in:
+      inventory: [10]
+      orders: 1
+    out: 10
+  - name: identical-singletons
+    in:
+      inventory: [1, 1, 1]
+      orders: 2
+    out: 2
+  - name: identical-colors
+    in:
+      inventory: [2, 2, 2]
+      orders: 5
+    out: 8
+  - name: dominant-color
+    in:
+      inventory: [100, 1]
+      orders: 50
+    out: 3775
+  - name: maximum-single-color
+    in:
+      inventory: [1000000000]
+      orders: 1000000000
+    out: 21
+  - name: three-colors
+    in:
+      inventory: [5, 4, 3]
+      orders: 7
+    out: 24
+  - name: tied-colors
+    in:
+      inventory: [7, 7]
+      orders: 8
+    out: 44
+  - name: uneven-small
+    in:
+      inventory: [8, 1, 2]
+      orders: 5
+    out: 30
+  - name: four-equal
+    in:
+      inventory: [6, 6, 6, 6]
+      orders: 10
+    out: 52
+  - name: increasing-colors
+    in:
+      inventory: [1, 2, 3, 4, 5]
+      orders: 10
+    out: 30
+  - name: descending-colors
+    in:
+      inventory: [9, 8, 7, 6]
+      orders: 20
+    out: 112
+  - name: one-sale-among-ties
+    in:
+      inventory: [100, 100, 100]
+      orders: 1
+    out: 100
+  - name: almost-all-tied
+    in:
+      inventory: [100, 100, 100]
+      orders: 250
+    out: 14708
+  - name: one-dominant-small
+    in:
+      inventory: [11, 1, 1, 1]
+      orders: 4
+    out: 38
+  - name: mixed-fourteen
+    in:
+      inventory: [2, 9, 4, 7]
+      orders: 13
+    out: 71
+  - name: two-nearby
+    in:
+      inventory: [20, 19]
+      orders: 30
+    out: 375
+  - name: two-peaks
+    in:
+      inventory: [50, 1, 50]
+      orders: 75
+    out: 2381
+  - name: five-equal
+    in:
+      inventory: [3, 3, 3, 3, 3]
+      orders: 7
+    out: 19
+  - name: mixed-three
+    in:
+      inventory: [17, 2, 8]
+      orders: 12
+    out: 140
+  - name: broad-distribution
+    in:
+      inventory: [30, 25, 10, 5]
+      orders: 40
+    out: 728
+  - name: near-max-two-colors
+    in:
+      inventory: [999999999, 1000000000]
+      orders: 1000000000
+    out: 750000042
+  - name: tiny-order-huge-color
+    in:
+      inventory: [1, 1000000000]
+      orders: 2
+    out: 999999992
+  - name: first-of-four
+    in:
+      inventory: [4, 5, 6, 7]
+      orders: 1
+    out: 7
+  - name: exhaust-four
+    in:
+      inventory: [4, 5, 6, 7]
+      orders: 22
+    out: 74
+  - name: two-high-one-low
+    in:
+      inventory: [12, 12, 1]
+      orders: 15
+    out: 131
+  - name: dominant-plus-singletons
+    in:
+      inventory: [13, 2, 2, 2]
+      orders: 10
+    out: 85
+  - name: generated-unit-colors
+    in:
+      inventory:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1
+        distinct: false
+        sorted: false
+        elemType: "int"
+      orders: 100000
+  - name: generated-small-levels
+    in:
+      inventory:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: "int"
+      orders: 100000
+  - name: generated-medium-levels
+    in:
+      inventory:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 10
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+      orders: 250000
+  - name: generated-large-levels
+    in:
+      inventory:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1000
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      orders: 100000000
+  - name: generated-maximum-values
+    in:
+      inventory:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1000000000
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      orders: 1000000000

@@ -1,0 +1,20 @@
+class Solution:
+    def minAbsDifference(self, nums, goal):
+        def sums(values):
+            result = [0]
+            for value in values:
+                result += [x + value for x in result]
+            return result
+
+        mid = len(nums) // 2
+        left = sorted(sums(nums[:mid]))
+        right = sorted(sums(nums[mid:]))
+        answer = abs(goal)
+        j = len(right) - 1
+        for value in left:
+            while j > 0 and right[j - 1] >= goal - value:
+                j -= 1
+            answer = min(answer, abs(value + right[j] - goal))
+            if j > 0:
+                answer = min(answer, abs(value + right[j - 1] - goal))
+        return answer

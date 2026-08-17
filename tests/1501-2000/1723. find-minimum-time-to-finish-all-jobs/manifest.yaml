@@ -1,0 +1,244 @@
+entry:
+  id: 1723
+  title: "find-minimum-time-to-finish-all-jobs"
+  params:
+    jobs:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().minimumTimeRequired({jobs}, {k})"
+    rust: "Solution::minimum_time_required({jobs}, {k})"
+    python3: "Solution().minimumTimeRequired({jobs}, {k})"
+    python2: "Solution().minimumTimeRequired({jobs}, {k})"
+    ruby: "minimum_time_required({jobs}, {k})"
+    java: "new Solution().minimumTimeRequired({jobs}, {k})"
+    csharp: "new Solution().MinimumTimeRequired({jobs}, {k})"
+    kotlin: "Solution().minimumTimeRequired({jobs}, {k})"
+    go: "minimumTimeRequired({jobs}, {k})"
+    dart: "Solution().minimumTimeRequired({jobs}, {k})"
+    swift: "Solution().minimumTimeRequired({jobs}, {k})"
+    typescript: "minimumTimeRequired({jobs}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minimumTimeRequired(jobs, k, {result})"
+    checker: |
+      class Checker:
+          def minimumTimeRequired(self, jobs, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              jobs = sorted(jobs, reverse=True)
+              lo, hi = max(jobs), sum(jobs)
+              def feasible(limit):
+                  loads = [0] * k
+                  def dfs(i):
+                      if i == len(jobs):
+                          return True
+                      seen = set()
+                      job = jobs[i]
+                      for w in range(k):
+                          if loads[w] in seen:
+                              continue
+                          seen.add(loads[w])
+                          if loads[w] + job <= limit:
+                              loads[w] += job
+                              if dfs(i + 1):
+                                  return True
+                              loads[w] -= job
+                          if loads[w] == 0:
+                              break
+                      return False
+                  return dfs(0)
+              while lo < hi:
+                  mid = (lo + hi) // 2
+                  if feasible(mid):
+                      hi = mid
+                  else:
+                      lo = mid + 1
+              return result == lo
+
+seed: 1723
+
+tests:
+  - name: example-one
+    in:
+      jobs: [3, 2, 3]
+      k: 3
+  - name: example-two
+    in:
+      jobs: [1, 2, 4, 7, 8]
+      k: 2
+  - name: one-job
+    in:
+      jobs: [9]
+      k: 1
+  - name: two-jobs-two-workers
+    in:
+      jobs: [5, 11]
+      k: 2
+  - name: all-equal
+    in:
+      jobs: [4, 4, 4, 4, 4, 4]
+      k: 3
+  - name: all-equal-workers
+    in:
+      jobs: [7, 7, 7, 7]
+      k: 4
+  - name: one-worker
+    in:
+      jobs: [1, 2, 3, 4, 5, 6]
+      k: 1
+  - name: workers-equal-jobs
+    in:
+      jobs: [1, 8, 3, 10, 2]
+      k: 5
+  - name: dominant-job
+    in:
+      jobs: [100, 1, 1, 1, 1, 1]
+      k: 3
+  - name: balanced-pairs
+    in:
+      jobs: [8, 7, 6, 5, 4, 3]
+      k: 3
+  - name: uneven-small
+    in:
+      jobs: [2, 2, 3, 7, 8]
+      k: 2
+  - name: duplicate-large
+    in:
+      jobs: [20, 20, 20, 1, 1, 1]
+      k: 3
+  - name: powers
+    in:
+      jobs: [1, 2, 4, 8, 16, 32]
+      k: 3
+  - name: many-ones
+    in:
+      jobs: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      k: 4
+  - name: k-two
+    in:
+      jobs: [9, 8, 7, 6, 5, 4, 3, 2]
+      k: 2
+  - name: k-three
+    in:
+      jobs: [13, 12, 11, 10, 9, 8, 7]
+      k: 3
+  - name: tiny-mixed
+    in:
+      jobs: [1, 3, 1, 2]
+      k: 2
+  - name: near-balanced
+    in:
+      jobs: [10, 9, 8, 7, 6, 5, 4]
+      k: 4
+  - name: large-values
+    in:
+      jobs: [10000000, 9999999, 1, 2, 3, 4]
+      k: 2
+  - name: large-equal
+    in:
+      jobs: [10000000, 10000000, 10000000, 10000000]
+      k: 2
+  - name: max-length-one-worker
+    in:
+      jobs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      k: 1
+  - name: max-length-many-workers
+    in:
+      jobs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      k: 12
+  - name: max-length-two
+    in:
+      jobs: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 2
+  - name: max-length-three
+    in:
+      jobs: [12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7]
+      k: 3
+  - name: max-length-four
+    in:
+      jobs: [30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19]
+      k: 4
+  - name: max-length-five
+    in:
+      jobs: [50, 1, 49, 2, 48, 3, 47, 4, 46, 5, 45, 6]
+      k: 5
+  - name: max-length-six
+    in:
+      jobs: [37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26]
+      k: 6
+  - name: max-length-seven
+    in:
+      jobs: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8]
+      k: 7
+  - name: max-length-eight
+    in:
+      jobs: [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6]
+      k: 8
+  - name: max-length-nine
+    in:
+      jobs: [1000, 999, 998, 997, 996, 995, 994, 993, 992, 991, 990, 989]
+      k: 9
+  - name: max-length-ten
+    in:
+      jobs: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115]
+      k: 10
+  - name: max-length-eleven
+    in:
+      jobs:
+        [
+          10000000,
+          1,
+          9999998,
+          2,
+          9999996,
+          3,
+          9999994,
+          4,
+          9999992,
+          5,
+          9999990,
+          6,
+        ]
+      k: 11
+  - name: max-length-k-six
+    in:
+      jobs: [21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10]
+      k: 6
+  - name: max-length-k-four
+    in:
+      jobs: [1, 100, 2, 99, 3, 98, 4, 97, 5, 96, 6, 95]
+      k: 4
+  - name: max-length-k-two-alternating
+    in:
+      jobs:
+        [
+          10000000,
+          1,
+          9999999,
+          2,
+          9999998,
+          3,
+          9999997,
+          4,
+          9999996,
+          5,
+          9999995,
+          6,
+        ]
+      k: 2
+  - name: max-length-k-three-alternating
+    in:
+      jobs: [100, 1, 99, 2, 98, 3, 97, 4, 96, 5, 95, 6]
+      k: 3

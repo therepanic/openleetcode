@@ -1,0 +1,40 @@
+class Solution(object):
+    def minimumIncompatibility(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: int
+        """
+        n = len(nums)
+        sz = n // k
+        
+        from collections import Counter
+        counts = Counter(nums)
+        if any(v > k for v in counts.values()):
+            return -1
+        
+        nums.sort()
+        
+        valid_subsets = {}
+        for mask in range(1 << n):
+            if bin(mask).count('1') == sz:
+                subset = [nums[i] for i in range(n) if (mask >> i) & 1]
+                if len(set(subset)) == sz:
+                    valid_subsets[mask] = max(subset) - min(subset)
+        
+        memo = {}
+        def solve(remaining_mask):
+            if remaining_mask == 0:
+                return 0
+            if remaining_mask in memo:
+                return memo[remaining_mask]
+            res = float('inf')
+            first_element = (remaining_mask & -remaining_mask).bit_length() - 1
+            for mask, cost in valid_subsets.items():
+                if (mask & remaining_mask) == mask and (mask >> first_element) & 1:
+                    res = min(res, cost + solve(remaining_mask ^ mask))
+            memo[remaining_mask] = res
+            return res
+        
+        ans = solve((1 << n) - 1)
+        return int(ans) if ans != float('inf') else -1

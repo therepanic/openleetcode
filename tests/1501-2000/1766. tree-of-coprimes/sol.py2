@@ -1,0 +1,45 @@
+class Solution(object):
+    def getCoprimes(self, nums, edges):
+        """
+        :type nums: List[int]
+        :type edges: List[List[int]]
+        :rtype: List[int]
+        """
+        import math
+        n = len(nums)
+        adj = [[] for _ in range(n)]
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
+        
+        ans = [-1] * n
+        depth = [0] * n
+        ancestorByValue = [-1] * 51
+        
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+
+        def dfs(node, prev, dep):
+            depth[node] = dep
+            best = float('inf')
+            best_anc = -1
+            for i in range(1, 51):
+                if gcd(i, nums[node]) == 1:
+                    if ancestorByValue[i] != -1:
+                        diff = dep - depth[ancestorByValue[i]]
+                        if diff < best:
+                            best = diff
+                            best_anc = ancestorByValue[i]
+            ans[node] = best_anc
+            
+            prev_state = ancestorByValue[nums[node]]
+            ancestorByValue[nums[node]] = node
+            for v in adj[node]:
+                if v != prev:
+                    dfs(v, node, dep + 1)
+            ancestorByValue[nums[node]] = prev_state
+        
+        dfs(0, 0, 0)
+        return ans

@@ -1,0 +1,247 @@
+entry:
+  id: 1787
+  title: make-the-xor-of-all-segments-equal-to-zero
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().minChanges({nums}, {k})"
+    rust: "Solution::min_changes({nums}, {k})"
+    python3: "Solution().minChanges({nums}, {k})"
+    python2: "Solution().minChanges({nums}, {k})"
+    ruby: "min_changes({nums}, {k})"
+    java: "new Solution().minChanges({nums}, {k})"
+    csharp: "new Solution().MinChanges({nums}, {k})"
+    kotlin: "Solution().minChanges({nums}, {k})"
+    go: "minChanges({nums}, {k})"
+    dart: "Solution().minChanges({nums}, {k})"
+    swift: "Solution().minChanges({nums}, {k})"
+    typescript: "minChanges({nums}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().minChanges(nums, k, {result})"
+    checker: |
+      from collections import Counter
+
+      class Checker:
+          def minChanges(self, nums, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              width = 1 << 10
+              dp = [-10**9] * width
+              dp[0] = 0
+              for group in range(k):
+                  counts = Counter(nums[group::k])
+                  best = max(dp)
+                  ndp = [best] * width
+                  for state, score in enumerate(dp):
+                      if score < 0:
+                          continue
+                      for value, count in counts.items():
+                          nxt = state ^ value
+                          if score + count > ndp[nxt]:
+                              ndp[nxt] = score + count
+                  dp = ndp
+              expected = len(nums) - dp[0]
+              return result == expected
+
+seed: 1787
+
+tests:
+  - name: single-zero-k-one
+    in:
+      nums: [0]
+      k: 1
+  - name: single-nonzero-k-one
+    in:
+      nums: [1023]
+      k: 1
+  - name: all-zeroes
+    in:
+      nums: [0, 0, 0, 0, 0, 0]
+      k: 3
+  - name: example-one
+    in:
+      nums: [1, 2, 0, 3, 0]
+      k: 1
+  - name: example-two
+    in:
+      nums: [3, 4, 5, 2, 1, 7, 3, 4, 7]
+      k: 3
+  - name: example-three
+    in:
+      nums: [1, 2, 4, 1, 2, 5, 1, 2, 6]
+      k: 3
+  - name: k-equals-n
+    in:
+      nums: [1, 2, 4, 8, 16]
+      k: 5
+  - name: k-equals-n-already-zero
+    in:
+      nums: [7, 7, 0, 7]
+      k: 4
+  - name: k-one-mixed
+    in:
+      nums: [5, 5, 5, 4, 4, 7, 7, 7]
+      k: 1
+  - name: k-one-distinct
+    in:
+      nums: [0, 1, 2, 3, 4, 5, 6]
+      k: 1
+  - name: two-groups-equal
+    in:
+      nums: [1, 2, 1, 2, 1, 2]
+      k: 2
+  - name: two-groups-unequal
+    in:
+      nums: [1, 1, 2, 3, 4, 5, 6]
+      k: 2
+  - name: three-groups-repeated
+    in:
+      nums: [1, 2, 3, 1, 2, 3, 1, 2, 3, 4]
+      k: 3
+  - name: zeros-and-high-values
+    in:
+      nums: [0, 1023, 0, 1023, 512, 512, 1, 1]
+      k: 4
+  - name: repeated-power-pattern
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
+      k: 2
+  - name: duplicate-heavy
+    in:
+      nums: [9, 9, 9, 10, 10, 11, 11, 11, 11, 12]
+      k: 4
+  - name: alternating
+    in:
+      nums: [0, 1023, 0, 1023, 0, 1023, 0, 1023, 0]
+      k: 3
+  - name: xor-cancellation
+    in:
+      nums: [6, 6, 6, 6, 6, 6, 6, 6]
+      k: 4
+  - name: small-values-all-groups
+    in:
+      nums: [0, 1, 2, 3, 0, 1, 2, 3, 3, 2, 1, 0]
+      k: 4
+  - name: irregular-remainder
+    in:
+      nums: [8, 1, 8, 2, 8, 3, 8, 4, 8, 5, 8]
+      k: 5
+  - name: max-value-single-group
+    in:
+      nums: [1023, 1023, 1023, 0, 0, 1, 1]
+      k: 3
+  - name: all-values-distinct-groups
+    in:
+      nums: [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1023]
+      k: 6
+  - name: balanced-four-groups
+    in:
+      nums: [1, 2, 4, 8, 1, 2, 4, 8, 8, 4, 2, 1]
+      k: 4
+  - name: mostly-zero
+    in:
+      nums: [0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0]
+      k: 6
+  - name: high-bit-combinations
+    in:
+      nums: [768, 512, 256, 768, 512, 256, 1023, 511, 255]
+      k: 3
+  - name: prime-like-values
+    in:
+      nums: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+      k: 5
+  - name: long-small-static
+    in:
+      nums: [0, 1, 0, 1, 2, 3, 2, 3, 4, 5, 4, 5, 6, 7, 6, 7, 8, 9, 8, 9]
+      k: 4
+  - name: one-group-per-element
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7]
+      k: 7
+  - name: uneven-groups-with-zero
+    in:
+      nums: [4, 4, 1, 5, 0, 1, 5, 4, 4, 0, 1, 5, 7, 7]
+      k: 5
+  - name: repeated-xor-basis
+    in:
+      nums: [15, 240, 255, 15, 240, 255, 15, 240, 255, 0, 0, 0, 15, 240, 255]
+      k: 3
+  - name: generated-k-one
+    in:
+      nums:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "int"
+          min: 0
+          max: 1023
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 1
+  - name: generated-k-two
+    in:
+      nums:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "int"
+          min: 0
+          max: 1023
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 2
+  - name: generated-k-seven
+    in:
+      nums:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "int"
+          min: 0
+          max: 1023
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 7
+  - name: generated-k-31
+    in:
+      nums:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "int"
+          min: 0
+          max: 1023
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 31
+  - name: generated-k-1000
+    in:
+      nums:
+        gen: "array"
+        len: 2000
+        of:
+          gen: "int"
+          min: 0
+          max: 1023
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 1000

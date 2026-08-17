@@ -1,0 +1,38 @@
+class Solution(object):
+    def minimumJumps(self, forbidden, a, b, x):
+        """
+        :type forbidden: List[int]
+        :type a: int
+        :type b: int
+        :type x: int
+        :rtype: int
+        """
+        idx = 1
+        for i in range(2, min(a, b) + 1):
+            if a % i == 0 and b % i == 0:
+                idx = i
+        if x % idx != 0:
+            return -1
+        from collections import deque
+        q = deque()
+        q.append((0, 1, 0))
+        visited = set()
+        visited.add(0)
+        for f in forbidden:
+            visited.add(f)
+        top = max(forbidden)
+        limit = top + x + a + b
+        while q:
+            curr, prev, step = q.popleft()
+            if curr == x:
+                return step
+            if prev == 1:
+                nb = curr - b
+                if nb >= 0 and nb not in visited:
+                    visited.add(nb)
+                    q.append((nb, -1, step + 1))
+            na = curr + a
+            if na <= limit and na not in visited:
+                visited.add(na)
+                q.append((na, 1, step + 1))
+        return -1

@@ -1,0 +1,337 @@
+entry:
+  id: 1665
+  title: "minimum-initial-energy-to-finish-tasks"
+  params:
+    tasks:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().minimumEffort({tasks})"
+    rust: "Solution::minimum_effort({tasks})"
+    python3: "Solution().minimumEffort({tasks})"
+    python2: "Solution().minimumEffort({tasks})"
+    ruby: "minimum_effort({tasks})"
+    java: "new Solution().minimumEffort({tasks})"
+    csharp: "new Solution().MinimumEffort({tasks})"
+    kotlin: "Solution().minimumEffort({tasks})"
+    go: "minimumEffort({tasks})"
+    dart: "Solution().minimumEffort({tasks})"
+    swift: "Solution().minimumEffort({tasks})"
+    typescript: "minimumEffort({tasks})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minimumEffort(tasks, {result})"
+    checker: |
+      class Checker:
+          def minimumEffort(self, tasks, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              ordered = sorted(tasks, key=lambda x: x[1] - x[0], reverse=True)
+              spent = 0
+              need = 0
+              for actual, minimum in ordered:
+                  need = max(need, spent + minimum)
+                  spent += actual
+              return result == need
+seed: 1665
+tests:
+  - name: example-one
+    in:
+      tasks:
+        - [1, 2]
+        - [2, 4]
+        - [4, 8]
+    out: 8
+  - name: example-two
+    in:
+      tasks:
+        - [1, 3]
+        - [2, 4]
+        - [10, 11]
+        - [10, 12]
+        - [8, 9]
+    out: 32
+  - name: example-three
+    in:
+      tasks:
+        - [1, 7]
+        - [2, 8]
+        - [3, 9]
+        - [4, 10]
+        - [5, 11]
+        - [6, 12]
+    out: 27
+  - name: one-task-equal
+    in:
+      tasks:
+        - [7, 7]
+    out: 7
+  - name: one-task-max-threshold
+    in:
+      tasks:
+        - [1, 10000]
+    out: 10000
+  - name: all-minimum-one
+    in:
+      tasks:
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 4
+  - name: equal-gaps
+    in:
+      tasks:
+        - [2, 5]
+        - [3, 6]
+        - [4, 7]
+    out: 12
+  - name: equal-tasks
+    in:
+      tasks:
+        - [10, 20]
+        - [10, 20]
+        - [10, 20]
+        - [10, 20]
+        - [10, 20]
+    out: 60
+  - name: zero-gap
+    in:
+      tasks:
+        - [5, 5]
+        - [4, 4]
+        - [3, 3]
+    out: 12
+  - name: high-thresholds
+    in:
+      tasks:
+        - [1, 100]
+        - [1, 101]
+        - [1, 102]
+    out: 102
+  - name: high-costs
+    in:
+      tasks:
+        - [100, 100]
+        - [99, 99]
+        - [98, 98]
+    out: 297
+  - name: mixed-small
+    in:
+      tasks:
+        - [3, 5]
+        - [1, 4]
+        - [2, 2]
+        - [4, 8]
+    out: 10
+  - name: reorder-required
+    in:
+      tasks:
+        - [5, 6]
+        - [1, 10]
+        - [2, 3]
+    out: 10
+  - name: powers-of-two
+    in:
+      tasks:
+        - [1, 2]
+        - [2, 4]
+        - [4, 8]
+        - [8, 16]
+        - [16, 32]
+    out: 32
+  - name: maximum-actuals
+    in:
+      tasks:
+        - [10000, 10000]
+        - [10000, 10000]
+    out: 20000
+  - name: maximum-thresholds
+    in:
+      tasks:
+        - [1, 10000]
+        - [2, 10000]
+        - [3, 10000]
+    out: 10003
+  - name: threshold-after-spend
+    in:
+      tasks:
+        - [8, 9]
+        - [1, 10]
+        - [1, 11]
+    out: 11
+  - name: four-staged
+    in:
+      tasks:
+        - [2, 9]
+        - [7, 8]
+        - [3, 10]
+        - [1, 5]
+    out: 14
+  - name: varied-gaps
+    in:
+      tasks:
+        - [9, 20]
+        - [1, 2]
+        - [4, 10]
+        - [2, 9]
+    out: 21
+  - name: increasing-actuals
+    in:
+      tasks:
+        - [1, 5]
+        - [2, 6]
+        - [3, 7]
+        - [4, 8]
+        - [5, 9]
+    out: 19
+  - name: decreasing-actuals
+    in:
+      tasks:
+        - [5, 5]
+        - [4, 6]
+        - [3, 7]
+        - [2, 8]
+        - [1, 9]
+    out: 15
+  - name: alternating-gaps
+    in:
+      tasks:
+        - [1, 10]
+        - [9, 9]
+        - [1, 8]
+        - [8, 8]
+        - [1, 7]
+    out: 20
+  - name: large-balanced
+    in:
+      tasks:
+        - [4000, 7000]
+        - [3000, 6000]
+        - [2000, 5000]
+        - [1000, 4000]
+    out: 13000
+  - name: large-unbalanced
+    in:
+      tasks:
+        - [9999, 10000]
+        - [1, 10000]
+        - [1, 10000]
+    out: 10002
+  - name: ten-unit-chain
+    in:
+      tasks:
+        - [10, 11]
+        - [10, 12]
+        - [10, 13]
+        - [10, 14]
+        - [10, 15]
+        - [10, 16]
+    out: 61
+  - name: sparse-threshold
+    in:
+      tasks:
+        - [2, 2]
+        - [2, 50]
+        - [2, 2]
+        - [2, 2]
+        - [2, 2]
+    out: 50
+  - name: near-limit-single
+    in:
+      tasks:
+        - [9999, 10000]
+    out: 10000
+  - name: near-limit-multiple
+    in:
+      tasks:
+        - [9999, 10000]
+        - [9998, 9999]
+        - [9997, 9998]
+    out: 29995
+  - name: many-small-varied
+    in:
+      tasks:
+        - [1, 3]
+        - [2, 5]
+        - [3, 7]
+        - [4, 9]
+        - [5, 11]
+        - [6, 13]
+        - [7, 15]
+        - [8, 17]
+    out: 38
+  - name: high-cost-staircase
+    in:
+      tasks:
+        - [1000, 2000]
+        - [900, 1900]
+        - [800, 1800]
+        - [700, 1700]
+        - [600, 1600]
+    out: 5000
+  - name: all-minimum-two
+    in:
+      tasks:
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+        - [1, 2]
+    out: 9
+  - name: alternating-cost-threshold
+    in:
+      tasks:
+        - [1, 100]
+        - [50, 51]
+        - [1, 100]
+        - [50, 51]
+        - [1, 100]
+    out: 104
+  - name: repeated-max-threshold
+    in:
+      tasks:
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+        - [1, 10000]
+    out: 10009
+  - name: descending-gap-chain
+    in:
+      tasks:
+        - [9, 10]
+        - [8, 12]
+        - [7, 14]
+        - [6, 16]
+        - [5, 18]
+        - [4, 20]
+        - [3, 22]
+        - [2, 24]
+        - [1, 26]
+    out: 46
+  - name: near-limit-total-energy
+    in:
+      tasks:
+        - [10000, 10000]
+        - [10000, 10000]
+        - [10000, 10000]
+        - [9999, 10000]
+        - [9998, 9999]
+    out: 49997

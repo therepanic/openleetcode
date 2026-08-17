@@ -1,0 +1,320 @@
+entry:
+  id: 1962
+  title: "remove-stones-to-minimize-the-total"
+  params:
+    piles:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().minStoneSum({piles}, {k})"
+    rust: "Solution::min_stone_sum({piles}, {k})"
+    python3: "Solution().minStoneSum({piles}, {k})"
+    python2: "Solution().minStoneSum({piles}, {k})"
+    ruby: "min_stone_sum({piles}, {k})"
+    java: "new Solution().minStoneSum({piles}, {k})"
+    csharp: "new Solution().MinStoneSum({piles}, {k})"
+    kotlin: "Solution().minStoneSum({piles}, {k})"
+    go: "minStoneSum({piles}, {k})"
+    dart: "Solution().minStoneSum({piles}, {k})"
+    swift: "Solution().minStoneSum({piles}, {k})"
+    typescript: "minStoneSum({piles}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minStoneSum(piles, k, {result})"
+    checker: |
+      import heapq
+
+      class Checker:
+          def minStoneSum(self, piles, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              heap = [-int(x) for x in piles]
+              heapq.heapify(heap)
+              for _ in range(k):
+                  x = -heapq.heappop(heap)
+                  heapq.heappush(heap, -(x - x // 2))
+              return result == -sum(heap)
+
+seed: 1962
+
+tests:
+  - name: "example_one"
+    in:
+      piles: [5, 4, 9]
+      k: 2
+    out: 12
+  - name: "example_two"
+    in:
+      piles: [4, 3, 6, 7]
+      k: 3
+    out: 12
+  - name: "single_even_once"
+    in:
+      piles: [10]
+      k: 1
+    out: 5
+  - name: "single_odd_once"
+    in:
+      piles: [9]
+      k: 1
+    out: 5
+  - name: "single_repeated"
+    in:
+      piles: [100]
+      k: 10
+    out: 1
+  - name: "single_until_one"
+    in:
+      piles: [1]
+      k: 100000
+    out: 1
+  - name: "all_ones"
+    in:
+      piles: [1, 1, 1, 1, 1]
+      k: 100
+    out: 5
+  - name: "two_equal"
+    in:
+      piles: [8, 8]
+      k: 1
+    out: 12
+  - name: "two_equal_many"
+    in:
+      piles: [8, 8]
+      k: 5
+    out: 3
+  - name: "odd_values"
+    in:
+      piles: [3, 5, 7, 9, 11]
+      k: 4
+    out: 20
+  - name: "large_gap"
+    in:
+      piles: [1, 1, 1, 10000]
+      k: 3
+    out: 1253
+  - name: "large_gap_many"
+    in:
+      piles: [1, 1, 10000]
+      k: 20
+    out: 3
+  - name: "zero_not_allowed_boundary"
+    in:
+      piles: [2, 2, 2]
+      k: 1
+    out: 5
+  - name: "powers_of_two"
+    in:
+      piles: [2, 4, 8, 16, 32]
+      k: 5
+    out: 22
+  - name: "mixed_small"
+    in:
+      piles: [2, 3, 4, 5, 6]
+      k: 6
+    out: 10
+  - name: "many_piles_one_round"
+    in:
+      piles: [2, 4, 6, 8, 10, 12, 14, 16]
+      k: 1
+    out: 64
+  - name: "many_piles_full_round"
+    in:
+      piles: [2, 4, 6, 8, 10, 12, 14, 16]
+      k: 8
+    out: 32
+  - name: "all_maximum"
+    in:
+      piles: [10000, 10000, 10000, 10000]
+      k: 1
+    out: 35000
+  - name: "all_maximum_many"
+    in:
+      piles: [10000, 10000, 10000, 10000]
+      k: 100000
+    out: 4
+  - name: "alternating"
+    in:
+      piles: [1, 100, 2, 99, 3, 98]
+      k: 7
+    out: 69
+  - name: "duplicates_and_small"
+    in:
+      piles: [7, 7, 7, 1, 1]
+      k: 3
+    out: 14
+  - name: "k_one_maximum"
+    in:
+      piles: [1, 2, 3, 9999]
+      k: 1
+    out: 5006
+  - name: "k_equals_length"
+    in:
+      piles: [9, 8, 7, 6]
+      k: 4
+    out: 16
+  - name: "deep_reduction_odd"
+    in:
+      piles: [9999]
+      k: 13
+    out: 2
+  - name: "deep_reduction_even"
+    in:
+      piles: [8192]
+      k: 13
+    out: 1
+  - name: "balanced_medium"
+    in:
+      piles: [101, 203, 405, 809]
+      k: 9
+    out: 254
+  - name: "ten_varied"
+    in:
+      piles: [13, 26, 39, 52, 65, 78, 91, 104, 117, 130]
+      k: 17
+    out: 190
+  - name: "near_max_varied"
+    in:
+      piles: [9991, 9993, 9995, 9997, 9999]
+      k: 7
+    out: 19991
+  - name: "many_ones_and_big"
+    in:
+      piles: [1, 1, 1, 1, 1, 5000, 6000]
+      k: 9
+    out: 506
+  - name: "long_small_cycle"
+    in:
+      piles: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+      k: 25
+    out: 24
+  - name: "large_static_array"
+    in:
+      piles:
+        [
+          10000,
+          9999,
+          9998,
+          9997,
+          9996,
+          9995,
+          9994,
+          9993,
+          9992,
+          9991,
+          9990,
+          9989,
+          9988,
+          9987,
+          9986,
+          9985,
+          9984,
+          9983,
+          9982,
+          9981,
+        ]
+      k: 100
+    out: 6256
+  - name: "generated_small"
+    seed: 196201
+    in:
+      piles:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 100
+  - name: "generated_medium"
+    seed: 196202
+    in:
+      piles:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50
+          max: 300
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 1000
+  - name: "generated_large"
+    seed: 196203
+    in:
+      piles:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 100000
+  - name: "generated_large_low_k"
+    seed: 196204
+    in:
+      piles:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50000
+          max: 100000
+        of:
+          gen: "int"
+          min: 5000
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 1
+        max: 100
+  - name: "generated_large_high_k"
+    seed: 196205
+    in:
+      piles:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 5000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+      k:
+        gen: "int"
+        min: 50000
+        max: 100000

@@ -1,0 +1,413 @@
+entry:
+  id: 1893
+  title: "check-if-all-the-integers-in-a-range-are-covered"
+  params:
+    ranges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    left:
+      type: int
+    right:
+      type: int
+  call:
+    cpp: "Solution().isCovered({ranges}, {left}, {right})"
+    rust: "Solution::is_covered({ranges}, {left}, {right})"
+    python3: "Solution().isCovered({ranges}, {left}, {right})"
+    python2: "Solution().isCovered({ranges}, {left}, {right})"
+    ruby: "is_covered({ranges}, {left}, {right})"
+    java: "new Solution().isCovered({ranges}, {left}, {right})"
+    csharp: "new Solution().IsCovered({ranges}, {left}, {right})"
+    kotlin: "Solution().isCovered({ranges}, {left}, {right})"
+    go: "isCovered({ranges}, {left}, {right})"
+    dart: "Solution().isCovered({ranges}, {left}, {right})"
+    swift: "Solution().isCovered({ranges}, {left}, {right})"
+    typescript: "isCovered({ranges}, {left}, {right})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().isCovered(ranges, left, right, {result})"
+    checker: |
+      class Checker:
+          def isCovered(self, ranges, left, right, result):
+              if not isinstance(result, bool):
+                  return False
+              covered = [False] * 51
+              for interval in ranges:
+                  start, end = interval
+                  for value in range(start, end + 1):
+                      covered[value] = True
+              expected = all(covered[value] for value in range(left, right + 1))
+              return result is expected
+
+seed: 1893
+
+tests:
+  - name: example-contiguous
+    in:
+      ranges:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+      left: 2
+      right: 5
+    out: true
+    judge:
+      type: "exact"
+  - name: example-uncovered
+    in:
+      ranges:
+        - [1, 10]
+        - [10, 20]
+      left: 21
+      right: 21
+    out: false
+    judge:
+      type: "exact"
+  - name: single-point-covered
+    in:
+      ranges:
+        - [7, 7]
+      left: 7
+      right: 7
+    out: true
+    judge:
+      type: "exact"
+  - name: single-point-missed
+    in:
+      ranges:
+        - [7, 7]
+      left: 6
+      right: 6
+    out: false
+    judge:
+      type: "exact"
+  - name: exact-one-interval
+    in:
+      ranges:
+        - [4, 12]
+      left: 4
+      right: 12
+    out: true
+    judge:
+      type: "exact"
+  - name: interval-too-short-left
+    in:
+      ranges:
+        - [5, 12]
+      left: 4
+      right: 12
+    out: false
+    judge:
+      type: "exact"
+  - name: interval-too-short-right
+    in:
+      ranges:
+        - [5, 12]
+      left: 5
+      right: 13
+    out: false
+    judge:
+      type: "exact"
+  - name: touching-intervals
+    in:
+      ranges:
+        - [1, 5]
+        - [5, 9]
+      left: 1
+      right: 9
+    out: true
+    judge:
+      type: "exact"
+  - name: one-number-gap
+    in:
+      ranges:
+        - [1, 4]
+        - [6, 10]
+      left: 1
+      right: 10
+    out: false
+    judge:
+      type: "exact"
+  - name: gap-outside-query
+    in:
+      ranges:
+        - [1, 4]
+        - [6, 10]
+      left: 1
+      right: 4
+    out: true
+    judge:
+      type: "exact"
+  - name: overlap-heavy
+    in:
+      ranges:
+        - [1, 10]
+        - [3, 7]
+        - [5, 15]
+      left: 2
+      right: 14
+    out: true
+    judge:
+      type: "exact"
+  - name: duplicate-ranges
+    in:
+      ranges:
+        - [2, 8]
+        - [2, 8]
+        - [2, 8]
+      left: 2
+      right: 8
+    out: true
+    judge:
+      type: "exact"
+  - name: duplicate-does-not-fill-gap
+    in:
+      ranges:
+        - [2, 4]
+        - [2, 4]
+        - [6, 8]
+      left: 2
+      right: 8
+    out: false
+    judge:
+      type: "exact"
+  - name: query-inside-overlap
+    in:
+      ranges:
+        - [1, 3]
+        - [8, 15]
+        - [12, 20]
+      left: 12
+      right: 15
+    out: true
+    judge:
+      type: "exact"
+  - name: query-at-lower-bound
+    in:
+      ranges:
+        - [1, 1]
+        - [2, 2]
+      left: 1
+      right: 2
+    out: true
+    judge:
+      type: "exact"
+  - name: query-at-upper-bound
+    in:
+      ranges:
+        - [49, 50]
+      left: 49
+      right: 50
+    out: true
+    judge:
+      type: "exact"
+  - name: missing-lower-bound
+    in:
+      ranges:
+        - [2, 50]
+      left: 1
+      right: 50
+    out: false
+    judge:
+      type: "exact"
+  - name: missing-upper-bound
+    in:
+      ranges:
+        - [1, 49]
+      left: 1
+      right: 50
+    out: false
+    judge:
+      type: "exact"
+  - name: full-domain-one-range
+    in:
+      ranges:
+        - [1, 50]
+      left: 1
+      right: 50
+    out: true
+    judge:
+      type: "exact"
+  - name: full-domain-split
+    in:
+      ranges:
+        - [1, 17]
+        - [18, 33]
+        - [34, 50]
+      left: 1
+      right: 50
+    out: true
+    judge:
+      type: "exact"
+  - name: isolated-query-covered
+    in:
+      ranges:
+        - [1, 2]
+        - [10, 20]
+        - [30, 40]
+      left: 30
+      right: 30
+    out: true
+    judge:
+      type: "exact"
+  - name: isolated-query-uncovered
+    in:
+      ranges:
+        - [1, 2]
+        - [10, 20]
+        - [30, 40]
+      left: 25
+      right: 25
+    out: false
+    judge:
+      type: "exact"
+  - name: unsorted-ranges
+    in:
+      ranges:
+        - [20, 25]
+        - [1, 8]
+        - [9, 19]
+      left: 1
+      right: 25
+    out: true
+    judge:
+      type: "exact"
+  - name: nested-range
+    in:
+      ranges:
+        - [1, 50]
+        - [10, 10]
+        - [20, 30]
+      left: 11
+      right: 49
+    out: true
+    judge:
+      type: "exact"
+  - name: many-singletons-contiguous
+    in:
+      ranges:
+        - [10, 10]
+        - [11, 11]
+        - [12, 12]
+        - [13, 13]
+        - [14, 14]
+      left: 10
+      right: 14
+    out: true
+    judge:
+      type: "exact"
+  - name: many-singletons-gap
+    in:
+      ranges:
+        - [10, 10]
+        - [11, 11]
+        - [13, 13]
+        - [14, 14]
+      left: 10
+      right: 14
+    out: false
+    judge:
+      type: "exact"
+  - name: overlap-at-gap-repair
+    in:
+      ranges:
+        - [1, 5]
+        - [4, 8]
+        - [7, 12]
+      left: 2
+      right: 11
+    out: true
+    judge:
+      type: "exact"
+  - name: gap-before-query
+    in:
+      ranges:
+        - [1, 5]
+        - [8, 20]
+      left: 8
+      right: 20
+    out: true
+    judge:
+      type: "exact"
+  - name: gap-after-query
+    in:
+      ranges:
+        - [1, 5]
+        - [8, 20]
+      left: 1
+      right: 5
+    out: true
+    judge:
+      type: "exact"
+  - name: gap-at-query-start
+    in:
+      ranges:
+        - [1, 4]
+        - [6, 10]
+      left: 5
+      right: 8
+    out: false
+    judge:
+      type: "exact"
+  - name: gap-at-query-end
+    in:
+      ranges:
+        - [1, 4]
+        - [6, 10]
+      left: 2
+      right: 5
+    out: false
+    judge:
+      type: "exact"
+  - name: range-count-one
+    in:
+      ranges:
+        - [25, 25]
+      left: 25
+      right: 25
+    out: true
+    judge:
+      type: "exact"
+  - name: broad-query-small-coverage
+    in:
+      ranges:
+        - [24, 26]
+      left: 1
+      right: 50
+    out: false
+    judge:
+      type: "exact"
+  - name: all-overlapping-cover
+    in:
+      ranges:
+        - [1, 20]
+        - [10, 30]
+        - [21, 50]
+        - [5, 45]
+      left: 1
+      right: 50
+    out: true
+    judge:
+      type: "exact"
+  - name: coverage-only-at-query-ends
+    in:
+      ranges:
+        - [1, 1]
+        - [3, 3]
+        - [5, 5]
+        - [1, 5]
+      left: 1
+      right: 5
+    out: true
+    judge:
+      type: "exact"

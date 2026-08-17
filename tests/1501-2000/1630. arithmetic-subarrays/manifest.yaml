@@ -1,0 +1,338 @@
+entry:
+  id: 1630
+  title: arithmetic-subarrays
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    l:
+      type: array
+      items:
+        type: int
+    r:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().checkArithmeticSubarrays({nums}, {l}, {r})"
+    rust: "Solution::check_arithmetic_subarrays({nums}, {l}, {r})"
+    python3: "Solution().checkArithmeticSubarrays({nums}, {l}, {r})"
+    python2: "Solution().checkArithmeticSubarrays({nums}, {l}, {r})"
+    ruby: "check_arithmetic_subarrays({nums}, {l}, {r})"
+    java: "new Solution().checkArithmeticSubarrays({nums}, {l}, {r})"
+    csharp: "new Solution().CheckArithmeticSubarrays({nums}, {l}, {r})"
+    kotlin: "Solution().checkArithmeticSubarrays({nums}, {l}, {r})"
+    go: "checkArithmeticSubarrays({nums}, {l}, {r})"
+    dart: "Solution().checkArithmeticSubarrays({nums}, {l}, {r})"
+    swift: "Solution().checkArithmeticSubarrays({nums}, {l}, {r})"
+    typescript: "checkArithmeticSubarrays({nums}, {l}, {r})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().checkArithmeticSubarrays(nums, l, r, {result})"
+    checker: |
+      class Checker:
+          def checkArithmeticSubarrays(self, nums, l, r, result):
+              if not isinstance(result, list) or len(result) != len(l) or len(l) != len(r):
+                  return False
+              expected = []
+              for left, right in zip(l, r):
+                  values = sorted(nums[left:right + 1])
+                  if len(values) < 2:
+                      expected.append(True)
+                  else:
+                      step = values[1] - values[0]
+                      expected.append(all(values[i] - values[i - 1] == step for i in range(2, len(values))))
+              return result == expected
+
+seed: 1630
+
+tests:
+  - name: example-one
+    in:
+      nums: [4, 6, 5, 9, 3, 7]
+      l: [0, 0, 2]
+      r: [2, 3, 5]
+    out: [true, false, true]
+    judge:
+      type: exact
+  - name: example-two
+    in:
+      nums: [-12, -9, -3, -12, -6, 15, 20, -25, -20, -15, -10]
+      l: [0, 1, 6, 4, 8, 7]
+      r: [4, 4, 9, 7, 9, 10]
+    out: [false, true, false, false, true, true]
+    judge:
+      type: exact
+  - name: two-elements
+    in:
+      nums: [9, -4, 9]
+      l: [0, 1]
+      r: [1, 2]
+    out: [true, true]
+    judge:
+      type: exact
+  - name: all-equal
+    in:
+      nums: [7, 7, 7, 7, 7]
+      l: [0, 1, 2]
+      r: [4, 3, 4]
+    out: [true, true, true]
+    judge:
+      type: exact
+  - name: descending
+    in:
+      nums: [10, 4, 7, 1, -2, 13]
+      l: [0, 0, 1]
+      r: [3, 4, 4]
+    out: [true, true, true]
+    judge:
+      type: exact
+  - name: duplicate-break
+    in:
+      nums: [1, 1, 2, 3, 5, 8]
+      l: [0, 0, 1, 2]
+      r: [2, 3, 5, 5]
+    out: [false, false, false, false]
+    judge:
+      type: exact
+  - name: negative-arithmetic
+    in:
+      nums: [-9, -1, -5, 3, -13, 7]
+      l: [0, 0, 1]
+      r: [3, 4, 4]
+    out: [true, true, false]
+    judge:
+      type: exact
+  - name: mixed-small
+    in:
+      nums: [2, 10, 6, 14, 18, 22, 3]
+      l: [0, 0, 1, 2]
+      r: [3, 4, 5, 6]
+    out: [true, true, true, false]
+    judge:
+      type: exact
+  - name: singleton-slices-not-allowed
+    in:
+      nums: [5, 1, 9, 13]
+      l: [0, 1, 2]
+      r: [1, 2, 3]
+    out: [true, true, true]
+    judge:
+      type: exact
+  - name: same-values-different-order
+    in:
+      nums: [20, 5, 15, 10, 25, 30]
+      l: [0, 0, 1]
+      r: [3, 4, 5]
+    out: [true, true, false]
+    judge:
+      type: exact
+  - name: large-magnitude
+    in:
+      nums: [-100000, 0, 100000, -99999, 1, 100001]
+      l: [0, 0, 3]
+      r: [2, 5, 5]
+    out: [true, false, true]
+    judge:
+      type: exact
+  - name: zero-step-and-outlier
+    in:
+      nums: [0, 0, 0, 1, 0, 0]
+      l: [0, 0, 1]
+      r: [2, 5, 5]
+    out: [true, false, false]
+    judge:
+      type: exact
+  - name: step-two-permuted
+    in:
+      nums: [9, 1, 7, 3, 5, 12, 15]
+      l: [0, 0, 1]
+      r: [4, 5, 6]
+    out: [true, false, false]
+    judge:
+      type: exact
+  - name: overlapping-queries
+    in:
+      nums: [8, 2, 6, 4, 10, 12, 14, 1]
+      l: [0, 1, 2, 3, 0]
+      r: [3, 6, 5, 6, 6]
+    out: [true, false, false, false, true]
+    judge:
+      type: exact
+  - name: alternating-values
+    in:
+      nums: [1, 9, 1, 9, 1, 9, 1, 9]
+      l: [0, 0, 1, 2]
+      r: [1, 3, 6, 7]
+    out: [true, false, false, false]
+    judge:
+      type: exact
+  - name: arithmetic-with-negative-step
+    in:
+      nums: [-1, -7, -4, 5, -10, -13, -16]
+      l: [0, 0, 4]
+      r: [2, 3, 6]
+    out: [true, false, true]
+    judge:
+      type: exact
+  - name: repeated-query
+    in:
+      nums: [11, 3, 7, 15, 19, 23]
+      l: [0, 0, 0, 1]
+      r: [3, 3, 3, 5]
+    out: [true, true, true, false]
+    judge:
+      type: exact
+  - name: short-invalid
+    in:
+      nums: [1, 2, 4, 8, 16, 32]
+      l: [0, 0, 1, 2]
+      r: [2, 3, 4, 5]
+    out: [false, false, false, false]
+    judge:
+      type: exact
+  - name: powers-with-valid-pair
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64]
+      l: [0, 1, 2, 3, 4]
+      r: [1, 2, 3, 4, 6]
+    out: [true, true, true, true, false]
+    judge:
+      type: exact
+  - name: broad-valid-subarrays
+    in:
+      nums: [30, 10, 50, 20, 40, 60, 70, 0]
+      l: [0, 0, 1, 2]
+      r: [4, 5, 6, 7]
+    out: [true, true, false, false]
+    judge:
+      type: exact
+  - name: extremes-and-zero
+    in:
+      nums: [-100000, 100000, 0, -50000, 50000]
+      l: [0, 0, 2]
+      r: [1, 4, 4]
+    out: [true, true, true]
+    judge:
+      type: exact
+  - name: many-duplicates
+    in:
+      nums: [4, 4, 8, 4, 12, 16, 4, 20]
+      l: [0, 0, 1, 2]
+      r: [1, 4, 5, 7]
+    out: [true, false, false, false]
+    judge:
+      type: exact
+  - name: odd-step
+    in:
+      nums: [13, 1, 7, 10, 4, 16, 19]
+      l: [0, 0, 1, 2]
+      r: [4, 5, 5, 6]
+    out: [true, true, false, false]
+    judge:
+      type: exact
+  - name: query-order
+    in:
+      nums: [6, 2, 10, 14, 18, 22, 26]
+      l: [4, 0, 2, 1]
+      r: [6, 3, 6, 5]
+    out: [true, true, true, false]
+    judge:
+      type: exact
+  - name: noncontiguous-values
+    in:
+      nums: [0, 100, 3, 6, 9, 12, 15]
+      l: [0, 1, 2, 3]
+      r: [2, 2, 6, 6]
+    out: [false, true, true, true]
+    judge:
+      type: exact
+  - name: negative-and-positive
+    in:
+      nums: [-8, 4, 0, -4, 8, 12, -12]
+      l: [0, 0, 1, 2]
+      r: [4, 5, 4, 6]
+    out: [true, true, true, false]
+    judge:
+      type: exact
+  - name: length-three-checks
+    in:
+      nums: [2, 5, 8, 3, 7, 11, 0, 0]
+      l: [0, 1, 2, 3, 4, 6]
+      r: [2, 3, 4, 5, 5, 7]
+    out: [true, false, false, true, true, true]
+    judge:
+      type: exact
+  - name: nearly-valid
+    in:
+      nums: [2, 6, 10, 14, 19, 22, 26, 30]
+      l: [0, 0, 1, 3]
+      r: [3, 4, 7, 7]
+    out: [true, false, false, false]
+    judge:
+      type: exact
+  - name: valid-window-inside-noise
+    in:
+      nums: [99, 15, 3, 9, 21, 27, -50]
+      l: [1, 1, 2, 0]
+      r: [5, 4, 5, 6]
+    out: [true, true, false, false]
+    judge:
+      type: exact
+  - name: all-negative-valid
+    in:
+      nums: [-2, -14, -8, -20, -26, 1]
+      l: [0, 0, 1]
+      r: [4, 5, 4]
+    out: [true, false, true]
+    judge:
+      type: exact
+  - name: varied-query-count
+    in:
+      nums: [5, 15, 25, 35, 45, 55, 65, 75, 84]
+      l: [0, 1, 2, 3, 4, 0, 5]
+      r: [8, 8, 8, 8, 8, 7, 8]
+    out: [false, false, false, false, false, true, false]
+    judge:
+      type: exact
+  - name: reordered-valid-four
+    in:
+      nums: [17, 5, 11, 23, 29, 35, 41]
+      l: [0, 0, 1, 2]
+      r: [3, 4, 6, 5]
+    out: [true, true, false, false]
+    judge:
+      type: exact
+  - name: zero-and-signs
+    in:
+      nums: [-6, 0, 6, 12, -12, 18]
+      l: [0, 0, 1, 2]
+      r: [2, 3, 5, 5]
+    out: [true, true, false, false]
+    judge:
+      type: exact
+  - name: final-boundary
+    in:
+      nums: [100000, 99999, 99998, 99997, -100000]
+      l: [0, 0, 1]
+      r: [3, 4, 3]
+    out: [true, false, true]
+    judge:
+      type: exact
+  - name: minimum-two-and-full-range
+    in:
+      nums: [42, 0, -42, 84, 126, 168]
+      l: [0, 1, 0]
+      r: [1, 2, 5]
+    out: [true, true, true]
+    judge:
+      type: exact

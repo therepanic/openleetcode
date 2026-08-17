@@ -1,0 +1,204 @@
+entry:
+  id: 1520
+  title: "maximum-number-of-non-overlapping-substrings"
+  params:
+    s:
+      type: string
+  call:
+    cpp: "Solution().maxNumOfSubstrings({s})"
+    rust: "Solution::max_num_of_substrings({s})"
+    python3: "Solution().maxNumOfSubstrings({s})"
+    python2: "Solution().maxNumOfSubstrings({s})"
+    ruby: "max_num_of_substrings({s})"
+    java: "new Solution().maxNumOfSubstrings({s})"
+    csharp: "new Solution().MaxNumOfSubstrings({s})"
+    kotlin: "Solution().maxNumOfSubstrings({s})"
+    go: "maxNumOfSubstrings({s})"
+    dart: "Solution().maxNumOfSubstrings({s})"
+    swift: "Solution().maxNumOfSubstrings({s})"
+    typescript: "maxNumOfSubstrings({s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxNumOfSubstrings(s, {result})"
+    checker: |
+      class Checker:
+          def maxNumOfSubstrings(self, s, result):
+              if not isinstance(result, list) or any(not isinstance(x, str) or not x for x in result):
+                  return False
+              first = {}
+              last = {}
+              for i, ch in enumerate(s):
+                  first.setdefault(ch, i)
+                  last[ch] = i
+              intervals = []
+              for ch in first:
+                  left, right = first[ch], last[ch]
+                  ok = True
+                  while True:
+                      old_left, old_right = left, right
+                      for i in range(left, right + 1):
+                          if first[s[i]] < left:
+                              ok = False
+                              break
+                          right = max(right, last[s[i]])
+                      if not ok:
+                          break
+                      if left == old_left and right == old_right:
+                          break
+                  if ok:
+                      intervals.append((left, right, s[left:right + 1]))
+              intervals.sort(key=lambda x: (x[1], x[0]))
+              expected = []
+              end = -1
+              for left, right, value in intervals:
+                  if left > end:
+                      expected.append(value)
+                      end = right
+              return sorted(result) == sorted(expected)
+
+seed: 15201520
+
+tests:
+  - name: example-one
+    in:
+      s: "adefaddaccc"
+  - name: example-two
+    in:
+      s: "abbaccd"
+  - name: all-unique
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+  - name: one-repeated-character
+    in:
+      s: "aaaaaa"
+  - name: two-blocks
+    in:
+      s: "aabbcc"
+  - name: nested-dependencies
+    in:
+      s: "cabcccbaa"
+  - name: crossing-looking-ranges
+    in:
+      s: "abacbadeaf"
+  - name: single-letter
+    in:
+      s: "z"
+  - name: two-letters
+    in:
+      s: "az"
+  - name: repeated-endpoints
+    in:
+      s: "abcaabc"
+  - name: isolated-middle
+    in:
+      s: "xxayybz"
+  - name: full-closure
+    in:
+      s: "abccba"
+  - name: many-singletons
+    in:
+      s: "abcdefghijklmnopqrst"
+  - name: alternating-two
+    in:
+      s: "abababab"
+  - name: alternating-three
+    in:
+      s: "abcabcabc"
+  - name: long-first-last
+    in:
+      s: "abacabadabacaba"
+  - name: disjoint-runs
+    in:
+      s: "aaabbbcccdddeee"
+  - name: one-wide-and-singletons
+    in:
+      s: "abacdefghijak"
+  - name: reverse-alphabet
+    in:
+      s: "zyxwvutsrqponmlkjihgfedcba"
+  - name: sparse-duplicates
+    in:
+      s: "qwertyqwerty"
+  - name: closure-chain
+    in:
+      s: "abcbacdefed"
+  - name: repeated-prefix
+    in:
+      s: "abcabcx"
+  - name: repeated-suffix
+    in:
+      s: "xabcabc"
+  - name: palindrome
+    in:
+      s: "abccbaabccba"
+  - name: all-equal-long
+    in:
+      s: "mmmmmmmmmmmmmmmm"
+  - name: disjoint-singletons-with-runs
+    in:
+      s: "aabbcddceeffg"
+  - name: large-alphabet-prefix
+    in:
+      s: "abcdefghijklmnopqrstuvwxyza"
+  - name: overlapping-closures
+    in:
+      s: "abacbdcedefg"
+  - name: alternating-four
+    in:
+      s: "abcdabcdabcdabcd"
+  - name: unique-then-repeat
+    in:
+      s: "abcdefghijklmnoapq"
+  - name: repeat-then-unique
+    in:
+      s: "aabcdefghijklmno"
+  - name: nested-three
+    in:
+      s: "abacaba"
+  - name: separate-pairs
+    in:
+      s: "aabbccddee"
+  - name: mixed-lowercase
+    in:
+      s: "kllmnomnoppqrrs"
+  - name: maximum-small-alphabet
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+  - name: generated-random-like
+    in:
+      s:
+        gen: "str"
+        len: 97
+        alphabet: "abcdefgh"
+  - name: generated-medium
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "abcdefghijkl"
+  - name: generated-large
+    in:
+      s:
+        gen: "str"
+        len: 10000
+        alphabet: "abcdefghijklmnop"
+  - name: generated-near-limit
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"
+  - name: generated-maximum
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "abcdefghijklmnopqrstuvwxyz"

@@ -1,0 +1,271 @@
+entry:
+  id: 1720
+  title: "decode-xored-array"
+  params:
+    encoded:
+      type: array
+      items:
+        type: int
+    first:
+      type: int
+  call:
+    cpp: "Solution().decode({encoded}, {first})"
+    rust: "Solution::decode({encoded}, {first})"
+    python3: "Solution().decode({encoded}, {first})"
+    python2: "Solution().decode({encoded}, {first})"
+    ruby: "decode({encoded}, {first})"
+    java: "new Solution().decode({encoded}, {first})"
+    csharp: "new Solution().Decode({encoded}, {first})"
+    kotlin: "Solution().decode({encoded}, {first})"
+    go: "decode({encoded}, {first})"
+    dart: "Solution().decode({encoded}, {first})"
+    swift: "Solution().decode({encoded}, {first})"
+    typescript: "decode({encoded}, {first})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().decode(encoded, first, {result})"
+    checker: |
+      class Checker:
+          def decode(self, encoded, first, result):
+              if not isinstance(result, list) or len(result) != len(encoded) + 1:
+                  return False
+              if not result or result[0] != first:
+                  return False
+              return all(result[i] ^ result[i + 1] == encoded[i] for i in range(len(encoded)))
+
+seed: 1720
+
+tests:
+  - name: example-one
+    in:
+      encoded: [1, 2, 3]
+      first: 1
+    out: [1, 0, 2, 1]
+  - name: example-two
+    in:
+      encoded: [6, 2, 7, 3]
+      first: 4
+    out: [4, 2, 0, 7, 4]
+  - name: minimum-length-zero-xor
+    in:
+      encoded: [0]
+      first: 0
+    out: [0, 0]
+  - name: minimum-length-nonzero
+    in:
+      encoded: [100000]
+      first: 100000
+    out: [100000, 0]
+  - name: all-zeroes
+    in:
+      encoded: [0, 0, 0, 0, 0]
+      first: 37
+    out: [37, 37, 37, 37, 37, 37]
+  - name: alternating-bit
+    in:
+      encoded: [1, 1, 1, 1, 1, 1]
+      first: 0
+    out: [0, 1, 0, 1, 0, 1, 0]
+  - name: high-bit-values
+    in:
+      encoded: [65535, 65535, 65535, 65535]
+      first: 65535
+    out: [65535, 0, 65535, 0, 65535]
+  - name: max-values
+    in:
+      encoded: [100000, 100000, 99999]
+      first: 100000
+    out: [100000, 0, 100000, 63]
+  - name: increasing-small
+    in:
+      encoded: [1, 2, 3, 4, 5, 6, 7]
+      first: 8
+    out: [8, 9, 11, 8, 12, 9, 15, 8]
+  - name: powers-of-two
+    in:
+      encoded: [1, 2, 4, 8, 16, 32]
+      first: 63
+    out: [63, 62, 60, 56, 48, 32, 0]
+  - name: repeated-pattern
+    in:
+      encoded: [5, 10, 5, 10, 5, 10]
+      first: 12
+    out: [12, 9, 3, 6, 12, 9, 3]
+  - name: mixed-small
+    in:
+      encoded: [3, 7, 2, 6, 1, 4, 0, 5]
+      first: 2
+    out: [2, 1, 6, 4, 2, 3, 7, 7, 2]
+  - name: byte-pattern
+    in:
+      encoded: [255, 15, 240, 170, 85]
+      first: 170
+    out: [170, 85, 90, 170, 0, 85]
+  - name: sparse-large
+    in:
+      encoded: [0, 100000, 0, 99999, 1]
+      first: 1
+    out: [1, 1, 100001, 100001, 62, 63]
+  - name: one-bit-first
+    in:
+      encoded: [8, 4, 2, 1]
+      first: 1
+    out: [1, 9, 13, 15, 14]
+  - name: zero-first
+    in:
+      encoded: [12, 34, 56, 78]
+      first: 0
+    out: [0, 12, 46, 22, 88]
+  - name: first-max
+    in:
+      encoded: [1, 2, 4, 8]
+      first: 100000
+    out: [100000, 100001, 100003, 100007, 100015]
+  - name: powers-high
+    in:
+      encoded: [32768, 16384, 8192, 4096]
+      first: 65535
+    out: [65535, 32767, 16383, 8191, 4095]
+  - name: xor-cancellation
+    in:
+      encoded: [12345, 12345, 54321, 54321, 99999]
+      first: 24680
+    out: [24680, 20561, 24680, 46169, 24680, 124663]
+  - name: length-ten
+    in:
+      encoded: [1, 3, 5, 7, 9, 11, 13, 15, 17]
+      first: 42
+    out: [42, 43, 40, 45, 42, 35, 40, 37, 42, 59]
+  - name: length-twelve
+    in:
+      encoded: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110]
+      first: 17
+    out: [17, 27, 15, 17, 57, 11, 55, 113, 33, 123, 31, 113]
+  - name: alternating-large
+    in:
+      encoded: [100000, 99999, 100000, 99999, 100000, 99999]
+      first: 0
+    out: [0, 100000, 63, 99999, 0, 100000, 63]
+  - name: mask-eight
+    in:
+      encoded: [255, 255, 255, 255, 255, 255, 255, 255]
+      first: 128
+    out: [128, 127, 128, 127, 128, 127, 128, 127, 128]
+  - name: fibonacci-like
+    in:
+      encoded: [1, 1, 2, 3, 5, 8, 13, 21]
+      first: 34
+    out: [34, 35, 34, 32, 35, 38, 46, 35, 54]
+  - name: random-mix-one
+    in:
+      encoded: [17, 2048, 73, 65536, 999, 4095]
+      first: 777
+    out: [777, 792, 2840, 2897, 68433, 67766, 67401]
+  - name: random-mix-two
+    in:
+      encoded: [2, 19, 256, 4096, 8191, 65535, 100000]
+      first: 54321
+    out: [54321, 54323, 54304, 54560, 50464, 56031, 9504, 107392]
+  - name: length-fifteen
+    in:
+      encoded: [31, 14, 7, 22, 3, 18, 29, 11, 5, 27, 9, 1, 16, 8]
+      first: 91
+    out: [91, 68, 74, 77, 91, 88, 74, 87, 92, 89, 66, 75, 74, 90, 82]
+  - name: near-limit-chain
+    in:
+      encoded: [100000, 1, 99998, 2, 99997, 3, 99996]
+      first: 99999
+    out: [99999, 63, 62, 100000, 100002, 63, 60, 100000]
+  - name: duplicate-blocks
+    in:
+      encoded: [7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
+      first: 73
+    out: [73, 78, 73, 78, 73, 78, 73, 78, 73, 78, 73]
+  - name: broad-range
+    in:
+      encoded: [4096, 8192, 16384, 32768, 65536, 99999]
+      first: 12345
+    out: [12345, 8249, 57, 16441, 49209, 114745, 18086]
+  - name: generator-short
+    in:
+      encoded:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 0
+          max: 100000
+        elemType: "int"
+      first:
+        gen: "int"
+        min: 0
+        max: 100000
+    seed: 172001
+  - name: generator-medium
+    in:
+      encoded:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 0
+          max: 100000
+        elemType: "int"
+      first:
+        gen: "int"
+        min: 0
+        max: 100000
+    seed: 172002
+  - name: generator-large
+    in:
+      encoded:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 100000
+        elemType: "int"
+      first:
+        gen: "int"
+        min: 0
+        max: 100000
+    seed: 172003
+  - name: generator-max-one
+    in:
+      encoded:
+        gen: "array"
+        len: 9999
+        of:
+          gen: "int"
+          min: 0
+          max: 100000
+        elemType: "int"
+      first:
+        gen: "int"
+        min: 0
+        max: 100000
+    seed: 172004
+  - name: generator-max-two
+    in:
+      encoded:
+        gen: "array"
+        len: 9998
+        of:
+          gen: "int"
+          min: 0
+          max: 100000
+        elemType: "int"
+      first:
+        gen: "int"
+        min: 0
+        max: 100000
+    seed: 172005

@@ -1,0 +1,435 @@
+entry:
+  id: 1591
+  title: "strange-printer-ii"
+  params:
+    targetGrid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().isPrintable({targetGrid})"
+    rust: "Solution::is_printable({targetGrid})"
+    python3: "Solution().isPrintable({targetGrid})"
+    python2: "Solution().isPrintable({targetGrid})"
+    ruby: "is_printable({targetGrid})"
+    java: "new Solution().isPrintable({targetGrid})"
+    csharp: "new Solution().IsPrintable({targetGrid})"
+    kotlin: "Solution().isPrintable({targetGrid})"
+    go: "isPrintable({targetGrid})"
+    dart: "Solution().isPrintable({targetGrid})"
+    swift: "Solution().isPrintable({targetGrid})"
+    typescript: "isPrintable({targetGrid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().isPrintable(targetGrid, {result})"
+    checker: |
+      class Checker:
+          def isPrintable(self, targetGrid, result):
+              if not isinstance(result, bool):
+                  return False
+              m, n = len(targetGrid), len(targetGrid[0])
+              boxes = {}
+              for r in range(m):
+                  for c in range(n):
+                      color = targetGrid[r][c]
+                      if color not in boxes:
+                          boxes[color] = [r, r, c, c]
+                      else:
+                          box = boxes[color]
+                          box[0] = min(box[0], r)
+                          box[1] = max(box[1], r)
+                          box[2] = min(box[2], c)
+                          box[3] = max(box[3], c)
+              remaining = set(boxes)
+              while remaining:
+                  removable = set()
+                  for color in remaining:
+                      r0, r1, c0, c1 = boxes[color]
+                      ok = True
+                      for r in range(r0, r1 + 1):
+                          for c in range(c0, c1 + 1):
+                              if targetGrid[r][c] not in (0, color):
+                                  ok = False
+                      if ok:
+                          removable.add(color)
+                  if not removable:
+                      expected = False
+                      return result == expected
+                  for color in removable:
+                      r0, r1, c0, c1 = boxes[color]
+                      for r in range(r0, r1 + 1):
+                          for c in range(c0, c1 + 1):
+                              targetGrid[r][c] = 0
+                  remaining -= removable
+              return result is True
+
+seed: 1591
+
+tests:
+  - name: example-one
+    in:
+      targetGrid:
+        - [1, 1, 1, 1]
+        - [1, 2, 2, 1]
+        - [1, 2, 2, 1]
+        - [1, 1, 1, 1]
+    out: true
+  - name: example-two
+    in:
+      targetGrid:
+        - [1, 1, 1, 1]
+        - [1, 1, 3, 3]
+        - [1, 1, 3, 4]
+        - [5, 5, 1, 4]
+    out: true
+  - name: example-three
+    in:
+      targetGrid:
+        - [1, 2, 1]
+        - [2, 1, 2]
+        - [1, 2, 1]
+    out: false
+  - name: one-cell
+    in:
+      targetGrid:
+        - [7]
+    out: true
+  - name: two-by-two-checker
+    in:
+      targetGrid:
+        - [1, 2]
+        - [2, 1]
+    out: false
+  - name: two-by-three-checker
+    in:
+      targetGrid:
+        - [1, 2, 1]
+        - [2, 1, 2]
+    out: false
+  - name: nested-center
+    in:
+      targetGrid:
+        - [1, 1, 1, 1, 1]
+        - [1, 2, 2, 2, 1]
+        - [1, 2, 3, 2, 1]
+        - [1, 2, 2, 2, 1]
+        - [1, 1, 1, 1, 1]
+    out: true
+  - name: horizontal-stripes
+    in:
+      targetGrid:
+        - [1, 1, 1, 1]
+        - [2, 2, 2, 2]
+        - [3, 3, 3, 3]
+        - [4, 4, 4, 4]
+    out: true
+  - name: vertical-stripes
+    in:
+      targetGrid:
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+        - [1, 2, 3, 4]
+    out: true
+  - name: diagonal-four
+    in:
+      targetGrid:
+        - [1, 2, 3, 4]
+        - [2, 3, 4, 1]
+        - [3, 4, 1, 2]
+        - [4, 1, 2, 3]
+    out: false
+  - name: three-color-cycle
+    in:
+      targetGrid:
+        - [1, 2, 3]
+        - [3, 1, 2]
+        - [2, 3, 1]
+    out: false
+  - name: removable-corner
+    in:
+      targetGrid:
+        - [1, 1, 2]
+        - [1, 1, 2]
+        - [3, 3, 2]
+    out: true
+  - name: overlapping-valid
+    in:
+      targetGrid:
+        - [1, 1, 2, 2]
+        - [1, 3, 3, 2]
+        - [1, 3, 3, 2]
+        - [1, 1, 2, 2]
+    out: true
+  - name: enclosing-invalid
+    in:
+      targetGrid:
+        - [1, 2, 1]
+        - [2, 1, 2]
+        - [1, 2, 1]
+    out: false
+  - name: isolated-colors
+    in:
+      targetGrid:
+        - [1, 1, 1, 1, 1]
+        - [1, 2, 3, 4, 1]
+        - [1, 5, 6, 7, 1]
+        - [1, 1, 1, 1, 1]
+    out: true
+  - name: repeated-cross
+    in:
+      targetGrid:
+        - [1, 1, 2, 1, 1]
+        - [1, 1, 2, 1, 1]
+        - [3, 3, 2, 3, 3]
+        - [1, 1, 2, 1, 1]
+        - [1, 1, 2, 1, 1]
+    out: true
+  - name: valid-cross-order
+    in:
+      targetGrid:
+        - [1, 1, 2, 1, 1]
+        - [1, 1, 2, 1, 1]
+        - [1, 1, 2, 1, 1]
+        - [1, 1, 2, 1, 1]
+        - [1, 1, 2, 1, 1]
+    out: true
+  - name: four-corners
+    in:
+      targetGrid:
+        - [1, 1, 1, 2]
+        - [1, 1, 1, 2]
+        - [3, 3, 3, 2]
+        - [3, 3, 3, 2]
+    out: true
+  - name: four-corners-cycle
+    in:
+      targetGrid:
+        - [1, 2, 2, 3]
+        - [1, 2, 2, 3]
+        - [4, 4, 4, 3]
+        - [4, 4, 4, 1]
+    out: true
+  - name: two-by-four-valid
+    in:
+      targetGrid:
+        - [1, 1, 2, 2]
+        - [1, 1, 2, 2]
+    out: true
+  - name: two-by-four-invalid
+    in:
+      targetGrid:
+        - [1, 2, 1, 2]
+        - [2, 1, 2, 1]
+    out: false
+  - name: three-color-border
+    in:
+      targetGrid:
+        - [1, 1, 1, 1, 1]
+        - [1, 2, 2, 2, 1]
+        - [3, 3, 3, 3, 3]
+        - [1, 2, 2, 2, 1]
+        - [1, 1, 1, 1, 1]
+    out: true
+  - name: valid-three-layer
+    in:
+      targetGrid:
+        - [1, 1, 1, 1, 1]
+        - [1, 2, 2, 2, 1]
+        - [1, 2, 3, 2, 1]
+        - [1, 2, 2, 2, 1]
+        - [1, 1, 1, 1, 1]
+    out: true
+  - name: sparse-six-colors
+    in:
+      targetGrid:
+        - [1, 1, 2, 2, 3, 3]
+        - [1, 1, 2, 2, 3, 3]
+        - [4, 4, 5, 5, 6, 6]
+        - [4, 4, 5, 5, 6, 6]
+    out: true
+  - name: sparse-cycle-six
+    in:
+      targetGrid:
+        - [1, 2, 3, 4, 5, 6]
+        - [6, 1, 2, 3, 4, 5]
+        - [5, 6, 1, 2, 3, 4]
+        - [4, 5, 6, 1, 2, 3]
+    out: false
+  - name: large-checker
+    in:
+      targetGrid:
+        - [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+        - [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        - [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+        - [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        - [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+        - [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        - [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+        - [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+        - [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+        - [2, 1, 2, 1, 2, 1, 2, 1, 2, 1]
+    out: false
+  - name: three-by-three-ring-cycle
+    in:
+      targetGrid:
+        - [1, 2, 1]
+        - [3, 4, 3]
+        - [1, 2, 1]
+    out: true
+  - name: four-by-four-blocks
+    in:
+      targetGrid:
+        - [1, 1, 2, 2]
+        - [1, 1, 2, 2]
+        - [3, 3, 4, 4]
+        - [3, 3, 4, 4]
+    out: true
+  - name: four-by-four-cycle
+    in:
+      targetGrid:
+        - [1, 2, 3, 4]
+        - [4, 1, 2, 3]
+        - [3, 4, 1, 2]
+        - [2, 3, 4, 1]
+    out: false
+  - name: ten-by-ten-diagonal
+    in:
+      targetGrid:
+        - [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        - [2, 3, 4, 5, 6, 7, 8, 9, 10, 1]
+        - [3, 4, 5, 6, 7, 8, 9, 10, 1, 2]
+        - [4, 5, 6, 7, 8, 9, 10, 1, 2, 3]
+        - [5, 6, 7, 8, 9, 10, 1, 2, 3, 4]
+        - [6, 7, 8, 9, 10, 1, 2, 3, 4, 5]
+        - [7, 8, 9, 10, 1, 2, 3, 4, 5, 6]
+        - [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]
+        - [9, 10, 1, 2, 3, 4, 5, 6, 7, 8]
+        - [10, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    out: false
+  - name: two-by-two-diagonal
+    in:
+      targetGrid:
+        - [11, 12]
+        - [12, 11]
+    out: false
+  - name: nested-four-colors
+    in:
+      targetGrid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 2, 2, 2, 2, 2, 1]
+        - [1, 2, 3, 3, 3, 2, 1]
+        - [1, 2, 3, 4, 3, 2, 1]
+        - [1, 2, 3, 3, 3, 2, 1]
+        - [1, 2, 2, 2, 2, 2, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: true
+  - name: nested-four-colors-cycle
+    in:
+      targetGrid:
+        - [1, 2, 1, 2, 1]
+        - [2, 3, 2, 3, 2]
+        - [1, 2, 4, 2, 1]
+        - [2, 3, 2, 3, 2]
+        - [1, 2, 1, 2, 1]
+    out: false
+  - name: six-by-six-blocks
+    in:
+      targetGrid:
+        - [1, 1, 1, 2, 2, 2]
+        - [1, 1, 1, 2, 2, 2]
+        - [1, 1, 1, 2, 2, 2]
+        - [3, 3, 3, 4, 4, 4]
+        - [3, 3, 3, 4, 4, 4]
+        - [3, 3, 3, 4, 4, 4]
+    out: true
+  - name: six-by-six-cycle
+    in:
+      targetGrid:
+        - [1, 2, 3, 4, 5, 6]
+        - [2, 3, 4, 5, 6, 1]
+        - [3, 4, 5, 6, 1, 2]
+        - [4, 5, 6, 1, 2, 3]
+        - [5, 6, 1, 2, 3, 4]
+        - [6, 1, 2, 3, 4, 5]
+    out: false
+  - name: generated-small
+    in:
+      targetGrid:
+        gen: "array"
+        len: 4
+        of:
+          gen: "array"
+          len: 4
+          of:
+            gen: "int"
+            min: 1
+            max: 4
+          elemType: "int"
+    seed: 159101
+  - name: generated-medium
+    in:
+      targetGrid:
+        gen: "array"
+        len: 12
+        of:
+          gen: "array"
+          len: 12
+          of:
+            gen: "int"
+            min: 1
+            max: 12
+          elemType: "int"
+    seed: 159102
+  - name: generated-wide
+    in:
+      targetGrid:
+        gen: "array"
+        len: 1
+        of:
+          gen: "array"
+          len: 60
+          of:
+            gen: "int"
+            min: 1
+            max: 60
+          elemType: "int"
+    seed: 159103
+  - name: generated-tall
+    in:
+      targetGrid:
+        gen: "array"
+        len: 60
+        of:
+          gen: "array"
+          len: 1
+          of:
+            gen: "int"
+            min: 1
+            max: 60
+          elemType: "int"
+    seed: 159104
+  - name: generated-maximum
+    in:
+      targetGrid:
+        gen: "array"
+        len: 60
+        of:
+          gen: "array"
+          len: 60
+          of:
+            gen: "int"
+            min: 1
+            max: 60
+          elemType: "int"
+    seed: 159105

@@ -1,0 +1,221 @@
+entry:
+  id: 1916
+  title: "count-ways-to-build-rooms-in-an-ant-colony"
+  params:
+    prevRoom:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().waysToBuildRooms({prevRoom})"
+    rust: "Solution::ways_to_build_rooms({prevRoom})"
+    python3: "Solution().waysToBuildRooms({prevRoom})"
+    python2: "Solution().waysToBuildRooms({prevRoom})"
+    ruby: "ways_to_build_rooms({prevRoom})"
+    java: "new Solution().waysToBuildRooms({prevRoom})"
+    csharp: "new Solution().WaysToBuildRooms({prevRoom})"
+    kotlin: "Solution().waysToBuildRooms({prevRoom})"
+    go: "waysToBuildRooms({prevRoom})"
+    dart: "Solution().waysToBuildRooms({prevRoom})"
+    swift: "Solution().waysToBuildRooms({prevRoom})"
+    typescript: "waysToBuildRooms({prevRoom})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().waysToBuildRooms(prevRoom, {result})"
+    checker: |
+      class Checker:
+          MOD = 1000000007
+
+          def waysToBuildRooms(self, prevRoom, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(prevRoom)
+              if n < 2 or n > 100000 or prevRoom[0] != -1:
+                  return False
+              children = [[] for _ in range(n)]
+              for i in range(1, n):
+                  p = prevRoom[i]
+                  if not isinstance(p, int) or p < 0 or p >= n:
+                      return False
+                  children[p].append(i)
+              fact = [1] * (n + 1)
+              for i in range(1, n + 1):
+                  fact[i] = fact[i - 1] * i % self.MOD
+              invfact = [1] * (n + 1)
+              invfact[n] = pow(fact[n], self.MOD - 2, self.MOD)
+              for i in range(n, 0, -1):
+                  invfact[i - 1] = invfact[i] * i % self.MOD
+              size = [0] * n
+              ways = [1] * n
+              order = [0]
+              for v in order:
+                  order.extend(children[v])
+              if len(order) != n:
+                  return False
+              for v in reversed(order):
+                  total = 0
+                  w = 1
+                  for u in children[v]:
+                      c = size[u]
+                      w = w * fact[total + c] % self.MOD
+                      w = w * invfact[total] % self.MOD
+                      w = w * invfact[c] % self.MOD
+                      w = w * ways[u] % self.MOD
+                      total += c
+                  size[v] = total + 1
+                  ways[v] = w
+              return result == ways[0]
+seed: 1916
+tests:
+  - name: chain-3
+    in:
+      prevRoom: [-1, 0, 1]
+  - name: chain-5
+    in:
+      prevRoom: [-1, 0, 1, 2, 3]
+  - name: star-3
+    in:
+      prevRoom: [-1, 0, 0]
+  - name: star-6
+    in:
+      prevRoom: [-1, 0, 0, 0, 0, 0]
+  - name: example-two
+    in:
+      prevRoom: [-1, 0, 0, 1, 2]
+  - name: balanced-7
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 2]
+  - name: balanced-15
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]
+  - name: broom
+    in:
+      prevRoom: [-1, 0, 0, 0, 0, 1, 1, 1, 2, 2]
+  - name: two-branches
+    in:
+      prevRoom: [-1, 0, 0, 1, 2, 3, 4, 5, 6]
+  - name: uneven-left
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 1, 2, 2, 3, 4]
+  - name: uneven-right
+    in:
+      prevRoom: [-1, 0, 0, 0, 1, 2, 2, 3, 3, 3]
+  - name: root-and-three
+    in:
+      prevRoom: [-1, 0, 0, 0]
+  - name: root-and-four
+    in:
+      prevRoom: [-1, 0, 0, 0, 0]
+  - name: deep-tail-after-star
+    in:
+      prevRoom: [-1, 0, 0, 0, 0, 4, 5, 6, 7, 8]
+  - name: alternating-parent
+    in:
+      prevRoom: [-1, 0, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5]
+  - name: shallow-wide
+    in:
+      prevRoom: [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: root-two-subtrees
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
+  - name: comb-left
+    in:
+      prevRoom: [-1, 0, 1, 1, 3, 3, 5, 5, 7, 7, 9]
+  - name: comb-right
+    in:
+      prevRoom: [-1, 0, 0, 2, 2, 4, 4, 6, 6, 8, 8]
+  - name: four-level
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7]
+  - name: dense-early
+    in:
+      prevRoom: [-1, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3]
+  - name: dense-late
+    in:
+      prevRoom: [-1, 0, 1, 2, 0, 1, 2, 3, 4, 5, 6, 7]
+  - name: five-leaves-one-chain
+    in:
+      prevRoom: [-1, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5]
+  - name: split-three
+    in:
+      prevRoom: [-1, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5]
+  - name: near-complete-heap
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6]
+  - name: parent-reuse
+    in:
+      prevRoom: [-1, 0, 0, 1, 0, 1, 0, 2, 1, 2, 0, 3, 3, 4, 4]
+  - name: zigzag-parents
+    in:
+      prevRoom: [-1, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 7]
+  - name: eight-root-children
+    in:
+      prevRoom: [-1, 0, 0, 0, 0, 0, 0, 0, 0]
+  - name: eight-chain
+    in:
+      prevRoom: [-1, 0, 1, 2, 3, 4, 5, 6, 7]
+  - name: mixed-branching
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 3, 3, 4, 5, 5, 6, 7, 8, 8]
+  - name: mixed-branching-2
+    in:
+      prevRoom: [-1, 0, 0, 0, 1, 2, 2, 3, 3, 4, 5, 5, 6, 7, 7]
+  - name: ten-balanced-ish
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6, 7, 8, 8]
+  - name: root-with-long-and-short
+    in:
+      prevRoom: [-1, 0, 0, 1, 2, 3, 4, 5, 6, 0, 9, 10, 0]
+  - name: structured-20
+    in:
+      prevRoom: [-1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9]
+  - name: stress-static-100
+    in:
+      prevRoom:
+        [
+          -1,
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          3,
+          3,
+          4,
+          4,
+          5,
+          5,
+          6,
+          6,
+          7,
+          7,
+          8,
+          8,
+          9,
+          9,
+          10,
+          10,
+          11,
+          11,
+          12,
+          12,
+          13,
+          13,
+          14,
+          14,
+          15,
+          15,
+          16,
+          16,
+          17,
+          17,
+          18,
+          18,
+          19,
+        ]

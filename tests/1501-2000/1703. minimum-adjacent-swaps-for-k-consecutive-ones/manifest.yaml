@@ -1,0 +1,421 @@
+entry:
+  id: 1703
+  title: "minimum-adjacent-swaps-for-k-consecutive-ones"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().minMoves({nums}, {k})"
+    rust: "Solution::min_moves({nums}, {k})"
+    python3: "Solution().minMoves({nums}, {k})"
+    python2: "Solution().minMoves({nums}, {k})"
+    ruby: "min_moves({nums}, {k})"
+    java: "new Solution().minMoves({nums}, {k})"
+    csharp: "new Solution().MinMoves({nums}, {k})"
+    kotlin: "Solution().minMoves({nums}, {k})"
+    go: "minMoves({nums}, {k})"
+    dart: "Solution().minMoves({nums}, {k})"
+    swift: "Solution().minMoves({nums}, {k})"
+    typescript: "minMoves({nums}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 2000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().minMoves(nums, k, {result})"
+    checker: |
+      class Checker:
+          def minMoves(self, nums, k, result):
+              pos = [i for i, x in enumerate(nums) if x == 1]
+              if not 1 <= k <= len(pos):
+                  return False
+              best = None
+              for left in range(len(pos) - k + 1):
+                  block = pos[left:left + k]
+                  mid = k // 2
+                  center = block[mid]
+                  cost = sum(abs(block[j] - center - j + mid) for j in range(k))
+                  best = cost if best is None else min(best, cost)
+              return isinstance(result, int) and not isinstance(result, bool) and result == best
+seed: 1703
+tests:
+  - name: example-one
+    in:
+      nums: [1, 0, 0, 1, 0, 1]
+      k: 2
+    out: 1
+  - name: example-two
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 1, 1]
+      k: 3
+    out: 5
+  - name: example-three
+    in:
+      nums: [1, 1, 0, 1]
+      k: 2
+    out: 0
+  - name: single-one
+    in:
+      nums: [0, 0, 1, 0]
+      k: 1
+    out: 0
+  - name: all-ones
+    in:
+      nums: [1, 1, 1, 1, 1]
+      k: 4
+    out: 0
+  - name: separated-pair
+    in:
+      nums: [1, 0, 1]
+      k: 2
+    out: 1
+  - name: separated-triple
+    in:
+      nums: [1, 0, 0, 1, 0, 0, 1]
+      k: 3
+    out: 4
+  - name: even-k
+    in:
+      nums: [1, 0, 0, 1, 0, 0, 1, 0, 1]
+      k: 4
+    out: 7
+  - name: odd-k
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1, 0, 1]
+      k: 5
+    out: 6
+  - name: dense-middle
+    in:
+      nums: [0, 0, 1, 1, 0, 1, 1, 1, 0, 0]
+      k: 5
+    out: 2
+  - name: best-right
+    in:
+      nums: [1, 0, 0, 0, 0, 1, 0, 1, 1]
+      k: 3
+    out: 1
+  - name: best-left
+    in:
+      nums: [1, 1, 0, 1, 0, 0, 0, 0, 1]
+      k: 3
+    out: 1
+  - name: alternating-six
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+      k: 6
+    out: 9
+  - name: long-gap
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 0, 1]
+      k: 2
+    out: 6
+  - name: three-clusters
+    in:
+      nums: [1, 1, 0, 0, 1, 0, 0, 0, 1, 1]
+      k: 4
+    out: 7
+  - name: sparse-five
+    in:
+      nums: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]
+      k: 5
+    out: 18
+  - name: adjacent-two
+    in:
+      nums: [1, 0, 0, 1, 1, 0, 0, 0, 1]
+      k: 2
+    out: 0
+  - name: middle-optimum
+    in:
+      nums: [0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0]
+      k: 4
+    out: 9
+  - name: prefix-zeros
+    in:
+      nums: [0, 0, 0, 0, 0, 1, 0, 1, 0, 1]
+      k: 3
+    out: 2
+  - name: suffix-zeros
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 0, 0, 0, 0]
+      k: 3
+    out: 2
+  - name: uneven-gaps
+    in:
+      nums: [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1]
+      k: 4
+    out: 8
+  - name: many-candidates
+    in:
+      nums: [1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1]
+      k: 4
+    out: 2
+  - name: regular-25
+    in:
+      nums:
+        [
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+        ]
+      k: 25
+    out: 156
+  - name: dense-40
+    in:
+      nums:
+        [
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+        ]
+      k: 40
+    out: 149
+  - name: all-ones-large
+    in:
+      nums:
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        ]
+      k: 37
+    out: 0
+  - name: extremes
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+      k: 2
+    out: 8
+  - name: all-but-one
+    in:
+      nums: [1, 1, 1, 1, 0, 1, 1, 1, 1]
+      k: 8
+    out: 4
+  - name: four-gaps
+    in:
+      nums: [1, 0, 1, 0, 0, 1, 0, 0, 0, 1]
+      k: 4
+    out: 8
+  - name: final-boundary
+    in:
+      nums: [0, 0, 1, 0, 0, 1, 0, 0, 1, 1]
+      k: 4
+    out: 6
+  - name: one-at-start
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 0, 0]
+      k: 1
+    out: 0
+  - name: one-at-end
+    in:
+      nums: [0, 0, 0, 0, 0, 0, 0, 1]
+      k: 1
+    out: 0
+  - name: five-adjacent
+    in:
+      nums: [0, 1, 1, 1, 1, 1, 0, 0]
+      k: 5
+    out: 0
+  - name: two-windows
+    in:
+      nums: [1, 0, 1, 1, 0, 1, 0, 1, 1]
+      k: 3
+    out: 1
+  - name: late-cluster
+    in:
+      nums: [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0]
+      k: 3
+    out: 0
+  - name: early-cluster
+    in:
+      nums: [1, 1, 1, 0, 1, 0, 0, 0, 0, 0]
+      k: 3
+    out: 0

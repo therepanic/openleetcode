@@ -1,0 +1,39 @@
+class Solution(object):
+    def areConnected(self, n, threshold, queries):
+        """
+        :type n: int
+        :type threshold: int
+        :type queries: List[List[int]]
+        :rtype: List[bool]
+        """
+        limit = max([n] + [v for pair in queries for v in pair])
+        parent = [i for i in range(limit + 1)]
+        rank = [1] * (limit + 1)
+
+        def find(x):
+            res = x
+            while res != parent[res]:
+                parent[res] = parent[parent[res]]
+                res = parent[res]
+            return res
+
+        def union(a, b):
+            p1, p2 = find(a), find(b)
+            if p1 == p2:
+                return False
+            if rank[p1] > rank[p2]:
+                parent[p2] = p1
+                rank[p1] += rank[p2]
+            else:
+                parent[p1] = p2
+                rank[p2] += rank[p1]
+            return True
+
+        for i in range(threshold + 1, limit + 1):
+            for j in range(2 * i, limit + 1, i):
+                union(i, j)
+
+        result = []
+        for x, y in queries:
+            result.append(find(x) == find(y))
+        return result

@@ -1,0 +1,237 @@
+entry:
+  id: 1643
+  title: "kth-smallest-instructions"
+  params:
+    destination:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().kthSmallestPath({destination}, {k})"
+    rust: "Solution::kth_smallest_path({destination}, {k})"
+    python3: "Solution().kthSmallestPath({destination}, {k})"
+    python2: "Solution().kthSmallestPath({destination}, {k})"
+    ruby: "kth_smallest_path({destination}, {k})"
+    java: "new Solution().kthSmallestPath({destination}, {k})"
+    csharp: "new Solution().KthSmallestPath({destination}, {k})"
+    kotlin: "Solution().kthSmallestPath({destination}, {k})"
+    go: "kthSmallestPath({destination}, {k})"
+    dart: "Solution().kthSmallestPath({destination}, {k})"
+    swift: "Solution().kthSmallestPath({destination}, {k})"
+    typescript: "kthSmallestPath({destination}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().kthSmallestPath(destination, k, {result})"
+    checker: |
+      from math import comb
+
+      class Checker:
+          def kthSmallestPath(self, destination, k, result):
+              if not isinstance(result, str):
+                  return False
+              rows, cols = destination
+              if len(result) != rows + cols:
+                  return False
+              if result.count("H") != cols or result.count("V") != rows:
+                  return False
+              expected = []
+              rank = k - 1
+              while rows or cols:
+                  block = comb(rows + cols - 1, cols - 1) if cols else 0
+                  if rank < block:
+                      expected.append("H")
+                      cols -= 1
+                  else:
+                      expected.append("V")
+                      rank -= block
+                      rows -= 1
+              return result == "".join(expected)
+
+seed: 1643
+
+tests:
+  - name: "one-one-first"
+    in:
+      destination: [1, 1]
+      k: 1
+    out: "HV"
+  - name: "one-one-last"
+    in:
+      destination: [1, 1]
+      k: 2
+    out: "VH"
+  - name: "one-two-first"
+    in:
+      destination: [1, 2]
+      k: 1
+    out: "HHV"
+  - name: "one-two-middle"
+    in:
+      destination: [1, 2]
+      k: 2
+    out: "HVH"
+  - name: "one-two-last"
+    in:
+      destination: [1, 2]
+      k: 3
+    out: "VHH"
+  - name: "two-one-first"
+    in:
+      destination: [2, 1]
+      k: 1
+    out: "HVV"
+  - name: "two-one-middle"
+    in:
+      destination: [2, 1]
+      k: 2
+    out: "VHV"
+  - name: "two-one-last"
+    in:
+      destination: [2, 1]
+      k: 3
+    out: "VVH"
+  - name: "example-first"
+    in:
+      destination: [2, 3]
+      k: 1
+    out: "HHHVV"
+  - name: "example-second"
+    in:
+      destination: [2, 3]
+      k: 2
+    out: "HHVHV"
+  - name: "example-third"
+    in:
+      destination: [2, 3]
+      k: 3
+    out: "HHVVH"
+  - name: "example-last"
+    in:
+      destination: [2, 3]
+      k: 10
+    out: "VVHHH"
+  - name: "three-two-first"
+    in:
+      destination: [3, 2]
+      k: 1
+    out: "HHVVV"
+  - name: "three-two-last"
+    in:
+      destination: [3, 2]
+      k: 10
+    out: "VVVHH"
+  - name: "three-three-first"
+    in:
+      destination: [3, 3]
+      k: 1
+    out: "HHHVVV"
+  - name: "three-three-middle"
+    in:
+      destination: [3, 3]
+      k: 10
+    out: "HVVVHH"
+  - name: "three-three-last"
+    in:
+      destination: [3, 3]
+      k: 20
+    out: "VVVHHH"
+  - name: "four-one-first"
+    in:
+      destination: [4, 1]
+      k: 1
+    out: "HVVVV"
+  - name: "four-one-last"
+    in:
+      destination: [4, 1]
+      k: 5
+    out: "VVVVH"
+  - name: "one-four-first"
+    in:
+      destination: [1, 4]
+      k: 1
+    out: "HHHHV"
+  - name: "one-four-last"
+    in:
+      destination: [1, 4]
+      k: 5
+    out: "VHHHH"
+  - name: "five-two-first"
+    in:
+      destination: [5, 2]
+      k: 1
+    out: "HHVVVVV"
+  - name: "five-two-middle"
+    in:
+      destination: [5, 2]
+      k: 10
+    out: "VHVVVHV"
+  - name: "two-five-first"
+    in:
+      destination: [2, 5]
+      k: 1
+    out: "HHHHHVV"
+  - name: "two-five-middle"
+    in:
+      destination: [2, 5]
+      k: 10
+    out: "HHVVHHH"
+  - name: "five-five-first"
+    in:
+      destination: [5, 5]
+      k: 1
+    out: "HHHHHVVVVV"
+  - name: "five-five-middle"
+    in:
+      destination: [5, 5]
+      k: 50
+    out: "HHVVVHVHHV"
+  - name: "five-five-last"
+    in:
+      destination: [5, 5]
+      k: 252
+    out: "VVVVVHHHHH"
+  - name: "ten-one-first"
+    in:
+      destination: [10, 1]
+      k: 1
+    out: "HVVVVVVVVVV"
+  - name: "one-ten-middle"
+    in:
+      destination: [1, 10]
+      k: 10
+    out: "HVHHHHHHHHH"
+  - name: "ten-ten-first"
+    in:
+      destination: [10, 10]
+      k: 1
+    out: "HHHHHHHHHHVVVVVVVVVV"
+  - name: "ten-ten-middle"
+    in:
+      destination: [10, 10]
+      k: 500
+    out: "HHHHHHVHVVVVVVVHVHHV"
+  - name: "ten-ten-last"
+    in:
+      destination: [10, 10]
+      k: 184756
+    out: "VVVVVVVVVVHHHHHHHHHH"
+  - name: "fifteen-one-last"
+    in:
+      destination: [15, 1]
+      k: 15
+    out: "VVVVVVVVVVVVVVHV"
+  - name: "one-fifteen-middle"
+    in:
+      destination: [1, 15]
+      k: 15
+    out: "HVHHHHHHHHHHHHHH"
