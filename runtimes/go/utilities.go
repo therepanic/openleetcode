@@ -415,7 +415,16 @@ func encodeValue(v reflect.Value, seen map[uintptr]bool) string {
 			return "null"
 		}
 		if v.Type().Elem().Kind() == reflect.Uint8 {
-			return jsonQuote(bytesHex(v.Bytes()))
+			var sb strings.Builder
+			sb.WriteByte('[')
+			for i, b := range v.Bytes() {
+				if i > 0 {
+					sb.WriteByte(',')
+				}
+				sb.WriteString(jsonQuote(string([]byte{b})))
+			}
+			sb.WriteByte(']')
+			return sb.String()
 		}
 		return encodeArray(v, seen)
 	case reflect.Array:
