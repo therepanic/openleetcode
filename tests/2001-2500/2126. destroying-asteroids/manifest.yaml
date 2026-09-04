@@ -1,0 +1,273 @@
+entry:
+  id: 2126
+  title: "destroying-asteroids"
+  params:
+    mass:
+      type: int
+    asteroids:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().asteroidsDestroyed({mass}, {asteroids})"
+    rust: "Solution::asteroids_destroyed({mass}, {asteroids})"
+    python3: "Solution().asteroidsDestroyed({mass}, {asteroids})"
+    python2: "Solution().asteroidsDestroyed({mass}, {asteroids})"
+    ruby: "asteroids_destroyed({mass}, {asteroids})"
+    java: "new Solution().asteroidsDestroyed({mass}, {asteroids})"
+    csharp: "new Solution().AsteroidsDestroyed({mass}, {asteroids})"
+    kotlin: "Solution().asteroidsDestroyed({mass}, {asteroids})"
+    go: "asteroidsDestroyed({mass}, {asteroids})"
+    dart: "Solution().asteroidsDestroyed({mass}, {asteroids})"
+    swift: "Solution().asteroidsDestroyed({mass}, {asteroids})"
+    typescript: "asteroidsDestroyed({mass}, {asteroids})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 256
+oracle:
+  python3:
+    call: "Checker().asteroidsDestroyed(mass, asteroids, {result})"
+    checker: |
+      class Checker:
+          def asteroidsDestroyed(self, mass, asteroids, result):
+              if not isinstance(result, bool):
+                  return False
+              current = mass
+              for asteroid in sorted(asteroids):
+                  if asteroid > current:
+                      return result is False
+                  current += asteroid
+              return result is True
+seed: 2126
+tests:
+  - name: "example-one"
+    in:
+      mass: 10
+      asteroids: [3, 9, 19, 5, 21]
+    out: true
+  - name: "example-two"
+    in:
+      mass: 5
+      asteroids: [4, 9, 23, 4]
+    out: false
+  - name: "single-equal"
+    in:
+      mass: 1
+      asteroids: [1]
+    out: true
+  - name: "single-too-large"
+    in:
+      mass: 1
+      asteroids: [2]
+    out: false
+  - name: "unordered-chain"
+    in:
+      mass: 3
+      asteroids: [10, 1, 2, 4]
+    out: true
+  - name: "blocked-after-small"
+    in:
+      mass: 2
+      asteroids: [1, 10]
+    out: false
+  - name: "all-equal"
+    in:
+      mass: 5
+      asteroids: [5, 5, 5, 5]
+    out: true
+  - name: "all-one"
+    in:
+      mass: 1
+      asteroids: [1, 1, 1, 1, 1]
+    out: true
+  - name: "needs-sort"
+    in:
+      mass: 1
+      asteroids: [100, 1, 2, 4, 8, 16, 32]
+    out: false
+  - name: "powers-success"
+    in:
+      mass: 1
+      asteroids: [1, 2, 4, 8, 16, 32]
+    out: true
+  - name: "exact-after-growth"
+    in:
+      mass: 4
+      asteroids: [8, 4]
+    out: true
+  - name: "just-insufficient"
+    in:
+      mass: 4
+      asteroids: [5]
+    out: false
+  - name: "large-initial-mass"
+    in:
+      mass: 100000
+      asteroids: [100000, 99999, 1]
+    out: true
+  - name: "largest-first-input"
+    in:
+      mass: 6
+      asteroids: [20, 7, 6, 1]
+    out: true
+  - name: "cannot-reach-largest"
+    in:
+      mass: 6
+      asteroids: [20, 7, 6]
+    out: false
+  - name: "duplicates-enable"
+    in:
+      mass: 3
+      asteroids: [6, 3, 3]
+    out: true
+  - name: "duplicates-insufficient"
+    in:
+      mass: 3
+      asteroids: [7, 3]
+    out: false
+  - name: "many-small-before-large"
+    in:
+      mass: 1
+      asteroids: [50, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: false
+  - name: "twenty-ones"
+    in:
+      mass: 1
+      asteroids: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    out: true
+  - name: "boundary-accumulation"
+    in:
+      mass: 10
+      asteroids: [11, 1]
+    out: true
+  - name: "generated-small"
+    seed: 1
+    in:
+      mass:
+        gen: "int"
+        min: 1
+        max: 100
+      asteroids:
+        gen: "array"
+        len: 30
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated-medium"
+    seed: 2
+    in:
+      mass:
+        gen: "int"
+        min: 1
+        max: 100000
+      asteroids:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated-large"
+    seed: 3
+    in:
+      mass:
+        gen: "int"
+        min: 1
+        max: 100000
+      asteroids:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated-large-small-values"
+    seed: 4
+    in:
+      mass: 1
+      asteroids:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated-large-max-values"
+    seed: 5
+    in:
+      mass: 100000
+      asteroids:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 90000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "late-failure"
+    in:
+      mass: 5
+      asteroids: [1, 2, 4, 100]
+    out: false
+  - name: "late-success"
+    in:
+      mass: 5
+      asteroids: [1, 2, 4, 12]
+    out: true
+  - name: "same-as-planet"
+    in:
+      mass: 99999
+      asteroids: [99999]
+    out: true
+  - name: "max-asteroid-with-growth"
+    in:
+      mass: 50000
+      asteroids: [50000, 100000]
+    out: true
+  - name: "max-asteroid-without-growth"
+    in:
+      mass: 99999
+      asteroids: [100000]
+    out: false
+  - name: "smallest-mass-progress"
+    in:
+      mass: 1
+      asteroids: [3, 1, 1]
+    out: true
+  - name: "smallest-mass-fails"
+    in:
+      mass: 1
+      asteroids: [4, 1, 1]
+    out: false
+  - name: "permuted-complete"
+    in:
+      mass: 2
+      asteroids: [9, 2, 1, 4]
+    out: true
+  - name: "permuted-incomplete"
+    in:
+      mass: 2
+      asteroids: [10, 2, 1, 4]
+    out: false
+  - name: "ten-equal-large"
+    in:
+      mass: 10000
+      asteroids: [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+    out: true

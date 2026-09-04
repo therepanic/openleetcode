@@ -1,0 +1,440 @@
+entry:
+  id: 2039
+  title: "the-time-when-the-network-becomes-idle"
+  params:
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    patience:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().networkBecomesIdle({edges}, {patience})"
+    rust: "Solution::network_becomes_idle({edges}, {patience})"
+    python3: "Solution().networkBecomesIdle({edges}, {patience})"
+    python2: "Solution().networkBecomesIdle({edges}, {patience})"
+    ruby: "network_becomes_idle({edges}, {patience})"
+    java: "new Solution().networkBecomesIdle({edges}, {patience})"
+    csharp: "new Solution().NetworkBecomesIdle({edges}, {patience})"
+    kotlin: "Solution().networkBecomesIdle({edges}, {patience})"
+    go: "networkBecomesIdle({edges}, {patience})"
+    dart: "Solution().networkBecomesIdle({edges}, {patience})"
+    swift: "Solution().networkBecomesIdle({edges}, {patience})"
+    typescript: "networkBecomesIdle({edges}, {patience})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().networkBecomesIdle(edges, patience, {result})"
+    checker: |
+      class Checker:
+          def networkBecomesIdle(self, edges, patience, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(patience)
+              graph = [[] for _ in range(n)]
+              for u, v in edges:
+                  graph[u].append(v)
+                  graph[v].append(u)
+              dist = [-1] * n
+              dist[0] = 0
+              queue = [0]
+              for u in queue:
+                  for v in graph[u]:
+                      if dist[v] < 0:
+                          dist[v] = dist[u] + 1
+                          queue.append(v)
+              expected = 1
+              for i in range(1, n):
+                  rtt = 2 * dist[i]
+                  last = rtt if patience[i] >= rtt else ((rtt - 1) // patience[i]) * patience[i] + rtt
+                  expected = max(expected, last + 1)
+              return result == expected
+
+seed: 2039
+
+tests:
+  - name: "example_path"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+      patience: [0, 2, 1]
+    out: 8
+  - name: "example_triangle"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 2]
+      patience: [0, 10, 10]
+    out: 3
+  - name: "two_servers_fast"
+    in:
+      edges:
+        - [0, 1]
+      patience: [0, 1]
+    out: 4
+  - name: "two_servers_equal_rtt"
+    in:
+      edges:
+        - [0, 1]
+      patience: [0, 2]
+    out: 3
+  - name: "two_servers_slow"
+    in:
+      edges:
+        - [0, 1]
+      patience: [0, 100000]
+    out: 3
+  - name: "star_three"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+      patience: [0, 1, 2, 3]
+    out: 4
+  - name: "star_all_fast"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+      patience: [0, 1, 1, 1, 1, 1]
+    out: 4
+  - name: "path_four_fast"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      patience: [0, 1, 1, 1]
+    out: 12
+  - name: "path_four_slow"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      patience: [0, 100, 100, 100]
+    out: 7
+  - name: "path_five_mixed"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      patience: [0, 1, 3, 2, 1]
+    out: 16
+  - name: "path_six_periods"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      patience: [0, 2, 4, 3, 5, 1]
+    out: 20
+  - name: "cycle_four"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 0]
+      patience: [0, 1, 1, 1]
+    out: 8
+  - name: "cycle_five"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 0]
+      patience: [0, 1, 2, 3, 1]
+    out: 8
+  - name: "shortcut_path"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [0, 3]
+        - [3, 4]
+      patience: [0, 1, 1, 1, 1]
+    out: 8
+  - name: "branching_graph"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 3]
+        - [1, 4]
+        - [2, 5]
+        - [5, 6]
+      patience: [0, 1, 2, 2, 3, 1, 4]
+    out: 11
+  - name: "dense_six"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 4]
+        - [2, 4]
+        - [2, 5]
+        - [3, 5]
+        - [4, 5]
+      patience: [0, 1, 2, 10, 1, 3]
+    out: 8
+  - name: "deep_branch"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [1, 5]
+        - [5, 6]
+        - [0, 7]
+      patience: [0, 1, 1, 2, 10, 1, 1, 2]
+    out: 12
+  - name: "patience_boundary_depth_two"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+      patience: [0, 3, 4]
+    out: 5
+  - name: "patience_just_below"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+      patience: [0, 3, 3]
+    out: 8
+  - name: "large_patience_mix"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [0, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      patience: [0, 100000, 99999, 1, 100000, 1, 2, 100000]
+    out: 12
+  - name: "long_path_ten"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+      patience: [0, 1, 2, 3, 4, 5, 6, 7, 8, 1]
+    out: 36
+  - name: "wide_two_level"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [1, 5]
+        - [1, 6]
+        - [2, 7]
+        - [3, 8]
+      patience: [0, 2, 3, 4, 5, 1, 2, 1, 10]
+    out: 8
+  - name: "leaf_with_many_resends"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      patience: [0, 1, 1, 1, 1]
+    out: 16
+  - name: "all_max_patience_small"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      patience: [0, 100000, 100000, 100000, 100000, 100000]
+    out: 11
+  - name: "complete_four"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+      patience: [0, 1, 2, 100000]
+    out: 4
+  - name: "chain_with_chords"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [0, 3]
+        - [1, 4]
+      patience: [0, 1, 1, 1, 2, 1]
+    out: 12
+  - name: "uneven_tree"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [1, 3]
+        - [3, 4]
+        - [3, 5]
+        - [5, 6]
+        - [5, 7]
+        - [7, 8]
+      patience: [0, 2, 1, 4, 1, 2, 3, 1, 2]
+    out: 19
+  - name: "single_far_fast"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      patience: [0, 1, 1, 1, 1, 1, 1, 1]
+    out: 28
+  - name: "single_far_slow"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+      patience: [0, 100000, 100000, 100000, 100000, 100000, 100000, 100000]
+    out: 15
+  - name: "dense_eight"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [2, 4]
+        - [2, 5]
+        - [3, 5]
+        - [3, 6]
+        - [4, 6]
+        - [4, 7]
+        - [5, 7]
+      patience: [0, 1, 1, 2, 1, 3, 2, 1]
+    out: 12
+  - name: "large_explicit_path"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+      patience: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1]
+    out: 76
+  - name: "large_explicit_star"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [0, 4]
+        - [0, 5]
+        - [0, 6]
+        - [0, 7]
+        - [0, 8]
+        - [0, 9]
+        - [0, 10]
+        - [0, 11]
+        - [0, 12]
+        - [0, 13]
+        - [0, 14]
+        - [0, 15]
+        - [0, 16]
+        - [0, 17]
+        - [0, 18]
+        - [0, 19]
+      patience: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 100000]
+    out: 4
+  - name: "triangle_fast_resend"
+    in:
+      edges:
+        - [0, 1]
+        - [0, 2]
+        - [1, 2]
+      patience: [0, 1, 1]
+    out: 4
+  - name: "tree_depth_three_boundary"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      patience: [0, 2, 4, 5]
+    out: 12
+  - name: "two_branches_long_leaf"
+    in:
+      edges:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [0, 4]
+        - [4, 5]
+      patience: [0, 2, 2, 1, 10, 1]
+    out: 12

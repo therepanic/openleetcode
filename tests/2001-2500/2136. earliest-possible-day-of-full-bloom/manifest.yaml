@@ -1,0 +1,302 @@
+entry:
+  id: 2136
+  title: "earliest-possible-day-of-full-bloom"
+  params:
+    plantTime:
+      type: array
+      items:
+        type: int
+    growTime:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().earliestFullBloom({plantTime}, {growTime})"
+    rust: "Solution::earliest_full_bloom({plantTime}, {growTime})"
+    python3: "Solution().earliestFullBloom({plantTime}, {growTime})"
+    python2: "Solution().earliestFullBloom({plantTime}, {growTime})"
+    ruby: "earliest_full_bloom({plantTime}, {growTime})"
+    java: "new Solution().earliestFullBloom({plantTime}, {growTime})"
+    csharp: "new Solution().EarliestFullBloom({plantTime}, {growTime})"
+    kotlin: "Solution().earliestFullBloom({plantTime}, {growTime})"
+    go: "earliestFullBloom({plantTime}, {growTime})"
+    dart: "Solution().earliestFullBloom({plantTime}, {growTime})"
+    swift: "Solution().earliestFullBloom({plantTime}, {growTime})"
+    typescript: "earliestFullBloom({plantTime}, {growTime})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().earliestFullBloom(plantTime, growTime, {result})"
+    checker: |
+      class Checker:
+          def earliestFullBloom(self, plantTime, growTime, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if not isinstance(plantTime, list) or not isinstance(growTime, list):
+                  return False
+              if len(plantTime) != len(growTime) or not (1 <= len(plantTime) <= 100000):
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) or not 1 <= x <= 10000 for x in plantTime + growTime):
+                  return False
+              elapsed = 0
+              answer = 0
+              for grow, plant in sorted(zip(growTime, plantTime), reverse=True):
+                  elapsed += plant
+                  answer = max(answer, elapsed + grow)
+              return result == answer
+
+seed: 2136
+
+tests:
+  - name: "example_1"
+    in:
+      plantTime: [1, 4, 3]
+      growTime: [2, 3, 1]
+    out: 9
+  - name: "example_2"
+    in:
+      plantTime: [1, 2, 3, 2]
+      growTime: [2, 1, 2, 1]
+    out: 9
+  - name: "example_3"
+    in:
+      plantTime: [1]
+      growTime: [1]
+    out: 2
+  - name: "single_max_growth"
+    in:
+      plantTime: [5]
+      growTime: [10000]
+    out: 10005
+  - name: "single_max_plant"
+    in:
+      plantTime: [10000]
+      growTime: [1]
+    out: 10001
+  - name: "equal_small"
+    in:
+      plantTime: [1, 1, 1]
+      growTime: [1, 1, 1]
+    out: 4
+  - name: "equal_pair"
+    in:
+      plantTime: [2, 2]
+      growTime: [3, 3]
+    out: 7
+  - name: "reverse_priority"
+    in:
+      plantTime: [1, 2]
+      growTime: [2, 1]
+    out: 4
+  - name: "long_plant_last"
+    in:
+      plantTime: [10, 1, 1]
+      growTime: [1, 10, 1]
+    out: 13
+  - name: "long_growth_last"
+    in:
+      plantTime: [1, 10, 1]
+      growTime: [1, 1, 10]
+    out: 13
+  - name: "four_mixed"
+    in:
+      plantTime: [3, 1, 2, 4]
+      growTime: [2, 5, 1, 3]
+    out: 11
+  - name: "four_reverse"
+    in:
+      plantTime: [4, 3, 2, 1]
+      growTime: [1, 2, 3, 4]
+    out: 11
+  - name: "three_mixed"
+    in:
+      plantTime: [7, 2, 5]
+      growTime: [6, 9, 1]
+    out: 15
+  - name: "four_varied"
+    in:
+      plantTime: [1, 5, 2, 4]
+      growTime: [10, 2, 8, 1]
+    out: 13
+  - name: "five_varied"
+    in:
+      plantTime: [6, 1, 3, 2, 5]
+      growTime: [4, 7, 2, 9, 1]
+    out: 18
+  - name: "four_high_growth"
+    in:
+      plantTime: [2, 9, 1, 8]
+      growTime: [7, 3, 10, 2]
+    out: 22
+  - name: "equal_plant_increasing_growth"
+    in:
+      plantTime: [10, 10, 10]
+      growTime: [1, 2, 3]
+    out: 31
+  - name: "increasing_plant_equal_growth"
+    in:
+      plantTime: [1, 2, 3]
+      growTime: [10, 10, 10]
+    out: 16
+  - name: "two_max_values"
+    in:
+      plantTime: [9999, 10000]
+      growTime: [10000, 9999]
+    out: 29998
+  - name: "two_max_reversed"
+    in:
+      plantTime: [10000, 9999]
+      growTime: [9999, 10000]
+    out: 29998
+  - name: "five_balanced"
+    in:
+      plantTime: [2, 4, 6, 8, 10]
+      growTime: [10, 8, 6, 4, 2]
+    out: 32
+  - name: "five_balanced_reverse"
+    in:
+      plantTime: [10, 8, 6, 4, 2]
+      growTime: [2, 4, 6, 8, 10]
+    out: 32
+  - name: "alternating_short"
+    in:
+      plantTime: [1, 3, 1, 3, 1]
+      growTime: [5, 1, 4, 2, 3]
+    out: 10
+  - name: "alternating_long"
+    in:
+      plantTime: [3, 1, 3, 1, 3]
+      growTime: [1, 5, 2, 4, 3]
+    out: 12
+  - name: "large_pair_a"
+    in:
+      plantTime: [100, 1, 100]
+      growTime: [1, 100, 1]
+    out: 202
+  - name: "large_pair_b"
+    in:
+      plantTime: [1, 100, 1]
+      growTime: [100, 1, 100]
+    out: 103
+  - name: "descending_plant"
+    in:
+      plantTime: [50, 40, 30, 20, 10]
+      growTime: [5, 15, 25, 35, 45]
+    out: 155
+  - name: "ascending_plant"
+    in:
+      plantTime: [5, 15, 25, 35, 45]
+      growTime: [50, 40, 30, 20, 10]
+    out: 135
+  - name: "growth_dominates"
+    in:
+      plantTime: [1, 1, 10, 10]
+      growTime: [100, 99, 2, 1]
+    out: 101
+  - name: "growth_dominates_reverse"
+    in:
+      plantTime: [10, 10, 1, 1]
+      growTime: [1, 2, 99, 100]
+    out: 101
+  - name: "six_mixed_a"
+    in:
+      plantTime: [8, 1, 7, 2, 6, 3]
+      growTime: [4, 10, 1, 9, 2, 8]
+    out: 28
+  - name: "six_mixed_b"
+    in:
+      plantTime: [1, 8, 2, 7, 3, 6]
+      growTime: [10, 4, 9, 1, 8, 2]
+    out: 28
+  - name: "generated_small"
+    seed: 11
+    in:
+      plantTime:
+        gen: "array"
+        len: 7
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+      growTime:
+        gen: "array"
+        len: 7
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+  - name: "generated_medium"
+    seed: 22
+    in:
+      plantTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+      growTime:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+  - name: "generated_boundary"
+    seed: 33
+    in:
+      plantTime:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+      growTime:
+        gen: "array"
+        len: 20
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+  - name: "stress_max_a"
+    seed: 44
+    in:
+      plantTime:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+      growTime:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+  - name: "stress_max_b"
+    seed: 55
+    in:
+      plantTime:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+      growTime:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 10000

@@ -1,0 +1,269 @@
+entry:
+  id: 2099
+  title: "find-subsequence-of-length-k-with-the-largest-sum"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxSubsequence({nums}, {k})"
+    rust: "Solution::max_subsequence({nums}, {k})"
+    python3: "Solution().maxSubsequence({nums}, {k})"
+    python2: "Solution().maxSubsequence({nums}, {k})"
+    ruby: "max_subsequence({nums}, {k})"
+    java: "new Solution().maxSubsequence({nums}, {k})"
+    csharp: "new Solution().MaxSubsequence({nums}, {k})"
+    kotlin: "Solution().maxSubsequence({nums}, {k})"
+    go: "maxSubsequence({nums}, {k})"
+    dart: "Solution().maxSubsequence({nums}, {k})"
+    swift: "Solution().maxSubsequence({nums}, {k})"
+    typescript: "maxSubsequence({nums}, {k})"
+
+judge:
+  type: exact
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().maxSubsequence(nums, k, {result})"
+    checker: |
+      class Checker:
+          def maxSubsequence(self, nums, k, result):
+              if not isinstance(result, list) or len(result) != k:
+                  return False
+              need = sorted(nums, reverse=True)[:k]
+              if sum(result) != sum(need):
+                  return False
+              pos = 0
+              for value in result:
+                  while pos < len(nums) and nums[pos] != value:
+                      pos += 1
+                  if pos == len(nums):
+                      return False
+                  pos += 1
+              return True
+
+seed: 2099
+
+tests:
+  - name: "example 1"
+    in:
+      nums: [2, 1, 3, 3]
+      k: 2
+    out: [3, 3]
+  - name: "example 2"
+    in:
+      nums: [-1, -2, 3, 4]
+      k: 3
+    out: [-1, 3, 4]
+  - name: "example 3 tie"
+    in:
+      nums: [3, 4, 3, 3]
+      k: 2
+  - name: "single positive"
+    in:
+      nums: [7]
+      k: 1
+    out: [7]
+  - name: "single negative"
+    in:
+      nums: [-100000]
+      k: 1
+    out: [-100000]
+  - name: "take all preserves order"
+    in:
+      nums: [5, -2, 8, 0]
+      k: 4
+    out: [5, -2, 8, 0]
+  - name: "all negative"
+    in:
+      nums: [-5, -1, -9, -2]
+      k: 2
+  - name: "all equal"
+    in:
+      nums: [4, 4, 4, 4, 4]
+      k: 3
+    out: [4, 4, 4]
+  - name: "duplicate cutoff"
+    in:
+      nums: [9, 1, 9, 8, 9, 2]
+      k: 3
+  - name: "zero cutoff"
+    in:
+      nums: [0, -1, 0, 2, -2]
+      k: 3
+  - name: "large bounds"
+    in:
+      nums: [-100000, 100000, 99999, -99999]
+      k: 2
+    out: [100000, 99999]
+  - name: "alternating extremes"
+    in:
+      nums: [100000, -100000, 100000, -100000, 99999]
+      k: 3
+  - name: "best values at ends"
+    in:
+      nums: [10, -4, -3, 8]
+      k: 2
+    out: [10, 8]
+  - name: "best values separated"
+    in:
+      nums: [-8, 6, -7, 5, -6, 4]
+      k: 3
+    out: [6, 5, 4]
+  - name: "k one"
+    in:
+      nums: [-3, 12, 4, 12, 1]
+      k: 1
+  - name: "k n minus one"
+    in:
+      nums: [1, 100, 2, 3, 4]
+      k: 4
+  - name: "negative duplicate values"
+    in:
+      nums: [-2, -2, -1, -2, -1]
+      k: 3
+  - name: "mixed zeroes"
+    in:
+      nums: [0, 0, -1, 0, 1, -1]
+      k: 4
+  - name: "descending"
+    in:
+      nums: [9, 8, 7, 6, 5, 4]
+      k: 3
+    out: [9, 8, 7]
+  - name: "ascending"
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+      k: 3
+    out: [4, 5, 6]
+  - name: "repeated maximum"
+    in:
+      nums: [5, 1, 5, 2, 5, 3, 5]
+      k: 4
+  - name: "near max integers"
+    in:
+      nums: [99998, -99998, 99997, -99997, 99996, -99996]
+      k: 3
+  - name: "minimum length two"
+    in:
+      nums: [-4, -3]
+      k: 1
+    out: [-3]
+  - name: "interleaved duplicates"
+    in:
+      nums: [2, 9, 2, 9, 2, 9, 1]
+      k: 2
+  - name: "many tied cutoff"
+    in:
+      nums: [6, 1, 6, 6, 2, 6, 3, 6]
+      k: 5
+  - name: "negative to positive"
+    in:
+      nums: [-10, -9, -8, 7, 6, 5]
+      k: 4
+  - name: "large sum safe"
+    in:
+      nums: [100000, 100000, 100000, 100000, 100000]
+      k: 5
+    out: [100000, 100000, 100000, 100000, 100000]
+  - name: "late optimum"
+    in:
+      nums: [-1, -2, -3, -4, 50, 40, 30]
+      k: 2
+    out: [50, 40]
+  - name: "early optimum"
+    in:
+      nums: [50, 40, 30, -1, -2, -3]
+      k: 2
+    out: [50, 40]
+  - name: "value order differs from index order"
+    in:
+      nums: [8, 1, 7, 2, 6, 3]
+      k: 4
+    out: [8, 7, 6, 3]
+  - name: "all selected tied"
+    in:
+      nums: [-7, -7, -7]
+      k: 2
+    out: [-7, -7]
+  - name: "mixed repeated negatives"
+    in:
+      nums: [-1, -5, -1, -3, -1, -2]
+      k: 4
+  - name: "gen small mixed"
+    in:
+      nums:
+        gen: array
+        len: 20
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+        elemType: int
+      k:
+        gen: int
+        min: 1
+        max: 20
+  - name: "gen medium mixed"
+    in:
+      nums:
+        gen: array
+        len: 100
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+        elemType: int
+      k:
+        gen: int
+        min: 1
+        max: 100
+  - name: "gen all negative"
+    in:
+      nums:
+        gen: array
+        len: 75
+        of:
+          gen: int
+          min: -100000
+          max: -1
+        elemType: int
+      k:
+        gen: int
+        min: 1
+        max: 75
+  - name: "gen large maximum size"
+    in:
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -100000
+          max: 100000
+        elemType: int
+      k:
+        gen: int
+        min: 1
+        max: 1000
+  - name: "gen large nonpositive"
+    in:
+      nums:
+        gen: array
+        len: 1000
+        of:
+          gen: int
+          min: -100000
+          max: 0
+        elemType: int
+      k:
+        gen: int
+        min: 1
+        max: 1000

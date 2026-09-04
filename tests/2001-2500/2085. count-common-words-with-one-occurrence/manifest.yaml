@@ -1,0 +1,330 @@
+entry:
+  id: 2085
+  title: "count-common-words-with-one-occurrence"
+  params:
+    words1:
+      type: array
+      items:
+        type: string
+    words2:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().countWords({words1}, {words2})"
+    rust: "Solution::count_words({words1}, {words2})"
+    python3: "Solution().countWords({words1}, {words2})"
+    python2: "Solution().countWords({words1}, {words2})"
+    ruby: "count_words({words1}, {words2})"
+    java: "new Solution().countWords({words1}, {words2})"
+    csharp: "new Solution().CountWords({words1}, {words2})"
+    kotlin: "Solution().countWords({words1}, {words2})"
+    go: "countWords({words1}, {words2})"
+    dart: "Solution().countWords({words1}, {words2})"
+    swift: "Solution().countWords({words1}, {words2})"
+    typescript: "countWords({words1}, {words2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().countWords(words1, words2, {result})"
+    checker: |
+      class Checker:
+          def countWords(self, words1, words2, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              from collections import Counter
+              expected = sum(1 for word, count in Counter(words1).items()
+                             if count == 1 and Counter(words2)[word] == 1)
+              return result == expected
+
+seed: 2085001
+
+tests:
+  - name: "example_1"
+    in:
+      words1: ["leetcode", "is", "amazing", "as", "is"]
+      words2: ["amazing", "leetcode", "is"]
+    out: 2
+  - name: "example_2_disjoint"
+    in:
+      words1: ["b", "bb", "bbb"]
+      words2: ["a", "aa", "aaa"]
+    out: 0
+  - name: "example_3_duplicate_other_side"
+    in:
+      words1: ["a", "ab"]
+      words2: ["a", "a", "a", "ab"]
+    out: 1
+  - name: "single_equal"
+    in:
+      words1: ["a"]
+      words2: ["a"]
+    out: 1
+  - name: "single_different"
+    in:
+      words1: ["a"]
+      words2: ["b"]
+    out: 0
+  - name: "all_duplicates_both"
+    in:
+      words1: ["x", "x", "x"]
+      words2: ["x", "x"]
+    out: 0
+  - name: "duplicate_only_words1"
+    in:
+      words1: ["x", "x", "y"]
+      words2: ["x", "y"]
+    out: 1
+  - name: "duplicate_only_words2"
+    in:
+      words1: ["x", "y"]
+      words2: ["x", "x", "y"]
+    out: 1
+  - name: "several_singletons"
+    in:
+      words1: ["a", "b", "c", "d"]
+      words2: ["d", "c", "b", "a"]
+    out: 4
+  - name: "shared_with_extras"
+    in:
+      words1: ["a", "b", "c", "z"]
+      words2: ["a", "b", "c", "q"]
+    out: 3
+  - name: "repeated_shared_excluded"
+    in:
+      words1: ["a", "a", "b", "c", "c"]
+      words2: ["a", "b", "b", "c"]
+    out: 0
+  - name: "case_is_lowercase_distinct"
+    in:
+      words1: ["aa", "ab", "ac"]
+      words2: ["aa", "ab", "ad"]
+    out: 2
+  - name: "length_one_words"
+    in:
+      words1: ["a", "b", "a", "c", "d"]
+      words2: ["b", "c", "d", "e"]
+    out: 3
+  - name: "length_thirty_equal"
+    in:
+      words1: ["abcdefghijklmnopqrstuvwxyzabcd"]
+      words2: ["abcdefghijklmnopqrstuvwxyzabcd"]
+    out: 1
+  - name: "length_thirty_nonmatching"
+    in:
+      words1: ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"]
+      words2: ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaab", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbba"]
+    out: 0
+  - name: "same_word_many_unique"
+    in:
+      words1: ["one", "two", "three", "four", "five", "six", "seven"]
+      words2: ["zero", "one", "three", "five", "seven", "eight"]
+    out: 4
+  - name: "intersection_empty"
+    in:
+      words1: ["red", "green", "blue"]
+      words2: ["cyan", "magenta", "yellow", "black"]
+    out: 0
+  - name: "one_side_has_all_duplicates"
+    in:
+      words1: ["a", "b", "c"]
+      words2: ["a", "a", "b", "b", "c", "c"]
+    out: 0
+  - name: "duplicate_frequency_three"
+    in:
+      words1: ["a", "a", "a", "b", "c"]
+      words2: ["a", "b", "c", "c", "c"]
+    out: 1
+  - name: "unique_after_duplicate_noise"
+    in:
+      words1: ["noise", "noise", "keep1", "keep2", "other"]
+      words2: ["noise", "keep1", "keep2", "other", "other"]
+    out: 2
+  - name: "repeated_prefix_words"
+    in:
+      words1: ["a", "aa", "aaa", "aaaa"]
+      words2: ["a", "aa", "aaa", "aaaa"]
+    out: 4
+  - name: "repeated_suffix_words"
+    in:
+      words1: ["ba", "cba", "dcba", "edcba", "ba"]
+      words2: ["ba", "cba", "dcba", "edcba"]
+    out: 3
+  - name: "ordering_irrelevant"
+    in:
+      words1: ["delta", "alpha", "charlie", "bravo"]
+      words2: ["bravo", "charlie", "alpha", "delta"]
+    out: 4
+  - name: "empty_result_from_mixed_counts"
+    in:
+      words1: ["a", "b", "b", "c", "d", "d"]
+      words2: ["a", "a", "b", "c", "c", "d"]
+    out: 0
+  - name: "two_singletons_among_duplicates"
+    in:
+      words1: ["a", "a", "b", "c", "c", "d"]
+      words2: ["a", "b", "b", "c", "d", "d"]
+    out: 0
+  - name: "long_unique_vocab"
+    in:
+      words1: ["alphaalphaalpha", "betabetabeta", "gammagammagamma", "delta"]
+      words2: ["delta", "gammagammagamma", "epsilon", "betabetabeta"]
+    out: 3
+  - name: "unicode_like_not_allowed_but_letters"
+    in:
+      words1: ["abcdefghijklmnopqrstuvwx", "yzabcdefghijklmnopqrstuv"]
+      words2: ["abcdefghijklmnopqrstuvwx", "yzabcdefghijklmnopqrstuv"]
+    out: 2
+  - name: "ten_singletons"
+    in:
+      words1: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+      words2: ["j", "i", "h", "g", "f", "e", "d", "c", "b", "a"]
+    out: 10
+  - name: "ten_with_five_duplicates"
+    in:
+      words1: ["a", "a", "b", "b", "c", "c", "d", "e", "f", "g"]
+      words2: ["a", "b", "c", "d", "e", "f", "f", "g", "g", "h"]
+    out: 2
+  - name: "small_alphabet_collisions"
+    in:
+      words1: ["aa", "ab", "ac", "aa", "ba", "bb"]
+      words2: ["aa", "ab", "ac", "ba", "bb", "bb"]
+    out: 3
+  - name: "all_words_same_singleton"
+    in:
+      words1: ["solo"]
+      words2: ["solo"]
+    out: 1
+  - name: "all_words_same_many"
+    in:
+      words1: ["same", "same", "same", "same"]
+      words2: ["same", "same", "same", "same"]
+    out: 0
+  - name: "generated_small"
+    seed: 208501
+    in:
+      words1:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 6
+          alphabet: "abcd"
+      words2:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 6
+          alphabet: "abcd"
+  - name: "generated_medium"
+    seed: 208502
+    in:
+      words1:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 250
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 12
+          alphabet: "abcdef"
+      words2:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 250
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 12
+          alphabet: "abcdef"
+  - name: "generated_maximum_short_vocab"
+    seed: 208503
+    in:
+      words1:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 3
+          alphabet: "abcdefgh"
+      words2:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 3
+          alphabet: "abcdefgh"
+  - name: "generated_maximum_long_words"
+    seed: 208504
+    in:
+      words1:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 30
+          alphabet: "abcdefghijkl"
+      words2:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 30
+          alphabet: "abcdefghijkl"
+  - name: "generated_boundary_lengths"
+    seed: 208505
+    in:
+      words1:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 30
+          alphabet: "az"
+      words2:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 30
+          alphabet: "az"

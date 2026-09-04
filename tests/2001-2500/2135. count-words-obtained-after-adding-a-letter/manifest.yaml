@@ -1,0 +1,343 @@
+entry:
+  id: 2135
+  title: "count-words-obtained-after-adding-a-letter"
+  params:
+    startWords:
+      type: array
+      items:
+        type: string
+    targetWords:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().wordCount({startWords}, {targetWords})"
+    rust: "Solution::word_count({startWords}, {targetWords})"
+    python3: "Solution().wordCount({startWords}, {targetWords})"
+    python2: "Solution().wordCount({startWords}, {targetWords})"
+    ruby: "word_count({startWords}, {targetWords})"
+    java: "new Solution().wordCount({startWords}, {targetWords})"
+    csharp: "new Solution().WordCount({startWords}, {targetWords})"
+    kotlin: "Solution().wordCount({startWords}, {targetWords})"
+    go: "wordCount({startWords}, {targetWords})"
+    dart: "Solution().wordCount({startWords}, {targetWords})"
+    swift: "Solution().wordCount({startWords}, {targetWords})"
+    typescript: "wordCount({startWords}, {targetWords})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().wordCount(startWords, targetWords, {result})"
+    checker: |
+      class Checker:
+          def wordCount(self, startWords, targetWords, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              available = {''.join(sorted(word)) for word in startWords}
+              expected = 0
+              for target in targetWords:
+                  for index, letter in enumerate(target):
+                      if target.count(letter) == 1 and target[:index] + target[index + 1:] in available:
+                          expected += 1
+                          break
+              return result == expected
+
+seed: 2135
+
+tests:
+  - name: "example_one"
+    in:
+      startWords: ["ant", "act", "tack"]
+      targetWords: ["tack", "act", "acti"]
+    out: 2
+  - name: "example_two"
+    in:
+      startWords: ["ab", "a"]
+      targetWords: ["abc", "abcd"]
+    out: 1
+  - name: "single_match"
+    in:
+      startWords: ["a"]
+      targetWords: ["ab"]
+    out: 1
+  - name: "single_no_match_same_word"
+    in:
+      startWords: ["a"]
+      targetWords: ["a"]
+    out: 0
+  - name: "single_letter_impossible"
+    in:
+      startWords: ["z"]
+      targetWords: ["a"]
+    out: 0
+  - name: "empty_intersection"
+    in:
+      startWords: ["abc", "def"]
+      targetWords: ["ghi", "jkl"]
+    out: 0
+  - name: "rearrangement_match"
+    in:
+      startWords: ["abc"]
+      targetWords: ["dbca"]
+    out: 1
+  - name: "rearrangement_without_added_letter"
+    in:
+      startWords: ["abc"]
+      targetWords: ["cba"]
+    out: 0
+  - name: "added_letter_already_present"
+    in:
+      startWords: ["abc"]
+      targetWords: ["abca"]
+    out: 0
+  - name: "multiple_possible_starts"
+    in:
+      startWords: ["ab", "ac", "bc"]
+      targetWords: ["abc", "abd", "acd"]
+    out: 3
+  - name: "target_duplicates_count_separately"
+    in:
+      startWords: ["ab"]
+      targetWords: ["abc", "cba", "abc", "bca"]
+    out: 4
+  - name: "start_duplicates_are_harmless"
+    in:
+      startWords: ["ab", "ba", "ab"]
+      targetWords: ["abc", "acb", "abcd"]
+    out: 2
+  - name: "one_letter_from_each_length"
+    in:
+      startWords: ["a", "ab", "abc", "abcd"]
+      targetWords: ["ab", "abc", "abcd", "abcde", "abcdef"]
+    out: 4
+  - name: "long_chain"
+    in:
+      startWords: ["a", "ab", "abc", "abcd", "abcde", "abcdef", "abcdefg", "abcdefgh"]
+      targetWords: ["ba", "cba", "dcba", "edcba", "fedcba", "gfedcba", "hgfedcba", "ihgfedcba"]
+    out: 8
+  - name: "alphabet_prefix"
+    in:
+      startWords: ["abcdefghijklmnopqrstuvwxy"]
+      targetWords: ["zyxwvutsrqponmlkjihgfedcba", "yxwvutsrqponmlkjihgfedcbaz", "abcdefghijklmnopqrstuvwxy"]
+    out: 2
+  - name: "alphabet_missing_each_end"
+    in:
+      startWords: ["bcdefghijklmnopqrstuvwxyz", "acdefghijklmnopqrstuvwxyz"]
+      targetWords: ["abcdefghijklmnopqrstuvwxyz", "zyxwvutsrqponmlkjihgfedcb", "abcdefghijklmnopqrstuvwxy"]
+    out: 1
+  - name: "mixed_lengths"
+    in:
+      startWords: ["x", "yz", "mnop", "rstuv", "abcdefghij"]
+      targetWords: ["xy", "zyx", "mnopq", "vutsrq", "abcdefghijk", "mnopqrst"]
+    out: 5
+  - name: "same_signature_different_order"
+    in:
+      startWords: ["cab", "fed", "jih"]
+      targetWords: ["abcd", "defg", "ghij", "abc"]
+    out: 3
+  - name: "only_repeated_target_candidate"
+    in:
+      startWords: ["ab"]
+      targetWords: ["aab", "abb", "aba", "abc"]
+    out: 1
+  - name: "all_candidates_repeated"
+    in:
+      startWords: ["a", "b", "c"]
+      targetWords: ["aa", "bb", "cc", "ab", "bc"]
+    out: 2
+  - name: "near_full_start_set"
+    in:
+      startWords: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+      targetWords: ["ab", "bc", "jk", "ka", "zz", "aa"]
+    out: 4
+  - name: "disjoint_lengths"
+    in:
+      startWords: ["a", "b", "c"]
+      targetWords: ["abcd", "efgh", "ijklm"]
+    out: 0
+  - name: "long_single_target"
+    in:
+      startWords: ["abcdefghijklmnopqrstuvwx"]
+      targetWords: ["zyxwvutsrqponmlkjihgfedcba"]
+    out: 0
+  - name: "target_order_irrelevant"
+    in:
+      startWords: ["dog", "cat"]
+      targetWords: ["zcat", "doge", "tacx", "god", "cat"]
+    out: 3
+  - name: "single_start_many_targets"
+    in:
+      startWords: ["a"]
+      targetWords: ["ab", "ac", "ad", "ba", "ca", "a"]
+    out: 5
+  - name: "nested_rearrangement"
+    in:
+      startWords: ["ace", "bdf", "gh"]
+      targetWords: ["face", "aced", "bdfe", "hgi", "ghi"]
+    out: 5
+  - name: "boundary_length_two"
+    in:
+      startWords: ["qwertyuiopasdfghjklzxcvbnm"]
+      targetWords: ["qwertyuiopasdfghjklzxcvbnma", "qwertyuiopasdfghjklzxcvbn"]
+    out: 0
+  - name: "case_sensitive_alphabet_only"
+    in:
+      startWords: ["mnop", "qrst"]
+      targetWords: ["mnopq", "qrstu", "nopm", "rstq"]
+    out: 2
+  - name: "several_added_choices"
+    in:
+      startWords: ["ab", "cd", "ef", "gh"]
+      targetWords: ["abc", "abd", "cde", "cdf", "efg", "egh", "ghi", "ghz"]
+    out: 8
+  - name: "long_start_and_short_targets"
+    in:
+      startWords: ["abcdefghijklmnopqrstuvwx", "yz"]
+      targetWords: ["abcdefghijklmnopqrstuvwxy", "xyz", "yz", "abcdefghijklmnopqrstuvwx"]
+    out: 2
+  - name: "all_twenty_six_letters"
+    in:
+      startWords: ["abcdefghijklmnopqrstuvwxyz"]
+      targetWords: ["abcdefghijklmnopqrstuvwxyz", "bcdefghijklmnopqrstuvwxyza"]
+    out: 0
+  - name: "generated_small_words"
+    seed: 101
+    in:
+      startWords:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdefgh"
+        distinct: true
+        elemType: "string"
+      targetWords:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdefghi"
+        distinct: false
+        elemType: "string"
+  - name: "generated_medium_words"
+    seed: 202
+    in:
+      startWords:
+        gen: "array"
+        len: 200
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdefghijklmno"
+        distinct: false
+        elemType: "string"
+      targetWords:
+        gen: "array"
+        len: 250
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdefghijklmnop"
+        distinct: false
+        elemType: "string"
+  - name: "generated_large_words"
+    seed: 303
+    in:
+      startWords:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        distinct: false
+        elemType: "string"
+      targetWords:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        distinct: false
+        elemType: "string"
+  - name: "generated_large_short_words"
+    seed: 404
+    in:
+      startWords:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdef"
+        distinct: false
+        elemType: "string"
+      targetWords:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "str"
+          len:
+            gen: "int"
+            min: 1
+            max: 1
+          alphabet: "abcdefg"
+        distinct: false
+        elemType: "string"
+  - name: "generated_full_alphabet"
+    seed: 505
+    in:
+      startWords:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 1
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        distinct: false
+        elemType: "string"
+      targetWords:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 1
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        distinct: false
+        elemType: "string"

@@ -1,0 +1,350 @@
+entry:
+  id: 2088
+  title: "count-fertile-pyramids-in-a-land"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().countPyramids({grid})"
+    rust: "Solution::count_pyramids({grid})"
+    python3: "Solution().countPyramids({grid})"
+    python2: "Solution().countPyramids({grid})"
+    ruby: "count_pyramids({grid})"
+    java: "new Solution().countPyramids({grid})"
+    csharp: "new Solution().CountPyramids({grid})"
+    kotlin: "Solution().countPyramids({grid})"
+    go: "countPyramids({grid})"
+    dart: "Solution().countPyramids({grid})"
+    swift: "Solution().countPyramids({grid})"
+    typescript: "countPyramids({grid})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().countPyramids(grid, {result})"
+    checker: |
+      class Checker:
+          def countPyramids(self, grid, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              m = len(grid)
+              n = len(grid[0])
+              if m < 1 or n < 1 or any(len(row) != n for row in grid):
+                  return False
+              def count(rows):
+                  dp = [[0] * n for _ in range(m)]
+                  total = 0
+                  for i in rows:
+                      for j in range(n):
+                          if grid[i][j] == 1:
+                              if i == m - 1 or j == 0 or j == n - 1:
+                                  dp[i][j] = 1
+                              else:
+                                  dp[i][j] = 1 + min(dp[i + 1][j - 1], dp[i + 1][j], dp[i + 1][j + 1])
+                              total += max(0, dp[i][j] - 1)
+                  return total
+              down = count(list(range(m - 1, -1, -1)))
+              updp = [[0] * n for _ in range(m)]
+              up = 0
+              for i in range(m):
+                  for j in range(n):
+                      if grid[i][j] == 1:
+                          if i == 0 or j == 0 or j == n - 1:
+                              updp[i][j] = 1
+                          else:
+                              updp[i][j] = 1 + min(updp[i - 1][j - 1], updp[i - 1][j], updp[i - 1][j + 1])
+                          up += max(0, updp[i][j] - 1)
+              return result == down + up
+
+seed: 2088
+
+tests:
+  - name: "example_1"
+    in:
+      grid:
+        - [0, 1, 1, 0]
+        - [1, 1, 1, 1]
+    out: 2
+  - name: "example_2"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 2
+  - name: "example_3"
+    in:
+      grid:
+        - [1, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [0, 1, 0, 0, 1]
+    out: 13
+  - name: "single_cell_zero"
+    in:
+      grid:
+        - [0]
+    out: 0
+  - name: "single_cell_one"
+    in:
+      grid:
+        - [1]
+    out: 0
+  - name: "single_row_all_ones"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1]
+    out: 0
+  - name: "single_column_all_ones"
+    in:
+      grid:
+        - [1]
+        - [1]
+        - [1]
+        - [1]
+    out: 0
+  - name: "all_zero_3x4"
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+        - [0, 0, 0, 0]
+    out: 0
+  - name: "two_rows_center"
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 1, 1]
+    out: 1
+  - name: "two_rows_inverse"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [0, 1, 0]
+    out: 1
+  - name: "two_rows_four"
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 4
+  - name: "three_by_three_full"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 4
+  - name: "four_by_four_full"
+    in:
+      grid:
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 12
+  - name: "five_by_five_full"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 30
+  - name: "wide_center_peak"
+    in:
+      grid:
+        - [0, 0, 1, 0, 0]
+        - [0, 1, 1, 1, 0]
+        - [1, 1, 1, 1, 1]
+    out: 6
+  - name: "wide_center_inverse"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [0, 1, 1, 1, 0]
+        - [0, 0, 1, 0, 0]
+    out: 6
+  - name: "alternating_rows"
+    in:
+      grid:
+        - [1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0]
+        - [1, 0, 1, 0, 1]
+        - [0, 1, 0, 1, 0]
+    out: 0
+  - name: "border_only"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+    out: 0
+  - name: "notched_peak"
+    in:
+      grid:
+        - [0, 0, 1, 0, 0]
+        - [0, 1, 0, 1, 0]
+        - [1, 1, 1, 1, 1]
+    out: 2
+  - name: "notched_inverse"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [0, 0, 1, 0, 0]
+    out: 1
+  - name: "diagonal_noise"
+    in:
+      grid:
+        - [1, 1, 0, 0, 0, 0]
+        - [0, 1, 1, 0, 0, 0]
+        - [0, 0, 1, 1, 0, 0]
+        - [0, 0, 0, 1, 1, 0]
+        - [0, 0, 0, 0, 1, 1]
+    out: 0
+  - name: "isolated_fertile"
+    in:
+      grid:
+        - [1, 0, 1, 0]
+        - [0, 0, 0, 0]
+        - [0, 1, 0, 1]
+    out: 0
+  - name: "left_triangle"
+    in:
+      grid:
+        - [1, 0, 0, 0]
+        - [1, 1, 0, 0]
+        - [1, 1, 1, 0]
+        - [1, 1, 1, 1]
+    out: 4
+  - name: "right_triangle"
+    in:
+      grid:
+        - [0, 0, 0, 1]
+        - [0, 0, 1, 1]
+        - [0, 1, 1, 1]
+        - [1, 1, 1, 1]
+    out: 4
+  - name: "five_by_three_full"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+        - [1, 1, 1]
+    out: 8
+  - name: "three_by_seven_full"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1, 1, 1]
+    out: 26
+  - name: "dense_gap_center"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 0, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 10
+  - name: "dense_gap_edge"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [0, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+        - [1, 1, 1, 1, 1]
+    out: 19
+  - name: "generated_small"
+    seed: 101
+    in:
+      grid:
+        gen: "array"
+        len: 7
+        of:
+          gen: "array"
+          len: 7
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_tall"
+    seed: 202
+    in:
+      grid:
+        gen: "array"
+        len: 40
+        of:
+          gen: "array"
+          len: 9
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_wide"
+    seed: 303
+    in:
+      grid:
+        gen: "array"
+        len: 8
+        of:
+          gen: "array"
+          len: 60
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_dense"
+    seed: 404
+    in:
+      grid:
+        gen: "array"
+        len: 25
+        of:
+          gen: "array"
+          len: 25
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "generated_max_area"
+    seed: 505
+    in:
+      grid:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 100
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+  - name: "single_row_zeroes"
+    in:
+      grid:
+        - [0, 0, 0, 0, 0, 0, 0]
+    out: 0
+  - name: "single_column_alternating"
+    in:
+      grid:
+        - [1]
+        - [0]
+        - [1]
+        - [0]
+        - [1]
+    out: 0

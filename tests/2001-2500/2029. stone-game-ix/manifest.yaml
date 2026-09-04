@@ -1,0 +1,244 @@
+entry:
+  id: 2029
+  title: "stone-game-ix"
+  params:
+    stones:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().stoneGameIX({stones})"
+    rust: "Solution::stone_game_ix({stones})"
+    python3: "Solution().stoneGameIX({stones})"
+    python2: "Solution().stoneGameIX({stones})"
+    ruby: "stone_game_ix({stones})"
+    java: "new Solution().stoneGameIX({stones})"
+    csharp: "new Solution().StoneGameIX({stones})"
+    kotlin: "Solution().stoneGameIX({stones})"
+    go: "stoneGameIX({stones})"
+    dart: "Solution().stoneGameIX({stones})"
+    swift: "Solution().stoneGameIX({stones})"
+    typescript: "stoneGameIX({stones})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 300
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().stoneGameIX(stones, {result})"
+    checker: |
+      class Checker:
+          def stoneGameIX(self, stones, result):
+              if not isinstance(result, bool) or not isinstance(stones, list):
+                  return False
+              counts = [0, 0, 0]
+              for value in stones:
+                  if not isinstance(value, int) or isinstance(value, bool) or value < 1 or value > 10000:
+                      return False
+                  counts[value % 3] += 1
+              expected = (abs(counts[1] - counts[2]) >= 3
+                          if counts[0] % 2
+                          else min(counts[1], counts[2]) >= 1)
+              return result is expected
+
+seed: 20292029
+
+tests:
+  - name: "example_1"
+    in:
+      stones: [2, 1]
+    out: true
+  - name: "example_2"
+    in:
+      stones: [2]
+    out: false
+  - name: "example_3"
+    in:
+      stones: [5, 1, 2, 4, 3]
+    out: false
+  - name: "single_residue_zero"
+    in:
+      stones: [3]
+    out: false
+  - name: "single_residue_one"
+    in:
+      stones: [1]
+    out: false
+  - name: "two_matching_one_residues"
+    in:
+      stones: [1, 4]
+    out: false
+  - name: "one_of_each_nonzero"
+    in:
+      stones: [1, 2]
+    out: true
+  - name: "zero_even_with_both"
+    in:
+      stones: [3, 1, 2]
+    out: false
+  - name: "zero_odd_difference_two"
+    in:
+      stones: [3, 1, 4, 2]
+    out: false
+  - name: "zero_odd_difference_three"
+    in:
+      stones: [3, 1, 4, 7, 2]
+    out: false
+  - name: "zero_odd_difference_four"
+    in:
+      stones: [6, 1, 4, 7, 10, 2]
+    out: true
+  - name: "all_zero_even"
+    in:
+      stones: [3, 6, 9, 12]
+    out: false
+  - name: "all_zero_odd"
+    in:
+      stones: [3, 6, 9]
+    out: false
+  - name: "all_ones"
+    in:
+      stones: [1, 1, 1, 1, 1]
+    out: false
+  - name: "all_twos"
+    in:
+      stones: [2, 2, 2, 2, 2]
+    out: false
+  - name: "balanced_nonzero_even_zero"
+    in:
+      stones: [6, 1, 4, 2, 5, 8]
+    out: false
+  - name: "balanced_nonzero_odd_zero"
+    in:
+      stones: [3, 1, 2, 4, 5]
+    out: false
+  - name: "large_values_residue_one"
+    in:
+      stones: [10000, 9997, 9994]
+    out: false
+  - name: "large_values_mixed"
+    in:
+      stones: [10000, 9999, 9998, 9997, 9996, 9995]
+    out: true
+  - name: "permuted_order"
+    in:
+      stones: [8, 3, 5, 1, 6, 4, 2, 7]
+    out: true
+  - name: "many_zero_balanced"
+    in:
+      stones: [3, 6, 12, 15, 1, 2, 4, 5]
+    out: true
+  - name: "many_zero_unbalanced"
+    in:
+      stones: [3, 6, 9, 1, 4, 7, 2]
+    out: false
+  - name: "one_zero_one_each"
+    in:
+      stones: [300, 10000, 9998]
+    out: false
+  - name: "two_zero_one_each"
+    in:
+      stones: [3, 6, 1, 2]
+    out: true
+  - name: "two_zero_only_one_side"
+    in:
+      stones: [3, 6, 1, 4]
+    out: false
+  - name: "odd_zero_equal_counts"
+    in:
+      stones: [300, 1, 4, 2, 5]
+    out: false
+  - name: "odd_zero_diff_boundary"
+    in:
+      stones: [9999, 1, 4, 7, 2, 5]
+    out: false
+  - name: "alternating_residues"
+    in:
+      stones: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: false
+  - name: "residue_pattern_false"
+    in:
+      stones: [1, 4, 7, 2, 3, 6]
+    out: true
+  - name: "residue_pattern_true"
+    in:
+      stones: [1, 4, 7, 10, 2, 3, 6, 9]
+    out: true
+  - name: "generated_small_uniform"
+    seed: 101
+    in:
+      stones:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated_small_duplicates"
+    seed: 202
+    in:
+      stones:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 10
+          max: 60
+        of:
+          gen: "int"
+          min: 3
+          max: 12
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated_medium"
+    seed: 303
+    in:
+      stones:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 500
+          max: 1500
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated_near_limit_a"
+    seed: 404
+    in:
+      stones:
+        gen: "array"
+        len: 99999
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"
+  - name: "generated_near_limit_b"
+    seed: 505
+    in:
+      stones:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 10000
+        distinct: false
+        sorted: false
+        elemType: "int"

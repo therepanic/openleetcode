@@ -1,0 +1,416 @@
+entry:
+  id: 2032
+  title: "two-out-of-three"
+  params:
+    nums1:
+      type: array
+      items:
+        type: int
+    nums2:
+      type: array
+      items:
+        type: int
+    nums3:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().twoOutOfThree({nums1}, {nums2}, {nums3})"
+    rust: "Solution::two_out_of_three({nums1}, {nums2}, {nums3})"
+    python3: "Solution().twoOutOfThree({nums1}, {nums2}, {nums3})"
+    python2: "Solution().twoOutOfThree({nums1}, {nums2}, {nums3})"
+    ruby: "two_out_of_three({nums1}, {nums2}, {nums3})"
+    java: "new Solution().twoOutOfThree({nums1}, {nums2}, {nums3})"
+    csharp: "new Solution().TwoOutOfThree({nums1}, {nums2}, {nums3})"
+    kotlin: "Solution().twoOutOfThree({nums1}, {nums2}, {nums3})"
+    go: "twoOutOfThree({nums1}, {nums2}, {nums3})"
+    dart: "Solution().twoOutOfThree({nums1}, {nums2}, {nums3})"
+    swift: "Solution().twoOutOfThree({nums1}, {nums2}, {nums3})"
+    typescript: "twoOutOfThree({nums1}, {nums2}, {nums3})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().twoOutOfThree(nums1, nums2, nums3, {result})"
+    checker: |
+      class Checker:
+          def twoOutOfThree(self, nums1, nums2, nums3, result):
+              if not isinstance(result, list):
+                  return False
+              if any(not isinstance(x, int) or isinstance(x, bool) for x in result):
+                  return False
+              if len(result) != len(set(result)):
+                  return False
+              expected = {x for x in set(nums1 + nums2 + nums3)
+                          if sum(x in nums for nums in (nums1, nums2, nums3)) >= 2}
+              return set(result) == expected
+
+seed: 2032
+
+tests:
+  - name: "example_one"
+    in:
+      nums1: [1, 1, 3, 2]
+      nums2: [2, 3]
+      nums3: [3]
+    out: [3, 2]
+  - name: "example_two"
+    in:
+      nums1: [3, 1]
+      nums2: [2, 3]
+      nums3: [1, 2]
+    out: [2, 3, 1]
+  - name: "example_three_empty"
+    in:
+      nums1: [1, 2, 2]
+      nums2: [4, 3, 3]
+      nums3: [5]
+    out: []
+  - name: "single_value_all_three"
+    in:
+      nums1: [1]
+      nums2: [1]
+      nums3: [1]
+    out: [1]
+  - name: "single_value_first_two"
+    in:
+      nums1: [7]
+      nums2: [7]
+      nums3: [8]
+    out: [7]
+  - name: "single_value_first_three"
+    in:
+      nums1: [9]
+      nums2: [8]
+      nums3: [9]
+    out: [9]
+  - name: "single_value_last_two"
+    in:
+      nums1: [6]
+      nums2: [5]
+      nums3: [5]
+    out: [5]
+  - name: "all_minimum"
+    in:
+      nums1: [1, 1, 1]
+      nums2: [1]
+      nums3: [1, 1]
+    out: [1]
+  - name: "all_maximum"
+    in:
+      nums1: [100]
+      nums2: [100, 100]
+      nums3: [100, 100, 100]
+    out: [100]
+  - name: "no_overlap_distinct"
+    in:
+      nums1: [1, 2, 3]
+      nums2: [4, 5, 6]
+      nums3: [7, 8, 9]
+    out: []
+  - name: "pairwise_disjoint_results"
+    in:
+      nums1: [1, 2]
+      nums2: [2, 3]
+      nums3: [1, 3]
+    out: [1, 2, 3]
+  - name: "only_all_three"
+    in:
+      nums1: [4, 4, 8]
+      nums2: [4, 9]
+      nums3: [4, 10]
+    out: [4]
+  - name: "duplicates_only_one_array"
+    in:
+      nums1: [2, 2, 2, 5]
+      nums2: [3, 3]
+      nums3: [4, 4, 4]
+    out: []
+  - name: "overlap_with_heavy_duplicates"
+    in:
+      nums1: [1, 1, 1, 2, 2]
+      nums2: [2, 2, 3, 3, 3]
+      nums3: [1, 3, 3, 4]
+    out: [1, 2, 3]
+  - name: "boundary_values_mixed"
+    in:
+      nums1: [1, 50, 100]
+      nums2: [1, 50, 99]
+      nums3: [2, 50, 100]
+    out: [1, 50, 100]
+  - name: "middle_value_pairs"
+    in:
+      nums1: [10, 20, 30, 40]
+      nums2: [20, 40, 50]
+      nums3: [10, 30, 50]
+    out: [10, 20, 30, 40, 50]
+  - name: "one_array_subsumed"
+    in:
+      nums1: [1, 2, 3, 4]
+      nums2: [2, 3]
+      nums3: [3, 4]
+    out: [2, 3, 4]
+  - name: "same_arrays"
+    in:
+      nums1: [5, 6, 7, 7]
+      nums2: [5, 6, 7]
+      nums3: [5, 6, 7, 7, 7]
+    out: [5, 6, 7]
+  - name: "alternating_pairs"
+    in:
+      nums1: [1, 3, 5, 7]
+      nums2: [2, 3, 6, 7]
+      nums3: [1, 2, 5, 6]
+    out: [1, 2, 3, 5, 6, 7]
+  - name: "long_first_array"
+    in:
+      nums1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      nums2: [2, 4, 6, 8, 10]
+      nums3: [1, 3, 5, 7, 9]
+    out: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  - name: "disjoint_then_common"
+    in:
+      nums1: [11, 12, 13, 14]
+      nums2: [21, 22, 23, 24]
+      nums3: [11, 21, 31, 41]
+    out: [11, 21]
+  - name: "three_way_and_pairwise"
+    in:
+      nums1: [1, 2, 3, 4, 5]
+      nums2: [2, 3, 6, 7]
+      nums3: [3, 4, 7, 8]
+    out: [2, 3, 4, 7]
+  - name: "near_upper_values"
+    in:
+      nums1: [96, 97, 98, 99, 100]
+      nums2: [95, 97, 99]
+      nums3: [94, 96, 98, 100]
+    out: [96, 97, 98, 99, 100]
+  - name: "repeated_pair_only"
+    in:
+      nums1: [12, 12, 13]
+      nums2: [14, 15, 15]
+      nums3: [12, 15, 16]
+    out: [12, 15]
+  - name: "small_universe"
+    in:
+      nums1: [1, 2, 1, 2]
+      nums2: [2, 3, 2]
+      nums3: [3, 1, 3]
+    out: [1, 2, 3]
+  - name: "singletons_all_different"
+    in:
+      nums1: [1]
+      nums2: [2]
+      nums3: [3]
+    out: []
+  - name: "two_arrays_with_internal_noise"
+    in:
+      nums1: [1, 1, 2, 3, 3]
+      nums2: [3, 4, 4, 5]
+      nums3: [6, 7, 7, 8]
+    out: [3]
+  - name: "every_value_in_exactly_two"
+    in:
+      nums1: [10, 20, 30, 40]
+      nums2: [10, 20, 50, 60]
+      nums3: [30, 40, 50, 60]
+    out: [10, 20, 30, 40, 50, 60]
+  - name: "one_common_value_amid_range"
+    in:
+      nums1: [1, 2, 3, 4, 5, 6]
+      nums2: [7, 8, 9, 10, 11, 12]
+      nums3: [6, 13, 14, 15, 16, 17]
+    out: [6]
+  - name: "generated_small"
+    seed: 11
+    in:
+      nums1:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 12
+        of:
+          gen: "int"
+          min: 1
+          max: 12
+      nums2:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 12
+        of:
+          gen: "int"
+          min: 1
+          max: 12
+      nums3:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 12
+        of:
+          gen: "int"
+          min: 1
+          max: 12
+  - name: "generated_medium"
+    seed: 22
+    in:
+      nums1:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 20
+          max: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums2:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 20
+          max: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums3:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 20
+          max: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_dense"
+    seed: 33
+    in:
+      nums1:
+        gen: "array"
+        len: 60
+        of:
+          gen: "int"
+          min: 1
+          max: 8
+      nums2:
+        gen: "array"
+        len: 60
+        of:
+          gen: "int"
+          min: 1
+          max: 8
+      nums3:
+        gen: "array"
+        len: 60
+        of:
+          gen: "int"
+          min: 1
+          max: 8
+  - name: "generated_sparse"
+    seed: 44
+    in:
+      nums1:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums2:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums3:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "generated_balanced"
+    seed: 55
+    in:
+      nums1:
+        gen: "array"
+        len: 35
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums2:
+        gen: "array"
+        len: 70
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums3:
+        gen: "array"
+        len: 5
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "stress_max_all_values"
+    seed: 66
+    in:
+      nums1:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums2:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      nums3:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+  - name: "stress_max_dense"
+    seed: 77
+    in:
+      nums1:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 3
+      nums2:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 98
+          max: 100
+      nums3:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100

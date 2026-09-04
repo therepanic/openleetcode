@@ -1,0 +1,276 @@
+entry:
+  id: 2139
+  title: "minimum-moves-to-reach-target-score"
+  params:
+    target:
+      type: int
+    maxDoubles:
+      type: int
+  call:
+    cpp: "Solution().minMoves({target}, {maxDoubles})"
+    rust: "Solution::min_moves({target}, {maxDoubles})"
+    python3: "Solution().minMoves({target}, {maxDoubles})"
+    python2: "Solution().minMoves({target}, {maxDoubles})"
+    ruby: "min_moves({target}, {maxDoubles})"
+    java: "new Solution().minMoves({target}, {maxDoubles})"
+    csharp: "new Solution().MinMoves({target}, {maxDoubles})"
+    kotlin: "Solution().minMoves({target}, {maxDoubles})"
+    go: "minMoves({target}, {maxDoubles})"
+    dart: "Solution().minMoves({target}, {maxDoubles})"
+    swift: "Solution().minMoves({target}, {maxDoubles})"
+    typescript: "minMoves({target}, {maxDoubles})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minMoves(target, maxDoubles, {result})"
+    checker: |
+      class Checker:
+          def minMoves(self, target, maxDoubles, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              moves = 0
+              while target > 1 and maxDoubles > 0:
+                  if target & 1:
+                      target -= 1
+                  else:
+                      target //= 2
+                      maxDoubles -= 1
+                  moves += 1
+              expected = moves + max(0, target - 1)
+              return result == expected
+
+seed: 2139
+
+tests:
+  - name: "minimum_target"
+    in:
+      target: 1
+      maxDoubles: 0
+    out: 0
+  - name: "target_two_no_doubles"
+    in:
+      target: 2
+      maxDoubles: 0
+    out: 1
+  - name: "example_one"
+    in:
+      target: 5
+      maxDoubles: 0
+    out: 4
+  - name: "example_two"
+    in:
+      target: 19
+      maxDoubles: 2
+    out: 7
+  - name: "example_three"
+    in:
+      target: 10
+      maxDoubles: 4
+    out: 4
+  - name: "doubles_unused_at_one"
+    in:
+      target: 1
+      maxDoubles: 100
+    out: 0
+  - name: "no_doubles_small_odd"
+    in:
+      target: 17
+      maxDoubles: 0
+    out: 16
+  - name: "no_doubles_max_target"
+    in:
+      target: 1000000000
+      maxDoubles: 0
+    out: 999999999
+  - name: "one_double_even"
+    in:
+      target: 4
+      maxDoubles: 1
+    out: 2
+  - name: "one_double_odd"
+    in:
+      target: 7
+      maxDoubles: 1
+    out: 4
+  - name: "one_double_power"
+    in:
+      target: 8
+      maxDoubles: 1
+    out: 4
+  - name: "one_double_large"
+    in:
+      target: 100
+      maxDoubles: 1
+    out: 50
+  - name: "odd_requires_increment"
+    in:
+      target: 3
+      maxDoubles: 1
+    out: 2
+  - name: "odd_chain"
+    in:
+      target: 15
+      maxDoubles: 2
+    out: 6
+  - name: "even_chain"
+    in:
+      target: 16
+      maxDoubles: 2
+    out: 5
+  - name: "exact_power_two"
+    in:
+      target: 32
+      maxDoubles: 5
+    out: 5
+  - name: "more_doubles_than_needed"
+    in:
+      target: 32
+      maxDoubles: 100
+    out: 5
+  - name: "power_two_limited"
+    in:
+      target: 64
+      maxDoubles: 2
+    out: 17
+  - name: "near_power_low"
+    in:
+      target: 31
+      maxDoubles: 4
+    out: 8
+  - name: "near_power_high"
+    in:
+      target: 33
+      maxDoubles: 4
+    out: 6
+  - name: "target_50_doubles_3"
+    in:
+      target: 50
+      maxDoubles: 3
+    out: 9
+  - name: "target_99_doubles_2"
+    in:
+      target: 99
+      maxDoubles: 2
+    out: 27
+  - name: "target_127_doubles_6"
+    in:
+      target: 127
+      maxDoubles: 6
+    out: 12
+  - name: "target_128_doubles_6"
+    in:
+      target: 128
+      maxDoubles: 6
+    out: 7
+  - name: "target_129_doubles_6"
+    in:
+      target: 129
+      maxDoubles: 6
+    out: 8
+  - name: "target_255_doubles_7"
+    in:
+      target: 255
+      maxDoubles: 7
+    out: 14
+  - name: "target_256_doubles_7"
+    in:
+      target: 256
+      maxDoubles: 7
+    out: 8
+  - name: "target_257_doubles_7"
+    in:
+      target: 257
+      maxDoubles: 7
+    out: 9
+  - name: "target_1000_doubles_3"
+    in:
+      target: 1000
+      maxDoubles: 3
+    out: 127
+  - name: "target_1000_doubles_10"
+    in:
+      target: 1000
+      maxDoubles: 10
+    out: 14
+  - name: "target_999999937_doubles_1"
+    in:
+      target: 999999937
+      maxDoubles: 1
+    out: 499999969
+  - name: "target_999999999_doubles_100"
+    in:
+      target: 999999999
+      maxDoubles: 100
+    out: 49
+  - name: "large_even_many_doubles"
+    in:
+      target: 1000000000
+      maxDoubles: 100
+    out: 41
+  - name: "large_odd_many_doubles"
+    in:
+      target: 999999999
+      maxDoubles: 99
+    out: 49
+  - name: "generated_small_mixed"
+    seed: 101
+    in:
+      target:
+        gen: "int"
+        min: 1
+        max: 1000
+      maxDoubles:
+        gen: "int"
+        min: 0
+        max: 100
+  - name: "generated_medium"
+    seed: 202
+    in:
+      target:
+        gen: "int"
+        min: 1001
+        max: 1000000
+      maxDoubles:
+        gen: "int"
+        min: 0
+        max: 100
+  - name: "generated_low_doubles"
+    seed: 303
+    in:
+      target:
+        gen: "int"
+        min: 1000000
+        max: 100000000
+      maxDoubles:
+        gen: "int"
+        min: 0
+        max: 3
+  - name: "generated_near_maximum"
+    seed: 404
+    in:
+      target:
+        gen: "int"
+        min: 900000000
+        max: 1000000000
+      maxDoubles:
+        gen: "int"
+        min: 50
+        max: 100
+  - name: "generated_maximum_scale"
+    seed: 505
+    in:
+      target:
+        gen: "int"
+        min: 999000000
+        max: 1000000000
+      maxDoubles:
+        gen: "int"
+        min: 90
+        max: 100

@@ -1,0 +1,639 @@
+entry:
+  id: 2076
+  title: "process-restricted-friend-requests"
+  params:
+    n:
+      type: int
+    restrictions:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    requests:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().friendRequests({n}, {restrictions}, {requests})"
+    rust: "Solution::friend_requests({n}, {restrictions}, {requests})"
+    python3: "Solution().friendRequests({n}, {restrictions}, {requests})"
+    python2: "Solution().friendRequests({n}, {restrictions}, {requests})"
+    ruby: "friend_requests({n}, {restrictions}, {requests})"
+    java: "new Solution().friendRequests({n}, {restrictions}, {requests})"
+    csharp: "new Solution().FriendRequests({n}, {restrictions}, {requests})"
+    kotlin: "Solution().friendRequests({n}, {restrictions}, {requests})"
+    go: "friendRequests({n}, {restrictions}, {requests})"
+    dart: "Solution().friendRequests({n}, {restrictions}, {requests})"
+    swift: "Solution().friendRequests({n}, {restrictions}, {requests})"
+    typescript: "friendRequests({n}, {restrictions}, {requests})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().friendRequests(n, restrictions, requests, {result})"
+    checker: |
+      class Checker:
+          def friendRequests(self, n, restrictions, requests, result):
+              parent = list(range(n))
+              def find(x):
+                  while parent[x] != x:
+                      parent[x] = parent[parent[x]]
+                      x = parent[x]
+                  return x
+              expected = []
+              for u, v in requests:
+                  ru, rv = find(u), find(v)
+                  ok = ru == rv
+                  if not ok:
+                      for a, b in restrictions:
+                          ra, rb = find(a), find(b)
+                          if (ra == ru and rb == rv) or (ra == rv and rb == ru):
+                              ok = False
+                              break
+                      else:
+                          ok = True
+                  expected.append(ok)
+                  if ok and ru != rv:
+                      parent[ru] = rv
+              return result == expected
+
+seed: 20762076
+
+tests:
+  - name: "example-1"
+    in:
+      n: 3
+      restrictions:
+        - [0, 1]
+      requests:
+        - [0, 2]
+        - [2, 1]
+    out: [true, false]
+  - name: "example-2"
+    in:
+      n: 3
+      restrictions:
+        - [0, 1]
+      requests:
+        - [1, 2]
+        - [0, 2]
+    out: [true, false]
+  - name: "example-3"
+    in:
+      n: 5
+      restrictions:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+      requests:
+        - [0, 4]
+        - [1, 2]
+        - [3, 1]
+        - [3, 4]
+    out: [true, false, true, false]
+  - name: "no-restrictions-chain"
+    in:
+      n: 6
+      restrictions: []
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [4, 5]
+        - [0, 5]
+    out: [true, true, true, true, true]
+  - name: "single-request-allowed"
+    in:
+      n: 2
+      restrictions: []
+      requests:
+        - [0, 1]
+    out: [true]
+  - name: "single-direct-restriction"
+    in:
+      n: 2
+      restrictions:
+        - [0, 1]
+      requests:
+        - [0, 1]
+    out: [false]
+  - name: "repeated-friends"
+    in:
+      n: 4
+      restrictions:
+        - [0, 3]
+      requests:
+        - [0, 1]
+        - [1, 0]
+        - [0, 1]
+        - [2, 3]
+        - [3, 2]
+    out: [true, true, true, true, true]
+  - name: "restriction-between-components"
+    in:
+      n: 5
+      restrictions:
+        - [0, 4]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [1, 2]
+        - [3, 4]
+    out: [true, true, true, false]
+  - name: "rejected-merge-does-not-change-state"
+    in:
+      n: 5
+      restrictions:
+        - [0, 3]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [1, 2]
+        - [0, 4]
+        - [4, 3]
+    out: [true, true, false, true, false]
+  - name: "multiple-restrictions"
+    in:
+      n: 6
+      restrictions:
+        - [0, 2]
+        - [1, 3]
+        - [4, 5]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [0, 2]
+        - [1, 3]
+        - [4, 0]
+        - [5, 1]
+    out: [true, true, false, false, true, false]
+  - name: "star-blocks-leaves"
+    in:
+      n: 7
+      restrictions:
+        - [1, 5]
+        - [2, 6]
+      requests:
+        - [0, 1]
+        - [0, 2]
+        - [5, 3]
+        - [6, 4]
+        - [3, 4]
+        - [0, 5]
+        - [0, 6]
+    out: [true, true, true, true, true, false, false]
+  - name: "all-pairs-restricted"
+    in:
+      n: 4
+      restrictions:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 2]
+        - [1, 3]
+        - [2, 3]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [0, 2]
+        - [1, 3]
+    out: [false, false, false, false]
+  - name: "components-safe-order"
+    in:
+      n: 8
+      restrictions:
+        - [0, 7]
+        - [1, 6]
+        - [2, 5]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [0, 7]
+    out: [true, true, true, true, true, false, true, false]
+  - name: "same-component-after-long-chain"
+    in:
+      n: 10
+      restrictions:
+        - [0, 9]
+        - [2, 8]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [0, 9]
+    out: [true, true, true, true, true, true, true, false, true, false]
+  - name: "isolated-persons"
+    in:
+      n: 9
+      restrictions:
+        - [0, 1]
+        - [3, 4]
+      requests:
+        - [2, 5]
+        - [5, 8]
+        - [2, 8]
+        - [0, 3]
+        - [1, 4]
+        - [6, 7]
+        - [0, 4]
+    out: [true, true, true, true, true, true, false]
+  - name: "restriction-becomes-indirect"
+    in:
+      n: 6
+      restrictions:
+        - [0, 5]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [0, 5]
+    out: [true, true, true, true, false, false]
+  - name: "empty-restrictions-many-requests"
+    in:
+      n: 10
+      restrictions: []
+      requests:
+        - [0, 9]
+        - [1, 8]
+        - [2, 7]
+        - [3, 6]
+        - [4, 5]
+        - [0, 1]
+        - [2, 3]
+        - [4, 6]
+        - [7, 8]
+        - [5, 9]
+    out: [true, true, true, true, true, true, true, true, true, true]
+  - name: "duplicate-restrictions"
+    in:
+      n: 5
+      restrictions:
+        - [0, 1]
+        - [1, 0]
+        - [0, 1]
+      requests:
+        - [0, 1]
+        - [0, 2]
+        - [2, 1]
+        - [1, 3]
+        - [0, 3]
+    out: [false, true, false, true, false]
+  - name: "late-cross-component-conflict"
+    in:
+      n: 7
+      restrictions:
+        - [0, 6]
+        - [2, 5]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [6, 3]
+        - [0, 6]
+        - [2, 5]
+    out: [true, true, true, true, true, false, false]
+  - name: "two-independent-conflicts"
+    in:
+      n: 8
+      restrictions:
+        - [0, 3]
+        - [4, 7]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+        - [1, 2]
+        - [5, 6]
+        - [0, 3]
+        - [4, 7]
+    out: [true, true, true, true, false, false, false, false]
+  - name: "n-1000-sparse"
+    in:
+      n: 1000
+      restrictions:
+        - [0, 999]
+        - [100, 900]
+        - [250, 750]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [100, 101]
+        - [101, 102]
+        - [899, 900]
+        - [0, 999]
+        - [250, 750]
+        - [4, 999]
+    out: [true, true, true, true, true, true, true, false, false, false]
+  - name: "n-1000-dense-requests"
+    in:
+      n: 1000
+      restrictions:
+        - [0, 500]
+        - [1, 501]
+        - [2, 502]
+        - [3, 503]
+        - [4, 504]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [500, 501]
+        - [501, 502]
+        - [502, 503]
+        - [503, 504]
+        - [0, 500]
+        - [4, 504]
+    out: [true, true, true, true, true, true, true, true, false, false]
+  - name: "alternating-requests"
+    in:
+      n: 6
+      restrictions:
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+      requests:
+        - [0, 1]
+        - [3, 4]
+        - [1, 2]
+        - [4, 5]
+        - [0, 2]
+        - [3, 5]
+    out: [true, true, true, true, true, true]
+  - name: "merge-restriction-endpoints"
+    in:
+      n: 5
+      restrictions:
+        - [0, 4]
+      requests:
+        - [0, 1]
+        - [4, 3]
+        - [1, 2]
+        - [2, 3]
+        - [0, 4]
+    out: [true, true, true, false, false]
+  - name: "reverse-chain"
+    in:
+      n: 6
+      restrictions:
+        - [0, 5]
+      requests:
+        - [5, 4]
+        - [4, 3]
+        - [3, 2]
+        - [2, 1]
+        - [1, 0]
+    out: [true, true, true, true, false]
+  - name: "restriction-unused"
+    in:
+      n: 5
+      restrictions:
+        - [0, 4]
+        - [1, 3]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [2, 4]
+        - [0, 2]
+    out: [true, true, true, false]
+  - name: "same-person-components"
+    in:
+      n: 4
+      restrictions:
+        - [0, 2]
+      requests:
+        - [0, 1]
+        - [0, 1]
+        - [2, 3]
+        - [2, 3]
+        - [1, 3]
+    out: [true, true, true, true, false]
+  - name: "three-way-restriction-cycle"
+    in:
+      n: 6
+      restrictions:
+        - [0, 2]
+        - [2, 4]
+        - [4, 0]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [1, 3]
+        - [3, 5]
+        - [0, 2]
+    out: [true, true, true, false, false, false]
+  - name: "one-restriction-many-bridges"
+    in:
+      n: 8
+      restrictions:
+        - [0, 7]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [0, 7]
+        - [0, 6]
+    out: [true, true, true, true, true, true, false, false, false]
+  - name: "early-rejection-later-safe"
+    in:
+      n: 5
+      restrictions:
+        - [0, 2]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [0, 2]
+        - [3, 4]
+        - [0, 3]
+    out: [true, false, false, true, true]
+  - name: "all-people-one-component"
+    in:
+      n: 7
+      restrictions:
+        - [0, 6]
+        - [1, 5]
+        - [2, 4]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [0, 6]
+    out: [true, true, true, false, true, true, false]
+  - name: "two-disjoint-groups"
+    in:
+      n: 10
+      restrictions:
+        - [0, 4]
+        - [5, 9]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [3, 4]
+        - [8, 9]
+        - [0, 5]
+    out: [true, true, true, true, true, true, false, false, true]
+  - name: "restriction-symmetric-input"
+    in:
+      n: 6
+      restrictions:
+        - [4, 1]
+        - [3, 0]
+      requests:
+        - [1, 2]
+        - [2, 4]
+        - [0, 5]
+        - [5, 3]
+        - [1, 0]
+        - [4, 3]
+    out: [true, false, true, false, true, true]
+  - name: "bridges-around-restriction"
+    in:
+      n: 9
+      restrictions:
+        - [0, 8]
+        - [2, 6]
+      requests:
+        - [0, 1]
+        - [1, 2]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [0, 8]
+        - [2, 6]
+    out: [true, true, true, true, true, true, true, false, false]
+  - name: "no-op-after-rejection"
+    in:
+      n: 4
+      restrictions:
+        - [0, 3]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [1, 2]
+        - [0, 3]
+        - [0, 1]
+        - [2, 3]
+    out: [true, true, false, false, true, true]
+  - name: "dense-restrictions-small"
+    in:
+      n: 7
+      restrictions:
+        - [0, 1]
+        - [0, 2]
+        - [0, 3]
+        - [1, 4]
+        - [2, 5]
+        - [3, 6]
+        - [4, 5]
+        - [5, 6]
+      requests:
+        - [0, 4]
+        - [1, 2]
+        - [3, 5]
+        - [4, 6]
+        - [0, 5]
+        - [1, 6]
+    out: [true, true, true, true, false, false]
+  - name: "long-safe-prefix"
+    in:
+      n: 12
+      restrictions:
+        - [0, 11]
+        - [1, 10]
+      requests:
+        - [0, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [0, 11]
+    out: [true, true, true, true, true, true, true, true, true, false, false]
+  - name: "late-merge-of-singletons"
+    in:
+      n: 8
+      restrictions:
+        - [0, 7]
+        - [2, 6]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [0, 7]
+    out: [true, true, true, true, true, false, false]
+  - name: "maximum-index-only"
+    in:
+      n: 1000
+      restrictions:
+        - [998, 999]
+      requests:
+        - [997, 998]
+        - [0, 997]
+        - [0, 999]
+        - [998, 999]
+    out: [true, true, false, false]
+  - name: "alternating-safe-and-blocked"
+    in:
+      n: 8
+      restrictions:
+        - [0, 7]
+        - [1, 6]
+        - [2, 5]
+        - [3, 4]
+      requests:
+        - [0, 1]
+        - [2, 3]
+        - [4, 5]
+        - [6, 7]
+        - [1, 2]
+        - [3, 4]
+        - [0, 7]
+        - [1, 6]
+    out: [true, true, true, true, true, false, false, false]

@@ -1,0 +1,379 @@
+entry:
+  id: 2115
+  title: "find-all-possible-recipes-from-given-supplies"
+  params:
+    recipes:
+      type: array
+      items:
+        type: string
+    ingredients:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+    supplies:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().findAllRecipes({recipes}, {ingredients}, {supplies})"
+    rust: "Solution::find_all_recipes({recipes}, {ingredients}, {supplies})"
+    python3: "Solution().findAllRecipes({recipes}, {ingredients}, {supplies})"
+    python2: "Solution().findAllRecipes({recipes}, {ingredients}, {supplies})"
+    ruby: "find_all_recipes({recipes}, {ingredients}, {supplies})"
+    java: "new Solution().findAllRecipes({recipes}, {ingredients}, {supplies})"
+    csharp: "new Solution().FindAllRecipes({recipes}, {ingredients}, {supplies})"
+    kotlin: "Solution().findAllRecipes({recipes}, {ingredients}, {supplies})"
+    go: "findAllRecipes({recipes}, {ingredients}, {supplies})"
+    dart: "Solution().findAllRecipes({recipes}, {ingredients}, {supplies})"
+    swift: "Solution().findAllRecipes({recipes}, {ingredients}, {supplies})"
+    typescript: "findAllRecipes({recipes}, {ingredients}, {supplies})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().findAllRecipes(recipes, ingredients, supplies, {result})"
+    checker: |
+      class Checker:
+          def findAllRecipes(self, recipes, ingredients, supplies, result):
+              if not isinstance(result, list) or len(result) != len(set(result)):
+                  return False
+              recipe_set = set(recipes)
+              if any(x not in recipe_set for x in result):
+                  return False
+              available = set(supplies)
+              remaining = {r: set(ingredients[i]) for i, r in enumerate(recipes)}
+              changed = True
+              expected = set()
+              while changed:
+                  changed = False
+                  for r in recipes:
+                      if r not in expected and remaining[r] <= available:
+                          expected.add(r)
+                          available.add(r)
+                          changed = True
+              return set(result) == expected
+
+seed: 2115
+
+tests:
+  - name: "example_bread"
+    in:
+      recipes: ["bread"]
+      ingredients:
+        - ["yeast", "flour"]
+      supplies: ["yeast", "flour", "corn"]
+    out: ["bread"]
+  - name: "example_sandwich"
+    in:
+      recipes: ["bread", "sandwich"]
+      ingredients:
+        - ["yeast", "flour"]
+        - ["bread", "meat"]
+      supplies: ["yeast", "flour", "meat"]
+    out: ["bread", "sandwich"]
+  - name: "example_burger"
+    in:
+      recipes: ["bread", "sandwich", "burger"]
+      ingredients:
+        - ["yeast", "flour"]
+        - ["bread", "meat"]
+        - ["sandwich", "meat", "bread"]
+      supplies: ["yeast", "flour", "meat"]
+    out: ["bread", "sandwich", "burger"]
+  - name: "single_missing"
+    in:
+      recipes: ["cake"]
+      ingredients:
+        - ["flour"]
+      supplies: ["sugar"]
+  - name: "single_ready"
+    in:
+      recipes: ["tea"]
+      ingredients:
+        - ["water"]
+      supplies: ["water"]
+  - name: "three_independent"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["x"]
+        - ["y", "z"]
+        - ["q"]
+      supplies: ["x", "y", "z", "q"]
+  - name: "none_of_three"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["x"]
+        - ["y"]
+        - ["z"]
+      supplies: ["q"]
+  - name: "long_chain_four"
+    in:
+      recipes: ["r1", "r2", "r3", "r4"]
+      ingredients:
+        - ["s"]
+        - ["r1"]
+        - ["r2"]
+        - ["r3", "s"]
+      supplies: ["s"]
+  - name: "reverse_chain_order"
+    in:
+      recipes: ["z", "y", "x"]
+      ingredients:
+        - ["y"]
+        - ["x"]
+        - ["raw"]
+      supplies: ["raw"]
+  - name: "branching_dag"
+    in:
+      recipes: ["base", "left", "right", "top"]
+      ingredients:
+        - ["raw"]
+        - ["base", "salt"]
+        - ["base", "pepper"]
+        - ["left", "right"]
+      supplies: ["raw", "salt", "pepper"]
+  - name: "cycle_two_unseeded"
+    in:
+      recipes: ["a", "b"]
+      ingredients:
+        - ["b"]
+        - ["a"]
+      supplies: ["x"]
+  - name: "cycle_with_branch"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["b"]
+        - ["a"]
+        - ["a", "raw"]
+      supplies: ["raw"]
+  - name: "cycle_broken_by_raw"
+    in:
+      recipes: ["a", "b"]
+      ingredients:
+        - ["b", "raw"]
+        - ["a", "raw"]
+      supplies: ["raw"]
+  - name: "multiple_prerequisites"
+    in:
+      recipes: ["meal", "sauce"]
+      ingredients:
+        - ["sauce", "bread", "fruit"]
+        - ["tomato", "oil"]
+      supplies: ["tomato", "oil", "bread", "fruit"]
+  - name: "irrelevant_supplies"
+    in:
+      recipes: ["a", "b"]
+      ingredients:
+        - ["x"]
+        - ["a", "y"]
+      supplies: ["x", "y", "unused1", "unused2"]
+  - name: "shared_prerequisite"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["raw"]
+        - ["raw"]
+        - ["a", "b"]
+      supplies: ["raw"]
+  - name: "recipe_named_like_external"
+    in:
+      recipes: ["ab", "cd"]
+      ingredients:
+        - ["a"]
+        - ["ab", "c"]
+      supplies: ["a", "c"]
+  - name: "all_single_ingredients"
+    in:
+      recipes: ["a", "b", "c", "d", "e"]
+      ingredients:
+        - ["s1"]
+        - ["s2"]
+        - ["s3"]
+        - ["s4"]
+        - ["s5"]
+      supplies: ["s1", "s2", "s3", "s4", "s5"]
+  - name: "one_missing_in_chain"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["raw"]
+        - ["a", "missing"]
+        - ["b"]
+      supplies: ["raw"]
+  - name: "deep_two_inputs"
+    in:
+      recipes: ["a", "b", "c", "d", "e"]
+      ingredients:
+        - ["x", "y"]
+        - ["a", "z"]
+        - ["b", "q"]
+        - ["c", "r"]
+        - ["d", "s"]
+      supplies: ["x", "y", "z", "q", "r", "s"]
+  - name: "late_unlock"
+    in:
+      recipes: ["top", "mid", "base"]
+      ingredients:
+        - ["mid"]
+        - ["base"]
+        - ["raw"]
+      supplies: ["raw"]
+  - name: "unreachable_side_branch"
+    in:
+      recipes: ["a", "b", "c", "d"]
+      ingredients:
+        - ["raw"]
+        - ["unknown"]
+        - ["a", "b"]
+        - ["c"]
+      supplies: ["raw"]
+  - name: "two_components"
+    in:
+      recipes: ["a", "b", "c", "d"]
+      ingredients:
+        - ["x"]
+        - ["a"]
+        - ["y"]
+        - ["c", "z"]
+      supplies: ["x", "y", "z"]
+  - name: "all_recipe_dependencies"
+    in:
+      recipes: ["r1", "r2", "r3"]
+      ingredients:
+        - ["raw1"]
+        - ["r1"]
+        - ["r2"]
+      supplies: ["raw1"]
+  - name: "blocked_extra_ingredient"
+    in:
+      recipes: ["a", "b"]
+      ingredients:
+        - ["raw", "nope"]
+        - ["a"]
+      supplies: ["raw"]
+  - name: "four_way_top"
+    in:
+      recipes: ["a", "b", "c", "d", "top"]
+      ingredients:
+        - ["x"]
+        - ["y"]
+        - ["z"]
+        - ["w"]
+        - ["a", "b", "c", "d"]
+      supplies: ["x", "y", "z", "w"]
+  - name: "cycle_and_independent"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["b"]
+        - ["a"]
+        - ["raw"]
+      supplies: ["raw"]
+  - name: "chain_with_decoy"
+    in:
+      recipes: ["a", "b", "c", "decoy"]
+      ingredients:
+        - ["raw"]
+        - ["a"]
+        - ["b"]
+        - ["notavailable"]
+      supplies: ["raw", "extra"]
+  - name: "many_supplies"
+    in:
+      recipes: ["a", "b"]
+      ingredients:
+        - ["s1", "s2", "s3"]
+        - ["a", "s4", "s5"]
+      supplies: ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"]
+  - name: "single_missing_of_many"
+    in:
+      recipes: ["a"]
+      ingredients:
+        - ["s1", "s2", "s3", "s4"]
+      supplies: ["s1", "s2", "s3"]
+  - name: "dependency_used_twice"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["raw"]
+        - ["a", "raw"]
+        - ["a", "b"]
+      supplies: ["raw"]
+  - name: "cycle_with_downstream"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["b"]
+        - ["a"]
+        - ["b"]
+      supplies: ["raw"]
+  - name: "two_ready_one_dependent"
+    in:
+      recipes: ["a", "b", "c"]
+      ingredients:
+        - ["x"]
+        - ["y"]
+        - ["a", "b"]
+      supplies: ["x", "y"]
+  - name: "blocked_cycle_with_ready"
+    in:
+      recipes: ["a", "b", "c", "d"]
+      ingredients:
+        - ["b"]
+        - ["a"]
+        - ["raw"]
+        - ["c", "unknown"]
+      supplies: ["raw"]
+  - name: "longer_branching"
+    in:
+      recipes: ["a", "b", "c", "d", "e", "f"]
+      ingredients:
+        - ["x"]
+        - ["x"]
+        - ["a", "b"]
+        - ["c", "y"]
+        - ["c", "z"]
+        - ["d", "e"]
+      supplies: ["x", "y", "z"]
+  - name: "single_long_name"
+    in:
+      recipes: ["abcdefghij"]
+      ingredients:
+        - ["klmnopqrst"]
+      supplies: ["klmnopqrst"]
+  - name: "stress_chain_100"
+    in:
+      recipes: ["r001", "r002", "r003", "r004", "r005", "r006", "r007", "r008", "r009", "r010", "r011", "r012", "r013", "r014", "r015", "r016", "r017", "r018", "r019", "r020"]
+      ingredients:
+        - ["raw"]
+        - ["r001"]
+        - ["r002"]
+        - ["r003"]
+        - ["r004"]
+        - ["r005"]
+        - ["r006"]
+        - ["r007"]
+        - ["r008"]
+        - ["r009"]
+        - ["r010"]
+        - ["r011"]
+        - ["r012"]
+        - ["r013"]
+        - ["r014"]
+        - ["r015"]
+        - ["r016"]
+        - ["r017"]
+        - ["r018"]
+        - ["r019"]
+      supplies: ["raw"]

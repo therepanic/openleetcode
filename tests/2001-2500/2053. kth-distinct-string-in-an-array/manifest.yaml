@@ -1,0 +1,277 @@
+entry:
+  id: 2053
+  title: "kth-distinct-string-in-an-array"
+  params:
+    arr:
+      type: array
+      items:
+        type: string
+    k:
+      type: int
+  call:
+    cpp: "Solution().kthDistinct({arr}, {k})"
+    rust: "Solution::kth_distinct({arr}, {k})"
+    python3: "Solution().kthDistinct({arr}, {k})"
+    python2: "Solution().kthDistinct({arr}, {k})"
+    ruby: "kth_distinct({arr}, {k})"
+    java: "new Solution().kthDistinct({arr}, {k})"
+    csharp: "new Solution().KthDistinct({arr}, {k})"
+    kotlin: "Solution().kthDistinct({arr}, {k})"
+    go: "kthDistinct({arr}, {k})"
+    dart: "Solution().kthDistinct({arr}, {k})"
+    swift: "Solution().kthDistinct({arr}, {k})"
+    typescript: "kthDistinct({arr}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().kthDistinct(arr, k, {result})"
+    checker: |
+      class Checker:
+          def kthDistinct(self, arr, k, result):
+              counts = {}
+              for value in arr:
+                  counts[value] = counts.get(value, 0) + 1
+              distinct = [value for value in arr if counts[value] == 1]
+              expected = distinct[k - 1] if k <= len(distinct) else ""
+              return result == expected
+
+seed: 2053
+
+tests:
+  - name: "example_ordered_duplicates"
+    in:
+      arr: ["d", "b", "c", "b", "c", "a"]
+      k: 2
+    out: "a"
+  - name: "example_all_distinct"
+    in:
+      arr: ["aaa", "aa", "a"]
+      k: 1
+    out: "aaa"
+  - name: "example_not_enough"
+    in:
+      arr: ["a", "b", "a"]
+      k: 3
+    out: ""
+  - name: "single_element_first"
+    in:
+      arr: ["z"]
+      k: 1
+    out: "z"
+  - name: "single_element_impossible"
+    in:
+      arr: ["z"]
+      k: 1
+    out: "z"
+  - name: "two_distinct_first"
+    in:
+      arr: ["a", "b"]
+      k: 2
+    out: "b"
+  - name: "two_equal"
+    in:
+      arr: ["a", "a"]
+      k: 2
+    out: ""
+  - name: "duplicate_first_unique_later"
+    in:
+      arr: ["x", "x", "y", "z"]
+      k: 1
+    out: "y"
+  - name: "unique_after_repeated_prefix"
+    in:
+      arr: ["a", "b", "a", "b", "c"]
+      k: 1
+    out: "c"
+  - name: "unique_after_repeated_prefix_second"
+    in:
+      arr: ["a", "b", "a", "b", "c", "d"]
+      k: 2
+    out: "d"
+  - name: "repeated_middle_preserves_order"
+    in:
+      arr: ["m", "n", "m", "o", "p", "n", "q"]
+      k: 3
+    out: "q"
+  - name: "all_unique_last"
+    in:
+      arr: ["a", "b", "c", "d", "e"]
+      k: 5
+    out: "e"
+  - name: "all_unique_middle"
+    in:
+      arr: ["a", "b", "c", "d", "e"]
+      k: 3
+    out: "c"
+  - name: "all_repeated"
+    in:
+      arr: ["abc", "abc", "abc", "abc"]
+      k: 1
+    out: ""
+  - name: "one_unique_at_end"
+    in:
+      arr: ["aa", "bb", "aa", "bb", "cc"]
+      k: 1
+    out: "cc"
+  - name: "one_unique_at_start"
+    in:
+      arr: ["cc", "aa", "bb", "aa", "bb"]
+      k: 1
+    out: "cc"
+  - name: "unique_strings_length_five"
+    in:
+      arr: ["abcde", "bcdea", "cdeab"]
+      k: 2
+    out: "bcdea"
+  - name: "case_sensitive_lowercase_only"
+    in:
+      arr: ["a", "aa", "a", "aaa", "aa", "aaaa"]
+      k: 2
+    out: "aaaa"
+  - name: "k_equals_array_length_with_one_unique"
+    in:
+      arr: ["p", "p", "p", "q"]
+      k: 4
+    out: ""
+  - name: "k_equals_array_length_all_unique"
+    in:
+      arr: ["p", "q", "r", "s"]
+      k: 4
+    out: "s"
+  - name: "alternating_pairs"
+    in:
+      arr: ["a", "b", "c", "a", "b", "d", "e"]
+      k: 2
+    out: "d"
+  - name: "alternating_pairs_first_unique"
+    in:
+      arr: ["a", "b", "c", "a", "b", "d", "e"]
+      k: 1
+    out: "c"
+  - name: "long_value_unique"
+    in:
+      arr: ["zzzzz", "aaaaa", "zzzzz", "yyyyy", "xxxxx"]
+      k: 2
+    out: "yyyyy"
+  - name: "long_value_first"
+    in:
+      arr: ["zzzzz", "aaaaa", "zzzzz", "yyyyy", "xxxxx"]
+      k: 1
+    out: "aaaaa"
+  - name: "all_unique_length_one"
+    in:
+      arr: ["a", "b", "c", "d", "e", "f"]
+      k: 6
+    out: "f"
+  - name: "duplicates_hide_two_values"
+    in:
+      arr: ["a", "b", "c", "b", "d", "c", "e", "a", "f"]
+      k: 2
+    out: "e"
+  - name: "duplicates_hide_two_values_last"
+    in:
+      arr: ["a", "b", "c", "b", "d", "c", "e", "a", "f"]
+      k: 3
+    out: "f"
+  - name: "no_distinct_with_many_duplicates"
+    in:
+      arr: ["a", "b", "c", "a", "b", "c", "a", "b", "c"]
+      k: 1
+    out: ""
+  - name: "unique_order_not_lexical"
+    in:
+      arr: ["z", "y", "x", "z", "w", "y"]
+      k: 2
+    out: "w"
+  - name: "unique_order_not_lexical_second"
+    in:
+      arr: ["z", "y", "x", "z", "w", "y"]
+      k: 3
+    out: ""
+  - name: "max_length_all_unique"
+    in:
+      arr: ["aaaaa", "bbbbb", "ccccc", "ddddd", "eeeee", "fffff", "ggggg", "hhhhh", "iiiii", "jjjjj"]
+      k: 10
+    out: "jjjjj"
+  - name: "generated_small_mixed"
+    in:
+      arr:
+        gen: "array"
+        len: 25
+        of:
+          gen: "str"
+          len: 2
+          alphabet: "abcd"
+        distinct: false
+        elemType: "string"
+      k:
+        gen: "int"
+        min: 1
+        max: 25
+  - name: "generated_medium_mixed"
+    in:
+      arr:
+        gen: "array"
+        len: 120
+        of:
+          gen: "str"
+          len: 3
+          alphabet: "abcde"
+        distinct: false
+        elemType: "string"
+      k:
+        gen: "int"
+        min: 1
+        max: 120
+  - name: "generated_long_values"
+    in:
+      arr:
+        gen: "array"
+        len: 300
+        of:
+          gen: "str"
+          len: 5
+          alphabet: "abcdef"
+        distinct: false
+        elemType: "string"
+      k:
+        gen: "int"
+        min: 1
+        max: 300
+  - name: "generated_near_maximum"
+    in:
+      arr:
+        gen: "array"
+        len: 900
+        of:
+          gen: "str"
+          len: 5
+          alphabet: "abcdefgh"
+        distinct: false
+        elemType: "string"
+      k:
+        gen: "int"
+        min: 1
+        max: 900
+  - name: "generated_maximum"
+    in:
+      arr:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "str"
+          len: 5
+          alphabet: "abcdefghij"
+        distinct: false
+        elemType: "string"
+      k:
+        gen: "int"
+        min: 1
+        max: 1000

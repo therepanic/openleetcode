@@ -1,0 +1,247 @@
+entry:
+  id: 2131
+  title: "longest-palindrome-by-concatenating-two-letter-words"
+  params:
+    words:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().longestPalindrome({words})"
+    rust: "Solution::longest_palindrome({words})"
+    python3: "Solution().longestPalindrome({words})"
+    python2: "Solution().longestPalindrome({words})"
+    ruby: "longest_palindrome({words})"
+    java: "new Solution().longestPalindrome({words})"
+    csharp: "new Solution().LongestPalindrome({words})"
+    kotlin: "Solution().longestPalindrome({words})"
+    go: "longestPalindrome({words})"
+    dart: "Solution().longestPalindrome({words})"
+    swift: "Solution().longestPalindrome({words})"
+    typescript: "longestPalindrome({words})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().longestPalindrome(words, {result})"
+    checker: |
+      class Checker:
+          def longestPalindrome(self, words, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              counts = {}
+              for word in words:
+                  if not isinstance(word, str) or len(word) != 2:
+                      return False
+                  counts[word] = counts.get(word, 0) + 1
+              total = 0
+              middle = False
+              for word, count in counts.items():
+                  reverse = word[::-1]
+                  if word == reverse:
+                      total += (count // 2) * 4
+                      middle = middle or (count % 2 == 1)
+                  elif word < reverse:
+                      total += min(count, counts.get(reverse, 0)) * 4
+              if middle:
+                  total += 2
+              return result == total
+
+seed: 2131
+
+tests:
+  - name: "example_1"
+    in:
+      words: ["lc", "cl", "gg"]
+    out: 6
+  - name: "example_2"
+    in:
+      words: ["ab", "ty", "yt", "lc", "cl", "ab"]
+    out: 8
+  - name: "example_3"
+    in:
+      words: ["cc", "ll", "xx"]
+    out: 2
+  - name: "single_nonpalindrome"
+    in:
+      words: ["ab"]
+    out: 0
+  - name: "single_palindrome"
+    in:
+      words: ["aa"]
+    out: 2
+  - name: "one_matching_pair"
+    in:
+      words: ["ab", "ba"]
+    out: 4
+  - name: "unmatched_reverse"
+    in:
+      words: ["ab", "ab", "ba"]
+    out: 4
+  - name: "three_same_nonpalindromes"
+    in:
+      words: ["ab", "ab", "ab"]
+    out: 0
+  - name: "four_same_nonpalindromes"
+    in:
+      words: ["ab", "ab", "ab", "ab"]
+    out: 0
+  - name: "two_identical_palindromes"
+    in:
+      words: ["aa", "aa"]
+    out: 4
+  - name: "three_identical_palindromes"
+    in:
+      words: ["zz", "zz", "zz"]
+    out: 6
+  - name: "mixed_diagonal_odds"
+    in:
+      words: ["aa", "bb", "cc"]
+    out: 2
+  - name: "mixed_diagonal_pairs"
+    in:
+      words: ["aa", "aa", "bb", "bb", "cc"]
+    out: 10
+  - name: "reverse_counts_left_heavy"
+    in:
+      words: ["ab", "ab", "ab", "ba", "ba"]
+    out: 8
+  - name: "reverse_counts_right_heavy"
+    in:
+      words: ["cd", "dc", "dc", "dc"]
+    out: 4
+  - name: "several_pairs"
+    in:
+      words: ["ab", "ba", "cd", "dc", "ef", "fe"]
+    out: 12
+  - name: "pairs_and_center"
+    in:
+      words: ["ab", "ba", "cc", "dd", "dd"]
+    out: 10
+  - name: "center_consumed_by_pair"
+    in:
+      words: ["aa", "aa", "ab", "ba"]
+    out: 8
+  - name: "all_letters_diagonal"
+    in:
+      words: ["aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh", "ii", "jj", "kk", "ll", "mm", "nn", "oo", "pp", "qq", "rr", "ss", "tt", "uu", "vv", "ww", "xx", "yy", "zz"]
+    out: 2
+  - name: "all_letters_two_each"
+    in:
+      words: ["aa", "aa", "bb", "bb", "cc", "cc", "dd", "dd", "ee", "ee", "ff", "ff", "gg", "gg", "hh", "hh", "ii", "ii", "jj", "jj", "kk", "kk", "ll", "ll", "mm", "mm", "nn", "nn", "oo", "oo", "pp", "pp", "qq", "qq", "rr", "rr", "ss", "ss", "tt", "tt", "uu", "uu", "vv", "vv", "ww", "ww", "xx", "xx", "yy", "yy", "zz", "zz"]
+    out: 104
+  - name: "lexicographic_pair_boundary"
+    in:
+      words: ["az", "za", "ay", "ya", "az", "za"]
+    out: 12
+  - name: "reverse_same_word"
+    in:
+      words: ["mn", "nm", "mn", "nm", "oo"]
+    out: 10
+  - name: "duplicates_with_noise"
+    in:
+      words: ["ab", "ba", "ab", "xy", "yx", "xy", "cc", "de"]
+    out: 10
+  - name: "no_usable_words"
+    in:
+      words: ["ab", "cd", "ef", "gh", "ij"]
+    out: 0
+  - name: "maximum_word_diversity"
+    in:
+      words: ["ab", "ba", "ac", "ca", "ad", "da", "ae", "ea", "af", "fa", "ag", "ga", "ah", "ha", "ai", "ia"]
+    out: 32
+  - name: "palindrome_pair_priority"
+    in:
+      words: ["aa", "aa", "aa", "bb", "cc", "bc", "cb"]
+    out: 10
+  - name: "odd_palindrome_pool"
+    in:
+      words: ["aa", "aa", "aa", "aa", "aa", "bb", "bb", "bb"]
+    out: 14
+  - name: "large_count_small_alphabet"
+    in:
+      words: ["ab", "ba", "ab", "ba", "aa", "bb", "aa", "bb", "cc", "cc", "cc"]
+    out: 22
+  - name: "case_order_irrelevant"
+    in:
+      words: ["zy", "yx", "xy", "yz", "zz"]
+    out: 10
+  - name: "single_center_among_pairs"
+    in:
+      words: ["ab", "ba", "cd", "dc", "ee", "fg", "gf"]
+    out: 14
+  - name: "gen_random_small"
+    seed: 31
+    in:
+      words:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 40
+        of:
+          gen: "str"
+          len: 2
+          alphabet: "abcde"
+        distinct: false
+        sorted: false
+  - name: "gen_random_medium"
+    seed: 32
+    in:
+      words:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 500
+        of:
+          gen: "str"
+          len: 2
+          alphabet: "abcdefghij"
+        distinct: false
+        sorted: false
+  - name: "gen_maximum_stress"
+    seed: 33
+    in:
+      words:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "str"
+          len: 2
+          alphabet: "abcdefghijklmnopqrstuvwxyz"
+        distinct: false
+        sorted: false
+  - name: "gen_binary_stress"
+    seed: 34
+    in:
+      words:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "str"
+          len: 2
+          alphabet: "ab"
+        distinct: false
+        sorted: false
+  - name: "gen_medium_alphabet"
+    seed: 35
+    in:
+      words:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 3000
+        of:
+          gen: "str"
+          len: 2
+          alphabet: "xyz"
+        distinct: false
+        sorted: false

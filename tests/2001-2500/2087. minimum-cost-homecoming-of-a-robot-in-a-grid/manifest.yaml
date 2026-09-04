@@ -1,0 +1,345 @@
+entry:
+  id: 2087
+  title: "minimum-cost-homecoming-of-a-robot-in-a-grid"
+  params:
+    startPos:
+      type: array
+      items:
+        type: int
+    homePos:
+      type: array
+      items:
+        type: int
+    rowCosts:
+      type: array
+      items:
+        type: int
+    colCosts:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    rust: "Solution::min_cost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    python3: "Solution().minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    python2: "Solution().minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    ruby: "min_cost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    java: "new Solution().minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    csharp: "new Solution().MinCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    kotlin: "Solution().minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    go: "minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    dart: "Solution().minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    swift: "Solution().minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+    typescript: "minCost({startPos}, {homePos}, {rowCosts}, {colCosts})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().minCost(startPos, homePos, rowCosts, colCosts, {result})"
+    checker: |
+      class Checker:
+          def minCost(self, startPos, homePos, rowCosts, colCosts, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              sr, sc = startPos
+              hr, hc = homePos
+              expected = sum(rowCosts[min(sr, hr) + 1:max(sr, hr) + 1]) if sr < hr else sum(rowCosts[hr:sr])
+              expected += sum(colCosts[min(sc, hc) + 1:max(sc, hc) + 1]) if sc < hc else sum(colCosts[hc:sc])
+              return result == expected
+
+seed: 2087
+
+tests:
+  - name: "example_down_and_right"
+    in:
+      startPos: [1, 0]
+      homePos: [2, 3]
+      rowCosts: [5, 4, 3]
+      colCosts: [8, 2, 6, 7]
+    out: 18
+  - name: "example_same_cell"
+    in:
+      startPos: [0, 0]
+      homePos: [0, 0]
+      rowCosts: [5]
+      colCosts: [26]
+    out: 0
+  - name: "one_row_right"
+    in:
+      startPos: [0, 0]
+      homePos: [0, 4]
+      rowCosts: [9]
+      colCosts: [1, 2, 3, 4, 5]
+    out: 14
+  - name: "one_row_left"
+    in:
+      startPos: [0, 5]
+      homePos: [0, 1]
+      rowCosts: [99]
+      colCosts: [8, 7, 6, 5, 4, 3]
+    out: 22
+  - name: "one_column_down"
+    in:
+      startPos: [0, 0]
+      homePos: [4, 0]
+      rowCosts: [10, 1, 2, 3, 4]
+      colCosts: [77]
+    out: 10
+  - name: "one_column_up"
+    in:
+      startPos: [5, 0]
+      homePos: [1, 0]
+      rowCosts: [6, 5, 4, 3, 2, 1]
+      colCosts: [77]
+    out: 14
+  - name: "all_zero"
+    in:
+      startPos: [3, 4]
+      homePos: [0, 0]
+      rowCosts: [0, 0, 0, 0]
+      colCosts: [0, 0, 0, 0, 0]
+    out: 0
+  - name: "max_single_move_down"
+    in:
+      startPos: [0, 0]
+      homePos: [1, 0]
+      rowCosts: [0, 10000]
+      colCosts: [0]
+    out: 10000
+  - name: "max_single_move_up"
+    in:
+      startPos: [1, 0]
+      homePos: [0, 0]
+      rowCosts: [10000, 0]
+      colCosts: [0]
+    out: 10000
+  - name: "max_single_move_right"
+    in:
+      startPos: [0, 0]
+      homePos: [0, 1]
+      rowCosts: [0]
+      colCosts: [0, 10000]
+    out: 10000
+  - name: "max_single_move_left"
+    in:
+      startPos: [0, 1]
+      homePos: [0, 0]
+      rowCosts: [0]
+      colCosts: [10000, 0]
+    out: 10000
+  - name: "mixed_down_left"
+    in:
+      startPos: [0, 4]
+      homePos: [3, 1]
+      rowCosts: [8, 1, 9, 2]
+      colCosts: [7, 6, 5, 4, 3]
+    out: 27
+  - name: "mixed_up_right"
+    in:
+      startPos: [4, 0]
+      homePos: [1, 3]
+      rowCosts: [2, 8, 1, 7, 6]
+      colCosts: [9, 1, 5, 4]
+    out: 26
+  - name: "endpoints_grid"
+    in:
+      startPos: [0, 0]
+      homePos: [3, 3]
+      rowCosts: [1, 10, 100, 1000]
+      colCosts: [2, 20, 200, 2000]
+    out: 3330
+  - name: "reverse_endpoints_grid"
+    in:
+      startPos: [3, 3]
+      homePos: [0, 0]
+      rowCosts: [1, 10, 100, 1000]
+      colCosts: [2, 20, 200, 2000]
+    out: 333
+  - name: "interior_same_row"
+    in:
+      startPos: [2, 1]
+      homePos: [2, 4]
+      rowCosts: [4, 5, 6, 7]
+      colCosts: [10, 0, 11, 0, 13]
+    out: 24
+  - name: "interior_same_column"
+    in:
+      startPos: [4, 2]
+      homePos: [1, 2]
+      rowCosts: [5, 0, 8, 0, 12]
+      colCosts: [3, 4, 5]
+    out: 8
+  - name: "zero_cost_entered_cells"
+    in:
+      startPos: [0, 0]
+      homePos: [3, 3]
+      rowCosts: [99, 0, 0, 0]
+      colCosts: [88, 0, 0, 0]
+    out: 0
+  - name: "zero_cost_start_cells_do_not_count"
+    in:
+      startPos: [3, 3]
+      homePos: [0, 0]
+      rowCosts: [0, 0, 0, 99]
+      colCosts: [0, 0, 0, 88]
+    out: 0
+  - name: "repeated_costs"
+    in:
+      startPos: [1, 1]
+      homePos: [5, 4]
+      rowCosts: [3, 3, 3, 3, 3, 3]
+      colCosts: [2, 2, 2, 2, 2]
+    out: 18
+  - name: "large_values_mixed"
+    in:
+      startPos: [2, 2]
+      homePos: [7, 8]
+      rowCosts: [10000, 9999, 1, 10000, 9998, 2, 9997, 3]
+      colCosts: [10000, 4, 9996, 5, 9995, 6, 9994, 7, 9993]
+    out: 60000
+  - name: "two_by_two_diagonal"
+    in:
+      startPos: [0, 0]
+      homePos: [1, 1]
+      rowCosts: [17, 23]
+      colCosts: [31, 37]
+    out: 60
+  - name: "two_by_two_reverse"
+    in:
+      startPos: [1, 1]
+      homePos: [0, 0]
+      rowCosts: [17, 23]
+      colCosts: [31, 37]
+    out: 48
+  - name: "three_by_three_center_to_corner"
+    in:
+      startPos: [1, 1]
+      homePos: [0, 0]
+      rowCosts: [4, 100, 6]
+      colCosts: [8, 200, 10]
+    out: 12
+  - name: "three_by_three_corner_to_center"
+    in:
+      startPos: [0, 0]
+      homePos: [1, 1]
+      rowCosts: [4, 100, 6]
+      colCosts: [8, 200, 10]
+    out: 300
+  - name: "long_row_alternating"
+    in:
+      startPos: [0, 1]
+      homePos: [0, 8]
+      rowCosts: [1]
+      colCosts: [0, 1, 0, 1, 0, 1, 0, 1, 0]
+    out: 3
+  - name: "long_column_alternating"
+    in:
+      startPos: [1, 0]
+      homePos: [8, 0]
+      rowCosts: [0, 1, 0, 1, 0, 1, 0, 1, 0]
+      colCosts: [0]
+    out: 3
+  - name: "single_row_single_column"
+    in:
+      startPos: [0, 0]
+      homePos: [0, 0]
+      rowCosts: [10000]
+      colCosts: [10000]
+    out: 0
+  - name: "same_row_high_cost_unused"
+    in:
+      startPos: [0, 1]
+      homePos: [0, 2]
+      rowCosts: [10000, 10000]
+      colCosts: [0, 1, 2]
+    out: 2
+  - name: "same_column_high_cost_unused"
+    in:
+      startPos: [1, 0]
+      homePos: [2, 0]
+      rowCosts: [0, 1, 2]
+      colCosts: [10000, 10000]
+    out: 2
+  - name: "generated_rows_forward"
+    seed: 101
+    in:
+      startPos: [0, 0]
+      homePos: [99999, 0]
+      rowCosts:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        elemType: "int"
+      colCosts: [0]
+  - name: "generated_rows_reverse"
+    seed: 102
+    in:
+      startPos: [99999, 0]
+      homePos: [0, 0]
+      rowCosts:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        elemType: "int"
+      colCosts: [0]
+  - name: "generated_cols_forward"
+    seed: 103
+    in:
+      startPos: [0, 0]
+      homePos: [0, 99999]
+      rowCosts: [0]
+      colCosts:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        elemType: "int"
+  - name: "generated_cols_reverse"
+    seed: 104
+    in:
+      startPos: [0, 99999]
+      homePos: [0, 0]
+      rowCosts: [0]
+      colCosts:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        elemType: "int"
+  - name: "generated_both_axes"
+    seed: 105
+    in:
+      startPos: [99999, 99999]
+      homePos: [0, 0]
+      rowCosts:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        elemType: "int"
+      colCosts:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 10000
+        elemType: "int"

@@ -1,0 +1,419 @@
+entry:
+  id: 2045
+  title: "second-minimum-time-to-reach-destination"
+  params:
+    n:
+      type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    time:
+      type: int
+    change:
+      type: int
+  call:
+    cpp: "Solution().secondMinimum({n}, {edges}, {time}, {change})"
+    rust: "Solution::second_minimum({n}, {edges}, {time}, {change})"
+    python3: "Solution().secondMinimum({n}, {edges}, {time}, {change})"
+    python2: "Solution().secondMinimum({n}, {edges}, {time}, {change})"
+    ruby: "second_minimum({n}, {edges}, {time}, {change})"
+    java: "new Solution().secondMinimum({n}, {edges}, {time}, {change})"
+    csharp: "new Solution().SecondMinimum({n}, {edges}, {time}, {change})"
+    kotlin: "Solution().secondMinimum({n}, {edges}, {time}, {change})"
+    go: "secondMinimum({n}, {edges}, {time}, {change})"
+    dart: "Solution().secondMinimum({n}, {edges}, {time}, {change})"
+    swift: "Solution().secondMinimum({n}, {edges}, {time}, {change})"
+    typescript: "secondMinimum({n}, {edges}, {time}, {change})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().secondMinimum(n, edges, time, change, {result})"
+    checker: |
+      class Checker:
+          def secondMinimum(self, n, edges, time, change, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              graph = [[] for _ in range(n + 1)]
+              for a, b in edges:
+                  graph[a].append(b)
+                  graph[b].append(a)
+              best = [[None, None] for _ in range(n + 1)]
+              best[1][0] = 0
+              queue = [(0, 1)]
+              import heapq
+              while queue:
+                  elapsed, node = heapq.heappop(queue)
+                  if elapsed not in best[node]:
+                      continue
+                  for nxt in graph[node]:
+                      depart = elapsed
+                      if (depart // change) % 2:
+                          depart = (depart // change + 1) * change
+                      arrival = depart + time
+                      if best[nxt][0] is None or arrival < best[nxt][0]:
+                          best[nxt][1] = best[nxt][0]
+                          best[nxt][0] = arrival
+                          heapq.heappush(queue, (arrival, nxt))
+                      elif best[nxt][0] < arrival and (best[nxt][1] is None or arrival < best[nxt][1]):
+                          best[nxt][1] = arrival
+                          heapq.heappush(queue, (arrival, nxt))
+              return result == best[n][1]
+
+seed: 2045
+
+tests:
+  - name: "single_edge_unit_signals"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 1
+      change: 1
+    out: 5
+  - name: "single_edge_short_green_window"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 1
+      change: 2
+    out: 5
+  - name: "single_edge_even_travel"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 2
+      change: 1
+    out: 6
+  - name: "single_edge_equal_period"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 2
+      change: 2
+    out: 10
+  - name: "example_two"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 3
+      change: 2
+    out: 11
+  - name: "single_edge_wait_four"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 5
+      change: 3
+    out: 17
+  - name: "single_edge_long_edge_fast_signal"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 10
+      change: 1
+    out: 30
+  - name: "single_edge_long_period"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 10
+      change: 10
+    out: 50
+  - name: "path_three_unit"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      time: 1
+      change: 1
+    out: 7
+  - name: "path_three_no_wait"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      time: 2
+      change: 1
+    out: 8
+  - name: "path_three_boundary"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      time: 3
+      change: 2
+    out: 15
+  - name: "path_three_long_period"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+      time: 5
+      change: 5
+    out: 35
+  - name: "path_four_short"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      time: 1
+      change: 2
+    out: 9
+  - name: "path_four_waiting"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+      time: 3
+      change: 5
+    out: 23
+  - name: "path_five_mixed"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      time: 2
+      change: 3
+    out: 16
+  - name: "path_five_long_edge"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+      time: 7
+      change: 4
+    out: 47
+  - name: "triangle_unit"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [1, 3]
+      time: 1
+      change: 1
+    out: 3
+  - name: "triangle_wait"
+    in:
+      n: 3
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [1, 3]
+      time: 4
+      change: 3
+    out: 10
+  - name: "cycle_four_short"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 1]
+      time: 2
+      change: 2
+    out: 10
+  - name: "cycle_four_long"
+    in:
+      n: 4
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 1]
+      time: 5
+      change: 3
+    out: 17
+  - name: "star_five_unit"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+      time: 1
+      change: 1
+    out: 5
+  - name: "star_five_wait"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+      time: 4
+      change: 2
+    out: 12
+  - name: "star_six_long_period"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [1, 3]
+        - [1, 4]
+        - [1, 5]
+        - [1, 6]
+      time: 3
+      change: 5
+    out: 13
+  - name: "cycle_six"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [1, 6]
+      time: 2
+      change: 4
+    out: 10
+  - name: "cycle_with_chord"
+    in:
+      n: 6
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [1, 6]
+        - [2, 5]
+      time: 3
+      change: 3
+    out: 15
+  - name: "cycle_seven_chord"
+    in:
+      n: 7
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [1, 7]
+      time: 6
+      change: 7
+    out: 20
+  - name: "dense_five"
+    in:
+      n: 5
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [1, 3]
+        - [2, 4]
+        - [3, 5]
+      time: 8
+      change: 6
+    out: 32
+  - name: "longer_sparse_chorded"
+    in:
+      n: 8
+      edges:
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [1, 8]
+        - [2, 7]
+      time: 9
+      change: 4
+    out: 27
+  - name: "single_edge_green_boundary"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 1
+      change: 3
+    out: 3
+  - name: "single_edge_two_step_boundary"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 2
+      change: 3
+    out: 8
+  - name: "single_edge_red_boundary"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 3
+      change: 3
+    out: 15
+  - name: "single_edge_crossing_period"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 4
+      change: 3
+    out: 16
+  - name: "single_edge_multiple_periods"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 7
+      change: 3
+    out: 21
+  - name: "single_edge_change_five"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 8
+      change: 5
+    out: 28
+  - name: "single_edge_change_five_late"
+    in:
+      n: 2
+      edges:
+        - [1, 2]
+      time: 9
+      change: 5
+    out: 29

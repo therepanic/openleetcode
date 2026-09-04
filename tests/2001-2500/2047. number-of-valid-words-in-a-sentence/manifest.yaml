@@ -1,0 +1,229 @@
+entry:
+  id: 2047
+  title: "number-of-valid-words-in-a-sentence"
+  params:
+    sentence:
+      type: string
+  call:
+    cpp: "Solution().countValidWords({sentence})"
+    rust: "Solution::count_valid_words({sentence})"
+    python3: "Solution().countValidWords({sentence})"
+    python2: "Solution().countValidWords({sentence})"
+    ruby: "count_valid_words({sentence})"
+    java: "new Solution().countValidWords({sentence})"
+    csharp: "new Solution().CountValidWords({sentence})"
+    kotlin: "Solution().countValidWords({sentence})"
+    go: "countValidWords({sentence})"
+    dart: "Solution().countValidWords({sentence})"
+    swift: "Solution().countValidWords({sentence})"
+    typescript: "countValidWords({sentence})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().countValidWords(sentence, {result})"
+    checker: |
+      class Checker:
+          def countValidWords(self, sentence, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              total = 0
+              for token in sentence.split(' '):
+                  if not token:
+                      continue
+                  hyphens = 0
+                  punctuation = 0
+                  valid = True
+                  for i, ch in enumerate(token):
+                      if not ('a' <= ch <= 'z' or ch in '-!.,'):
+                          valid = False
+                          break
+                      if ch == '-':
+                          hyphens += 1
+                          if hyphens > 1 or i == 0 or i == len(token) - 1:
+                              valid = False
+                              break
+                          if not ('a' <= token[i - 1] <= 'z' and 'a' <= token[i + 1] <= 'z'):
+                              valid = False
+                              break
+                      elif ch in '!.,':
+                          punctuation += 1
+                          if punctuation > 1 or i != len(token) - 1:
+                              valid = False
+                              break
+                  if valid:
+                      total += 1
+              return result == total
+
+seed: 2047
+
+tests:
+  - name: "example_one"
+    in:
+      sentence: "cat and  dog"
+    out: 3
+  - name: "example_two"
+    in:
+      sentence: "!this  1-s b8d!"
+    out: 0
+  - name: "example_three"
+    in:
+      sentence: "alice and  bob are playing stone-game10"
+    out: 5
+  - name: "single_letter"
+    in:
+      sentence: "a"
+    out: 1
+  - name: "single_digit"
+    in:
+      sentence: "7"
+    out: 0
+  - name: "single_punctuation"
+    in:
+      sentence: "!"
+    out: 1
+  - name: "single_hyphen"
+    in:
+      sentence: "-"
+    out: 0
+  - name: "letters_with_period"
+    in:
+      sentence: "hello."
+    out: 1
+  - name: "letters_with_comma"
+    in:
+      sentence: "hello,"
+    out: 1
+  - name: "letters_with_exclamation"
+    in:
+      sentence: "hello!"
+    out: 1
+  - name: "hyphenated_word"
+    in:
+      sentence: "a-b"
+    out: 1
+  - name: "hyphenated_with_punctuation"
+    in:
+      sentence: "a-b."
+    out: 1
+  - name: "hyphen_at_start"
+    in:
+      sentence: "-ab"
+    out: 0
+  - name: "hyphen_at_end"
+    in:
+      sentence: "ab-"
+    out: 0
+  - name: "two_hyphens"
+    in:
+      sentence: "a-b-c"
+    out: 0
+  - name: "hyphen_next_to_punctuation"
+    in:
+      sentence: "a-."
+    out: 0
+  - name: "punctuation_at_start"
+    in:
+      sentence: ".abc"
+    out: 0
+  - name: "punctuation_in_middle"
+    in:
+      sentence: "ab!cd"
+    out: 0
+  - name: "two_punctuation_marks"
+    in:
+      sentence: "ab.,"
+    out: 0
+  - name: "digit_in_plain_word"
+    in:
+      sentence: "abc1"
+    out: 0
+  - name: "digit_in_hyphenated_word"
+    in:
+      sentence: "a1-b"
+    out: 0
+  - name: "mixed_valid_invalid"
+    in:
+      sentence: "a a-b a-b. a1 ab!cd ! good,"
+    out: 5
+  - name: "many_spaces"
+    in:
+      sentence: "  a   b-c    d!  "
+    out: 3
+  - name: "all_invalid_forms"
+    in:
+      sentence: "1 1a a1 -a a- a--b a!b a.. a-,"
+    out: 0
+  - name: "all_valid_forms"
+    in:
+      sentence: "a ab abc a-b a-b! word, ! ."
+    out: 8
+  - name: "long_plain_word"
+    in:
+      sentence: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+    out: 1
+  - name: "long_hyphenated_word"
+    in:
+      sentence: "abcdefghijklmnopqrstuv-wxyzabcdefghijklmnopqrstuv"
+    out: 1
+  - name: "punctuation_variants"
+    in:
+      sentence: "a! b. c, ! . ,"
+    out: 6
+  - name: "hyphen_boundary_letters"
+    in:
+      sentence: "a-b ab-c abc-d x-y-z aa--bb"
+    out: 3
+  - name: "invalid_punctuation_boundaries"
+    in:
+      sentence: "!a a!b a!b. a-, a,."
+    out: 0
+  - name: "digits_and_valid_words"
+    in:
+      sentence: "room2 room two-words two-words! end."
+    out: 4
+  - name: "repeated_valid_tokens"
+    in:
+      sentence: "ok ok ok! ok-ok ok-ok,"
+    out: 5
+  - name: "generated_small_alphabet"
+    seed: 11
+    in:
+      sentence:
+        gen: "str"
+        len: 37
+        alphabet: "ab-!1"
+  - name: "generated_medium_alphabet"
+    seed: 22
+    in:
+      sentence:
+        gen: "str"
+        len: 251
+        alphabet: "acm-.,2 "
+  - name: "generated_max_plain_symbols"
+    seed: 33
+    in:
+      sentence:
+        gen: "str"
+        len: 1000
+        alphabet: "abx-!0 "
+  - name: "generated_max_letters"
+    seed: 44
+    in:
+      sentence:
+        gen: "str"
+        len: 1000
+        alphabet: "adz"
+  - name: "generated_max_punctuation_mix"
+    seed: 55
+    in:
+      sentence:
+        gen: "str"
+        len: 999
+        alphabet: "qr-.!,3 "
