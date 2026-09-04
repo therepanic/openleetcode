@@ -1,0 +1,207 @@
+entry:
+  id: 2038
+  title: "remove-colored-pieces-if-both-neighbors-are-the-same-color"
+  params:
+    colors:
+      type: string
+  call:
+    cpp: "Solution().winnerOfGame({colors})"
+    rust: "Solution::winner_of_game({colors})"
+    python3: "Solution().winnerOfGame({colors})"
+    python2: "Solution().winnerOfGame({colors})"
+    ruby: "winner_of_game({colors})"
+    java: "new Solution().winnerOfGame({colors})"
+    csharp: "new Solution().WinnerOfGame({colors})"
+    kotlin: "Solution().winnerOfGame({colors})"
+    go: "winnerOfGame({colors})"
+    dart: "Solution().winnerOfGame({colors})"
+    swift: "Solution().winnerOfGame({colors})"
+    typescript: "winnerOfGame({colors})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().winnerOfGame(colors, {result})"
+    checker: |
+      class Checker:
+          def winnerOfGame(self, colors, result):
+              if not isinstance(result, bool):
+                  return False
+              a = 0
+              b = 0
+              i = 0
+              while i < len(colors):
+                  j = i
+                  while j < len(colors) and colors[j] == colors[i]:
+                      j += 1
+                  if j - i >= 3:
+                      if colors[i] == 'A':
+                          a += j - i - 2
+                      else:
+                          b += j - i - 2
+                  i = j
+              return result == (a > b)
+
+seed: 2038
+
+tests:
+  - name: "example_1"
+    in:
+      colors: "AAABABB"
+    out: true
+  - name: "example_2"
+    in:
+      colors: "AA"
+    out: false
+  - name: "example_3"
+    in:
+      colors: "ABBBBBBBAAA"
+    out: false
+  - name: "single_a"
+    in:
+      colors: "A"
+    out: false
+  - name: "single_b"
+    in:
+      colors: "B"
+    out: false
+  - name: "two_different"
+    in:
+      colors: "AB"
+    out: false
+  - name: "three_a"
+    in:
+      colors: "AAA"
+    out: true
+  - name: "three_b"
+    in:
+      colors: "BBB"
+    out: false
+  - name: "four_a"
+    in:
+      colors: "AAAA"
+    out: true
+  - name: "four_b"
+    in:
+      colors: "BBBB"
+    out: false
+  - name: "alternating_short"
+    in:
+      colors: "ABABAB"
+    out: false
+  - name: "alternating_long"
+    in:
+      colors: "ABABABABABABABABABAB"
+    out: false
+  - name: "equal_three_runs"
+    in:
+      colors: "AAABBB"
+    out: false
+  - name: "a_one_more"
+    in:
+      colors: "AAABBBB"
+    out: false
+  - name: "b_one_more"
+    in:
+      colors: "AAAABBB"
+    out: true
+  - name: "both_long_a_wins"
+    in:
+      colors: "AAAAABBBB"
+    out: true
+  - name: "both_long_b_wins"
+    in:
+      colors: "AAABBBBB"
+    out: false
+  - name: "same_runs_with_separators"
+    in:
+      colors: "AAABAAAB"
+    out: true
+  - name: "internal_a_run"
+    in:
+      colors: "BAAAB"
+    out: true
+  - name: "internal_b_run"
+    in:
+      colors: "ABBBA"
+    out: false
+  - name: "edge_run_a"
+    in:
+      colors: "AAAAB"
+    out: true
+  - name: "edge_run_b"
+    in:
+      colors: "BAAAA"
+    out: true
+  - name: "no_moves_with_pairs"
+    in:
+      colors: "AABBBAA"
+    out: false
+  - name: "many_small_runs"
+    in:
+      colors: "AABBAABBAABB"
+    out: false
+  - name: "a_runs_sum_three"
+    in:
+      colors: "AAAABAAAB"
+    out: true
+  - name: "b_runs_sum_three"
+    in:
+      colors: "ABBBBABBB"
+    out: false
+  - name: "balanced_disjoint_runs"
+    in:
+      colors: "AAABBBAAABBB"
+    out: false
+  - name: "long_a_against_many_b"
+    in:
+      colors: "AAAAAAAAAABBBBBB"
+    out: true
+  - name: "many_a_against_long_b"
+    in:
+      colors: "AAAAAABBBBBBBBBB"
+    out: false
+  - name: "all_a_max_small"
+    in:
+      colors: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    out: true
+  - name: "all_b_max_small"
+    in:
+      colors: "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    out: false
+  - name: "isolated_a_between_b"
+    in:
+      colors: "BBABB"
+    out: false
+  - name: "isolated_b_between_a"
+    in:
+      colors: "AABAA"
+    out: false
+  - name: "alternating_runs_a_edge"
+    in:
+      colors: "AAABBAABBBAAAAA"
+    out: true
+  - name: "alternating_runs_b_edge"
+    in:
+      colors: "BBBAABBBAAABBBBB"
+    out: false
+  - name: "generated_small"
+    seed: 12038
+    in:
+      colors:
+        gen: "str"
+        len: 137
+        alphabet: "AB"
+  - name: "generated_maximum"
+    seed: 22038
+    in:
+      colors:
+        gen: "str"
+        len: 100000
+        alphabet: "AB"

@@ -1,0 +1,326 @@
+entry:
+  id: 2105
+  title: "watering-plants-ii"
+  params:
+    plants:
+      type: array
+      items:
+        type: int
+    capacityA:
+      type: int
+    capacityB:
+      type: int
+  call:
+    cpp: "Solution().minimumRefill({plants}, {capacityA}, {capacityB})"
+    rust: "Solution::minimum_refill({plants}, {capacityA}, {capacityB})"
+    python3: "Solution().minimumRefill({plants}, {capacityA}, {capacityB})"
+    python2: "Solution().minimumRefill({plants}, {capacityA}, {capacityB})"
+    ruby: "minimum_refill({plants}, {capacityA}, {capacityB})"
+    java: "new Solution().minimumRefill({plants}, {capacityA}, {capacityB})"
+    csharp: "new Solution().MinimumRefill({plants}, {capacityA}, {capacityB})"
+    kotlin: "Solution().minimumRefill({plants}, {capacityA}, {capacityB})"
+    go: "minimumRefill({plants}, {capacityA}, {capacityB})"
+    dart: "Solution().minimumRefill({plants}, {capacityA}, {capacityB})"
+    swift: "Solution().minimumRefill({plants}, {capacityA}, {capacityB})"
+    typescript: "minimumRefill({plants}, {capacityA}, {capacityB})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minimumRefill(plants, capacityA, capacityB, {result})"
+    checker: |
+      class Checker:
+          def minimumRefill(self, plants, capacityA, capacityB, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              left, right = 0, len(plants) - 1
+              water_a, water_b = capacityA, capacityB
+              expected = 0
+              while left < right:
+                  if water_a < plants[left]:
+                      expected += 1
+                      water_a = capacityA
+                  water_a -= plants[left]
+                  if water_b < plants[right]:
+                      expected += 1
+                      water_b = capacityB
+                  water_b -= plants[right]
+                  left += 1
+                  right -= 1
+              if left == right and max(water_a, water_b) < plants[left]:
+                  expected += 1
+              return result == expected
+
+seed: 21052105
+
+tests:
+  - name: "example_1"
+    in:
+      plants: [2, 2, 3, 3]
+      capacityA: 5
+      capacityB: 5
+    out: 1
+  - name: "example_2"
+    in:
+      plants: [2, 2, 3, 3]
+      capacityA: 3
+      capacityB: 4
+    out: 2
+  - name: "example_3_single_plant"
+    in:
+      plants: [5]
+      capacityA: 10
+      capacityB: 8
+    out: 0
+  - name: "minimum_capacity_single"
+    in:
+      plants: [1]
+      capacityA: 1
+      capacityB: 1
+    out: 0
+  - name: "single_asymmetric_capacity"
+    in:
+      plants: [1]
+      capacityA: 2
+      capacityB: 1
+    out: 0
+  - name: "two_equal_minimum"
+    in:
+      plants: [1, 1]
+      capacityA: 1
+      capacityB: 1
+    out: 0
+  - name: "two_surplus_cans"
+    in:
+      plants: [1, 1]
+      capacityA: 2
+      capacityB: 2
+    out: 0
+  - name: "two_asymmetric_left"
+    in:
+      plants: [1, 2]
+      capacityA: 1
+      capacityB: 2
+    out: 0
+  - name: "two_asymmetric_right"
+    in:
+      plants: [2, 1]
+      capacityA: 2
+      capacityB: 1
+    out: 0
+  - name: "odd_all_minimum"
+    in:
+      plants: [1, 1, 1]
+      capacityA: 1
+      capacityB: 1
+    out: 1
+  - name: "odd_all_surplus"
+    in:
+      plants: [1, 1, 1]
+      capacityA: 2
+      capacityB: 2
+    out: 0
+  - name: "even_exact_capacity"
+    in:
+      plants: [5, 5, 5, 5]
+      capacityA: 5
+      capacityB: 5
+    out: 2
+  - name: "even_one_unit_surplus"
+    in:
+      plants: [5, 5, 5, 5]
+      capacityA: 6
+      capacityB: 6
+    out: 2
+  - name: "odd_middle_refill"
+    in:
+      plants: [3, 4, 3, 4, 3]
+      capacityA: 5
+      capacityB: 5
+    out: 3
+  - name: "odd_middle_asymmetric"
+    in:
+      plants: [3, 4, 3, 4, 3]
+      capacityA: 4
+      capacityB: 5
+    out: 3
+  - name: "alternating_high_low"
+    in:
+      plants: [10, 1, 10, 1, 10, 1]
+      capacityA: 10
+      capacityB: 10
+    out: 4
+  - name: "alternating_low_high"
+    in:
+      plants: [1, 10, 1, 10, 1, 10]
+      capacityA: 10
+      capacityB: 10
+    out: 4
+  - name: "descending_mixed"
+    in:
+      plants: [7, 2, 6, 3, 5, 4]
+      capacityA: 8
+      capacityB: 9
+    out: 2
+  - name: "descending_near_capacity"
+    in:
+      plants: [9, 8, 7, 6, 5, 4]
+      capacityA: 9
+      capacityB: 10
+    out: 3
+  - name: "seven_plants"
+    in:
+      plants: [1, 2, 3, 4, 5, 6, 7]
+      capacityA: 7
+      capacityB: 7
+    out: 3
+  - name: "eight_plants"
+    in:
+      plants: [1, 2, 3, 4, 5, 6, 7, 8]
+      capacityA: 8
+      capacityB: 8
+    out: 4
+  - name: "single_large_value"
+    in:
+      plants: [1000000]
+      capacityA: 1000000000
+      capacityB: 1000000000
+    out: 0
+  - name: "two_large_exact"
+    in:
+      plants: [1000000, 1000000]
+      capacityA: 1000000
+      capacityB: 1000000
+    out: 0
+  - name: "large_middle_odd"
+    in:
+      plants: [1, 1000000, 1]
+      capacityA: 1000000
+      capacityB: 1
+    out: 1
+  - name: "near_int_capacity"
+    in:
+      plants: [999999999, 999999999, 999999999, 999999999]
+      capacityA: 1000000000
+      capacityB: 1000000000
+    out: 2
+  - name: "increasing_nine"
+    in:
+      plants: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+      capacityA: 10
+      capacityB: 10
+    out: 5
+  - name: "decreasing_nine"
+    in:
+      plants: [10, 9, 8, 7, 6, 5, 4, 3, 2]
+      capacityA: 10
+      capacityB: 10
+    out: 5
+  - name: "alternating_capacity_four"
+    in:
+      plants: [4, 1, 4, 1, 4, 1, 4, 1]
+      capacityA: 4
+      capacityB: 4
+    out: 6
+  - name: "alternating_capacity_four_reversed"
+    in:
+      plants: [1, 4, 1, 4, 1, 4, 1, 4]
+      capacityA: 4
+      capacityB: 4
+    out: 6
+  - name: "six_mixed"
+    in:
+      plants: [6, 5, 4, 3, 2, 1]
+      capacityA: 6
+      capacityB: 6
+    out: 2
+  - name: "generated_small_uniform"
+    seed: 101
+    in:
+      plants:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 20
+        distinct: false
+        sorted: false
+        elemType: "int"
+      capacityA: 20
+      capacityB: 20
+  - name: "generated_small_high_capacity"
+    seed: 102
+    in:
+      plants:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 80
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      capacityA: 1000000000
+      capacityB: 1000000000
+  - name: "generated_boundary_values"
+    seed: 103
+    in:
+      plants:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 90
+          max: 120
+        of:
+          gen: "int"
+          min: 999000
+          max: 999500
+        distinct: false
+        sorted: false
+        elemType: "int"
+      capacityA: 1000000
+      capacityB: 999500
+  - name: "generated_large"
+    seed: 104
+    in:
+      plants:
+        gen: "array"
+        len: 90000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      capacityA: 1000000000
+      capacityB: 1000000000
+  - name: "generated_maximum"
+    seed: 105
+    in:
+      plants:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      capacityA: 1000000
+      capacityB: 1000000

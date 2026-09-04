@@ -1,0 +1,259 @@
+entry:
+  id: 2111
+  title: "minimum-operations-to-make-the-array-k-increasing"
+  params:
+    arr:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().kIncreasing({arr}, {k})"
+    rust: "Solution::k_increasing({arr}, {k})"
+    python3: "Solution().kIncreasing({arr}, {k})"
+    python2: "Solution().kIncreasing({arr}, {k})"
+    ruby: "k_increasing({arr}, {k})"
+    java: "new Solution().kIncreasing({arr}, {k})"
+    csharp: "new Solution().KIncreasing({arr}, {k})"
+    kotlin: "Solution().kIncreasing({arr}, {k})"
+    go: "kIncreasing({arr}, {k})"
+    dart: "Solution().kIncreasing({arr}, {k})"
+    swift: "Solution().kIncreasing({arr}, {k})"
+    typescript: "kIncreasing({arr}, {k})"
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 300
+oracle:
+  python3:
+    call: "Checker().kIncreasing(arr, k, {result})"
+    checker: |
+      from bisect import bisect_right
+      class Checker:
+          def kIncreasing(self, arr, k, result):
+              if not isinstance(result, int):
+                  return False
+              keep = 0
+              for start in range(k):
+                  lis = []
+                  for value in arr[start::k]:
+                      pos = bisect_right(lis, value)
+                      if pos == len(lis):
+                          lis.append(value)
+                      else:
+                          lis[pos] = value
+                  keep += len(lis)
+              return result == len(arr) - keep
+seed: 2111
+tests:
+  - name: "example_1"
+    in:
+      arr: [5, 4, 3, 2, 1]
+      k: 1
+    out: 4
+  - name: "example_2"
+    in:
+      arr: [4, 1, 5, 2, 6, 2]
+      k: 2
+    out: 0
+  - name: "example_3"
+    in:
+      arr: [4, 1, 5, 2, 6, 2]
+      k: 3
+    out: 2
+  - name: "single_element"
+    in:
+      arr: [1]
+      k: 1
+    out: 0
+  - name: "all_equal"
+    in:
+      arr: [7, 7, 7, 7]
+      k: 1
+    out: 0
+  - name: "increasing_k_one"
+    in:
+      arr: [1, 2, 3, 4, 5]
+      k: 1
+    out: 0
+  - name: "descending_k_one"
+    in:
+      arr: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 1
+    out: 8
+  - name: "descending_k_two"
+    in:
+      arr: [5, 4, 3, 2, 1]
+      k: 2
+    out: 3
+  - name: "alternating_two_chains"
+    in:
+      arr: [1, 100, 2, 99, 3, 98]
+      k: 2
+    out: 2
+  - name: "three_chain_reversals"
+    in:
+      arr: [10, 1, 10, 1, 10, 1]
+      k: 3
+    out: 2
+  - name: "duplicate_chain_values"
+    in:
+      arr: [3, 1, 2, 1, 2, 1, 3]
+      k: 2
+    out: 1
+  - name: "descending_three_chains"
+    in:
+      arr: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+      k: 3
+    out: 6
+  - name: "interleaved_nonmonotonic"
+    in:
+      arr: [1, 2, 1, 2, 1, 2, 1, 2]
+      k: 3
+    out: 2
+  - name: "large_values"
+    in:
+      arr: [1000000000, 1, 999999999, 2]
+      k: 1
+    out: 2
+  - name: "mostly_valid_pairs"
+    in:
+      arr: [2, 1, 3, 1, 4, 1]
+      k: 2
+    out: 0
+  - name: "pair_chain_drops"
+    in:
+      arr: [1, 3, 2, 4, 3, 5]
+      k: 2
+    out: 0
+  - name: "k_equals_n_descending"
+    in:
+      arr: [6, 5, 4, 3, 2, 1]
+      k: 6
+    out: 0
+  - name: "k_equals_n_increasing"
+    in:
+      arr: [1, 2, 3, 4, 5, 6]
+      k: 6
+    out: 0
+  - name: "duplicate_blocks"
+    in:
+      arr: [2, 2, 1, 1, 3, 3]
+      k: 1
+    out: 2
+  - name: "four_residue_chains"
+    in:
+      arr: [8, 1, 7, 2, 6, 3, 5, 4]
+      k: 4
+    out: 2
+  - name: "two_residue_mixed"
+    in:
+      arr: [1, 9, 2, 8, 3, 7, 4, 6, 5]
+      k: 2
+    out: 3
+  - name: "constant_one"
+    in:
+      arr: [1]
+      k: 1
+    out: 0
+  - name: "two_elements_drop"
+    in:
+      arr: [2, 1]
+      k: 1
+    out: 1
+  - name: "two_elements_equal"
+    in:
+      arr: [2, 2]
+      k: 1
+    out: 0
+  - name: "three_elements_middle_drop"
+    in:
+      arr: [1, 3, 2]
+      k: 1
+    out: 1
+  - name: "k_two_singletons"
+    in:
+      arr: [3, 1, 2]
+      k: 2
+    out: 1
+  - name: "k_three_short_chains"
+    in:
+      arr: [3, 2, 1, 1]
+      k: 3
+    out: 1
+  - name: "strictly_descending_even"
+    in:
+      arr: [20, 18, 16, 14, 12, 10, 8, 6]
+      k: 2
+    out: 6
+  - name: "repeated_plateaus"
+    in:
+      arr: [4, 4, 3, 3, 2, 2, 1, 1]
+      k: 1
+    out: 6
+  - name: "three_chains_one_bad"
+    in:
+      arr: [1, 1, 1, 2, 1, 1, 2, 2, 2]
+      k: 3
+    out: 0
+  - name: "alternating_extremes"
+    in:
+      arr: [100, 1, 100, 1, 100, 1, 100]
+      k: 1
+    out: 3
+  - name: "near_limit_generated_a"
+    seed: 211101
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 1
+  - name: "near_limit_generated_b"
+    seed: 211102
+    in:
+      arr:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 997
+  - name: "large_sorted"
+    in:
+      arr:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      k: 49999
+  - name: "large_constant"
+    in:
+      arr:
+        gen: "array"
+        len: 80000
+        of:
+          gen: "int"
+          min: 777777777
+          max: 777777777
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 40000

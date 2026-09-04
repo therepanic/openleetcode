@@ -1,0 +1,207 @@
+entry:
+  id: 2134
+  title: "minimum-swaps-to-group-all-1s-together-ii"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minSwaps({nums})"
+    rust: "Solution::min_swaps({nums})"
+    python3: "Solution().minSwaps({nums})"
+    python2: "Solution().minSwaps({nums})"
+    ruby: "min_swaps({nums})"
+    java: "new Solution().minSwaps({nums})"
+    csharp: "new Solution().MinSwaps({nums})"
+    kotlin: "Solution().minSwaps({nums})"
+    go: "minSwaps({nums})"
+    dart: "Solution().minSwaps({nums})"
+    swift: "Solution().minSwaps({nums})"
+    typescript: "minSwaps({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().check(nums, {result})"
+    checker: |
+      class Checker:
+          def check(self, nums, result):
+              n = len(nums)
+              ones = sum(nums)
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if ones <= 1 or ones == n:
+                  return result == 0
+              doubled = nums + nums[:ones - 1]
+              inside = sum(doubled[:ones])
+              best = ones - inside
+              for i in range(ones, len(doubled)):
+                  inside += doubled[i] - doubled[i - ones]
+                  best = min(best, ones - inside)
+              return result == best
+
+seed: 2134
+
+tests:
+  - name: "example_1"
+    in:
+      nums: [0, 1, 0, 1, 1, 0, 0]
+  - name: "example_2"
+    in:
+      nums: [0, 1, 1, 1, 0, 0, 1, 1, 0]
+  - name: "example_3"
+    in:
+      nums: [1, 1, 0, 0, 1]
+  - name: "single_zero"
+    in:
+      nums: [0]
+  - name: "single_one"
+    in:
+      nums: [1]
+  - name: "two_zeros"
+    in:
+      nums: [0, 0]
+  - name: "two_ones"
+    in:
+      nums: [1, 1]
+  - name: "alternating_even"
+    in:
+      nums: [1, 0, 1, 0, 1, 0, 1, 0]
+  - name: "alternating_odd"
+    in:
+      nums: [0, 1, 0, 1, 0, 1, 0]
+  - name: "ones_at_wrap"
+    in:
+      nums: [1, 1, 0, 0, 0, 1]
+  - name: "zeros_at_wrap"
+    in:
+      nums: [0, 1, 1, 1, 1, 0]
+  - name: "one_zero_gap"
+    in:
+      nums: [1, 0, 1]
+  - name: "one_one_gap"
+    in:
+      nums: [0, 1, 0, 1]
+  - name: "already_grouped_start"
+    in:
+      nums: [1, 1, 1, 0, 0, 0, 0]
+  - name: "already_grouped_middle"
+    in:
+      nums: [0, 0, 1, 1, 1, 0, 0]
+  - name: "all_zeros_small"
+    in:
+      nums: [0, 0, 0, 0, 0]
+  - name: "all_ones_small"
+    in:
+      nums: [1, 1, 1, 1, 1]
+  - name: "mostly_ones"
+    in:
+      nums: [1, 0, 1, 1, 1, 0, 1, 1]
+  - name: "mostly_zeros"
+    in:
+      nums: [0, 1, 0, 0, 0, 1, 0, 0]
+  - name: "symmetric"
+    in:
+      nums: [1, 0, 0, 1, 0, 0, 1]
+  - name: "cluster_split_by_end"
+    in:
+      nums: [1, 0, 0, 1, 1, 0, 0, 1]
+  - name: "long_run_center"
+    in:
+      nums: [0, 0, 0, 1, 1, 1, 1, 1, 0, 0]
+  - name: "long_run_wrap"
+    in:
+      nums: [1, 1, 1, 0, 0, 0, 0, 1, 1]
+  - name: "sparse_ones"
+    in:
+      nums: [1, 0, 0, 0, 0, 1, 0, 0, 1, 0]
+  - name: "sparse_zeros"
+    in:
+      nums: [0, 1, 1, 1, 1, 0, 1, 1, 1, 1]
+  - name: "prime_length"
+    in:
+      nums: [0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0]
+  - name: "length_twelve"
+    in:
+      nums: [1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1]
+  - name: "dense_alternating"
+    in:
+      nums: [0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]
+  - name: "boundary_one_at_each_end"
+    in:
+      nums: [1, 0, 0, 0, 0, 0, 1]
+  - name: "boundary_zero_at_each_end"
+    in:
+      nums: [0, 1, 1, 1, 1, 1, 0]
+  - name: "generated_small"
+    seed: 301
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+  - name: "generated_medium"
+    seed: 302
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50
+          max: 250
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+  - name: "generated_sparse"
+    seed: 303
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 500
+          max: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+  - name: "stress_large_balanced"
+    seed: 304
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50000
+          max: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 1
+  - name: "stress_maximum"
+    seed: 305
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100000
+          max: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 1

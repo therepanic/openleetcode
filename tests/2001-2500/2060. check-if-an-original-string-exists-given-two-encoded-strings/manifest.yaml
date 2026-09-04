@@ -1,0 +1,266 @@
+entry:
+  id: 2060
+  title: "check-if-an-original-string-exists-given-two-encoded-strings"
+  params:
+    s1:
+      type: string
+    s2:
+      type: string
+  call:
+    cpp: "Solution().possiblyEquals({s1}, {s2})"
+    rust: "Solution::possibly_equals({s1}, {s2})"
+    python3: "Solution().possiblyEquals({s1}, {s2})"
+    python2: "Solution().possiblyEquals({s1}, {s2})"
+    ruby: "possibly_equals({s1}, {s2})"
+    java: "new Solution().possiblyEquals({s1}, {s2})"
+    csharp: "new Solution().PossiblyEquals({s1}, {s2})"
+    kotlin: "Solution().possiblyEquals({s1}, {s2})"
+    go: "possiblyEquals({s1}, {s2})"
+    dart: "Solution().possiblyEquals({s1}, {s2})"
+    swift: "Solution().possiblyEquals({s1}, {s2})"
+    typescript: "possiblyEquals({s1}, {s2})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().possiblyEquals(s1, s2, {result})"
+    checker: |
+      class Checker:
+          def possiblyEquals(self, s1, s2, result):
+              if not isinstance(result, bool):
+                  return False
+              seen = set()
+              stack = [(0, 0, 0)]
+              while stack:
+                  i, j, delta = stack.pop()
+                  state = (i, j, delta)
+                  if state in seen:
+                      continue
+                  seen.add(state)
+                  if i == len(s1) and j == len(s2) and delta == 0:
+                      return result is True
+                  if i < len(s1) and s1[i].isdigit():
+                      value = 0
+                      k = i
+                      while k < len(s1) and s1[k].isdigit():
+                          value = value * 10 + int(s1[k])
+                          k += 1
+                          stack.append((k, j, delta - value))
+                      continue
+                  if j < len(s2) and s2[j].isdigit():
+                      value = 0
+                      k = j
+                      while k < len(s2) and s2[k].isdigit():
+                          value = value * 10 + int(s2[k])
+                          k += 1
+                          stack.append((i, k, delta + value))
+                      continue
+                  if delta > 0 and i < len(s1) and not s1[i].isdigit():
+                      stack.append((i + 1, j, delta - 1))
+                      continue
+                  if delta < 0 and j < len(s2) and not s2[j].isdigit():
+                      stack.append((i, j + 1, delta + 1))
+                      continue
+                  if delta == 0 and i < len(s1) and j < len(s2) and s1[i] == s2[j]:
+                      stack.append((i + 1, j + 1, 0))
+              return result is False
+
+seed: 2060
+
+tests:
+  - name: "example_internationalization"
+    in:
+      s1: "internationalization"
+      s2: "i18n"
+    out: true
+  - name: "example_leetcode"
+    in:
+      s1: "l123e"
+      s2: "44"
+    out: true
+  - name: "example_conflicting_letters"
+    in:
+      s1: "a5b"
+      s2: "c5b"
+    out: false
+  - name: "same_single_letter"
+    in:
+      s1: "a"
+      s2: "a"
+    out: true
+  - name: "different_single_letters"
+    in:
+      s1: "a"
+      s2: "b"
+    out: false
+  - name: "same_single_digit"
+    in:
+      s1: "1"
+      s2: "1"
+    out: true
+  - name: "different_single_digits"
+    in:
+      s1: "1"
+      s2: "2"
+    out: false
+  - name: "same_boundary_digit"
+    in:
+      s1: "9"
+      s2: "9"
+    out: true
+  - name: "nine_vs_ten"
+    in:
+      s1: "9"
+      s2: "10"
+    out: false
+  - name: "same_two_digit_count"
+    in:
+      s1: "10"
+      s2: "10"
+    out: true
+  - name: "same_two_digit_max"
+    in:
+      s1: "99"
+      s2: "99"
+    out: true
+  - name: "same_three_digit_max"
+    in:
+      s1: "999"
+      s2: "999"
+    out: true
+  - name: "literal_segment_match"
+    in:
+      s1: "a1b"
+      s2: "a1b"
+    out: true
+  - name: "literal_segment_mismatch"
+    in:
+      s1: "a1b"
+      s2: "a2b"
+    out: false
+  - name: "digit_letter_reordering"
+    in:
+      s1: "a1b"
+      s2: "ab1"
+    out: true
+  - name: "letters_equal_one_digit"
+    in:
+      s1: "ab"
+      s2: "2"
+    out: true
+  - name: "letters_equal_split_digits"
+    in:
+      s1: "ab"
+      s2: "11"
+    out: true
+  - name: "three_letters_equal_count"
+    in:
+      s1: "abc"
+      s2: "3"
+    out: true
+  - name: "prefix_letter_and_count"
+    in:
+      s1: "abc"
+      s2: "2c"
+    out: true
+  - name: "middle_letter_between_counts"
+    in:
+      s1: "abc"
+      s2: "1b1"
+    out: true
+  - name: "unmatched_prefix_count"
+    in:
+      s1: "a2c"
+      s2: "3"
+    out: false
+  - name: "conflicting_letter_after_count"
+    in:
+      s1: "a2c"
+      s2: "b3"
+    out: false
+  - name: "count_cannot_cover_suffix"
+    in:
+      s1: "a12z"
+      s2: "12"
+    out: false
+  - name: "count_with_wrong_suffix_letter"
+    in:
+      s1: "a12z"
+      s2: "3z"
+    out: false
+  - name: "leading_count_with_matching_letter"
+    in:
+      s1: "12a"
+      s2: "3a"
+    out: true
+  - name: "three_digit_string_vs_count"
+    in:
+      s1: "123"
+      s2: "6"
+    out: true
+  - name: "three_digit_string_vs_split_count"
+    in:
+      s1: "123"
+      s2: "33"
+    out: true
+  - name: "count_letter_count_mismatch"
+    in:
+      s1: "1a2"
+      s2: "3"
+    out: false
+  - name: "count_letter_count_match"
+    in:
+      s1: "1a2"
+      s2: "2a1"
+    out: true
+  - name: "letter_plus_nine_vs_ten"
+    in:
+      s1: "a9"
+      s2: "10"
+    out: true
+  - name: "letter_conflict_plus_count"
+    in:
+      s1: "a9"
+      s2: "b10"
+    out: false
+  - name: "ambiguous_large_count_mismatch"
+    in:
+      s1: "x123y"
+      s2: "124"
+    out: false
+  - name: "letters_and_count_alignment"
+    in:
+      s1: "abc123def"
+      s2: "3abc123"
+    out: true
+  - name: "interleaved_count_mismatch"
+    in:
+      s1: "a1b2c3d"
+      s2: "6"
+    out: false
+  - name: "repeated_count_letter_mismatch"
+    in:
+      s1: "1a1a1a"
+      s2: "3a3"
+    out: false
+  - name: "maximum_length_all_digits"
+    in:
+      s1: "99999999999999999999999999999999999999"
+      s2: "99999999999999999999999999999999999999"
+    out: true
+  - name: "long_repeated_blocks"
+    in:
+      s1: "abc123abc123abc123abc123abc123abc123"
+      s2: "36"
+    out: false
+  - name: "long_interleaved_mismatch"
+    in:
+      s1: "a1b2c3d4e5f6g7h8i9j"
+      s2: "19"
+    out: false

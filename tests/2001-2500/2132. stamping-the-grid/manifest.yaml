@@ -1,0 +1,473 @@
+entry:
+  id: 2132
+  title: "stamping-the-grid"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    stampHeight:
+      type: int
+    stampWidth:
+      type: int
+  call:
+    python3: "Solution().possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    python2: "Solution().possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    cpp: "Solution().possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    rust: "Solution::possible_to_stamp({grid}, {stampHeight}, {stampWidth})"
+    ruby: "possible_to_stamp({grid}, {stampHeight}, {stampWidth})"
+    java: "new Solution().possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    csharp: "new Solution().PossibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    kotlin: "Solution().possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    go: "possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    dart: "Solution().possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    swift: "Solution().possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+    typescript: "possibleToStamp({grid}, {stampHeight}, {stampWidth})"
+
+judge:
+  type: "exact"
+limits:
+  time_ms: 1000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().possibleToStamp(grid, stampHeight, stampWidth, {result})"
+    checker: |
+      class Checker:
+          def possibleToStamp(self, grid, H, W, result):
+              if not isinstance(result, bool) or not grid or not grid[0]:
+                  return False
+              m, n = len(grid), len(grid[0])
+              if any(not isinstance(row, list) or len(row) != n for row in grid):
+                  return False
+              ps = [[0] * (n + 1) for _ in range(m + 1)]
+              for i in range(m):
+                  for j in range(n):
+                      ps[i + 1][j + 1] = grid[i][j] + ps[i][j + 1] + ps[i + 1][j] - ps[i][j]
+              diff = [[0] * (n + 1) for _ in range(m + 1)]
+              for i in range(m - H + 1):
+                  for j in range(n - W + 1):
+                      total = ps[i + H][j + W] - ps[i][j + W] - ps[i + H][j] + ps[i][j]
+                      if total == 0:
+                          diff[i][j] += 1
+                          diff[i + H][j] -= 1
+                          diff[i][j + W] -= 1
+                          diff[i + H][j + W] += 1
+              expected = True
+              for i in range(m):
+                  for j in range(n):
+                      if i:
+                          diff[i][j] += diff[i - 1][j]
+                      if j:
+                          diff[i][j] += diff[i][j - 1]
+                      if i and j:
+                          diff[i][j] -= diff[i - 1][j - 1]
+                      if grid[i][j] == 0 and diff[i][j] <= 0:
+                          expected = False
+              
+              return result == expected
+seed: 2132
+tests:
+  - name: "example_overlapping"
+    in:
+      grid:
+        - [1, 0, 0, 0]
+        - [1, 0, 0, 0]
+        - [1, 0, 0, 0]
+        - [1, 0, 0, 0]
+        - [1, 0, 0, 0]
+      stampHeight: 4
+      stampWidth: 3
+    out: true
+  - name: "example_diagonal_blockers"
+    in:
+      grid:
+        - [1, 0, 0, 0]
+        - [0, 1, 0, 0]
+        - [0, 0, 1, 0]
+        - [0, 0, 0, 1]
+      stampHeight: 2
+      stampWidth: 2
+    out: false
+  - name: "single_empty_unit"
+    in:
+      grid:
+        - [0]
+      stampHeight: 1
+      stampWidth: 1
+    out: true
+  - name: "single_occupied_large_stamp"
+    in:
+      grid:
+        - [1]
+      stampHeight: 9
+      stampWidth: 9
+    out: true
+  - name: "single_empty_too_large"
+    in:
+      grid:
+        - [0]
+      stampHeight: 2
+      stampWidth: 1
+    out: false
+  - name: "one_row_exact"
+    in:
+      grid:
+        - [0, 0, 0, 0, 0]
+      stampHeight: 1
+      stampWidth: 3
+    out: true
+  - name: "one_row_gap"
+    in:
+      grid:
+        - [0, 0, 1, 0, 0]
+      stampHeight: 1
+      stampWidth: 2
+    out: true
+  - name: "one_row_isolated_left"
+    in:
+      grid:
+        - [0, 1, 0]
+      stampHeight: 1
+      stampWidth: 2
+    out: false
+  - name: "one_column_exact"
+    in:
+      grid:
+        - [0]
+        - [0]
+        - [0]
+        - [0]
+      stampHeight: 3
+      stampWidth: 1
+    out: true
+  - name: "one_column_gap"
+    in:
+      grid:
+        - [0]
+        - [1]
+        - [0]
+      stampHeight: 2
+      stampWidth: 1
+    out: false
+  - name: "all_occupied"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 1, 1]
+      stampHeight: 5
+      stampWidth: 5
+    out: true
+  - name: "empty_rectangle_exact"
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 0, 0]
+      stampHeight: 2
+      stampWidth: 3
+    out: true
+  - name: "empty_rectangle_height_miss"
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 0, 0]
+      stampHeight: 3
+      stampWidth: 2
+    out: false
+  - name: "empty_rectangle_width_miss"
+    in:
+      grid:
+        - [0, 0]
+        - [0, 0]
+      stampHeight: 1
+      stampWidth: 3
+    out: false
+  - name: "unit_stamps_cover_all"
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 0, 1]
+      stampHeight: 1
+      stampWidth: 1
+    out: true
+  - name: "horizontal_bar_obstacle"
+    in:
+      grid:
+        - [0, 0, 0, 0]
+        - [1, 1, 1, 1]
+        - [0, 0, 0, 0]
+      stampHeight: 2
+      stampWidth: 2
+    out: false
+  - name: "vertical_bar_obstacle"
+    in:
+      grid:
+        - [0, 1, 0]
+        - [0, 1, 0]
+        - [0, 1, 0]
+      stampHeight: 2
+      stampWidth: 1
+    out: true
+  - name: "corner_occupied"
+    in:
+      grid:
+        - [1, 0, 0]
+        - [0, 0, 0]
+        - [0, 0, 0]
+      stampHeight: 2
+      stampWidth: 2
+    out: true
+  - name: "cross_obstacles"
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 1, 1]
+        - [0, 1, 0]
+      stampHeight: 1
+      stampWidth: 1
+    out: true
+  - name: "cross_requires_overlap"
+    in:
+      grid:
+        - [0, 1, 0]
+        - [1, 0, 1]
+        - [0, 1, 0]
+      stampHeight: 2
+      stampWidth: 2
+    out: false
+  - name: "two_by_two_one_empty"
+    in:
+      grid:
+        - [1, 1]
+        - [1, 0]
+      stampHeight: 2
+      stampWidth: 2
+    out: false
+  - name: "two_by_two_one_empty_unit"
+    in:
+      grid:
+        - [1, 1]
+        - [1, 0]
+      stampHeight: 1
+      stampWidth: 1
+    out: true
+  - name: "checkerboard_two"
+    in:
+      grid:
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+      stampHeight: 2
+      stampWidth: 2
+    out: false
+  - name: "checkerboard_unit"
+    in:
+      grid:
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+        - [0, 1, 0, 1]
+        - [1, 0, 1, 0]
+      stampHeight: 1
+      stampWidth: 1
+    out: true
+  - name: "full_width_single_row"
+    in:
+      grid:
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 0, 0]
+      stampHeight: 1
+      stampWidth: 5
+    out: false
+  - name: "full_height_single_column"
+    in:
+      grid:
+        - [0, 0]
+        - [0, 1]
+        - [0, 0]
+        - [0, 0]
+      stampHeight: 4
+      stampWidth: 1
+    out: false
+  - name: "large_stamp_fits_open_window"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+      stampHeight: 2
+      stampWidth: 3
+    out: true
+  - name: "large_stamp_window_blocked"
+    in:
+      grid:
+        - [1, 1, 1, 1, 1]
+        - [1, 0, 1, 0, 1]
+        - [1, 0, 0, 0, 1]
+        - [1, 1, 1, 1, 1]
+      stampHeight: 2
+      stampWidth: 3
+    out: false
+  - name: "overlap_horizontal"
+    in:
+      grid:
+        - [1, 0, 0, 0, 0, 1]
+        - [1, 0, 0, 0, 0, 1]
+      stampHeight: 2
+      stampWidth: 4
+    out: true
+  - name: "overlap_vertical"
+    in:
+      grid:
+        - [1, 1]
+        - [0, 0]
+        - [0, 0]
+        - [0, 0]
+        - [1, 1]
+      stampHeight: 4
+      stampWidth: 1
+    out: false
+  - name: "stamp_one_by_many"
+    in:
+      grid:
+        - [0, 0, 1, 0, 0, 0]
+      stampHeight: 1
+      stampWidth: 2
+    out: true
+  - name: "stamp_many_by_one"
+    in:
+      grid:
+        - [0]
+        - [0]
+        - [1]
+        - [0]
+        - [0]
+      stampHeight: 2
+      stampWidth: 1
+    out: true
+  - name: "all_empty_three_by_three"
+    in:
+      grid:
+        - [0, 0, 0]
+        - [0, 0, 0]
+        - [0, 0, 0]
+      stampHeight: 2
+      stampWidth: 2
+    out: true
+  - name: "isolated_empty_between_walls"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [1, 0, 1]
+        - [1, 1, 1]
+      stampHeight: 2
+      stampWidth: 2
+    out: false
+  - name: "generated_small"
+    seed: 31
+    in:
+      grid:
+        gen: "array"
+        len: 5
+        of:
+          gen: "array"
+          len: 6
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+      stampHeight:
+        gen: "int"
+        min: 1
+        max: 6
+      stampWidth:
+        gen: "int"
+        min: 1
+        max: 6
+  - name: "generated_medium"
+    seed: 32
+    in:
+      grid:
+        gen: "array"
+        len: 40
+        of:
+          gen: "array"
+          len: 50
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+      stampHeight:
+        gen: "int"
+        min: 1
+        max: 40
+      stampWidth:
+        gen: "int"
+        min: 1
+        max: 50
+  - name: "generated_wide_stress"
+    seed: 33
+    in:
+      grid:
+        gen: "array"
+        len: 2
+        of:
+          gen: "array"
+          len: 1000
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+      stampHeight:
+        gen: "int"
+        min: 1
+        max: 2
+      stampWidth:
+        gen: "int"
+        min: 1
+        max: 1000
+  - name: "generated_tall_stress"
+    seed: 34
+    in:
+      grid:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+      stampHeight:
+        gen: "int"
+        min: 1
+        max: 1000
+      stampWidth:
+        gen: "int"
+        min: 1
+        max: 2
+  - name: "generated_square_stress"
+    seed: 35
+    in:
+      grid:
+        gen: "array"
+        len: 30
+        of:
+          gen: "array"
+          len: 30
+          of:
+            gen: "int"
+            min: 0
+            max: 1
+      stampHeight:
+        gen: "int"
+        min: 1
+        max: 30
+      stampWidth:
+        gen: "int"
+        min: 1
+        max: 30

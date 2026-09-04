@@ -1,0 +1,356 @@
+entry:
+  id: 2030
+  title: "smallest-k-length-subsequence-with-occurrences-of-a-letter"
+  params:
+    s:
+      type: string
+    k:
+      type: int
+    letter:
+      type: string
+    repetition:
+      type: int
+  call:
+    cpp: "Solution().smallestSubsequence({s}, {k}, {letter}[0], {repetition})"
+    rust: "Solution::smallest_subsequence({s}, {k}, {letter}[0], {repetition})"
+    python3: "Solution().smallestSubsequence({s}, {k}, {letter}, {repetition})"
+    python2: "Solution().smallestSubsequence({s}, {k}, {letter}, {repetition})"
+    ruby: "smallest_subsequence({s}, {k}, {letter}, {repetition})"
+    java: "new Solution().smallestSubsequence({s}, {k}, {letter}.charAt(0), {repetition})"
+    csharp: "new Solution().SmallestSubsequence({s}, {k}, {letter}[0], {repetition})"
+    kotlin: "Solution().smallestSubsequence({s}, {k}, {letter}[0], {repetition})"
+    go: "smallestSubsequence({s}, {k}, {letter}[0], {repetition})"
+    dart: "Solution().smallestSubsequence({s}, {k}, {letter}, {repetition})"
+    swift: "Solution().smallestSubsequence({s}, {k}, {letter}.first!, {repetition})"
+    typescript: "smallestSubsequence({s}, {k}, {letter}, {repetition})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().check(s, k, letter, repetition, {result})"
+    checker: |
+      class Checker:
+          def check(self, s, k, letter, repetition, result):
+              stack = []
+              need = repetition
+              remaining = s.count(letter)
+              for i, ch in enumerate(s):
+                  if ch == letter:
+                      remaining -= 1
+                  while stack and stack[-1] > ch and len(stack) + len(s) - i - 1 >= k:
+                      if stack[-1] == letter and remaining < need:
+                          break
+                      if stack.pop() == letter:
+                          need += 1
+                  if len(stack) < k:
+                      if ch == letter:
+                          stack.append(ch)
+                          need -= 1
+                      elif k - len(stack) > need:
+                          stack.append(ch)
+              return isinstance(result, str) and result == ''.join(stack)
+
+seed: 20302030
+
+tests:
+  - name: "example_1_leet"
+    in:
+      s: "leet"
+      k: 3
+      letter: "e"
+      repetition: 1
+    out: "eet"
+  - name: "example_2_leetcode"
+    in:
+      s: "leetcode"
+      k: 4
+      letter: "e"
+      repetition: 2
+    out: "ecde"
+  - name: "example_3_all_required"
+    in:
+      s: "bb"
+      k: 2
+      letter: "b"
+      repetition: 2
+    out: "bb"
+  - name: "single_a"
+    in:
+      s: "a"
+      k: 1
+      letter: "a"
+      repetition: 1
+    out: "a"
+  - name: "single_z"
+    in:
+      s: "z"
+      k: 1
+      letter: "z"
+      repetition: 1
+    out: "z"
+  - name: "prefix_required"
+    in:
+      s: "abc"
+      k: 2
+      letter: "a"
+      repetition: 1
+    out: "ab"
+  - name: "late_required"
+    in:
+      s: "cba"
+      k: 2
+      letter: "a"
+      repetition: 1
+    out: "ba"
+  - name: "z_before_a"
+    in:
+      s: "zzza"
+      k: 2
+      letter: "z"
+      repetition: 1
+    out: "za"
+  - name: "many_a_after_b"
+    in:
+      s: "baaa"
+      k: 2
+      letter: "a"
+      repetition: 1
+    out: "aa"
+  - name: "interleaved_z"
+    in:
+      s: "azbz"
+      k: 3
+      letter: "z"
+      repetition: 1
+    out: "abz"
+  - name: "alternating_b"
+    in:
+      s: "abab"
+      k: 3
+      letter: "b"
+      repetition: 1
+    out: "aab"
+  - name: "descending_c"
+    in:
+      s: "dcba"
+      k: 3
+      letter: "c"
+      repetition: 1
+    out: "cba"
+  - name: "all_a_partial"
+    in:
+      s: "aaaaa"
+      k: 3
+      letter: "a"
+      repetition: 2
+    out: "aaa"
+  - name: "required_at_end"
+    in:
+      s: "abcde"
+      k: 4
+      letter: "e"
+      repetition: 1
+    out: "abce"
+  - name: "descending_first_required"
+    in:
+      s: "edcba"
+      k: 3
+      letter: "e"
+      repetition: 1
+    out: "eba"
+  - name: "two_a_required"
+    in:
+      s: "bacbac"
+      k: 4
+      letter: "a"
+      repetition: 2
+    out: "abac"
+  - name: "middle_b_required"
+    in:
+      s: "cbacba"
+      k: 4
+      letter: "b"
+      repetition: 1
+    out: "acba"
+  - name: "x_prefix"
+    in:
+      s: "xyza"
+      k: 3
+      letter: "a"
+      repetition: 1
+    out: "xya"
+  - name: "two_z_required"
+    in:
+      s: "azzzb"
+      k: 3
+      letter: "z"
+      repetition: 2
+    out: "azz"
+  - name: "three_a_available"
+    in:
+      s: "cabaa"
+      k: 3
+      letter: "a"
+      repetition: 2
+    out: "aaa"
+  - name: "qwerty_e"
+    in:
+      s: "qwerty"
+      k: 3
+      letter: "e"
+      repetition: 1
+    out: "ert"
+  - name: "p_in_order"
+    in:
+      s: "mnopqr"
+      k: 5
+      letter: "p"
+      repetition: 1
+    out: "mnopq"
+  - name: "duplicate_blocks"
+    in:
+      s: "aabbcc"
+      k: 4
+      letter: "b"
+      repetition: 1
+    out: "aabb"
+  - name: "a_suffix"
+    in:
+      s: "bbacaa"
+      k: 4
+      letter: "a"
+      repetition: 2
+    out: "acaa"
+  - name: "z_prefix"
+    in:
+      s: "zzabc"
+      k: 3
+      letter: "z"
+      repetition: 1
+    out: "zab"
+  - name: "a_cluster"
+    in:
+      s: "caaab"
+      k: 3
+      letter: "a"
+      repetition: 2
+    out: "aaa"
+  - name: "alternating_c"
+    in:
+      s: "bcbcbc"
+      k: 4
+      letter: "c"
+      repetition: 2
+    out: "bbcc"
+  - name: "a_middle_twice"
+    in:
+      s: "dabbad"
+      k: 4
+      letter: "a"
+      repetition: 2
+    out: "abad"
+  - name: "b_suffix_required"
+    in:
+      s: "aaaabbbb"
+      k: 5
+      letter: "b"
+      repetition: 2
+    out: "aaabb"
+  - name: "a_tail_required"
+    in:
+      s: "cbbaaa"
+      k: 4
+      letter: "a"
+      repetition: 2
+    out: "baaa"
+  - name: "two_z_alternating"
+    in:
+      s: "azazaz"
+      k: 4
+      letter: "z"
+      repetition: 2
+    out: "aazz"
+  - name: "f_at_start"
+    in:
+      s: "fedcba"
+      k: 2
+      letter: "f"
+      repetition: 1
+    out: "fa"
+  - name: "full_leetcode"
+    in:
+      s: "leetcode"
+      k: 8
+      letter: "e"
+      repetition: 3
+    out: "leetcode"
+  - name: "repeated_abc"
+    in:
+      s: "abcabcabc"
+      k: 5
+      letter: "c"
+      repetition: 1
+    out: "aaabc"
+  - name: "z_block"
+    in:
+      s: "zzzzabc"
+      k: 6
+      letter: "z"
+      repetition: 3
+    out: "zzzabc"
+  - name: "generated_all_a_small"
+    seed: 20301
+    in:
+      s:
+        gen: "str"
+        len: 50
+        alphabet: "a"
+      k: 37
+      letter: "a"
+      repetition: 12
+  - name: "generated_all_b_medium"
+    seed: 20302
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "b"
+      k: 777
+      letter: "b"
+      repetition: 400
+  - name: "generated_all_c_large"
+    seed: 20303
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "c"
+      k: 49999
+      letter: "c"
+      repetition: 25000
+  - name: "generated_all_d_max"
+    seed: 20304
+    in:
+      s:
+        gen: "str"
+        len: 50000
+        alphabet: "d"
+      k: 25001
+      letter: "d"
+      repetition: 1
+  - name: "generated_all_e_tail"
+    seed: 20305
+    in:
+      s:
+        gen: "str"
+        len: 20000
+        alphabet: "e"
+      k: 19999
+      letter: "e"
+      repetition: 19999

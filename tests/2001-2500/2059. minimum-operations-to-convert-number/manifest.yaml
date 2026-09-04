@@ -1,0 +1,345 @@
+entry:
+  id: 2059
+  title: "minimum-operations-to-convert-number"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    start:
+      type: int
+    goal:
+      type: int
+  call:
+    cpp: "Solution().minimumOperations({nums}, {start}, {goal})"
+    rust: "Solution::minimum_operations({nums}, {start}, {goal})"
+    python3: "Solution().minimumOperations({nums}, {start}, {goal})"
+    python2: "Solution().minimumOperations({nums}, {start}, {goal})"
+    ruby: "minimum_operations({nums}, {start}, {goal})"
+    java: "new Solution().minimumOperations({nums}, {start}, {goal})"
+    csharp: "new Solution().MinimumOperations({nums}, {start}, {goal})"
+    kotlin: "Solution().minimumOperations({nums}, {start}, {goal})"
+    go: "minimumOperations({nums}, {start}, {goal})"
+    dart: "Solution().minimumOperations({nums}, {start}, {goal})"
+    swift: "Solution().minimumOperations({nums}, {start}, {goal})"
+    typescript: "minimumOperations({nums}, {start}, {goal})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().minimumOperations(nums, start, goal, {result})"
+    checker: |
+      from collections import deque
+      class Checker:
+          def minimumOperations(self, nums, start, goal, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              seen = {start}
+              q = deque([(start, 0)])
+              answer = -1
+              while q:
+                  x, d = q.popleft()
+                  if x == goal:
+                      answer = d
+                      break
+                  if not (0 <= x <= 1000):
+                      continue
+                  for n in nums:
+                      for y in (x + n, x - n, x ^ n):
+                          if y == goal:
+                              answer = d + 1
+                              q.clear()
+                              break
+                          if 0 <= y <= 1000 and y not in seen:
+                              seen.add(y)
+                              q.append((y, d + 1))
+                      if answer != -1:
+                          break
+                  if answer != -1:
+                      break
+              return result == answer
+
+seed: 2059
+
+tests:
+  - name: "example_add_sub"
+    in:
+      nums: [2, 4, 12]
+      start: 2
+      goal: 12
+    out: 2
+  - name: "example_negative_goal"
+    in:
+      nums: [3, 5, 7]
+      start: 0
+      goal: -4
+    out: 2
+  - name: "example_unreachable"
+    in:
+      nums: [2, 8, 16]
+      start: 0
+      goal: 1
+    out: -1
+  - name: "direct_add"
+    in:
+      nums: [5]
+      start: 0
+      goal: 5
+    out: 1
+  - name: "direct_subtract_to_negative"
+    in:
+      nums: [9]
+      start: 4
+      goal: -5
+    out: 1
+  - name: "direct_xor_zero"
+    in:
+      nums: [37]
+      start: 37
+      goal: 0
+    out: 1
+  - name: "direct_xor_boundary"
+    in:
+      nums: [1023]
+      start: 0
+      goal: 1023
+    out: 1
+  - name: "start_zero_to_one"
+    in:
+      nums: [1]
+      start: 0
+      goal: 1
+    out: 1
+  - name: "start_max_to_zero"
+    in:
+      nums: [1000]
+      start: 1000
+      goal: 0
+    out: 1
+  - name: "single_increment_two"
+    in:
+      nums: [1]
+      start: 0
+      goal: 2
+    out: 2
+  - name: "single_increment_ten"
+    in:
+      nums: [1]
+      start: 10
+      goal: 20
+    out: 10
+  - name: "single_decrement_to_zero"
+    in:
+      nums: [1]
+      start: 10
+      goal: 0
+    out: 10
+  - name: "single_xor_chain"
+    in:
+      nums: [3]
+      start: 0
+      goal: 6
+    out: 2
+  - name: "two_step_small"
+    in:
+      nums: [2, 5]
+      start: 0
+      goal: 7
+    out: 2
+  - name: "two_step_cancel"
+    in:
+      nums: [4, 9]
+      start: 20
+      goal: 7
+    out: 2
+  - name: "xor_then_add"
+    in:
+      nums: [6, 10]
+      start: 5
+      goal: 19
+    out: 3
+  - name: "negative_num_direct"
+    in:
+      nums: [-3]
+      start: 10
+      goal: 7
+    out: 1
+  - name: "negative_num_outside"
+    in:
+      nums: [-100]
+      start: 0
+      goal: -100
+    out: 1
+  - name: "large_direct_goal"
+    in:
+      nums: [1000000000]
+      start: 0
+      goal: 1000000000
+    out: 1
+  - name: "large_negative_direct"
+    in:
+      nums: [-1000000000]
+      start: 1000
+      goal: -999999000
+    out: 1
+  - name: "large_num_unreachable"
+    in:
+      nums: [1000000000]
+      start: 1
+      goal: 2
+    out: -1
+  - name: "odd_parity_unreachable"
+    in:
+      nums: [2, 4, 8]
+      start: 0
+      goal: 3
+    out: -1
+  - name: "zero_like_xor_unreachable"
+    in:
+      nums: [10, 20]
+      start: 5
+      goal: 6
+    out: -1
+  - name: "boundary_inside_to_outside"
+    in:
+      nums: [1]
+      start: 1000
+      goal: 1001
+    out: 1
+  - name: "boundary_subtract"
+    in:
+      nums: [1]
+      start: 0
+      goal: -1
+    out: 1
+  - name: "many_options_shortest"
+    in:
+      nums: [1, 7, 11, 20]
+      start: 100
+      goal: 120
+    out: 1
+  - name: "distinct_large_values"
+    in:
+      nums: [999, 998, 997]
+      start: 1
+      goal: 1000
+    out: 1
+  - name: "xor_high_bits"
+    in:
+      nums: [512]
+      start: 511
+      goal: 1023
+    out: 1
+  - name: "negative_goal_two_steps"
+    in:
+      nums: [1, 100]
+      start: 0
+      goal: -99
+    out: 2
+  - name: "zero_start_large_path"
+    in:
+      nums: [10, 20, 30]
+      start: 0
+      goal: 60
+    out: 2
+  - name: "gen_small_distinct"
+    seed: 301
+    in:
+      nums:
+        gen: "array"
+        len: 8
+        of:
+          gen: "int"
+          min: -20
+          max: 20
+        distinct: true
+      start:
+        gen: "int"
+        min: 0
+        max: 1000
+      goal:
+        gen: "int"
+        min: -1000
+        max: 1000
+  - name: "gen_medium_distinct"
+    seed: 302
+    in:
+      nums:
+        gen: "array"
+        len: 30
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: true
+      start:
+        gen: "int"
+        min: 0
+        max: 1000
+      goal:
+        gen: "int"
+        min: -1000000000
+        max: 1000000000
+  - name: "gen_dense_boundary_values"
+    seed: 303
+    in:
+      nums:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: -1000000
+          max: 1000000
+        distinct: true
+      start:
+        gen: "int"
+        min: 0
+        max: 1000
+      goal:
+        gen: "int"
+        min: -1000000000
+        max: 1000000000
+  - name: "gen_large_1000_a"
+    seed: 304
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: true
+      start:
+        gen: "int"
+        min: 0
+        max: 1000
+      goal:
+        gen: "int"
+        min: -1000000000
+        max: 1000000000
+  - name: "gen_large_1000_b"
+    seed: 305
+    in:
+      nums:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: -1000000000
+          max: 1000000000
+        distinct: true
+      start:
+        gen: "int"
+        min: 0
+        max: 1000
+      goal:
+        gen: "int"
+        min: -1000000000
+        max: 1000000000

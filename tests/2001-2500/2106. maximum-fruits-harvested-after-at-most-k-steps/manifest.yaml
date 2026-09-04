@@ -1,0 +1,509 @@
+entry:
+  id: 2106
+  title: "maximum-fruits-harvested-after-at-most-k-steps"
+  params:
+    fruits:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    startPos:
+      type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().maxTotalFruits({fruits}, {startPos}, {k})"
+    rust: "Solution::max_total_fruits({fruits}, {startPos}, {k})"
+    python3: "Solution().maxTotalFruits({fruits}, {startPos}, {k})"
+    python2: "Solution().maxTotalFruits({fruits}, {startPos}, {k})"
+    ruby: "max_total_fruits({fruits}, {startPos}, {k})"
+    java: "new Solution().maxTotalFruits({fruits}, {startPos}, {k})"
+    csharp: "new Solution().MaxTotalFruits({fruits}, {startPos}, {k})"
+    kotlin: "Solution().maxTotalFruits({fruits}, {startPos}, {k})"
+    go: "maxTotalFruits({fruits}, {startPos}, {k})"
+    dart: "Solution().maxTotalFruits({fruits}, {startPos}, {k})"
+    swift: "Solution().maxTotalFruits({fruits}, {startPos}, {k})"
+    typescript: "maxTotalFruits({fruits}, {startPos}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxTotalFruits(fruits, startPos, k, {result})"
+    checker: |
+      class Checker:
+          def maxTotalFruits(self, fruits, startPos, k, result):
+              if not isinstance(result, int):
+                  return False
+              best = 0
+              for i, (left, _) in enumerate(fruits):
+                  for j in range(i, len(fruits)):
+                      right = fruits[j][0]
+                      cost = min(abs(startPos - left) + right - left,
+                                 abs(startPos - right) + right - left)
+                      if cost <= k:
+                          best = max(best, sum(amount for _, amount in fruits[i:j + 1]))
+              return result == best
+
+seed: 2106
+
+tests:
+  - name: "example_1"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [2, 8]
+          - [6, 3]
+          - [8, 6]
+      startPos: 5
+      k: 4
+    out: 9
+  - name: "example_2"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 9]
+          - [4, 1]
+          - [5, 7]
+          - [6, 2]
+          - [7, 4]
+          - [10, 9]
+      startPos: 5
+      k: 4
+    out: 14
+  - name: "example_3"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 3]
+          - [6, 4]
+          - [8, 5]
+      startPos: 3
+      k: 2
+    out: 0
+  - name: "single_at_start"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [10, 7]
+      startPos: 10
+      k: 0
+    out: 7
+  - name: "single_left_reachable"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [3, 11]
+      startPos: 5
+      k: 2
+    out: 11
+  - name: "single_right_unreachable"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [8, 11]
+      startPos: 5
+      k: 2
+    out: 0
+  - name: "zero_steps_with_start_fruit"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [4, 3]
+          - [5, 13]
+          - [6, 2]
+      startPos: 5
+      k: 0
+    out: 13
+  - name: "all_left"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 4]
+          - [5, 8]
+      startPos: 6
+      k: 5
+    out: 14
+  - name: "all_right"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [6, 5]
+          - [8, 7]
+          - [10, 9]
+      startPos: 6
+      k: 4
+    out: 21
+  - name: "turn_left_then_right"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [2, 5]
+          - [4, 6]
+          - [7, 20]
+          - [9, 1]
+      startPos: 5
+      k: 5
+    out: 26
+  - name: "turn_right_then_left"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [1, 10]
+          - [3, 2]
+          - [6, 30]
+          - [8, 4]
+      startPos: 5
+      k: 6
+    out: 42
+  - name: "boundary_exact_left"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 17]
+          - [2, 3]
+          - [5, 2]
+      startPos: 5
+      k: 5
+    out: 22
+  - name: "boundary_exact_right"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [5, 2]
+          - [8, 3]
+          - [10, 19]
+      startPos: 5
+      k: 5
+    out: 24
+  - name: "gap_blocks_middle"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 5]
+          - [10, 50]
+          - [11, 4]
+          - [20, 60]
+      startPos: 10
+      k: 3
+    out: 54
+  - name: "start_between_sparse"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 8]
+          - [4, 6]
+          - [9, 7]
+          - [15, 10]
+      startPos: 6
+      k: 5
+    out: 7
+  - name: "duplicate_amounts"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [2, 5]
+          - [3, 5]
+          - [4, 5]
+          - [5, 5]
+          - [6, 5]
+      startPos: 4
+      k: 2
+    out: 15
+  - name: "large_amount_single"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [100000, 10000]
+      startPos: 0
+      k: 200000
+    out: 10000
+  - name: "positions_at_zero"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+      startPos: 0
+      k: 2
+    out: 6
+  - name: "positions_at_max"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [199998, 4]
+          - [199999, 5]
+          - [200000, 6]
+      startPos: 200000
+      k: 2
+    out: 15
+  - name: "high_value_far_left"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 10000]
+          - [100, 1]
+          - [200, 1]
+      startPos: 100
+      k: 100
+    out: 10001
+  - name: "high_value_far_right"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [100, 1]
+          - [200, 10000]
+      startPos: 100
+      k: 100
+    out: 10001
+  - name: "prefer_one_side_over_turn"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [1, 100]
+          - [4, 1]
+          - [6, 1]
+          - [9, 1]
+      startPos: 5
+      k: 4
+    out: 101
+  - name: "dense_window_left"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [1, 2]
+          - [2, 3]
+          - [3, 4]
+          - [4, 5]
+          - [5, 6]
+          - [6, 7]
+          - [7, 8]
+      startPos: 6
+      k: 5
+    out: 30
+  - name: "dense_window_right"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [10, 8]
+          - [11, 7]
+          - [12, 6]
+          - [13, 5]
+          - [14, 4]
+          - [15, 3]
+          - [16, 2]
+          - [17, 1]
+      startPos: 11
+      k: 4
+    out: 26
+  - name: "mixed_window"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [2, 9]
+          - [4, 1]
+          - [5, 8]
+          - [7, 2]
+          - [8, 10]
+          - [11, 3]
+      startPos: 6
+      k: 5
+    out: 20
+  - name: "start_before_everything"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [5, 2]
+          - [7, 4]
+          - [9, 8]
+          - [12, 16]
+      startPos: 0
+      k: 10
+    out: 14
+  - name: "start_after_everything"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 2]
+          - [3, 4]
+          - [5, 8]
+          - [8, 16]
+      startPos: 10
+      k: 10
+    out: 30
+  - name: "far_fruit_unreachable"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 10000]
+          - [200000, 9999]
+      startPos: 100000
+      k: 99999
+    out: 0
+  - name: "two_sided_overlap"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [3, 4]
+          - [5, 6]
+          - [7, 8]
+          - [9, 10]
+      startPos: 6
+      k: 4
+    out: 18
+  - name: "turnaround_cost_matters"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 20]
+          - [2, 1]
+          - [5, 30]
+          - [6, 40]
+      startPos: 4
+      k: 6
+    out: 71
+  - name: "maximum_count_small_amounts"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 1]
+          - [2, 1]
+          - [4, 1]
+          - [6, 1]
+          - [8, 1]
+          - [10, 1]
+      startPos: 5
+      k: 7
+    out: 4
+  - name: "large_gap_exact_reach"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [50000, 300]
+          - [100000, 400]
+          - [150000, 500]
+      startPos: 100000
+      k: 50000
+    out: 900
+  - name: "near_constraint_amount_sum"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [99990, 10000]
+          - [99995, 10000]
+          - [100000, 10000]
+          - [100005, 10000]
+          - [100010, 10000]
+      startPos: 100000
+      k: 10
+    out: 30000
+  - name: "long_sparse_chain"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 10]
+          - [25000, 20]
+          - [50000, 30]
+          - [75000, 40]
+          - [100000, 50]
+          - [125000, 60]
+          - [150000, 70]
+          - [175000, 80]
+          - [200000, 90]
+      startPos: 100000
+      k: 100000
+    out: 350
+  - name: "max_positions_dense_end"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [199990, 1]
+          - [199991, 2]
+          - [199992, 3]
+          - [199993, 4]
+          - [199994, 5]
+          - [199995, 6]
+          - [199996, 7]
+          - [199997, 8]
+          - [199998, 9]
+          - [199999, 10]
+          - [200000, 11]
+      startPos: 199995
+      k: 10
+    out: 60
+  - name: "max_k_reaches_both_ends"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [0, 2]
+          - [1, 3]
+          - [199999, 4]
+          - [200000, 5]
+      startPos: 100000
+      k: 200000
+    out: 9
+  - name: "one_hundred_positions_pattern"
+    in:
+      fruits:
+        elemType: "int"
+        value:
+          - [100, 1]
+          - [101, 2]
+          - [102, 3]
+          - [103, 4]
+          - [104, 5]
+          - [105, 6]
+          - [106, 7]
+          - [107, 8]
+          - [108, 9]
+          - [109, 10]
+      startPos: 105
+      k: 6
+    out: 45
