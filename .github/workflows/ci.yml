@@ -46,34 +46,26 @@ jobs:
         run: cabal update
 
       - name: Build
-        run: cabal build all
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          cabal install exe:openleetcode \
+            --installdir=artifacts \
+            --install-method=copy \
+            --overwrite-policy=always \
+            --enable-executable-stripping
+
+      - name: Finalize artifact
+        if: runner.os != 'Windows'
+        run: mv artifacts/openleetcode "artifacts/${{ matrix.artifact }}"
+
+      - name: Finalize artifact
+        if: runner.os == 'Windows'
+        shell: bash
+        run: mv artifacts/openleetcode.exe "artifacts/${{ matrix.artifact }}.exe"
 
       - name: Tests
         run: cabal test all
-
-      - name: Collect executable
-        if: runner.os != 'Windows'
-        run: |
-          mkdir -p artifacts
-          exe="$(find dist-newstyle \
-            -type f \
-            -path "*/x/openleetcode/build/openleetcode/openleetcode" \
-            | head -n 1)"
-
-          cp "$exe" "artifacts/${{ matrix.artifact }}"
-
-      - name: Collect executable
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path artifacts
-          $exe = Get-ChildItem -Path dist-newstyle -Recurse -Filter "openleetcode.exe" |
-            Where-Object {
-              $_.FullName -like "*\x\openleetcode\build\openleetcode\openleetcode.exe"
-            } |
-            Select-Object -First 1
-
-          Copy-Item $exe.FullName "artifacts/${{ matrix.artifact }}.exe"
 
       - name: Smoke test
         if: runner.os != 'Windows'
@@ -82,9 +74,8 @@ jobs:
 
       - name: Smoke test
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          .\artifacts\${{ matrix.artifact }}.exe --version
+        shell: bash
+        run: ./artifacts/${{ matrix.artifact }}.exe --version
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
