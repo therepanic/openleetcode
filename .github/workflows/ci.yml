@@ -46,6 +46,7 @@ jobs:
         run: cabal update
 
       - name: Build
+        shell: bash
         run: |
           mkdir -p artifacts
           cabal install exe:openleetcode \
@@ -60,8 +61,8 @@ jobs:
 
       - name: Finalize artifact
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: Move-Item artifacts/openleetcode.exe "artifacts/${{ matrix.artifact }}.exe"
+        shell: bash
+        run: mv artifacts/openleetcode.exe "artifacts/${{ matrix.artifact }}.exe"
 
       - name: Tests
         run: cabal test all
@@ -73,9 +74,8 @@ jobs:
 
       - name: Smoke test
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          .\artifacts\${{ matrix.artifact }}.exe --version
+        shell: bash
+        run: ./artifacts/${{ matrix.artifact }}.exe --version
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
