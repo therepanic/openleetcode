@@ -1,0 +1,296 @@
+entry:
+  id: 2055
+  title: "plates-between-candles"
+  params:
+    s:
+      type: string
+    queries:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().platesBetweenCandles({s}, {queries})"
+    rust: "Solution::plates_between_candles({s}, {queries})"
+    python3: "Solution().platesBetweenCandles({s}, {queries})"
+    python2: "Solution().platesBetweenCandles({s}, {queries})"
+    ruby: "plates_between_candles({s}, {queries})"
+    java: "new Solution().platesBetweenCandles({s}, {queries})"
+    csharp: "new Solution().PlatesBetweenCandles({s}, {queries})"
+    kotlin: "Solution().platesBetweenCandles({s}, {queries})"
+    go: "platesBetweenCandles({s}, {queries})"
+    dart: "Solution().platesBetweenCandles({s}, {queries})"
+    swift: "Solution().platesBetweenCandles({s}, {queries})"
+    typescript: "platesBetweenCandles({s}, {queries})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().platesBetweenCandles(s, queries, {result})"
+    checker: |
+      class Checker:
+          def platesBetweenCandles(self, s, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              expected = []
+              for left, right in queries:
+                  candles = [i for i in range(left, right + 1) if s[i] == '|']
+                  if len(candles) < 2:
+                      expected.append(0)
+                  else:
+                      expected.append(sum(1 for ch in s[candles[0] + 1:candles[-1]] if ch == '*'))
+              return result == expected
+
+seed: 2055
+
+tests:
+  - name: "example_one"
+    in:
+      s: "**|**|***|"
+      queries: [[2, 5], [5, 9]]
+    out: [2, 3]
+  - name: "example_two"
+    in:
+      s: "***|**|*****|**||**|*"
+      queries: [[1, 17], [4, 5], [14, 17], [5, 11], [15, 16]]
+    out: [9, 0, 0, 0, 0]
+  - name: "all_plates"
+    in:
+      s: "******"
+      queries: [[0, 5], [1, 1], [2, 4]]
+    out: [0, 0, 0]
+  - name: "all_candles"
+    in:
+      s: "||||||"
+      queries: [[0, 5], [1, 4], [3, 3]]
+    out: [0, 0, 0]
+  - name: "one_inner_plate"
+    in:
+      s: "|*|"
+      queries: [[0, 2], [0, 1], [1, 2]]
+    out: [1, 0, 0]
+  - name: "adjacent_candles"
+    in:
+      s: "|*||*|"
+      queries: [[0, 5], [2, 5], [2, 3]]
+    out: [2, 1, 0]
+  - name: "outer_noise"
+    in:
+      s: "***|**|***"
+      queries: [[0, 9], [0, 3], [6, 9], [3, 6]]
+    out: [2, 0, 0, 2]
+  - name: "query_boundaries"
+    in:
+      s: "|**|*|***|"
+      queries: [[0, 9], [1, 8], [2, 7], [3, 6], [4, 5]]
+    out: [6, 1, 1, 1, 0]
+  - name: "repeated_blocks"
+    in:
+      s: "|*|*|*|*|"
+      queries: [[0, 8], [0, 2], [2, 6], [4, 8], [1, 7]]
+    out: [4, 1, 2, 2, 2]
+  - name: "single_candle"
+    in:
+      s: "***|***"
+      queries: [[0, 6], [3, 3], [2, 5]]
+    out: [0, 0, 0]
+  - name: "candle_at_ends"
+    in:
+      s: "|****|"
+      queries: [[0, 5], [1, 4], [0, 4], [1, 5]]
+    out: [4, 0, 0, 0]
+  - name: "short_mixed"
+    in:
+      s: "*|*|*"
+      queries: [[0, 4], [1, 3], [0, 2], [2, 4]]
+    out: [1, 1, 0, 0]
+  - name: "long_plate_runs"
+    in:
+      s: "|*****|**|****|"
+      queries: [[0, 14], [1, 14], [6, 10], [7, 14]]
+    out: [11, 6, 2, 4]
+  - name: "alternating_even"
+    in:
+      s: "***"
+      queries: [[0, 2], [0, 0], [1, 2], [2, 2], [0, 1]]
+    out: [0, 0, 0, 0, 0]
+  - name: "plate_between_nonadjacent"
+    in:
+      s: "||***||****|"
+      queries: [[0, 11], [1, 10], [2, 8], [5, 11]]
+    out: [7, 3, 0, 4]
+  - name: "prefix_candle"
+    in:
+      s: "|**|*|**|"
+      queries:
+        - [0, 8]
+        - [0, 3]
+        - [1, 7]
+    out: [5, 2, 1]
+  - name: "suffix_candle"
+    in:
+      s: "**|*|***|"
+      queries:
+        - [0, 8]
+        - [2, 6]
+        - [4, 8]
+    out: [4, 1, 3]
+  - name: "nested_candle_ranges"
+    in:
+      s: "|*||**|*|"
+      queries:
+        - [0, 8]
+        - [1, 7]
+        - [2, 6]
+        - [3, 5]
+    out: [4, 2, 2, 0]
+  - name: "right_single_plate"
+    in:
+      s: "|**|*||"
+      queries:
+        - [0, 6]
+        - [1, 4]
+        - [3, 6]
+    out: [3, 0, 1]
+  - name: "left_single_plate"
+    in:
+      s: "|*|**|"
+      queries:
+        - [0, 5]
+        - [0, 2]
+        - [2, 5]
+    out: [3, 1, 2]
+  - name: "exact_candle_pair"
+    in:
+      s: "***|***|***"
+      queries:
+        - [3, 7]
+        - [3, 6]
+        - [4, 7]
+    out: [3, 0, 0]
+  - name: "multiple_pairs"
+    in:
+      s: "|**|*|****|"
+      queries:
+        - [0, 10]
+        - [0, 3]
+        - [3, 10]
+        - [4, 9]
+    out: [7, 2, 5, 0]
+  - name: "query_one_character"
+    in:
+      s: "|*|*|"
+      queries:
+        - [0, 0]
+        - [1, 1]
+        - [2, 2]
+        - [4, 4]
+    out: [0, 0, 0, 0]
+  - name: "all_ranges_same_pair"
+    in:
+      s: "|****|"
+      queries:
+        - [0, 5]
+        - [0, 4]
+        - [1, 5]
+        - [1, 4]
+    out: [4, 0, 0, 0]
+  - name: "alternating_odd"
+    in:
+      s: "*|*|*|*|*"
+      queries:
+        - [0, 8]
+        - [1, 7]
+        - [2, 6]
+        - [3, 5]
+    out: [3, 3, 1, 1]
+  - name: "long_outer_plates"
+    in:
+      s: "*****|**|*****"
+      queries:
+        - [0, 13]
+        - [4, 10]
+        - [5, 8]
+    out: [2, 2, 2]
+  - name: "candle_runs"
+    in:
+      s: "|||***|||**|"
+      queries:
+        - [0, 11]
+        - [2, 10]
+        - [3, 8]
+        - [8, 11]
+    out: [5, 3, 0, 2]
+  - name: "mixed_short_a"
+    in:
+      s: "*|**||*|"
+      queries:
+        - [0, 7]
+        - [1, 6]
+        - [2, 5]
+    out: [3, 2, 0]
+  - name: "mixed_short_b"
+    in:
+      s: "||*|***||"
+      queries:
+        - [0, 8]
+        - [1, 7]
+        - [2, 6]
+        - [4, 8]
+    out: [4, 4, 0, 0]
+  - name: "boundary_pair_only"
+    in:
+      s: "|*|***|*|"
+      queries:
+        - [0, 2]
+        - [6, 8]
+        - [0, 8]
+        - [2, 6]
+    out: [1, 1, 5, 3]
+  - name: "generated_balanced_small"
+    seed: 11
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "*|"
+      queries: [[0, 99], [1, 50], [20, 80], [3, 3], [40, 41]]
+  - name: "generated_balanced_medium"
+    seed: 12
+    in:
+      s:
+        gen: "str"
+        len: 1000
+        alphabet: "*|"
+      queries: [[0, 999], [1, 998], [100, 900], [250, 750], [499, 500]]
+  - name: "generated_large_a"
+    seed: 13
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "*|"
+      queries: [[0, 99999], [1, 99998], [123, 98765], [50000, 99999], [0, 50000]]
+  - name: "generated_large_b"
+    seed: 14
+    in:
+      s:
+        gen: "str"
+        len: 100000
+        alphabet: "*|"
+      queries: [[0, 0], [99999, 99999], [1, 2], [33333, 66666], [2, 99997]]
+  - name: "generated_large_c"
+    seed: 15
+    in:
+      s:
+        gen: "str"
+        len: 99999
+        alphabet: "*|"
+      queries: [[0, 99998], [10, 99990], [25000, 75000], [1, 99998], [75000, 99998]]

@@ -1,0 +1,438 @@
+entry:
+  id: 2092
+  title: "find-all-people-with-secret"
+  params:
+    n:
+      type: int
+    meetings:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    firstPerson:
+      type: int
+  call:
+    cpp: "Solution().findAllPeople({n}, {meetings}, {firstPerson})"
+    rust: "Solution::find_all_people({n}, {meetings}, {firstPerson})"
+    python3: "Solution().findAllPeople({n}, {meetings}, {firstPerson})"
+    python2: "Solution().findAllPeople({n}, {meetings}, {firstPerson})"
+    ruby: "find_all_people({n}, {meetings}, {firstPerson})"
+    java: "new Solution().findAllPeople({n}, {meetings}, {firstPerson})"
+    csharp: "new Solution().FindAllPeople({n}, {meetings}, {firstPerson})"
+    kotlin: "Solution().findAllPeople({n}, {meetings}, {firstPerson})"
+    go: "findAllPeople({n}, {meetings}, {firstPerson})"
+    dart: "Solution().findAllPeople({n}, {meetings}, {firstPerson})"
+    swift: "Solution().findAllPeople({n}, {meetings}, {firstPerson})"
+    typescript: "findAllPeople({n}, {meetings}, {firstPerson})"
+
+judge:
+  type: "ignore_order"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().findAllPeople(n, meetings, firstPerson, {result})"
+    checker: |
+      class Checker:
+          def findAllPeople(self, n, meetings, firstPerson, result):
+              if not isinstance(result, list):
+                  return False
+              known = {0, firstPerson}
+              by_time = {}
+              for x, y, t in meetings:
+                  by_time.setdefault(t, []).append((x, y))
+              for t in sorted(by_time):
+                  graph = {}
+                  for x, y in by_time[t]:
+                      graph.setdefault(x, []).append(y)
+                      graph.setdefault(y, []).append(x)
+                  queue = [p for x, y in by_time[t] for p in (x, y) if p in known]
+                  seen = set(queue)
+                  for p in queue:
+                      for q in graph.get(p, []):
+                          if q not in seen:
+                              seen.add(q)
+                              queue.append(q)
+                  known.update(seen)
+              return set(result) == known and len(result) == len(known)
+
+seed: 2092
+
+tests:
+  - name: "example_chain"
+    in:
+      n: 6
+      meetings:
+        - [1, 2, 5]
+        - [2, 3, 8]
+        - [1, 5, 10]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 5]
+  - name: "example_late_meeting"
+    in:
+      n: 4
+      meetings:
+        - [3, 1, 3]
+        - [1, 2, 2]
+        - [0, 3, 3]
+      firstPerson: 3
+    out: [0, 1, 3]
+  - name: "example_same_time_chain"
+    in:
+      n: 5
+      meetings:
+        - [3, 4, 2]
+        - [1, 2, 1]
+        - [2, 3, 1]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4]
+  - name: "only_initial_pair"
+    in:
+      n: 2
+      meetings:
+        - [0, 1, 1]
+      firstPerson: 1
+    out: [0, 1]
+  - name: "no_reachable_meetings"
+    in:
+      n: 5
+      meetings:
+        - [2, 3, 1]
+        - [3, 4, 2]
+      firstPerson: 1
+    out: [0, 1]
+  - name: "direct_first_person"
+    in:
+      n: 5
+      meetings:
+        - [1, 4, 1]
+      firstPerson: 1
+    out: [0, 1, 4]
+  - name: "same_time_transitive"
+    in:
+      n: 6
+      meetings:
+        - [1, 2, 7]
+        - [2, 3, 7]
+        - [3, 4, 7]
+        - [4, 5, 7]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5]
+  - name: "same_time_disconnected"
+    in:
+      n: 7
+      meetings:
+        - [1, 2, 4]
+        - [3, 4, 4]
+        - [5, 6, 4]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "order_independent_same_time"
+    in:
+      n: 6
+      meetings:
+        - [4, 5, 9]
+        - [2, 3, 9]
+        - [1, 2, 9]
+        - [3, 4, 9]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5]
+  - name: "future_cannot_backpropagate"
+    in:
+      n: 5
+      meetings:
+        - [2, 3, 5]
+        - [1, 2, 10]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "past_meeting_unavailable"
+    in:
+      n: 5
+      meetings:
+        - [1, 2, 10]
+        - [2, 3, 1]
+        - [3, 4, 2]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "duplicate_edges"
+    in:
+      n: 4
+      meetings:
+        - [1, 2, 1]
+        - [1, 2, 1]
+        - [2, 3, 2]
+      firstPerson: 1
+    out: [0, 1, 2, 3]
+  - name: "repeated_times_progress"
+    in:
+      n: 8
+      meetings:
+        - [1, 2, 1]
+        - [2, 3, 1]
+        - [3, 4, 2]
+        - [4, 5, 2]
+        - [5, 6, 3]
+        - [6, 7, 4]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5, 6, 7]
+  - name: "cycle_unreachable"
+    in:
+      n: 7
+      meetings:
+        - [2, 3, 1]
+        - [3, 4, 1]
+        - [4, 2, 1]
+        - [5, 6, 2]
+      firstPerson: 1
+    out: [0, 1]
+  - name: "cycle_reached_late"
+    in:
+      n: 7
+      meetings:
+        - [1, 2, 3]
+        - [2, 3, 4]
+        - [3, 1, 4]
+        - [3, 4, 5]
+        - [4, 5, 6]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5]
+  - name: "first_person_max_id"
+    in:
+      n: 10
+      meetings:
+        - [9, 8, 1]
+        - [8, 7, 2]
+      firstPerson: 9
+    out: [0, 7, 8, 9]
+  - name: "zero_meeting_at_time_one"
+    in:
+      n: 6
+      meetings:
+        - [0, 5, 1]
+        - [2, 4, 1]
+        - [1, 3, 2]
+      firstPerson: 1
+    out: [0, 1, 3, 5]
+  - name: "all_meet_at_final_time"
+    in:
+      n: 6
+      meetings:
+        - [1, 2, 1]
+        - [2, 3, 100000]
+        - [3, 4, 100000]
+        - [4, 5, 100000]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5]
+  - name: "isolated_zero_edge"
+    in:
+      n: 8
+      meetings:
+        - [0, 2, 1]
+        - [3, 4, 2]
+        - [5, 6, 3]
+        - [6, 7, 4]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "branching"
+    in:
+      n: 9
+      meetings:
+        - [1, 2, 2]
+        - [1, 3, 2]
+        - [2, 4, 3]
+        - [3, 5, 3]
+        - [4, 6, 4]
+        - [5, 7, 4]
+        - [6, 8, 5]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+  - name: "branch_blocked_by_time"
+    in:
+      n: 8
+      meetings:
+        - [1, 2, 5]
+        - [2, 3, 4]
+        - [1, 4, 6]
+        - [4, 5, 7]
+        - [3, 6, 8]
+        - [5, 7, 9]
+      firstPerson: 1
+    out: [0, 1, 2, 4, 5, 7]
+  - name: "multiple_components_one_reached"
+    in:
+      n: 10
+      meetings:
+        - [1, 2, 1]
+        - [2, 3, 2]
+        - [4, 5, 1]
+        - [5, 6, 2]
+        - [7, 8, 3]
+        - [8, 9, 4]
+      firstPerson: 1
+    out: [0, 1, 2, 3]
+  - name: "meeting_with_known_both"
+    in:
+      n: 5
+      meetings:
+        - [0, 1, 1]
+        - [1, 2, 2]
+        - [0, 2, 3]
+        - [2, 4, 4]
+      firstPerson: 1
+    out: [0, 1, 2, 4]
+  - name: "late_bridge"
+    in:
+      n: 7
+      meetings:
+        - [1, 2, 1]
+        - [3, 4, 1]
+        - [2, 3, 2]
+        - [4, 5, 2]
+        - [5, 6, 3]
+      firstPerson: 1
+    out: [0, 1, 2, 3]
+  - name: "bridge_too_early"
+    in:
+      n: 7
+      meetings:
+        - [2, 3, 1]
+        - [1, 2, 2]
+        - [3, 4, 2]
+        - [4, 5, 3]
+        - [5, 6, 4]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "no_chain_after_dead_end"
+    in:
+      n: 6
+      meetings:
+        - [1, 2, 2]
+        - [3, 4, 1]
+        - [4, 5, 1]
+        - [2, 3, 1]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "long_sequential_chain"
+    in:
+      n: 12
+      meetings:
+        - [1, 2, 1]
+        - [2, 3, 2]
+        - [3, 4, 3]
+        - [4, 5, 4]
+        - [5, 6, 5]
+        - [6, 7, 6]
+        - [7, 8, 7]
+        - [8, 9, 8]
+        - [9, 10, 9]
+        - [10, 11, 10]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+  - name: "high_time_sparse"
+    in:
+      n: 6
+      meetings:
+        - [1, 2, 99998]
+        - [2, 3, 99999]
+        - [3, 4, 100000]
+        - [0, 5, 100000]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5]
+  - name: "same_time_cycle_and_tail"
+    in:
+      n: 8
+      meetings:
+        - [1, 2, 50]
+        - [2, 3, 50]
+        - [3, 1, 50]
+        - [3, 4, 50]
+        - [4, 5, 50]
+        - [5, 6, 51]
+        - [6, 7, 52]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5, 6, 7]
+  - name: "large_n_few_meetings"
+    in:
+      n: 100000
+      meetings:
+        - [99999, 99998, 1]
+        - [1, 99999, 2]
+        - [99998, 99997, 3]
+        - [50000, 50001, 4]
+      firstPerson: 1
+    out: [0, 1, 99999]
+  - name: "large_n_high_ids_disconnected"
+    in:
+      n: 100000
+      meetings:
+        - [99998, 99999, 1]
+        - [99997, 99998, 2]
+        - [2, 3, 3]
+        - [1, 2, 4]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "dense_small_same_time"
+    in:
+      n: 10
+      meetings:
+        - [1, 2, 10]
+        - [1, 3, 10]
+        - [1, 4, 10]
+        - [2, 5, 10]
+        - [3, 6, 10]
+        - [4, 7, 10]
+        - [5, 8, 10]
+        - [6, 9, 10]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "late_first_connection"
+    in:
+      n: 6
+      meetings:
+        - [2, 3, 1]
+        - [3, 4, 2]
+        - [1, 2, 100000]
+        - [4, 5, 100000]
+      firstPerson: 1
+    out: [0, 1, 2]
+  - name: "same_time_receives_and_shares"
+    in:
+      n: 6
+      meetings:
+        - [4, 5, 20]
+        - [3, 4, 20]
+        - [2, 3, 20]
+        - [1, 2, 20]
+      firstPerson: 1
+    out: [0, 1, 2, 3, 4, 5]
+  - name: "late_unreachable_component"
+    in:
+      n: 9
+      meetings:
+        - [1, 2, 1]
+        - [2, 3, 2]
+        - [4, 5, 100000]
+        - [5, 6, 100000]
+        - [6, 7, 100000]
+        - [7, 8, 100000]
+      firstPerson: 1
+    out: [0, 1, 2, 3]
+  - name: "all_people_already_connected"
+    in:
+      n: 10
+      meetings:
+        - [0, 1, 1]
+        - [2, 3, 1]
+        - [4, 5, 1]
+        - [6, 7, 1]
+        - [8, 9, 1]
+        - [1, 2, 2]
+        - [3, 4, 2]
+        - [5, 6, 2]
+        - [7, 8, 2]
+      firstPerson: 1
+    out: [0, 1, 2]

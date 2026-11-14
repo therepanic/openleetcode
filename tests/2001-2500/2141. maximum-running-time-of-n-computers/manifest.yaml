@@ -1,0 +1,290 @@
+entry:
+  id: 2141
+  title: "maximum-running-time-of-n-computers"
+  params:
+    n:
+      type: int
+    batteries:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maxRunTime({n}, {batteries})"
+    rust: "Solution::max_run_time({n}, {batteries})"
+    python3: "Solution().maxRunTime({n}, {batteries})"
+    python2: "Solution().maxRunTime({n}, {batteries})"
+    ruby: "max_run_time({n}, {batteries})"
+    java: "new Solution().maxRunTime({n}, {batteries})"
+    csharp: "new Solution().MaxRunTime({n}, {batteries})"
+    kotlin: "Solution().maxRunTime({n}, {batteries})"
+    go: "maxRunTime({n}, {batteries})"
+    dart: "Solution().maxRunTime({n}, {batteries})"
+    swift: "Solution().maxRunTime({n}, {batteries})"
+    typescript: "maxRunTime({n}, {batteries})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxRunTime(n, batteries, {result})"
+    checker: |
+      class Checker:
+          def maxRunTime(self, n, batteries, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if n < 1 or len(batteries) < n or any(x < 1 for x in batteries):
+                  return False
+              total = sum(batteries)
+              lo, hi = 0, total // n
+              while lo < hi:
+                  mid = (lo + hi + 1) // 2
+                  usable = sum(x if x < mid else mid for x in batteries)
+                  if usable // n >= mid:
+                      lo = mid
+                  else:
+                      hi = mid - 1
+              return result == lo
+
+seed: 2141001
+
+tests:
+  - name: "example_one"
+    in:
+      n: 2
+      batteries: [3, 3, 3]
+    out: 4
+  - name: "example_two"
+    in:
+      n: 2
+      batteries: [1, 1, 1, 1]
+    out: 2
+  - name: "single_computer_one_battery"
+    in:
+      n: 1
+      batteries: [1]
+    out: 1
+  - name: "single_computer_many_batteries"
+    in:
+      n: 1
+      batteries: [5, 2, 9, 1]
+    out: 17
+  - name: "all_computers_equal"
+    in:
+      n: 4
+      batteries: [7, 7, 7, 7]
+    out: 7
+  - name: "all_computers_unequal"
+    in:
+      n: 4
+      batteries: [1, 2, 3, 4]
+    out: 1
+  - name: "one_dominant_battery"
+    in:
+      n: 3
+      batteries: [100, 1, 1]
+    out: 1
+  - name: "dominant_battery_with_reserve"
+    in:
+      n: 2
+      batteries: [100, 1, 1]
+    out: 2
+  - name: "many_small_batteries"
+    in:
+      n: 5
+      batteries: [1, 1, 1, 1, 1, 1, 1, 1]
+    out: 1
+  - name: "exact_total_division"
+    in:
+      n: 3
+      batteries: [2, 4, 6]
+    out: 2
+  - name: "remainder_total"
+    in:
+      n: 3
+      batteries: [2, 4, 7]
+    out: 2
+  - name: "cap_is_binding"
+    in:
+      n: 2
+      batteries: [8, 8, 1]
+    out: 8
+  - name: "cap_is_not_binding"
+    in:
+      n: 3
+      batteries: [2, 3, 4, 5]
+    out: 4
+  - name: "minimum_battery_limits_answer"
+    in:
+      n: 3
+      batteries: [1, 50, 50]
+    out: 1
+  - name: "zero_not_allowed_boundary_one"
+    in:
+      n: 2
+      batteries: [1, 2]
+    out: 1
+  - name: "large_int_values"
+    in:
+      n: 2
+      batteries: [1000000000, 1000000000]
+    out: 1000000000
+  - name: "large_int_sum_over_32_bit"
+    in:
+      n: 3
+      batteries: [1000000000, 1000000000, 1000000000, 1000000000]
+    out: 1333333333
+  - name: "large_imbalance"
+    in:
+      n: 5
+      batteries: [1000000000, 1, 1, 1, 1, 1]
+    out: 1
+  - name: "two_computers_pairing"
+    in:
+      n: 2
+      batteries: [4, 5, 6, 7]
+    out: 11
+  - name: "three_computers_pairing"
+    in:
+      n: 3
+      batteries: [5, 5, 5, 5]
+    out: 6
+  - name: "duplicate_short_batteries"
+    in:
+      n: 3
+      batteries: [2, 2, 2, 10, 10]
+    out: 6
+  - name: "sorted_ascending"
+    in:
+      n: 4
+      batteries: [1, 3, 5, 7, 9]
+    out: 4
+  - name: "sorted_descending"
+    in:
+      n: 4
+      batteries: [9, 7, 5, 3, 1]
+    out: 4
+  - name: "extra_batteries_all_useful"
+    in:
+      n: 2
+      batteries: [2, 2, 2, 2, 2]
+    out: 5
+  - name: "extra_batteries_partly_capped"
+    in:
+      n: 2
+      batteries: [1, 1, 1, 10]
+    out: 3
+  - name: "n_equals_length_mixed"
+    in:
+      n: 6
+      batteries: [6, 1, 4, 2, 8, 3]
+    out: 1
+  - name: "n_equals_length_equal"
+    in:
+      n: 8
+      batteries: [12, 12, 12, 12, 12, 12, 12, 12]
+    out: 12
+  - name: "near_capacity_two"
+    in:
+      n: 2
+      batteries: [1, 3, 3, 3]
+    out: 5
+  - name: "near_capacity_four"
+    in:
+      n: 4
+      batteries: [2, 2, 2, 2, 2, 2, 2]
+    out: 3
+  - name: "generated_small_balanced"
+    seed: 214101
+    in:
+      n: 2
+      batteries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 2
+          max: 12
+        of:
+          gen: "int"
+          min: 1
+          max: 30
+    
+  - name: "generated_medium_three"
+    seed: 214102
+    in:
+      n: 3
+      batteries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 3
+          max: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 1000
+  - name: "generated_many_computers"
+    seed: 214103
+    in:
+      n: 25
+      batteries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 25
+          max: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+  - name: "generated_large_values"
+    seed: 214104
+    in:
+      n: 10
+      batteries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 10
+          max: 80
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+  - name: "generated_stress_100k"
+    seed: 214105
+    in:
+      n: 50000
+      batteries:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+  - name: "generated_stress_minimum_n"
+    seed: 214106
+    in:
+      n: 1
+      batteries:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+  - name: "generated_stress_all_computers"
+    seed: 214107
+    in:
+      n: 100000
+      batteries:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000

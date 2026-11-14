@@ -1,0 +1,283 @@
+entry:
+  id: 2120
+  title: "execution-of-all-suffix-instructions-staying-in-a-grid"
+  params:
+    n:
+      type: int
+    startPos:
+      type: array
+      items:
+        type: int
+    s:
+      type: string
+  call:
+    cpp: "Solution().executeInstructions({n}, {startPos}, {s})"
+    rust: "Solution::execute_instructions({n}, {startPos}, {s})"
+    python3: "Solution().executeInstructions({n}, {startPos}, {s})"
+    python2: "Solution().executeInstructions({n}, {startPos}, {s})"
+    ruby: "execute_instructions({n}, {startPos}, {s})"
+    java: "new Solution().executeInstructions({n}, {startPos}, {s})"
+    csharp: "new Solution().ExecuteInstructions({n}, {startPos}, {s})"
+    kotlin: "Solution().executeInstructions({n}, {startPos}, {s})"
+    go: "executeInstructions({n}, {startPos}, {s})"
+    dart: "Solution().executeInstructions({n}, {startPos}, {s})"
+    swift: "Solution().executeInstructions({n}, {startPos}, {s})"
+    typescript: "executeInstructions({n}, {startPos}, {s})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().executeInstructions(n, startPos, s, {result})"
+    checker: |
+      class Checker:
+          def executeInstructions(self, n, startPos, s, result):
+              if not isinstance(result, list) or len(result) != len(s):
+                  return False
+              expected = []
+              for i in range(len(s)):
+                  row, col = startPos
+                  count = 0
+                  for ch in s[i:]:
+                      if ch == 'L': col -= 1
+                      elif ch == 'R': col += 1
+                      elif ch == 'U': row -= 1
+                      else: row += 1
+                      if not (0 <= row < n and 0 <= col < n): break
+                      count += 1
+                  expected.append(count)
+              return result == expected
+
+seed: 212012
+
+tests:
+  - name: "example_1"
+    in:
+      n: 3
+      startPos: [0, 1]
+      s: "RRDDLU"
+    out: [1, 5, 4, 3, 1, 0]
+  - name: "example_2"
+    in:
+      n: 2
+      startPos: [1, 1]
+      s: "LURD"
+    out: [4, 1, 0, 0]
+  - name: "example_3_single_cell"
+    in:
+      n: 1
+      startPos: [0, 0]
+      s: "LRUD"
+    out: [0, 0, 0, 0]
+  - name: "corner_cycle"
+    in:
+      n: 2
+      startPos: [0, 0]
+      s: "RDLU"
+    out: [4, 1, 0, 0]
+  - name: "bottom_left_cycle"
+    in:
+      n: 2
+      startPos: [1, 0]
+      s: "URDL"
+    out: [4, 1, 0, 0]
+  - name: "center_cycle"
+    in:
+      n: 3
+      startPos: [1, 1]
+      s: "LRUD"
+    out: [4, 3, 2, 1]
+  - name: "top_left_outward"
+    in:
+      n: 4
+      startPos: [0, 0]
+      s: "RRDDLLUU"
+    out: [8, 4, 2, 1, 0, 0, 0, 0]
+  - name: "bottom_right_inward"
+    in:
+      n: 4
+      startPos: [3, 3]
+      s: "LLUURRDD"
+    out: [8, 4, 2, 1, 0, 0, 0, 0]
+  - name: "center_square"
+    in:
+      n: 5
+      startPos: [2, 2]
+      s: "RRDDLLUU"
+    out: [8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "top_right_mixed"
+    in:
+      n: 5
+      startPos: [0, 4]
+      s: "LDDRRU"
+    out: [4, 2, 1, 0, 0, 0]
+  - name: "long_turning_path"
+    in:
+      n: 6
+      startPos: [3, 1]
+      s: "DURRULLD"
+    out: [8, 7, 6, 5, 2, 1, 2, 1]
+  - name: "left_edge_mixed"
+    in:
+      n: 3
+      startPos: [1, 0]
+      s: "RDRUL"
+    out: [5, 4, 3, 1, 0]
+  - name: "bottom_right_mixed"
+    in:
+      n: 3
+      startPos: [2, 2]
+      s: "ULDLR"
+    out: [5, 1, 0, 2, 0]
+  - name: "edge_start_down"
+    in:
+      n: 7
+      startPos: [6, 0]
+      s: "URRDDL"
+    out: [4, 2, 1, 0, 0, 0]
+  - name: "edge_start_left"
+    in:
+      n: 8
+      startPos: [0, 7]
+      s: "LDDRUUL"
+    out: [7, 2, 1, 0, 0, 0, 1]
+  - name: "long_center_path"
+    in:
+      n: 9
+      startPos: [4, 4]
+      s: "RURDLULDR"
+    out: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "ten_grid_down_right"
+    in:
+      n: 10
+      startPos: [5, 2]
+      s: "DDRRUULL"
+    out: [8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "ten_grid_corner"
+    in:
+      n: 10
+      startPos: [0, 0]
+      s: "DRDRULUL"
+    out: [8, 5, 4, 1, 0, 0, 0, 0]
+  - name: "eleven_grid_corner"
+    in:
+      n: 11
+      startPos: [10, 10]
+      s: "ULULDRDR"
+    out: [8, 5, 4, 1, 0, 0, 0, 0]
+  - name: "repeated_horizontal"
+    in:
+      n: 12
+      startPos: [6, 6]
+      s: "RRRRLLLLUUU"
+    out: [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "top_right_boundary"
+    in:
+      n: 13
+      startPos: [1, 11]
+      s: "LLDDRRUU"
+    out: [8, 7, 3, 2, 1, 2, 1, 1]
+  - name: "bottom_left_boundary"
+    in:
+      n: 14
+      startPos: [7, 0]
+      s: "UUURRDDDLLL"
+    out: [10, 9, 8, 7, 5, 3, 2, 1, 0, 0, 0]
+  - name: "top_right_long"
+    in:
+      n: 15
+      startPos: [0, 14]
+      s: "DDDLLLUURRR"
+    out: [11, 10, 5, 3, 2, 1, 0, 0, 0, 0, 0]
+  - name: "alternating_center"
+    in:
+      n: 16
+      startPos: [8, 8]
+      s: "LRLRUDUD"
+    out: [8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "seventeen_mixed"
+    in:
+      n: 17
+      startPos: [4, 12]
+      s: "RDLURDLU"
+    out: [8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "eighteen_corner"
+    in:
+      n: 18
+      startPos: [17, 0]
+      s: "URURDDLL"
+    out: [8, 4, 3, 1, 0, 0, 0, 0]
+  - name: "long_down_from_center"
+    in:
+      n: 19
+      startPos: [9, 9]
+      s: "DDDDDDDDDD"
+    out: [9, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "long_right_from_corner"
+    in:
+      n: 20
+      startPos: [0, 0]
+      s: "RRRRRRRRRR"
+    out: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "backtracking_vertical"
+    in:
+      n: 21
+      startPos: [10, 10]
+      s: "UDUDUDUDUDUDUDUD"
+    out: [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "large_balanced_square"
+    in:
+      n: 25
+      startPos: [24, 24]
+      s: "ULULULULULUL"
+    out: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  - name: "generated_small"
+    seed: 101
+    in:
+      n: 5
+      startPos: [2, 2]
+      s:
+        gen: "str"
+        len: 25
+        alphabet: "LRUD"
+  - name: "generated_edge"
+    seed: 102
+    in:
+      n: 2
+      startPos: [0, 1]
+      s:
+        gen: "str"
+        len: 40
+        alphabet: "LRUD"
+  - name: "generated_medium"
+    seed: 103
+    in:
+      n: 17
+      startPos: [8, 8]
+      s:
+        gen: "str"
+        len: 120
+        alphabet: "LRUD"
+  - name: "generated_near_limit"
+    seed: 104
+    in:
+      n: 250
+      startPos: [125, 125]
+      s:
+        gen: "str"
+        len: 450
+        alphabet: "LRUD"
+  - name: "generated_maximum"
+    seed: 105
+    in:
+      n: 500
+      startPos: [249, 250]
+      s:
+        gen: "str"
+        len: 500
+        alphabet: "LRUD"

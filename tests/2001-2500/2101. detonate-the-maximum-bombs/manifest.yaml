@@ -1,0 +1,362 @@
+entry:
+  id: 2101
+  title: "detonate-the-maximum-bombs"
+  params:
+    bombs:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().maximumDetonation({bombs})"
+    rust: "Solution::maximum_detonation({bombs})"
+    python3: "Solution().maximumDetonation({bombs})"
+    python2: "Solution().maximumDetonation({bombs})"
+    ruby: "maximum_detonation({bombs})"
+    java: "new Solution().maximumDetonation({bombs})"
+    csharp: "new Solution().MaximumDetonation({bombs})"
+    kotlin: "Solution().maximumDetonation({bombs})"
+    go: "maximumDetonation({bombs})"
+    dart: "Solution().maximumDetonation({bombs})"
+    swift: "Solution().maximumDetonation({bombs})"
+    typescript: "maximumDetonation({bombs})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().maximumDetonation(bombs, {result})"
+    checker: |
+      class Checker:
+          def maximumDetonation(self, bombs, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(bombs)
+              if n < 1 or result < 1 or result > n:
+                  return False
+              graph = [[] for _ in range(n)]
+              for i, (x1, y1, r1) in enumerate(bombs):
+                  for j, (x2, y2, r2) in enumerate(bombs):
+                      if i != j and (x2 - x1) ** 2 + (y2 - y1) ** 2 <= r1 ** 2:
+                          graph[i].append(j)
+              best = 0
+              for start in range(n):
+                  seen = {start}
+                  stack = [start]
+                  while stack:
+                      for nxt in graph[stack.pop()]:
+                          if nxt not in seen:
+                              seen.add(nxt)
+                              stack.append(nxt)
+                  best = max(best, len(seen))
+              return result == best
+
+seed: 2101
+
+tests:
+  - name: "example_1"
+    in:
+      bombs:
+        - [2, 1, 3]
+        - [6, 1, 4]
+    out: 2
+  - name: "example_2"
+    in:
+      bombs:
+        - [1, 1, 5]
+        - [10, 10, 5]
+    out: 1
+  - name: "example_3"
+    in:
+      bombs:
+        - [1, 2, 3]
+        - [2, 3, 1]
+        - [3, 4, 2]
+        - [4, 5, 3]
+        - [5, 6, 4]
+    out: 5
+  - name: "single_bomb"
+    in:
+      bombs:
+        - [1, 1, 1]
+    out: 1
+  - name: "identical_locations"
+    in:
+      bombs:
+        - [5, 5, 1]
+        - [5, 5, 1]
+        - [5, 5, 1]
+        - [5, 5, 1]
+    out: 4
+  - name: "touching_boundary"
+    in:
+      bombs:
+        - [1, 1, 2]
+        - [3, 1, 1]
+    out: 2
+  - name: "just_outside_boundary"
+    in:
+      bombs:
+        - [1, 1, 1]
+        - [3, 1, 1]
+    out: 1
+  - name: "one_way_chain"
+    in:
+      bombs:
+        - [1, 1, 2]
+        - [3, 1, 2]
+        - [7, 1, 2]
+    out: 2
+  - name: "reverse_chain_best_end"
+    in:
+      bombs:
+        - [1, 1, 1]
+        - [2, 1, 2]
+        - [4, 1, 3]
+    out: 3
+  - name: "disjoint_three"
+    in:
+      bombs:
+        - [1, 1, 1]
+        - [10, 10, 1]
+        - [100, 100, 1]
+    out: 1
+  - name: "two_cycle"
+    in:
+      bombs:
+        - [1, 1, 3]
+        - [3, 1, 3]
+    out: 2
+  - name: "cycle_with_tail"
+    in:
+      bombs:
+        - [1, 1, 3]
+        - [3, 1, 3]
+        - [5, 1, 1]
+    out: 3
+  - name: "large_coordinates_near"
+    in:
+      bombs:
+        - [100000, 100000, 100000]
+        - [1, 100000, 99999]
+        - [100000, 1, 99999]
+    out: 3
+  - name: "large_coordinates_far"
+    in:
+      bombs:
+        - [1, 1, 100000]
+        - [100000, 100000, 1]
+        - [99999, 1, 1]
+    out: 2
+  - name: "vertical_chain"
+    in:
+      bombs:
+        - [10, 1, 3]
+        - [10, 4, 3]
+        - [10, 7, 3]
+        - [10, 10, 3]
+    out: 4
+  - name: "horizontal_chain"
+    in:
+      bombs:
+        - [1, 10, 2]
+        - [3, 10, 2]
+        - [5, 10, 2]
+        - [7, 10, 2]
+        - [9, 10, 2]
+    out: 5
+  - name: "branching_graph"
+    in:
+      bombs:
+        - [5, 5, 5]
+        - [1, 5, 1]
+        - [9, 5, 1]
+        - [5, 1, 1]
+        - [5, 9, 1]
+    out: 5
+  - name: "small_radius_isolated"
+    in:
+      bombs:
+        - [1, 1, 1]
+        - [2, 2, 1]
+        - [3, 3, 1]
+        - [4, 4, 1]
+    out: 1
+  - name: "nested_ranges"
+    in:
+      bombs:
+        - [50, 50, 1]
+        - [50, 50, 2]
+        - [50, 50, 3]
+        - [50, 50, 4]
+        - [50, 50, 5]
+    out: 5
+  - name: "diagonal_touch"
+    in:
+      bombs:
+        - [1, 1, 2]
+        - [2, 2, 1]
+        - [3, 3, 1]
+    out: 2
+  - name: "diagonal_gap"
+    in:
+      bombs:
+        - [1, 1, 1]
+        - [2, 2, 1]
+        - [3, 3, 1]
+    out: 1
+  - name: "asymmetric_radii"
+    in:
+      bombs:
+        - [1, 1, 10]
+        - [8, 1, 1]
+        - [15, 1, 1]
+        - [22, 1, 1]
+    out: 2
+  - name: "overlap_without_chain"
+    in:
+      bombs:
+        - [1, 1, 4]
+        - [4, 1, 1]
+        - [8, 1, 4]
+    out: 2
+  - name: "all_at_max_coordinate"
+    in:
+      bombs:
+        - [100000, 100000, 1]
+        - [100000, 100000, 100000]
+        - [99999, 100000, 1]
+        - [100000, 99999, 1]
+    out: 4
+  - name: "five_components"
+    in:
+      bombs:
+        - [1, 1, 1]
+        - [3, 1, 1]
+        - [20, 20, 1]
+        - [22, 20, 1]
+        - [100, 100, 1]
+    out: 1
+  - name: "dense_small_cluster"
+    in:
+      bombs:
+        - [1, 1, 2]
+        - [2, 1, 2]
+        - [1, 2, 2]
+        - [2, 2, 2]
+        - [3, 2, 1]
+        - [2, 3, 1]
+    out: 6
+  - name: "late_bridge"
+    in:
+      bombs:
+        - [1, 1, 2]
+        - [3, 1, 2]
+        - [6, 1, 1]
+        - [8, 1, 2]
+        - [11, 1, 1]
+    out: 2
+  - name: "boundary_chain_three"
+    in:
+      bombs:
+        - [1, 1, 2]
+        - [3, 1, 2]
+        - [5, 1, 2]
+    out: 3
+  - name: "hub_reaches_two_branches"
+    in:
+      bombs:
+        - [10, 10, 5]
+        - [6, 10, 1]
+        - [14, 10, 1]
+        - [6, 12, 1]
+        - [14, 12, 1]
+    out: 5
+  - name: "radius_one_grid"
+    in:
+      bombs:
+        - [1, 1, 1]
+        - [2, 1, 1]
+        - [1, 2, 1]
+        - [2, 2, 1]
+    out: 4
+  - name: "generated_small_random"
+    seed: 211
+    in:
+      bombs:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 12
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 30
+  - name: "generated_medium_random"
+    seed: 212
+    in:
+      bombs:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 30
+          max: 60
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 1000
+  - name: "generated_dense"
+    seed: 213
+    in:
+      bombs:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 80
+          max: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+  - name: "generated_max_coordinates"
+    seed: 214
+    in:
+      bombs:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 99900
+            max: 100000
+  - name: "generated_max_spread"
+    seed: 215
+    in:
+      bombs:
+        gen: "array"
+        len: 100
+        of:
+          gen: "array"
+          len: 3
+          of:
+            gen: "int"
+            min: 1
+            max: 100000

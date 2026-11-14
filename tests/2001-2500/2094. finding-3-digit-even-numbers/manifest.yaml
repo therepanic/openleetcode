@@ -1,0 +1,195 @@
+entry:
+  id: 2094
+  title: "finding-3-digit-even-numbers"
+  params:
+    digits:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().findEvenNumbers({digits})"
+    rust: "Solution::find_even_numbers({digits})"
+    python3: "Solution().findEvenNumbers({digits})"
+    python2: "Solution().findEvenNumbers({digits})"
+    ruby: "find_even_numbers({digits})"
+    java: "new Solution().findEvenNumbers({digits})"
+    csharp: "new Solution().FindEvenNumbers({digits})"
+    kotlin: "Solution().findEvenNumbers({digits})"
+    go: "findEvenNumbers({digits})"
+    dart: "Solution().findEvenNumbers({digits})"
+    swift: "Solution().findEvenNumbers({digits})"
+    typescript: "findEvenNumbers({digits})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().findEvenNumbers(digits, {result})"
+    checker: |
+      class Checker:
+          def findEvenNumbers(self, digits, result):
+              if not isinstance(result, list):
+                  return False
+              counts = [0] * 10
+              for digit in digits:
+                  if not isinstance(digit, int) or digit < 0 or digit > 9:
+                      return False
+                  counts[digit] += 1
+              expected = []
+              for hundreds in range(1, 10):
+                  for tens in range(10):
+                      for ones in range(0, 10, 2):
+                          need = [0] * 10
+                          need[hundreds] += 1
+                          need[tens] += 1
+                          need[ones] += 1
+                          if all(need[d] <= counts[d] for d in range(10)):
+                              expected.append(100 * hundreds + 10 * tens + ones)
+              return result == expected
+
+seed: 2094
+
+tests:
+  - name: "example_1"
+    in:
+      digits: [2, 1, 3, 0]
+    out: [102, 120, 130, 132, 210, 230, 302, 310, 312, 320]
+  - name: "example_2_duplicates"
+    in:
+      digits: [2, 2, 8, 8, 2]
+    out: [222, 228, 282, 288, 822, 828, 882]
+  - name: "example_3_no_even_digit"
+    in:
+      digits: [3, 7, 5]
+    out: []
+  - name: "all_zero"
+    in:
+      digits: [0, 0, 0]
+    out: []
+  - name: "three_distinct_no_zero"
+    in:
+      digits: [1, 2, 4]
+    out: [124, 142, 214, 412]
+  - name: "all_odd_digits"
+    in:
+      digits: [1, 3, 5, 7, 9]
+    out: []
+  - name: "zero_even_digits"
+    in:
+      digits: [0, 2, 4]
+    out: [204, 240, 402, 420]
+  - name: "zero_one_two"
+    in:
+      digits: [0, 1, 2]
+    out: [102, 120, 210]
+  - name: "two_zeros_one_even"
+    in:
+      digits: [0, 0, 2]
+    out: [200]
+  - name: "repeated_odd_and_even"
+    in:
+      digits: [1, 1, 2]
+    out: [112]
+  - name: "one_odd_two_even"
+    in:
+      digits: [1, 2, 2]
+    out: [122, 212]
+  - name: "same_digit_even"
+    in:
+      digits: [8, 8, 8]
+    out: [888]
+  - name: "zero_and_three_even_choices"
+    in:
+      digits: [0, 4, 6, 8]
+    out: [406, 408, 460, 468, 480, 486, 604, 608, 640, 648, 680, 684, 804, 806, 840, 846, 860, 864]
+  - name: "mixed_zero_and_odd"
+    in:
+      digits: [9, 0, 2, 5]
+    out: [250, 290, 502, 520, 590, 592, 902, 920, 950, 952]
+  - name: "two_zero_supply"
+    in:
+      digits: [1, 0, 0, 2]
+    out: [100, 102, 120, 200, 210]
+  - name: "three_of_each"
+    in:
+      digits: [1, 1, 1, 2, 2, 2]
+    out: [112, 122, 212, 222]
+  - name: "all_digits_stress"
+    in:
+      digits: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "two_high_pairs"
+    in:
+      digits: [9, 9, 8, 8, 7, 6]
+    out: [678, 688, 698, 768, 786, 788, 796, 798, 868, 876, 878, 886, 896, 898, 968, 976, 978, 986, 988, 996, 998]
+  - name: "paired_zero_one_two"
+    in:
+      digits: [0, 0, 1, 1, 2, 2]
+    out: [100, 102, 110, 112, 120, 122, 200, 202, 210, 212, 220]
+  - name: "all_even_digits"
+    in:
+      digits: [2, 4, 6, 8, 0]
+    out: [204, 206, 208, 240, 246, 248, 260, 264, 268, 280, 284, 286, 402, 406, 408, 420, 426, 428, 460, 462, 468, 480, 482, 486, 602, 604, 608, 620, 624, 628, 640, 642, 648, 680, 682, 684, 802, 804, 806, 820, 824, 826, 840, 842, 846, 860, 862, 864]
+  - name: "repeated_four_six"
+    in:
+      digits: [1, 4, 4, 6, 6]
+    out: [144, 146, 164, 166, 414, 416, 446, 464, 466, 614, 616, 644, 646, 664]
+  - name: "three_threes_two_fours"
+    in:
+      digits: [3, 3, 3, 4, 4]
+    out: [334, 344, 434]
+  - name: "four_distinct_high"
+    in:
+      digits: [5, 6, 7, 8]
+    out: [568, 576, 578, 586, 658, 678, 756, 758, 768, 786, 856, 876]
+  - name: "zero_three_six_nine"
+    in:
+      digits: [0, 3, 6, 9]
+    out: [306, 360, 390, 396, 630, 690, 906, 930, 936, 960]
+  - name: "six_distinct"
+    in:
+      digits: [1, 2, 3, 4, 5, 6]
+    out: [124, 126, 132, 134, 136, 142, 146, 152, 154, 156, 162, 164, 214, 216, 234, 236, 246, 254, 256, 264, 312, 314, 316, 324, 326, 342, 346, 352, 354, 356, 362, 364, 412, 416, 426, 432, 436, 452, 456, 462, 512, 514, 516, 524, 526, 532, 534, 536, 542, 546, 562, 564, 612, 614, 624, 632, 634, 642, 652, 654]
+  - name: "three_twos_with_zero_three"
+    in:
+      digits: [0, 2, 2, 2, 3]
+    out: [202, 220, 222, 230, 232, 302, 320, 322]
+  - name: "double_zero_high_digits"
+    in:
+      digits: [7, 8, 9, 0, 0]
+    out: [700, 708, 780, 790, 798, 800, 870, 890, 900, 908, 970, 978, 980]
+  - name: "double_nine_one_eight"
+    in:
+      digits: [1, 8, 9, 9]
+    out: [198, 918, 998]
+  - name: "three_eights_with_zero_one"
+    in:
+      digits: [0, 1, 8, 8, 8]
+    out: [108, 180, 188, 808, 810, 818, 880, 888]
+  - name: "seven_digit_range"
+    in:
+      digits: [2, 3, 4, 5, 6, 7, 8]
+    out: [234, 236, 238, 246, 248, 254, 256, 258, 264, 268, 274, 276, 278, 284, 286, 324, 326, 328, 342, 346, 348, 352, 354, 356, 358, 362, 364, 368, 372, 374, 376, 378, 382, 384, 386, 426, 428, 432, 436, 438, 452, 456, 458, 462, 468, 472, 476, 478, 482, 486, 524, 526, 528, 532, 534, 536, 538, 542, 546, 548, 562, 564, 568, 572, 574, 576, 578, 582, 584, 586, 624, 628, 632, 634, 638, 642, 648, 652, 654, 658, 672, 674, 678, 682, 684, 724, 726, 728, 732, 734, 736, 738, 742, 746, 748, 752, 754, 756, 758, 762, 764, 768, 782, 784, 786, 824, 826, 832, 834, 836, 842, 846, 852, 854, 856, 862, 864, 872, 874, 876]
+  - name: "four_ones_two_zeros"
+    in:
+      digits: [1, 1, 1, 1, 0, 0]
+    out: [100, 110]
+  - name: "six_high_digits"
+    in:
+      digits: [4, 5, 6, 7, 8, 9]
+    out: [456, 458, 468, 476, 478, 486, 496, 498, 546, 548, 564, 568, 574, 576, 578, 584, 586, 594, 596, 598, 648, 654, 658, 674, 678, 684, 694, 698, 746, 748, 754, 756, 758, 764, 768, 784, 786, 794, 796, 798, 846, 854, 856, 864, 874, 876, 894, 896, 946, 948, 954, 956, 958, 964, 968, 974, 976, 978, 984, 986]
+  - name: "three_fives_zero_six"
+    in:
+      digits: [0, 5, 5, 5, 6]
+    out: [506, 550, 556, 560, 650]
+  - name: "four_twos_two_fours"
+    in:
+      digits: [2, 2, 2, 2, 4, 4]
+    out: [222, 224, 242, 244, 422, 424, 442]
+  - name: "maximum_length_duplicate_one"
+    in:
+      digits: [0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9]

@@ -1,0 +1,272 @@
+entry:
+  id: 2073
+  title: "time-needed-to-buy-tickets"
+  params:
+    tickets:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().timeRequiredToBuy({tickets}, {k})"
+    rust: "Solution::time_required_to_buy({tickets}, {k})"
+    python3: "Solution().timeRequiredToBuy({tickets}, {k})"
+    python2: "Solution().timeRequiredToBuy({tickets}, {k})"
+    ruby: "time_required_to_buy({tickets}, {k})"
+    java: "new Solution().timeRequiredToBuy({tickets}, {k})"
+    csharp: "new Solution().TimeRequiredToBuy({tickets}, {k})"
+    kotlin: "Solution().timeRequiredToBuy({tickets}, {k})"
+    go: "timeRequiredToBuy({tickets}, {k})"
+    dart: "Solution().timeRequiredToBuy({tickets}, {k})"
+    swift: "Solution().timeRequiredToBuy({tickets}, {k})"
+    typescript: "timeRequiredToBuy({tickets}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().timeRequiredToBuy(tickets, k, {result})"
+    checker: |
+      class Checker:
+          def timeRequiredToBuy(self, tickets, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              target = tickets[k]
+              expected = 0
+              for i, count in enumerate(tickets):
+                  expected += min(count, target if i <= k else target - 1)
+              return result == expected
+
+seed: 2073
+
+tests:
+  - name: "example_one"
+    in:
+      tickets: [2, 3, 2]
+      k: 2
+    out: 6
+  - name: "example_two"
+    in:
+      tickets: [5, 1, 1, 1]
+      k: 0
+    out: 8
+  - name: "single_person_minimum"
+    in:
+      tickets: [1]
+      k: 0
+    out: 1
+  - name: "single_person_maximum"
+    in:
+      tickets: [100]
+      k: 0
+    out: 100
+  - name: "target_front_all_minimum"
+    in:
+      tickets: [1, 1, 1, 1, 1]
+      k: 0
+    out: 1
+  - name: "target_back_all_minimum"
+    in:
+      tickets: [1, 1, 1, 1, 1]
+      k: 4
+    out: 5
+  - name: "target_front_all_maximum"
+    in:
+      tickets: [100, 100, 100]
+      k: 0
+    out: 298
+  - name: "target_back_all_maximum"
+    in:
+      tickets: [100, 100, 100]
+      k: 2
+    out: 300
+  - name: "target_front_large_others_small"
+    in:
+      tickets: [100, 1, 1, 1, 1]
+      k: 0
+    out: 104
+  - name: "target_back_large_others_small"
+    in:
+      tickets: [1, 1, 1, 1, 100]
+      k: 4
+    out: 104
+  - name: "target_middle_large"
+    in:
+      tickets: [1, 1, 100, 1, 1]
+      k: 2
+    out: 104
+  - name: "target_middle_small_others_large"
+    in:
+      tickets: [100, 100, 1, 100, 100]
+      k: 2
+    out: 3
+  - name: "two_people_front_equal"
+    in:
+      tickets: [7, 7]
+      k: 0
+    out: 13
+  - name: "two_people_back_equal"
+    in:
+      tickets: [7, 7]
+      k: 1
+    out: 14
+  - name: "two_people_skew_front"
+    in:
+      tickets: [3, 10]
+      k: 0
+    out: 5
+  - name: "two_people_skew_back"
+    in:
+      tickets: [10, 3]
+      k: 1
+    out: 6
+  - name: "alternating_counts_front"
+    in:
+      tickets: [4, 1, 4, 1, 4, 1]
+      k: 0
+    out: 13
+  - name: "alternating_counts_middle"
+    in:
+      tickets: [4, 1, 4, 1, 4, 1]
+      k: 2
+    out: 14
+  - name: "alternating_counts_back"
+    in:
+      tickets: [4, 1, 4, 1, 4, 1]
+      k: 5
+    out: 6
+  - name: "increasing_target_front"
+    in:
+      tickets: [1, 2, 3, 4, 5]
+      k: 0
+    out: 1
+  - name: "increasing_target_middle"
+    in:
+      tickets: [1, 2, 3, 4, 5]
+      k: 2
+    out: 10
+  - name: "increasing_target_back"
+    in:
+      tickets: [1, 2, 3, 4, 5]
+      k: 4
+    out: 15
+  - name: "decreasing_target_front"
+    in:
+      tickets: [5, 4, 3, 2, 1]
+      k: 0
+    out: 15
+  - name: "decreasing_target_middle"
+    in:
+      tickets: [5, 4, 3, 2, 1]
+      k: 2
+    out: 12
+  - name: "decreasing_target_back"
+    in:
+      tickets: [5, 4, 3, 2, 1]
+      k: 4
+    out: 5
+  - name: "mixed_small_front"
+    in:
+      tickets: [2, 5, 1, 4, 3]
+      k: 0
+    out: 6
+  - name: "mixed_small_second"
+    in:
+      tickets: [2, 5, 1, 4, 3]
+      k: 1
+    out: 15
+  - name: "mixed_small_fourth"
+    in:
+      tickets: [2, 5, 1, 4, 3]
+      k: 3
+    out: 14
+  - name: "mixed_small_back"
+    in:
+      tickets: [2, 5, 1, 4, 3]
+      k: 4
+    out: 12
+  - name: "repeated_peak_before_target"
+    in:
+      tickets: [8, 8, 2, 8, 1]
+      k: 2
+    out: 8
+  - name: "repeated_peak_after_target"
+    in:
+      tickets: [2, 8, 8, 8, 1]
+      k: 2
+    out: 26
+  - name: "boundary_values_mixed"
+    in:
+      tickets: [1, 100, 1, 100, 1, 100]
+      k: 3
+    out: 302
+  - name: "generated_small_uniform"
+    seed: 101
+    in:
+      tickets:
+        gen: "array"
+        len: 8
+        of:
+          gen: "int"
+          min: 1
+          max: 10
+      k:
+        gen: "int"
+        min: 0
+        max: 7
+  - name: "generated_medium_varied"
+    seed: 202
+    in:
+      tickets:
+        gen: "array"
+        len: 37
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      k:
+        gen: "int"
+        min: 0
+        max: 36
+  - name: "generated_maximum_front"
+    seed: 303
+    in:
+      tickets:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      k: 0
+  - name: "generated_maximum_back"
+    seed: 404
+    in:
+      tickets:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      k: 99
+  - name: "generated_maximum_middle"
+    seed: 505
+    in:
+      tickets:
+        gen: "array"
+        len: 100
+        of:
+          gen: "int"
+          min: 1
+          max: 100
+      k:
+        gen: "int"
+        min: 49
+        max: 50

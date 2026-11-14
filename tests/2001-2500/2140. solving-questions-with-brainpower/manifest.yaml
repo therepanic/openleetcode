@@ -1,0 +1,417 @@
+entry:
+  id: 2140
+  title: "solving-questions-with-brainpower"
+  params:
+    questions:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().mostPoints({questions})"
+    rust: "Solution::most_points({questions})"
+    python3: "Solution().mostPoints({questions})"
+    python2: "Solution().mostPoints({questions})"
+    ruby: "most_points({questions})"
+    java: "new Solution().mostPoints({questions})"
+    csharp: "new Solution().MostPoints({questions})"
+    kotlin: "Solution().mostPoints({questions})"
+    go: "mostPoints({questions})"
+    dart: "Solution().mostPoints({questions})"
+    swift: "Solution().mostPoints({questions})"
+    typescript: "mostPoints({questions})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().mostPoints(questions, {result})"
+    checker: |
+      class Checker:
+          def mostPoints(self, questions, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(questions)
+              dp = [0] * (n + 1)
+              for i in range(n - 1, -1, -1):
+                  points, brainpower = questions[i]
+                  nxt = i + brainpower + 1
+                  take = points + (dp[nxt] if nxt < n else 0)
+                  dp[i] = max(dp[i + 1], take)
+              return result == dp[0]
+
+seed: 2140
+
+tests:
+  - name: "example_one"
+    in:
+      questions:
+        - [3, 2]
+        - [4, 3]
+        - [4, 4]
+        - [2, 5]
+    out: 5
+  - name: "example_two"
+    in:
+      questions:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+        - [5, 5]
+    out: 7
+  - name: "single_question"
+    in:
+      questions:
+        - [1, 1]
+    out: 1
+  - name: "single_max_values"
+    in:
+      questions:
+        - [100000, 100000]
+    out: 100000
+  - name: "all_questions_skippable_after_first"
+    in:
+      questions:
+        - [10, 100000]
+        - [9, 1]
+        - [8, 1]
+        - [7, 1]
+    out: 16
+  - name: "all_brainpower_one"
+    in:
+      questions:
+        - [5, 1]
+        - [1, 1]
+        - [5, 1]
+        - [1, 1]
+        - [5, 1]
+    out: 15
+  - name: "all_brainpower_zero_like_boundary"
+    in:
+      questions:
+        - [2, 1]
+        - [3, 1]
+        - [4, 1]
+        - [5, 1]
+        - [6, 1]
+        - [7, 1]
+    out: 15
+  - name: "take_every_other"
+    in:
+      questions:
+        - [10, 1]
+        - [1, 1]
+        - [10, 1]
+        - [1, 1]
+        - [10, 1]
+        - [1, 1]
+    out: 30
+  - name: "skip_to_larger_later_value"
+    in:
+      questions:
+        - [1, 1]
+        - [100, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 101
+  - name: "long_jump_vs_two_rewards"
+    in:
+      questions:
+        - [10, 2]
+        - [20, 1]
+        - [30, 1]
+        - [40, 1]
+    out: 60
+  - name: "jump_exactly_to_last"
+    in:
+      questions:
+        - [8, 3]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+        - [9, 1]
+    out: 17
+  - name: "jump_past_end"
+    in:
+      questions:
+        - [4, 2]
+        - [100, 100000]
+        - [3, 1]
+    out: 100
+  - name: "repeated_equal_pairs"
+    in:
+      questions:
+        - [7, 2]
+        - [7, 2]
+        - [7, 2]
+        - [7, 2]
+        - [7, 2]
+        - [7, 2]
+    out: 14
+  - name: "alternating_long_jumps"
+    in:
+      questions:
+        - [9, 4]
+        - [50, 1]
+        - [8, 4]
+        - [50, 1]
+        - [7, 4]
+        - [50, 1]
+        - [6, 4]
+    out: 150
+  - name: "large_points_small_brainpower"
+    in:
+      questions:
+        - [100000, 1]
+        - [99999, 1]
+        - [100000, 1]
+        - [99999, 1]
+        - [100000, 1]
+    out: 300000
+  - name: "mixed_dense_choices"
+    in:
+      questions:
+        - [3, 1]
+        - [8, 2]
+        - [2, 1]
+        - [9, 1]
+        - [4, 3]
+        - [10, 1]
+        - [1, 1]
+        - [7, 2]
+    out: 29
+  - name: "increasing_points_increasing_brainpower"
+    in:
+      questions:
+        - [1, 1]
+        - [2, 2]
+        - [3, 3]
+        - [4, 4]
+        - [5, 5]
+        - [6, 6]
+        - [7, 7]
+        - [8, 8]
+    out: 12
+  - name: "decreasing_points_increasing_brainpower"
+    in:
+      questions:
+        - [20, 1]
+        - [19, 2]
+        - [18, 3]
+        - [17, 4]
+        - [16, 5]
+        - [15, 6]
+    out: 38
+  - name: "short_chain"
+    in:
+      questions:
+        - [5, 1]
+        - [4, 1]
+        - [3, 1]
+    out: 8
+  - name: "best_is_last"
+    in:
+      questions:
+        - [1, 100]
+        - [1, 100]
+        - [1, 100]
+        - [100000, 1]
+    out: 100000
+  - name: "best_is_first"
+    in:
+      questions:
+        - [100000, 100000]
+        - [1, 1]
+        - [1, 1]
+        - [1, 1]
+    out: 100000
+  - name: "multiple_zero_effect_choices"
+    in:
+      questions:
+        - [6, 1]
+        - [6, 1]
+        - [6, 1]
+        - [6, 1]
+        - [6, 1]
+        - [6, 1]
+        - [6, 1]
+    out: 24
+  - name: "large_jump_middle"
+    in:
+      questions:
+        - [2, 1]
+        - [3, 1]
+        - [100, 3]
+        - [4, 1]
+        - [5, 1]
+        - [6, 1]
+        - [7, 1]
+    out: 109
+  - name: "one_step_decision_chain"
+    in:
+      questions:
+        - [4, 1]
+        - [10, 1]
+        - [4, 1]
+        - [10, 1]
+        - [4, 1]
+        - [10, 1]
+        - [4, 1]
+        - [10, 1]
+    out: 40
+  - name: "all_max_points_short_jumps"
+    in:
+      questions:
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+    out: 300000
+  - name: "varied_small_values"
+    in:
+      questions:
+        - [1, 1]
+        - [2, 3]
+        - [3, 1]
+        - [1, 2]
+        - [4, 1]
+        - [2, 2]
+        - [5, 1]
+        - [3, 3]
+        - [6, 1]
+    out: 19
+  - name: "near_integer_answer_limit"
+    in:
+      questions:
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+        - [100000, 1]
+    out: 500000
+  - name: "late_competition"
+    in:
+      questions:
+        - [5, 5]
+        - [4, 1]
+        - [4, 1]
+        - [4, 1]
+        - [4, 1]
+        - [20, 1]
+        - [1, 1]
+    out: 28
+  - name: "alternating_brainpower"
+    in:
+      questions:
+        - [12, 1]
+        - [1, 5]
+        - [12, 1]
+        - [1, 5]
+        - [12, 1]
+        - [1, 5]
+        - [12, 1]
+    out: 48
+  - name: "generated_small"
+    seed: 101
+    in:
+      questions:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 25
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+  - name: "generated_medium"
+    seed: 202
+    in:
+      questions:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100
+          max: 300
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+  - name: "generated_max_points"
+    seed: 303
+    in:
+      questions:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 1500
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 100000
+            max: 100000
+  - name: "generated_max_brainpower"
+    seed: 404
+    in:
+      questions:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 1500
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+  - name: "stress_fifty_thousand"
+    seed: 505
+    in:
+      questions:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000
+  - name: "stress_one_hundred_thousand"
+    seed: 606
+    in:
+      questions:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 100000

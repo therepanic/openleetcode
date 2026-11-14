@@ -1,0 +1,515 @@
+entry:
+  id: 2070
+  title: "most-beautiful-item-for-each-query"
+  params:
+    items:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    queries:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maximumBeauty({items}, {queries})"
+    rust: "Solution::maximum_beauty({items}, {queries})"
+    python3: "Solution().maximumBeauty({items}, {queries})"
+    python2: "Solution().maximumBeauty({items}, {queries})"
+    ruby: "maximum_beauty({items}, {queries})"
+    java: "new Solution().maximumBeauty({items}, {queries})"
+    csharp: "new Solution().MaximumBeauty({items}, {queries})"
+    kotlin: "Solution().maximumBeauty({items}, {queries})"
+    go: "maximumBeauty({items}, {queries})"
+    dart: "Solution().maximumBeauty({items}, {queries})"
+    swift: "Solution().maximumBeauty({items}, {queries})"
+    typescript: "maximumBeauty({items}, {queries})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 5000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maximumBeauty(items, queries, {result})"
+    checker: |
+      from bisect import bisect_right
+
+      class Checker:
+          def maximumBeauty(self, items, queries, result):
+              if not isinstance(result, list) or len(result) != len(queries):
+                  return False
+              ordered = sorted(items)
+              prices = []
+              prefix = []
+              for price, beauty in ordered:
+                  prices.append(price)
+                  prefix.append(max(beauty, prefix[-1] if prefix else 0))
+              expected = [prefix[bisect_right(prices, query) - 1]
+                          if bisect_right(prices, query) else 0
+                          for query in queries]
+              return result == expected
+
+seed: 207000
+
+tests:
+  - name: "example_1"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [3, 2]
+          - [2, 4]
+          - [5, 6]
+          - [3, 5]
+      queries: [1, 2, 3, 4, 5, 6]
+    out: [2, 4, 5, 5, 6, 6]
+  - name: "example_2_duplicate_prices"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [1, 2]
+          - [1, 3]
+          - [1, 4]
+      queries: [1]
+    out: [4]
+  - name: "example_3_no_eligible_item"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [10, 1000]
+      queries: [5]
+    out: [0]
+  - name: "single_exact_match"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [7, 11]
+      queries: [7]
+    out: [11]
+  - name: "single_below_and_above"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [7, 11]
+      queries: [1, 6, 8, 100]
+    out: [0, 0, 11, 11]
+  - name: "query_order_preserved"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [2, 20]
+          - [5, 50]
+          - [9, 90]
+      queries: [9, 1, 5, 10, 2, 8]
+    out: [90, 0, 50, 90, 20, 50]
+  - name: "same_price_increasing_beauty"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [4, 1]
+          - [4, 9]
+          - [4, 3]
+      queries: [3, 4, 5]
+    out: [0, 9, 9]
+  - name: "same_price_decreasing_beauty"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [4, 10]
+          - [4, 8]
+          - [4, 2]
+      queries: [4]
+    out: [10]
+  - name: "unsorted_items"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [10, 1]
+          - [1, 100]
+          - [7, 50]
+          - [3, 25]
+      queries: [1, 2, 3, 6, 7, 10]
+    out: [100, 100, 100, 100, 100, 100]
+  - name: "beauty_peak_then_lower"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1, 5]
+          - [2, 100]
+          - [3, 20]
+          - [4, 7]
+      queries: [1, 2, 3, 4]
+    out: [5, 100, 100, 100]
+  - name: "strict_price_boundaries"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [5, 50]
+          - [10, 100]
+      queries: [4, 5, 6, 9, 10, 11]
+    out: [0, 50, 50, 50, 100, 100]
+  - name: "all_queries_before_items"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [100, 1]
+          - [200, 2]
+      queries: [1, 50, 99]
+    out: [0, 0, 0]
+  - name: "all_queries_after_items"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [2, 8]
+          - [4, 3]
+          - [6, 15]
+      queries: [7, 8, 100]
+    out: [15, 15, 15]
+  - name: "one_query_many_items"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [8, 80]
+          - [1, 10]
+          - [5, 55]
+          - [3, 30]
+          - [5, 60]
+      queries: [5]
+    out: [60]
+  - name: "many_queries_one_item"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [50, 77]
+      queries: [1, 49, 50, 51, 1000000000]
+    out: [0, 0, 77, 77, 77]
+  - name: "maximum_values"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1000000000, 1000000000]
+          - [999999999, 999999998]
+      queries: [999999998, 999999999, 1000000000]
+    out: [0, 999999998, 1000000000]
+  - name: "minimum_values"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1, 1]
+          - [2, 1]
+      queries: [1, 2]
+    out: [1, 1]
+  - name: "duplicate_items"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [2, 5]
+          - [2, 5]
+          - [2, 5]
+          - [3, 6]
+      queries: [1, 2, 3]
+    out: [0, 5, 6]
+  - name: "interleaved_prices"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [20, 2]
+          - [4, 40]
+          - [12, 12]
+          - [8, 80]
+          - [16, 16]
+      queries: [4, 8, 12, 16, 20]
+    out: [40, 80, 80, 80, 80]
+  - name: "equal_query_repetition"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [3, 9]
+          - [6, 2]
+          - [9, 12]
+      queries: [6, 6, 6, 3, 3]
+    out: [9, 9, 9, 9, 9]
+  - name: "large_beauty_before_small_beauty"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [2, 999]
+          - [100, 1]
+          - [50, 500]
+      queries: [1, 2, 49, 50, 100]
+    out: [0, 999, 999, 999, 999]
+  - name: "all_prices_equal_large_beauties"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [42, 3]
+          - [42, 300]
+          - [42, 30]
+          - [42, 299]
+      queries: [41, 42, 43]
+    out: [0, 300, 300]
+  - name: "alternating_query_thresholds"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [10, 10]
+          - [20, 30]
+          - [30, 20]
+      queries: [30, 10, 29, 20, 9, 31]
+    out: [30, 10, 30, 30, 0, 30]
+  - name: "long_price_gaps"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1, 7]
+          - [1000000000, 8]
+      queries: [1, 2, 999999999, 1000000000]
+    out: [7, 7, 7, 8]
+  - name: "beauty_zero_not_allowed_but_default_zero"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [500, 1]
+          - [600, 2]
+      queries: [1, 499, 500]
+    out: [0, 0, 1]
+  - name: "query_at_each_duplicate_price"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [3, 4]
+          - [3, 9]
+          - [5, 2]
+          - [5, 10]
+          - [7, 8]
+      queries: [2, 3, 4, 5, 6, 7]
+    out: [0, 9, 9, 10, 10, 10]
+  - name: "reverse_sorted_items"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [9, 90]
+          - [7, 70]
+          - [5, 50]
+          - [3, 30]
+          - [1, 10]
+      queries: [0, 1, 4, 5, 8, 9]
+    out: [0, 10, 30, 50, 70, 90]
+  - name: "mixed_duplicate_and_unordered"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [8, 1]
+          - [2, 20]
+          - [8, 80]
+          - [4, 40]
+          - [2, 15]
+          - [6, 60]
+      queries: [2, 3, 4, 7, 8]
+    out: [20, 20, 40, 60, 80]
+  - name: "powers_of_two"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1, 2]
+          - [2, 4]
+          - [4, 8]
+          - [8, 16]
+          - [16, 32]
+      queries: [1, 3, 7, 15, 31, 32]
+    out: [2, 4, 8, 16, 32, 32]
+  - name: "descending_beauties"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1, 100]
+          - [2, 90]
+          - [3, 80]
+          - [4, 70]
+      queries: [1, 2, 3, 4]
+    out: [100, 100, 100, 100]
+  - name: "ascending_beauties"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [4, 40]
+          - [1, 10]
+          - [3, 30]
+          - [2, 20]
+      queries: [1, 2, 3, 4]
+    out: [10, 20, 30, 40]
+  - name: "single_item_extremes"
+    in:
+      items:
+        elemType: "int"
+        value:
+          - [1000000000, 1000000000]
+      queries: [1, 999999999, 1000000000]
+    out: [0, 0, 1000000000]
+  - name: "generated_small_general"
+    seed: 207001
+    in:
+      items:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+      queries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 40
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+  - name: "generated_medium_general"
+    seed: 207002
+    in:
+      items:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 400
+          max: 700
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+      queries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 400
+          max: 700
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+  - name: "generated_large_items"
+    seed: 207003
+    in:
+      items:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 80000
+          max: 80000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+      queries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 50000
+          max: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+  - name: "generated_maximum_scale"
+    seed: 207004
+    in:
+      items:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100000
+          max: 100000
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 1000000000
+      queries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 100000
+          max: 100000
+        of:
+          gen: "int"
+          min: 1
+          max: 1000000000
+  - name: "generated_duplicate_friendly"
+    seed: 207005
+    in:
+      items:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 1500
+        of:
+          gen: "array"
+          len: 2
+          of:
+            gen: "int"
+            min: 1
+            max: 20
+      queries:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1000
+          max: 1500
+        of:
+          gen: "int"
+          min: 1
+          max: 20

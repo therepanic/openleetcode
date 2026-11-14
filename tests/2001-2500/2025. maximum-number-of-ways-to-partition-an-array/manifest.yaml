@@ -1,0 +1,307 @@
+entry:
+  id: 2025
+  title: "maximum-number-of-ways-to-partition-an-array"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().waysToPartition({nums}, {k})"
+    rust: "Solution::ways_to_partition({nums}, {k})"
+    python3: "Solution().waysToPartition({nums}, {k})"
+    python2: "Solution().waysToPartition({nums}, {k})"
+    ruby: "ways_to_partition({nums}, {k})"
+    java: "new Solution().waysToPartition({nums}, {k})"
+    csharp: "new Solution().WaysToPartition({nums}, {k})"
+    kotlin: "Solution().waysToPartition({nums}, {k})"
+    go: "waysToPartition({nums}, {k})"
+    dart: "Solution().waysToPartition({nums}, {k})"
+    swift: "Solution().waysToPartition({nums}, {k})"
+    typescript: "waysToPartition({nums}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().waysToPartition(nums, k, {result})"
+    checker: |
+      class Checker:
+          def waysToPartition(self, nums, k, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              from collections import Counter
+              total = sum(nums)
+              right = Counter()
+              left = Counter()
+              running = 0
+              for value in nums[:-1]:
+                  running += value
+                  right[2 * running - total] += 1
+              expected = right[0]
+              running = 0
+              for value in nums:
+                  running += value
+                  delta = k - value
+                  expected = max(expected, left[delta] + right[-delta])
+                  pivot_delta = 2 * running - total
+                  left[pivot_delta] += 1
+                  right[pivot_delta] -= 1
+              return result == expected
+
+seed: 20250826
+
+tests:
+  - name: "example_one"
+    in:
+      nums: [2, -1, 2]
+      k: 3
+    out: 1
+  - name: "example_two"
+    in:
+      nums: [0, 0, 0]
+      k: 1
+    out: 2
+  - name: "example_three"
+    in:
+      nums: [22, 4, -25, -20, -15, 15, -16, 7, 19, -10, 0, -13, -14]
+      k: -33
+    out: 4
+  - name: "two_elements_equal"
+    in:
+      nums: [5, 5]
+      k: 9
+    out: 1
+  - name: "two_elements_unequal"
+    in:
+      nums: [5, 4]
+      k: 9
+    out: 0
+  - name: "two_elements_no_help"
+    in:
+      nums: [5, 4]
+      k: -2
+    out: 0
+  - name: "all_negative_zero_sum"
+    in:
+      nums: [-1, -1, -1, -1]
+      k: 7
+    out: 1
+  - name: "alternating_zeroes"
+    in:
+      nums: [1, -1, 1, -1, 1, -1]
+      k: 0
+    out: 2
+  - name: "single_balanced_pivot"
+    in:
+      nums: [3, 1, 2]
+      k: 10
+    out: 1
+  - name: "change_creates_balance"
+    in:
+      nums: [1, 2, 4]
+      k: 3
+    out: 1
+  - name: "multiple_existing"
+    in:
+      nums: [0, 0, 1, -1, 0, 0]
+      k: 8
+    out: 4
+  - name: "negative_k"
+    in:
+      nums: [4, -2, -2, 0]
+      k: -4
+    out: 1
+  - name: "large_values_cancel"
+    in:
+      nums: [100000, -100000, 100000, -100000]
+      k: 100000
+    out: 2
+  - name: "large_values_unbalanced"
+    in:
+      nums: [100000, 100000, -100000, -99999]
+      k: -100000
+    out: 0
+  - name: "pivot_at_first"
+    in:
+      nums: [7, 1, 2, 4]
+      k: 3
+    out: 1
+  - name: "pivot_at_last"
+    in:
+      nums: [1, 2, 4, 7]
+      k: 7
+    out: 1
+  - name: "no_partition"
+    in:
+      nums: [1, 1, 1, 1, 1]
+      k: 100
+    out: 0
+  - name: "constant_positive"
+    in:
+      nums: [2, 2, 2, 2, 2, 2]
+      k: -3
+    out: 1
+  - name: "constant_zero_replacement"
+    in:
+      nums: [0, 0, 0, 0, 0]
+      k: 0
+    out: 4
+  - name: "mixed_signs"
+    in:
+      nums: [-5, 3, 2, -1, 1]
+      k: 4
+    out: 1
+  - name: "replacement_is_existing_value"
+    in:
+      nums: [2, 1, 1, 2]
+      k: 1
+    out: 1
+  - name: "odd_length_symmetry"
+    in:
+      nums: [3, -1, -2, 4, -4, 0, 0]
+      k: 5
+    out: 3
+  - name: "all_maximum"
+    in:
+      nums: [100000, 100000, 100000, 100000]
+      k: -100000
+    out: 2
+  - name: "all_minimum"
+    in:
+      nums: [-100000, -100000, -100000, -100000]
+      k: 100000
+    out: 2
+  - name: "prefix_sum_repeated"
+    in:
+      nums: [1, -1, 2, -2, 3, -3, 4, -4]
+      k: 6
+    out: 3
+  - name: "unequal_total"
+    in:
+      nums: [8, -3, 5, 2, -1]
+      k: -6
+    out: 0
+  - name: "four_zeroes_with_outlier"
+    in:
+      nums: [0, 0, 0, 5, 0, 0]
+      k: 0
+    out: 5
+  - name: "negative_outlier"
+    in:
+      nums: [0, 0, 0, -5, 0, 0]
+      k: 0
+    out: 5
+  - name: "balanced_after_middle_change"
+    in:
+      nums: [5, 1, 1, 1, 1]
+      k: -1
+    out: 0
+  - name: "single_existing_balance"
+    in:
+      nums: [4, 2, 2, 4]
+      k: 9
+    out: 1
+  - name: "large_magnitude_mix"
+    in:
+      nums: [-100000, 1, 99999, 100000, -1]
+      k: 0
+    out: 0
+  - name: "generated_small_general"
+    seed: 101
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 2
+          max: 25
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -100000
+        max: 100000
+  - name: "generated_small_duplicates"
+    seed: 202
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 10
+          max: 40
+        of:
+          gen: "int"
+          min: -3
+          max: 3
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k: 2
+  - name: "generated_medium_signed"
+    seed: 303
+    in:
+      nums:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 500
+          max: 1500
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -100000
+        max: 100000
+  - name: "generated_large_bounded"
+    seed: 404
+    in:
+      nums:
+        gen: "array"
+        len: 80000
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -100000
+        max: 100000
+  - name: "generated_maximum_size"
+    seed: 505
+    in:
+      nums:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: false
+        elemType: "int"
+      k:
+        gen: "int"
+        min: -100000
+        max: 100000

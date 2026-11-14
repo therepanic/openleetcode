@@ -1,0 +1,256 @@
+entry:
+  id: 2116
+  title: "check-if-a-parentheses-string-can-be-valid"
+  params:
+    s:
+      type: string
+    locked:
+      type: string
+  call:
+    cpp: "Solution().canBeValid({s}, {locked})"
+    rust: "Solution::can_be_valid({s}, {locked})"
+    python3: "Solution().canBeValid({s}, {locked})"
+    python2: "Solution().canBeValid({s}, {locked})"
+    ruby: "can_be_valid({s}, {locked})"
+    java: "new Solution().canBeValid({s}, {locked})"
+    csharp: "new Solution().CanBeValid({s}, {locked})"
+    kotlin: "Solution().canBeValid({s}, {locked})"
+    go: "canBeValid({s}, {locked})"
+    dart: "Solution().canBeValid({s}, {locked})"
+    swift: "Solution().canBeValid({s}, {locked})"
+    typescript: "canBeValid({s}, {locked})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().canBeValid(s, locked, {result})"
+    checker: |
+      class Checker:
+          def canBeValid(self, s, locked, result):
+              if not isinstance(result, bool) or len(s) != len(locked) or len(s) % 2:
+                  return False
+              lo = hi = 0
+              for ch, flag in zip(s, locked):
+                  if flag == '0':
+                      lo -= 1
+                      hi += 1
+                  elif ch == '(':
+                      lo += 1
+                      hi += 1
+                  else:
+                      lo -= 1
+                      hi -= 1
+                  if hi < 0:
+                      return False
+                  lo = max(lo, 0)
+              return result == (lo == 0)
+
+seed: 21162026
+
+tests:
+  - name: "example_1"
+    in:
+      s: "))()))"
+      locked: "010100"
+    out: true
+  - name: "example_2"
+    in:
+      s: "()()"
+      locked: "0000"
+    out: true
+  - name: "example_3_odd"
+    in:
+      s: ")"
+      locked: "0"
+    out: false
+  - name: "single_open_unlocked"
+    in:
+      s: "("
+      locked: "0"
+    out: false
+  - name: "single_close_locked"
+    in:
+      s: ")"
+      locked: "1"
+    out: false
+  - name: "pair_already_valid_locked"
+    in:
+      s: "()"
+      locked: "11"
+    out: true
+  - name: "pair_reversed_locked"
+    in:
+      s: ")(" 
+      locked: "11"
+    out: false
+  - name: "pair_reversed_unlocked"
+    in:
+      s: ")(" 
+      locked: "00"
+    out: true
+  - name: "all_open_locked"
+    in:
+      s: "(((("
+      locked: "1111"
+    out: false
+  - name: "all_close_locked"
+    in:
+      s: "))))"
+      locked: "1111"
+    out: false
+  - name: "all_open_unlocked"
+    in:
+      s: "(((("
+      locked: "0000"
+    out: true
+  - name: "all_close_unlocked"
+    in:
+      s: "))))"
+      locked: "0000"
+    out: true
+  - name: "locked_prefix_close"
+    in:
+      s: ")())"
+      locked: "1000"
+    out: false
+  - name: "unlocked_prefix_rescue"
+    in:
+      s: ")())"
+      locked: "0000"
+    out: true
+  - name: "locked_suffix_open"
+    in:
+      s: "((()"
+      locked: "0001"
+    out: true
+  - name: "unlocked_suffix_rescue"
+    in:
+      s: "((()"
+      locked: "0000"
+    out: true
+  - name: "odd_length_mixed"
+    in:
+      s: "(()))"
+      locked: "01010"
+    out: false
+  - name: "balanced_mixed_locks"
+    in:
+      s: "(()())"
+      locked: "101010"
+    out: true
+  - name: "unlocked_middle_only"
+    in:
+      s: "()))("
+      locked: "11011"
+    out: false
+  - name: "two_unlocked_middle"
+    in:
+      s: "()))("
+      locked: "11001"
+    out: false
+  - name: "alternating_locked_valid"
+    in:
+      s: "()()()()"
+      locked: "10101010"
+    out: true
+  - name: "alternating_locked_invalid"
+    in:
+      s: ")()()()("
+      locked: "10101010"
+    out: false
+  - name: "late_unlocked_open"
+    in:
+      s: "))))(("
+      locked: "111100"
+    out: false
+  - name: "early_unlocked_open"
+    in:
+      s: "))))(("
+      locked: "000011"
+    out: false
+  - name: "one_change_needed"
+    in:
+      s: ")()(" 
+      locked: "1001"
+    out: false
+  - name: "two_changes_needed"
+    in:
+      s: "))(("
+      locked: "0000"
+    out: true
+  - name: "fixed_valid_nested"
+    in:
+      s: "((()))"
+      locked: "111111"
+    out: true
+  - name: "fixed_invalid_nested"
+    in:
+      s: "(())))"
+      locked: "111111"
+    out: false
+  - name: "odd_all_unlocked"
+    in:
+      s: "()()()()()"
+      locked: "0000000000"
+    out: true
+  - name: "long_even_valid"
+    in:
+      s: "()()()()()()()()()()()()()()()()"
+      locked: "11111111111111111111111111111111"
+    out: true
+  - name: "long_even_invalid"
+    in:
+      s: "((((((((((((((((" 
+      locked: "1111111111111111"
+    out: false
+  - name: "long_unlocked_repair"
+    in:
+      s: "))))))))))))))))"
+      locked: "0000000000000000"
+    out: true
+  - name: "odd_long_unlocked"
+    in:
+      s: ")))))))))))))))"
+      locked: "000000000000000"
+    out: false
+  - name: "locked_balance_with_free_pair"
+    in:
+      s: "())(()"
+      locked: "110011"
+    out: true
+  - name: "locked_balance_wrong_order"
+    in:
+      s: ")(()())("
+      locked: "10000001"
+    out: false
+  - name: "deep_valid_fixed"
+    in:
+      s: "()()()()()()()()()()()()()()()()()()()()"
+      locked: "1111111111111111111111111111111111111111"
+    out: true
+  - name: "deep_invalid_fixed"
+    in:
+      s: "(((((((((((((((((((((((((((((((((((((((("
+      locked: "1111111111111111111111111111111111111111"
+    out: false
+  - name: "deep_unlocked_repair"
+    in:
+      s: "))))))))))))))))))))))))))))))))))))))))"
+      locked: "0000000000000000000000000000000000000000"
+    out: true
+  - name: "mixed_locked_valid_long"
+    in:
+      s: "(()())()()((()))()()(()())()()((()))()()"
+      locked: "1010101010101010101010101010101010101010"
+    out: true
+  - name: "mixed_locked_invalid_long"
+    in:
+      s: "))))))(((()))))(((()))))(((()))))(((())))"
+      locked: "1111110000111111000011111100001111110000"
+    out: false

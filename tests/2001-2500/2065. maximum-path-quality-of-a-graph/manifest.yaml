@@ -1,0 +1,403 @@
+entry:
+  id: 2065
+  title: "maximum-path-quality-of-a-graph"
+  params:
+    values:
+      type: array
+      items:
+        type: int
+    edges:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    maxTime:
+      type: int
+  call:
+    cpp: "Solution().maximalPathQuality({values}, {edges}, {maxTime})"
+    rust: "Solution::maximal_path_quality({values}, {edges}, {maxTime})"
+    python3: "Solution().maximalPathQuality({values}, {edges}, {maxTime})"
+    python2: "Solution().maximalPathQuality({values}, {edges}, {maxTime})"
+    ruby: "maximal_path_quality({values}, {edges}, {maxTime})"
+    java: "new Solution().maximalPathQuality({values}, {edges}, {maxTime})"
+    csharp: "new Solution().MaximalPathQuality({values}, {edges}, {maxTime})"
+    kotlin: "Solution().maximalPathQuality({values}, {edges}, {maxTime})"
+    go: "maximalPathQuality({values}, {edges}, {maxTime})"
+    dart: "Solution().maximalPathQuality({values}, {edges}, {maxTime})"
+    swift: "Solution().maximalPathQuality({values}, {edges}, {maxTime})"
+    typescript: "maximalPathQuality({values}, {edges}, {maxTime})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maximalPathQuality(values, edges, maxTime, {result})"
+    checker: |
+      class Checker:
+          def maximalPathQuality(self, values, edges, maxTime, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              graph = [[] for _ in values]
+              for u, v, t in edges:
+                  graph[u].append((v, t))
+                  graph[v].append((u, t))
+              best = 0
+              def dfs(node, remaining, score, mask):
+                  nonlocal best
+                  if node == 0:
+                      best = max(best, score)
+                  for nxt, cost in graph[node]:
+                      if cost <= remaining:
+                          dfs(nxt, remaining - cost, score if mask & (1 << nxt) else score + values[nxt], mask | (1 << nxt))
+              dfs(0, maxTime, values[0], 1)
+              return result == best
+
+seed: 2065
+
+tests:
+  - name: "example_1"
+    in:
+      values: [0, 32, 10, 43]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 15]
+        - [0, 3, 10]
+      maxTime: 49
+    out: 75
+  - name: "example_2"
+    in:
+      values: [5, 10, 15, 20]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [0, 3, 10]
+      maxTime: 30
+    out: 25
+  - name: "example_3"
+    in:
+      values: [1, 2, 3, 4]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 11]
+        - [2, 3, 12]
+        - [1, 3, 13]
+      maxTime: 50
+    out: 7
+  - name: "single_node_no_edges"
+    in:
+      values: [7]
+      edges: []
+      maxTime: 10
+    out: 7
+  - name: "start_zero_value"
+    in:
+      values: [0, 9]
+      edges:
+        - [0, 1, 10]
+      maxTime: 10
+    out: 0
+  - name: "insufficient_return_time"
+    in:
+      values: [4, 100]
+      edges:
+        - [0, 1, 10]
+      maxTime: 19
+    out: 4
+  - name: "exact_round_trip"
+    in:
+      values: [4, 100]
+      edges:
+        - [0, 1, 10]
+      maxTime: 20
+    out: 104
+  - name: "disconnected_high_value"
+    in:
+      values: [3, 4, 999]
+      edges:
+        - [0, 1, 10]
+      maxTime: 20
+    out: 7
+  - name: "zero_value_leaf"
+    in:
+      values: [8, 0]
+      edges:
+        - [0, 1, 10]
+      maxTime: 20
+    out: 8
+  - name: "two_equal_branches"
+    in:
+      values: [1, 5, 7]
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 10]
+      maxTime: 40
+    out: 13
+  - name: "branch_budget_one"
+    in:
+      values: [1, 5, 7]
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 10]
+      maxTime: 20
+    out: 8
+  - name: "chain_all_nodes"
+    in:
+      values: [1, 2, 3, 4, 5]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+      maxTime: 80
+    out: 15
+  - name: "chain_missing_last"
+    in:
+      values: [1, 2, 3, 4, 100]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+      maxTime: 59
+    out: 6
+  - name: "triangle_all"
+    in:
+      values: [2, 8, 16]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [0, 2, 10]
+      maxTime: 40
+    out: 26
+  - name: "triangle_expensive_edge"
+    in:
+      values: [2, 8, 16]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [0, 2, 100]
+      maxTime: 40
+    out: 26
+  - name: "revisit_collects_two_branches"
+    in:
+      values: [1, 10, 20]
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 15]
+      maxTime: 50
+    out: 31
+  - name: "revisit_not_enough"
+    in:
+      values: [1, 10, 20]
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 15]
+      maxTime: 39
+    out: 21
+  - name: "duplicate_values"
+    in:
+      values: [5, 5, 5, 5]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 0, 10]
+      maxTime: 80
+    out: 20
+  - name: "cycle_partial"
+    in:
+      values: [10, 1, 50, 3]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 0, 10]
+      maxTime: 39
+    out: 13
+  - name: "cycle_all"
+    in:
+      values: [10, 1, 50, 3]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 0, 10]
+      maxTime: 40
+    out: 64
+  - name: "weighted_shortcut"
+    in:
+      values: [1, 10, 20, 40]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 30]
+        - [2, 3, 10]
+        - [0, 3, 10]
+      maxTime: 60
+    out: 71
+  - name: "weighted_shortcut_tight"
+    in:
+      values: [1, 10, 20, 40]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 30]
+        - [2, 3, 10]
+        - [0, 3, 10]
+      maxTime: 40
+    out: 61
+  - name: "star_four_edges"
+    in:
+      values: [2, 3, 5, 7, 11]
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 10]
+        - [0, 3, 10]
+        - [0, 4, 10]
+      maxTime: 80
+    out: 28
+  - name: "star_three_edges"
+    in:
+      values: [2, 3, 5, 7, 11]
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 10]
+        - [0, 3, 10]
+        - [0, 4, 10]
+      maxTime: 60
+    out: 25
+  - name: "large_values"
+    in:
+      values: [100000000, 100000000, 99999999]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [0, 2, 10]
+      maxTime: 40
+    out: 299999999
+  - name: "max_time_boundary"
+    in:
+      values: [6, 7]
+      edges:
+        - [0, 1, 100]
+      maxTime: 100
+    out: 6
+  - name: "max_time_round_trip"
+    in:
+      values: [6, 7]
+      edges:
+        - [0, 1, 100]
+      maxTime: 100
+    out: 6
+  - name: "many_zero_nodes"
+    in:
+      values: [9, 0, 0, 0, 0, 25]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+        - [4, 5, 10]
+      maxTime: 100
+    out: 34
+  - name: "high_leaf_unreachable"
+    in:
+      values: [2, 4, 8, 1000]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 100]
+      maxTime: 40
+    out: 14
+  - name: "parallel_route_choice"
+    in:
+      values: [1, 20, 30, 40]
+      edges:
+        - [0, 1, 10]
+        - [1, 3, 10]
+        - [0, 2, 20]
+        - [2, 3, 10]
+        - [0, 3, 10]
+      maxTime: 40
+    out: 71
+  - name: "parallel_route_tight"
+    in:
+      values: [1, 20, 30, 40]
+      edges:
+        - [0, 1, 10]
+        - [1, 3, 10]
+        - [0, 2, 20]
+        - [2, 3, 10]
+        - [0, 3, 10]
+      maxTime: 20
+    out: 41
+  - name: "five_node_cycle"
+    in:
+      values: [3, 6, 9, 12, 15]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+        - [4, 0, 10]
+      maxTime: 100
+    out: 45
+  - name: "five_node_cycle_partial"
+    in:
+      values: [3, 6, 9, 12, 15]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+        - [4, 0, 10]
+      maxTime: 60
+    out: 45
+  - name: "dense_bounded_degree"
+    in:
+      values: [1, 2, 4, 8, 16, 32, 64, 128]
+      edges:
+        - [0, 1, 10]
+        - [0, 2, 20]
+        - [0, 3, 30]
+        - [1, 4, 10]
+        - [1, 5, 20]
+        - [2, 5, 10]
+        - [2, 6, 20]
+        - [3, 6, 10]
+        - [3, 7, 20]
+        - [4, 5, 10]
+        - [5, 6, 10]
+        - [6, 7, 10]
+      maxTime: 100
+    out: 251
+  - name: "isolated_start_with_components"
+    in:
+      values: [42, 1, 2, 3, 4]
+      edges:
+        - [1, 2, 10]
+        - [2, 3, 10]
+        - [3, 4, 10]
+      maxTime: 100
+    out: 42
+  - name: "minimum_edge_time"
+    in:
+      values: [1, 2, 4]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+      maxTime: 30
+    out: 3
+  - name: "all_values_zero"
+    in:
+      values: [0, 0, 0, 0]
+      edges:
+        - [0, 1, 10]
+        - [1, 2, 10]
+        - [2, 3, 10]
+      maxTime: 100
+    out: 0

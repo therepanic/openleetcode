@@ -1,0 +1,319 @@
+entry:
+  id: 2040
+  title: "kth-smallest-product-of-two-sorted-arrays"
+  params:
+    nums1:
+      type: array
+      items:
+        type: int
+    nums2:
+      type: array
+      items:
+        type: int
+    k:
+      type: long
+  call:
+    cpp: "Solution().kthSmallestProduct({nums1}, {nums2}, {k})"
+    rust: "Solution::kth_smallest_product({nums1}, {nums2}, {k})"
+    python3: "Solution().kthSmallestProduct({nums1}, {nums2}, {k})"
+    python2: "Solution().kthSmallestProduct({nums1}, {nums2}, {k})"
+    ruby: "kth_smallest_product({nums1}, {nums2}, {k})"
+    java: "new Solution().kthSmallestProduct({nums1}, {nums2}, {k})"
+    csharp: "new Solution().KthSmallestProduct({nums1}, {nums2}, {k})"
+    kotlin: "Solution().kthSmallestProduct({nums1}, {nums2}, {k})"
+    go: "kthSmallestProduct({nums1}, {nums2}, {k})"
+    dart: "Solution().kthSmallestProduct({nums1}, {nums2}, {k})"
+    swift: "Solution().kthSmallestProduct({nums1}, {nums2}, {k})"
+    typescript: "kthSmallestProduct({nums1}, {nums2}, {k})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 3000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().check(nums1, nums2, k, {result})"
+    checker: |
+      class Checker:
+          def check(self, nums1, nums2, k, result):
+              import bisect
+              def count(x):
+                  total = 0
+                  for a in nums1:
+                      if a > 0:
+                          total += bisect.bisect_right(nums2, x // a)
+                      elif a < 0:
+                          q, r = divmod(x, a)
+                          if r != 0:
+                              q += 1
+                          total += len(nums2) - bisect.bisect_left(nums2, q)
+                      elif x >= 0:
+                          total += len(nums2)
+                  return total
+              lo, hi = -10000000000, 10000000000
+              while lo < hi:
+                  mid = (lo + hi) // 2
+                  if count(mid) < k:
+                      lo = mid + 1
+                  else:
+                      hi = mid
+              return result == lo
+
+seed: 2040
+
+tests:
+  - name: "example_positive_second"
+    in:
+      nums1: [2, 5]
+      nums2: [3, 4]
+      k: 2
+    out: 8
+  - name: "example_zero_boundary"
+    in:
+      nums1: [-4, -2, 0, 3]
+      nums2: [2, 4]
+      k: 6
+    out: 0
+  - name: "example_mixed_negative"
+    in:
+      nums1: [-2, -1, 0, 1, 2]
+      nums2: [-3, -1, 2, 4, 5]
+      k: 3
+    out: -6
+  - name: "single_positive"
+    in:
+      nums1: [7]
+      nums2: [6]
+      k: 1
+    out: 42
+  - name: "single_negative"
+    in:
+      nums1: [-7]
+      nums2: [6]
+      k: 1
+    out: -42
+  - name: "single_zero"
+    in:
+      nums1: [0]
+      nums2: [-100000, 100000]
+      k: 2
+    out: 0
+  - name: "all_negative_arrays_first"
+    in:
+      nums1: [-5, -3, -1]
+      nums2: [2, 4]
+      k: 1
+    out: -20
+  - name: "all_negative_arrays_last"
+    in:
+      nums1: [-5, -3, -1]
+      nums2: [2, 4]
+      k: 6
+    out: -2
+  - name: "negative_times_negative"
+    in:
+      nums1: [-4, -2]
+      nums2: [-5, -1]
+      k: 2
+    out: 4
+  - name: "positive_times_negative"
+    in:
+      nums1: [1, 3, 8]
+      nums2: [-7, -2]
+      k: 4
+    out: -7
+  - name: "zeros_duplicate_products"
+    in:
+      nums1: [-1, 0, 0, 0, 2]
+      nums2: [-3, 0, 0, 4]
+      k: 7
+    out: 0
+  - name: "zero_first_product"
+    in:
+      nums1: [-2, 0, 4]
+      nums2: [-3, -1, 2]
+      k: 1
+    out: -12
+  - name: "zero_last_product"
+    in:
+      nums1: [-2, 0, 4]
+      nums2: [-3, -1, 2]
+      k: 9
+    out: 8
+  - name: "duplicate_negatives"
+    in:
+      nums1: [-2, -2, 1]
+      nums2: [2, 2, 3]
+      k: 3
+    out: -4
+  - name: "duplicate_positives"
+    in:
+      nums1: [1, 1, 4]
+      nums2: [2, 2, 5]
+      k: 5
+    out: 5
+  - name: "all_ones"
+    in:
+      nums1: [1, 1, 1, 1]
+      nums2: [1, 1, 1]
+      k: 6
+    out: 1
+  - name: "min_product_extreme"
+    in:
+      nums1: [-100000]
+      nums2: [100000]
+      k: 1
+    out: -10000000000
+  - name: "max_product_extreme"
+    in:
+      nums1: [100000]
+      nums2: [100000]
+      k: 1
+    out: 10000000000
+  - name: "extreme_mixed_low"
+    in:
+      nums1: [-100000, -1, 0, 1, 100000]
+      nums2: [-100000, -2, 0, 2, 100000]
+      k: 1
+    out: -10000000000
+  - name: "extreme_mixed_high"
+    in:
+      nums1: [-100000, -1, 0, 1, 100000]
+      nums2: [-100000, -2, 0, 2, 100000]
+      k: 25
+    out: 10000000000
+  - name: "near_zero_negative"
+    in:
+      nums1: [-3, -1, 2]
+      nums2: [-4, 1, 5]
+      k: 4
+    out: -3
+  - name: "near_zero_positive"
+    in:
+      nums1: [-3, -1, 2]
+      nums2: [-4, 1, 5]
+      k: 6
+    out: 2
+  - name: "unequal_lengths"
+    in:
+      nums1: [-5, 0, 2, 9]
+      nums2: [-3, 4]
+      k: 5
+    out: 0
+  - name: "two_by_two_middle"
+    in:
+      nums1: [-2, 3]
+      nums2: [-4, 5]
+      k: 2
+    out: -10
+  - name: "all_zero"
+    in:
+      nums1: [0, 0, 0]
+      nums2: [0, 0]
+      k: 4
+    out: 0
+  - name: "negative_division_case"
+    in:
+      nums1: [-5, -2]
+      nums2: [-4, 3]
+      k: 3
+    out: 8
+  - name: "positive_division_case"
+    in:
+      nums1: [2, 5]
+      nums2: [-3, 7]
+      k: 3
+    out: 14
+  - name: "many_signs"
+    in:
+      nums1: [-6, -3, -1, 0, 2, 5]
+      nums2: [-7, -2, 0, 4, 8]
+      k: 10
+    out: -4
+  - name: "many_signs_upper"
+    in:
+      nums1: [-6, -3, -1, 0, 2, 5]
+      nums2: [-7, -2, 0, 4, 8]
+      k: 29
+    out: 40
+  - name: "all_positive_order"
+    in:
+      nums1: [2, 3, 10]
+      nums2: [1, 4, 9]
+      k: 7
+    out: 27
+  - name: "all_negative_order"
+    in:
+      nums1: [-10, -3, -2]
+      nums2: [-9, -4, -1]
+      k: 7
+    out: 27
+  - name: "large_magnitude_small_length"
+    in:
+      nums1: [-99999, -50000, 50000, 99999]
+      nums2: [-99998, -2, 2, 99998]
+      k: 8
+    out: -100000
+  - name: "boundary_k_one_mixed"
+    in:
+      nums1: [-9, -4, 3, 8]
+      nums2: [-6, -2, 5, 7]
+      k: 1
+    out: -63
+  - name: "boundary_k_all"
+    in:
+      nums1: [-9, -4, 3, 8]
+      nums2: [-6, -2, 5, 7]
+      k: 16
+    out: 56
+  - name: "generated_full_positive"
+    in:
+      nums1:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 1
+          max: 100000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      k: 1250000000
+    seed: 204001
+  - name: "generated_full_mixed"
+    in:
+      nums1:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      nums2:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: -100000
+          max: 100000
+        distinct: false
+        sorted: true
+        elemType: "int"
+      k: 1875000000
+    seed: 204002

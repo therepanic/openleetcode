@@ -1,0 +1,214 @@
+entry:
+  id: 2147
+  title: "number-of-ways-to-divide-a-long-corridor"
+  params:
+    corridor:
+      type: string
+  call:
+    cpp: "Solution().numberOfWays({corridor})"
+    rust: "Solution::number_of_ways({corridor})"
+    python3: "Solution().numberOfWays({corridor})"
+    python2: "Solution().numberOfWays({corridor})"
+    ruby: "number_of_ways({corridor})"
+    java: "new Solution().numberOfWays({corridor})"
+    csharp: "new Solution().NumberOfWays({corridor})"
+    kotlin: "Solution().numberOfWays({corridor})"
+    go: "numberOfWays({corridor})"
+    dart: "Solution().numberOfWays({corridor})"
+    swift: "Solution().numberOfWays({corridor})"
+    typescript: "numberOfWays({corridor})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 500
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().numberOfWays(corridor, {result})"
+    checker: |
+      class Checker:
+          def numberOfWays(self, corridor, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              mod = 1000000007
+              seats = [i for i, c in enumerate(corridor) if c == 'S']
+              if len(seats) == 0 or len(seats) % 2:
+                  expected = 0
+              else:
+                  expected = 1
+                  for i in range(1, len(seats) - 1, 2):
+                      expected = expected * (seats[i + 1] - seats[i]) % mod
+              return result == expected
+
+seed: 2147
+
+tests:
+  - name: "single_seat"
+    in:
+      corridor: "S"
+    out: 0
+  - name: "single_plant"
+    in:
+      corridor: "P"
+    out: 0
+  - name: "empty_pair"
+    in:
+      corridor: "PP"
+    out: 0
+  - name: "two_adjacent_seats"
+    in:
+      corridor: "SS"
+    out: 1
+  - name: "seat_then_plant"
+    in:
+      corridor: "SP"
+    out: 0
+  - name: "plant_then_seat"
+    in:
+      corridor: "PS"
+    out: 0
+  - name: "pair_with_trailing_plants"
+    in:
+      corridor: "SSPPP"
+    out: 1
+  - name: "leading_plants_pair"
+    in:
+      corridor: "PPPSS"
+    out: 1
+  - name: "one_gap_between_pairs"
+    in:
+      corridor: "SSPSS"
+    out: 2
+  - name: "two_gap_between_pairs"
+    in:
+      corridor: "SSPPSS"
+    out: 3
+  - name: "three_gap_between_pairs"
+    in:
+      corridor: "SSPPPSS"
+    out: 4
+  - name: "example_one"
+    in:
+      corridor: "SSPPSPS"
+    out: 3
+  - name: "example_two"
+    in:
+      corridor: "PPSPSP"
+    out: 1
+  - name: "four_seats_adjacent"
+    in:
+      corridor: "SSSS"
+    out: 1
+  - name: "six_seats_adjacent"
+    in:
+      corridor: "SSSSSS"
+    out: 1
+  - name: "eight_seats_adjacent"
+    in:
+      corridor: "SSSSSSSS"
+    out: 1
+  - name: "odd_three_seats"
+    in:
+      corridor: "SSPS"
+    out: 0
+  - name: "odd_five_seats"
+    in:
+      corridor: "SPSPS"
+    out: 0
+  - name: "odd_seven_seats"
+    in:
+      corridor: "SSPPSSPS"
+    out: 0
+  - name: "alternating_five"
+    in:
+      corridor: "PSPSP"
+    out: 1
+  - name: "two_pairs_leading_gap"
+    in:
+      corridor: "PSSPPSSP"
+    out: 3
+  - name: "two_pairs_long_gap"
+    in:
+      corridor: "SSPPPPSS"
+    out: 5
+  - name: "three_pairs_mixed"
+    in:
+      corridor: "PPSSPPSSPP"
+    out: 3
+  - name: "three_pairs_many_plants"
+    in:
+      corridor: "SSPPSSPPSSPPSS"
+    out: 27
+  - name: "four_pairs_mixed"
+    in:
+      corridor: "SPSPSSPPSSPS"
+    out: 0
+  - name: "long_first_gap"
+    in:
+      corridor: "PSSPPPPPPPSS"
+    out: 8
+  - name: "long_leading_and_trailing"
+    in:
+      corridor: "PPSSPPSSPPSSPP"
+    out: 9
+  - name: "twenty_plant_gap"
+    in:
+      corridor: "PPPPPPPPPPPPPPPPPPPPSSPPPPPPPPPPPPPPPPPPPPSS"
+    out: 21
+  - name: "one_hundred_seats_even"
+    in:
+      corridor: "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+    out: 1
+  - name: "one_hundred_one_seats_odd"
+    in:
+      corridor: "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+    out: 0
+  - name: "plants_then_pair_at_end"
+    in:
+      corridor: "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSS"
+    out: 1
+  - name: "pair_long_middle_gap"
+    in:
+      corridor: "SSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSS"
+    out: 92
+  - name: "generated_small_balanced"
+    seed: 31
+    in:
+      corridor:
+        gen: "str"
+        len: 17
+        alphabet: "SP"
+  - name: "generated_small_varied"
+    seed: 32
+    in:
+      corridor:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 60
+        alphabet: "SP"
+  - name: "generated_medium"
+    seed: 33
+    in:
+      corridor:
+        gen: "str"
+        len: 1000
+        alphabet: "SP"
+  - name: "generated_large"
+    seed: 34
+    in:
+      corridor:
+        gen: "str"
+        len: 50000
+        alphabet: "SP"
+  - name: "generated_maximum"
+    seed: 35
+    in:
+      corridor:
+        gen: "str"
+        len: 100000
+        alphabet: "SP"

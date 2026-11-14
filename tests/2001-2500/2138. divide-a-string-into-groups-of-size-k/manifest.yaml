@@ -1,0 +1,333 @@
+entry:
+  id: 2138
+  title: "divide-a-string-into-groups-of-size-k"
+  params:
+    s:
+      type: string
+    k:
+      type: int
+    fill:
+      type: char
+  call:
+    cpp: "Solution().divideString({s}, {k}, {fill})"
+    rust: "Solution::divide_string({s}, {k}, {fill})"
+    python3: "Solution().divideString({s}, {k}, {fill})"
+    python2: "Solution().divideString({s}, {k}, {fill})"
+    ruby: "divide_string({s}, {k}, {fill})"
+    java: "new Solution().divideString({s}, {k}, {fill})"
+    csharp: "new Solution().DivideString({s}, {k}, {fill})"
+    kotlin: "Solution().divideString({s}, {k}, {fill})"
+    go: "divideString({s}, {k}, {fill})"
+    dart: "Solution().divideString({s}, {k}, {fill})"
+    swift: "Solution().divideString({s}, {k}, {fill})"
+    typescript: "divideString({s}, {k}, {fill})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 200
+  memory_mb: 300
+
+oracle:
+  python3:
+    call: "Checker().divideString(s, k, fill, {result})"
+    checker: |
+      class Checker:
+          def divideString(self, s, k, fill, result):
+              if not isinstance(result, list) or not result:
+                  return False
+              expected_count = (len(s) + k - 1) // k
+              if len(result) != expected_count:
+                  return False
+              for i, group in enumerate(result):
+                  if not isinstance(group, str) or len(group) != k:
+                      return False
+                  start = i * k
+                  expected = s[start:start + k]
+                  if len(expected) < k:
+                      expected += fill * (k - len(expected))
+                  if group != expected:
+                      return False
+              return ''.join(result)[:len(s)] == s
+
+seed: 2138
+
+tests:
+  - name: "example_exact_division"
+    in:
+      s: "abcdefghi"
+      k: 3
+      fill: "x"
+    out: ["abc", "def", "ghi"]
+  - name: "example_padded_tail"
+    in:
+      s: "abcdefghij"
+      k: 3
+      fill: "x"
+    out: ["abc", "def", "ghi", "jxx"]
+  - name: "single_character"
+    in:
+      s: "a"
+      k: 1
+      fill: "z"
+    out: ["a"]
+  - name: "single_character_large_group"
+    in:
+      s: "q"
+      k: 100
+      fill: "m"
+    out: ["qmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"]
+  - name: "k_one"
+    in:
+      s: "leetcode"
+      k: 1
+      fill: "x"
+    out: ["l", "e", "e", "t", "c", "o", "d", "e"]
+  - name: "k_equals_length"
+    in:
+      s: "openleetcode"
+      k: 12
+      fill: "a"
+    out: ["openleetcode"]
+  - name: "k_greater_than_length"
+    in:
+      s: "abcde"
+      k: 7
+      fill: "z"
+    out: ["abcdezz"]
+  - name: "repeated_letters_exact"
+    in:
+      s: "aaaaaaaaaa"
+      k: 5
+      fill: "b"
+    out: ["aaaaa", "aaaaa"]
+  - name: "repeated_letters_padded"
+    in:
+      s: "zzzzz"
+      k: 2
+      fill: "z"
+    out: ["zz", "zz", "zz"]
+  - name: "fill_same_as_tail"
+    in:
+      s: "helloworld"
+      k: 4
+      fill: "o"
+    out: ["hell", "owor", "ldoo"]
+  - name: "remainder_one"
+    in:
+      s: "abcdefghijk"
+      k: 5
+      fill: "p"
+    out: ["abcde", "fghij", "kpppp"]
+  - name: "remainder_k_minus_one"
+    in:
+      s: "abcdefghijkl"
+      k: 4
+      fill: "w"
+    out: ["abcd", "efgh", "ijkl"]
+  - name: "two_groups_one_short"
+    in:
+      s: "abcdefg"
+      k: 4
+      fill: "r"
+    out: ["abcd", "efgr"]
+  - name: "alternating_letters"
+    in:
+      s: "ababababab"
+      k: 3
+      fill: "c"
+    out: ["aba", "bab", "aba", "bcc"]
+  - name: "alphabet_prefix"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyz"
+      k: 10
+      fill: "q"
+    out: ["abcdefghij", "klmnopqrst", "uvwxyzqqqq"]
+  - name: "large_k_two"
+    in:
+      s: "abcdefghij"
+      k: 2
+      fill: "v"
+    out: ["ab", "cd", "ef", "gh", "ij"]
+  - name: "length_ninety_nine_k_ten"
+    in:
+      s: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      k: 10
+      fill: "b"
+    out:
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaaa"
+      - "aaaaaaaaab"
+  - name: "length_hundred_k_hundred"
+    in:
+      s: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv"
+      k: 100
+      fill: "x"
+    out:
+      - "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv"
+  - name: "two_characters_k_one"
+    in:
+      s: "xy"
+      k: 1
+      fill: "a"
+    out: ["x", "y"]
+  - name: "two_characters_k_two"
+    in:
+      s: "xy"
+      k: 2
+      fill: "a"
+    out: ["xy"]
+  - name: "two_characters_k_three"
+    in:
+      s: "xy"
+      k: 3
+      fill: "a"
+    out: ["xya"]
+  - name: "length_three_k_two"
+    in:
+      s: "cat"
+      k: 2
+      fill: "d"
+    out: ["ca", "td"]
+  - name: "length_four_k_three"
+    in:
+      s: "bird"
+      k: 3
+      fill: "x"
+    out: ["bir", "dxx"]
+  - name: "length_five_k_four"
+    in:
+      s: "apple"
+      k: 4
+      fill: "z"
+    out: ["appl", "ezzz"]
+  - name: "length_six_k_four"
+    in:
+      s: "orange"
+      k: 4
+      fill: "q"
+    out: ["oran", "geqq"]
+  - name: "length_seven_k_three"
+    in:
+      s: "network"
+      k: 3
+      fill: "s"
+    out: ["net", "wor", "kss"]
+  - name: "length_eight_k_five"
+    in:
+      s: "computer"
+      k: 5
+      fill: "x"
+    out: ["compu", "terxx"]
+  - name: "length_twelve_k_five"
+    in:
+      s: "abcdefghijkl"
+      k: 5
+      fill: "z"
+    out: ["abcde", "fghij", "klzzz"]
+  - name: "length_thirteen_k_six"
+    in:
+      s: "abcdefghijklm"
+      k: 6
+      fill: "n"
+    out: ["abcdef", "ghijkl", "mnnnnn"]
+  - name: "length_twenty_k_seven"
+    in:
+      s: "abcdefghijklmnopqrst"
+      k: 7
+      fill: "x"
+    out: ["abcdefg", "hijklmn", "opqrstx"]
+  - name: "fill_is_a"
+    in:
+      s: "coding"
+      k: 4
+      fill: "a"
+    out: ["codi", "ngaa"]
+  - name: "fill_is_z"
+    in:
+      s: "testing"
+      k: 5
+      fill: "z"
+    out: ["testi", "ngzzz"]
+  - name: "generated_short_mixed"
+    seed: 101
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 1
+          max: 20
+        alphabet: "abcx"
+      k:
+        gen: "int"
+        min: 1
+        max: 20
+      fill:
+        gen: "char"
+        variety: ["d", "e", "f"]
+  - name: "generated_medium"
+    seed: 202
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 21
+          max: 60
+        alphabet: "amz"
+      k:
+        gen: "int"
+        min: 2
+        max: 30
+      fill:
+        gen: "char"
+        variety: ["a", "q", "z"]
+  - name: "generated_maximum_length"
+    seed: 303
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "abcdefghijklm"
+      k:
+        gen: "int"
+        min: 1
+        max: 100
+      fill:
+        gen: "char"
+        variety: ["n", "o", "p"]
+  - name: "generated_large_groups"
+    seed: 404
+    in:
+      s:
+        gen: "str"
+        len:
+          gen: "int"
+          min: 80
+          max: 100
+        alphabet: "rstu"
+      k:
+        gen: "int"
+        min: 50
+        max: 100
+      fill:
+        gen: "char"
+        variety: ["v", "w", "x"]
+  - name: "generated_k_one"
+    seed: 505
+    in:
+      s:
+        gen: "str"
+        len: 100
+        alphabet: "qr"
+      k: 1
+      fill: "z"

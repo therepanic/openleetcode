@@ -1,0 +1,432 @@
+entry:
+  id: 2097
+  title: "valid-arrangement-of-pairs"
+  params:
+    pairs:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+  call:
+    cpp: "Solution().validArrangement({pairs})"
+    rust: "Solution::valid_arrangement({pairs})"
+    python3: "Solution().validArrangement({pairs})"
+    python2: "Solution().validArrangement({pairs})"
+    ruby: "valid_arrangement({pairs})"
+    java: "new Solution().validArrangement({pairs})"
+    csharp: "new Solution().ValidArrangement({pairs})"
+    kotlin: "Solution().validArrangement({pairs})"
+    go: "validArrangement({pairs})"
+    dart: "Solution().validArrangement({pairs})"
+    swift: "Solution().validArrangement({pairs})"
+    typescript: "validArrangement({pairs})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().validArrangement(pairs, {result})"
+    checker: |
+      class Checker:
+          def validArrangement(self, pairs, result):
+              if not isinstance(result, list) or len(result) != len(pairs):
+                  return False
+              counts = {}
+              for edge in pairs:
+                  if not isinstance(edge, list) or len(edge) != 2:
+                      return False
+                  key = (edge[0], edge[1])
+                  counts[key] = counts.get(key, 0) + 1
+              for i, edge in enumerate(result):
+                  if not isinstance(edge, list) or len(edge) != 2:
+                      return False
+                  key = (edge[0], edge[1])
+                  if counts.get(key, 0) == 0:
+                      return False
+                  counts[key] -= 1
+                  if i and result[i - 1][1] != edge[0]:
+                      return False
+              return all(value == 0 for value in counts.values())
+
+seed: 2097
+
+tests:
+  - name: "example_one"
+    in:
+      pairs:
+        - [5, 1]
+        - [4, 5]
+        - [11, 9]
+        - [9, 4]
+  - name: "example_two_cycle"
+    in:
+      pairs:
+        - [1, 3]
+        - [3, 2]
+        - [2, 1]
+  - name: "example_three_branch"
+    in:
+      pairs:
+        - [1, 2]
+        - [1, 3]
+        - [2, 1]
+  - name: "single_edge_zero"
+    in:
+      pairs:
+        - [0, 1000000000]
+  - name: "single_edge_max_reversed"
+    in:
+      pairs:
+        - [1000000000, 0]
+  - name: "two_edge_chain"
+    in:
+      pairs:
+        - [7, 8]
+        - [8, 9]
+  - name: "two_edge_cycle"
+    in:
+      pairs:
+        - [42, 17]
+        - [17, 42]
+  - name: "three_edge_chain"
+    in:
+      pairs:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+  - name: "self_returning_cycle_without_self_edge"
+    in:
+      pairs:
+        - [9, 4]
+        - [4, 9]
+        - [9, 8]
+        - [8, 9]
+  - name: "star_out_and_return"
+    in:
+      pairs:
+        - [10, 1]
+        - [1, 10]
+        - [10, 2]
+        - [2, 10]
+        - [10, 3]
+        - [3, 10]
+  - name: "branching_open_trail"
+    in:
+      pairs:
+        - [5, 1]
+        - [5, 2]
+        - [1, 5]
+        - [2, 3]
+        - [3, 5]
+  - name: "nested_branching"
+    in:
+      pairs:
+        - [0, 2]
+        - [0, 1]
+        - [2, 0]
+        - [1, 3]
+        - [3, 0]
+        - [0, 4]
+        - [4, 0]
+  - name: "long_chain_reversed_input"
+    in:
+      pairs:
+        - [5, 6]
+        - [4, 5]
+        - [3, 4]
+        - [2, 3]
+        - [1, 2]
+        - [0, 1]
+  - name: "cycle_reversed_input"
+    in:
+      pairs:
+        - [30, 10]
+        - [20, 30]
+        - [10, 20]
+        - [40, 10]
+        - [10, 40]
+  - name: "duplicate_endpoints_distinct_edges"
+    in:
+      pairs:
+        - [8, 1]
+        - [1, 8]
+        - [8, 2]
+        - [2, 8]
+        - [8, 3]
+        - [3, 8]
+        - [8, 4]
+        - [4, 8]
+  - name: "negative_like_unsigned_boundary"
+    in:
+      pairs:
+        - [0, 999999999]
+        - [999999999, 1]
+        - [1, 1000000000]
+  - name: "large_labels_cycle"
+    in:
+      pairs:
+        - [1000000000, 999999999]
+        - [999999999, 500000000]
+        - [500000000, 0]
+        - [0, 1000000000]
+  - name: "two_cycles_joined_at_vertex"
+    in:
+      pairs:
+        - [1, 2]
+        - [2, 1]
+        - [1, 3]
+        - [3, 1]
+        - [1, 4]
+        - [4, 1]
+  - name: "four_way_open_branch"
+    in:
+      pairs:
+        - [100, 10]
+        - [100, 20]
+        - [100, 30]
+        - [10, 100]
+        - [20, 100]
+        - [30, 40]
+        - [40, 100]
+  - name: "interleaved_input_order"
+    in:
+      pairs:
+        - [2, 3]
+        - [0, 1]
+        - [4, 5]
+        - [1, 2]
+        - [3, 4]
+  - name: "dense_small_cycle"
+    in:
+      pairs:
+        - [0, 1]
+        - [1, 0]
+        - [0, 2]
+        - [2, 0]
+        - [0, 3]
+        - [3, 0]
+        - [0, 4]
+        - [4, 0]
+        - [0, 5]
+        - [5, 0]
+  - name: "deep_detour"
+    in:
+      pairs:
+        - [50, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 50]
+        - [50, 4]
+        - [4, 5]
+        - [5, 50]
+  - name: "alternating_labels"
+    in:
+      pairs:
+        - [6, 100]
+        - [100, 7]
+        - [7, 200]
+        - [200, 8]
+        - [8, 300]
+        - [300, 6]
+  - name: "open_with_late_start"
+    in:
+      pairs:
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [8, 9]
+  - name: "many_detours"
+    in:
+      pairs:
+        - [7, 1]
+        - [1, 7]
+        - [7, 2]
+        - [2, 3]
+        - [3, 7]
+        - [7, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+  - name: "zero_hub"
+    in:
+      pairs:
+        - [0, 2]
+        - [2, 0]
+        - [0, 4]
+        - [4, 0]
+        - [0, 6]
+        - [6, 0]
+        - [0, 8]
+        - [8, 0]
+  - name: "maximum_hub"
+    in:
+      pairs:
+        - [1000000000, 1]
+        - [1, 1000000000]
+        - [1000000000, 2]
+        - [2, 1000000000]
+        - [1000000000, 3]
+        - [3, 1000000000]
+  - name: "mixed_scale_cycle"
+    in:
+      pairs:
+        - [0, 999]
+        - [999, 1000000000]
+        - [1000000000, 17]
+        - [17, 0]
+        - [0, 500000000]
+        - [500000000, 0]
+  - name: "ten_edge_open"
+    in:
+      pairs:
+        - [10, 11]
+        - [11, 12]
+        - [12, 10]
+        - [10, 13]
+        - [13, 14]
+        - [14, 10]
+        - [10, 15]
+        - [15, 16]
+        - [16, 10]
+        - [10, 17]
+  - name: "wide_euler_cycle"
+    in:
+      pairs:
+        - [500, 1]
+        - [1, 500]
+        - [500, 2]
+        - [2, 500]
+        - [500, 3]
+        - [3, 500]
+        - [500, 4]
+        - [4, 500]
+        - [500, 5]
+        - [5, 500]
+  - name: "crossed_open_edges"
+    in:
+      pairs:
+        - [20, 1]
+        - [20, 2]
+        - [1, 20]
+        - [2, 3]
+        - [3, 4]
+        - [4, 20]
+        - [20, 5]
+  - name: "large_chain_50"
+    in:
+      pairs:
+        - [0, 1]
+        - [1, 2]
+        - [2, 3]
+        - [3, 4]
+        - [4, 5]
+        - [5, 6]
+        - [6, 7]
+        - [7, 8]
+        - [8, 9]
+        - [9, 10]
+        - [10, 11]
+        - [11, 12]
+        - [12, 13]
+        - [13, 14]
+        - [14, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 18]
+        - [18, 19]
+        - [19, 20]
+        - [20, 21]
+        - [21, 22]
+        - [22, 23]
+        - [23, 24]
+        - [24, 25]
+        - [25, 26]
+        - [26, 27]
+        - [27, 28]
+        - [28, 29]
+        - [29, 30]
+        - [30, 31]
+        - [31, 32]
+        - [32, 33]
+        - [33, 34]
+        - [34, 35]
+        - [35, 36]
+        - [36, 37]
+        - [37, 38]
+        - [38, 39]
+        - [39, 40]
+        - [40, 41]
+        - [41, 42]
+        - [42, 43]
+        - [43, 44]
+        - [44, 45]
+        - [45, 46]
+        - [46, 47]
+        - [47, 48]
+        - [48, 49]
+        - [49, 50]
+  - name: "stress_like_long_cycle"
+    in:
+      pairs:
+        - [1000000000, 999999999]
+        - [999999999, 999999998]
+        - [999999998, 999999997]
+        - [999999997, 999999996]
+        - [999999996, 999999995]
+        - [999999995, 999999994]
+        - [999999994, 999999993]
+        - [999999993, 999999992]
+        - [999999992, 999999991]
+        - [999999991, 999999990]
+        - [999999990, 999999989]
+        - [999999989, 999999988]
+        - [999999988, 999999987]
+        - [999999987, 999999986]
+        - [999999986, 999999985]
+        - [999999985, 999999984]
+        - [999999984, 999999983]
+        - [999999983, 999999982]
+        - [999999982, 999999981]
+        - [999999981, 1000000000]
+  - name: "stress_like_branching_cycle"
+    in:
+      pairs:
+        - [700000000, 1]
+        - [1, 700000000]
+        - [700000000, 2]
+        - [2, 700000000]
+        - [700000000, 3]
+        - [3, 700000000]
+        - [700000000, 4]
+        - [4, 700000000]
+        - [700000000, 5]
+        - [5, 700000000]
+        - [700000000, 6]
+        - [6, 700000000]
+        - [700000000, 7]
+        - [7, 700000000]
+        - [700000000, 8]
+        - [8, 700000000]
+        - [700000000, 9]
+        - [9, 700000000]
+        - [700000000, 10]
+        - [10, 700000000]
+  - name: "asymmetric_eulerian_cycle"
+    in:
+      pairs:
+        - [77, 12]
+        - [12, 77]
+        - [77, 13]
+        - [13, 14]
+        - [14, 77]
+        - [77, 15]
+        - [15, 16]
+        - [16, 17]
+        - [17, 77]

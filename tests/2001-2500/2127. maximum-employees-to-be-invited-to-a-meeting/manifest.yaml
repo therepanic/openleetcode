@@ -1,0 +1,223 @@
+entry:
+  id: 2127
+  title: "maximum-employees-to-be-invited-to-a-meeting"
+  params:
+    favorite:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().maximumInvitations({favorite})"
+    rust: "Solution::maximum_invitations({favorite})"
+    python3: "Solution().maximumInvitations({favorite})"
+    python2: "Solution().maximumInvitations({favorite})"
+    ruby: "maximum_invitations({favorite})"
+    java: "new Solution().maximumInvitations({favorite})"
+    csharp: "new Solution().MaximumInvitations({favorite})"
+    kotlin: "Solution().maximumInvitations({favorite})"
+    go: "maximumInvitations({favorite})"
+    dart: "Solution().maximumInvitations({favorite})"
+    swift: "Solution().maximumInvitations({favorite})"
+    typescript: "maximumInvitations({favorite})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maximumInvitations(favorite, {result})"
+    checker: |
+      class Checker:
+          def maximumInvitations(self, favorite, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              n = len(favorite)
+              indeg = [0] * n
+              depth = [0] * n
+              for v in favorite:
+                  if not isinstance(v, int) or v < 0 or v >= n:
+                      return False
+                  indeg[v] += 1
+              q = [i for i, d in enumerate(indeg) if d == 0]
+              head = 0
+              while head < len(q):
+                  u = q[head]
+                  head += 1
+                  v = favorite[u]
+                  depth[v] = max(depth[v], depth[u] + 1)
+                  indeg[v] -= 1
+                  if indeg[v] == 0:
+                      q.append(v)
+              best_cycle = 0
+              pairs = 0
+              seen = [False] * n
+              for i in range(n):
+                  if indeg[i] == 0 or seen[i]:
+                      continue
+                  cur = i
+                  size = 0
+                  while not seen[cur]:
+                      seen[cur] = True
+                      cur = favorite[cur]
+                      size += 1
+                  if size == 2:
+                      pairs += 2 + depth[i] + depth[favorite[i]]
+                  else:
+                      best_cycle = max(best_cycle, size)
+              return result == max(best_cycle, pairs)
+
+seed: 2127
+
+tests:
+  - name: "example_1"
+    in:
+      favorite: [2, 2, 1, 2]
+    out: 3
+  - name: "example_2_cycle_three"
+    in:
+      favorite: [1, 2, 0]
+    out: 3
+  - name: "example_3"
+    in:
+      favorite: [3, 0, 1, 4, 1]
+    out: 4
+  - name: "single_mutual_pair"
+    in:
+      favorite: [1, 0, 0]
+    out: 3
+  - name: "pair_with_chain"
+    in:
+      favorite: [1, 0, 0, 2, 3]
+    out: 5
+  - name: "pair_two_chains"
+    in:
+      favorite: [1, 0, 0, 1, 3, 4]
+    out: 6
+  - name: "cycle_four"
+    in:
+      favorite: [1, 2, 3, 0, 0]
+    out: 4
+  - name: "cycle_five"
+    in:
+      favorite: [1, 2, 3, 4, 0, 1]
+    out: 5
+  - name: "cycle_two_beats_cycle_three"
+    in:
+      favorite: [1, 0, 3, 4, 2]
+    out: 3
+  - name: "cycle_three_beats_pair_chains"
+    in:
+      favorite: [1, 2, 0, 4, 3, 3]
+    out: 3
+  - name: "two_disconnected_pairs"
+    in:
+      favorite: [1, 0, 3, 2, 5, 4]
+    out: 6
+  - name: "pair_and_cycle_three"
+    in:
+      favorite: [1, 0, 3, 4, 2]
+    out: 3
+  - name: "long_chain_into_pair"
+    in:
+      favorite: [1, 0, 0, 2, 3, 4, 5]
+    out: 7
+  - name: "branching_chain_into_pair"
+    in:
+      favorite: [1, 0, 0, 0, 3, 4]
+    out: 5
+  - name: "branching_selects_longest"
+    in:
+      favorite: [1, 0, 0, 0, 3, 4, 5]
+    out: 6
+  - name: "all_to_one_cycle"
+    in:
+      favorite: [1, 0, 0, 0, 0, 0, 0, 0]
+    out: 3
+  - name: "many_pairs_sum"
+    in:
+      favorite: [1, 0, 3, 2, 5, 4, 7, 6]
+    out: 8
+  - name: "pair_chain_and_long_cycle"
+    in:
+      favorite: [1, 0, 0, 4, 5, 6, 3]
+    out: 4
+  - name: "cycle_with_incoming_tail"
+    in:
+      favorite: [1, 2, 0, 0, 3, 4]
+    out: 3
+  - name: "nested_tail_branch"
+    in:
+      favorite: [1, 0, 0, 2, 2, 4, 5, 6]
+    out: 7
+  - name: "three_cycle_and_pair"
+    in:
+      favorite: [1, 2, 0, 4, 3]
+    out: 3
+  - name: "four_cycle_and_pair"
+    in:
+      favorite: [1, 2, 3, 0, 5, 4]
+    out: 4
+  - name: "several_short_tails"
+    in:
+      favorite: [1, 0, 0, 0, 0, 1, 5, 6]
+    out: 6
+  - name: "cycle_six"
+    in:
+      favorite: [1, 2, 3, 4, 5, 0, 0]
+    out: 6
+  - name: "cycle_seven"
+    in:
+      favorite: [1, 2, 3, 4, 5, 6, 0, 1]
+    out: 7
+  - name: "pair_with_competing_depths"
+    in:
+      favorite: [1, 0, 0, 2, 3, 0, 5, 6, 7]
+    out: 6
+  - name: "cycle_three_with_tail"
+    in:
+      favorite: [1, 2, 0, 1, 3, 4]
+    out: 3
+  - name: "cycle_four_with_tail"
+    in:
+      favorite: [1, 2, 3, 0, 1, 4]
+    out: 4
+  - name: "two_pairs_with_tails"
+    in:
+      favorite: [1, 0, 0, 2, 5, 4, 4, 6]
+    out: 8
+  - name: "large_cycle"
+    in:
+      favorite: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+    out: 10
+  - name: "large_pair_chain"
+    in:
+      favorite: [1, 0, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    out: 12
+  - name: "large_many_pairs"
+    in:
+      favorite: [1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14]
+    out: 16
+  - name: "large_disconnected_cycles"
+    in:
+      favorite: [1, 2, 0, 4, 5, 3, 7, 8, 6, 10, 11, 9]
+    out: 3
+
+  - name: "minimum_length_three"
+    in:
+      favorite: [1, 0, 1]
+    out: 3
+  - name: "maximum_n_cycle"
+    in:
+      favorite:
+        gen: "array"
+        len: 100000
+        of:
+          gen: "int"
+          min: 0
+          max: 99999
+        distinct: false
+        sorted: false

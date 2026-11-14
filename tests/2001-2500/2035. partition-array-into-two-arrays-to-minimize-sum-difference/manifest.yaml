@@ -1,0 +1,257 @@
+entry:
+  id: 2035
+  title: "partition-array-into-two-arrays-to-minimize-sum-difference"
+  params:
+    nums:
+      type: array
+      items:
+        type: int
+  call:
+    cpp: "Solution().minimumDifference({nums})"
+    rust: "Solution::minimum_difference({nums})"
+    python3: "Solution().minimumDifference({nums})"
+    python2: "Solution().minimumDifference({nums})"
+    ruby: "minimum_difference({nums})"
+    java: "new Solution().minimumDifference({nums})"
+    csharp: "new Solution().MinimumDifference({nums})"
+    kotlin: "Solution().minimumDifference({nums})"
+    go: "minimumDifference({nums})"
+    dart: "Solution().minimumDifference({nums})"
+    swift: "Solution().minimumDifference({nums})"
+    typescript: "minimumDifference({nums})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().minimumDifference(nums, {result})"
+    checker: |
+      class Checker:
+          def minimumDifference(self, nums, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              m = len(nums)
+              if m < 2 or m % 2 != 0 or m > 30:
+                  return False
+              n = m // 2
+              total = sum(nums)
+              left = [[] for _ in range(n + 1)]
+              right = [[] for _ in range(n + 1)]
+              for mask in range(1 << n):
+                  k = mask.bit_count()
+                  a = 0
+                  b = 0
+                  for i in range(n):
+                      if mask & (1 << i):
+                          a += nums[i]
+                          b += nums[n + i]
+                  left[k].append(a)
+                  right[k].append(b)
+              for values in left:
+                  values.sort()
+              import bisect
+              best = None
+              for k in range(n + 1):
+                  candidates = left[k]
+                  for s in right[n - k]:
+                      target = (total // 2) - s
+                      pos = bisect.bisect_left(candidates, target)
+                      for j in (pos - 1, pos):
+                          if 0 <= j < len(candidates):
+                              diff = abs(total - 2 * (candidates[j] + s))
+                              best = diff if best is None else min(best, diff)
+              return result == best
+
+seed: 20352035
+
+tests:
+  - name: "example_one"
+    in:
+      nums: [3, 9, 7, 3]
+    out: 2
+  - name: "example_two"
+    in:
+      nums: [-36, 36]
+    out: 72
+  - name: "example_three"
+    in:
+      nums: [2, -1, 0, 4, -2, -9]
+    out: 0
+  - name: "two_equal_zero"
+    in:
+      nums: [0, 0]
+    out: 0
+  - name: "two_same_positive"
+    in:
+      nums: [7, 7]
+    out: 0
+  - name: "two_opposite"
+    in:
+      nums: [-10000000, 10000000]
+    out: 20000000
+  - name: "four_all_equal"
+    in:
+      nums: [5, 5, 5, 5]
+    out: 0
+  - name: "four_mixed_sign"
+    in:
+      nums: [-5, -4, 10, 1]
+    out: 8
+  - name: "four_extremes"
+    in:
+      nums: [-10000000, -10000000, 10000000, 10000000]
+    out: 0
+  - name: "six_balanced"
+    in:
+      nums: [1, 2, 3, 4, 5, 6]
+    out: 1
+  - name: "six_duplicates"
+    in:
+      nums: [8, 8, 8, 8, 8, 8]
+    out: 0
+  - name: "six_large_odd_total"
+    in:
+      nums: [10000000, 10000000, 10000000, 10000000, 10000000, 9999999]
+    out: 1
+  - name: "eight_powers"
+    in:
+      nums: [1, 2, 4, 8, 16, 32, 64, 128]
+    out: 15
+  - name: "eight_negative"
+    in:
+      nums: [-1, -2, -3, -4, -5, -6, -7, -8]
+    out: 0
+  - name: "eight_zero_and_large"
+    in:
+      nums: [0, 0, 0, 0, 10000000, 10000000, -10000000, -10000000]
+    out: 0
+  - name: "ten_alternating"
+    in:
+      nums: [100, -100, 99, -99, 98, -98, 97, -97, 96, -96]
+    out: 184
+  - name: "ten_uneven"
+    in:
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+    out: 1
+  - name: "twelve_sequential"
+    in:
+      nums: [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+  - name: "fourteen_sparse"
+    in:
+      nums: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1]
+  - name: "sixteen_repeated_blocks"
+    in:
+      nums: [3, 3, 3, 3, 3, 3, 3, 3, -2, -2, -2, -2, -2, -2, -2, -2]
+  - name: "eighteen_signed_steps"
+    in:
+      nums: [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  - name: "twenty_randomish"
+    in:
+      nums: [17, -23, 41, 5, -8, 19, -31, 7, 13, -2, 29, -11, 3, 37, -19, 2, -7, 43, -5, 11]
+  - name: "twenty_two_extreme_mix"
+    in:
+      nums: [10000000, -10000000, 9999999, -9999999, 8888888, -8888888, 7777777, -7777777, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7]
+  - name: "twenty_four_duplicates"
+    in:
+      nums: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11]
+  - name: "twenty_six_progression"
+    in:
+      nums: [-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  - name: "twenty_eight_high_values"
+    in:
+      nums: [9999991, 9999983, 9999973, 9999967, 9999959, 9999943, 9999931, 9999929, -9999919, -9999907, -9999901, -9999899, -9999887, -9999871, -9999857, -9999851, 1234567, -1234567, 7654321, -7654321, 3141592, -3141592, 2718281, -2718281, 42, -42, 100, -100]
+  - name: "thirty_maximum_balanced"
+    in:
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15]
+  - name: "generated_small_values"
+    seed: 101
+    in:
+      nums:
+        gen: "array"
+        len: 10
+        of:
+          gen: "int"
+          min: -20
+          max: 20
+        distinct: false
+        sorted: false
+  - name: "generated_medium_values"
+    seed: 202
+    in:
+      nums:
+        gen: "array"
+        len: 16
+        of:
+          gen: "int"
+          min: -1000
+          max: 1000
+        distinct: false
+        sorted: false
+  - name: "generated_large_values"
+    seed: 303
+    in:
+      nums:
+        gen: "array"
+        len: 24
+        of:
+          gen: "int"
+          min: -10000000
+          max: 10000000
+        distinct: false
+        sorted: false
+  - name: "generated_maximum_values"
+    seed: 404
+    in:
+      nums:
+        gen: "array"
+        len: 30
+        of:
+          gen: "int"
+          min: -10000000
+          max: 10000000
+        distinct: false
+        sorted: false
+  - name: "generated_maximum_narrow_range"
+    seed: 505
+    in:
+      nums:
+        gen: "array"
+        len: 30
+        of:
+          gen: "int"
+          min: -3
+          max: 3
+        distinct: false
+        sorted: false
+  - name: "thirty_maximum_same_sign"
+    in:
+      nums: [10000000, 9999999, 9999998, 9999997, 9999996, 9999995, 9999994, 9999993, 9999992, 9999991, 9999990, 9999989, 9999988, 9999987, 9999986, -10000000, -9999999, -9999998, -9999997, -9999996, -9999995, -9999994, -9999993, -9999992, -9999991, -9999990, -9999989, -9999988, -9999987, -9999986]
+  - name: "generated_odd_total_candidates"
+    seed: 606
+    in:
+      nums:
+        gen: "array"
+        len: 14
+        of:
+          gen: "int"
+          min: -999
+          max: 1000
+        distinct: false
+        sorted: false
+  - name: "generated_maximum_duplicates"
+    seed: 707
+    in:
+      nums:
+        gen: "array"
+        len: 30
+        of:
+          gen: "int"
+          min: -1
+          max: 1
+        distinct: false
+        sorted: false

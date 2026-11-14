@@ -1,0 +1,443 @@
+entry:
+  id: 2071
+  title: "maximum-number-of-tasks-you-can-assign"
+  params:
+    tasks:
+      type: array
+      items:
+        type: int
+    workers:
+      type: array
+      items:
+        type: int
+    pills:
+      type: int
+    strength:
+      type: int
+  call:
+    cpp: "Solution().maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    rust: "Solution::max_task_assign({tasks}, {workers}, {pills}, {strength})"
+    python3: "Solution().maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    python2: "Solution().maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    ruby: "max_task_assign({tasks}, {workers}, {pills}, {strength})"
+    java: "new Solution().maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    csharp: "new Solution().MaxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    kotlin: "Solution().maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    go: "maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    dart: "Solution().maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    swift: "Solution().maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+    typescript: "maxTaskAssign({tasks}, {workers}, {pills}, {strength})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().maxTaskAssign(tasks, workers, pills, strength, {result})"
+    checker: |
+      class Checker:
+          def maxTaskAssign(self, tasks, workers, pills, strength, result):
+              if not isinstance(result, int) or isinstance(result, bool):
+                  return False
+              if result < 0 or result > min(len(tasks), len(workers)):
+                  return False
+              a = sorted(tasks)
+              w = sorted(workers)
+              def possible(k):
+                  pool = w[-k:]
+                  used = 0
+                  for task in reversed(a[:k]):
+                      if pool and pool[-1] >= task:
+                          pool.pop()
+                      else:
+                          i = 0
+                          while i < len(pool) and pool[i] + strength < task:
+                              i += 1
+                          if i == len(pool) or used == pills:
+                              return False
+                          used += 1
+                          pool.pop(i)
+                  return True
+              lo, hi = 0, min(len(a), len(w))
+              while lo < hi:
+                  mid = (lo + hi + 1) // 2
+                  if possible(mid):
+                      lo = mid
+                  else:
+                      hi = mid - 1
+              return result == lo
+
+seed: 2071
+
+tests:
+  - name: "example_1"
+    in:
+      tasks: [3, 2, 1]
+      workers: [0, 3, 3]
+      pills: 1
+      strength: 1
+    out: 3
+  - name: "example_2"
+    in:
+      tasks: [5, 4]
+      workers: [0, 0, 0]
+      pills: 1
+      strength: 5
+    out: 1
+  - name: "example_3"
+    in:
+      tasks: [10, 15, 30]
+      workers: [0, 10, 10, 10, 10]
+      pills: 3
+      strength: 10
+    out: 2
+  - name: "one_exact_worker"
+    in:
+      tasks: [7]
+      workers: [7]
+      pills: 0
+      strength: 0
+    out: 1
+  - name: "one_needs_pill"
+    in:
+      tasks: [8]
+      workers: [7]
+      pills: 1
+      strength: 1
+    out: 1
+  - name: "one_impossible"
+    in:
+      tasks: [8]
+      workers: [7]
+      pills: 0
+      strength: 1
+    out: 0
+  - name: "no_pills_direct_matches"
+    in:
+      tasks: [1, 2, 3, 4]
+      workers: [0, 2, 3, 4, 5]
+      pills: 0
+      strength: 9
+    out: 4
+  - name: "all_pills_equal_count"
+    in:
+      tasks: [5, 6, 7]
+      workers: [1, 2, 3]
+      pills: 3
+      strength: 4
+    out: 3
+  - name: "pills_zero_strength"
+    in:
+      tasks: [0, 0, 1]
+      workers: [0, 0, 0]
+      pills: 2
+      strength: 0
+    out: 2
+  - name: "zero_requirements"
+    in:
+      tasks: [0, 0, 0, 0]
+      workers: [0, 0]
+      pills: 0
+      strength: 0
+    out: 2
+  - name: "more_workers_than_tasks"
+    in:
+      tasks: [4, 8]
+      workers: [1, 4, 8, 100]
+      pills: 0
+      strength: 20
+    out: 2
+  - name: "more_tasks_than_workers"
+    in:
+      tasks: [1, 2, 3, 4, 5]
+      workers: [5, 5]
+      pills: 0
+      strength: 1
+    out: 2
+  - name: "duplicates_and_one_pill"
+    in:
+      tasks: [5, 5, 5, 5]
+      workers: [4, 4, 5, 5]
+      pills: 1
+      strength: 1
+    out: 3
+  - name: "pill_must_help_weakest"
+    in:
+      tasks: [4, 9]
+      workers: [3, 8]
+      pills: 1
+      strength: 1
+    out: 1
+  - name: "pill_not_enough"
+    in:
+      tasks: [4, 9]
+      workers: [3, 8]
+      pills: 1
+      strength: 0
+    out: 1
+  - name: "large_strength_value"
+    in:
+      tasks: [1000000000, 999999999]
+      workers: [999999998, 1000000000]
+      pills: 1
+      strength: 1
+    out: 2
+  - name: "large_gap"
+    in:
+      tasks: [1000000000]
+      workers: [0]
+      pills: 1
+      strength: 999999999
+    out: 0
+  - name: "boundary_pill_count"
+    in:
+      tasks: [2, 3, 4, 5]
+      workers: [1, 1, 1, 1]
+      pills: 4
+      strength: 4
+    out: 4
+  - name: "direct_preferred_over_pill"
+    in:
+      tasks: [2, 100]
+      workers: [2, 99]
+      pills: 1
+      strength: 1
+    out: 2
+  - name: "only_hard_task_fails"
+    in:
+      tasks: [1, 2, 100]
+      workers: [1, 2, 2]
+      pills: 1
+      strength: 50
+    out: 2
+  - name: "descending_inputs"
+    in:
+      tasks: [9, 7, 5, 3]
+      workers: [8, 6, 4, 2]
+      pills: 2
+      strength: 1
+    out: 3
+  - name: "interleaved_capabilities"
+    in:
+      tasks: [4, 4, 7, 8]
+      workers: [3, 5, 6, 7]
+      pills: 2
+      strength: 1
+    out: 3
+  - name: "zero_pills_zero_strength"
+    in:
+      tasks: [0, 1, 2]
+      workers: [0, 1, 1]
+      pills: 0
+      strength: 0
+    out: 2
+  - name: "all_workers_too_weak"
+    in:
+      tasks: [10, 20, 30]
+      workers: [0, 1, 2]
+      pills: 0
+      strength: 5
+    out: 0
+  - name: "all_workers_with_pills"
+    in:
+      tasks: [10, 20, 30]
+      workers: [0, 10, 20]
+      pills: 3
+      strength: 10
+    out: 3
+  - name: "exact_boundary_without_pill"
+    in:
+      tasks: [10, 20]
+      workers: [10, 19]
+      pills: 0
+      strength: 1
+    out: 1
+  - name: "pill_boundary_inclusive"
+    in:
+      tasks: [10, 20]
+      workers: [9, 19]
+      pills: 2
+      strength: 1
+    out: 2
+  - name: "one_worker_many_tasks"
+    in:
+      tasks: [0, 0, 1, 2]
+      workers: [1]
+      pills: 1
+      strength: 1
+    out: 1
+  - name: "one_task_many_workers"
+    in:
+      tasks: [50]
+      workers: [0, 25, 49, 50]
+      pills: 0
+      strength: 50
+    out: 1
+  - name: "all_equal"
+    in:
+      tasks: [6, 6, 6, 6]
+      workers: [6, 6, 6, 6]
+      pills: 0
+      strength: 0
+    out: 4
+  - name: "pill_budget_bottleneck"
+    in:
+      tasks: [5, 6, 7]
+      workers: [4, 5, 6]
+      pills: 1
+      strength: 1
+    out: 2
+  - name: "worker_count_bottleneck"
+    in:
+      tasks: [1, 2, 3, 4]
+      workers: [1, 2]
+      pills: 2
+      strength: 100
+    out: 2
+  - name: "large_repeated_tasks"
+    in:
+      tasks: [1000000000, 1000000000, 1000000000]
+      workers: [999999999, 999999999, 999999999]
+      pills: 2
+      strength: 1
+    out: 2
+  - name: "mixed_zero_and_max"
+    in:
+      tasks: [0, 1000000000]
+      workers: [0, 999999999]
+      pills: 1
+      strength: 1
+    out: 2
+  - name: "many_workers_low_pills"
+    in:
+      tasks: [3, 4, 5, 6, 7, 8]
+      workers: [1, 2, 3, 4, 5, 6, 7, 8]
+      pills: 1
+      strength: 1
+    out: 6
+  - name: "generated_small"
+    seed: 301
+    in:
+      tasks:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      workers:
+        gen: "array"
+        len:
+          gen: "int"
+          min: 1
+          max: 30
+        of:
+          gen: "int"
+          min: 0
+          max: 100
+      pills:
+        gen: "int"
+        min: 0
+        max: 30
+      strength:
+        gen: "int"
+        min: 0
+        max: 100
+  - name: "generated_medium"
+    seed: 302
+    in:
+      tasks:
+        gen: "array"
+        len: 250
+        of:
+          gen: "int"
+          min: 0
+          max: 100000
+      workers:
+        gen: "array"
+        len: 250
+        of:
+          gen: "int"
+          min: 0
+          max: 100000
+      pills:
+        gen: "int"
+        min: 0
+        max: 250
+      strength:
+        gen: "int"
+        min: 0
+        max: 100000
+  - name: "generated_unequal"
+    seed: 303
+    in:
+      tasks:
+        gen: "array"
+        len: 1000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      workers:
+        gen: "array"
+        len: 700
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      pills:
+        gen: "int"
+        min: 0
+        max: 700
+      strength:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: "generated_large_tasks"
+    seed: 304
+    in:
+      tasks:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      workers:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      pills: 25000
+      strength:
+        gen: "int"
+        min: 0
+        max: 1000000000
+  - name: "generated_maximum"
+    seed: 305
+    in:
+      tasks:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      workers:
+        gen: "array"
+        len: 50000
+        of:
+          gen: "int"
+          min: 0
+          max: 1000000000
+      pills: 50000
+      strength: 1000000000

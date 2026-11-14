@@ -1,0 +1,227 @@
+entry:
+  id: 2075
+  title: "decode-the-slanted-ciphertext"
+  params:
+    encodedText:
+      type: string
+    rows:
+      type: int
+  call:
+    cpp: "Solution().decodeCiphertext({encodedText}, {rows})"
+    rust: "Solution::decode_ciphertext({encodedText}, {rows})"
+    python3: "Solution().decodeCiphertext({encodedText}, {rows})"
+    python2: "Solution().decodeCiphertext({encodedText}, {rows})"
+    ruby: "decode_ciphertext({encodedText}, {rows})"
+    java: "new Solution().decodeCiphertext({encodedText}, {rows})"
+    csharp: "new Solution().DecodeCiphertext({encodedText}, {rows})"
+    kotlin: "Solution().decodeCiphertext({encodedText}, {rows})"
+    go: "decodeCiphertext({encodedText}, {rows})"
+    dart: "Solution().decodeCiphertext({encodedText}, {rows})"
+    swift: "Solution().decodeCiphertext({encodedText}, {rows})"
+    typescript: "decodeCiphertext({encodedText}, {rows})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().decodeCiphertext(encodedText, rows, {result})"
+    checker: |
+      class Checker:
+          def decodeCiphertext(self, encodedText, rows, result):
+              if not isinstance(result, str) or rows < 1:
+                  return False
+              cols = len(encodedText) // rows
+              expected = []
+              for c in range(cols):
+                  r = 0
+                  j = c
+                  while r < rows and j < cols:
+                      expected.append(encodedText[r * cols + j])
+                      r += 1
+                      j += 1
+              return ''.join(expected).rstrip(' ') == result
+
+seed: 2075
+
+tests:
+  - name: "example_cipher"
+    in:
+      encodedText: "cp i   "
+      rows: 3
+  - name: "example_leetcode"
+    in:
+      encodedText: "ivle  ee  l    o"
+      rows: 4
+  - name: "example_single_row"
+    in:
+      encodedText: "coding"
+      rows: 1
+  - name: "one_character"
+    in:
+      encodedText: "a"
+      rows: 1
+  - name: "two_rows_two_chars"
+    in:
+      encodedText: "a  "
+      rows: 2
+  - name: "two_rows_odd_length"
+    in:
+      encodedText: "ac b"
+      rows: 2
+  - name: "two_rows_even_boundary"
+    in:
+      encodedText: "ac b"
+      rows: 2
+  - name: "two_rows_five"
+    in:
+      encodedText: "ace bd"
+      rows: 2
+  - name: "two_rows_six"
+    in:
+      encodedText: "ace bd"
+      rows: 2
+  - name: "two_rows_seven"
+    in:
+      encodedText: "aceg bdf"
+      rows: 2
+  - name: "three_rows_eight"
+    in:
+      encodedText: "adf be  c"
+      rows: 3
+  - name: "three_rows_hello"
+    in:
+      encodedText: "hl e  "
+      rows: 3
+  - name: "spaces_in_original"
+    in:
+      encodedText: "ab  "
+      rows: 2
+  - name: "space_between_words"
+    in:
+      encodedText: "a d bc"
+      rows: 2
+  - name: "double_space"
+    in:
+      encodedText: "a    "
+      rows: 2
+  - name: "four_rows_leetcode"
+    in:
+      encodedText: "le e     "
+      rows: 4
+  - name: "five_rows_transposition"
+    in:
+      encodedText: "tnp rs  a       "
+      rows: 5
+  - name: "three_rows_phrase"
+    in:
+      encodedText: "sndih lt p  aec"
+      rows: 3
+  - name: "lowercase_two_rows"
+    in:
+      encodedText: "lwrae oecs"
+      rows: 2
+  - name: "spaces_matter"
+    in:
+      encodedText: "semt psa  a    c"
+      rows: 4
+  - name: "rows_exceed_text"
+    in:
+      encodedText: "ts e           "
+      rows: 7
+  - name: "alphabet_three_rows"
+    in:
+      encodedText: "adgi beh  cf"
+      rows: 3
+  - name: "alphabet_four_rows"
+    in:
+      encodedText: "aehj bfi  cg   d"
+      rows: 4
+  - name: "sentence_five_rows"
+    in:
+      encodedText: "tqc  huk  ei        "
+      rows: 5
+  - name: "rows_equal_length"
+    in:
+      encodedText: "o      "
+      rows: 6
+  - name: "matrix_two_rows"
+    in:
+      encodedText: "mti ar"
+      rows: 2
+  - name: "three_rows_short"
+    in:
+      encodedText: "eg d   "
+      rows: 3
+  - name: "longer_phrase"
+    in:
+      encodedText: "letx ore  n    g"
+      rows: 4
+  - name: "three_word_phrase"
+    in:
+      encodedText: "o ohe nt r  ewt"
+      rows: 3
+  - name: "decode_phrase"
+    in:
+      encodedText: "dcd hs eoeti"
+      rows: 2
+  - name: "single_spaces"
+    in:
+      encodedText: "xyz    "
+      rows: 2
+  - name: "repeated_letters"
+    in:
+      encodedText: "aa a   "
+      rows: 3
+  - name: "repeated_words"
+    in:
+      encodedText: "acac b b"
+      rows: 2
+  - name: "many_internal_spaces"
+    in:
+      encodedText: "a    c  b"
+      rows: 3
+  - name: "final_phrase"
+    in:
+      encodedText: "flxm i a  ne   a"
+      rows: 4
+  - name: "six_rows_boundary"
+    in:
+      encodedText: "rw o         "
+      rows: 6
+  - name: "generated_single_row_large"
+    seed: 101
+    in:
+      encodedText:
+        gen: "str"
+        len: 100000
+        alphabet: "abc"
+      rows: 1
+  - name: "generated_thousand_rows"
+    seed: 102
+    in:
+      encodedText:
+        gen: "str"
+        len: 100000
+        alphabet: "abc "
+      rows: 1000
+  - name: "generated_999_rows"
+    seed: 104
+    in:
+      encodedText:
+        gen: "str"
+        len: 999000
+        alphabet: "abc "
+      rows: 999
+  - name: "generated_maximum"
+    seed: 105
+    in:
+      encodedText:
+        gen: "str"
+        len: 1000000
+        alphabet: "abc "
+      rows: 1000

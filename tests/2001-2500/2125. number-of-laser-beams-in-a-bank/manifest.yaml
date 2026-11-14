@@ -1,0 +1,195 @@
+entry:
+  id: 2125
+  title: "number-of-laser-beams-in-a-bank"
+  params:
+    bank:
+      type: array
+      items:
+        type: string
+  call:
+    cpp: "Solution().numberOfBeams({bank})"
+    rust: "Solution::number_of_beams({bank})"
+    python3: "Solution().numberOfBeams({bank})"
+    python2: "Solution().numberOfBeams({bank})"
+    ruby: "number_of_beams({bank})"
+    java: "new Solution().numberOfBeams({bank})"
+    csharp: "new Solution().NumberOfBeams({bank})"
+    kotlin: "Solution().numberOfBeams({bank})"
+    go: "numberOfBeams({bank})"
+    dart: "Solution().numberOfBeams({bank})"
+    swift: "Solution().numberOfBeams({bank})"
+    typescript: "numberOfBeams({bank})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 2000
+  memory_mb: 256
+
+oracle:
+  python3:
+    call: "Checker().numberOfBeams(bank, result)"
+    checker: |
+      class Checker:
+          def numberOfBeams(self, bank, result):
+              previous = 0
+              expected = 0
+              for row in bank:
+                  devices = row.count("1")
+                  if devices:
+                      expected += previous * devices
+                      previous = devices
+              return result == expected
+
+seed: 2125
+
+tests:
+  - name: "example_one"
+    in:
+      bank: ["011001", "000000", "010100", "001000"]
+    out: 8
+  - name: "example_two"
+    in:
+      bank: ["000", "111", "000"]
+    out: 0
+  - name: "single_empty_row"
+    in:
+      bank: ["0"]
+    out: 0
+  - name: "single_device_row"
+    in:
+      bank: ["1"]
+    out: 0
+  - name: "two_adjacent_singletons"
+    in:
+      bank: ["1", "1"]
+    out: 1
+  - name: "two_adjacent_counts"
+    in:
+      bank: ["1101", "0110"]
+    out: 6
+  - name: "zero_rows_between"
+    in:
+      bank: ["1000", "0000", "0000", "0010"]
+    out: 1
+  - name: "zero_rows_do_not_reset"
+    in:
+      bank: ["101", "000", "010", "000", "111"]
+    out: 5
+  - name: "three_active_rows"
+    in:
+      bank: ["11", "10", "01"]
+    out: 3
+  - name: "leading_empty_rows"
+    in:
+      bank: ["000", "000", "101", "000", "011"]
+    out: 4
+  - name: "trailing_empty_rows"
+    in:
+      bank: ["101", "000", "011", "000", "000"]
+    out: 4
+  - name: "all_empty"
+    in:
+      bank: ["0000", "0000", "0000", "0000"]
+    out: 0
+  - name: "one_active_among_empty"
+    in:
+      bank: ["000", "000", "010", "000"]
+    out: 0
+  - name: "all_ones_two_rows"
+    in:
+      bank: ["11111", "11111"]
+    out: 25
+  - name: "all_ones_three_rows"
+    in:
+      bank: ["111", "111", "111"]
+    out: 18
+  - name: "alternating_rows"
+    in:
+      bank: ["10101", "01010", "10101", "01010"]
+    out: 18
+  - name: "alternating_with_gaps"
+    in:
+      bank: ["1010", "0000", "0101", "0000", "1010"]
+    out: 8
+  - name: "many_zero_rows"
+    in:
+      bank: ["100", "000", "000", "000", "001", "000", "000", "010"]
+    out: 2
+  - name: "dense_then_sparse"
+    in:
+      bank: ["111111", "000000", "000001"]
+    out: 6
+  - name: "sparse_then_dense"
+    in:
+      bank: ["100000", "000000", "111111"]
+    out: 6
+  - name: "middle_active_breaks_beam"
+    in:
+      bank: ["111", "000", "100", "000", "011"]
+    out: 5
+  - name: "consecutive_active_breaks_skip"
+    in:
+      bank: ["10", "01", "11"]
+    out: 3
+  - name: "single_column_pattern"
+    in:
+      bank: ["1", "0", "1", "1", "0", "1"]
+    out: 3
+  - name: "single_column_sparse"
+    in:
+      bank: ["0", "1", "0", "0", "1", "0", "1"]
+    out: 2
+  - name: "row_counts_1_2_3"
+    in:
+      bank: ["1000", "1100", "1110"]
+    out: 8
+  - name: "row_counts_3_1_2"
+    in:
+      bank: ["1110", "0000", "1000", "0011"]
+    out: 5
+  - name: "repeated_counts"
+    in:
+      bank: ["1010", "0000", "1010", "0000", "1010"]
+    out: 8
+  - name: "late_first_active"
+    in:
+      bank: ["00000", "00000", "00100", "00000", "11111"]
+    out: 5
+  - name: "early_last_active"
+    in:
+      bank: ["11111", "00000", "00100", "00000", "00000"]
+    out: 5
+  - name: "max_width_single_pair"
+    in:
+      bank: ["1111111111", "0000000000", "0000000001"]
+    out: 10
+  - name: "max_width_dense_pair"
+    in:
+      bank: ["1111111111", "1111111111"]
+    out: 100
+  - name: "mixed_width_five_rows"
+    in:
+      bank: ["00101", "00000", "11111", "00010", "10000"]
+    out: 16
+  - name: "alternating_single_devices"
+    in:
+      bank: ["10000", "00000", "00010", "00000", "00001", "00000"]
+    out: 2
+  - name: "four_active_count_product"
+    in:
+      bank: ["10101", "00000", "11111", "00000", "11000", "00000", "00100"]
+    out: 27
+  - name: "all_rows_one_device"
+    in:
+      bank: ["100000", "010000", "001000", "000100", "000010", "000001"]
+    out: 5
+  - name: "large_width_generated_a"
+    in:
+      bank: ["11111111111111111111", "00000000000000000000", "10101010101010101010", "00000000000000000000", "11111111110000000000"]
+    out: 300
+  - name: "large_width_generated_b"
+    in:
+      bank: ["10000000000000000000000000000000000000000000000000", "00000000000000000000000000000000000000000000000000", "11111111111111111111111111111111111111111111111111", "01000000000000000000000000000000000000000000000000"]
+    out: 100

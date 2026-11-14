@@ -1,0 +1,385 @@
+entry:
+  id: 2146
+  title: "k-highest-ranked-items-within-a-price-range"
+  params:
+    grid:
+      type: array
+      items:
+        type: array
+        items:
+          type: int
+    pricing:
+      type: array
+      items:
+        type: int
+    start:
+      type: array
+      items:
+        type: int
+    k:
+      type: int
+  call:
+    cpp: "Solution().highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    rust: "Solution::highest_ranked_k_items({grid}, {pricing}, {start}, {k})"
+    python3: "Solution().highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    python2: "Solution().highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    ruby: "highest_ranked_k_items({grid}, {pricing}, {start}, {k})"
+    java: "new Solution().highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    csharp: "new Solution().HighestRankedKItems({grid}, {pricing}, {start}, {k})"
+    kotlin: "Solution().highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    go: "highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    dart: "Solution().highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    swift: "Solution().highestRankedKItems({grid}, {pricing}, {start}, {k})"
+    typescript: "highestRankedKItems({grid}, {pricing}, {start}, {k})"
+judge:
+  type: exact
+limits:
+  time_ms: 1000
+  memory_mb: 512
+oracle:
+  python3:
+    call: "Checker().highestRankedKItems(grid, pricing, start, k, {result})"
+    checker: |
+      from collections import deque
+      class Checker:
+          def highestRankedKItems(self, grid, pricing, start, k, result):
+              m, n = len(grid), len(grid[0])
+              low, high = pricing
+              sr, sc = start
+              q = deque([(sr, sc, 0)])
+              seen = {(sr, sc)}
+              ranked = []
+              while q:
+                  r, c, d = q.popleft()
+                  v = grid[r][c]
+                  if low <= v <= high:
+                      ranked.append((d, v, r, c))
+                  for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                      nr, nc = r + dr, c + dc
+                      if 0 <= nr < m and 0 <= nc < n and (nr, nc) not in seen and grid[nr][nc] != 0:
+                          seen.add((nr, nc))
+                          q.append((nr, nc, d + 1))
+              expected = [[r, c] for _, _, r, c in sorted(ranked)[:k]]
+              return result == expected
+seed: 2146
+tests:
+  - name: "example_1"
+    in:
+      grid:
+        - [1, 2, 0, 1]
+        - [1, 3, 0, 1]
+        - [0, 2, 5, 1]
+      pricing: [2, 5]
+      start: [0, 0]
+      k: 3
+  - name: "example_2"
+    in:
+      grid:
+        - [1, 2, 0, 1]
+        - [1, 3, 3, 1]
+        - [0, 2, 5, 1]
+      pricing: [2, 3]
+      start: [2, 3]
+      k: 2
+  - name: "example_3"
+    in:
+      grid:
+        - [1, 1, 1]
+        - [0, 0, 1]
+        - [2, 3, 4]
+      pricing: [2, 3]
+      start: [0, 0]
+      k: 3
+  - name: "single_start_item"
+    in:
+      grid:
+        - [2]
+      pricing: [2, 2]
+      start: [0, 0]
+      k: 1
+  - name: "single_out_of_range"
+    in:
+      grid:
+        - [1]
+      pricing: [2, 2]
+      start: [0, 0]
+      k: 1
+  - name: "one_row_price_ties"
+    in:
+      grid:
+        - [1, 5, 2, 5, 2, 5]
+      pricing: [2, 5]
+      start: [0, 0]
+      k: 6
+  - name: "one_column"
+    in:
+      grid:
+        - [1]
+        - [4]
+        - [3]
+        - [2]
+      pricing: [2, 4]
+      start: [0, 0]
+      k: 2
+  - name: "all_walls_except_start"
+    in:
+      grid:
+        - [7, 0, 6]
+        - [0, 1, 0]
+        - [5, 0, 4]
+      pricing: [2, 7]
+      start: [1, 1]
+      k: 4
+  - name: "isolated_start_item"
+    in:
+      grid:
+        - [9, 0, 2]
+        - [0, 1, 0]
+        - [3, 0, 4]
+      pricing: [2, 9]
+      start: [0, 0]
+      k: 3
+  - name: "inclusive_low"
+    in:
+      grid:
+        - [1, 2, 3]
+      pricing: [2, 2]
+      start: [0, 0]
+      k: 3
+  - name: "inclusive_high"
+    in:
+      grid:
+        - [1, 4, 5]
+      pricing: [2, 5]
+      start: [0, 0]
+      k: 3
+  - name: "k_one"
+    in:
+      grid:
+        - [1, 9, 2]
+        - [3, 4, 5]
+      pricing: [2, 9]
+      start: [0, 0]
+      k: 1
+  - name: "k_all"
+    in:
+      grid:
+        - [2, 3]
+        - [4, 5]
+      pricing: [2, 5]
+      start: [0, 0]
+      k: 4
+  - name: "same_distance_price_order"
+    in:
+      grid:
+        - [1, 9, 1]
+        - [8, 1, 7]
+        - [1, 6, 1]
+      pricing: [6, 9]
+      start: [1, 1]
+      k: 4
+  - name: "same_distance_row_order"
+    in:
+      grid:
+        - [1, 5, 1, 5, 1]
+        - [5, 1, 5, 1, 5]
+      pricing: [5, 5]
+      start: [0, 2]
+      k: 5
+  - name: "same_row_column_order"
+    in:
+      grid:
+        - [1, 2, 1, 3, 1]
+      pricing: [2, 3]
+      start: [0, 2]
+      k: 2
+  - name: "zero_price_excluded"
+    in:
+      grid:
+        - [1, 0, 2]
+        - [3, 1, 4]
+      pricing: [2, 4]
+      start: [0, 0]
+      k: 4
+  - name: "detour_around_walls"
+    in:
+      grid:
+        - [1, 0, 0, 5]
+        - [2, 1, 1, 1]
+        - [3, 0, 4, 6]
+      pricing: [2, 6]
+      start: [0, 0]
+      k: 5
+  - name: "unreachable_right_region"
+    in:
+      grid:
+        - [1, 2, 0, 8]
+        - [3, 4, 0, 9]
+        - [5, 6, 0, 7]
+      pricing: [2, 9]
+      start: [0, 0]
+      k: 8
+  - name: "start_high_price"
+    in:
+      grid:
+        - [100000, 2]
+        - [3, 4]
+      pricing: [2, 100000]
+      start: [0, 0]
+      k: 3
+  - name: "maximum_price_boundary"
+    in:
+      grid:
+        - [1, 100000, 99999]
+      pricing: [99999, 100000]
+      start: [0, 0]
+      k: 2
+  - name: "large_k_fewer_items"
+    in:
+      grid:
+        - [1, 2, 1]
+        - [1, 1, 1]
+      pricing: [2, 2]
+      start: [1, 1]
+      k: 6
+  - name: "price_then_coordinates"
+    in:
+      grid:
+        - [1, 8, 1, 7]
+        - [6, 1, 5, 1]
+        - [1, 4, 1, 3]
+      pricing: [3, 8]
+      start: [1, 1]
+      k: 7
+  - name: "blocked_start_component"
+    in:
+      grid:
+        - [2, 0, 3, 4]
+        - [0, 1, 0, 1]
+        - [5, 1, 6, 1]
+      pricing: [2, 6]
+      start: [1, 1]
+      k: 5
+  - name: "rectangular_four_by_two"
+    in:
+      grid:
+        - [1, 2]
+        - [3, 4]
+        - [5, 6]
+        - [7, 8]
+      pricing: [3, 7]
+      start: [3, 1]
+      k: 4
+  - name: "rectangular_two_by_four"
+    in:
+      grid:
+        - [1, 2, 3, 4]
+        - [8, 7, 6, 5]
+      pricing: [2, 7]
+      start: [0, 0]
+      k: 5
+  - name: "many_equal_prices"
+    in:
+      grid:
+        - [1, 2, 2]
+        - [2, 1, 2]
+        - [2, 2, 1]
+      pricing: [2, 2]
+      start: [1, 1]
+      k: 8
+  - name: "zero_wall_corridor"
+    in:
+      grid:
+        - [1, 2, 0, 0, 3]
+        - [1, 1, 1, 1, 1]
+        - [4, 0, 0, 0, 5]
+      pricing: [2, 5]
+      start: [0, 0]
+      k: 4
+  - name: "start_empty_cell"
+    in:
+      grid:
+        - [5, 1, 2]
+        - [4, 1, 3]
+      pricing: [2, 5]
+      start: [0, 1]
+      k: 4
+  - name: "narrow_turns"
+    in:
+      grid:
+        - [1, 2, 0, 0]
+        - [0, 1, 3, 0]
+        - [0, 0, 1, 4]
+        - [8, 7, 6, 5]
+      pricing: [2, 8]
+      start: [0, 0]
+      k: 6
+  - name: "all_cells_items"
+    in:
+      grid:
+        - [2, 3, 4]
+        - [5, 6, 7]
+        - [8, 9, 10]
+      pricing: [2, 10]
+      start: [1, 1]
+      k: 9
+  - name: "lower_bound_two"
+    in:
+      grid:
+        - [1, 2, 1]
+        - [2, 1, 2]
+      pricing: [2, 2]
+      start: [0, 0]
+      k: 3
+  - name: "high_bound_one_hundred_thousand"
+    in:
+      grid:
+        - [1, 99998, 100000]
+        - [99999, 1, 2]
+      pricing: [99998, 100000]
+      start: [1, 1]
+      k: 3
+  - name: "large_open_grid"
+    in:
+      grid:
+        - [1, 2, 3, 4, 5, 6, 7, 8]
+        - [16, 15, 14, 13, 12, 11, 10, 9]
+        - [17, 18, 19, 20, 21, 22, 23, 24]
+        - [32, 31, 30, 29, 28, 27, 26, 25]
+        - [33, 34, 35, 36, 37, 38, 39, 40]
+        - [48, 47, 46, 45, 44, 43, 42, 41]
+        - [49, 50, 51, 52, 53, 54, 55, 56]
+        - [64, 63, 62, 61, 60, 59, 58, 57]
+      pricing: [20, 50]
+      start: [0, 0]
+      k: 20
+  - name: "large_walled_grid"
+    in:
+      grid:
+        - [1, 2, 0, 4, 5, 0, 7, 8]
+        - [9, 10, 0, 12, 13, 0, 15, 16]
+        - [17, 18, 19, 20, 0, 22, 23, 24]
+        - [0, 26, 27, 28, 0, 30, 31, 0]
+        - [33, 34, 0, 36, 37, 38, 0, 40]
+        - [41, 0, 43, 44, 45, 0, 47, 48]
+      pricing: [2, 48]
+      start: [0, 0]
+      k: 18
+  - name: "far_corner_start"
+    in:
+      grid:
+        - [2, 1, 3, 1]
+        - [4, 1, 5, 1]
+        - [6, 1, 7, 1]
+        - [8, 1, 9, 1]
+      pricing: [2, 9]
+      start: [3, 3]
+      k: 7
+  - name: "no_matching_reachable_items"
+    in:
+      grid:
+        - [1, 1, 0]
+        - [1, 1, 2]
+      pricing: [3, 4]
+      start: [0, 0]
+      k: 2

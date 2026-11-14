@@ -1,0 +1,286 @@
+entry:
+  id: 2096
+  title: "step-by-step-directions-from-a-binary-tree-node-to-another"
+  params:
+    root:
+      type: tree_node
+    start:
+      type: int
+    dest:
+      type: int
+  call:
+    cpp: "Solution().getDirections({root}, {start}, {dest})"
+    rust: "Solution::get_directions({root}, {start}, {dest})"
+    python3: "Solution().getDirections({root}, {start}, {dest})"
+    python2: "Solution().getDirections({root}, {start}, {dest})"
+    ruby: "get_directions({root}, {start}, {dest})"
+    java: "new Solution().getDirections({root}, {start}, {dest})"
+    csharp: "new Solution().GetDirections({root}, {start}, {dest})"
+    kotlin: "Solution().getDirections({root}, {start}, {dest})"
+    go: "getDirections({root}, {start}, {dest})"
+    dart: "Solution().getDirections({root}, {start}, {dest})"
+    swift: "Solution().getDirections({root}, {start}, {dest})"
+    typescript: "getDirections({root}, {start}, {dest})"
+
+judge:
+  type: "exact"
+
+limits:
+  time_ms: 1000
+  memory_mb: 512
+
+oracle:
+  python3:
+    call: "Checker().getDirections(root, start, dest, {result})"
+    checker: |
+      class Checker:
+          def getDirections(self, root, start, dest, result):
+              if not isinstance(result, str) or any(ch not in 'LRU' for ch in result):
+                  return False
+              parent = {}
+              move = {}
+              stack = [root]
+              while stack:
+                  node = stack.pop()
+                  if node is None:
+                      continue
+                  if node.left is not None:
+                      parent[node.left.val] = node.val
+                      move[node.left.val] = 'L'
+                      stack.append(node.left)
+                  if node.right is not None:
+                      parent[node.right.val] = node.val
+                      move[node.right.val] = 'R'
+                      stack.append(node.right)
+              paths = {}
+              node = start
+              paths[node] = ''
+              while node in parent:
+                  paths[parent[node]] = paths[node] + 'U'
+                  node = parent[node]
+              node = dest
+              down = ''
+              while node not in paths:
+                  down = move[node] + down
+                  node = parent[node]
+              return result == paths[node] + down
+
+seed: 2096001
+
+tests:
+  - name: "example_1"
+    in:
+      root: [5, 1, 2, 3, null, 6, 4]
+      start: 3
+      dest: 6
+    out: "UURL"
+  - name: "example_2"
+    in:
+      root: [2, 1]
+      start: 2
+      dest: 1
+    out: "L"
+  - name: "root_to_left"
+    in:
+      root: [1, 2, 3]
+      start: 1
+      dest: 2
+    out: "L"
+  - name: "root_to_right"
+    in:
+      root: [1, 2, 3]
+      start: 1
+      dest: 3
+    out: "R"
+  - name: "left_to_root"
+    in:
+      root: [1, 2, 3]
+      start: 2
+      dest: 1
+    out: "U"
+  - name: "right_to_root"
+    in:
+      root: [1, 2, 3]
+      start: 3
+      dest: 1
+    out: "U"
+  - name: "left_to_right_siblings"
+    in:
+      root: [1, 2, 3]
+      start: 2
+      dest: 3
+    out: "UR"
+  - name: "right_to_left_siblings"
+    in:
+      root: [1, 2, 3]
+      start: 3
+      dest: 2
+    out: "UL"
+  - name: "left_chain_down"
+    in:
+      root: [1, 2, null, 4, null, 5, null, 7]
+      start: 1
+      dest: 7
+    out: "LLLL"
+  - name: "left_chain_up"
+    in:
+      root: [1, 2, null, 4, null, 5, null, 7]
+      start: 7
+      dest: 1
+    out: "UUUU"
+  - name: "right_chain_down"
+    in:
+      root: [1, null, 2, null, 4, null, 8]
+      start: 1
+      dest: 8
+    out: "RRR"
+  - name: "right_chain_up"
+    in:
+      root: [1, null, 2, null, 4, null, 8]
+      start: 8
+      dest: 1
+    out: "UUU"
+  - name: "zigzag_left_right"
+    in:
+      root: [10, 4, null, null, 7, null, 9]
+      start: 10
+      dest: 9
+    out: "LRR"
+  - name: "zigzag_right_left"
+    in:
+      root: [10, null, 20, 15, null, 12]
+      start: 10
+      dest: 12
+    out: "RLL"
+  - name: "deep_branch_to_branch"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 1
+      dest: 15
+    out: "UUURRR"
+  - name: "deep_branch_reverse"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 15
+      dest: 1
+    out: "UUULLL"
+  - name: "same_parent_left_to_right"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 5
+      dest: 7
+    out: "UR"
+  - name: "same_parent_right_to_left"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 7
+      dest: 5
+    out: "UL"
+  - name: "ancestor_to_grandchild"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 4
+      dest: 7
+    out: "RR"
+  - name: "grandchild_to_ancestor"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 7
+      dest: 4
+    out: "UU"
+  - name: "right_subtree_internal"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 9
+      dest: 14
+    out: "UUR"
+  - name: "left_subtree_internal"
+    in:
+      root: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15]
+      start: 2
+      dest: 6
+    out: "UR"
+  - name: "nonconsecutive_labels"
+    in:
+      root: [100, 20, 300, 10, 50, null, 400, null, 15]
+      start: 15
+      dest: 400
+    out: "UUURR"
+  - name: "label_boundary_low"
+    in:
+      root: [100000, 1, 99999, 2, null, null, 99998]
+      start: 1
+      dest: 99998
+    out: "URR"
+  - name: "label_boundary_high"
+    in:
+      root: [100000, 1, 99999, 2, null, null, 99998]
+      start: 100000
+      dest: 99998
+    out: "RR"
+  - name: "sparse_tree_left"
+    in:
+      root: [50, 20, 80, null, 30, 60, null, 25]
+      start: 25
+      dest: 60
+    out: "UUURL"
+  - name: "sparse_tree_right"
+    in:
+      root: [50, 20, 80, null, 30, 60, null, 25]
+      start: 60
+      dest: 25
+    out: "UULRL"
+  - name: "full_height_three"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      start: 4
+      dest: 7
+    out: "UURR"
+  - name: "full_height_three_reverse"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7]
+      start: 7
+      dest: 4
+    out: "UULL"
+  - name: "full_height_four_left_to_right"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      start: 8
+      dest: 15
+    out: "UUURRR"
+  - name: "full_height_four_right_to_left"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      start: 15
+      dest: 8
+    out: "UUULLL"
+  - name: "full_height_four_cross"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      start: 10
+      dest: 14
+    out: "UUURRL"
+  - name: "full_height_four_ancestor"
+    in:
+      root: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      start: 2
+      dest: 9
+    out: "LR"
+  - name: "larger_balanced_cross"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+      start: 1
+      dest: 31
+    out: "UUUURRRR"
+  - name: "larger_balanced_inner"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+      start: 11
+      dest: 23
+    out: "UUUURLRR"
+  - name: "larger_balanced_reverse"
+    in:
+      root: [16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+      start: 31
+      dest: 1
+    out: "UUUULLLL"
